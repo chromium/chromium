@@ -27,7 +27,6 @@
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"
-#include "chromeos/ash/services/device_sync/cryptauth_device_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager_impl.h"
@@ -698,7 +697,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
 
   void TearDown() override {
     CryptAuthGCMManagerImpl::Factory::SetFactoryForTesting(nullptr);
-    CryptAuthDeviceManagerImpl::Factory::SetFactoryForTesting(nullptr);
     CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(nullptr);
     CryptAuthV2EnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);
     CryptAuthEnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);

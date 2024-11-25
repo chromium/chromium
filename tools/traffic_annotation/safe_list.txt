@@ -327,7 +327,6 @@ missing_new_fields,chrome/browser/ash/printing/oauth2/authorization_server_data.
 missing_new_fields,chrome/browser/ash/printing/oauth2/authorization_server_session.cc
 missing_new_fields,chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.cc
 missing_new_fields,chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc
-missing_new_fields,chromeos/ash/services/device_sync/cryptauth_device_manager_impl.cc
 missing_new_fields,components/browsing_data/core/counters/history_counter.cc
 missing_new_fields,components/browsing_data/core/history_notice_utils.cc
 missing_new_fields,components/history/core/browser/browsing_history_service.cc

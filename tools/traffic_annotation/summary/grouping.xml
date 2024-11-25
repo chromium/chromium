@@ -211,7 +211,6 @@ after discussions on the right group.
       <annotation id="download_bubble_retry_download"/>
       <annotation id="quick_answers_loader"/>
       <annotation id="chrome_search_suggest_service"/>
-      <annotation id="cryptauth_get_my_devices"/>
       <annotation id="chrome_commerce_price_email_pref_fetcher"/>
       <annotation id="chrome_commerce_price_email_pref_sender"/>
       <annotation id="receive_messages_express"/>
