@@ -607,6 +607,8 @@
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avx256vnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni.c
+// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c
+// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-scalar.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx-mul16-add16.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx2-mul32.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p1c-minmax-fp32-scalar-fmagic.c
@@ -927,10 +929,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  112,  68, 198, 165, 171,  60,  98, 235,
-  192, 240, 122, 252,   1, 135, 243,  35,
-  186, 229, 126, 219, 100, 113,  76, 100,
-   13, 250, 229,   7,  29, 249,  48,  20
+   10, 243, 165, 162, 236, 132,  57, 241,
+  181, 146,  33, 192, 235, 201, 173, 180,
+  120,  25, 221,  70, 171,  12, 216, 183,
+  247, 169, 250,  57, 205,  41, 120,  22
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

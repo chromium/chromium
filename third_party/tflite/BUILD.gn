@@ -176,6 +176,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/sign_custom.cc",
     "src/tensorflow/lite/kernels/stablehlo_add.cc",
     "src/tensorflow/lite/kernels/stablehlo_and.cc",
+    "src/tensorflow/lite/kernels/stablehlo_case.cc",
     "src/tensorflow/lite/kernels/stablehlo_composite.cc",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
     "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
@@ -619,6 +620,26 @@ flatbuffer("weight_cache_schema_generated") {
   args = [ "--gen-object-api" ]
 }
 
+source_set("tflite_compiler_utils") {
+  sources = [
+    "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.cc",
+    "src/tensorflow/compiler/mlir/lite/core/api/flatbuffer_conversions.h",
+    "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.cc",
+    "src/tensorflow/compiler/mlir/lite/tools/versioning/op_signature.h",
+  ]
+  configs += [ ":tflite_config" ]
+  public_deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_proto",
+    ":tflite_public_headers",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
+  ]
+  visibility = [ ":*" ]
+}
+
 # TODO(crbug.com/1147996): Update to a component build. Will require updating the
 # tflite version.
 # TODO(crbug.com/372526657): Use tflite registration directly and not the C API.
@@ -814,6 +835,7 @@ tflite_static_library("tflite") {
   conditional_public_deps = [ ":tflite_kernels" ]
 
   public_deps = [
+    ":tflite_compiler_utils",
     ":tflite_kernel_common_headers",
     ":tflite_kernel_internals",
     ":tflite_proto",
