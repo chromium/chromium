@@ -10,8 +10,10 @@
 #import "base/metrics/histogram_macros_local.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
@@ -726,6 +728,17 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
             ? SaveToPhotosContextMenuActions::kAvailableDidSaveImageLocally
             : SaveToPhotosContextMenuActions::kUnavailableDidSaveImageLocally);
   }];
+
+  policy::DownloadRestriction download_restriction =
+      static_cast<policy::DownloadRestriction>(
+          self.browser->GetProfile()->GetPrefs()->GetInteger(
+              policy::policy_prefs::kDownloadRestrictions));
+  if (download_restriction == policy::DownloadRestriction::ALL_FILES) {
+    saveImage.subtitle =
+        l10n_util::GetNSString(IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
+    saveImage.attributes = UIMenuElementAttributesDisabled;
+  }
+
   [imageSavingElements addObject:saveImage];
 
   // Save Image to Photos.

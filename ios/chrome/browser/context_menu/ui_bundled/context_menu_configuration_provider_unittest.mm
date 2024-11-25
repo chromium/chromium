@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
@@ -36,6 +40,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -218,6 +223,9 @@ TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
   EXPECT_EQ(foundMenuElement.subtitle, expectedMenuElement.subtitle);
   // Test that the element has the expected image.
   EXPECT_TRUE([foundMenuElement.image isEqual:expectedMenuElement.image]);
+  // Test that the element is not disabled.
+  EXPECT_NE(base::apple::ObjCCast<UIAction>(foundMenuElement).attributes,
+            UIMenuElementAttributesDisabled);
 }
 
 // Test that the "Share" action is added to the context
@@ -298,4 +306,41 @@ TEST_F(ContextMenuConfigurationProviderTest, NoEntityDetectionOnDisallowedURL) {
       "OptimizationGuide.ApplyDecision.TextClassifierEntityDetection",
       optimization_guide::OptimizationTypeDecision::kRequestedUnregisteredType,
       1);
+}
+
+// Test that "Save in Photos" action is disabled and has a download restriction
+// subtitle.
+TEST_F(ContextMenuConfigurationProviderTest,
+       HasSaveImageWithDownloadRestrictionMenuElement) {
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetInteger(
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
+
+  // Get menu with params containing image source URL.
+  web::ContextMenuParams paramsWithImage =
+      GetContextMenuParamsWithImageUrl(kImageUrl);
+  UIMenu* menu = GetContextMenuForParams(paramsWithImage);
+
+  BrowserActionFactory* actionFactory = GetBrowserActionFactory();
+  UIMenuElement* expectedMenuElement =
+      [actionFactory actionSaveImageWithBlock:nil];
+
+  // Test that there is an element with the expected title in the menu.
+  NSUInteger indexOfFoundMenuElement =
+      [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menuElement,
+                                                    NSUInteger, BOOL*) {
+        return [menuElement.title isEqualToString:expectedMenuElement.title];
+      }];
+  ASSERT_TRUE(indexOfFoundMenuElement != NSNotFound);
+  UIMenuElement* foundMenuElement = menu.children[indexOfFoundMenuElement];
+
+  // Test that the element has the expected subtitle.
+  EXPECT_TRUE([foundMenuElement.subtitle
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION)]);
+
+  // Test that the element is disabled.
+  EXPECT_EQ(base::apple::ObjCCast<UIAction>(foundMenuElement).attributes,
+            UIMenuElementAttributesDisabled);
 }
