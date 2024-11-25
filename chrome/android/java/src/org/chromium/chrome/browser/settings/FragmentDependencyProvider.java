@@ -211,8 +211,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);
             tpFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
-            tpFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)
@@ -227,15 +225,11 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     ((IpProtectionSettingsFragment) fragment);
             ipProtectionSettingsFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
-            ipProtectionSettingsFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment
                 instanceof FingerprintingProtectionSettingsFragment fpProtectionSettingsFragment) {
             fpProtectionSettingsFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
-            fpProtectionSettingsFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AutofillLocalIbanEditor) {
             ((AutofillLocalIbanEditor) fragment)

@@ -21,13 +21,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -42,7 +40,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.privacy_sandbox.CustomTabs.CustomTabIntentHelper;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -52,11 +49,8 @@ import java.util.List;
 import java.util.Locale;
 
 /** Fragment to manage settings for tracking protection. */
-public class TrackingProtectionSettings extends PreferenceFragmentCompat
-        implements CustomDividerFragment,
-                OnPreferenceClickListener,
-                SiteAddedCallback,
-                EmbeddableSettingsPage {
+public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
+        implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_IP_PROTECTION_TOGGLE = "ip_protection_toggle";
     private static final String PREF_IP_PROTECTION_LEARN_MORE = "ip_protection_learn_more";
@@ -85,8 +79,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     private String mSearch;
 
     private TrackingProtectionDelegate mDelegate;
-
-    private CustomTabIntentHelper mCustomTabIntentHelper;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -380,10 +372,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     private void onLearnMoreClicked() {
-        CustomTabs.openUrlInCct(mCustomTabIntentHelper, getContext(), LEARN_MORE_URL);
-    }
-
-    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
-        mCustomTabIntentHelper = helper;
+        getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
     }
 }

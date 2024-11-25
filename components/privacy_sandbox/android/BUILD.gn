@@ -6,9 +6,9 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/privacy_sandbox/CustomTabs.java",
     "java/src/org/chromium/components/privacy_sandbox/FingerprintingProtectionSettingsFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/IpProtectionSettingsFragment.java",
+    "java/src/org/chromium/components/privacy_sandbox/PrivacySandboxBaseFragment.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionDelegate.java",
     "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettings.java",
     "java/src/org/chromium/components/privacy_sandbox/WebsiteExceptionRowPreference.java",
