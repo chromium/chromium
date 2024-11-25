@@ -1395,37 +1395,7 @@ TEST_F(WebAppRegistrarTest, DefaultNotInstalledWithOsIntegration) {
       app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
-// Link capturing preferences & overlapping scopes have custom behavior on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(WebAppRegistrarTest, AppsOverlapIfSharesScope) {
-  base::test::ScopedFeatureList enable_link_capturing;
-  enable_link_capturing.InitWithFeaturesAndParameters(
-      apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
-  StartWebAppProvider();
-
-  // Initialize 2 apps, both having the same scope, and set the second
-  // app to capture links. If app1 is passed as an input, then
-  // app2 is returned as an overlapping app that matches the scope and
-  // is set by the user to handle links.
-  auto web_app1 =
-      test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
-  web_app1->SetScope(GURL("https://example_scope.com"));
-
-  auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
-                                     WebAppManagement::kDefault);
-  web_app2->SetScope(GURL("https://example_scope.com"));
-  web_app2->SetLinkCapturingUserPreference(
-      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
-
-  const webapps::AppId app_id1 = web_app1->app_id();
-  const webapps::AppId app_id2 = web_app2->app_id();
-  RegisterAppUnsafe(std::move(web_app1));
-  RegisterAppUnsafe(std::move(web_app2));
-
-  EXPECT_THAT(registrar().GetOverlappingAppsMatchingScope(app_id1),
-              ElementsAre(app_id2));
-}
-
 TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
   StartWebAppProvider();
 
@@ -1811,5 +1781,59 @@ TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class WebAppRegistrarParameterizedTest
+    : public WebAppRegistrarTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
+ public:
+  WebAppRegistrarParameterizedTest() {
+    link_capturing_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+  }
+
+ private:
+  base::test::ScopedFeatureList link_capturing_feature_list_;
+};
+
+TEST_P(WebAppRegistrarParameterizedTest, AppsOverlapIfSharesScope) {
+  StartWebAppProvider();
+
+  // Initialize 2 apps, both having the same scope, and set the second
+  // app to capture links. If app1 is passed as an input, then
+  // app2 is returned as an overlapping app that matches the scope and
+  // is set by the user to handle links.
+  auto web_app1 =
+      test::CreateWebApp(GURL("https://example.com"), WebAppManagement::kSync);
+  web_app1->SetScope(GURL("https://example_scope.com"));
+
+  auto web_app2 = test::CreateWebApp(GURL("https://example.com/def"),
+                                     WebAppManagement::kDefault);
+  web_app2->SetScope(GURL("https://example_scope.com"));
+  web_app2->SetLinkCapturingUserPreference(
+      proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS);
+
+  const webapps::AppId app_id1 = web_app1->app_id();
+  const webapps::AppId app_id2 = web_app2->app_id();
+  RegisterAppUnsafe(std::move(web_app1));
+  RegisterAppUnsafe(std::move(web_app2));
+
+  EXPECT_THAT(registrar().GetOverlappingAppsMatchingScope(app_id1),
+              ElementsAre(app_id2));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebAppRegistrarParameterizedTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
