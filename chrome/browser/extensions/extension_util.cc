@@ -12,13 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "chrome/common/pref_names.h"
@@ -48,11 +41,22 @@
 #include "chromeos/ash/components/file_manager/app_id.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#endif
+
 namespace extensions {
 namespace util {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns |extension_id|. See note below.
 std::string ReloadExtension(const std::string& extension_id,
                             content::BrowserContext* context) {
@@ -100,6 +104,7 @@ bool IsForceInstalledExtension(const ExtensionId& extension_id,
   return false;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns true if the profile is a sign-in profile and the extension is policy
 // installed. `is_policy_installed` can be passed to the method if its value is
@@ -149,6 +154,7 @@ bool HasIsolatedStorage(const Extension& extension,
   return extension.is_platform_app();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled) {
@@ -345,6 +351,7 @@ std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name) {
   return GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(extension_name));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace util
 }  // namespace extensions

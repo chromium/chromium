@@ -299,6 +299,8 @@ static_library("test_support") {
       "../browser/extensions/extension_platform_browsertest.cc",
       "../browser/extensions/extension_platform_browsertest.h",
     ]
+
+    deps += [ "//chrome/browser/extensions" ]
   }
 
   if (enable_desktop_android_extensions) {
@@ -1731,6 +1733,7 @@ if (is_android) {
       ]
 
       deps += [
+        "//chrome/browser/extensions",
         "//components/embedder_support",
         "//components/proxy_config",
         "//components/web_package",
@@ -8551,6 +8554,10 @@ test("unit_tests") {
     }
   }
 
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions:test_support" ]
+  }
+
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
   if (enable_extensions) {
     sources += [
@@ -8896,7 +8903,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/extensions:cws_item_service_proto",
-      "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/cookies:helpers",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/web_applications:unit_tests",

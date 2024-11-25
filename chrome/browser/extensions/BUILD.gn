@@ -29,6 +29,10 @@ source_set("extensions") {
   sources = [
     "chrome_extensions_browser_api_provider.cc",
     "chrome_extensions_browser_api_provider.h",
+    "extension_special_storage_policy.cc",
+    "extension_special_storage_policy.h",
+    "extension_util.cc",
+    "extension_util.h",
   ]
   configs += [
     "//build/config:precompiled_headers",
@@ -36,10 +40,17 @@ source_set("extensions") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/extensions/api:api_registration",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//content/public/browser",
     "//extensions/browser",
     "//extensions/buildflags",
+    "//extensions/common",
     "//net",
+    "//storage/browser",
   ]
   defines = []
 
@@ -462,8 +473,6 @@ source_set("extensions") {
       "extension_service.h",
       "extension_side_panel_view_host.cc",
       "extension_side_panel_view_host.h",
-      "extension_special_storage_policy.cc",
-      "extension_special_storage_policy.h",
       "extension_sync_data.cc",
       "extension_sync_data.h",
       "extension_sync_service.cc",
@@ -484,8 +493,6 @@ source_set("extensions") {
       "extension_ui_util.h",
       "extension_uninstall_dialog.cc",
       "extension_uninstall_dialog.h",
-      "extension_util.cc",
-      "extension_util.h",
       "extension_view.h",
       "extension_view_host.cc",
       "extension_view_host.h",
@@ -736,7 +743,6 @@ source_set("extensions") {
       "//chrome/browser/apps:user_type_filter",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/chooser_controller",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/feedback",
       "//chrome/browser/importer",
       "//chrome/browser/picture_in_picture",
@@ -822,7 +828,6 @@ source_set("extensions") {
       "//components/browsing_data/content",
       "//components/browsing_data/core",
       "//components/content_settings/core/browser",
-      "//components/content_settings/core/browser:cookie_settings",
       "//components/cookie_config:cookie_config",
       "//components/crx_file",
       "//components/device_signals/core/browser",
@@ -920,7 +925,6 @@ source_set("extensions") {
       "//extensions/browser/api/storage:settings_observer",
       "//extensions/browser/updater",
       "//extensions/browser/updater:keepalive",
-      "//extensions/common",
       "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/strings",
@@ -940,7 +944,6 @@ source_set("extensions") {
       "//services/video_capture/public/mojom:constants",
       "//skia",
       "//sql",
-      "//storage/browser",
       "//storage/common",
       "//third_party/abseil-cpp:absl",
       "//third_party/blink/public:resources",
@@ -1487,11 +1490,24 @@ if (enable_extensions) {
   proto_library("cws_item_service_proto") {
     sources = [ "cws_item_service.proto" ]
   }
+}
 
-  static_library("test_support") {
-    testonly = true
+static_library("test_support") {
+  testonly = true
 
-    sources = [
+  sources = [
+    "mock_extension_special_storage_policy.cc",
+    "mock_extension_special_storage_policy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/extensions",
+  ]
+
+  if (enable_extensions) {
+    sources += [
       "api/messaging/native_messaging_test_util.cc",
       "api/messaging/native_messaging_test_util.h",
       "api/passwords_private/test_passwords_private_delegate.cc",
@@ -1514,8 +1530,6 @@ if (enable_extensions) {
       "menu_manager_test_observer.h",
       "mock_crx_installer.cc",
       "mock_crx_installer.h",
-      "mock_extension_special_storage_policy.cc",
-      "mock_extension_special_storage_policy.h",
       "scoped_database_manager_for_test.cc",
       "scoped_database_manager_for_test.h",
       "scoped_test_mv2_enabler.cc",
@@ -1530,7 +1544,7 @@ if (enable_extensions) {
       "test_extension_system.h",
     ]
 
-    deps = [
+    deps += [
       ":extensions",
       "//base",
       "//chrome/browser",
@@ -1564,7 +1578,9 @@ if (enable_extensions) {
       deps += [ "//components/user_manager:test_support" ]
     }
   }
+}
 
+if (enable_extensions) {
   fuzzer_test("extension_management_internal_fuzzer") {
     sources = [ "extension_management_internal_fuzzer.cc" ]
     deps = [
