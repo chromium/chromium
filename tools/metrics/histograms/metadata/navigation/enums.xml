@@ -1954,6 +1954,8 @@ Called by update_scheduler_enums.py.-->
   <int value="65" label="SmartCard"/>
   <int value="66" label="LiveMediaStreamTrack"/>
   <int value="67" label="UnloadHandler"/>
+  <int value="68" label="ParserAborted"/>
+  <int value="69" label="WebBluetooth"/>
 </enum>
 
 </enums>

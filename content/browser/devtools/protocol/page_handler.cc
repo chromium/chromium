@@ -1873,8 +1873,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::
           JsNetworkRequestReceivedCacheControlNoStoreResource;
     case WebSchedulerTrackedFeature::kWebSerial:
-      // Currently we add WebSchedulerTrackedFeature::kWebSerial only for
-      // disabling aggressive throttling.
+    case WebSchedulerTrackedFeature::kWebBluetooth:
+      // These features only disable aggressive throttling.
       NOTREACHED();
     case WebSchedulerTrackedFeature::kSmartCard:
       return Page::BackForwardCacheNotRestoredReasonEnum::SmartCard;
@@ -2119,6 +2119,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebSocketSticky:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case WebSchedulerTrackedFeature::kWebSerial:
+    case WebSchedulerTrackedFeature::kWebBluetooth:
       NOTREACHED();
   }
 }

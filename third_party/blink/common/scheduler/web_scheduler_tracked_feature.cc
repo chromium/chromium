@@ -150,6 +150,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
               "page contains unload handler"};
     case WebSchedulerTrackedFeature::kParserAborted:
       return {"parser-aborted", "parser was aborted"};
+    case WebSchedulerTrackedFeature::kWebBluetooth:
+      return {"webbluetooth", "Active Bluetooth connection"};
   }
   return {};
 }
