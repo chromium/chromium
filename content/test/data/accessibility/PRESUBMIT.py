@@ -161,7 +161,7 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=[r"content/test/data/accessibility/.+\.txt"],
+            files_to_check=[r"content/test/data/accessibility/(?!(mac|win)/).+\.txt"],
         )
 
     valid_suffixes = [
@@ -169,9 +169,17 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
         "-expected-android.txt",
         "-expected-android-assist-data.txt",
         "-expected-auralinux.txt",
+        "-expected-auralinux-2.txt",
+        "-expected-blink.txt",
+        "-expected-blink-cros.txt",
+        "-expected-fuchsia.txt",
         "-expected-mac.txt",
+        "-expected-mac-before-11.txt",
         "-expected-uia-win.txt",
         "-expected-win.txt",
+
+        # TODO(accessibility) Temporary while Android API experiment is running
+        "-expected-android-exp.txt",
     ]
     problems = []
 

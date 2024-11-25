@@ -275,13 +275,23 @@ class CheckAccessibilityTestExpectationFilenamesTest(unittest.TestCase):
             MockFile("content/test/data/accessibility/aria/foo-expected-android-external.txt", []),
             MockFile("content/test/data/accessibility/event/bar-expected-android.txt", []),
             MockFile("content/test/data/accessibility/html/baz-expected-android-assist-data.txt", []),
+            MockFile("content/test/data/accessibility/event/bar-expected-android-exp.txt", []),
             MockFile("content/test/data/accessibility/accname/qux-expected-auralinux.txt", []),
+            MockFile("content/test/data/accessibility/accname/qux-expected-auralinux-2.txt", []),
+            MockFile("content/test/data/accessibility/event/bar-expected-blink.txt", []),
+            MockFile("content/test/data/accessibility/accname/qux-expected-blink-cros.txt", []),
+            MockFile("content/test/data/accessibility/accname/qux-expected-fuchsia.txt", []),
             MockFile("content/test/data/accessibility/css/foobar-expected-mac.txt", []),
+            MockFile("content/test/data/accessibility/css/foobar-expected-mac-before-11.txt", []),
             MockFile("content/test/data/accessibility/tree/barbaz-expected-uia-win.txt", []),
             MockFile("content/test/data/accessibility/table/quxfoo-expected-win.txt", []),
 
-             # Existing files don't require updating, so they are not checked.
+            # Existing files don't require updating, so they are not checked.
             MockFile("content/test/data/accessibility/aria/existing_file_bad_name.txt", [], action='M'),
+
+            # Files in the /mac/ and /win/ia2 sub-directories end in "-expected.txt".
+            MockFile("content/test/data/accessibility/mac/barbaz-expected.txt", []),
+            MockFile("content/test/data/accessibility/win/ia2/quxfoo-expected.txt", []),
         ]
         results = PRESUBMIT.CheckAccessibilityTestExpectationFilenames(
             mock_input_api, MockOutputApi())
