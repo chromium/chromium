@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_debug_report_fetcher.h"
 
 #include "base/base64.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +46,7 @@ class BoundSessionRefreshCookieDebugReportFetcherTest : public testing::Test {
 };
 
 TEST_F(BoundSessionRefreshCookieDebugReportFetcherTest, Fetch) {
+  base::HistogramTester histogram_tester;
   bound_session_credentials::RotationDebugInfo debug_info;
   debug_info.set_termination_reason(
       bound_session_credentials::RotationDebugInfo::
@@ -79,8 +82,12 @@ TEST_F(BoundSessionRefreshCookieDebugReportFetcherTest, Fetch) {
   EXPECT_THAT(sent_debug_info, base::test::EqualsProto(debug_info));
 
   test_url_loader_factory().SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), "");
+      pending_request->request.url.spec(), "", net::HTTP_OK);
   EXPECT_TRUE(future.IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials."
+      "SessionTerminationDebugReportFetcherHttpResult",
+      net::HTTP_OK, /*expected_bucket_count=*/1);
 }
 
 }  // namespace

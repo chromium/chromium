@@ -170,6 +170,12 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
   std::vector<bound_session_credentials::BoundSessionParams>
       bound_session_params =
           session_params_storage_->ReadAllParamsAndCleanStorageIfNecessary();
+
+  constexpr int kMaxSessionsForMetrics = 30;
+  base::UmaHistogramExactLinear(
+      "Signin.BoundSessionCredentials.SessionCountOnInit",
+      bound_session_params.size(), kMaxSessionsForMetrics);
+
   if (bound_session_params.empty()) {
     return;
   }

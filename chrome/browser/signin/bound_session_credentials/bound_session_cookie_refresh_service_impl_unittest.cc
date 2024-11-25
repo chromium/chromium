@@ -1618,3 +1618,18 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
       "Signin.BoundSessionCredentials.SessionTerminationTrigger",
       SessionTerminationTrigger::kCookiesCleared, 2);
 }
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, ReportsCountUma) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"}),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  base::HistogramTester histogram_tester;
+  GetCookieRefreshServiceImpl();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.SessionCountOnInit", all_params.size(),
+      /*expected_bucket_count=*/1);
+}
