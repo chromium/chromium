@@ -488,12 +488,7 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
   return true;
 }
 
-void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
-    return;
-  }
-
+void MimeHandlerViewGuest::GuestViewDocumentOnLoadCompleted() {
   DCHECK(GetEmbedderFrame());
   DCHECK_NE(element_instance_id(), guest_view::kInstanceIDNone);
 

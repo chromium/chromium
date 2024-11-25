@@ -666,6 +666,10 @@ void GuestViewBase::GuestDidStopLoading() {
   GuestViewDidStopLoading();
 }
 
+void GuestViewBase::GuestDocumentOnLoadCompleted() {
+  GuestViewDocumentOnLoadCompleted();
+}
+
 content::JavaScriptDialogManager*
 GuestViewBase::GuestGetJavascriptDialogManager() {
   return nullptr;
@@ -679,6 +683,16 @@ void GuestViewBase::DidStopLoading() {
   }
 
   GuestDidStopLoading();
+}
+
+void GuestViewBase::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    // The load state of the embedder does not affect the load state of the
+    // guest.
+    return;
+  }
+
+  GuestDocumentOnLoadCompleted();
 }
 
 void GuestViewBase::GuestOverrideRendererPreferences(

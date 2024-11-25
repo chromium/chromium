@@ -1024,12 +1024,7 @@ void WebViewGuest::LoadProgressChanged(double progress) {
       webview::kEventLoadProgress, std::move(args)));
 }
 
-void WebViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
-    return;
-  }
-
+void WebViewGuest::GuestViewDocumentOnLoadCompleted() {
   base::Value::Dict args;
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventContentLoad, std::move(args)));

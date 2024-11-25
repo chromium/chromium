@@ -146,6 +146,7 @@ class MimeHandlerViewGuest
       content::RenderFrameHost* outer_contents_frame) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
   bool ZoomPropagatesFromEmbedderToGuest() const final;
+  void GuestViewDocumentOnLoadCompleted() final;
 
   // BrowserPluginGuestDelegate implementation.
   content::RenderFrameHost* GetProspectiveOuterDocument() final;
@@ -201,7 +202,6 @@ class MimeHandlerViewGuest
   bool SetFullscreenState(bool is_fullscreen);
 
   // content::WebContentsObserver implementation.
-  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;

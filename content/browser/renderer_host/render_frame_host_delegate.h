@@ -259,8 +259,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The DOMContentLoaded handler in the frame has completed.
   virtual void DOMContentLoaded(RenderFrameHostImpl* render_frame_host) {}
 
-  // The onload handler in the frame has completed. Only called for the top-
-  // level frame.
+  // The onload handler in the frame has completed. Only called for the main
+  // frames.
   virtual void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) {
   }
 

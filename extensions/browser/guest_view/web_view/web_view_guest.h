@@ -217,6 +217,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsPermissionRequestable(ContentSettingsType type) const final;
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type) const final;
+  void GuestViewDocumentOnLoadCompleted() final;
 
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -287,7 +288,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
   void LoadProgressChanged(double progress) final;
-  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,

@@ -9137,11 +9137,29 @@ void WebContentsImpl::DocumentOnLoadCompleted(
     RenderFrameHostImpl* render_frame_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DocumentOnLoadCompleted",
                         "render_frame_host", render_frame_host);
-  DCHECK(render_frame_host->IsInPrimaryMainFrame());
-  ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
+  DCHECK(render_frame_host->is_main_frame());
+  if (!render_frame_host->IsOutermostMainFrame()) {
+    // If this main frame isn't an outermost main frame but an embedded
+    // main frame then return. )ie. a fenced frame inside a guest).
+    return;
+  }
 
-  observers_.NotifyObservers(
-      &WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame);
+  if (auto* guest =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
+    guest->delegate()->GuestDocumentOnLoadCompleted();
+  } else if (render_frame_host->IsInPrimaryMainFrame()) {
+    // Don't dispatch DocumentOnLoadCompletedInPrimaryMainFrame for non-primary
+    // main frames. As most of the observers are interested only in the onload
+    // completion of the current document in the primary main frame. Since the
+    // WebContents could be hosting more than one main frame (e.g., fenced
+    // frames, prerender pages or pending delete RFHs), return early for other
+    // cases. In case of prerendering, we dispatch
+    // DocumentOnLoadCompletedInPrimaryMainFrame on activation.
+    ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
+    observers_.NotifyObservers(
+        &WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame);
+  }
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,

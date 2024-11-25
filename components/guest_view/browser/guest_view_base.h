@@ -362,6 +362,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // completed loading.
   virtual void GuestViewDidStopLoading() {}
 
+  // When the document on load is completed in the main frame.
+  virtual void GuestViewDocumentOnLoadCompleted() {}
+
   // This method is called when the guest's zoom changes.
   virtual void GuestZoomChanged(double old_zoom_level, double new_zoom_level) {}
 
@@ -437,6 +440,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() override;
   void GuestOverrideRendererPreferences(
       blink::RendererPreferences& preferences) override;
+  void GuestDocumentOnLoadCompleted() override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
@@ -455,6 +459,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // WebContentsObserver implementation.
   void DidStopLoading() final;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
 
   // zoom::ZoomObserver implementation.
   void OnZoomControllerDestroyed(zoom::ZoomController* source) final;

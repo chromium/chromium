@@ -2106,14 +2106,10 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestContentLoadEvent) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testContentLoadEvent", "web_view/shim", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestContentLoadEventWithDisplayNone) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testContentLoadEventWithDisplayNone",
              "web_view/shim",
              NO_TEST_SERVER);

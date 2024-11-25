@@ -56,6 +56,9 @@ class GuestPageHolder : public base::SupportsUserData {
     virtual void GuestOverrideRendererPreferences(
         blink::RendererPreferences& preferences) = 0;
 
+    // The main frame was completely loaded.
+    virtual void GuestDocumentOnLoadCompleted() = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.

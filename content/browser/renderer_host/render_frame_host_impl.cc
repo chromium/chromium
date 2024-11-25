@@ -7889,17 +7889,8 @@ void RenderFrameHostImpl::DocumentOnLoadCompleted() {
     return;
   }
 
-  // Don't dispatch DocumentOnLoadCompletedInPrimaryMainFrame for non-primary
-  // main frames. As most of the observers are interested only in the onload
-  // completion of the current document in the primary main frame. Since the
-  // WebContents could be hosting more than one main frame (e.g., fenced frames,
-  // prerender pages or pending delete RFHs), return early for other cases. In
-  // case of prerendering, we dispatch DocumentOnLoadCompletedInPrimaryMainFrame
-  // on activation.
-  if (!IsInPrimaryMainFrame())
-    return;
-
-  // This message is only sent for top-level frames.
+  // This message is only sent for main-level frames and will be filtered
+  // out in the delegate.
   //
   // TODO(avi): when frame tree mirroring works correctly, add a check here
   // to enforce it.
