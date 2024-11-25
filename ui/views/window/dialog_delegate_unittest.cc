@@ -665,9 +665,9 @@ class MakeCloseSynchronousTest : public DialogTest {
     synchronous_close_widget_->Show();
   }
 
-  std::unique_ptr<Widget> OverrideClose(Widget::ClosedReason) {
+  void OverrideClose(Widget::ClosedReason) {
     synchronous_close_view_ = nullptr;
-    return std::move(synchronous_close_widget_);
+    synchronous_close_widget_.reset();
   }
 
   // Owned by synchronous_close_widget_

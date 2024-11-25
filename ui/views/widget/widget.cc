@@ -815,10 +815,10 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   // added logic into this class, rather than modifying the client to not call
   // Close().
   if (override_close_) {
-    std::unique_ptr<Widget> widget =
-        std::move(override_close_).Run(closed_reason);
-    CHECK_EQ(widget.get(), this);
-    // Let `widget` go out of scope, which destroys `this`.
+    base::WeakPtr<Widget> weak_this = weak_ptr_factory_.GetWeakPtr();
+    std::move(override_close_).Run(closed_reason);
+    // Ensure that `this` was destroyed.
+    CHECK(!weak_this);
     return;
   }
 
@@ -870,7 +870,7 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
 }
 
 void Widget::MakeCloseSynchronous(
-    base::OnceCallback<std::unique_ptr<Widget>(ClosedReason)> override_close) {
+    base::OnceCallback<void(ClosedReason)> override_close) {
   override_close_ = std::move(override_close);
 }
 

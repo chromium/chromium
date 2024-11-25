@@ -777,11 +777,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   //
   //  // Called by the implementation of DialogDelegate when the user clicks the
   //  // close/cancel buttons, or presses `esc`.
-  //  std::unique_ptr<Widget> Client::CloseWidget(Widget::CloseReason reason) {
+  //  void Client::CloseWidget(Widget::CloseReason reason) {
   //    LogExactlyOnceOnWidgetDestruction(reason);
-  //
-  //    // Results in destruction of `widget_`.
-  //    return std::move(widget_);
+  //    widget_.reset();
   //  }
   //
   //  // If the client wants to close the widget, it can also do so.
@@ -789,7 +787,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   //    CloseWidget(CloseReason::kUnspecified);
   //  }
   void MakeCloseSynchronous(
-      base::OnceCallback<std::unique_ptr<Widget>(ClosedReason)> override_close);
+      base::OnceCallback<void(ClosedReason)> override_close);
 
   // A UI test which tries to asynchronously examine a widget (e.g. the pixel
   // tests) will fail if the widget is closed before that.  This can happen
@@ -1576,7 +1574,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool check_parent_for_fullscreen_ = false;
 
   // Replaces the implementation of Close() and CloseWithReason().
-  base::OnceCallback<std::unique_ptr<Widget>(ClosedReason)> override_close_;
+  base::OnceCallback<void(ClosedReason)> override_close_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
