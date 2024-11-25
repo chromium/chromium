@@ -39,12 +39,18 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
       const PasswordCrossDomainConfirmationPopupControllerImpl&) = delete;
   ~PasswordCrossDomainConfirmationPopupControllerImpl() override;
 
-  // PasswordCrossDomainConfirmationPopupController:
+  // Creates and shows a popup pointing to `element_bounds` and presenting
+  // a message regarding cross domain password usage. `domain` is the domain
+  // of the current web site the popup is triggered on. `password_domain` is
+  // the domain of the web site the password was originally stored on.
+  // `confirmation_callback` is called if the user confirms the action, if
+  // the user cancels it, the popup is silently hidden.
+  // If the popup is already shown, it gets hidden and a new one shows up.
   void Show(const gfx::RectF& element_bounds,
             base::i18n::TextDirection text_direction,
             const GURL& domain,
             const std::u16string& password_origin,
-            base::OnceClosure confirmation_callback) override;
+            base::OnceClosure confirmation_callback);
 
   // autofill::AutofillPopupViewDelegate:
   void Hide(autofill::SuggestionHidingReason reason) override;

@@ -16,6 +16,7 @@ static_library("public") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/password_manager/core/browser:browser",
     "//content/public/browser",
     "//ui/android:android",
   ]

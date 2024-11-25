@@ -107,10 +107,12 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #else
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::CalculateFormSignature;
@@ -401,11 +403,18 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      window_android_ = ui::WindowAndroid::CreateForTesting();
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 void ChromePasswordManagerClientTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
+#if BUILDFLAG(IS_ANDROID)
+  window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
+#endif  // BUILDFLAG(IS_ANDROID)
   ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
       GetBrowserContext(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
@@ -1816,18 +1825,26 @@ TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 
-class MockPasswordCrossDomainConfirmationPopupController
-    : public password_manager::PasswordCrossDomainConfirmationPopupController {
+class FakePasswordCrossDomainConfirmationPopupView
+    : public PasswordCrossDomainConfirmationPopupView {
  public:
-  MOCK_METHOD(void, Hide, (autofill::SuggestionHidingReason), (override));
-  MOCK_METHOD(void,
-              Show,
-              (const gfx::RectF&,
-               base::i18n::TextDirection,
-               const GURL&,
-               const std::u16string&,
-               base::OnceClosure),
-              (override));
+  explicit FakePasswordCrossDomainConfirmationPopupView(
+      base::OnceClosure confirmation_callback)
+      : confirmation_callback_(std::move(confirmation_callback)) {}
+
+  void Confirm() { std::move(confirmation_callback_).Run(); }
+
+  MOCK_METHOD(void, Hide, (), (override));
+  MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const, override));
+
+  base::WeakPtr<PasswordCrossDomainConfirmationPopupView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::OnceClosure confirmation_callback_;
+  base::WeakPtrFactory<FakePasswordCrossDomainConfirmationPopupView>
+      weak_ptr_factory_{this};
 };
 
 TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
@@ -1838,27 +1855,58 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
   web_contents()->GetNativeView()->SetBounds(gfx::Rect(100, 100, 1000, 1000));
 #endif  // !BUILDFLAG(IS_MAC)
 
-  base::MockRepeatingCallback<std::unique_ptr<
-      password_manager::PasswordCrossDomainConfirmationPopupController>()>
+  // Controller requests the focused frame, this call makes sure there is one.
+  FocusWebContentsOnMainFrame();
+
+  base::MockRepeatingCallback<
+      std::unique_ptr<PasswordCrossDomainConfirmationPopupControllerImpl>()>
       popup_factory;
-  EXPECT_CALL(popup_factory, Run).WillOnce([&]() {
-    auto mock_controller =
-        std::make_unique<MockPasswordCrossDomainConfirmationPopupController>();
-    EXPECT_CALL(
-        *mock_controller,
-        Show(gfx::RectF(
-                 gfx::PointF(web_contents()->GetContainerBounds().origin()),
-                 gfx::SizeF(100, 100)),
-             base::i18n::TextDirection::LEFT_TO_RIGHT,
-             GURL("https://google.com"), std::u16string(u"google.de"), _));
-    return mock_controller;
-  });
+  auto controller =
+      std::make_unique<PasswordCrossDomainConfirmationPopupControllerImpl>(
+          web_contents());
+  base::MockOnceClosure accepted_callback;
+  auto view = std::make_unique<FakePasswordCrossDomainConfirmationPopupView>(
+      accepted_callback.Get());
+  controller->set_view_factory_for_testing(base::BindRepeating(
+      [](FakePasswordCrossDomainConfirmationPopupView* view,
+         base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
+         const GURL& domain, const std::u16string& password_origin,
+         base::OnceClosure confirmation_callback,
+         base::OnceClosure cancel_callback) { return view->GetWeakPtr(); },
+      base::Unretained(view.get())));
+
+  EXPECT_CALL(popup_factory, Run)
+      .WillOnce(testing::Return(std::move(controller)));
   GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
       popup_factory.Get());
 
   GetClient()->ShowCrossDomainConfirmationPopup(
       gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
-      GURL("https://google.com"), u"google.de", base::DoNothing());
+      GURL("https://google.com"), u"google.de", accepted_callback.Get());
+
+  EXPECT_CALL(accepted_callback, Run);
+  view->Confirm();
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
+  AcknowledgeGroupedCredentialSheetControllerTestHelper helper;
+  GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
+      base::BindRepeating(
+          &AcknowledgeGroupedCredentialSheetControllerTestHelper::
+              CreateController,
+          base::Unretained(&helper)));
+
+  base::MockOnceClosure accepted_callback;
+  // Need to store the returned controller to dismiss the sheet.
+  std::unique_ptr<
+      password_manager::PasswordCrossDomainConfirmationPopupController>
+      controller = GetClient()->ShowCrossDomainConfirmationPopup(
+          gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
+          GURL("https://google.com"), u"google.de", accepted_callback.Get());
+  EXPECT_CALL(accepted_callback, Run);
+  helper.DismissSheet(/*accepted=*/true);
+}
+#endif  // BUILDFLAG(IS_ANDROID)

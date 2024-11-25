@@ -48,6 +48,7 @@
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
@@ -57,6 +58,8 @@
 
 class PasswordAccessoryController;
 class TouchToFillController;
+#else
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -112,6 +115,15 @@ class ChromePasswordManagerClient
       public autofill::mojom::PasswordGenerationDriver,
       public autofill::AutofillManager::Observer {
  public:
+  using CrossDomainConfirmationPopupFactory =
+#if BUILDFLAG(IS_ANDROID)
+      base::RepeatingCallback<
+          std::unique_ptr<AcknowledgeGroupedCredentialSheetController>()>;
+#else
+      base::RepeatingCallback<std::unique_ptr<
+          PasswordCrossDomainConfirmationPopupControllerImpl>()>;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   static void CreateForWebContents(content::WebContents* contents);
   static void BindPasswordGenerationDriver(
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
@@ -301,6 +313,7 @@ class ChromePasswordManagerClient
 #if !BUILDFLAG(IS_ANDROID)
   void OpenPasswordDetailsBubble(
       const password_manager::PasswordForm& form) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<
       password_manager::PasswordCrossDomainConfirmationPopupController>
   ShowCrossDomainConfirmationPopup(
@@ -309,7 +322,6 @@ class ChromePasswordManagerClient
       const GURL& domain,
       const std::u16string& password_origin,
       base::OnceClosure confirmation_callback) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
   void ShowCredentialsInAmbientBubble(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
       int credential_type_flags,
@@ -357,14 +369,10 @@ class ChromePasswordManagerClient
   }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   void set_cross_domain_confirmation_popup_factory_for_testing(
-      base::RepeatingCallback<std::unique_ptr<
-          password_manager::PasswordCrossDomainConfirmationPopupController>()>
-          factory) {
+      CrossDomainConfirmationPopupFactory factory) {
     cross_domain_confirmation_popup_factory_for_testing_ = std::move(factory);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   PasswordAccessoryController* GetOrCreatePasswordAccessory();
@@ -562,13 +570,10 @@ class ChromePasswordManagerClient
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
       this};
 
-#if !BUILDFLAG(IS_ANDROID)
   // The cross domain confirmation popup view factory, used for testing to mock
   // some views specific initializations.
-  base::RepeatingCallback<std::unique_ptr<
-      password_manager::PasswordCrossDomainConfirmationPopupController>()>
+  CrossDomainConfirmationPopupFactory
       cross_domain_confirmation_popup_factory_for_testing_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

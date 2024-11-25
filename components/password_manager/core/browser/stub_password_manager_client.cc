@@ -198,7 +198,10 @@ version_info::Channel StubPasswordManagerClient::GetChannel() const {
     BUILDFLAG(IS_CHROMEOS)
 void StubPasswordManagerClient::OpenPasswordDetailsBubble(
     const password_manager::PasswordForm& form) {}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_IOS)
 std::unique_ptr<
     password_manager::PasswordCrossDomainConfirmationPopupController>
 StubPasswordManagerClient::ShowCrossDomainConfirmationPopup(
@@ -209,7 +212,6 @@ StubPasswordManagerClient::ShowCrossDomainConfirmationPopup(
     base::OnceClosure confirmation_callback) {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager
