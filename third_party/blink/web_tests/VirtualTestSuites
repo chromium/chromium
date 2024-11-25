@@ -1671,7 +1671,7 @@
     ],
     "args": [
       "--enable-privacy-sandbox-ads-apis",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationAuctionReportBuyerDebugModeConfig,SharedStorageCrossOriginScript,SharedStorageCreateWorkletUseContextOriginByDefault,PrivateAggregationApiContributionMerging"
+      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationAuctionReportBuyerDebugModeConfig,SharedStorageCreateWorkletUseContextOriginByDefault,PrivateAggregationApiContributionMerging"
     ],
     "owners": ["alexmt@chromium.org", "dmcardle@chromium.org"],
     "expires": "Jan 1, 2025"
@@ -1688,7 +1688,7 @@
     "args": [
       "--enable-privacy-sandbox-ads-apis",
       "--private-aggregation-developer-mode",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationAuctionReportBuyerDebugModeConfig,SharedStorageCrossOriginScript,SharedStorageCreateWorkletUseContextOriginByDefault,PrivateAggregationApiContributionMerging"
+      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationAuctionReportBuyerDebugModeConfig,SharedStorageCreateWorkletUseContextOriginByDefault,PrivateAggregationApiContributionMerging"
     ],
     "owners": ["alexmt@chromium.org", "dmcardle@chromium.org"],
     "expires": "Jan 1, 2025"
@@ -1705,7 +1705,7 @@
       "external/wpt/shared-storage",
       "http/tests/inspector-protocol/shared-storage"
     ],
-    "args": ["--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,SharedStorageAPIM125,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageCrossOriginScript,SharedStorageCreateWorkletUseContextOriginByDefault,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"],
+    "args": ["--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIM118,SharedStorageAPIM125,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageCreateWorkletUseContextOriginByDefault,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"],
     "expires": "Jan 31, 2025"
   },
   {
@@ -1718,7 +1718,7 @@
     "exclusive_tests": [
       "external/wpt/shared-storage-selecturl-limit/"
     ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIM118,SharedStorageAPIM125,SharedStorageAPIEnableWALForDatabase,SharedStorageCrossOriginScript,SharedStorageCreateWorkletUseContextOriginByDefault,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"],
+    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIM118,SharedStorageAPIM125,SharedStorageAPIEnableWALForDatabase,SharedStorageCreateWorkletUseContextOriginByDefault,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"],
     "expires": "Jan 31, 2025"
   },
   "Task tracking tests require UnexposedTaskIds to work, so these tests are run",

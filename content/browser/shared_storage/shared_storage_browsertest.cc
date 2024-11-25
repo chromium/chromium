@@ -886,7 +886,6 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
                TimeDeltaToString(base::Days(kStalenessThresholdDays))},
           }},
          {blink::features::kSharedStorageAPIM125, {}},
-         {blink::features::kSharedStorageCrossOriginScript, {}},
          {blink::features::kSharedStorageCreateWorkletUseContextOriginByDefault,
           {}}},
         /*disabled_features=*/{});

@@ -910,8 +910,7 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
     const String& module_url,
     const SharedStorageWorkletOptions* options,
     ExceptionState& exception_state) {
-  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(
-      script_state, /*cross_origin_script_allowed=*/true);
+  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(script_state);
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<SharedStorageWorklet>>(
           script_state);
@@ -934,10 +933,7 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
 SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   if (!shared_storage_worklet_) {
-    shared_storage_worklet_ = SharedStorageWorklet::Create(
-        script_state,
-        /*cross_origin_script_allowed=*/base::FeatureList::IsEnabled(
-            features::kSharedStorageCrossOriginScript));
+    shared_storage_worklet_ = SharedStorageWorklet::Create(script_state);
   }
 
   return shared_storage_worklet_.Get();

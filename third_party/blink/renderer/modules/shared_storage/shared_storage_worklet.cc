@@ -76,11 +76,8 @@ bool IsValidFencedFrameReportingURL(const KURL& url) {
 }  // namespace
 
 // static
-SharedStorageWorklet* SharedStorageWorklet::Create(
-    ScriptState* script_state,
-    bool cross_origin_script_allowed) {
-  return MakeGarbageCollected<SharedStorageWorklet>(
-      cross_origin_script_allowed);
+SharedStorageWorklet* SharedStorageWorklet::Create(ScriptState* script_state) {
+  return MakeGarbageCollected<SharedStorageWorklet>();
 }
 
 void SharedStorageWorklet::Trace(Visitor* visitor) const {
@@ -156,21 +153,9 @@ void SharedStorageWorklet::AddModuleHelper(
           script_security_origin.get())) {
     // This `addModule()` call could be affected by the breaking change
     // proposed in https://github.com/WICG/shared-storage/pull/158 and now
-    // implemented behind `blink::features::kSharedStorageCrossOriginScript`.
-    // Measure its usage.
+    // implemented. Measure its usage.
     execution_context->CountUse(
         WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript);
-  }
-
-  if (!cross_origin_script_allowed_ &&
-      !execution_context->GetSecurityOrigin()->IsSameOriginWith(
-          script_security_origin.get())) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kDataError,
-        "Only same origin module script is allowed."));
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return;
   }
 
   if (worklet_host_) {
@@ -372,11 +357,6 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
 
     return promise;
-  }
-
-  if (!cross_origin_script_allowed_) {
-    // The opaque origin should have been checked in addModule() already.
-    CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
   }
 
   if (!IsValidSharedStorageURLsArrayLength(urls.size())) {
@@ -650,11 +630,6 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
       mojom::blink::PermissionsPolicyFeature::kSharedStorage,
       shared_storage_origin_));
 
-  if (!cross_origin_script_allowed_) {
-    // The opaque origin should have been checked in addModule() already.
-    CHECK(!execution_context->GetSecurityOrigin()->IsOpaque());
-  }
-
   if (!keep_alive_after_operation_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kOperationError,
@@ -713,8 +688,5 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
   return promise;
 }
-
-SharedStorageWorklet::SharedStorageWorklet(bool cross_origin_script_allowed)
-    : cross_origin_script_allowed_(cross_origin_script_allowed) {}
 
 }  // namespace blink
