@@ -52,25 +52,6 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
     base::Milliseconds(200);
 
-std::u16string GetAccessibleTrayName(
-    const FocusModeSession::Snapshot& session_snapshot,
-    const size_t congratulatory_index) {
-  if (session_snapshot.state == FocusModeSession::State::kEnding) {
-    return focus_mode_util::GetCongratulatoryTextAndEmoji(congratulatory_index);
-  }
-
-  const std::u16string duration_string =
-      session_snapshot.remaining_time < base::Minutes(1)
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE)
-          : focus_mode_util::GetDurationString(session_snapshot.remaining_time,
-                                               /*digital_format=*/false);
-
-  return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
-      duration_string);
-}
-
 std::u16string GetAccessibleBubbleName(
     const FocusModeSession::Snapshot& session_snapshot,
     const std::u16string& task_title,
@@ -263,6 +244,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
                       controller->in_ending_moment());
   tasks_observation_.Observe(&controller->tasks_model());
   controller->AddObserver(this);
+
+  UpdateAccessibleName();
 }
 
 FocusModeTray::~FocusModeTray() {
@@ -285,16 +268,6 @@ void FocusModeTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   }
 
   CloseBubble();
-}
-
-std::u16string FocusModeTray::GetAccessibleNameForTray() {
-  if (!session_snapshot_) {
-    return std::u16string();
-  }
-
-  return GetAccessibleTrayName(
-      session_snapshot_.value(),
-      FocusModeController::Get()->congratulatory_index());
 }
 
 std::u16string FocusModeTray::GetAccessibleNameForBubble() {
@@ -360,6 +333,7 @@ void FocusModeTray::ShowBubble() {
 
   session_snapshot_ =
       controller->current_session()->GetSnapshot(base::Time::Now());
+  UpdateAccessibleName();
   bubble_view->UpdateAccessibleName();
   UpdateBubbleViews(session_snapshot_.value());
 
@@ -413,13 +387,12 @@ void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
   auto current_session = focus_mode_controller->current_session();
   if (!current_session) {
     session_snapshot_.reset();
+    UpdateAccessibleName();
     return;
   }
 
   session_snapshot_ = current_session->GetSnapshot(base::Time::Now());
-  image_view_->SetTooltipText(
-      GetAccessibleTrayName(session_snapshot_.value(),
-                            focus_mode_controller->congratulatory_index()));
+  UpdateAccessibleName();
 
   if (bubble_) {
     if (auto* bubble_view = bubble_->GetBubbleView()) {
@@ -435,12 +408,10 @@ void FocusModeTray::OnFocusModeChanged(FocusModeSession::State session_state) {
 void FocusModeTray::OnTimerTick(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
+  UpdateAccessibleName();
   if (bubble_ && bubble_->GetBubbleView()) {
     bubble_->GetBubbleView()->UpdateAccessibleName();
   }
-  image_view_->SetTooltipText(GetAccessibleTrayName(
-      session_snapshot_.value(),
-      FocusModeController::Get()->congratulatory_index()));
 
   // We only paint the progress ring if it has reached the next threshold of
   // progress. This is to try and decrease power usage of Focus mode when the
@@ -459,12 +430,10 @@ void FocusModeTray::OnTimerTick(
 void FocusModeTray::OnActiveSessionDurationChanged(
     const FocusModeSession::Snapshot& session_snapshot) {
   session_snapshot_ = session_snapshot;
+  UpdateAccessibleName();
   if (bubble_ && bubble_->GetBubbleView()) {
     bubble_->GetBubbleView()->UpdateAccessibleName();
   }
-  image_view_->SetTooltipText(GetAccessibleTrayName(
-      session_snapshot_.value(),
-      FocusModeController::Get()->congratulatory_index()));
   UpdateProgressRing();
   progress_ring_update_threshold_ = 0.0;
   MaybeUpdateCountdownViewUI(session_snapshot);
@@ -727,6 +696,37 @@ void FocusModeTray::CloseBubbleAndMaybeReset(bool should_reset) {
   if (auto* controller = FocusModeController::Get();
       !controller->in_focus_session() && should_reset) {
     controller->ResetFocusSession();
+  }
+}
+
+void FocusModeTray::UpdateAccessibleName() {
+  if (!session_snapshot_) {
+    GetViewAccessibility().RemoveName();
+    image_view_->SetCachedTooltipText(std::u16string());
+    return;
+  }
+
+  std::u16string name;
+  if (session_snapshot_->state == FocusModeSession::State::kEnding) {
+    name = focus_mode_util::GetCongratulatoryTextAndEmoji(
+        FocusModeController::Get()->congratulatory_index());
+  } else {
+    const std::u16string duration_string =
+        session_snapshot_->remaining_time < base::Minutes(1)
+            ? l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_FOCUS_MODE_SESSION_LESS_THAN_ONE_MINUTE)
+            : focus_mode_util::GetDurationString(
+                  session_snapshot_->remaining_time,
+                  /*digital_format=*/false);
+
+    name = l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+        duration_string);
+  }
+
+  GetViewAccessibility().SetName(name);
+  if (image_view_) {
+    image_view_->SetTooltipText(name);
   }
 }
 
