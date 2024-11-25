@@ -177,14 +177,6 @@ MATCHER_P(SuggestionWithGuidPayload, guid, "") {
   return arg.template GetPayload<Suggestion::Guid>() == guid;
 }
 
-class MockFormInteractionsUkmLogger
-    : public autofill_metrics::FormInteractionsUkmLogger {
- public:
-  MockFormInteractionsUkmLogger(AutofillClient* client,
-                                ukm::UkmRecorder* ukm_recorder)
-      : FormInteractionsUkmLogger(client, ukm_recorder) {}
-};
-
 class MockCreditCardFormEventLogger
     : public autofill_metrics::CreditCardFormEventLogger {
  public:
@@ -215,7 +207,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
         std::make_unique<AutofillOfferManager>(
             &autofill_client_.GetPersonalDataManager()));
     form_interactions_ukm_logger_ =
-        std::make_unique<NiceMock<MockFormInteractionsUkmLogger>>(
+        std::make_unique<autofill_metrics::FormInteractionsUkmLogger>(
             &autofill_client_, autofill_client_.GetUkmRecorder());
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
@@ -311,7 +303,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   bool did_set_up_image_resource_for_test_ = false;
 
  protected:
-  std::unique_ptr<MockFormInteractionsUkmLogger> form_interactions_ukm_logger_;
+  std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
+      form_interactions_ukm_logger_;
   std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
 };
 
