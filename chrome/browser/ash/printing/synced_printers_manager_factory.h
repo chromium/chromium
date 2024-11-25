@@ -35,7 +35,7 @@ class SyncedPrintersManagerFactory : public ProfileKeyedServiceFactory {
   ~SyncedPrintersManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation:
-  SyncedPrintersManager* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 };
 
