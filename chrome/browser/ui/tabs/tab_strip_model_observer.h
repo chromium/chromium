@@ -49,13 +49,12 @@ class TabStripModelChange {
  public:
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
 
-  // Used to specify what will happen with the WebContents after it is removed.
+  // Used to specify what will happen with the tab after it is removed.
   enum class RemoveReason {
-    // WebContents will be deleted.
+    // Tab will be deleted.
     kDeleted,
 
-    // WebContents got detached from a TabStrip and inserted into another
-    // TabStrip.
+    // Tab got detached from a TabStrip and inserted into another TabStrip.
     kInsertedIntoOtherTabStrip
   };
 
@@ -69,27 +68,27 @@ class TabStripModelChange {
   };
 
   struct RemovedTab {
-    RemovedTab(content::WebContents* contents,
+    RemovedTab(tabs::TabInterface* tab,
                int index,
                RemoveReason remove_reason,
                tabs::TabInterface::DetachReason tab_detach_reason,
-               std::optional<SessionID> session_id,
-               tabs::TabInterface* tab);
+               std::optional<SessionID> session_id);
     virtual ~RemovedTab();
     RemovedTab(RemovedTab&& other);
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    raw_ptr<content::WebContents> contents;
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> contents = nullptr;
     int index;
     RemoveReason remove_reason;
     tabs::TabInterface::DetachReason tab_detach_reason;
     std::optional<SessionID> session_id;
-    raw_ptr<tabs::TabInterface> tab;
   };
 
   struct ContentsWithIndex {
-    raw_ptr<content::WebContents> contents;
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> contents = nullptr;
     int index;
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -103,8 +102,8 @@ class TabStripModelChange {
     Insert(Insert&& other);
     Insert& operator=(Insert&& other);
 
-    // Contains the web contents that were inserted, along with their indexes at
-    // the time of insertion. For example, if we inserted elements:
+    // Contains the tabs that were inserted, along with their indexes at the
+    // time of insertion. For example, if we inserted elements:
     //
     // Before insertion:
     // A B C D
@@ -114,17 +113,17 @@ class TabStripModelChange {
     // A X Y B C Z D
     // 0 1 2 3 4 5 6
     //
-    // If the tabs were inserted in the order X, Y, Z, |contents| would contain:
+    // If the tabs were inserted in the order X, Y, Z, `contents` would contain:
     // { X, 1 }, { Y, 2 }, { Z, 5 }
     //
-    // But if the contents were inserted in the order Z, Y, X, |contents| would
+    // But if the contents were inserted in the order Z, Y, X, `contents` would
     // contain:
     // { Z, 3 }, { Y, 1 }, { X, 1 }
     //
-    // Therefore all observers which store indices of web contents should update
-    // them in the order the web contents appear in |contents|. Observers should
-    // not do index-based queries based on their own internally-stored indices
-    // until after processing all of |contents|.
+    // Therefore all observers which store indices of tabs should update them in
+    // the order the tabs appear in `contents`. Observers should not do
+    // index-based queries based on their own internally-stored indices until
+    // after processing all of `contents`.
     std::vector<ContentsWithIndex> contents;
 
     void WriteIntoTrace(perfetto::TracedValue context) const override;
@@ -138,10 +137,9 @@ class TabStripModelChange {
     Remove(Remove&& other);
     Remove& operator=(Remove&& other);
 
-    // Contains the list of web contents removed with their indexes at
-    // the time of removal along with flag |remove_reason| that indicates if
-    // the web contents will be deleted or not after removing. For example, if
-    // we removed elements:
+    // Contains the list of tabs removed with their indexes at the time of
+    // removal along with flag `remove_reason` that indicates i the tab will be
+    // deleted or not after removing. For example, if we removed elements:
     //
     // Before removal:
     // A B C D E F G
@@ -151,38 +149,40 @@ class TabStripModelChange {
     // A D E G
     // 0 1 2 3
     //
-    // If the tabs were removed in the order B, C, F, |contents| would contain:
+    // If the tabs were removed in the order B, C, F, `contents` would contain:
     // { B, 1 }, { C, 1 }, { F, 3 }
     //
-    // But if the tabs were removed in the order F, C, B, then |contents| would
+    // But if the tabs were removed in the order F, C, B, then `contents` would
     // contain:
     // { F, 5 }, { C, 2 }, { B, 1 }
     //
-    // Therefore all observers which store indices of web contents should update
-    // them in the order the web contents appear in |contents|. Observers should
-    // not do index-based queries based on their own internally-stored indices
-    // until after processing all of |contents|.
+    // Therefore all observers which store indices of tabs should update them
+    // in the order the tabs appear in `contents`. Observers should  not do
+    // index-based queries based on their own internally-stored indices until
+    // after processing all of `contents`.
     std::vector<RemovedTab> contents;
 
     void WriteIntoTrace(perfetto::TracedValue context) const override;
   };
 
-  // A WebContents was moved from |from_index| to |to_index|. This implicitly
-  // changes the existing selection model by calling
-  // Move(from_index, to_index, 1).
+  // A tab was moved from `from_index` to `to_index`. This implicitly changes
+  // the existing selection model by calling Move(from_index, to_index, 1).
   struct Move : public Delta {
-    raw_ptr<content::WebContents> contents;
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> contents = nullptr;
     int from_index;
     int to_index;
 
     void WriteIntoTrace(perfetto::TracedValue context) const override;
   };
 
-  // The WebContents was replaced at the specified index. This is invoked when
-  // prerendering swaps in a prerendered WebContents.
+  // The tab was replaced at the specified index. This is invoked when
+  // prerendering swaps in a prerendered WebContents or when a tab's WebContents
+  // is discarded to save memory.
   struct Replace : public Delta {
-    raw_ptr<content::WebContents> old_contents;
-    raw_ptr<content::WebContents> new_contents;
+    raw_ptr<tabs::TabInterface> tab = nullptr;
+    raw_ptr<content::WebContents> old_contents = nullptr;
+    raw_ptr<content::WebContents> new_contents = nullptr;
     int index;
 
     void WriteIntoTrace(perfetto::TracedValue context) const override;
@@ -223,10 +223,16 @@ struct TabStripSelectionChange {
   // Fill TabStripSelectionChange with given |contents| and |selection_model|.
   // note that |new_contents| and |new_model| will be filled too so that
   // selection_changed() and active_tab_changed() won't return true.
-  TabStripSelectionChange(content::WebContents* contents,
+  TabStripSelectionChange(tabs::TabInterface* tab,
                           const ui::ListSelectionModel& model);
 
-  bool active_tab_changed() const { return old_contents != new_contents; }
+  bool active_tab_changed() const {
+    // This could be `old_tab != new_tab`, except for tab discarding, where
+    // it's the same tab with different contents. Some observers want to
+    // treat tab discarding as a selection change, e.g. to update their
+    // observations.
+    return old_contents != new_contents;
+  }
 
   // TODO(sangwoo.ko) Do we need something to indicate that the change
   // was made implicitly?
@@ -234,9 +240,11 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> old_contents =
-      nullptr;
-  raw_ptr<content::WebContents, DanglingUntriaged> new_contents = nullptr;
+  raw_ptr<tabs::TabInterface> old_tab = nullptr;
+  raw_ptr<tabs::TabInterface> new_tab = nullptr;
+
+  raw_ptr<content::WebContents> old_contents = nullptr;
+  raw_ptr<content::WebContents> new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;
