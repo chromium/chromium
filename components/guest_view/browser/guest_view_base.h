@@ -368,6 +368,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // When the load progress has changed.
   virtual void GuestViewDidChangeLoadProgress(double progress) {}
 
+  // When the main process has terminated.
+  virtual void GuestViewMainFrameProcessGone(base::TerminationStatus status) {}
+
   // This method is called when the guest's zoom changes.
   virtual void GuestZoomChanged(double old_zoom_level, double new_zoom_level) {}
 
@@ -445,6 +448,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       blink::RendererPreferences& preferences) override;
   void GuestDocumentOnLoadCompleted() final;
   void GuestDidChangeLoadProgress(double progress) final;
+  void GuestMainFrameProcessGone(base::TerminationStatus status) final;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
@@ -465,6 +469,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void DidStopLoading() final;
   void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void LoadProgressChanged(double progress) final;
+  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
 
   // zoom::ZoomObserver implementation.
   void OnZoomControllerDestroyed(zoom::ZoomController* source) final;

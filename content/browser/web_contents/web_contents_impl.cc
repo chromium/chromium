@@ -8713,8 +8713,20 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // current_frame_host() for the root FrameTreeNode has already been cleared.
   // Since the WebContents is going away, none of the work here is needed, so
   // just return early.
-  if (IsBeingDestroyed()) {
+  auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
+  if (IsBeingDestroyed() || rvh_impl->frame_tree()->IsBeingDestroyed()) {
     return;
+  }
+
+  // If we are a guest frame tree and the RenderViewHost is the main frame's RVH
+  // then notify that the guest's main frame process went away.
+  if (rvh_impl->frame_tree()->is_guest() &&
+      rvh_impl->frame_tree()->GetMainFrame()->render_view_host() == rvh_impl) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+            *rvh_impl->frame_tree()->GetMainFrame())) {
+      guest->delegate()->GuestMainFrameProcessGone(status);
+      return;
+    }
   }
 
   if (rvh != GetRenderViewHost()) {
@@ -8722,7 +8734,6 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
     return;
   }
 
-  auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
   DCHECK(rvh_impl->GetMainRenderFrameHost()->IsInPrimaryMainFrame())
       << "GetRenderViewHost() must belong to the primary frame tree";
 

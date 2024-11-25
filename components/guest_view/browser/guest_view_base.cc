@@ -674,6 +674,10 @@ void GuestViewBase::GuestDidChangeLoadProgress(double progress) {
   GuestViewDidChangeLoadProgress(progress);
 }
 
+void GuestViewBase::GuestMainFrameProcessGone(base::TerminationStatus status) {
+  GuestViewMainFrameProcessGone(status);
+}
+
 void GuestViewBase::LoadProgressChanged(double progress) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // The load state of the embedder does not affect the load state of the
@@ -681,6 +685,16 @@ void GuestViewBase::LoadProgressChanged(double progress) {
     return;
   }
   GuestDidChangeLoadProgress(progress);
+}
+
+void GuestViewBase::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    // For MPArch we will get notification directly for the guest. Don't do
+    // anything if the embedder process dies.
+    return;
+  }
+  GuestMainFrameProcessGone(status);
 }
 
 content::JavaScriptDialogManager*

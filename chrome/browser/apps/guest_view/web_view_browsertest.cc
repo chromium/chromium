@@ -1584,8 +1584,6 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 IN_PROC_BROWSER_TEST_P(
     WebViewTest,
     Shim_TestContentScriptIsInjectedAfterTerminateAndReloadWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   TestHelper("testContentScriptIsInjectedAfterTerminateAndReloadWebView",
              "web_view/shim", NEEDS_TEST_SERVER);
@@ -2205,8 +2203,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestReload) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestReloadAfterTerminate) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   TestHelper("testReloadAfterTerminate", "web_view/shim", NO_TEST_SERVER);
 }
@@ -4405,8 +4401,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_testFindInMultipleWebViews) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestFindAfterTerminate) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   TestHelper("testFindAfterTerminate", "web_view/shim", NO_TEST_SERVER);
 }
