@@ -2026,6 +2026,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @EnableAnimations
+    @DisabledTest(message = "https://crbug.com/380823191")
     public void testCreateIncognitoGroupAndCloseAllTabsInDialogTwice_Bug354745444() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         boolean incognito = true;
