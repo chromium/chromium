@@ -35,6 +35,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
+    private static final int EXPIRATION_FOR_TESTING = 33;
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
@@ -50,6 +51,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private CharSequence mHostName;
     private RwsCookieInfo mRwsInfo;
     private PageInfoControllerDelegate mPageInfoControllerDelegate;
+    // Sets a constant # of days until expiration to prevent test flakiness.
+    private boolean mFixedExpiration;
 
     /** Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -64,6 +67,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         // Block all third-party cookies when Tracking Protection is on.
         public boolean blockAll3pc;
         public boolean isIncognito;
+        public boolean isModeBUi;
+        public boolean fixedExpirationForTesting;
     }
 
     @Override
@@ -96,6 +101,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     public void setParams(PageInfoCookiesViewParams params) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
+        mFixedExpiration = params.fixedExpirationForTesting;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         ClickableSpan linkSpan =
                 new ClickableSpan() {
@@ -233,7 +239,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
-            int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
+            int days =
+                    mFixedExpiration
+                            ? EXPIRATION_FOR_TESTING
+                            : calculateDaysUntilExpiration(
+                                    TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
             int resId = R.string.page_info_cookies_send_feedback_description;
             mThirdPartyCookiesSummary.setSummary(

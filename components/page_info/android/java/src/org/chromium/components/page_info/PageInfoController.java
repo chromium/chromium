@@ -550,6 +550,10 @@ public class PageInfoController
         return mTrackingProtectionController;
     }
 
+    public PageInfoCookiesController getCookiesControllerForTesting() {
+        return mCookiesController;
+    }
+
     public PageInfoTrackingProtectionLaunchController
             getTrackingProtectionLaunchControllerForTesting() {
         return mTrackingProtectionLaunchController;
