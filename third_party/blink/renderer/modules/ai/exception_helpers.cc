@@ -37,6 +37,9 @@ const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "or neither of them.";
 const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
+const char kExceptionMessageInitialPromptTooLarge[] =
+    "The initial prompts / system prompts are too large to fit in the "
+    "context.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
 const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =

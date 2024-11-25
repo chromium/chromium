@@ -22,7 +22,7 @@ namespace content {
 
 namespace {
 
-const int kMockDownloadPreperationTimeMillisecond = 300;
+const int kMockDownloadPreparationTimeMillisecond = 300;
 const int kMockModelSizeBytes = 3000;
 
 }  // namespace
@@ -52,6 +52,13 @@ void EchoAIManagerImpl::CreateLanguageModel(
   mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client_remote(
       std::move(client));
 
+  if (options->system_prompt.has_value() &&
+      options->system_prompt->size() > kMaxContextSizeInTokens) {
+    client_remote->OnError(blink::mojom::AIManagerCreateLanguageModelError::
+                               kInitialPromptsTooLarge);
+    return;
+  }
+
   // In order to test the model download progress handling, the
   // `EchoAIManagerImpl` will always start from the `after-download` state, and
   // we simulate the downloading time by posting a delayed task.
@@ -59,7 +66,7 @@ void EchoAIManagerImpl::CreateLanguageModel(
       FROM_HERE,
       base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
                      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote)),
-      base::Milliseconds(kMockDownloadPreperationTimeMillisecond));
+      base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(

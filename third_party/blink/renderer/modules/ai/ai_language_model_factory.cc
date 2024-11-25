@@ -7,8 +7,10 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
@@ -115,11 +117,23 @@ class CreateLanguageModelClient
       return;
     }
 
-    // TODO(crbug.com/380175435): throw QuotaExceededException for the
-    // `kInitialPromptsTooLarge` error.
-    GetResolver()->RejectWithDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        kExceptionMessageUnableToCreateSession);
+    using mojom::blink::AIManagerCreateLanguageModelError;
+
+    switch (error) {
+      case AIManagerCreateLanguageModelError::kUnableToCreateSession:
+      case AIManagerCreateLanguageModelError::kUnableToCalculateTokenSize: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateLanguageModelError::kInitialPromptsTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kQuotaExceededError,
+            kExceptionMessageInitialPromptTooLarge);
+        break;
+      }
+    }
     Cleanup();
   }
 
