@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "cc/input/overscroll_behavior.h"
 #include "ui/android/overscroll_refresh_handler.h"
 #include "ui/android/ui_android_features.h"
@@ -36,7 +37,7 @@ OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
       top_at_scroll_start_(true),
       bottom_at_scroll_start_(false),
       overflow_y_hidden_(false),
-      scroll_consumption_state_(DISABLED),
+      scroll_consumption_state_(ScrollConsumptionState::kDisabled),
       edge_width_(edge_width),
       handler_(handler) {
   DCHECK(handler);
@@ -46,7 +47,7 @@ OverscrollRefresh::OverscrollRefresh()
     : scrolled_to_top_(true),
       scrolled_to_bottom_(false),
       overflow_y_hidden_(false),
-      scroll_consumption_state_(DISABLED),
+      scroll_consumption_state_(ScrollConsumptionState::kDisabled),
       edge_width_(kDefaultNavigationEdgeWidth * 1.f),
       handler_(nullptr) {}
 
@@ -54,7 +55,7 @@ OverscrollRefresh::~OverscrollRefresh() {
 }
 
 void OverscrollRefresh::Reset() {
-  scroll_consumption_state_ = DISABLED;
+  scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
   cumulative_scroll_.set_x(0);
   cumulative_scroll_.set_y(0);
   handler_->PullReset();
@@ -66,7 +67,7 @@ void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
   top_at_scroll_start_ = scrolled_to_top_;
   bottom_at_scroll_start_ = scrolled_to_bottom_;
   ReleaseWithoutActivation();
-  scroll_consumption_state_ = AWAITING_SCROLL_UPDATE_ACK;
+  scroll_consumption_state_ = ScrollConsumptionState::kAwaitingScrollUpdateAck;
 }
 
 void OverscrollRefresh::OnScrollEnd(const gfx::Vector2dF& scroll_velocity) {
@@ -75,14 +76,14 @@ void OverscrollRefresh::OnScrollEnd(const gfx::Vector2dF& scroll_velocity) {
 }
 
 void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
-  if (scroll_consumption_state_ != AWAITING_SCROLL_UPDATE_ACK)
+  if (scroll_consumption_state_ != ScrollConsumptionState::kAwaitingScrollUpdateAck)
     return;
 
   float ydelta = cumulative_scroll_.y();
   float xdelta = cumulative_scroll_.x();
   bool in_y_direction = std::abs(ydelta) > std::abs(xdelta);
   bool in_x_direction = std::abs(ydelta) * kWeightAngle30 < std::abs(xdelta);
-  OverscrollAction type = OverscrollAction::NONE;
+  OverscrollAction type = OverscrollAction::kNone;
   std::optional<BackGestureEventSwipeEdge> overscroll_edge;
   if (in_y_direction) {
     if (behavior.y != cc::OverscrollBehavior::Type::kAuto) {
@@ -91,9 +92,9 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
     }
     // Pull-to-refresh. Check overscroll-behavior-y
     if (ydelta > 0) {
-      type = OverscrollAction::PULL_TO_REFRESH;
+      type = OverscrollAction::kPullToRefresh;
     } else if (scrolled_to_bottom_) {  // ydelta < 0
-      type = OverscrollAction::PULL_FROM_BOTTOM_EDGE;
+      type = OverscrollAction::kPullFromBottomEdge;
     }
   } else if (in_x_direction &&
              (scroll_begin_x_ < edge_width_ ||
@@ -103,27 +104,28 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
       Reset();
       return;
     }
-    type = OverscrollAction::HISTORY_NAVIGATION;
+    type = OverscrollAction::kHistoryNavigation;
     overscroll_edge = xdelta < 0 ? BackGestureEventSwipeEdge::RIGHT
                                  : BackGestureEventSwipeEdge::LEFT;
   }
 
   CHECK_EQ(overscroll_edge.has_value(),
-           type == OverscrollAction::HISTORY_NAVIGATION);
+           type == OverscrollAction::kHistoryNavigation);
 
-  if (type != OverscrollAction::NONE) {
-    scroll_consumption_state_ =
-        handler_->PullStart(type, overscroll_edge) ? ENABLED : DISABLED;
+  if (type != OverscrollAction::kNone) {
+    scroll_consumption_state_ = handler_->PullStart(type, overscroll_edge)
+                                    ? ScrollConsumptionState::kEnabled
+                                    : ScrollConsumptionState::kDisabled;
   }
 }
 
 bool OverscrollRefresh::WillHandleScrollUpdate(
     const gfx::Vector2dF& scroll_delta) {
   switch (scroll_consumption_state_) {
-    case DISABLED:
+    case ScrollConsumptionState::kDisabled:
       return false;
 
-    case AWAITING_SCROLL_UPDATE_ACK:
+    case ScrollConsumptionState::kAwaitingScrollUpdateAck:
       if (std::abs(scroll_delta.y()) > std::abs(scroll_delta.x())) {
         // Check applies for the pull-to-refresh.
         bool is_pull_to_refresh = scroll_delta.y() > 0 && top_at_scroll_start_;
@@ -135,19 +137,20 @@ bool OverscrollRefresh::WillHandleScrollUpdate(
         // If the activation shouldn't have happened, stop here.
         if (overflow_y_hidden_ ||
             (!is_pull_to_refresh && !is_pull_from_bottom_edge)) {
-          scroll_consumption_state_ = DISABLED;
+          scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
           return false;
         }
       }
       cumulative_scroll_.Add(scroll_delta);
       return false;
 
-    case ENABLED:
+    case ScrollConsumptionState::kEnabled:
       handler_->PullUpdate(scroll_delta.x(), scroll_delta.y());
       return true;
   }
 
-  NOTREACHED() << "Invalid overscroll state: " << scroll_consumption_state_;
+  NOTREACHED() << "Invalid overscroll state: "
+               << base::to_underlying(scroll_consumption_state_);
 }
 
 void OverscrollRefresh::ReleaseWithoutActivation() {
@@ -156,11 +159,11 @@ void OverscrollRefresh::ReleaseWithoutActivation() {
 }
 
 bool OverscrollRefresh::IsActive() const {
-  return scroll_consumption_state_ == ENABLED;
+  return scroll_consumption_state_ == ScrollConsumptionState::kEnabled;
 }
 
 bool OverscrollRefresh::IsAwaitingScrollUpdateAck() const {
-  return scroll_consumption_state_ == AWAITING_SCROLL_UPDATE_ACK;
+  return scroll_consumption_state_ == ScrollConsumptionState::kAwaitingScrollUpdateAck;
 }
 
 void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
@@ -177,9 +180,9 @@ void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
 }
 
 void OverscrollRefresh::Release(bool allow_refresh) {
-  if (scroll_consumption_state_ == ENABLED)
+  if (scroll_consumption_state_ == ScrollConsumptionState::kEnabled)
     handler_->PullRelease(allow_refresh);
-  scroll_consumption_state_ = DISABLED;
+  scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
   cumulative_scroll_.set_x(0);
   cumulative_scroll_.set_y(0);
 }
