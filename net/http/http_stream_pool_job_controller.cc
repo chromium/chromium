@@ -56,8 +56,8 @@ HttpStreamPool::JobController::CalculateAlternative(
 
   url::SchemeHostPort destination(
       url::kHttpsScheme,
-      request_info.alternative_service_info.host_port_pair().host(),
-      request_info.alternative_service_info.host_port_pair().port());
+      request_info.alternative_service_info.GetHostPortPair().host(),
+      request_info.alternative_service_info.GetHostPortPair().port());
 
   // If the alternative endpoint's destination is the same as origin, we don't
   // need an alternative job since the origin job will handle all protocols for

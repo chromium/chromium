@@ -897,7 +897,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     if (alternative_service_info_.protocol() != kProtoUnknown &&
         !preconnect_job->HasAvailableQuicSession()) {
       GURL alternative_url = CreateAltSvcUrl(
-          origin_url_, alternative_service_info_.host_port_pair());
+          origin_url_, alternative_service_info_.GetHostPortPair());
       RewriteUrlWithHostMappingRules(alternative_url);
 
       url::SchemeHostPort alternative_destination =
@@ -939,12 +939,12 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     DCHECK(origin_url_.SchemeIs(url::kHttpsScheme));
     DCHECK(!is_websocket_);
     DVLOG(1) << "Selected alternative service (host: "
-             << alternative_service_info_.host_port_pair().host()
-             << " port: " << alternative_service_info_.host_port_pair().port()
+             << alternative_service_info_.GetHostPortPair().host()
+             << " port: " << alternative_service_info_.GetHostPortPair().port()
              << " version: " << quic_version << ")";
 
     GURL alternative_url = CreateAltSvcUrl(
-        origin_url_, alternative_service_info_.host_port_pair());
+        origin_url_, alternative_service_info_.GetHostPortPair());
     RewriteUrlWithHostMappingRules(alternative_url);
 
     url::SchemeHostPort alternative_destination =
@@ -1354,7 +1354,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false);
 
     GURL destination = CreateAltSvcUrl(
-        original_url, alternative_service_info.host_port_pair());
+        original_url, alternative_service_info.GetHostPortPair());
     if (session_key.host() != destination.host_piece() &&
         !session_->context().quic_context->params()->allow_remote_alt_svc) {
       continue;

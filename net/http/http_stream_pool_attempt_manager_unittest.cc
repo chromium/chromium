@@ -178,7 +178,7 @@ class Preconnector {
                                            key_builder_.destination().host(),
                                            key_builder_.destination().port());
     alternative_service_info_.set_alternative_service(alternative_service);
-    alternative_service_info_.set_advertised_versions({quic_version});
+    alternative_service_info_.SetAdvertisedVersions({quic_version});
     return *this;
   }
 
@@ -308,7 +308,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
                                            key_builder_.destination().host(),
                                            key_builder_.destination().port());
     alternative_service_info_.set_alternative_service(alternative_service);
-    alternative_service_info_.set_advertised_versions({quic_version});
+    alternative_service_info_.SetAdvertisedVersions({quic_version});
     return *this;
   }
 
