@@ -143,7 +143,7 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
   bool HasProfileWithName(std::string_view name) const override {
-    return profiles_map_.find(name) != profiles_map_.end();
+    return profile_attributes_storage_.HasProfileWithName(name);
   }
 
   bool CanCreateProfileWithName(std::string_view name) const override {
@@ -209,7 +209,7 @@ class AccountProfileMapperTest : public PlatformTest {
 
   [[nodiscard]] NSArray* GetIdentitiesForProfile(
       std::string_view profile_name) {
-    CHECK(profile_manager_->GetProfileWithName(profile_name));
+    CHECK(profile_manager_->HasProfileWithName(profile_name));
 
     NSMutableArray* identities = [NSMutableArray array];
     auto callback = base::BindRepeating(
@@ -224,16 +224,21 @@ class AccountProfileMapperTest : public PlatformTest {
   }
 
   std::string FindCreatedProfileName(
-      const base::flat_set<std::string> known_profile_names) {
-    EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(),
-              known_profile_names.size() + 1);
-    std::string profile_name;
-    for (const ProfileIOS* profile : profile_manager_->GetLoadedProfiles()) {
-      if (!known_profile_names.contains(profile->GetProfileName())) {
-        return profile->GetProfileName();
+      const base::flat_set<std::string>& known_profile_names) {
+    const ProfileAttributesStorageIOS* storage = profile_attributes_storage();
+    EXPECT_EQ(storage->GetNumberOfProfiles(), known_profile_names.size() + 1);
+    for (size_t i = 0; i < storage->GetNumberOfProfiles(); i++) {
+      std::string profile_name =
+          storage->GetAttributesForProfileAtIndex(i).GetProfileName();
+      if (!known_profile_names.contains(profile_name)) {
+        return profile_name;
       }
     }
     NOTREACHED();
+  }
+
+  ProfileAttributesStorageIOS* profile_attributes_storage() {
+    return profile_manager_->GetProfileAttributesStorage();
   }
 
  protected:
@@ -423,7 +428,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   if (!@available(iOS 17, *)) {
     return;
   }
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
@@ -439,7 +444,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_NSEQ(expected_identities,
               GetIdentitiesForProfile(kPersonalProfileName));
   // Check that no other profiles have been created.
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
 }
@@ -452,7 +457,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   if (!@available(iOS 17, *)) {
     return;
   }
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
@@ -465,11 +470,10 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
 
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   system_identity_manager_->AddIdentity(google_identity);
-  // Wait for the enterprise profile to get created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
+  // A new enterprise profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
   std::string managed_profile_name =
@@ -521,12 +525,12 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_CALL(mock_observer_personal, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
 
-  // Add a managed identity. This should trigger the creation of a new profile.
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  // Add a managed identity. This should trigger the registration of a new
+  // profile.
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   system_identity_manager_->AddIdentity(google_identity);
-  // Wait for the enterprise profile to get created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
+  // A new enterprise profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
   std::string managed_profile_name1 =
@@ -537,13 +541,12 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_->AddObserver(&mock_observer_managed1,
                                        managed_profile_name1);
 
-  // Add another managed identity. This should again trigger the creation of a
-  // new profile.
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
+  // Add another managed identity. This should again trigger the registration of
+  // a new profile.
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
   system_identity_manager_->AddIdentity(chromium_identity);
-  // Wait for the enterprise profile to get created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return profile_manager_->GetLoadedProfiles().size() == 3; }));
+  // A new enterprise profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 3u);
 
   // Find the name of the new profile.
   std::string managed_profile_name2 = FindCreatedProfileName(
@@ -592,20 +595,14 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   system_identity_manager_->AddIdentity(gmail_identity2);
 
   // Add a managed identity. This should trigger the creation of a new profile.
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
   system_identity_manager_->AddIdentity(google_identity);
-  // Wait for the enterprise profile to get created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
+  // A new enterprise profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
-  std::string managed_profile_name;
-  for (const ProfileIOS* profile : profile_manager_->GetLoadedProfiles()) {
-    if (profile->GetProfileName() != kPersonalProfileName) {
-      managed_profile_name = profile->GetProfileName();
-      break;
-    }
-  }
+  std::string managed_profile_name =
+      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
   ASSERT_FALSE(managed_profile_name.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed;
@@ -670,7 +667,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   if (!@available(iOS 17, *)) {
     return;
   }
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
@@ -684,13 +681,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // This should *not* kick off creation of another profile.
   system_identity_manager_->AddIdentity(gmail_identity2);
 
-  // Wait for the enterprise profile to get created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
-
-  // Ensure that only a single profile was created for the managed identity.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
+  // Exactly one new enterprise profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 }
 
 // Tests that the mapping between profiles and accounts is populated when the
@@ -702,7 +694,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   if (!@available(iOS 17, *)) {
     return;
   }
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   // Some identities already exist before the AccountProfileMapper is created.
   system_identity_manager_->AddIdentity(gmail_identity1);
@@ -711,12 +703,14 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
 
-  // Wait for the enterprise profile to get created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return profile_manager_->GetLoadedProfiles().size() == 2; }));
+  // A new enterprise profile should get registered, as a posted task.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 2u);
   std::string managed_profile_name =
       FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
   ASSERT_FALSE(managed_profile_name.empty());
@@ -740,7 +734,7 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   if (!@available(iOS 17, *)) {
     return;
   }
-  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   // A consumer identity and a managed identity already exist before the
   // AccountProfileMapper is created.
@@ -750,30 +744,27 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Both identities are already assigned to the personal profile. This is
   // typically the case if the identities were added before multi-profile
   // support was enabled.
-  ProfileAttributesStorageIOS* attributes =
-      profile_manager_->GetProfileAttributesStorage();
-  attributes->UpdateAttributesForProfileWithName(
+  profile_attributes_storage()->UpdateAttributesForProfileWithName(
       kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
         attr.SetAttachedGaiaIds(
             {base::SysNSStringToUTF8(gmail_identity1.gaiaID),
              base::SysNSStringToUTF8(google_identity.gaiaID)});
         return attr;
       }));
-  ASSERT_EQ(attributes->GetNumberOfProfiles(), 1u);
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 
   account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
       system_identity_manager_, profile_manager_.get());
 
   // Both identities should still be attached to the personal profile.
-  EXPECT_EQ(attributes->GetAttributesForProfileWithName(kPersonalProfileName)
+  EXPECT_EQ(profile_attributes_storage()
+                ->GetAttributesForProfileWithName(kPersonalProfileName)
                 .GetAttachedGaiaIds()
                 .size(),
             2u);
 
-  // No additional profile should've been created.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(attributes->GetNumberOfProfiles(), 1u);
-  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+  // No additional profile should've been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 }
 
 }  // namespace
