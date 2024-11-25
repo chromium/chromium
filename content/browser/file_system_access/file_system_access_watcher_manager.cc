@@ -160,7 +160,7 @@ void FileSystemAccessWatcherManager::OnRawChange(
 
   std::optional<storage::FileSystemURL> moved_from_url =
       is_move_event ? std::make_optional(
-                          ToFileSystemURL(*manager()->context(), changed_url,
+                          ToFileSystemURL(*manager_->context(), changed_url,
                                           change_info.moved_from_path.value()))
                     : std::nullopt;
 
@@ -262,6 +262,13 @@ void FileSystemAccessWatcherManager::OnSourceBeingDestroyed(
   source_observations_.RemoveObservation(source);
   size_t count_removed = std::erase(all_sources_, *source);
   CHECK_EQ(count_removed, 1u);
+}
+
+void FileSystemAccessWatcherManager::RegisterSourceForTesting(
+    FileSystemAccessChangeSource* source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RegisterSource(source);
 }
 
 void FileSystemAccessWatcherManager::RegisterSource(
@@ -459,7 +466,7 @@ FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
   return nullptr;
 #else
   auto new_source = std::make_unique<FileSystemAccessLocalPathWatcher>(
-      std::move(scope), base::WrapRefCounted(manager()->context()),
+      std::move(scope), base::WrapRefCounted(manager_->context()),
       base::PassKey<FileSystemAccessWatcherManager>());
   RegisterSource(new_source.get());
   return new_source;

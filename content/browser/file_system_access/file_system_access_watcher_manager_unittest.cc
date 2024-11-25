@@ -529,7 +529,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistrationUnownedSource) {
   auto scope = FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
   {
     FakeChangeSource source(scope, file_system_context_);
-    watcher_manager().RegisterSource(&source);
+    watcher_manager().RegisterSourceForTesting(&source);
     EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
   }
 
@@ -544,7 +544,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
@@ -566,7 +566,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   source.set_initialization_result(blink::mojom::FileSystemAccessError::New(
@@ -656,7 +656,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
@@ -745,7 +745,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   FakeChangeSource source_for_file(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source_for_file);
+  watcher_manager().RegisterSourceForTesting(&source_for_file);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source_for_file));
 
   // Add another source which covers the scope of `source_for_file`, and more.
@@ -753,7 +753,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
       FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
           dir_url, /*is_recursive=*/true),
       file_system_context_);
-  watcher_manager().RegisterSource(&source_for_dir);
+  watcher_manager().RegisterSourceForTesting(&source_for_dir);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source_for_dir));
 
   ChangeAccumulator accumulator(ObserveFile(file_url));
@@ -787,7 +787,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems(),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   ChangeAccumulator dir_accumulator(
@@ -820,7 +820,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
                               dir_url, /*is_recursive=*/true),
                           file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   ChangeAccumulator dir_accumulator(
@@ -829,7 +829,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FakeChangeSource file_source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&file_source);
+  watcher_manager().RegisterSourceForTesting(&file_source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&file_source));
 
   ChangeAccumulator file_accumulator(ObserveFile(file_url));
@@ -858,7 +858,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErroredChange) {
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
@@ -887,7 +887,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems(),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   ChangeAccumulator accumulator(
@@ -907,7 +907,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
   FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
                               dir_url, /*is_recursive=*/true),
                           file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   ChangeAccumulator accumulator(
@@ -934,7 +934,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.
@@ -1233,7 +1233,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   FakeChangeSource file_source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&file_source);
+  watcher_manager().RegisterSourceForTesting(&file_source);
 
   base::FilePath dir_path = dir_.GetPath().AppendASCII("bar");
   auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
@@ -1241,7 +1241,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
           dir_url, /*is_recursive=*/false),
       file_system_context_);
-  watcher_manager().RegisterSource(&dir_source);
+  watcher_manager().RegisterSourceForTesting(&dir_source);
 
   std::unique_ptr<Observation> foo_file_observation1 =
       std::move(ObserveFile(foo_storage_key, file_url)).value();
@@ -1289,7 +1289,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
       file_system_context_);
-  watcher_manager().RegisterSource(&source);
+  watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
   // Attempting to observe a scope covered by `source` will use `source`.

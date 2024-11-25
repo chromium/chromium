@@ -297,7 +297,7 @@ class FileSystemAccessObserverObservationTest
   void RegisterChangeSource(FakeChangeSource& source) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    manager_->watcher_manager().RegisterSource(&source);
+    manager_->watcher_manager().RegisterSourceForTesting(&source);
     EXPECT_TRUE(manager_->watcher_manager().HasSourceForTesting(&source));
   }
 

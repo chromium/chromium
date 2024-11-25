@@ -86,18 +86,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                                bool is_recursive,
                                GetObservationCallback get_observation_callback);
 
-  // FileSystemAccessChangeSource::RawChangeObserver:
-  void OnRawChange(const storage::FileSystemURL& changed_url,
-                   bool error,
-                   const FileSystemAccessChangeSource::ChangeInfo& change_info,
-                   const FileSystemAccessWatchScope& scope) override;
-  void OnUsageChange(size_t old_usage,
-                     size_t new_usage,
-                     const FileSystemAccessWatchScope& scope) override;
-  void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
-
-  // Subscriber this instance to raw changes from `source`.
-  void RegisterSource(FileSystemAccessChangeSource* source);
+  // Subscribe this instance to raw changes from `source`.
+  void RegisterSourceForTesting(FileSystemAccessChangeSource* source);
 
   bool HasObservationGroupsForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,8 +104,6 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   }
   bool HasSourceContainingScopeForTesting(
       const FileSystemAccessWatchScope& scope) const;
-
-  FileSystemAccessManagerImpl* manager() { return manager_; }
 
  private:
   friend FileSystemAccessObservationGroup;
@@ -135,6 +123,19 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Called by `FileSystemAccessObservationGroup` to destroy itself.
   void RemoveObservationGroup(const blink::StorageKey& storage_key,
                               const FileSystemAccessWatchScope& scope);
+
+  // FileSystemAccessChangeSource::RawChangeObserver:
+  void OnRawChange(const storage::FileSystemURL& changed_url,
+                   bool error,
+                   const FileSystemAccessChangeSource::ChangeInfo& change_info,
+                   const FileSystemAccessWatchScope& scope) override;
+  void OnUsageChange(size_t old_usage,
+                     size_t new_usage,
+                     const FileSystemAccessWatchScope& scope) override;
+  void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
+
+  // Subscribe this instance to raw changes from `source`.
+  void RegisterSource(FileSystemAccessChangeSource* source);
 
   // Attempts to create a change source for `scope` if it does not exist.
   void EnsureSourceIsInitializedForScope(
