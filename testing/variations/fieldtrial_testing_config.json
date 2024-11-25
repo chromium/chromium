@@ -9989,6 +9989,33 @@
             ]
         }
     ],
+    "FontDataService": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DWrite_Enabled",
+                    "params": {
+                        "typeface": "DWrite"
+                    },
+                    "enable_features": [
+                        "FontDataService"
+                    ]
+                },
+                {
+                    "name": "Internal_Enabled",
+                    "params": {
+                        "typeface": "Internal"
+                    },
+                    "enable_features": [
+                        "FontDataService"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontationsFontBackend": [
         {
             "platforms": [
