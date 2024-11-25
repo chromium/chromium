@@ -62,9 +62,10 @@ union GetInterestGroupsResult {
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.
 interface SharedStorageWorkletServiceClient {
-  // Handle the modifier method `method`. Return an empty `error_message` on
-  // success, and return an non-empty `error_message` on failure.
-  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method)
+  // Handle the modifier method `method_with_options`. Return an empty
+  // `error_message` on success, and return an non-empty `error_message` on
+  // failure.
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethodWithOptions method_with_options)
       => (string error_message);
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if

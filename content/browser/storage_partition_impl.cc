@@ -1354,7 +1354,7 @@ void StoragePartitionImpl::Initialize(
   lock_manager_ = std::make_unique<LockManager<storage::BucketId>>();
 
   shared_storage_runtime_manager_ =
-      std::make_unique<SharedStorageRuntimeManager>();
+      std::make_unique<SharedStorageRuntimeManager>(*this);
 
   scoped_refptr<ChromeBlobStorageContext> blob_context =
       ChromeBlobStorageContext::GetFor(browser_context_);

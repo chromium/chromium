@@ -2126,6 +2126,8 @@ source_set("browser") {
     "shared_storage/shared_storage_features.h",
     "shared_storage/shared_storage_header_observer.cc",
     "shared_storage/shared_storage_header_observer.h",
+    "shared_storage/shared_storage_lock_manager.cc",
+    "shared_storage/shared_storage_lock_manager.h",
     "shared_storage/shared_storage_render_thread_worklet_driver.cc",
     "shared_storage/shared_storage_render_thread_worklet_driver.h",
     "shared_storage/shared_storage_runtime_manager.cc",

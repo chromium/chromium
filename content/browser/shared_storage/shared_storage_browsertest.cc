@@ -895,7 +895,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     auto test_runtime_manager =
-        std::make_unique<TestSharedStorageRuntimeManager>();
+        std::make_unique<TestSharedStorageRuntimeManager>(
+            *static_cast<StoragePartitionImpl*>(GetStoragePartition()));
     observer_ = std::make_unique<TestSharedStorageObserver>();
 
     test_runtime_manager->AddSharedStorageObserver(observer_.get());

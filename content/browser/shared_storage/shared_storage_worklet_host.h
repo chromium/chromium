@@ -110,7 +110,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   // blink::mojom::SharedStorageWorkletServiceClient:
   void SharedStorageUpdate(
-      network::mojom::SharedStorageModifierMethodPtr method,
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
       SharedStorageUpdateCallback callback) override;
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;

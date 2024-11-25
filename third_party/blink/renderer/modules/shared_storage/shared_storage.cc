@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_modifier_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.h"
@@ -423,15 +424,21 @@ ScriptPromise<IDLAny> SharedStorage::set(
   bool ignore_if_present =
       options->hasIgnoreIfPresent() && options->ignoreIfPresent();
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewSetMethod(
           network::mojom::blink::SharedStorageSetMethod::New(
               key, value, ignore_if_present));
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kSet, GlobalScope::kWindow,
@@ -439,7 +446,7 @@ ScriptPromise<IDLAny> SharedStorage::set(
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kSet,
@@ -453,6 +460,16 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
                                             const String& key,
                                             const String& value,
                                             ExceptionState& exception_state) {
+  return append(script_state, key, value,
+                SharedStorageModifierMethodOptions::Create(), exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::append(
+    ScriptState* script_state,
+    const String& key,
+    const String& value,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow() ||
@@ -492,14 +509,20 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
     return promise;
   }
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewAppendMethod(
           network::mojom::blink::SharedStorageAppendMethod::New(key, value));
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kAppend,
@@ -507,7 +530,7 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kAppend,
@@ -520,6 +543,15 @@ ScriptPromise<IDLAny> SharedStorage::append(ScriptState* script_state,
 ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
                                             const String& key,
                                             ExceptionState& exception_state) {
+  return Delete(script_state, key, SharedStorageModifierMethodOptions::Create(),
+                exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::Delete(
+    ScriptState* script_state,
+    const String& key,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow() ||
@@ -552,14 +584,20 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
     return promise;
   }
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewDeleteMethod(
           network::mojom::blink::SharedStorageDeleteMethod::New(key));
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kDelete,
@@ -567,7 +605,7 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kDelete,
@@ -579,6 +617,14 @@ ScriptPromise<IDLAny> SharedStorage::Delete(ScriptState* script_state,
 
 ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
                                            ExceptionState& exception_state) {
+  return clear(script_state, SharedStorageModifierMethodOptions::Create(),
+               exception_state);
+}
+
+ScriptPromise<IDLAny> SharedStorage::clear(
+    ScriptState* script_state,
+    const SharedStorageModifierMethodOptions* options,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow() ||
@@ -604,14 +650,20 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
     return promise;
   }
 
+  String with_lock = options->getWithLockOr(/*fallback_value=*/String());
+
   auto method =
       network::mojom::blink::SharedStorageModifierMethod::NewClearMethod(
           network::mojom::blink::SharedStorageClearMethod::New());
 
+  auto method_with_options =
+      network::mojom::blink::SharedStorageModifierMethodWithOptions::New(
+          std::move(method), std::move(with_lock));
+
   if (execution_context->IsWindow()) {
     GetSharedStorageDocumentService(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kClear,
@@ -619,7 +671,7 @@ ScriptPromise<IDLAny> SharedStorage::clear(ScriptState* script_state,
   } else {
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
-            std::move(method),
+            std::move(method_with_options),
             WTF::BindOnce(&OnSharedStorageUpdateFinished,
                           WrapPersistent(resolver), WrapPersistent(this),
                           SharedStorageSetterMethod::kClear,

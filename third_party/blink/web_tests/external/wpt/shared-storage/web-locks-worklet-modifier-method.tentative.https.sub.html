@@ -25,27 +25,38 @@ promise_test(async t => {
   let url2_1 = generateURL("/shared-storage/resources/frame1.html",
                          [ancestor_key2]);
 
-  // Two `selectURL()`s run in parallel. Each performs the following steps:
+  // Invoke `selectURL()` to perform the following steps:
   // 1. Acquires the lock.
-  // 2. Reads the current value of the given key.
-  // 3. Waits for 100ms.
-  // 4. Increments the value.
+  // 2. Reads the current value at the given key.
+  // 3. Waits for 500ms.
+  // 4. Sets the shared storage value to the read value appended with the given letter.
   // 5. Releases the lock.
   //
-  // Expected behavior: After both operations finish, the value of the given key
-  // should be 2.
+  // In parallel, invoke another `selectURL()`, which subsequently invokes
+  // `sharedStorage.append()` with the same lock and the same letter to append.
   //
-  // This demonstrates that the lock is effective, preventing the
-  // "get and increment" operations from interleaving. If the lock were not
-  // used, both worklets would likely read 0 and set the value to 1.
-
+  // Expected behavior: After both of them finish, the value at the given key
+  // should contain the letter repeated twice.
+  //
+  // Note: This test remains valid even if the `append()` call happens outside
+  // the critical section protected by the lock within the worklet. The test
+  // effectively demonstrates mutual exclusion as long as there's a reasonable
+  // chance for `append()` to occur while the worklet is still running.
   let select_url_result1 = await worklet1.selectURL(
-      "get-wait-increment-within-lock", [{url: url1_0}, {url: url1_1}],
-      {data: {'key': 'key'}, resolveToConfig: true});
+      "get-wait-set-within-lock",
+      [{url: url1_0}, {url: url1_1}],
+      {data: {'key': 'key',
+              'lock_name': 'lock1',
+              'append_letter': 'a'},
+      resolveToConfig: true});
 
   let select_url_result2 = await worklet2.selectURL(
-      "get-wait-increment-within-lock", [{url: url2_0}, {url: url2_1}],
-      {data: {'key': 'key'}, resolveToConfig: true});
+      "append-with-lock-option",
+      [{url: url2_0}, {url: url2_1}],
+      {data: {'key': 'key',
+              'lock_name': 'lock1',
+              'append_letter': 'a'},
+      resolveToConfig: true});
 
   attachFencedFrame(select_url_result1, 'opaque-ads');
   const result1 = await nextValueFromServer(ancestor_key1);
@@ -55,10 +66,10 @@ promise_test(async t => {
   const result2 = await nextValueFromServer(ancestor_key2);
   assert_equals(result2, "frame1_loaded");
 
-  await verifyKeyValueForOrigin('key', '2', location.origin);
+  await verifyKeyValueForOrigin('key', 'aa', location.origin);
 
   await deleteKeyForOrigin('key', location.origin);
-}, 'Basic test for Web Locks API in the shared storage worklet');
+}, 'Test for withLock option in a SharedStorageWorklet context');
 
 </script>
 </body>
