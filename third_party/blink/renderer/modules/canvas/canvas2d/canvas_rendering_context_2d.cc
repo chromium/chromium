@@ -52,7 +52,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "gpu/command_buffer/client/context_support.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -110,6 +109,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -153,15 +153,6 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
 }
 
 namespace {
-
-gpu::ContextSupport* GetContextSupport() {
-  if (!SharedGpuContext::ContextProviderWrapper()) {
-    return nullptr;
-  }
-  return SharedGpuContext::ContextProviderWrapper()
-      ->ContextProvider()
-      .ContextSupport();
-}
 
 // Serves as killswitch for changing CanCreateCanvasResourceProvider() to
 // create resource provider internally rather than Canvas2DLayerBridge.
@@ -927,9 +918,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 
   // Conserve memory.
   if (element->GetRasterMode() == RasterMode::kGPU) {
-    if (auto* context_support = GetContextSupport()) {
-      context_support->SetAggressivelyFreeResources(!page_is_visible);
-    }
+    SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
   }
 
   if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&

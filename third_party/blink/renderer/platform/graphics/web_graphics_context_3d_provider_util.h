@@ -46,6 +46,11 @@ PLATFORM_EXPORT void CreateWebGPUGraphicsContext3DProviderAsync(
     WTF::CrossThreadOnceFunction<
         void(std::unique_ptr<WebGraphicsContext3DProvider>)> callback);
 
+// If the shared GPU context exists, sets whether it aggressively frees
+// resources to `value`.
+PLATFORM_EXPORT void SetAggressivelyFreeSharedGpuContextResourcesIfPossible(
+    bool value);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_UTIL_H_

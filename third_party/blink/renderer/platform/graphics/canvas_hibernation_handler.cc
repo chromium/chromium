@@ -12,14 +12,13 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "gpu/command_buffer/client/context_support.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -44,21 +43,6 @@
 #endif
 
 namespace blink {
-
-namespace {
-
-// TODO(crbug.com/40280152): De-dupe this method with the identical method in
-// canvas_rendering_context_2d.cc.
-gpu::ContextSupport* GetContextSupport() {
-  if (!SharedGpuContext::ContextProviderWrapper()) {
-    return nullptr;
-  }
-  return SharedGpuContext::ContextProviderWrapper()
-      ->ContextProvider()
-      .ContextSupport();
-}
-
-}  // namespace
 
 // Use ZSTD to compress the snapshot. This is faster to decompress, and much
 // faster to compress. ZSTD may not be available on all platforms, so this
@@ -482,12 +466,10 @@ void CanvasHibernationHandler::Hibernate() {
   // will a flush come?).
   if (base::FeatureList::IsEnabled(
           features::kCanvas2DHibernationReleaseTransferMemory)) {
-    if (auto* context_support = GetContextSupport()) {
-      // Unnecessary since there would be an early return above otherwise, but
-      // let's document that.
-      DCHECK(!resource_host_->IsPageVisible());
-      context_support->SetAggressivelyFreeResources(true);
-    }
+    // Unnecessary since there would be an early return above otherwise, but
+    // let's document that.
+    DCHECK(!resource_host_->IsPageVisible());
+    SetAggressivelyFreeSharedGpuContextResourcesIfPossible(true);
   }
 }
 
