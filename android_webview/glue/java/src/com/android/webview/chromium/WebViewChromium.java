@@ -750,7 +750,7 @@ class WebViewChromium
                 mFactory.startYourEngines(true);
             }
 
-            final boolean isAccessFromFileURLsGrantedByDefault =
+            final boolean isAccessFromFileUrlsGrantedByDefault =
                     mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
             final boolean areLegacyQuirksEnabled =
                     mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
@@ -771,7 +771,7 @@ class WebViewChromium
                         mFactory.createContentSettingsAdapter(
                                 new AwSettings(
                                         mContext,
-                                        isAccessFromFileURLsGrantedByDefault,
+                                        isAccessFromFileUrlsGrantedByDefault,
                                         areLegacyQuirksEnabled,
                                         allowEmptyDocumentPersistence,
                                         allowGeolocationOnInsecureOrigins,
@@ -786,7 +786,7 @@ class WebViewChromium
             }
 
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
-                mWebSettings.getAwSettings().setCSSHexAlphaColorEnabled(true);
+                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
                 mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
             }
 

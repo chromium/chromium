@@ -992,8 +992,8 @@ public class AwContents implements SmartClipProvider {
             if (TRACE) Log.i(TAG, "%s onDIPScaleChanged dipScale=%f", this, dipScale);
 
             AwContentsJni.get().setDipScale(mNativeAwContents, dipScale);
-            mLayoutSizer.setDIPScale(dipScale);
-            mSettings.setDIPScale(dipScale);
+            mLayoutSizer.setDipScale(dipScale);
+            mSettings.setDipScale(dipScale);
         }
     }
     ;
@@ -1140,8 +1140,8 @@ public class AwContents implements SmartClipProvider {
             mSettings.setZoomListener(zoomListener);
             mDefaultVideoPosterRequestHandler =
                     new DefaultVideoPosterRequestHandler(mContentsClient);
-            mSettings.setDefaultVideoPosterURL(
-                    mDefaultVideoPosterRequestHandler.getDefaultVideoPosterURL());
+            mSettings.setDefaultVideoPosterUrl(
+                    mDefaultVideoPosterRequestHandler.getDefaultVideoPosterUrl());
             mScrollOffsetManager =
                     dependencyFactory.createScrollOffsetManager(
                             new AwScrollOffsetManagerDelegate());

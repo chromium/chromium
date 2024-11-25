@@ -653,7 +653,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
                         "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS);
-            mAwSettings.setAllowUniversalAccessFromFileURLs(flag);
+            mAwSettings.setAllowUniversalAccessFromFileUrls(flag);
         }
     }
 
@@ -664,7 +664,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
                         "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS);
-            mAwSettings.setAllowFileAccessFromFileURLs(flag);
+            mAwSettings.setAllowFileAccessFromFileUrls(flag);
         }
     }
 
@@ -781,7 +781,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
                         "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS);
-            return mAwSettings.getAllowUniversalAccessFromFileURLs();
+            return mAwSettings.getAllowUniversalAccessFromFileUrls();
         }
     }
 
@@ -792,7 +792,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
                         "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS);
-            return mAwSettings.getAllowFileAccessFromFileURLs();
+            return mAwSettings.getAllowFileAccessFromFileUrls();
         }
     }
 

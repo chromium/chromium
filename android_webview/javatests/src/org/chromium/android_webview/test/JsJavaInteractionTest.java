@@ -985,7 +985,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testFileSchemeUrl_setAllowFileAccessFromFile_true() throws Throwable {
-        mAwContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(true);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), FILE_URI);
@@ -1005,7 +1005,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     public void testFileSchemeUrl_setAllowFileAccessFromFile_false() throws Throwable {
         // The default value is false on JELLY_BEAN and above, but we explicitly set this to
         // false to readability.
-        mAwContents.getSettings().setAllowFileAccessFromFileURLs(false);
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(false);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), FILE_URI);
@@ -1020,9 +1020,9 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
-    public void testContentSchemeUrl_setAllowFileAccessFromFileURLs_true() throws Throwable {
+    public void testContentSchemeUrl_setAllowFileAccessFromFileUrls_true() throws Throwable {
         mAwContents.getSettings().setAllowContentAccess(true);
-        mAwContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(true);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         mActivityTestRule.loadUrlSync(
                 mAwContents,
@@ -1041,11 +1041,11 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     @SkipMutations(
             reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
-    public void testContentSchemeUrl_setAllowFileAccessFromFileURLs_false() throws Throwable {
+    public void testContentSchemeUrl_setAllowFileAccessFromFileUrls_false() throws Throwable {
         mAwContents.getSettings().setAllowContentAccess(true);
         // The default value is false on JELLY_BEAN and above, but we explicitly set this to
         // false to readability.
-        mAwContents.getSettings().setAllowFileAccessFromFileURLs(false);
+        mAwContents.getSettings().setAllowFileAccessFromFileUrls(false);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         mActivityTestRule.loadUrlSync(
                 mAwContents,
