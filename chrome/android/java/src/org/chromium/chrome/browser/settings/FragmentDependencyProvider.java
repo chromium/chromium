@@ -188,8 +188,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof PrivacyGuideFragment) {
             PrivacyGuideFragment pgFragment = (PrivacyGuideFragment) fragment;
             pgFragment.setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
-            pgFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
