@@ -34,7 +34,8 @@ ShareKitServiceFactory* ShareKitServiceFactory::GetInstance() {
 
 ShareKitServiceFactory::ShareKitServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ShareKitService",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+                                    ProfileSelection::kNoInstanceInIncognito,
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());

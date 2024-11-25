@@ -40,7 +40,6 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
-#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
@@ -53,7 +52,6 @@
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
-#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -61,7 +59,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
-#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -485,16 +482,6 @@ void FlushCookieStoreOnIOThread(
     }
   }
 
-  // Ensure that the tab group sync services are created to observe updates.
-  if (IsTabGroupSyncEnabled()) {
-    tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  }
-
-  // Ensure that the ShareKit service is created to handle Join Group requests.
-  if (IsSharedTabGroupsJoinEnabled(profile)) {
-    ShareKitServiceFactory::GetForProfile(profile);
-  }
-
   [self attachProfileAgents];
 }
 
@@ -586,7 +573,7 @@ void FlushCookieStoreOnIOThread(
   _savingCookies = NO;
 }
 
-#pragma mark Deferred initialisation tasks scheduling
+#pragma mark Deferred initialization tasks scheduling
 
 // Schedules external files removal.
 - (void)scheduleRemoveExternalFiles {

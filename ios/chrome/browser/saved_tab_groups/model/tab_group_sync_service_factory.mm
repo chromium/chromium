@@ -45,9 +45,8 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
 }
 
 TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "TabGroupSyncServiceFactory",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(BrowserListFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
