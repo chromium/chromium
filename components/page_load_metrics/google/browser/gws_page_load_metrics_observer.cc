@@ -316,12 +316,17 @@ struct HeaderInfo {
 
 using ReportedHeaders = std::vector<HeaderInfo>;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(HeaderMismatchType)
 enum class HeaderMismatchType {
   kHeaderNotExpected = 1 << 0,
   kValueMismatched = 1 << 1,
   kHeaderNotActuallyExist = 1 << 2,
   kMaxValue = kHeaderNotActuallyExist,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:HeaderMismatchType)
 
 void SetHeaderCrashKeys(const ReportedHeaders& reported_headers,
                         HeaderMismatchType mismatch_type) {

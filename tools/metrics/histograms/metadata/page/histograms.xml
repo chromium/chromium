@@ -1522,7 +1522,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.SyntheticResponse.HeaderMismatchType"
-    units="count" expires_after="2025-08-01">
+    enum="HeaderMismatchType" expires_after="2025-08-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
