@@ -4182,6 +4182,7 @@ static_library("browser") {
       "//chrome/browser/autofill_ai:util",
       "//chrome/browser/contextual_cueing:contextual_cueing",
       "//chrome/browser/enterprise/signals:utils",
+      "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
       "//chrome/browser/icon_transcoder",
@@ -6935,10 +6936,7 @@ static_library("browser") {
       "policy/browser_dm_token_storage_linux.cc",
       "policy/browser_dm_token_storage_linux.h",
     ]
-    deps += [
-      "//chrome/browser/error_reporting",
-      "//third_party/fontconfig",
-    ]
+    deps += [ "//third_party/fontconfig" ]
     if (use_dbus) {
       deps += [ "//dbus" ]
     }

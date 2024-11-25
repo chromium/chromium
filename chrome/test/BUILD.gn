@@ -1941,6 +1941,7 @@ if (!is_android) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/dips:browser_tests",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/error_reporting:test_support",
       "//chrome/browser/favicon",
       "//chrome/browser/feedback",
       "//chrome/browser/feedback:feedback_impl",
@@ -2131,7 +2132,6 @@ if (!is_android) {
       "//components/content_settings/core/browser:test_support",
       "//components/cookie_config",
       "//components/country_codes",
-      "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
       "//components/data_sharing/public",
       "//components/dom_distiller/content/browser",
       "//components/dom_distiller/content/browser:test_support",
@@ -2764,6 +2764,7 @@ if (!is_android) {
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/enterprise/watermark/watermark_browsertest.cc",
       "../browser/error_reporting/crash_client_upload_info_browsertest.cc",
+      "../browser/error_reporting/webui_js_error_reporting_browsertest.cc",
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_browsertest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",
@@ -3580,14 +3581,6 @@ if (!is_android) {
       ]
     }
 
-    if (is_linux || is_chromeos) {
-      # TODO(crbug.com/374696525): enable this test on all desktop platforms.
-      sources += [
-        "../browser/error_reporting/webui_js_error_reporting_browsertest.cc",
-      ]
-      deps += [ "//chrome/browser/error_reporting:test_support" ]
-    }
-
     if (is_chromeos) {
       deps += [
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
@@ -4371,7 +4364,6 @@ if (!is_android) {
           "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/chromeos/extensions/vpn_provider",
           "//chrome/browser/chromeos/extensions/wm",
-          "//chrome/browser/error_reporting:test_support",
           "//chromeos/constants",
           "//chromeos/dbus/constants",
           "//chromeos/dbus/dlp:dlp",
@@ -7885,6 +7877,7 @@ test("unit_tests") {
       "//chrome/browser/companion/text_finder:unit_tests",
       "//chrome/browser/content_settings:unit_tests",
       "//chrome/browser/enterprise/connectors/analysis:features",
+      "//chrome/browser/error_reporting:unit_test",
       "//chrome/browser/hid",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/image_fetcher",
@@ -8483,10 +8476,6 @@ test("unit_tests") {
         "//chromeos/ash/components/memory/userspace_swap:mojom",
       ]
     }
-  }
-
-  if (is_linux || is_chromeos) {
-    deps += [ "//chrome/browser/error_reporting:unit_test" ]
   }
 
   if (use_ozone) {

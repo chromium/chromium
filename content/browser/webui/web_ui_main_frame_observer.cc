@@ -7,32 +7,30 @@
 #include <string>
 #include <utility>
 
-#include "build/build_config.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webui/web_ui_impl.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_ui_controller.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
-#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
+#include "build/build_config.h"
+#include "components/crash/content/browser/error_reporting/javascript_error_report.h"
+#include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webui/web_ui_impl.h"
+#include "content/common/features.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
-#endif
 
 namespace content {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA))
 // Remove the pieces of the URL we don't want to send back with the error
 // reports. In particular, do not send query or fragments as those can have
 // privacy-sensitive information in them.
@@ -46,7 +44,17 @@ std::string RedactURL(const GURL& url) {
   base::StrAppend(&redacted_url, {url.path_piece()});
   return redacted_url;
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA))
+
+bool IsWebUIJavaScriptErrorReportingSupported() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  return false;
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(features::kWebUIJSErrorReportingExtended);
+#endif
+}
 
 }  // namespace
 
@@ -56,7 +64,7 @@ WebUIMainFrameObserver::WebUIMainFrameObserver(WebUIImpl* web_ui,
 
 WebUIMainFrameObserver::~WebUIMainFrameObserver() = default;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
@@ -133,9 +141,14 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   processor->SendErrorReport(std::move(report), base::DoNothing(),
                              web_contents()->GetBrowserContext());
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
     NavigationHandle* navigation_handle) {
+  if (!IsWebUIJavaScriptErrorReportingSupported()) {
+    return;
+  }
+
   error_reporting_enabled_ =
       web_ui_->GetController()->IsJavascriptErrorReportingEnabled();
 
@@ -153,8 +166,6 @@ void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
   }
 }
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 void WebUIMainFrameObserver::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   // Navigation didn't occur in the frame associated with this WebUI.
@@ -169,11 +180,7 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
   GetContentClient()->browser()->LogWebUICreated(GetUrlForLogging());
   pending_non_empty_paint_ = true;
 
-// TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
-// thunking issues. Fix & re-enable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebUIMainFrameObserver::PrimaryPageChanged(Page& page) {

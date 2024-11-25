@@ -2496,7 +2496,6 @@ source_set("browser") {
     public_deps += [ "//components/services/font/public/mojom" ]
 
     deps += [
-      "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
       "//content/common:sandbox_support_linux",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
@@ -3413,7 +3412,10 @@ source_set("browser") {
         "speech/soda_speech_recognition_engine_impl.h",
       ]
 
-      deps += [ "//media/mojo/mojom:web_speech_recognition" ]
+      deps += [
+        "//components/crash/content/browser/error_reporting",
+        "//media/mojo/mojom:web_speech_recognition",
+      ]
     }
 
     deps += [

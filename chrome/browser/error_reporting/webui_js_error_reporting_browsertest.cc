@@ -172,8 +172,11 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
       browser()->tab_strip_model()->GetActiveWebContents();
   // Trigger uncaught exception. Simulating mouse clicks on a button requires
   // there to not be CSP on the JavaScript, so use accesskeys instead.
+  // On mac, the accesskey is activated by Ctrl+Option+Key. On other platforms,
+  // the accesskey is activate by Alt+Key.
+  constexpr bool press_ctrl = BUILDFLAG(IS_MAC);
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_T,
-                            ui::VKEY_T, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_T, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(2));
@@ -187,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   endpoint.clear_last_report();
   // Trigger console.error call.
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_L,
-                            ui::VKEY_L, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_L, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(3));
@@ -202,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   endpoint.clear_last_report();
   // Trigger unhandled promise rejection.
   content::SimulateKeyPress(web_contents, ui::DomKey::NONE, ui::DomCode::US_P,
-                            ui::VKEY_P, /*control=*/false, /*shift=*/false,
+                            ui::VKEY_P, press_ctrl, /*shift=*/false,
                             /*alt=*/true, /*command=*/false);
   report = endpoint.WaitForReport();
   EXPECT_THAT(endpoint.all_reports(), SizeIs(4));
