@@ -118,8 +118,8 @@ struct MakeUiCredentialParams {
 UiCredential MakeUiCredential(MakeUiCredentialParams params) {
   return UiCredential(
       base::UTF8ToUTF16(params.username), base::UTF8ToUTF16(params.password),
-      url::Origin::Create(GURL(params.origin)), params.match_type,
-      base::Time::Now() - params.time_since_last_use);
+      url::Origin::Create(GURL(params.origin)), std::string(params.origin),
+      params.match_type, base::Time::Now() - params.time_since_last_use);
 }
 
 }  // namespace
@@ -950,15 +950,12 @@ TEST_F(TouchToFillControllerAutofillTest,
 TEST_F(TouchToFillControllerAutofillTest,
        TriggersAcknowledgeDialogBeforeFillingGroupedCredential) {
   // Test multiple credentials with one of them being an Android credential.
-  UiCredential credentials[] = {
-      MakeUiCredential({
-          .username = "bob",
-          .password = "s3cr3t",
-          .origin = "",
-          .match_type = password_manager_util::GetLoginMatchType::kGrouped,
-          .time_since_last_use = base::Minutes(3),
-      }),
-  };
+  std::string display_name = "Example android app";
+  UiCredential credentials[] = {UiCredential(
+      /*username=*/u"bob", /*password=*/u"s3cr3t",
+      url::Origin::Create(GURL("")), display_name,
+      password_manager_util::GetLoginMatchType::kGrouped,
+      base::Time::Now() - base::Minutes(3))};
 
   touch_to_fill_controller().Show(
       credentials, /*passkey_credentials=*/{},
@@ -972,7 +969,7 @@ TEST_F(TouchToFillControllerAutofillTest,
 
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword).Times(0);
   EXPECT_CALL(*(acknowledge_grouped_credential_sheet_helper().jni_bridge()),
-              Show);
+              Show(_, display_name));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
   // Authentication and then `FillUsernameAndPassword` should be called if

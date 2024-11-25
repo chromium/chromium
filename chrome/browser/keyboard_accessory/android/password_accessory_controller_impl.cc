@@ -1005,8 +1005,10 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
       GetUiCredentialForSelection(matching_creds, selection);
   if (selection.is_obfuscated() && cred != matching_creds.end() &&
       cred->match_type() == GetLoginMatchType::kGrouped) {
+    // Use `cred->display_name()` instead of origin here to correctly display
+    // credentials saved for android apps.
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
-        GetDisplayOrigin(origin), GetDisplayOrigin(cred->origin()),
+        GetDisplayOrigin(origin), cred->display_name(),
         web_contents()->GetTopLevelNativeWindow(),
         base::BindOnce(&PasswordAccessoryControllerImpl::
                            OnAcknowledgementBeforeFillingReceived,

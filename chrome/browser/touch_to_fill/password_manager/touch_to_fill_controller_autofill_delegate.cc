@@ -316,9 +316,10 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
       password_manager_util::GetLoginMatchType::kGrouped) {
     std::string current_origin =
         GetDisplayOrigin(url::Origin::Create(GetFrameUrl()));
-    std::string credential_origin = GetDisplayOrigin(credential.origin());
+    // Use `cred->display_name()` instead of origin here to correctly display
+    // credentials saved for android apps.
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
-        std::move(current_origin), std::move(credential_origin),
+        std::move(current_origin), credential.display_name(),
         web_contents_->GetTopLevelNativeWindow(),
         base::BindOnce(
             &TouchToFillControllerAutofillDelegate::

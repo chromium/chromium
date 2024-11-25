@@ -127,6 +127,7 @@ public class Credential {
         return mLastUsedMsSinceEpoch;
     }
 
+    @CalledByNative
     public String getDisplayName() {
         return mDisplayName;
     }

@@ -114,6 +114,7 @@ using IsExactMatch = autofill::UserInfo::IsExactMatch;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 constexpr char kExampleSite[] = "https://example.com";
+constexpr char kExampleAndroidApp[] = "android://hash@com.example.android";
 constexpr char kExampleHttpSite[] = "http://example.com";
 constexpr char16_t kExampleHttpSite16[] = u"http://example.com";
 constexpr char kExampleSiteMobile[] = "https://m.example.com";
@@ -1562,8 +1563,13 @@ TEST_F(PasswordAccessoryControllerTest,
        ShowsAcknowledgementBeforeFillingGroupedPassword) {
   CreateSheetController();
 
-  std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+  PasswordForm form;
+  form.username_value = u"Ben";
+  form.password_value = u"S3cur3";
+  form.signon_realm = kExampleAndroidApp;
+  form.match_type = PasswordForm::MatchType::kGrouped;
+  form.app_display_name = "Example android app";
+  std::vector<PasswordForm> matches = {form};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
@@ -1583,7 +1589,8 @@ TEST_F(PasswordAccessoryControllerTest,
   // Should not call `driver()->FillIntoFocusedField` yet. Should show ack sheet
   // instead.
   base::OnceCallback<void(bool)> callback;
-  EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(), Show);
+  EXPECT_CALL(*grouped_credential_sheet_test_helper.jni_bridge(),
+              Show(_, form.app_display_name));
   EXPECT_CALL(*driver(), FillIntoFocusedField).Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 
