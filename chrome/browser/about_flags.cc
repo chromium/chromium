@@ -1278,31 +1278,6 @@ const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-const FeatureEntry::FeatureParam kShortcutBoostSingleUrl[] = {
-    {"ShortcutBoostSearchScore", "0"},
-    {"ShortcutBoostNonTopHitThreshold", "0"},
-    {"ShortcutBoostGroupWithSearches", "false"},
-};
-const FeatureEntry::FeatureParam kShortcutBoostMultipleUrls[] = {
-    {"ShortcutBoostSearchScore", "0"},
-    {"ShortcutBoostNonTopHitThreshold", "2"},
-    {"ShortcutBoostGroupWithSearches", "true"},
-};
-const FeatureEntry::FeatureParam kShortcutBoostMultipleSearchesAndUrls[] = {
-    {"ShortcutBoostSearchScore", "1414"},
-    {"ShortcutBoostNonTopHitThreshold", "2"},
-    {"ShortcutBoostNonTopHitSearchThreshold", "3"},
-    {"ShortcutBoostGroupWithSearches", "true"},
-};
-
-const FeatureEntry::FeatureVariation kOmniboxShortcutBoostVariations[] = {
-    {"Single URL", kShortcutBoostSingleUrl, std::size(kShortcutBoostSingleUrl),
-     nullptr},
-    {"Multiple URLs", kShortcutBoostMultipleUrls,
-     std::size(kShortcutBoostMultipleUrls), nullptr},
-    {"Multiple Searches and URLs", kShortcutBoostMultipleSearchesAndUrls,
-     std::size(kShortcutBoostMultipleSearchesAndUrls), nullptr},
-};
 
 // A limited number of combinations of the rich autocompletion params.
 const FeatureEntry::FeatureParam
@@ -6501,12 +6476,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxForceAllowedToBeDefaultDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox_feature_configs::ForceAllowedToBeDefault::
                             kForceAllowedToBeDefault)},
-    {"omnibox-shortcut-boost", flag_descriptions::kOmniboxShortcutBoostName,
-     flag_descriptions::kOmniboxShortcutBoostDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
-         kOmniboxShortcutBoostVariations,
-         "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-promising",
      flag_descriptions::kOmniboxRichAutocompletionPromisingName,
      flag_descriptions::kOmniboxRichAutocompletionPromisingDescription,

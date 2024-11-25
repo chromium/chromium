@@ -1539,8 +1539,7 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 3;
   }
   // Group boosted shortcuts above searches.
-  if (omnibox_feature_configs::ShortcutBoosting::Get().group_with_searches &&
-      shortcut_boosted) {
+  if (shortcut_boosted) {
     return 2;
   }
   if (type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER)

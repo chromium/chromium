@@ -91,45 +91,6 @@ ReportNumZPSInSession::ReportNumZPSInSession()
     : enabled(base::FeatureList::IsEnabled(kReportNumZPSInSession)) {}
 
 // static
-BASE_FEATURE(ShortcutBoosting::kShortcutBoost,
-             "OmniboxShortcutBoost",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-ShortcutBoosting::ShortcutBoosting() {
-  enabled = base::FeatureList::IsEnabled(kShortcutBoost);
-  search_score =
-      base::FeatureParam<int>(&kShortcutBoost, "ShortcutBoostSearchScore", 0)
-          .Get();
-  url_score =
-      base::FeatureParam<int>(&kShortcutBoost, "ShortcutBoostUrlScore", 1414)
-          .Get();
-  counterfactual = base::FeatureParam<bool>(
-                       &kShortcutBoost, "ShortcutBoostCounterfactual", false)
-                       .Get();
-  non_top_hit_threshold =
-      base::FeatureParam<int>(&kShortcutBoost,
-                              "ShortcutBoostNonTopHitThreshold", 2)
-          .Get();
-  non_top_hit_search_threshold =
-      base::FeatureParam<int>(&kShortcutBoost,
-                              "ShortcutBoostNonTopHitSearchThreshold", 2)
-          .Get();
-  group_with_searches =
-      base::FeatureParam<bool>(&kShortcutBoost,
-                               "ShortcutBoostGroupWithSearches", true)
-          .Get();
-}
-
-// static
-BASE_FEATURE(SparkSearch::kSparkSearch,
-             "SparkSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-SparkSearch::SparkSearch() {
-  enabled = base::FeatureList::IsEnabled(kSparkSearch);
-  scoped = base::FeatureParam<bool>(&kSparkSearch,
-                                  "SparkSearch", false).Get();
-}
-
-// static
 BASE_FEATURE(SuggestionAnswerMigration::kOmniboxSuggestionAnswerMigration,
              "OmniboxSuggestionAnswerMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
