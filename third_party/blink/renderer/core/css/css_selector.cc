@@ -492,6 +492,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
+    case kPseudoTargetCurrent:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -644,6 +645,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"spelling-error", CSSSelector::kPseudoSpellingError},
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
+    {"target-current", CSSSelector::kPseudoTargetCurrent},
     {"target-text", CSSSelector::kPseudoTargetText},
     {"user-invalid", CSSSelector::kPseudoUserInvalid},
     {"user-valid", CSSSelector::kPseudoUserValid},
@@ -753,6 +755,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if (match->type == CSSSelector::kPseudoPermissionGranted &&
       !RuntimeEnabledFeatures::PermissionElementEnabled(
           document ? document->GetExecutionContext() : nullptr)) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if (match->type == CSSSelector::kPseudoTargetCurrent &&
+      !RuntimeEnabledFeatures::CSSPseudoScrollMarkersEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -1008,6 +1015,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
+    case kPseudoTargetCurrent:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -1724,6 +1732,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoPopoverOpen:
     case kPseudoRelativeAnchor:
     case kPseudoSpatialNavigationFocus:
+    case kPseudoTargetCurrent:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
       return true;

@@ -81,7 +81,7 @@ void ScrollMarkerPseudoElement::SetSelected(bool value) {
     return;
   }
   is_selected_ = value;
-  PseudoStateChanged(CSSSelector::kPseudoChecked);
+  PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
 }
 
 void ScrollMarkerPseudoElement::Dispose() {

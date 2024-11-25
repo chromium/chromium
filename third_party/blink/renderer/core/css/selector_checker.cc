@@ -2019,7 +2019,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         if (option_element->Selected()) {
           return true;
         }
-      } else if (element.IsScrollMarkerPseudoElement()) {
+      }
+      break;
+    }
+    case CSSSelector::kPseudoTargetCurrent: {
+      if (element.IsScrollMarkerPseudoElement()) {
         return To<ScrollMarkerPseudoElement>(element).IsSelected();
       }
       break;
