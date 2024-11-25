@@ -578,11 +578,6 @@ class WTF_EXPORT StringImpl {
         .ValueOrDie();
   }
 
-  static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
-                                                       LChar*& data);
-  static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
-                                                       UChar*& data);
-
   template <typename DestCharType,
             typename SrcCharType,
             typename ReplacementCharType>

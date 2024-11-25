@@ -208,14 +208,6 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
                             StringImpl(narrowed_length, kForce8BitConstructor));
 }
 
-scoped_refptr<StringImpl> StringImpl::CreateUninitialized(wtf_size_t length,
-                                                          LChar*& data) {
-  base::span<LChar> data_span;
-  auto impl = CreateUninitialized(length, data_span);
-  data = data_span.data();
-  return impl;
-}
-
 scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
     size_t length,
     base::span<UChar>& data) {
@@ -237,14 +229,6 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
   data = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<UChar*>(string + 1), narrowed_length));
   return base::AdoptRef(new (string) StringImpl(narrowed_length));
-}
-
-scoped_refptr<StringImpl> StringImpl::CreateUninitialized(wtf_size_t length,
-                                                          UChar*& data) {
-  base::span<UChar> data_span;
-  auto impl = CreateUninitialized(length, data_span);
-  data = data_span.data();
-  return impl;
 }
 
 static StaticStringsTable& StaticStrings() {
