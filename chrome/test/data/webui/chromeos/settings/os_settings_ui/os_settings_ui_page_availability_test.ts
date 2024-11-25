@@ -4,12 +4,11 @@
 
 /**
  * @fileoverview
- * Suite of tests for page availability in the CrOS Settings UI.
+ * Suite of tests for page availability when incorporated into the overall
+ * CrOS Settings UI.
  *
- * - This suite is run with the OsSettingsRevampWayfinding feature flag both
- *   enabled and disabled.
  * - This suite is separated into a dedicated file to mitigate test timeouts
- *   since the element is very large.
+ *   since the `os-settings-ui` element is very large.
  */
 
 import 'chrome://os-settings/os_settings.js';
@@ -28,7 +27,6 @@ import {SECTION_EXPECTATIONS, SectionName} from './page_availability_test_helper
 const {Section} = routesMojom;
 
 suite('<os-settings-ui> page availability', () => {
-  const isRevampEnabled = loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let ui: OsSettingsUiElement;
   let settingsMain: OsSettingsMainElement;
   let mainPageContainer: MainPageContainerElement;
@@ -101,20 +99,9 @@ suite('<os-settings-ui> page availability', () => {
       ui.remove();
     });
 
-    for (const {
-           name,
-           availableBeforeRevamp,
-           availableAfterRevamp,
-         } of SECTION_EXPECTATIONS) {
+    for (const {name} of SECTION_EXPECTATIONS) {
       test(`${name} page availability`, async () => {
-        const shouldExpectStamped = (isRevampEnabled && availableAfterRevamp) ||
-            (!isRevampEnabled && availableBeforeRevamp);
-
-        if (shouldExpectStamped) {
-          assertPageIsStamped(name);
-        } else {
-          assertPageIsNotStamped(name);
-        }
+        assertPageIsStamped(name);
       });
     }
   });
@@ -143,16 +130,10 @@ suite('<os-settings-ui> page availability', () => {
 
     for (const {
            name,
-           availableBeforeRevamp,
-           availableAfterRevamp,
            availableForGuest,
          } of SECTION_EXPECTATIONS) {
       test(`${name} page availability`, async () => {
-        const shouldExpectStamped = availableForGuest &&
-            ((isRevampEnabled && availableAfterRevamp) ||
-             (!isRevampEnabled && availableBeforeRevamp));
-
-        if (shouldExpectStamped) {
+        if (availableForGuest) {
           assertPageIsStamped(name);
         } else {
           assertPageIsNotStamped(name);
