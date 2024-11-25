@@ -37,18 +37,6 @@ SocketDescriptor CreatePlatformSocket(int family, int type, int protocol) {
   return result;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   SocketDescriptor result = ::socket(family, type, protocol);
-#if BUILDFLAG(IS_APPLE)
-  // Disable SIGPIPE on this socket. Although Chromium globally disables
-  // SIGPIPE, the net stack may be used in other consumers which do not do
-  // this. SO_NOSIGPIPE is a Mac-only API. On Linux, it is a flag on send.
-  if (result != kInvalidSocket) {
-    int value = 1;
-    if (setsockopt(result, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value))) {
-      close(result);
-      return kInvalidSocket;
-    }
-  }
-#endif
   return result;
 #endif  // BUILDFLAG(IS_WIN)
 }

@@ -39,16 +39,6 @@ bool CreateSocketPair(ScopedFD* one, ScopedFD* two) {
 #endif
   if (socketpair(AF_UNIX, flags, 0, raw_socks) == -1)
     return false;
-#if BUILDFLAG(IS_APPLE)
-  // On macOS, preventing SIGPIPE is done with socket option.
-  const int no_sigpipe = 1;
-  if (setsockopt(raw_socks[0], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                 sizeof(no_sigpipe)) != 0)
-    return false;
-  if (setsockopt(raw_socks[1], SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                 sizeof(no_sigpipe)) != 0)
-    return false;
-#endif
   one->reset(raw_socks[0]);
   two->reset(raw_socks[1]);
   return true;
@@ -99,23 +89,11 @@ bool UnixDomainSocket::SendMsg(int fd,
     msg.msg_controllen = cmsg->cmsg_len;
   }
 
-// Avoid a SIGPIPE if the other end breaks the connection.
-// Due to a bug in the Linux kernel (net/unix/af_unix.c) MSG_NOSIGNAL isn't
-// regarded for SOCK_SEQPACKET in the AF_UNIX domain, but it is mandated by
-// POSIX. On Mac MSG_NOSIGNAL is not supported, so we need to ensure that
-// SO_NOSIGPIPE is set during socket creation.
-#if BUILDFLAG(IS_APPLE)
-  const int flags = 0;
-  int no_sigpipe = 0;
-  socklen_t no_sigpipe_len = sizeof(no_sigpipe);
-  DPCHECK(getsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe,
-                     &no_sigpipe_len) == 0)
-      << "Failed ot get socket option.";
-  DCHECK(no_sigpipe) << "SO_NOSIGPIPE not set on the socket.";
-#else
-  const int flags = MSG_NOSIGNAL;
-#endif  // BUILDFLAG(IS_APPLE)
-  const ssize_t r = HANDLE_EINTR(sendmsg(fd, &msg, flags));
+  // Avoid a SIGPIPE if the other end breaks the connection.
+  // Due to a bug in the Linux kernel (net/unix/af_unix.c) MSG_NOSIGNAL isn't
+  // regarded for SOCK_SEQPACKET in the AF_UNIX domain, but it is mandated by
+  // POSIX.
+  const ssize_t r = HANDLE_EINTR(sendmsg(fd, &msg, MSG_NOSIGNAL));
   const bool ret = static_cast<ssize_t>(length) == r;
   delete[] control_buffer;
   return ret;
@@ -268,8 +246,6 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
   send_sock.reset();
 
   std::vector<ScopedFD> recv_fds;
-  // When porting to OSX keep in mind it doesn't support MSG_NOSIGNAL, so the
-  // sender might get a SIGPIPE.
   const ssize_t reply_len = RecvMsgWithFlags(
       recv_sock.get(), reply, max_reply_len, recvmsg_flags, &recv_fds, nullptr);
   recv_sock.reset();
