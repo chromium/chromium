@@ -93,8 +93,6 @@ static const syncer::UserSelectableType kAccountSwitchItems[] = {
     syncer::UserSelectableType::kPayments,
     syncer::UserSelectableType::kPreferences};
 
-// Enterprise icon.
-NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 constexpr CGFloat kErrorSymbolPointSize = 22.;
 constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
@@ -1513,7 +1511,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (TableViewItem*)createSyncDisabledByAdministratorErrorItem {
   TableViewImageItem* item = [[TableViewImageItem alloc]
       initWithType:SyncDisabledByAdministratorErrorItemType];
-  item.image = [UIImage imageNamed:kGoogleServicesEnterpriseImage];
+  item.image = SymbolWithPalette(CustomSettingsRootSymbol(kEnterpriseSymbol),
+                                 @[ [UIColor colorNamed:kStaticGrey600Color] ]);
   item.title = GetNSString(
       IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_TITLE);
   item.enabled = NO;
