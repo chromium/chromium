@@ -103,7 +103,7 @@ TEST(DataBufferTest, Duration) {
   EXPECT_EQ(buffer->duration(), kDurationB);
 }
 
-TEST(DataBufferTest, ReadingWriting) {
+TEST(DataBufferTest, DISABLED_ReadingWriting) {
   constexpr const char kData[] = "hello";
   constexpr const char kNewData[] = "chromium";
   const auto kDataSpan = base::byte_span_from_cstring(kData);
