@@ -527,7 +527,7 @@ void BrokerHost::LoopAndHandleRequests() {
 
     BrokerSimpleMessage reply;
     base::ScopedFD opened_file;
-    if (!HandleRemoteCommand(&message, recv_fds.subspan(1), &reply,
+    if (!HandleRemoteCommand(&message, recv_fds.subspan<1>(), &reply,
                              &opened_file)) {
       // Does not exit if we received a malformed message.
       LOG(ERROR) << "Received malformed message from the client";
