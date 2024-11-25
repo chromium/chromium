@@ -41,5 +41,6 @@ export function createDummyApp(): App {
     selectedLocale: null,
     showSystemNotificationsSettingsLink: false,
     allowUninstall: false,
+    disableUserChoiceNavigationCapturing: false,
   };
 }

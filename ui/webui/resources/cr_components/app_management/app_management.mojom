@@ -178,6 +178,9 @@ struct App {
   bool show_system_notifications_settings_link;
   // Whether to allow uninstall of the app.
   bool allow_uninstall;
+  // Whether to disable the user choice area to set navigation capturing for
+  // an app.
+  bool disable_user_choice_navigation_capturing;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be
