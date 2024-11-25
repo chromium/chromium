@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -59,4 +60,12 @@ void GlicKeyedService::GetContextFromFocusedTab(
     bool include_viewport_screenshot,
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   LOG(ERROR) << "Ignoring unimplemented GetContextFromFocusedTab()";
+  std::vector<uint8_t> image_data = {1, 2, 3, 4, 5, 6, 7, 8};
+  std::move(callback).Run(glic::mojom::TabContextResult::New(
+      glic::mojom::TabData::New(),
+      glic::mojom::WebPageData::New(
+          glic::mojom::DocumentData::New(url::Origin(), "test inner text")),
+      glic::mojom::Screenshot::New(
+          10, 10, std::move(image_data), "text/plain",
+          glic::mojom::ImageOriginAnnotations::New())));
 }

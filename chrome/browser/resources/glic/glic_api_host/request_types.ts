@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TabData} from '//glic/glic_api/glic_api.js';
+import type {TabContextResult, TabData} from '//glic/glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -53,6 +53,18 @@ export interface HostRequestTypes {
   'glicBrowserClosePanel': {
     request: {},
     response: void,
+  };
+  'glicBrowserGetContextFromFocusedTab': {
+    request: {
+      options: {
+        innerText?: boolean,
+        // Options for capturing screenshot, currently none supported.
+        viewportScreenshot?: {},
+      },
+    },
+    response: {
+      tabContextResult?: TabContextResult,
+    },
   };
 }
 

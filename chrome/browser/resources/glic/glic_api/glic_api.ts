@@ -76,11 +76,12 @@ export declare interface GlicBrowserHost {
   // included in the response.
   // If viewportScreenshot is provided, a screenshot of the user visible
   // viewport will be included in the response, following any settings it holds.
-  // Responses may be throttled by the browser as a precaution. The promise may
-  // be rejected in case of errors.
+  // Responses may be throttled by the browser as a precaution, in which case
+  // the promise will be rejected. If a tab is navigated or closed during
+  // context gathering, the promise will be rejected.
   getContextFromFocusedTab?
-      (options: {innerText?: boolean, viewportScreenshot?: ScreenshotOptions}):
-          Promise<PageContent>;
+      (options: {innerText?: boolean, viewportScreenshot?: boolean},
+       responseTransfer: Transferable[]): Promise<TabContextResult>;
 
   // Creates a tab and navigates to a url. It is made the active tab by default
   // but that can be changed using the openInBackground option.
@@ -100,24 +101,35 @@ export declare interface GlicBrowserHost {
 }
 
 /**
- * Options about how a screenshot should be created.
- */
-export declare interface ScreenshotOptions {
-  // NOTE: For now, providing of this instance signals that a screenshot is
-  // being requested. Further options will be added as needed.
-}
-
-/**
  * Data class holding information and contents extracted from a web page.
  */
-export declare interface PageContent {
+// TODO(crbug.com/380323608): Rename this to TabPageContent
+export declare interface TabContextResult {
   // Metadata about the tab that holds the page. Always provided.
   tabData: TabData;
   // The innerText of a page at its current state. Provided only if requested.
-  innerText?: string;
+  webPageData?: WebPageData;
   // A screenshot of the user-visible portion of the page. Provided only if
   // requested.
   viewportScreenshot?: Screenshot;
+}
+
+/**
+ * Information about a web page being rendered in a tab.
+ */
+export declare interface WebPageData {
+  mainDocument: DocumentData;
+}
+
+/**
+ * Text information about a web document.
+ */
+export declare interface DocumentData {
+  // Origin of the document.
+  origin: string;
+  // The innerText of the document at its current state.
+  // Currently includes embedded same-origin iframes.
+  innerText: string;
 }
 
 /**
@@ -136,6 +148,13 @@ export declare interface TabData {
 }
 
 /**
+ * Annotates an image, providing security relevant information about the origins
+ * from which image is composed.
+ * TODO(crbug.com/380495633): Finalize and implement image annotations.
+ */
+export declare interface ImageOriginAnnotations {}
+
+/**
  * An encoded screenshot image and associated metadata.
  * NOTE: Only JPEG images will be supported initially, so mimeType will always
  * be "image/jpeg".
@@ -149,6 +168,8 @@ export declare interface Screenshot {
   data: ArrayBuffer;
   // The image encoding format represented as a MIME type.
   mimeType: string;
+  // Image annotations for this screenshot.
+  originAnnotations: ImageOriginAnnotations;
 }
 
 // Creates the GlicHostRegistry. Must be called by the web client on its page

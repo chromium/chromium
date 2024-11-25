@@ -65,5 +65,4 @@ void GlicPageHandler::CreateWebClient(
       GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_),
       std::move(web_client_receiver));
 }
-
 }  // namespace glic

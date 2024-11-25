@@ -8,10 +8,12 @@
 
 // TODO(crbug.com/379677413): Add tests for the API host.
 
+import type {Screenshot, WebPageData} from '//glic/glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '//glic/glic_api_host/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '//glic/glic_api_host/post_message_transport.js';
 import type {HostRequestTypes} from '//glic/glic_api_host/request_types.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
@@ -107,6 +109,61 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserClosePanel() {
     return this.handler.closePanel();
+  }
+
+  async glicBrowserGetContextFromFocusedTab(
+      request: {
+        options: {innerText?: boolean, viewportScreenshot?: {}},
+      },
+      transfer: Transferable[]) {
+    const response = await this.handler.getContextFromFocusedTab(
+        request.options.innerText || false,
+        request.options.viewportScreenshot !== undefined);
+    const tabContextResult = response.tabContextResult;
+    if (!tabContextResult) {
+      return {};
+    }
+    const tabData = tabContextResult.tabData;
+    if (!tabData) {
+      return {};
+    }
+    const tabDataResult = {
+      tabId: tabIdToClient(tabData.tabId),
+      windowId: windowIdToClient(tabData.windowId),
+      url: urlToClient(tabData.url),
+      title: optionalToClient(tabData.title),
+    };
+    const webPageData = tabContextResult.webPageData;
+    let webPageDataResult: WebPageData|undefined = undefined;
+    if (webPageData) {
+      webPageDataResult = {
+        mainDocument: {
+          origin: originToClient(webPageData.mainDocument.origin),
+          innerText: webPageData.mainDocument.innerText,
+        },
+      };
+    }
+    const viewportScreenshot = tabContextResult.viewportScreenshot;
+    let viewportScreenshotResult: Screenshot|undefined = undefined;
+    if (viewportScreenshot) {
+      const screenshotArray = new Uint8Array(viewportScreenshot.data);
+      viewportScreenshotResult = {
+        widthPixels: viewportScreenshot.widthPixels,
+        heightPixels: viewportScreenshot.heightPixels,
+        data: screenshotArray.buffer,
+        mimeType: viewportScreenshot.mimeType,
+        originAnnotations: {},
+      };
+      transfer.push(screenshotArray.buffer);
+    }
+
+    return {
+      tabContextResult: {
+        tabData: tabDataResult,
+        webPageData: webPageDataResult,
+        viewportScreenshot: viewportScreenshotResult,
+      },
+    };
   }
 }
 
@@ -207,4 +264,15 @@ function urlToClient(url: Url): string {
 
 function urlFromClient(url: string): Url {
   return {url};
+}
+
+function originToClient(origin: Origin): string {
+  if (!origin.scheme) {
+    return '';
+  }
+  const originBase = `${origin.scheme}://${origin.host}`;
+  if (origin.port) {
+    return `${originBase}:${origin.port}`;
+  }
+  return originBase;
 }

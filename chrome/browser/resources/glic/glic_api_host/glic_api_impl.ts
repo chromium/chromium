@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabData} from '../glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabContextResult, TabData} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {WebClientRequestTypes} from './request_types.js';
@@ -119,6 +119,18 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   closePanel(): Promise<void> {
     return this.sender.requestWithResponse('glicBrowserClosePanel', {});
+  }
+
+  async getContextFromFocusedTab(options: {
+    innerText?: boolean|undefined,
+    viewportScreenshot?: boolean|undefined,
+  }): Promise<TabContextResult> {
+    const context = await this.sender.requestWithResponse(
+        'glicBrowserGetContextFromFocusedTab', {options});
+    if (!context.tabContextResult) {
+      throw new Error('getContextFromFocusedTab: failed');
+    }
+    return context.tabContextResult;
   }
 }
 
