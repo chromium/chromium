@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -282,6 +283,50 @@ void EnsureResourceRecycled(CanvasResourceProvider* provider,
       &transferable_resource, &release_callback,
       /*needs_verified_synctoken=*/false));
   std::move(release_callback).Run(std::move(resource), sync_token, false);
+}
+
+TEST_F(CanvasResourceProviderTest,
+       CanvasResourceProviderSharedImageEndExternalWrite) {
+  // Set up this test to use OOP rasterization to be able to verify
+  // conditions against the test raster interface.
+  SharedGpuContext::Reset();
+  auto raster_context_provider = viz::TestContextProvider::CreateRaster();
+  raster_context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(
+      true);
+  InitializeSharedGpuContextRaster(raster_context_provider.get(),
+                                   &image_decode_cache_,
+                                   SetIsContextLost::kSetToFalse);
+
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  const gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  auto provider = CanvasResourceProvider::CreateSharedImageProvider(
+      kInfo, cc::PaintFlags::FilterQuality::kMedium,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+      shared_image_usage_flags);
+
+  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  auto old_compositor_read_sync_token = resource->GetSyncToken();
+
+  // NOTE: Need to ensure that this SyncToken's release count is greater than
+  // that of the last one that TestRasterInterface waited on for
+  // TestRasterInterface to set this token as `last_waited_sync_token_` when it
+  // waits on the token.
+  gpu::SyncToken external_write_sync_token(gpu::CommandBufferNamespace::GPU_IO,
+                                           gpu::CommandBufferId(), 42);
+
+  provider->EndExternalWrite(external_write_sync_token);
+
+  // EndExternalWrite() should have initiated a wait on
+  // `external_write_sync_token` on the raster interface.
+  EXPECT_EQ(raster_context_provider->GetTestRasterInterface()
+                ->last_waited_sync_token(),
+            external_write_sync_token);
+
+  // In addition, it should have ensured that the resource generates a new
+  // compositor read sync token on the next request for that token.
+  EXPECT_NE(resource->GetSyncToken(), old_compositor_read_sync_token);
 }
 
 TEST_F(CanvasResourceProviderTest,
