@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.10.0...chromium-bidi-v0.10.1) (2024-11-25)
+
+
+### Features
+
+* do not emit initial navigation events ([#2796](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2796)) ([c8c9cdf](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c8c9cdfe1cc28448b8d136bf575a87917cbc9325))
+* implement `browser.getClientWindows` ([#2780](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2780)) ([7b91906](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7b9190627000b839dbe2a903d464a4715d980e72))
+
+
+### Bug Fixes
+
+* `browser.getClientWindows` returns a unique per window value ([#2783](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2783)) ([0f97130](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0f971303281aba1910786035facc5eb54a833232))
+
 ## [0.10.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.9.1...chromium-bidi-v0.10.0) (2024-11-13)
 
 
