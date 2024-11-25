@@ -906,7 +906,14 @@ PasswordFormManager* PasswordManager::CreateFormManager(
       form, /*form_fetcher=*/nullptr,
       std::make_unique<PasswordSaveManagerImpl>(client_),
       /*metrics_recorder=*/nullptr);
+  // Process model and server predictions in case they've already arrived.
+  if (auto model_form_predictions = classifier_model_predictions_.find(
+          std::make_pair(driver, form.renderer_id()));
+      model_form_predictions != classifier_model_predictions_.end()) {
+    manager->ProcessModelPredictions(model_form_predictions->second);
+  }
   manager->ProcessServerPredictions(server_predictions_);
+
   password_form_cache_.AddFormManager(std::move(manager));
   return password_form_cache_.GetMatchedManager(driver, form.renderer_id());
 }
@@ -1533,16 +1540,23 @@ void PasswordManager::ProcessClassificationModelPredictions(
     const autofill::FormData& form,
     const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
         field_predictions) {
-  classifier_model_predictions_[std::make_pair(driver, form.renderer_id())] =
-      std::move(field_predictions);
+  auto& predictions_for_form = classifier_model_predictions_[std::make_pair(
+      driver, form.renderer_id())] = std::move(field_predictions);
 
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
         client_->GetLogManager());
-    logger->LogFormDataWithModelPredictions(form, field_predictions);
+    logger->LogFormDataWithModelPredictions(form, predictions_for_form);
   }
-  // TODO(crbug.com/371933424): Utilize these predictions for parsing.
+
+  PasswordFormManager* manager =
+      GetMatchedManagerForForm(driver, form.renderer_id());
+  if (manager) {
+    manager->ProcessModelPredictions(predictions_for_form);
+  }
+  // TODO(crbug.com/371933424): Handle the case of forms not recognized by the
+  // renderer (that don't have a form manager created).
 }
 
 PasswordFormManager* PasswordManager::GetSubmittedManager() const {

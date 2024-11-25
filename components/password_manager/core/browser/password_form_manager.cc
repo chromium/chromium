@@ -1121,6 +1121,15 @@ void PasswordFormManager::ProcessServerPredictions(
   }
 }
 
+void PasswordFormManager::ProcessModelPredictions(
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+        predictions) {
+  parser_.set_model_predictions(predictions);
+  // TODO(crbug.com/371933424): Model predictions always arrive before server
+  // predictions at the moment. Refactor this class to not depend on this to be
+  // resilient to pipeline changes.
+}
+
 void PasswordFormManager::Fill() {
   if (parser_.server_predictions() ||
       !wait_for_server_predictions_for_filling_) {

@@ -20,6 +20,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -5980,6 +5981,74 @@ TEST_P(PasswordManagerTest, ParsingDifferenceFillingAndSavingUKM) {
       test_ukm_recorder, ukm::builders::PasswordForm::kEntryName,
       ukm::builders::PasswordForm::kParsingDiffFillingAndSavingName,
       PasswordFormMetricsRecorder::ParsingDifference::kNone);
+}
+
+// Checks that a password form can be parsed using model predictions.
+TEST_P(PasswordManagerTest, ProcessingModelPredictions) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Create a simple form that has a username and a password field, so should be
+  // parsed as a login form (containing username and current password) normally.
+  PasswordForm form(MakeSimpleForm());
+  store_->AddLogin(form);
+
+  manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {form.form_data});
+
+  // Create model predictions indicating it's a sign-up form (containing
+  // username and account creation password).
+  const FieldGlobalId username_field = form.form_data.fields()[0].global_id();
+  const FieldGlobalId password_field = form.form_data.fields()[1].global_id();
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form.form_data,
+      {{username_field, FieldType::USERNAME},
+       {password_field, FieldType::ACCOUNT_CREATION_PASSWORD}});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager()->GetParsedObservedForm(
+               &driver_, username_field.renderer_id) != nullptr;
+  }));
+  const PasswordForm* parsed_form =
+      manager()->GetParsedObservedForm(&driver_, username_field.renderer_id);
+  // Check that the form was parsed according to the model predictions.
+  EXPECT_EQ(parsed_form->username_element_renderer_id,
+            username_field.renderer_id);
+  EXPECT_EQ(parsed_form->new_password_element_renderer_id,
+            password_field.renderer_id);
+}
+
+// Checks that if the model predictions are received before the form is found
+// during PasswordManager parsing, these model predictions are still used for
+// parsing.
+TEST_P(PasswordManagerTest, ProcessModelPredictionBeforeFormIsParsed) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Create a simple form that has a username and a password field, so should be
+  // parsed as a login form (containing username and current password) normally.
+  PasswordForm form(MakeSimpleForm());
+  store_->AddLogin(form);
+
+  // Create model predictions indicating it's a sign-up form (containing
+  // username and account creation password).
+  const FieldGlobalId username_field = form.form_data.fields()[0].global_id();
+  const FieldGlobalId password_field = form.form_data.fields()[1].global_id();
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form.form_data,
+      {{username_field, FieldType::USERNAME},
+       {password_field, FieldType::ACCOUNT_CREATION_PASSWORD}});
+
+  manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager()->GetParsedObservedForm(
+               &driver_, username_field.renderer_id) != nullptr;
+  }));
+  const PasswordForm* parsed_form =
+      manager()->GetParsedObservedForm(&driver_, username_field.renderer_id);
+  // Check that the form was parsed according to the model predictions.
+  EXPECT_EQ(parsed_form->username_element_renderer_id,
+            username_field.renderer_id);
+  EXPECT_EQ(parsed_form->new_password_element_renderer_id,
+            password_field.renderer_id);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
