@@ -3283,10 +3283,11 @@
       status: "stable",
     },
     // TODO(crbug.com/379241451): This controls the behavior when a popover is
-    // nested inside an invoker button.
+    // nested inside an invoker button. This was shipped in M133, and this flag
+    // can be removed in M135.
     {
       name: "PopoverButtonNestingBehavior",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
