@@ -366,7 +366,7 @@ Http2Connection::OnHeaderForStream(http2::adapter::Http2StreamId stream_id,
                                    std::string_view key,
                                    std::string_view value) {
   header_map_[stream_id][std::string(key)] = std::string(value);
-  return http2::adapter::Http2VisitorInterface::HEADER_OK;
+  return http2::adapter::Http2VisitorInterface::OnHeaderResult::HEADER_OK;
 }
 
 bool Http2Connection::OnEndHeadersForStream(
