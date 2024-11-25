@@ -1109,10 +1109,10 @@
 -virtual/permission-element/external/wpt/html/semantics/permission-element/large-min-size-reftest.tentative.html
 -virtual/permission-element/external/wpt/html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html
 -virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html?include=from-treat-as-public
+-virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/button-in-popover.tentative.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html
--virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/popovers/popover-minimum-role.html
@@ -1134,6 +1134,7 @@
 -virtual/scalefactor200/external/wpt/css/printing/input-file-print.html
 -virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
 -virtual/scalefactor200/external/wpt/largest-contentful-paint/initially-invisible-images.html
+-virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
 -virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
 -virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-hover-styles.tentative.html
 -virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
