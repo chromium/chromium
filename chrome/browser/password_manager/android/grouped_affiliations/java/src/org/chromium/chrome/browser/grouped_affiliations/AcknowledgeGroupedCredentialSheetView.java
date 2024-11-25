@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.grouped_affiliations;
 
 import android.content.Context;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.Button;
@@ -22,9 +23,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.SpanApplier;
 
 class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
+    private static final float URL_IN_TITLE_MAX_LINES = 1.5f;
     private final View mContent;
     private final String mCurrentOrigin;
-    private final String mCredentialOrigin;
+    private String mCredentialOrigin;
     private final Callback<Boolean> mInterationCallback;
 
     public AcknowledgeGroupedCredentialSheetView(
@@ -56,6 +58,22 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
         titleView.setText(
                 mContent.getResources()
                         .getString(R.string.ack_grouped_cred_sheet_title, mCredentialOrigin));
+        titleView.post(
+                () -> {
+                    View sheetItemList = mContent.findViewById(R.id.sheet_item_list);
+                    // Url will ellipsize to take max 1.5 lines in the title.
+                    float maxWidth = URL_IN_TITLE_MAX_LINES * sheetItemList.getWidth();
+                    CharSequence ellipsizedUrl =
+                            TextUtils.ellipsize(
+                                    mCredentialOrigin,
+                                    titleView.getPaint(),
+                                    maxWidth,
+                                    TextUtils.TruncateAt.START);
+                    titleView.setText(
+                            mContent.getResources()
+                                    .getString(
+                                            R.string.ack_grouped_cred_sheet_title, ellipsizedUrl));
+                });
     }
 
     private void setDescription() {
