@@ -335,21 +335,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
 }
 
-#pragma mark - Context Menu
-
-- (void)displayContextMenuInvokedByGestureRecognizer:
-    (UILongPressGestureRecognizer*)gestureRecognizer {
-  if (self.editing) {
-    return;
-  }
-
-  if ([self scrimIsVisible]) {
-    self.searchController.active = NO;
-    return;
-  }
-  [super displayContextMenuInvokedByGestureRecognizer:gestureRecognizer];
-}
-
 #pragma mark - HistoryConsumer
 
 - (void)historyQueryWasCompletedWithResults:
@@ -505,10 +490,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
           weakSelf.tableView.scrollEnabled = YES;
         }];
   }
-}
-
-- (BOOL)scrimIsVisible {
-  return self.scrimView.superview ? YES : NO;
 }
 
 #pragma mark - Helper Methods

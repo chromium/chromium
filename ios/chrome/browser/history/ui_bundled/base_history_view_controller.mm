@@ -158,7 +158,6 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // Clear C++ ivars.
   _browser = nullptr;
   _historyService = nullptr;
-  [self dismissContextMenuCoordinator];
 }
 
 #pragma mark - ViewController Lifecycle.
@@ -308,147 +307,6 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 
 - (void)removeEmptyTableViewBackground {
   [self removeEmptyTableView];
-}
-
-// TODO(crbug.com/369517575): Clean-up deprecated implementation of the Context
-// menu.
-#pragma mark - Context Menu
-
-// Displays a context menu on the cell pressed with gestureRecognizer.
-- (void)displayContextMenuInvokedByGestureRecognizer:
-    (UILongPressGestureRecognizer*)gestureRecognizer {
-  if (!self.browser) {
-    return;
-  }
-  if (gestureRecognizer.numberOfTouches != 1 ||
-      gestureRecognizer.state != UIGestureRecognizerStateBegan) {
-    return;
-  }
-
-  CGPoint touchLocation = [gestureRecognizer locationOfTouch:0
-                                                      inView:self.tableView];
-  NSIndexPath* touchedItemIndexPath =
-      [self.tableView indexPathForRowAtPoint:touchLocation];
-  // If there's no index path, or the index path is for the header item, do not
-  // display a contextual menu.
-  if (!touchedItemIndexPath ||
-      [touchedItemIndexPath isEqual:[NSIndexPath indexPathForItem:0
-                                                        inSection:0]]) {
-    return;
-  }
-
-  HistoryEntryItem* entry = base::apple::ObjCCastStrict<HistoryEntryItem>(
-      [self.tableViewModel itemAtIndexPath:touchedItemIndexPath]);
-
-  __weak BaseHistoryViewController* weakSelf = self;
-  NSString* menuTitle =
-      base::SysUTF16ToNSString(url_formatter::FormatUrl(entry.URL));
-  self.contextMenuCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.navigationController
-                         browser:self.browser
-                           title:menuTitle
-                         message:nil
-                            rect:CGRectMake(touchLocation.x, touchLocation.y,
-                                            1.0, 1.0)
-                            view:self.tableView];
-
-  // Add "Open in New Tab" option.
-  NSString* openInNewTabTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
-  ProceduralBlock openInNewTabAction = ^{
-    [weakSelf openURLInNewTab:entry.URL];
-    [weakSelf dismissContextMenuCoordinator];
-  };
-  [self.contextMenuCoordinator addItemWithTitle:openInNewTabTitle
-                                         action:openInNewTabAction
-                                          style:UIAlertActionStyleDefault];
-
-  if (base::ios::IsMultipleScenesSupported()) {
-    // Add "Open In New Window" option.
-    NSString* openInNewWindowTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
-    ProceduralBlock openInNewWindowAction = ^{
-      [weakSelf openURLInNewWindow:entry.URL];
-    };
-    [self.contextMenuCoordinator addItemWithTitle:openInNewWindowTitle
-                                           action:openInNewWindowAction
-                                            style:UIAlertActionStyleDefault];
-  }
-
-  // Add "Open in New Incognito Tab" option.
-  NSString* openInNewIncognitoTabTitle = l10n_util::GetNSStringWithFixup(
-      IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
-  ProceduralBlock openInNewIncognitoTabAction = ^{
-    [weakSelf openURLInNewIncognitoTab:entry.URL];
-    [weakSelf dismissContextMenuCoordinator];
-  };
-  BOOL incognitoEnabled =
-      !IsIncognitoModeDisabled(self.browser->GetProfile()->GetPrefs());
-  [self.contextMenuCoordinator addItemWithTitle:openInNewIncognitoTabTitle
-                                         action:openInNewIncognitoTabAction
-                                          style:UIAlertActionStyleDefault
-                                        enabled:incognitoEnabled];
-
-  // Add "Copy URL" option.
-  NSString* copyURLTitle =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_COPY);
-  ProceduralBlock copyURLAction = ^{
-    StoreURLInPasteboard(entry.URL);
-    [weakSelf dismissContextMenuCoordinator];
-  };
-  [self.contextMenuCoordinator addItemWithTitle:copyURLTitle
-                                         action:copyURLAction
-                                          style:UIAlertActionStyleDefault];
-
-  [self.contextMenuCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
-                action:^{
-                  [weakSelf dismissContextMenuCoordinator];
-                }
-                 style:UIAlertActionStyleCancel];
-  [self.contextMenuCoordinator start];
-}
-
-// Opens URL in a new non-incognito tab and dismisses the history view.
-- (void)openURLInNewTab:(const GURL&)URL {
-  base::RecordAction(
-      base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissViewController:self
-                        withCompletion:^{
-                          [weakSelf
-                              loadAndActivateTabFromHistoryWithParams:params
-                                                            incognito:NO];
-                        }];
-}
-
-// Opens URL in a new non-incognito tab in a new window and dismisses the
-// history view.
-- (void)openURLInNewWindow:(const GURL&)URL {
-  if (!self.browser) {
-    return;
-  }
-  id<ApplicationCommands> windowOpener = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [windowOpener
-      openNewWindowWithActivity:ActivityToLoadURL(WindowActivityHistoryOrigin,
-                                                  URL)];
-}
-
-// Opens URL in a new incognito tab and dismisses the history view.
-- (void)openURLInNewIncognitoTab:(const GURL&)URL {
-  base::RecordAction(base::UserMetricsAction(
-      "MobileHistoryPage_EntryLinkOpenNewIncognitoTab"));
-  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
-  params.in_incognito = YES;
-  __weak __typeof(self) weakSelf = self;
-  [self.delegate dismissViewController:self
-                        withCompletion:^{
-                          [weakSelf
-                              loadAndActivateTabFromHistoryWithParams:params
-                                                            incognito:YES];
-                        }];
 }
 
 #pragma mark - HistoryConsumer
@@ -791,6 +649,35 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 
 #pragma mark - Private methods
 
+// Opens URL in a new non-incognito tab and dismisses the history view.
+- (void)openURLInNewTab:(const GURL&)URL {
+  base::RecordAction(
+      base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  __weak __typeof(self) weakSelf = self;
+  [self.delegate dismissViewController:self
+                        withCompletion:^{
+                          [weakSelf
+                              loadAndActivateTabFromHistoryWithParams:params
+                                                            incognito:NO];
+                        }];
+}
+
+// Opens URL in a new incognito tab and dismisses the history view.
+- (void)openURLInNewIncognitoTab:(const GURL&)URL {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileHistoryPage_EntryLinkOpenNewIncognitoTab"));
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = YES;
+  __weak __typeof(self) weakSelf = self;
+  [self.delegate dismissViewController:self
+                        withCompletion:^{
+                          [weakSelf
+                              loadAndActivateTabFromHistoryWithParams:params
+                                                            incognito:YES];
+                        }];
+}
+
 // Displays the loading indicator for a minimum of
 // `kDelayUntilReadyToRemoveLoadingIndicatorsMs`.
 - (void)displayLoadingIndicator {
@@ -975,11 +862,6 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
       }
     }
   }
-}
-
-- (void)dismissContextMenuCoordinator {
-  [self.contextMenuCoordinator stop];
-  self.contextMenuCoordinator = nil;
 }
 
 // Updates header section to provide relevant information about the currently

@@ -126,8 +126,6 @@ history::WebHistoryService* WebHistoryServiceGetter(
     _browserObserver.reset();
   }
 
-  [self.viewController.contextMenuCoordinator stop];
-
   _browsingHistoryDriver = nullptr;
   _browsingHistoryService = nullptr;
   _browsingHistoryDriverDelegate = nullptr;

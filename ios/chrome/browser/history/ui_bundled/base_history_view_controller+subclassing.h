@@ -52,9 +52,6 @@
     (const std::vector<BrowsingHistoryService::HistoryEntry>&)results;
 // Checks if the loading indicator should be displayed.
 - (BOOL)shouldDisplayLoadingIndicator;
-// Displays a context menu on the cell pressed with gestureRecognizer.
-- (void)displayContextMenuInvokedByGestureRecognizer:
-    (UILongPressGestureRecognizer*)gestureRecognizer;
 
 @end
 

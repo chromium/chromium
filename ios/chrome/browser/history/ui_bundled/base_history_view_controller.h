@@ -41,8 +41,6 @@ using history::BrowsingHistoryService;
 @property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;
 // Data source for favicon images.
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
-// Coordinator for displaying a context menu for history entries.
-@property(nonatomic, strong) ActionSheetCoordinator* contextMenuCoordinator;
 // Provider of menu configurations for the history component.
 @property(nonatomic, weak) id<HistoryMenuProvider> menuProvider API_AVAILABLE(
     ios(13.0));
