@@ -982,8 +982,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1061,8 +1061,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1088,8 +1088,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
         *autofill_client(), FormFieldData(),
         /*four_digit_combinations_in_dom=*/{},
-        /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-        {}, CREDIT_CARD_NUMBER,
+        /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+        CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -1116,8 +1116,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
         *autofill_client(), FormFieldData(),
         /*four_digit_combinations_in_dom=*/{},
-        /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-        {}, CREDIT_CARD_NUMBER,
+        /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+        CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -1146,8 +1146,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
         *autofill_client(), FormFieldData(),
         /*four_digit_combinations_in_dom=*/{},
-        /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-        {}, CREDIT_CARD_NUMBER,
+        /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+        CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -1163,8 +1163,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/true,
       /*should_show_cards_from_account=*/true, summary);
 
@@ -1177,8 +1177,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowScanCreditCard) {
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/true,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1200,8 +1200,8 @@ TEST_F(PaymentsSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/true, summary);
 
@@ -1226,8 +1226,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -1832,8 +1832,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       GetCreditCardOrCvcFieldSuggestions(
           *autofill_client(), FormFieldData(),
           /*four_digit_combinations_in_dom=*/{},
-          /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-          {}, CREDIT_CARD_VERIFICATION_CODE,
+          /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+          CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1868,8 +1868,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       GetCreditCardOrCvcFieldSuggestions(
           *autofill_client(), FormFieldData(),
           /*four_digit_combinations_in_dom=*/{},
-          /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-          {}, CREDIT_CARD_VERIFICATION_CODE,
+          /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+          CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1894,8 +1894,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       GetCreditCardOrCvcFieldSuggestions(
           *autofill_client(), FormFieldData(),
           /*four_digit_combinations_in_dom=*/{},
-          /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-          {}, CREDIT_CARD_VERIFICATION_CODE,
+          /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+          CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -1934,8 +1934,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       GetCreditCardOrCvcFieldSuggestions(
           *autofill_client(), FormFieldData(),
           /*four_digit_combinations_in_dom=*/{},
-          /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-          {}, CREDIT_CARD_VERIFICATION_CODE,
+          /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+          CREDIT_CARD_VERIFICATION_CODE,
           /*should_show_scan_credit_card=*/false,
           /*should_show_cards_from_account=*/false, summary);
 
@@ -2273,8 +2273,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     GetCreditCardOrCvcFieldSuggestions(
         *autofill_client(), FormFieldData(),
         /*four_digit_combinations_in_dom=*/{},
-        /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-        {}, CREDIT_CARD_NUMBER,
+        /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+        CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -2309,8 +2309,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     GetCreditCardOrCvcFieldSuggestions(
         *autofill_client(), FormFieldData(),
         /*four_digit_combinations_in_dom=*/{},
-        /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-        {}, CREDIT_CARD_NUMBER,
+        /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+        CREDIT_CARD_NUMBER,
         /*should_show_scan_credit_card=*/false,
         /*should_show_cards_from_account=*/false, summary);
 
@@ -2356,8 +2356,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2583,8 +2583,8 @@ TEST_F(PaymentsSuggestionGeneratorTestWithNewSuggestionRankingAlgorithm,
   GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2619,8 +2619,8 @@ TEST_F(
   GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
   EXPECT_TRUE(
@@ -2657,7 +2657,7 @@ TEST_F(
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/{});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
   EXPECT_THAT(
       suggestions,
@@ -2716,7 +2716,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      FieldType::CREDIT_CARD_NUMBER)));
 
 // Verify that suggestions are filtered based on
-// `autofilled_last_four_digits_in_form_for_suggestion_filtering` when flag is
+// `autofilled_last_four_digits_in_form_for_filtering` when flag is
 // on and triggered field type is CVC.
 TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
   FormFieldData field;
@@ -2724,23 +2724,21 @@ TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
 
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {u"1111", u"1113"}, get_trigger_field_type(),
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"1111",
+      get_trigger_field_type(),
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
   if (IsCvcStorageEnhancementEnabled() &&
       get_trigger_field_type() == FieldType::CREDIT_CARD_VERIFICATION_CODE) {
-    // There are 4 suggestions, 1 for local card suggestion and 1 for server
-    // card suggestion, followed by a separator, and followed by "Manage payment
-    // methods..." which redirects to the Chrome payment methods settings page.
+    // There are 3 suggestions, 1 for local card suggestion, followed by a
+    // separator, and followed by "Manage payment methods..." which redirects to
+    // the Chrome payment methods settings page.
     EXPECT_THAT(
         suggestions,
         UnorderedElementsAre(
             SuggestionWithGuidPayload(
                 Suggestion::Guid("00000000-0000-0000-0000-000000000001")),
-            SuggestionWithGuidPayload(
-                Suggestion::Guid("00000000-0000-0000-0000-000000000003")),
             EqualsSuggestion(SuggestionType::kSeparator),
             EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/false)));
     EXPECT_THAT(suggestions,
@@ -2768,15 +2766,15 @@ TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
 }
 
 // Verify that suggestions are not filtered if
-// `autofilled_last_four_digits_in_form_for_suggestion_filtering` is empty.
+// `autofilled_last_four_digits_in_form_for_filtering` is empty.
 TEST_P(GetFilteredCardsToSuggestTest, EmptyFilteringSet) {
   FormFieldData field;
   CreditCardSuggestionSummary summary;
 
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, get_trigger_field_type(),
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      get_trigger_field_type(),
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2807,8 +2805,8 @@ TEST_P(GetFilteredCardsToSuggestTest, TriggerFieldIsNotCvc) {
 
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {u"1111", u"1112"}, FieldType::CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"1111",
+      FieldType::CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2839,8 +2837,8 @@ TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
 
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), field, /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {u"9999"}, get_trigger_field_type(),
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      u"9999", get_trigger_field_type(),
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
@@ -2934,7 +2932,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1111", "1113"},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/{});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
   if (IsCvcStorageStandaloneFormEnhancementEnabled()) {
     // There are 4 suggestions, 2 for card suggestions, followed by a separator,
@@ -2956,7 +2954,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 
 // Tests that GetCreditCardSuggestions function correctly returns masked server
 // card suggestions matching
-// `autofilled_last_four_digits_in_form_for_suggestion_filtering` for normal
+// `autofilled_last_four_digits_in_form_for_filtering` for normal
 // credit card form. It also tests that `four_digit_combinations_in_dom` doesn't
 // affect suggestions.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
@@ -2968,8 +2966,8 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1113"},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {u"1111"});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      u"1111");
 
   // There are 3 suggestions, 1 for card suggestions, followed by a separator,
   // and followed by "Manage payment methods..." which redirects to the Chrome
@@ -2994,7 +2992,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/{});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -3010,7 +3008,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"0000", "9999"},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/{});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
   EXPECT_EQ(suggestions.size(), 0U);
 }
@@ -3027,15 +3025,13 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
   payments_data().AddServerCreditCard(server_card_3);
   CreditCardSuggestionSummary summary;
   std::vector<std::string> four_digit_combinations_in_dom = {"1234"};
-  std::vector<std::u16string>
-      autofilled_last_four_digits_in_form_for_suggestion_filtering;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(),
       FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE, summary,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/{});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
   EXPECT_EQ(suggestions.size(), 0U);
 }
 
@@ -3068,7 +3064,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false,
       /*four_digit_combinations_in_dom=*/{"1234"},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/{});
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
 
   EXPECT_THAT(
       suggestions,
@@ -3094,8 +3090,8 @@ TEST_F(
   GetCreditCardOrCvcFieldSuggestions(
       *autofill_client(), FormFieldData(),
       /*four_digit_combinations_in_dom=*/{},
-      /*autofilled_last_four_digits_in_form_for_suggestion_filtering=*/
-      {}, CREDIT_CARD_NUMBER,
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
   EXPECT_FALSE(summary.ranking_context.RankingsAreDifferent());

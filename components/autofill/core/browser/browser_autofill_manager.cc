@@ -2630,7 +2630,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   std::u16string card_number_field_value = u"";
   bool is_card_number_autofilled = false;
-  std::vector<std::u16string> last_four_list_for_cvc_suggestion_filtering;
 
   // Preprocess the form to extract info about card number field.
   for (const FormFieldData& field : form.fields()) {
@@ -2641,10 +2640,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       card_number_field_value += SanitizeCreditCardFieldValue(field.value());
       is_card_number_autofilled |= field.is_autofilled();
     }
-  }
-  if (is_card_number_autofilled && card_number_field_value.size() >= 4) {
-    last_four_list_for_cvc_suggestion_filtering.push_back(
-        card_number_field_value.substr(card_number_field_value.size() - 4));
   }
 
   // Offer suggestion for expiration date field if the card number field is
@@ -2670,7 +2665,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       summary, ShouldShowScanCreditCard(form, trigger_field),
       ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
       four_digit_combinations_in_dom_,
-      last_four_list_for_cvc_suggestion_filtering);
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      is_card_number_autofilled && card_number_field_value.size() >= 4
+          ? card_number_field_value.substr(card_number_field_value.size() - 4)
+          : u"");
   bool is_virtual_card_standalone_cvc_field = std::any_of(
       suggestions.begin(), suggestions.end(), [](Suggestion suggestion) {
         return suggestion.type == SuggestionType::kVirtualCreditCardEntry;

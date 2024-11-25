@@ -887,8 +887,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::vector<std::u16string>&
-        autofilled_last_four_digits_in_form_for_suggestion_filtering) {
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering) {
   // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's standalone
   // CVC field.
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
@@ -912,9 +911,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     // regular credit card suggestions.
     suggestions = GetCreditCardOrCvcFieldSuggestions(
         client, trigger_field, four_digit_combinations_in_dom,
-        autofilled_last_four_digits_in_form_for_suggestion_filtering,
-        trigger_field_type, should_show_scan_credit_card,
-        should_show_cards_from_account, summary);
+        autofilled_last_four_digits_in_form_for_filtering, trigger_field_type,
+        should_show_scan_credit_card, should_show_cards_from_account, summary);
   }
 
   return suggestions;
@@ -924,8 +922,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const std::vector<std::u16string>&
-        autofilled_last_four_digits_in_form_for_suggestion_filtering,
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     FieldType trigger_field_type,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
@@ -965,9 +962,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     FilterCardsToSuggestForCvcFields(
         trigger_field_type,
         base::flat_set<std::string>(std::move(four_digit_combinations_in_dom)),
-        base::flat_set<std::u16string>(std::move(
-            autofilled_last_four_digits_in_form_for_suggestion_filtering)),
-        cards_to_suggest);
+        autofilled_last_four_digits_in_form_for_filtering, cards_to_suggest);
   }
 
   bool new_ranking_experiment_enabled = base::FeatureList::IsEnabled(
@@ -1351,8 +1346,7 @@ bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
 void FilterCardsToSuggestForCvcFields(
     FieldType trigger_field_type,
     const base::flat_set<std::string>& four_digit_combinations_in_dom,
-    const base::flat_set<std::u16string>&
-        autofilled_last_four_digits_in_form_for_suggestion_filtering,
+    const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     std::vector<CreditCard>& cards_to_suggest) {
   if (trigger_field_type ==
           FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
@@ -1369,18 +1363,17 @@ void FilterCardsToSuggestForCvcFields(
           base::UTF16ToUTF8(credit_card.LastFourDigits()));
     });
   } else {
-    // `autofilled_last_four_digits_in_form_for_suggestion_filtering` being
-    // empty implies no card was autofilled, show all suggestions.
-    if (autofilled_last_four_digits_in_form_for_suggestion_filtering.empty()) {
+    // `autofilled_last_four_digits_in_form_for_filtering` being empty implies
+    // no card was autofilled, show all suggestions.
+    if (autofilled_last_four_digits_in_form_for_filtering.empty()) {
       return;
     }
-    std::erase_if(
-        cards_to_suggest,
-        [&autofilled_last_four_digits_in_form_for_suggestion_filtering](
-            const CreditCard& credit_card) {
-          return !autofilled_last_four_digits_in_form_for_suggestion_filtering
-                      .contains(credit_card.LastFourDigits());
-        });
+    std::erase_if(cards_to_suggest,
+                  [&autofilled_last_four_digits_in_form_for_filtering](
+                      const CreditCard& credit_card) {
+                    return autofilled_last_four_digits_in_form_for_filtering !=
+                           credit_card.LastFourDigits();
+                  });
   }
 }
 
