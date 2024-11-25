@@ -73,10 +73,6 @@ class GURL;
 // Resets the selection area to the initial position.
 - (void)resetSelectionAreaToInitialPosition:(void (^)())completion;
 
-// Hides the user selected region/text without resetting to initial position.
-// Currently, there is no API to unhide the selection.
-- (void)hideUserSelection;
-
 // Updates the visibility of the top icons.
 - (void)setTopIconsHidden:(BOOL)hidden;
 

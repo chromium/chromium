@@ -70,10 +70,6 @@
   // NO-OP
 }
 
-- (void)hideUserSelection {
-  // NO-OP
-}
-
 - (void)setTopIconsHidden:(BOOL)hidden {
   // NO-OP
 }
