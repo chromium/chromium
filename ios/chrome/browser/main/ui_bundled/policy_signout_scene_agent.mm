@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/policy_signout_scene_agent.h"
+#import "ios/chrome/browser/main/ui_bundled/policy_signout_scene_agent.h"
 
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -18,8 +18,9 @@
 @implementation PolicySignoutSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  if ([super init])
+  if ([super init]) {
     _dispatcher = dispatcher;
+  }
   return self;
 }
 

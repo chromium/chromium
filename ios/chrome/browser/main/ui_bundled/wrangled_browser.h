@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_MAIN_WRANGLED_BROWSER_H_
-#define IOS_CHROME_BROWSER_UI_MAIN_WRANGLED_BROWSER_H_
+#ifndef IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_WRANGLED_BROWSER_H_
+#define IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_WRANGLED_BROWSER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -49,4 +49,4 @@ class ProfileIOS;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_MAIN_WRANGLED_BROWSER_H_
+#endif  // IOS_CHROME_BROWSER_MAIN_UI_BUNDLED_WRANGLED_BROWSER_H_

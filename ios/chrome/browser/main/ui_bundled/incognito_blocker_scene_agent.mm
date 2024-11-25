@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
+#import "ios/chrome/browser/main/ui_bundled/incognito_blocker_scene_agent.h"
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"

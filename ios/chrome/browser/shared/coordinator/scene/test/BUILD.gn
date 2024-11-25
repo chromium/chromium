@@ -15,13 +15,13 @@ source_set("test") {
     "stub_browser_provider_interface.mm",
   ]
   deps = [
+    "//ios/chrome/browser/main/ui_bundled",
+    "//ios/chrome/browser/main/ui_bundled:scene",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test/fakes",
   ]

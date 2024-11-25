@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/wrangled_browser.h"
+#import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"

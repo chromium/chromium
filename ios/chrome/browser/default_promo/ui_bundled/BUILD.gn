@@ -55,11 +55,11 @@ source_set("ui") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators",
+    "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
   ]
