@@ -251,6 +251,9 @@ std::u16string GetNoResultsFoundDescription(QuickInsertCategory category) {
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED();
+    case QuickInsertCategory::kGifs:
+      // TODO: b/345303965 - Add finalized strings for GIFs.
+      return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
   }
 }
 

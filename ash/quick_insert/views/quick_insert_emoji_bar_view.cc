@@ -15,6 +15,7 @@
 #include "ash/quick_insert/views/quick_insert_emoji_item_view.h"
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "ash/quick_insert/views/quick_insert_pseudo_focus.h"
+#include "ash/quick_insert/views/quick_insert_strings.h"
 #include "ash/quick_insert/views/quick_insert_style.h"
 #include "ash/quick_insert/views/quick_insert_traversable_item_container.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -151,10 +152,8 @@ class GifsButton : public views::LabelButton {
   // `pressed_callback` takes in whether the GIFs button is checked or not
   // (after the press).
   explicit GifsButton(base::RepeatingCallback<void(bool)> pressed_callback) {
-    // The label is not translated to keep the width constant. Treat it as an
-    // icon.
     views::Builder<views::LabelButton>(this)
-        .SetText(u"GIF")
+        .SetText(GetLabelForQuickInsertCategory(QuickInsertCategory::kGifs))
         .SetCallback(base::BindRepeating(&GifsButton::OnButtonPressed,
                                          base::Unretained(this))
                          .Then(std::move(pressed_callback)))

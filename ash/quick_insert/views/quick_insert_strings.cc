@@ -48,6 +48,10 @@ std::u16string GetLabelForQuickInsertCategory(QuickInsertCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL);
     case QuickInsertCategory::kEmojis:
       return l10n_util::GetStringUTF16(IDS_PICKER_EMOJIS_CATEGORY_LABEL);
+    case QuickInsertCategory::kGifs:
+      // The label is not translated to keep the width of the GIF button
+      // constant. It is treated like an icon.
+      return u"GIF";
     case QuickInsertCategory::kClipboard:
       return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
     case QuickInsertCategory::kDriveFiles:
@@ -89,6 +93,9 @@ std::u16string GetSearchFieldPlaceholderTextForQuickInsertCategory(
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED();
+    case QuickInsertCategory::kGifs:
+      return l10n_util::GetStringUTF16(
+          IDS_QUICK_INSERT_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
   }
 }
 

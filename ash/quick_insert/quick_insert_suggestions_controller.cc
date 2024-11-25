@@ -136,6 +136,10 @@ void QuickInsertSuggestionsController::GetSuggestionsForCategory(
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
       NOTREACHED();
+    case QuickInsertCategory::kGifs:
+      // TODO: b/368442959 - Implement GIF suggestions.
+      NOTIMPLEMENTED_LOG_ONCE();
+      return;
     case QuickInsertCategory::kDriveFiles:
       client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;

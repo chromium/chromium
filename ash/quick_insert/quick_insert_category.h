@@ -20,6 +20,7 @@ enum class ASH_EXPORT QuickInsertCategory {
   kLinks,
   kEmojisGifs,
   kEmojis,
+  kGifs,
   kClipboard,
   kDriveFiles,
   kLocalFiles,
