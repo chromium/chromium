@@ -1033,6 +1033,12 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
           gpu::kGpuFeatureStatusEnabled;
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
+  // crbug.com/376174085: On Mac using implicit resolve causes flickering due to
+  // losses of precision when render passes are interleaved. So disabling it.
+  supports_implicit_resolve = false;
+#endif
+
   if (webgl_preferences.anti_aliasing_mode == kAntialiasingModeUnspecified) {
     if (use_multisampling) {
       anti_aliasing_mode_ = kAntialiasingModeMSAAExplicitResolve;
