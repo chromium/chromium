@@ -7805,7 +7805,7 @@
   {
     "name": "safety-check-unused-site-permissions",
     "owners": ["sideyilmaz@chromium.org"],
-    "expiry_milestone": 132
+    "expiry_milestone": 136
   },
   {
     "name": "safety-hub",
@@ -7813,7 +7813,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 136
   },
   {
     "name": "safety-hub-abusive-notification-revocation",
@@ -7852,7 +7852,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 136
   },
   {
     "name": "safety-hub-one-off-survey",
@@ -7860,7 +7860,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 136
   },
   {
     "name": "safety-hub-weak-reused-passwords",
