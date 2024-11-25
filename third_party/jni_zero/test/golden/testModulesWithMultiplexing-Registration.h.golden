@@ -20,10 +20,14 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Muxed_org_jni_1zero_SampleModule_bar(
 JNI_POSSIBLE_BOUNDARY_EXPORT void Muxed_org_jni_1zero_SampleModule_foo(JNIEnv* env);
 
 // Multiplexing Methods.
-JNI_BOUNDARY_EXPORT void Java_J_module_1N__1V(JNIEnv* env, jclass jcaller) {
+JNI_BOUNDARY_EXPORT void Java_J_module_1N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
   return Muxed_org_jni_1zero_SampleModule_foo(env);
 }
-JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(JNIEnv* env, jclass jcaller, jboolean p0) {
+JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num,
+    jboolean p0) {
   return Muxed_org_jni_1zero_SampleModule_bar(env, p0);
 }
 
