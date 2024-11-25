@@ -113,6 +113,7 @@ DesktopAndroidExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context) {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kRedirectedToOriginal)
+      .WithGuest(ProfileSelection::kRedirectedToOriginal)
       .Build()
       .ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
