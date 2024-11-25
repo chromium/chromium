@@ -29,8 +29,6 @@
 -All/SearchPrefetchServiceEnabledBrowserTest.PrefetchRateLimiting/1
 -All/SearchPrefetchServiceEnabledBrowserTest.PrefetchSecureSecurityState/0
 -All/SearchPrefetchServiceEnabledBrowserTest.PrefetchServedBeforeHeaders/0
--All/SearchPrefetchServiceEnabledBrowserTest.RemovingMatchCancelsInFlight/0
--All/SearchPrefetchServiceEnabledBrowserTest.RemovingMatchCancelsInFlight/1
 -All/PromotionalTabsEnabledPolicyWhatsNewTest.RunTest/0
 -All/PromotionalTabsEnabledPolicyWhatsNewTest.RunTest/2
 -All/V4SafeBrowsingServiceJsRequestSafeTest.RequestNotBlocked/2
