@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -406,5 +407,49 @@ public class OverlayPanelBaseTest {
 
         nextState = mNoExpandPanel.findNearestPanelStateFromHeight(aboveMax, DOWNWARD_VELOCITY);
         Assert.assertTrue(nextState == PanelState.MAXIMIZED);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testCalculateOverlayPanelY() {
+        final float tabHeight = 1000;
+        final float overlayHeight = 200;
+        mNoExpandPanel.onLayoutChanged(400, tabHeight, 100);
+        mNoExpandPanel.setHeightForTesting(200);
+
+        // Toolbar on the top
+        when(mBrowserControlsStateProvider.getControlsPosition())
+                .thenReturn(ControlsPosition.BOTTOM);
+        when(mBrowserControlsStateProvider.getBottomControlsHeight()).thenReturn(0);
+        Assert.assertEquals(
+                "Panel should be shown at the bottom of the tab",
+                tabHeight - overlayHeight,
+                mNoExpandPanel.calculateOverlayPanelY(),
+                /*delta*/ 0.1);
+
+        // Toolbar at the bottom
+        when(mBrowserControlsStateProvider.getControlsPosition())
+                .thenReturn(ControlsPosition.BOTTOM);
+        when(mBrowserControlsStateProvider.getBottomControlsHeight())
+                .thenReturn(MOCK_TOOLBAR_HEIGHT);
+        Assert.assertTrue(
+                "Panel should be shown above the bottom toolbar",
+                tabHeight - overlayHeight > mNoExpandPanel.calculateOverlayPanelY());
+
+        // Toolbar partially hidden
+        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.4f);
+        Assert.assertTrue(
+                "Panel should be shown above the bottom toolbar",
+                tabHeight - overlayHeight > mNoExpandPanel.calculateOverlayPanelY());
+
+        // Hide toolbar
+        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.f);
+        Assert.assertEquals(
+                "Panel should be shown at the bottom of the tab when toolbar is hiden",
+                tabHeight - overlayHeight,
+                mNoExpandPanel.calculateOverlayPanelY(),
+                /*delta*/ 0.1);
     }
 }

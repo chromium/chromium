@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -19,6 +20,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -147,6 +150,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
 
     // State provider for Desktop Window.
     private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private float mAppHeaderHeightDp;
 
     // ============================================================================================
@@ -157,14 +161,18 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @param context The current Android {@link Context}.
      * @param toolbarHeightDp The current height of the toolbar in dp.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for measuring
+     *     controls.
      */
     public OverlayPanelBase(
             Context context,
             float toolbarHeightDp,
-            DesktopWindowStateManager desktopWindowStateManager) {
+            DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
         mToolbarHeightDp = toolbarHeightDp;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mPxToDp = 1.f / mContext.getResources().getDisplayMetrics().density;
 
         mBarMarginSide = BAR_ICON_SIDE_PADDING_DP;
@@ -319,7 +327,15 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The current Y-position of the Overlay Panel.
      */
     protected float calculateOverlayPanelY() {
-        return getTabHeight() + heightForNeverHideBrowserControls() - mHeight;
+        float bottomControlsHeight =
+                mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
+                        ? mBrowserControlsStateProvider.getBottomControlsHeight()
+                                * (1 - mBrowserControlsStateProvider.getBrowserControlHiddenRatio())
+                        : 0;
+        return getTabHeight()
+                + heightForNeverHideBrowserControls()
+                - mHeight
+                - bottomControlsHeight * mPxToDp;
     }
 
     /**

@@ -49,7 +49,8 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
                                     activity.getCompositorViewHolderForTesting().getLayoutManager(),
                                     mPanelManager,
                                     ProfileProvider.getOrCreateProfile(
-                                            activity.getProfileProviderSupplier().get(), false));
+                                            activity.getProfileProviderSupplier().get(), false),
+                                    activity.getBrowserControlsManager());
                     mPanel.setManagementDelegate(mContextualSearchManager);
                     mContextualSearchManager.setContextualSearchPanel(mPanel);
                     mPanelManager.setDynamicResourceLoader(new DynamicResourceLoader(0, null));

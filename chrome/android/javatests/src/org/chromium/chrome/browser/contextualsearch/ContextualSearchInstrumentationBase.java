@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.C
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeSlowResolveSearch;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -89,12 +90,13 @@ public class ContextualSearchInstrumentationBase {
                 Context context,
                 LayoutManagerImpl layoutManager,
                 OverlayPanelManager panelManager,
-                Profile profile) {
+                Profile profile,
+                BrowserControlsManager browserControlsManager) {
             super(
                     context,
                     layoutManager,
                     panelManager,
-                    null,
+                    browserControlsManager,
                     null,
                     profile,
                     null,
