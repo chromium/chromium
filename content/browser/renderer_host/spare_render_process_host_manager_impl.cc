@@ -117,13 +117,23 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
           base::BindRepeating(
               &SpareRenderProcessHostManagerImpl::OnMemoryPressure,
               base::Unretained(this))),
-      is_under_memory_pressure_(IsCurrentlyUnderMemoryPressure()),
+      check_memory_pressure_timer_(
+          FROM_HERE,
+          base::Minutes(5),
+          base::BindRepeating(
+              &SpareRenderProcessHostManagerImpl::CheckIfMemoryPressureEnded,
+              base::Unretained(this))),
       metrics_heartbeat_timer_(
           FROM_HERE,
           base::Minutes(2),
           base::BindRepeating(
               &SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired,
               base::Unretained(this))) {
+  // Immediately start the timer if the system is already under memory pressure.
+  if (IsCurrentlyUnderMemoryPressure()) {
+    check_memory_pressure_timer_.Reset();
+  }
+
   // Need to register first before checking the state to make sure we don't miss
   // a notification.
   if (auto performance_scenario_observer_list =
@@ -635,12 +645,27 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 
 void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  is_under_memory_pressure_ =
-      memory_pressure_level !=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-  if (is_under_memory_pressure_) {
-    CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
+  CHECK_NE(memory_pressure_level,
+           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  if (check_memory_pressure_timer_.IsRunning()) {
+    return;
   }
+
+  CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
+  // `reset()` will start the timer.
+  check_memory_pressure_timer_.Reset();
+}
+
+void SpareRenderProcessHostManagerImpl::CheckIfMemoryPressureEnded() {
+  if (IsCurrentlyUnderMemoryPressure()) {
+    return;
+  }
+
+  check_memory_pressure_timer_.Stop();
+
+  // Now that the system is no longer under memory pressure, check if we need
+  // to start another spare.
+  MaybeCreateExtraSpare();
 }
 
 bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
@@ -677,7 +702,7 @@ bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
   }
 
   // Don't create spares when under memory pressure.
-  if (is_under_memory_pressure_) {
+  if (check_memory_pressure_timer_.IsRunning()) {
     return false;
   }
 
