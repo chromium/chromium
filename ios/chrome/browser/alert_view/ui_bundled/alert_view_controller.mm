@@ -272,7 +272,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   self.contentView.accessibilityIdentifier = self.alertAccessibilityIdentifier;
   self.contentView.clipsToBounds = YES;
   self.contentView.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   self.contentView.layer.cornerRadius = kCornerRadius;
   self.contentView.layer.shadowOffset =
       CGSizeMake(kShadowOffsetX, kShadowOffsetY);
@@ -409,7 +409,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   }
 
   UIView* lastArrangedView = stackView.arrangedSubviews.lastObject;
-  if (lastArrangedView) {
+  if (lastArrangedView && !self.imageLottieName) {
     [stackView setCustomSpacing:kAlertActionsSpacing
                       afterView:lastArrangedView];
   }
