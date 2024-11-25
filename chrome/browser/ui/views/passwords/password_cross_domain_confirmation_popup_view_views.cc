@@ -92,7 +92,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
           .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .Build());
-  EmphasizeTokens(label, views::style::TextStyle::STYLE_BODY_3_EMPHASIS,
+  EmphasizeTokens(label, views::style::TextStyle::STYLE_BODY_3_BOLD,
                   /*tokens=*/
                   {password_origin, base::ASCIIToUTF16(domain.host())});
 
