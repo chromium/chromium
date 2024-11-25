@@ -167,7 +167,7 @@ class OutputHelper {
 };
 
 static std::string GetReplacementDirective(
-    const clang::SourceRange replacement_range,
+    const clang::SourceRange& replacement_range,
     std::string replacement_text,
     const clang::SourceManager& source_manager) {
   clang::tooling::Replacement replacement(
@@ -530,6 +530,47 @@ static Node getNodeFromSizeExpr(const clang::Expr* size_expr,
   n.size_info_available = true;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
+  return n;
+}
+
+static Node getNodeFromSizeOfArrayExpr(
+    const clang::UnaryExprOrTypeTraitExpr* sizeof_array_expr,
+    const MatchFinder::MatchResult& result) {
+  clang::SourceManager& source_manager = *result.SourceManager;
+
+  const auto* array_variable =
+      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+  const std::string& array_variable_as_string =
+      array_variable->getNameAsString();
+
+  // sizeof_array_expr matches with "sizeof(c_array)" in case of
+  // `sizeof(c_array)`, and "sizeof " in case of `sizeof c_array`. In the
+  // latter case, we need to include "c_array" in the replacement range.
+  int end_offset = 1;
+  if (const auto* decl_ref = clang::dyn_cast_or_null<clang::DeclRefExpr>(
+          sizeof_array_expr->getArgumentExpr())) {
+    // Unfortunately decl_ref matches with "" (the empty string) at the
+    // beginning of "c_array", so we cannot use decl_ref->getSourceRange().
+    // Count the length of "c_array" (variable name) instead.
+    const clang::DeclarationNameInfo& name_info = decl_ref->getNameInfo();
+    const clang::DeclarationName& name = name_info.getName();
+    end_offset = name.getAsString().length();
+  }
+
+  const clang::SourceRange replacement_range = {
+      sizeof_array_expr->getBeginLoc(),
+      sizeof_array_expr->getEndLoc().getLocWithOffset(end_offset)};
+
+  // The outer-most parentheses are redundant for most cases. But it's
+  // necessary in cases like "x / sizeof(c_array)", which is unlikely though.
+  std::string replacement_text =
+      llvm::formatv("({0}.size() * sizeof(decltype({0})::value_type))",
+                    array_variable_as_string);
+  std::string replacement_directive = GetReplacementDirective(
+      replacement_range, std::move(replacement_text), source_manager);
+
+  Node n;
+  n.replacement = replacement_directive;
   return n;
 }
 
@@ -993,6 +1034,8 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
       return getNodeFromArrayType(result);
     }
+
+    // Not supposed to get here.
     assert(false);
   }
 
@@ -1001,6 +1044,12 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
+    }
+
+    if (const auto* sizeof_array_expr =
+            result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>(
+                "sizeof_array_expr")) {
+      return getNodeFromSizeOfArrayExpr(sizeof_array_expr, result);
     }
 
     if (auto* rhs_array_var =
@@ -1037,6 +1086,7 @@ class PotentialNodes : public MatchFinder::MatchCallback {
             result.Nodes.getNodeAs<clang::Expr>("size_node")) {
       return getNodeFromSizeExpr(size_expr, result);
     }
+
     // Not supposed to get here.
     assert(false);
   }
@@ -1401,15 +1451,25 @@ class Spanifier {
             .bind("buffer_expr"));
     match_finder_.addMatcher(buffer_expr1, &potential_nodes_);
 
+    auto array_variable =
+        varDecl(hasType(arrayType().bind("array_type")),
+                hasTypeLoc(loc(qualType(anything())).bind("array_type_loc")),
+                unless(exclusions), unless(hasExternalFormalLinkage()))
+            .bind("array_variable");
+
     auto buffer_expr2 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        expr(ignoringParenCasts(arraySubscriptExpr(hasLHS(declRefExpr(
-            to(varDecl(
-                   hasType(arrayType().bind("array_type")),
-                   hasTypeLoc(loc(qualType(anything())).bind("array_type_loc")),
-                   unless(exclusions), unless(hasExternalFormalLinkage()))
-                   .bind("array_variable"))))))));
+        expr(ignoringParenCasts(
+            arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable)))))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
+
+    // `sizeof(c_array)` is rewritten to
+    // `std_array.size() * sizeof(element_size)`.
+    auto sizeof_array_expr =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 sizeOfExpr(has(declRefExpr(to(array_variable))))
+                     .bind("sizeof_array_expr"));
+    match_finder_.addMatcher(sizeof_array_expr, &potential_nodes_);
 
     auto deref_expression = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
