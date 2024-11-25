@@ -105,7 +105,7 @@ bool GPUSupportedLimits::Populate(
   // String -> wgpu::Limits::*member.
   for (const auto& [limitName, limitRawValue] : in) {
     if (limitName == "maxInterStageShaderComponents") {
-      UseCounter::Count(
+      UseCounter::CountDeprecation(
           resolver->GetExecutionContext(),
           WebFeature::kMaxInterStageShaderComponentsRequiredLimit);
     }

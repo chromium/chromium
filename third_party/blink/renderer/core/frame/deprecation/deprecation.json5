@@ -603,6 +603,16 @@
       milestone: 96,
     },
     {
+      name: "WebGPULimitMaxInterStageShaderComponents",
+      message: "The WebGPU limit `maxInterStageShaderComponents` is deprecated, instead use the WebGPU limit `maxInterStageShaderVariables`.",
+      translation_note: "This warning occurs when the website attempts to use the deprecated WebGPU limit `maxInterStageShaderComponents`.",
+      web_features: [
+        "kMaxInterStageShaderComponentsRequiredLimit",
+        "kV8GPUSupportedLimits_MaxInterStageShaderComponents_AttributeGetter",
+      ],
+      chrome_status_feature: 4853767735083008,
+    },
+    {
       name: "WebSQL",
       message: "Web SQL is deprecated. Please use SQLite WebAssembly or Indexed Database",
       translation_note: "Warning displayed to developers when the Web SQL API is used to let them know this API is deprecated.",

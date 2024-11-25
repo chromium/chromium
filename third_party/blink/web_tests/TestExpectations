@@ -8656,6 +8656,9 @@ crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-
 # Gardener 2024-11-15
 crbug.com/359319433 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
 
+# Remove this when WebGPU limit maxInterStageShaderComponents is removed from the web platform.
+crbug.com/364338810 http/tests/inspector-protocol/issues/gpulimit-deprecation.js [ Skip Timeout ]
+
 # Gardener 2024-11-18
 crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
 crbug.com/377815400 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?high-6.2 [ Pass Timeout ]
