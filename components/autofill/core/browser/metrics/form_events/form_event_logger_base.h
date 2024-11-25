@@ -212,6 +212,8 @@ class FormEventLoggerBase {
   std::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
   // The last field that was polled for suggestions.
+  // TODO(crbug.com/40100455): Make this a `FieldGlobalId` when
+  // kAutofillUseFewerFormAndFieldComparison is removed.
   FormFieldData last_polled_field_;
 
   // Used to count consecutive modifications on the same field as one change.

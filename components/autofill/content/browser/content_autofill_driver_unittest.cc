@@ -729,7 +729,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 
   test_api(driver()).LiftForTest(form);
   ASSERT_EQ(augmented_forms.size(), 1u);
-  EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
+  EXPECT_TRUE(FormData::DeepEqual(augmented_forms.front(), form));
 
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures(

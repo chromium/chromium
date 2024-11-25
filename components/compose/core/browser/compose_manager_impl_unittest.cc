@@ -332,7 +332,8 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       compose::kComposeContextMenuCtr,
       compose::ComposeContextMenuCtrEvent::kMenuItemClicked, 1);
 
-  EXPECT_TRUE(selected_form_field.SameFieldAs(last_form_field_to_client()));
+  EXPECT_TRUE(autofill::FormFieldData::DeepEqual(selected_form_field,
+                                                 last_form_field_to_client()));
   EXPECT_EQ(last_form_field_to_client().selected_text(), u"value1");
 }
 

@@ -921,7 +921,11 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
   // Process the current pending form if different than supplied |form|.
-  if (pending_form_data_ && !pending_form_data_->SameFormAs(form)) {
+  if (pending_form_data_ &&
+      (base::FeatureList::IsEnabled(
+           features::kAutofillUseFewerFormAndFieldComparison)
+           ? pending_form_data_->global_id() != form.global_id()
+           : !pending_form_data_->SameFormAs(form))) {
     ProcessPendingFormForUpload();
   }
   // A new pending form is assigned.

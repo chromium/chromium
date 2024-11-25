@@ -118,7 +118,10 @@ void FormEventLoggerBase::OnDidPollSuggestions(const FormFieldData& field) {
   // This is to avoid recording too many poll actions (for example when a user
   // types in a field, triggering multiple queries) to make the analysis more
   // simple.
-  if (!field.SameFieldAs(last_polled_field_)) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseFewerFormAndFieldComparison)
+          ? field.global_id() != last_polled_field_.global_id()
+          : !field.SameFieldAs(last_polled_field_)) {
     RecordPollSuggestions();
     last_polled_field_ = field;
   }

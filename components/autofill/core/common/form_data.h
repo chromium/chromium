@@ -170,6 +170,8 @@ class FormData {
   // TODO(crbug.com/40183094): This function is deprecated. Use
   // FormData::DeepEqual() instead. Returns true if two forms are the same, not
   // counting the values of the form elements.
+  // TODO(crbug.com/40100455): Remove when
+  // kAutofillUseFewerFormAndFieldComparison is removed.
   bool SameFormAs(const FormData& other) const;
 
   // Returns a pointer to the field if found, otherwise returns nullptr.
@@ -190,8 +192,8 @@ class FormData {
     name_attribute_ = std::move(name_attribute);
   }
 
-  // NOTE: Update `SameFormAs()` and `FormDataAndroid::SimilarFormAs()` if
-  // needed when adding new a member.
+  // NOTE: Update `FormDataAndroid::SimilarFormAs()` if needed when adding new a
+  // member.
 
   // The name by which autofill knows this form. This is generally either the
   // name attribute or the id_attribute value, which-ever is non-empty with
