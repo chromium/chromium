@@ -7,6 +7,7 @@ import './declutter/declutter_page.js';
 import './tab_organization_selector_button.js';
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {DeclutterPageElement} from './declutter/declutter_page.js';
@@ -19,11 +20,12 @@ import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 export interface TabOrganizationSelectorElement {
   $: {
+    autoTabGroupsButton: HTMLElement,
     autoTabGroupsPage: HTMLElement,
+    declutterButton: HTMLElement,
     declutterPage: DeclutterPageElement,
   };
 }
-
 
 export class TabOrganizationSelectorElement extends CrLitElement {
   static get is() {
@@ -44,12 +46,15 @@ export class TabOrganizationSelectorElement extends CrLitElement {
       declutterHeading_: {type: String},
       disableDeclutter_: {type: Boolean},
       selectedState_: {type: Number},
+      prevSelectedState_: {type: Number},
     };
   }
 
   availableHeight: number = 0;
 
   protected selectedState_: TabOrganizationFeature =
+      TabOrganizationFeature.kSelector;
+  protected prevSelectedState_: TabOrganizationFeature =
       TabOrganizationFeature.kSelector;
   protected declutterHeading_: string = '';
   protected disableDeclutter_: boolean = false;
@@ -92,6 +97,32 @@ export class TabOrganizationSelectorElement extends CrLitElement {
         'visibilitychange', this.visibilityChangedListener_);
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('selectedState_') &&
+        this.prevSelectedState_ !== this.selectedState_) {
+      switch (this.selectedState_) {
+        case TabOrganizationFeature.kAutoTabGroups:
+          this.$.autoTabGroupsPage.focus();
+          break;
+        case TabOrganizationFeature.kDeclutter:
+          this.$.declutterPage.focus();
+          break;
+        case TabOrganizationFeature.kSelector:
+          if (this.prevSelectedState_ ===
+              TabOrganizationFeature.kAutoTabGroups) {
+            this.$.autoTabGroupsButton.focus();
+          } else {
+            this.$.declutterButton.focus();
+          }
+          break;
+      }
+    }
+  }
+
   maybeLogFeatureShow(): void {
     if (this.selectedState_ === TabOrganizationFeature.kSelector) {
       this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
@@ -130,6 +161,7 @@ export class TabOrganizationSelectorElement extends CrLitElement {
 
   protected onBackClick_(): void {
     this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
+    this.prevSelectedState_ = this.selectedState_;
     this.selectedState_ = TabOrganizationFeature.kSelector;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }
