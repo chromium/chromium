@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,7 +87,6 @@ class HttpStreamPool::AttemptManager
   void StartJob(Job* job,
                 RequestPriority priority,
                 const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                RespectLimits respect_limits,
                 bool enable_ip_based_pooling,
                 bool enable_alternative_services,
                 quic::ParsedQuicVersion quic_version,
@@ -261,6 +261,10 @@ class HttpStreamPool::AttemptManager
   // effects.
   CanAttemptResult CanAttemptConnection();
 
+  // Returns true only when there is no job that ignore the pool and group
+  // limits.
+  bool ShouldRespectLimits() const;
+
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
   bool ShouldThrottleAttemptForSpdy();
@@ -363,7 +367,7 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource net_log_;
 
-  RespectLimits respect_limits_ = RespectLimits::kRespect;
+  base::flat_set<raw_ptr<Job>> limit_ignoring_jobs_;
 
   bool enable_ip_based_pooling_ = true;
 

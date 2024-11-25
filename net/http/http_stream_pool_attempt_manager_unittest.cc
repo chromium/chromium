@@ -483,11 +483,11 @@ class TestJobDelegate : public Job::Delegate {
   void CreateAndStartJob(HttpStreamPool& pool) {
     CHECK(!job_);
     job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
-               .CreateJob(this, expected_protocol_,
+               .CreateJob(this, HttpStreamPool::RespectLimits::kRespect,
+                          expected_protocol_,
                           /*is_http1_allowed=*/true, ProxyInfo::Direct());
 
     job_->Start(RequestPriority::DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                HttpStreamPool::RespectLimits::kRespect,
                 /*enable_ip_based_pooling=*/true,
                 /*enable_alternative_services=*/true, quic_version_,
                 NetLogWithSource());
@@ -1754,9 +1754,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestStreamIdleStreamSocket) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
 }
 
-// Tests that the group and pool limits are ignored when requests set
+// Tests that the group and pool limits are ignored when all requests set
 // LOAD_IGNORE_LIMITS.
-TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimits) {
+TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimitsAll) {
   constexpr size_t kMaxPerGroup = 2;
   constexpr size_t kMaxPerPool = 3;
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
@@ -1778,6 +1778,133 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreLimits) {
     requester->WaitForResult();
     EXPECT_THAT(requester->result(), Optional(IsOk()));
     requesters.emplace_back(std::move(requester));
+  }
+}
+
+// Tests that the group and pool limits are ignored for requests that set
+// LOAD_IGNORE_LIMITS, but once these requests are completed, subsequent
+// normal requests repsect group and pool limits.
+TEST_F(HttpStreamPoolAttemptManagerTest, IgnoreAndRespectLimits) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 3;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  std::vector<std::unique_ptr<SequencedSocketData>> data_providers;
+
+  std::vector<std::unique_ptr<StreamRequester>> limit_ignoring_requesters;
+  for (size_t i = 0; i < kMaxPerPool + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>();
+    requester->set_load_flags(LOAD_IGNORE_LIMITS).RequestStream(pool());
+    requester->WaitForResult();
+    // Requests should not be blocked even the pool/group reach limits.
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
+    limit_ignoring_requesters.emplace_back(std::move(requester));
+  }
+
+  std::list<std::unique_ptr<StreamRequester>> limit_respecting_requesters;
+  for (size_t i = 0; i < kMaxPerPool + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>();
+    requester->RequestStream(pool());
+    FastForwardUntilNoTasksRemain();
+    // Requests should be blocked.
+    ASSERT_FALSE(requester->result().has_value());
+    limit_respecting_requesters.emplace_back(std::move(requester));
+  }
+
+  // Destroy requests that ignored limits to unblock requests that respect
+  // limits.
+  limit_ignoring_requesters.clear();
+
+  // Check requests that respect limits complete.
+  while (!limit_respecting_requesters.empty()) {
+    limit_respecting_requesters.front()->WaitForResult();
+    EXPECT_THAT(limit_respecting_requesters.front()->result(),
+                Optional(IsOk()));
+    limit_respecting_requesters.pop_front();
+  }
+}
+
+// Tests that the group and pool limits are ignored for requests that set
+// LOAD_IGNORE_LIMITS, but once these requests are completed, in-flight attempts
+// are canceled until the active stream count goes down to the limits.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       IgnoreAndRespectLimitsCancelInflightAttempt) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 3;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+
+  std::list<std::unique_ptr<SequencedSocketData>> data_providers;
+
+  std::list<std::unique_ptr<StreamRequester>> limit_ignoring_requesters;
+  for (size_t i = 0; i < kMaxPerPool + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    requester->set_load_flags(LOAD_IGNORE_LIMITS)
+        .set_priority(RequestPriority::HIGHEST)
+        .RequestStream(pool());
+    limit_ignoring_requesters.emplace_back(std::move(requester));
+  }
+
+  std::list<std::unique_ptr<StreamRequester>> limit_respecting_requesters;
+  for (size_t i = 0; i < kMaxPerGroup; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    data_providers.emplace_back(std::move(data));
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .CompleteStartSynchronously(OK);
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    requester->set_priority(RequestPriority::LOW).RequestStream(pool());
+    limit_respecting_requesters.emplace_back(std::move(requester));
+  }
+
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+  ASSERT_GT(group.GetAttemptManagerForTesting()->InFlightAttemptCount(),
+            kMaxPerGroup);
+
+  // Complete requests that ignore limits.
+  while (!limit_ignoring_requesters.empty()) {
+    limit_ignoring_requesters.front()->WaitForResult();
+    EXPECT_THAT(limit_ignoring_requesters.front()->result(), Optional(IsOk()));
+    limit_ignoring_requesters.pop_front();
+  }
+
+  ASSERT_LE(group.ActiveStreamSocketCount(), kMaxPerGroup);
+
+  // Complete requests that respect limits.
+  while (!limit_respecting_requesters.empty()) {
+    limit_respecting_requesters.front()->WaitForResult();
+    EXPECT_THAT(limit_respecting_requesters.front()->result(),
+                Optional(IsOk()));
+    limit_respecting_requesters.pop_front();
   }
 }
 

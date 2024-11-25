@@ -165,7 +165,6 @@ void HttpStreamPool::AttemptManager::StartJob(
     Job* job,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-    RespectLimits respect_limits,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
@@ -190,8 +189,8 @@ void HttpStreamPool::AttemptManager::StartJob(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND,
       net_log_.source());
 
-  if (respect_limits == RespectLimits::kIgnore) {
-    respect_limits_ = RespectLimits::kIgnore;
+  if (job->respect_limits() == RespectLimits::kIgnore) {
+    limit_ignoring_jobs_.emplace(job);
   }
 
   if (!enable_ip_based_pooling) {
@@ -990,7 +989,7 @@ HttpStreamPool::AttemptManager::CanAttemptConnection() {
     return CanAttemptResult::kBlockedStreamAttempt;
   }
 
-  if (respect_limits_ == RespectLimits::kRespect) {
+  if (ShouldRespectLimits()) {
     if (group_->ReachedMaxStreamLimit()) {
       return CanAttemptResult::kReachedGroupLimit;
     }
@@ -1001,6 +1000,10 @@ HttpStreamPool::AttemptManager::CanAttemptConnection() {
   }
 
   return CanAttemptResult::kAttempt;
+}
+
+bool HttpStreamPool::AttemptManager::ShouldRespectLimits() const {
+  return limit_ignoring_jobs_.empty();
 }
 
 bool HttpStreamPool::AttemptManager::ShouldThrottleAttemptForSpdy() {
@@ -1215,9 +1218,8 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 
   std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
       std::move(stream_socket), reuse_type, std::move(connect_timing));
-  CHECK(respect_limits_ == RespectLimits::kIgnore ||
-        group_->ActiveStreamSocketCount() <=
-            pool()->max_stream_sockets_per_group())
+  CHECK(!ShouldRespectLimits() || group_->ActiveStreamSocketCount() <=
+                                      pool()->max_stream_sockets_per_group())
       << "active=" << group_->ActiveStreamSocketCount()
       << ", limit=" << pool()->max_stream_sockets_per_group();
 
@@ -1318,6 +1320,23 @@ HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
   }
   raw_ptr<Job> job = jobs_.Erase(jobs_.FirstMax());
   Job* job_raw_ptr = job.get();
+
+  // If the extracted job is the last job that ignores the limit, cancel
+  // in-flight attempts until the active stream count goes down to the limit.
+  limit_ignoring_jobs_.erase(job);
+  if (ShouldRespectLimits()) {
+    while (group_->ActiveStreamSocketCount() >
+               pool()->max_stream_sockets_per_group() &&
+           !in_flight_attempts_.empty()) {
+      std::unique_ptr<InFlightAttempt> attempt = std::move(
+          in_flight_attempts_.extract(in_flight_attempts_.begin()).value());
+      if (attempt->is_slow()) {
+        --slow_attempt_count_;
+      }
+      attempt.reset();
+    }
+  }
+
   notified_jobs_.emplace(std::move(job));
   return job_raw_ptr;
 }

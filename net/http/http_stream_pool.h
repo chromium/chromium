@@ -81,6 +81,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "Connection was closed when it was returned to the pool";
   static constexpr std::string_view kSocketGenerationOutOfDate =
       "Socket generation out of date";
+  static constexpr std::string_view kExceededSocketLimits =
+      "Exceed socket pool/group limits";
 
   // The default maximum number of sockets per pool. The same as
   // ClientSocketPoolManager::max_sockets_per_pool().

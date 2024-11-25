@@ -105,11 +105,12 @@ HttpStreamPool::Group::~Group() {
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
+    RespectLimits respect_limits,
     NextProto expected_protocol,
     bool is_http1_allowed,
     ProxyInfo proxy_info) {
   EnsureAttemptManager();
-  return std::make_unique<Job>(delegate, attempt_manager_.get(),
+  return std::make_unique<Job>(delegate, attempt_manager_.get(), respect_limits,
                                expected_protocol, is_http1_allowed,
                                std::move(proxy_info));
 }
@@ -165,6 +166,8 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
                               : kClosedConnectionReturnedToPool;
   } else if (generation != generation_) {
     not_reusable_reason = kSocketGenerationOutOfDate;
+  } else if (ReachedMaxStreamLimit()) {
+    not_reusable_reason = kExceededSocketLimits;
   } else {
     reusable = true;
   }
