@@ -821,9 +821,6 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOTIFICATIONS_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can request permission to send notifications. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can ask to send notifications. When off, sites can’t send notifications.
   </message>
-  <message name="IDS_NOTIFICATIONS_IPH" desc="A message that explains to the users that notification permission requests will appear as an infobar from now on because the user repeatedly denied the notification permission in the past.">
-    You usually block notifications. To allow, tap Details.
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOTIFICATIONS_ASK" desc="Summary text explaining that sites need to ask for permission before sending notifications.">
     Sites can ask to send notifications
   </message>

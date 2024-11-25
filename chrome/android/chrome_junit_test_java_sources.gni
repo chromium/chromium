@@ -251,7 +251,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/homepage/HomepagePolicyManagerTest.java",
   "junit/src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/incognito/IncognitoTabbedSnapshotControllerTest.java",
-  "junit/src/org/chromium/chrome/browser/infobar/IphInfoBarSupportTest.java",
   "junit/src/org/chromium/chrome/browser/init/ActivityProfileProviderTest.java",
   "junit/src/org/chromium/chrome/browser/init/AsyncInitTaskRunnerTest.java",
   "junit/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunnerTest.java",

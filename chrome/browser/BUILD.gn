@@ -2707,7 +2707,6 @@ static_library("browser") {
       "android/oom_intervention/oom_intervention_tab_helper.h",
       "android/partner_browser_customizations.cc",
       "android/partner_browser_customizations.h",
-      "android/permissions/permission_settings_bridge.cc",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.cc",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h",
       "android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.cc",
