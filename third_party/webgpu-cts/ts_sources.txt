@@ -304,6 +304,7 @@ src/webgpu/api/validation/encoding/cmds/render/draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/render.ts
 src/webgpu/api/validation/encoding/cmds/render/indirect_draw.spec.ts
+src/webgpu/api/validation/encoding/cmds/render/indirect_multi_draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setIndexBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setPipeline.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setVertexBuffer.spec.ts
