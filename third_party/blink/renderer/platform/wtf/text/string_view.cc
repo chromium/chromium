@@ -249,14 +249,9 @@ bool EqualStringView(const StringView& a, const StringView& b) {
     return false;
   if (a.Bytes() == b.Bytes() && a.Is8Bit() == b.Is8Bit())
     return true;
-  if (a.Is8Bit()) {
-    if (b.Is8Bit())
-      return Equal(a.Characters8(), b.Span8());
-    return Equal(a.Characters8(), b.Span16());
-  }
-  if (b.Is8Bit())
-    return Equal(a.Characters16(), b.Span8());
-  return Equal(a.Characters16(), b.Span16());
+  return VisitCharacters(a, [b](auto chars) {
+    return b.Is8Bit() ? chars == b.Span8() : chars == b.Span16();
+  });
 }
 
 bool DeprecatedEqualIgnoringCaseAndNullity(const StringView& a,
