@@ -424,7 +424,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypePlusAddress) {
-    base::RecordAction(base::UserMetricsAction("Settings.PlusAddresses"));
+    base::RecordAction(
+        base::UserMetricsAction("Settings.ManageOptionOnSettingsSelected"));
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:
             GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];

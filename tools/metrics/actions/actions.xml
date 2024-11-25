@@ -34685,15 +34685,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Settings.PlusAddresses">
-  <owner>mreichhoff@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <description>
-    Reported when the user navigates to &quot;Plus Addresses&quot; in settings.
-    iOS only.
-  </description>
-</action>
-
 <action name="Settings.Privacy">
   <owner>thgreenfrog@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
