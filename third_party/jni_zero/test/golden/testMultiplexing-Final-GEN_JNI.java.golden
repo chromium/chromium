@@ -6,7 +6,7 @@ package org.jni_zero;
 
 public class GEN_JNI {
   public static void org_jni_1zero_SampleForAnnotationProcessor_foo() {
-    J.N._V();
+    J.N._V(0);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
     return J.N._O(0);
@@ -48,7 +48,7 @@ public class GEN_JNI {
     return J.N._O(12);
   }
   public static boolean org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
-    return J.N._Z();
+    return J.N._Z(0);
   }
   public static Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample) {
     return J.N._O_O(0, sample);
@@ -85,6 +85,7 @@ public class GEN_JNI {
       boolean zbool,
       Object bools) {
     return J.N._O_BCDFIJOOOOOOOOSZ(
+        0,
         zbyte,
         zchar,
         zdouble,
@@ -122,6 +123,7 @@ public class GEN_JNI {
       Object context,
       Object convertedObjects) {
     J.N._V_OOOOOOOOOOOOOOOOOO(
+        0,
         clazz,
         classes,
         throwable,

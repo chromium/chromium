@@ -8,6 +8,6 @@ public class module_N {
   public static final long WHOLE_HASH = -7714383706413312501L;
   public static final long PRIORITY_HASH = 0L;
 
-  public static native void _V();
-  public static native boolean _Z_Z(boolean p0);
+  public static native void _V(int _switchNum);
+  public static native boolean _Z_Z(int _switchNum, boolean p0);
 }
