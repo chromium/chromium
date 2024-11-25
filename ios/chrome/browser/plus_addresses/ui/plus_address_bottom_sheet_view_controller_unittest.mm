@@ -340,13 +340,14 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
 // logs appopriate metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest,
        RefreshAndConfirmButtonTapped) {
+  base::UserActionTester user_action_tester;
   [view_controller_ loadViewIfNeeded];
 
   OCMExpect([delegate_ confirmPlusAddress]);
   OCMExpect([delegate_ didTapRefreshButton]);
 
   [view_controller_ didTapTrailingButton];
-
+  EXPECT_EQ(user_action_tester.GetActionCount("PlusAddresses.Refreshed"), 1);
   scoped_clock_.Advance(kDuration);
 
   // Test function called after user taps confirm button.
