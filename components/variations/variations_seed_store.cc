@@ -751,37 +751,40 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     int seed_milestone,
     const ClientFilterableState& client_state,
     base::Time seed_fetch_time) {
-  // As a performance optimization, avoid an expensive no-op of overwriting
-  // the previous safe seed with an identical copy.
   const StoredSeed previous_safe_seed = safe_seed_store_->GetCompressedSeed();
+  // Avoid overwriting the previous safe seed with an identical copy, which
+  // would be an expensive no-op. This can happen as follows:
+  //
+  // 1. The client has safe seed A and latest seed B and is applying B.
+  // 2. The client attempts to fetch a seed, receives a 304 Not Modified
+  //    response from the variations server, and promotes B to safe seed. Note
+  //    that B is both the safe seed and the latest seed.
+  // 3. The client attempts to fetch another seed and receives another 304
+  //    response. In this case, the below condition is false and an unnecessary
+  //    write is avoided.
   if (!seed.MatchesStoredSeed(previous_safe_seed)) {
-    // It's theoretically possible to overwrite an existing safe seed value,
-    // which was identical to the latest seed, with a new value. This could
-    // happen, for example, if:
-    //   (1) Seed A is received from the server and saved as both the safe and
-    //       latest seed value.
-    //   (2) Seed B is received from the server and saved as the latest seed
-    //       value.
-    //   (3) The user restarts Chrome, which is now running with the
-    //       configuration from seed B.
-    //   (4) Seed A is received again from the server, perhaps due to a
-    //       rollback.
-    // In this situation, seed A should be saved as the latest seed, while
-    // seed B should be saved as the safe seed, i.e. the previously saved
-    // values should be swapped. Indeed, it is guaranteed that the latest seed
-    // value should be overwritten in this case, as a seed should not be
-    // considered safe unless a new seed can be both received *and saved* from
-    // the server.
+    // Before updating the safe seed, update the latest seed if the latest
+    // seed's value is |kIdenticalToSafeSeedSentinel|.
+    //
+    // It's theoretically possible for the client to be in the following state:
+    // 1. The client has safe seed A.
+    // 2. The client is applying seed B. In other words, seed B was the latest
+    //    seed when Chrome was started.
+    // 3. The client has just successfully fetched a new latest seed that
+    //    happens to be seed A—perhaps due to a rollback. In this case,
+    //    |kIdenticalToSafeSeedSentinel| is stored as the latest seed value to
+    //    avoid duplicating seed A in storage.
+    // 4. The client is promoting seed B to safe seed.
     if (seed_reader_writer_->GetSeedData().data ==
         kIdenticalToSafeSeedSentinel) {
       // For the below call to StoreValidatedSeed(), there are two possibilities
       // to consider:
-      //  (1) The client is in the SeedFile trial treatment group. In this case,
-      //  StoreValidatedSeed() updates the seed file and ignores the local state
-      //  seed.
-      //  (2) The client is either not in the experiment or is in its
-      //  control or default group. In this case, |previous_safe_seed.data| is
-      //  ignored.
+      //
+      // 1. The client is in the SeedFile experiment's treatment group. In this
+      //    case, StoreValidatedSeed() updates the seed file and ignores the
+      //    local state seed.
+      // 2. The client is either not in the experiment or is in its control or
+      //    default group. In this case, |previous_safe_seed.data| is ignored.
       seed_reader_writer_->StoreValidatedSeed(
           previous_safe_seed.data,
           local_state_->GetString(prefs::kVariationsSafeCompressedSeed));
