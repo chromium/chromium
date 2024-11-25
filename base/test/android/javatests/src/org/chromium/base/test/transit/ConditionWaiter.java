@@ -250,13 +250,10 @@ public class ConditionWaiter {
      * Blocks waiting for multiple {@link Condition}s, polling them and reporting their status to he
      * {@link ConditionWait}es.
      *
-     * @param conditionWaitsSupplier a supplier of the current list of {@link ConditionWait}es to
-     *     process. Gets called every poll interval to refresh the list of ConditionWaits.
      * @param transitionName String representing the Transition to print
-     * @param options the {@link TransitionOptions} to configure the polling parameters.
-     * @throws AssertionError if not all {@link Condition}s are fulfilled before timing out.
+     * @throws TravelException if not all {@link Condition}s are fulfilled before timing out.
      */
-    void waitFor(String transitionName) {
+    void waitFor(String transitionName) throws Throwable {
         Runnable checker =
                 () -> {
                     boolean anyCriteriaMissing = processWaits(/* startMonitoringNewWaits= */ true);
@@ -274,7 +271,12 @@ public class ConditionWaiter {
 
         TransitionOptions options = mTransition.getOptions();
         long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
-        CriteriaHelper.pollInstrumentationThread(checker, timeoutMs, POLLING_INTERVAL);
+        try {
+            CriteriaHelper.pollInstrumentationThread(checker, timeoutMs, POLLING_INTERVAL);
+        } catch (CriteriaHelper.TimeoutException timeoutException) {
+            // Remove the TimeoutException part of the stack to reduce the error message.
+            throw timeoutException.getCause();
+        }
 
         // Check that all element factories were used.
         if (!mConditionsGuardingFactories.isEmpty()) {
