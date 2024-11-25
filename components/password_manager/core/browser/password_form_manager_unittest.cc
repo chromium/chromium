@@ -4647,6 +4647,30 @@ TEST_P(PasswordFormManagerTest,
   fetcher_->NotifyFetchCompleted();
 }
 
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageForEmptySecurityDomainError) {
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kEmptySecurityDomain));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kFillFlow,
+                  PasswordStoreBackendErrorType::kEmptySecurityDomain));
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageForIrretrievableSecurityDomainError) {
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kIrretrievableSecurityDomain));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kFillFlow,
+                  PasswordStoreBackendErrorType::kIrretrievableSecurityDomain));
+  fetcher_->NotifyFetchCompleted();
+}
+
 // Tests that the error message is displayed in the case when both account and
 // profile store are requested and the result is the following:
 // - account store replies with an authentication error,
