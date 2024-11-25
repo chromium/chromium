@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/scheme_logger.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"

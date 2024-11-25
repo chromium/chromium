@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
+#import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
 
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "ios/web/public/web_state.h"
@@ -50,8 +50,9 @@ std::string GetUnsafeResourceMetricPrefix(
 SafeBrowsingUrlAllowList* GetAllowListForResource(
     const security_interstitials::UnsafeResource& resource) {
   web::WebState* web_state = resource.weak_web_state.get();
-  if (!web_state)
+  if (!web_state) {
     return nullptr;
+  }
   return SafeBrowsingUrlAllowList::FromWebState(web_state);
 }
 

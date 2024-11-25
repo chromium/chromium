@@ -55,8 +55,8 @@ source_set("safe_browsing") {
 
 source_set("util") {
   sources = [
-    "unsafe_resource_util.h",
-    "unsafe_resource_util.mm",
+    "ios_unsafe_resource_util.h",
+    "ios_unsafe_resource_util.mm",
   ]
 
   deps = [

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "content/public/browser/navigation_entry.h"
@@ -13,7 +13,8 @@ namespace safe_browsing::unsafe_resource_util {
 
 content::NavigationEntry* GetNavigationEntryForResource(
     const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = unsafe_resource_util::GetWebContentsForResource(resource);
+  content::WebContents* web_contents =
+      unsafe_resource_util::GetWebContentsForResource(resource);
   if (!web_contents) {
     return nullptr;
   }
