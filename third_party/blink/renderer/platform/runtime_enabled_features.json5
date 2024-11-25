@@ -1132,12 +1132,6 @@
       name: "CSSParserIgnoreCharsetForURLs",
     },
     {
-      // Shipped in M130.  Should be removed a little bit after M130 reaches
-      // stable.
-      name: "CSSPartAllowsMoreSelectorsAfter",
-      status: "stable",
-    },
-    {
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },

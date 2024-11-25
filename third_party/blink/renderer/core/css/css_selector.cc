@@ -1621,8 +1621,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
-      return true;
-
     case kPseudoBackdrop:
     case kPseudoCue:
     case kPseudoMarker:
@@ -1645,7 +1643,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
-      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+      return true;
 
     // It's possible that we should support ::slotted() after ::part().
     // (WebKit accepts it at parse time but it doesn't appear to work;
@@ -1659,15 +1657,12 @@ bool CSSSelector::IsAllowedAfterPart() const {
 
     // Pseudo-classes
     //
-    // TODO(https://crbug.com/40623497): Eventually all non-structural
-    // pseudo-classes should be allowed, and structural pseudo-classes should
-    // be forbidden.
+    // All non-structural pseudo-classes should be allowed, and structural
+    // pseudo-classes should be forbidden.
     case kPseudoAutofill:
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
     case kPseudoWebKitAutofill:
-      return true;
-
     case kPseudoActive:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -1731,7 +1726,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoSpatialNavigationFocus:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
-      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+      return true;
 
     // IsSimpleSelectorValidAfterPseudoElement allows these selectors after
     // ::part() regardless of what we do here.  However, since they are in
@@ -1739,7 +1734,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoIs:
     case kPseudoNot:
     case kPseudoWhere:
-      return RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled();
+      return true;
 
     // :-webkit-any() should in theory be allowed too like :is() and :where(),
     // but it's a legacy feature so just leave it disallowed.

@@ -1264,11 +1264,6 @@ bool IsSimpleSelectorValidAfterPseudoElement(
       // nested selectors will be dropped if they are invalid according to
       // this function.
       return true;
-    case CSSSelector::kPseudoHas:
-      if (!RuntimeEnabledFeatures::CSSPartAllowsMoreSelectorsAfterEnabled()) {
-        return true;
-      }
-      [[fallthrough]];
     default:
       break;
   }
