@@ -59,26 +59,6 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
   return result;
 }
 
-// Returns the name of the profile that has `gaia_id` attached, or the empty
-// string if no such profile exists.
-std::string FindProfileNameForGaiaId(
-    const ProfileAttributesStorageIOS* profile_attributes_storage,
-    std::string_view gaia_id) {
-  if (!profile_attributes_storage) {
-    CHECK_IS_TEST();
-    return std::string();
-  }
-  for (size_t index = 0;
-       index < profile_attributes_storage->GetNumberOfProfiles(); index++) {
-    ProfileAttributesIOS attr =
-        profile_attributes_storage->GetAttributesForProfileAtIndex(index);
-    if (attr.GetAttachedGaiaIds().contains(gaia_id)) {
-      return attr.GetProfileName();
-    }
-  }
-  return std::string();
-}
-
 void AttachGaiaIdToProfile(
     ProfileAttributesStorageIOS* profile_attributes_storage,
     std::string_view profile_name,
@@ -160,6 +140,9 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
       IdentityAccessTokenRefreshFailedCallback
           identity_access_token_refresh_failed_cb);
   ~Assigner() override;
+
+  std::optional<std::string> FindProfileNameForGaiaID(
+      std::string_view gaia_id) const;
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() final;
@@ -275,6 +258,19 @@ AccountProfileMapper::Assigner::Assigner(
 }
 
 AccountProfileMapper::Assigner::~Assigner() = default;
+
+std::optional<std::string>
+AccountProfileMapper::Assigner::FindProfileNameForGaiaID(
+    std::string_view gaia_id) const {
+  for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
+    if (gaia_ids.contains(gaia_id)) {
+      return profile_name;
+    }
+  }
+  // The identity isn't assigned to any profile. This can happen (temporarily)
+  // just after an identity is added to the device.
+  return std::nullopt;
+}
 
 void AccountProfileMapper::Assigner::OnIdentityListChanged() {
   // Assign identities to profiles, if they're not assigned yet.
@@ -531,27 +527,7 @@ bool AccountProfileMapper::IsSigninSupported() {
 
 std::optional<std::string> AccountProfileMapper::FindProfileNameForGaiaID(
     std::string_view gaia_id) const {
-  if (!profile_manager_) {
-    CHECK_IS_TEST();
-    return std::nullopt;
-  }
-  const ProfileAttributesStorageIOS* profile_attributes_storage =
-      profile_manager_->GetProfileAttributesStorage();
-  if (!profile_attributes_storage) {
-    CHECK_IS_TEST();
-    return std::nullopt;
-  }
-  for (size_t i = 0; i < profile_attributes_storage->GetNumberOfProfiles();
-       ++i) {
-    ProfileAttributesIOS attr =
-        profile_attributes_storage->GetAttributesForProfileAtIndex(i);
-    if (attr.GetAttachedGaiaIds().contains(gaia_id)) {
-      return attr.GetProfileName();
-    }
-  }
-  // The identity isn't assigned to any profile. This can happen (temporarily)
-  // just after an identity is added to the device.
-  return std::nullopt;
+  return assigner_->FindProfileNameForGaiaID(gaia_id);
 }
 
 void AccountProfileMapper::IterateOverIdentities(
@@ -582,24 +558,18 @@ void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
 
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyIdentityUpdated(
-      identity,
-      FindProfileNameForGaiaId(
-          profile_manager_ ? profile_manager_->GetProfileAttributesStorage()
-                           : nullptr,
-          base::SysNSStringToUTF8(identity.gaiaID)));
+  NotifyIdentityUpdated(identity,
+                        assigner_->FindProfileNameForGaiaID(
+                            base::SysNSStringToUTF8(identity.gaiaID)));
 }
 
 void AccountProfileMapper::IdentityRefreshTokenUpdated(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NotifyRefreshTokenUpdated(
-      identity,
-      FindProfileNameForGaiaId(
-          profile_manager_ ? profile_manager_->GetProfileAttributesStorage()
-                           : nullptr,
-          base::SysNSStringToUTF8(identity.gaiaID)));
+  NotifyRefreshTokenUpdated(identity,
+                            assigner_->FindProfileNameForGaiaID(
+                                base::SysNSStringToUTF8(identity.gaiaID)));
 }
 
 void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
@@ -607,12 +577,9 @@ void AccountProfileMapper::IdentityAccessTokenRefreshFailed(
     id<RefreshAccessTokenError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NotifyAccessTokenRefreshFailed(
-      identity, error,
-      FindProfileNameForGaiaId(
-          profile_manager_ ? profile_manager_->GetProfileAttributesStorage()
-                           : nullptr,
-          base::SysNSStringToUTF8(identity.gaiaID)));
+  NotifyAccessTokenRefreshFailed(identity, error,
+                                 assigner_->FindProfileNameForGaiaID(
+                                     base::SysNSStringToUTF8(identity.gaiaID)));
 }
 
 SystemIdentityManager::IteratorResult
@@ -621,10 +588,6 @@ AccountProfileMapper::FilterIdentitiesForProfile(
     IdentityIteratorCallback callback,
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/331783685): Need to filter out identities that are filtered
-  // by enterprise policy, and remove that filter done by
-  // ChromeAccountManagerService.
 
   if (AreSeparateProfilesForManagedAccountsEnabled() && profile_manager_) {
     ProfileAttributesIOS attr =
@@ -697,13 +660,13 @@ void AccountProfileMapper::NotifyIdentityListChanged(
 
 void AccountProfileMapper::NotifyIdentityUpdated(
     id<SystemIdentity> identity,
-    std::string_view profile_name) {
+    const std::optional<std::string>& profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    if (profile_name.empty()) {
+    if (!profile_name.has_value()) {
       return;
     }
-    auto it = observer_lists_per_profile_name_.find(profile_name);
+    auto it = observer_lists_per_profile_name_.find(*profile_name);
     if (it == observer_lists_per_profile_name_.end()) {
       return;
     }
@@ -722,13 +685,13 @@ void AccountProfileMapper::NotifyIdentityUpdated(
 
 void AccountProfileMapper::NotifyRefreshTokenUpdated(
     id<SystemIdentity> identity,
-    std::string_view profile_name) {
+    const std::optional<std::string>& profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
-    if (profile_name.empty()) {
+    if (!profile_name.has_value()) {
       return;
     }
-    auto it = observer_lists_per_profile_name_.find(profile_name);
+    auto it = observer_lists_per_profile_name_.find(*profile_name);
     if (it == observer_lists_per_profile_name_.end()) {
       return;
     }
@@ -748,13 +711,13 @@ void AccountProfileMapper::NotifyRefreshTokenUpdated(
 void AccountProfileMapper::NotifyAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error,
-    std::string_view profile_name) {
+    const std::optional<std::string>& profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    if (profile_name.empty()) {
+    if (!profile_name.has_value()) {
       return;
     }
-    auto it = observer_lists_per_profile_name_.find(profile_name);
+    auto it = observer_lists_per_profile_name_.find(*profile_name);
     if (it == observer_lists_per_profile_name_.end()) {
       return;
     }

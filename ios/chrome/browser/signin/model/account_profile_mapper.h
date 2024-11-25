@@ -120,18 +120,20 @@ class AccountProfileMapper {
   // `kSeparateProfilesForManagedAccounts` is disabled, all observers are
   // notified, and `profile_name` is ignored.
   void NotifyIdentityUpdated(id<SystemIdentity> identity,
-                             std::string_view profile_name);
+                             const std::optional<std::string>& profile_name);
   // Invokes `OnIdentityRefreshTokenUpdated(...)` for all observers for
   // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
   // is disabled, all observers are notified, and `profile_name` is ignored.
-  void NotifyRefreshTokenUpdated(id<SystemIdentity> identity,
-                                 std::string_view profile_name);
+  void NotifyRefreshTokenUpdated(
+      id<SystemIdentity> identity,
+      const std::optional<std::string>& profile_name);
   // Invokes `OnIdentityAccessTokenRefreshFailed(...)` for all observers for
   // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
   // is disabled, all observers are notified, and `profile_name` is ignored.
-  void NotifyAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                      id<RefreshAccessTokenError> error,
-                                      std::string_view profile_name);
+  void NotifyAccessTokenRefreshFailed(
+      id<SystemIdentity> identity,
+      id<RefreshAccessTokenError> error,
+      const std::optional<std::string>& profile_name);
 
   // The AccountProfileMapper is sequence-affine.
   SEQUENCE_CHECKER(sequence_checker_);
