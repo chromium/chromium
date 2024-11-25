@@ -12,11 +12,20 @@ package org.chromium.components.data_sharing.configs;
 public class DataSharingRuntimeDataConfig {
     private final String mSessionId;
     private final DataSharingPreviewDataConfig mDataSharingPreviewDataConfig;
+    private final DataSharingPreviewDetailsConfig mDataSharingPreviewDetailsConfig;
 
     public DataSharingRuntimeDataConfig(
             String sessionId, DataSharingPreviewDataConfig dataSharingPreviewDataConfig) {
         this.mSessionId = sessionId;
         this.mDataSharingPreviewDataConfig = dataSharingPreviewDataConfig;
+        this.mDataSharingPreviewDetailsConfig = null;
+    }
+
+    public DataSharingRuntimeDataConfig(
+            String sessionId, DataSharingPreviewDetailsConfig dataSharingPreviewDetailsConfig) {
+        this.mSessionId = sessionId;
+        this.mDataSharingPreviewDataConfig = null;
+        this.mDataSharingPreviewDetailsConfig = dataSharingPreviewDetailsConfig;
     }
 
     public String getSessionId() {
@@ -27,10 +36,16 @@ public class DataSharingRuntimeDataConfig {
         return mDataSharingPreviewDataConfig;
     }
 
+    public DataSharingPreviewDetailsConfig getDataSharingPreviewDetailsConfig() {
+        return mDataSharingPreviewDetailsConfig;
+    }
+
     // Builder class
     public static class Builder {
         private String mSessionId;
         private DataSharingPreviewDataConfig mDataSharingPreviewDataConfig;
+        private DataSharingPreviewDetailsConfig mDataSharingPreviewDetailsConfig;
+        private boolean mRuntimeDataSet;
 
         /** Session ID to set the preview to, given when showXFlow API is called */
         public Builder setSessionId(String sessionId) {
@@ -38,15 +53,32 @@ public class DataSharingRuntimeDataConfig {
             return this;
         }
 
-        /** Preview data data for the flows */
+        /** Preview image data for the flows */
         public Builder setDataSharingPreviewDataConfig(
                 DataSharingPreviewDataConfig dataSharingPreviewDataConfig) {
+            assert !mRuntimeDataSet;
+            mRuntimeDataSet = true; // Only one is allowed.
             this.mDataSharingPreviewDataConfig = dataSharingPreviewDataConfig;
             return this;
         }
 
+        /** Preview details for each tab in tab group */
+        public Builder setDataSharingPreviewDetailsConfig(
+                DataSharingPreviewDetailsConfig dataSharingPreviewDetailsConfig) {
+            assert !mRuntimeDataSet;
+            mRuntimeDataSet = true; // Only one is allowed.
+            this.mDataSharingPreviewDetailsConfig = dataSharingPreviewDetailsConfig;
+            return this;
+        }
+
         public DataSharingRuntimeDataConfig build() {
-            return new DataSharingRuntimeDataConfig(mSessionId, mDataSharingPreviewDataConfig);
+            if (mDataSharingPreviewDataConfig != null) {
+                return new DataSharingRuntimeDataConfig(mSessionId, mDataSharingPreviewDataConfig);
+            } else if (mDataSharingPreviewDetailsConfig != null) {
+                return new DataSharingRuntimeDataConfig(
+                        mSessionId, mDataSharingPreviewDetailsConfig);
+            }
+            return null;
         }
     }
 }

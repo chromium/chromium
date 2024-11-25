@@ -44,6 +44,7 @@ import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingPreviewDataConfig;
+import org.chromium.components.data_sharing.configs.DataSharingPreviewDetailsConfig;
 import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
 import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
@@ -57,8 +58,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -397,8 +400,23 @@ public class DataSharingTabManager {
                                         .setSharedDataPreview(previewData.sharedDataPreview)
                                         .build()));
 
+        fetchFavicons(
+                joinFlowTracker,
+                preview,
+                /* fetchAll= */ false,
+                () -> {
+                    fetchFavicons(joinFlowTracker, preview, /* fetchAll= */ true, () -> {});
+                });
+    }
+
+    private void fetchFavicons(
+            JoinFlowTracker joinFlowTracker,
+            SharedTabGroupPreview preview,
+            boolean fetchAll,
+            Runnable doneCallback) {
         int expectedCount = 0;
-        for (int i = 0; i < preview.tabs.size() && i < 4; ++i) {
+        int maxNumToFetch = fetchAll ? preview.tabs.size() : 4;
+        for (int i = 0; i < preview.tabs.size() && i < maxNumToFetch; ++i) {
             expectedCount++;
             Integer index = i;
             getFaviconHelper()
@@ -413,9 +431,37 @@ public class DataSharingTabManager {
         }
         joinFlowTracker.setPreviewFaviconCallback(
                 (favicons) -> {
-                    updatePreviewImage(joinFlowTracker, favicons);
+                    if (fetchAll) {
+                        updateAllFavicons(joinFlowTracker, preview, favicons);
+                    } else {
+                        updatePreviewImage(joinFlowTracker, favicons);
+                    }
+                    doneCallback.run();
                 },
                 expectedCount);
+    }
+
+    private void updateAllFavicons(
+            JoinFlowTracker joinFlowTracker,
+            SharedTabGroupPreview preview,
+            Map<Integer, Bitmap> favicons) {
+        List<DataSharingPreviewDetailsConfig.TabPreview> tabPreviews = new ArrayList<>();
+        for (int i = 0; i < favicons.size(); ++i) {
+            tabPreviews.add(
+                    new DataSharingPreviewDetailsConfig.TabPreview(
+                            preview.tabs.get(i).displayUrl, favicons.get(i)));
+        }
+        DataSharingRuntimeDataConfig runtimeConfig =
+                new DataSharingRuntimeDataConfig.Builder()
+                        .setSessionId(joinFlowTracker.getSessionId())
+                        .setDataSharingPreviewDetailsConfig(
+                                new DataSharingPreviewDetailsConfig.Builder()
+                                        .setTabPreviews(tabPreviews)
+                                        .build())
+                        .build();
+        mDataSharingService
+                .getUiDelegate()
+                .updateRuntimeData(joinFlowTracker.getSessionId(), runtimeConfig);
     }
 
     private void updatePreviewImage(
