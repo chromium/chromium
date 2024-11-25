@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PasswordChangeSubmission"
       summary="Password Change Submission"/>
   <variant name="PromptApi" summary="Prompt API"/>
+  <variant name="ScamDetection" summary="Scam Detection"/>
   <variant name="Summarize" summary="Summarize"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
   <variant name="Test" summary="Test"/>
@@ -63,6 +64,8 @@ chromium-metrics-reviews@google.com.
       summary="Model Execution Feature: History Search"/>
   <variant name="ModelExecutionFeaturePromptAPI"
       summary="Model Execution Feature: Prompt API"/>
+  <variant name="ModelExecutionFeatureScamDetection"
+      summary="Model ExecutionFeature: Scam Detection"/>
   <variant name="ModelExecutionFeatureSummarize"
       summary="Model Execution Feature: Summarize"/>
   <variant name="ModelValidation" summary="Model validation triggered via CLI"/>

@@ -55,6 +55,7 @@ void SetExecutionRequest(
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kScamDetection:
       // Do not log requests for these features.
       return;
   }
@@ -97,6 +98,7 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kBlingPrototyping:
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kScamDetection:
       // Do not log responses for these features.
       return;
   }

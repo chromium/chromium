@@ -30,6 +30,7 @@ proto_library("optimization_guide_proto") {
     "features/password_change_submission.proto",
     "features/product_specifications.proto",
     "features/prompt_api.proto",
+    "features/scam_detection.proto",
     "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
@@ -161,6 +162,20 @@ proto_library("history_query_intent_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "history_query_intent.descriptor"
+  proto_deps = [
+    ":optimization_guide_proto",
+    "//third_party/metrics_proto:metrics_proto",
+  ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
+}
+
+proto_library("scam_detection_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/scam_detection.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "scam_detection.descriptor"
   proto_deps = [
     ":optimization_guide_proto",
     "//third_party/metrics_proto:metrics_proto",
