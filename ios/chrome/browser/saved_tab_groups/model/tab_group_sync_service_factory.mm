@@ -68,7 +68,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   CHECK(!profile->IsOffTheRecord());
 
   // Give the opportunity for the test hook to override the factory from

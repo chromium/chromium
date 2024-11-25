@@ -45,11 +45,7 @@ CollaborationServiceFactory::~CollaborationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 CollaborationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!context) {
-    return nullptr;
-  }
-
-  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   bool isFeatureEnabled = base::FeatureList::IsEnabled(
                               data_sharing::features::kDataSharingFeature) ||
