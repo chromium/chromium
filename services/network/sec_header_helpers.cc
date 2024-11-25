@@ -210,6 +210,11 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
     // A credentials mode of "same-origin" or "omit" prevents including cookies
     // on the request in the first place, so we don't bother to include the
     // `Sec-Fetch-Storage-Access` header in that case.
+    //
+    // To ensure that an erroneous value isn't sent by mistake (and that
+    // consumers aren't allowed to override the correct "omitted" value), we
+    // clear any existing value.
+    request.RemoveRequestHeaderByName(kSecFetchStorageAccess);
     return;
   }
   request.SetExtraRequestHeaderByName(
@@ -251,28 +256,22 @@ void MaybeRemoveSecHeaders(net::URLRequest* request,
                            const GURL& pending_redirect_url) {
   DCHECK(request);
 
-  if (IsUrlPotentiallyTrustworthy(request->url())) {
-    // The `kSecFetchStorageAccess` header isn't necessarily included on all
-    // requests to potentially trustworthy URLs, so we should remove the header
-    // after receiving a redirect.
-    request->RemoveRequestHeaderByName(kSecFetchStorageAccess);
-
-    // If our redirect destination is not trusted it would not have had sec-ch-
-    // or sec-fetch- prefixed headers added to it. Our previous hops may have
-    // added these headers if the current url is trustworthy though so we should
-    // try to remove these now.
-    if (!IsUrlPotentiallyTrustworthy(pending_redirect_url)) {
-      // Check each of our request headers and if it is a "sec-ch-" or
-      // "sec-fetch-" prefixed header we'll remove it.
-      const net::HttpRequestHeaders::HeaderVector request_headers =
-          request->extra_request_headers().GetHeaderVector();
-      for (const auto& header : request_headers) {
-        if (StartsWith(header.key, "sec-ch-",
-                       base::CompareCase::INSENSITIVE_ASCII) ||
-            StartsWith(header.key, "sec-fetch-",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-          request->RemoveRequestHeaderByName(header.key);
-        }
+  // If our redirect destination is not trusted it would not have had sec-ch-
+  // or sec-fetch- prefixed headers added to it. Our previous hops may have
+  // added these headers if the current url is trustworthy though so we should
+  // try to remove these now.
+  if (IsUrlPotentiallyTrustworthy(request->url()) &&
+      !IsUrlPotentiallyTrustworthy(pending_redirect_url)) {
+    // Check each of our request headers and if it is a "sec-ch-" or
+    // "sec-fetch-" prefixed header we'll remove it.
+    const net::HttpRequestHeaders::HeaderVector request_headers =
+        request->extra_request_headers().GetHeaderVector();
+    for (const auto& header : request_headers) {
+      if (StartsWith(header.key, "sec-ch-",
+                     base::CompareCase::INSENSITIVE_ASCII) ||
+          StartsWith(header.key, "sec-fetch-",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+        request->RemoveRequestHeaderByName(header.key);
       }
     }
   }

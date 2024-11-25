@@ -132,8 +132,11 @@ namespace {
 
 using ::net::test::IsError;
 using ::net::test::IsOk;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Key;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::SizeIs;
@@ -5019,6 +5022,29 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
     return http_response;
   }
 };
+
+// Validate that Sec-Fetch-Storage-Access header cannot be overridden by
+// manually setting the value.
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       DirectlyModifiedSecFetchStorageAccess) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/echo"));
+  request.headers.SetHeader("Sec-Fetch-Storage-Access", "active");
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+
+  EXPECT_THAT(sent_request().headers,
+              Not(Contains(Key("Sec-Fetch-Storage-Access"))));
+}
 
 TEST_F(StorageAccessHeaderURLLoaderTest, LoadNoStatus) {
   base::RunLoop delete_run_loop;
