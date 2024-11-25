@@ -7,6 +7,10 @@
 #include "base/feature_list.h"
 
 namespace data_sharing::features {
+namespace {
+const char kDataSharingDefaultUrl[] =
+    "https://shared-tabs-v3-dot-googwebreview.appspot.com/chrome/tabshare/";
+}
 
 BASE_FEATURE(kDataSharingFeature,
              "DataSharing",
@@ -23,6 +27,6 @@ BASE_FEATURE(kDataSharingAndroidV2,
 constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
-    /*default_value=*/"https://www.chromium.org/data_sharing/");
+    kDataSharingDefaultUrl);
 
 }  // namespace data_sharing::features

@@ -232,7 +232,7 @@ void ShareGroupAtIndex(int index) {
 // Checks that the user with JoinOnly can trigger the Join flow.
 - (void)testJoinGroup {
   GURL joinGroupURL =
-      GURL("https://www.chromium.org/data_sharing/"
+      GURL(data_sharing::features::kDataSharingURL.Get() +
            "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
            "token_blob=CggHBicxA_slvxIWR2RvcXIzclJGR1E5eXQ0RUdpN2M3Zw");
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
@@ -286,7 +286,7 @@ void ShareGroupAtIndex(int index) {
 // Checks that the user with JoinOnly can trigger the Join flow.
 - (void)testJoinGroup {
   GURL joinGroupURL =
-      GURL("https://www.chromium.org/data_sharing/"
+      GURL(data_sharing::features::kDataSharingURL.Get() +
            "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
            "token_blob=CggHBicxA_slvxIWR2RvcXIzclJGR1E5eXQ0RUdpN2M3Zw");
   [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
