@@ -466,7 +466,6 @@ public class StripLayoutHelper
     private ModalDialogManager mModalDialogManager;
     @Nullable private DataSharingTabManager mDataSharingTabManager;
     @Nullable private DataSharingService mDataSharingService;
-    @Nullable private CollaborationService mCollaborationService;
     @Nullable private TabGroupSyncService mTabGroupSyncService;
     @Nullable private DataSharingService.Observer mDataSharingObserver;
 
@@ -1060,10 +1059,9 @@ public class StripLayoutHelper
         if (profile == null) {
             return false;
         }
-        if (mCollaborationService == null) {
-            mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
-        }
-        return mCollaborationService.getServiceStatus().isAllowedToJoin();
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(profile);
+        return collaborationService.getServiceStatus().isAllowedToJoin();
     }
 
     TabGroupModelFilterObserver getTabGroupModelFilterObserverForTesting() {
