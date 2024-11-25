@@ -18,6 +18,12 @@ if (target_os == "ios") {
   build_gn_logs += [ "" ]
 }
 
+if (target_os == "mac") {
+  import("//build/config/mac/mac_sdk.gni")
+  build_gn_logs += [ "### mac_sdk.gni ###" ] + mac_sdk_logs
+  build_gn_logs += [ "" ]
+}
+
 if (target_os == "win") {
   import("//build/config/win/visual_studio_version.gni")
   build_gn_logs +=
