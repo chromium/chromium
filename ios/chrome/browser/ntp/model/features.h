@@ -9,6 +9,14 @@
 
 namespace set_up_list {
 
+// Enum to represent arms of feature kSetUpListInFirstRun.
+enum class FirstRunVariationType {
+  kDisabled,
+  kDockingAndAddressBar,
+  kDocking,
+  kAddressBar,
+};
+
 // Feature to enable the Set Up List in the First Run.
 BASE_DECLARE_FEATURE(kSetUpListInFirstRun);
 
@@ -18,7 +26,7 @@ extern const char kSetUpListInFirstRunParam[];
 
 // Returns which variation of the kSetUpListInFirstRun feature is enabled.
 // Returns 0 if the feature is disabled.
-int GetSetUpListInFirstRunVariation();
+FirstRunVariationType GetSetUpListInFirstRunVariation();
 
 }  // namespace set_up_list
 

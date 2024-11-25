@@ -165,6 +165,7 @@ source_set("utils") {
   deps = [
     "//base",
     "//components/prefs",
+    "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",

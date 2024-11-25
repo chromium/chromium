@@ -14,12 +14,13 @@ BASE_FEATURE(kSetUpListInFirstRun,
 
 const char kSetUpListInFirstRunParam[] = "SetUpListInFirstRunParam";
 
-int GetSetUpListInFirstRunVariation() {
+FirstRunVariationType GetSetUpListInFirstRunVariation() {
   if (!base::FeatureList::IsEnabled(kSetUpListInFirstRun)) {
-    return 0;
+    return FirstRunVariationType::kDisabled;
   }
-  return base::GetFieldTrialParamByFeatureAsInt(kSetUpListInFirstRun,
-                                                kSetUpListInFirstRunParam, 1);
+  return static_cast<FirstRunVariationType>(
+      base::GetFieldTrialParamByFeatureAsInt(kSetUpListInFirstRun,
+                                             kSetUpListInFirstRunParam, 1));
 }
 
 }  // namespace set_up_list

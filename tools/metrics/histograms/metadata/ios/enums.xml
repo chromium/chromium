@@ -933,6 +933,8 @@ the generic promo launch. -->
   <int value="4" label="Follow"/>
   <int value="5" label="All Set"/>
   <int value="6" label="Notifications"/>
+  <int value="7" label="Docking"/>
+  <int value="8" label="Address Bar"/>
 </enum>
 
 <enum name="IOSShareExtensionReceivedEntrySource">

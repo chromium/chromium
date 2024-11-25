@@ -836,6 +836,8 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kSetUpListDocking:
+    case ContentSuggestionsModuleType::kSetUpListAddressBar:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [_setUpListMediator disableModule];
       break;
@@ -1142,6 +1144,12 @@ using segmentation_platform::TipIdentifier;
         } else {
           [weakSelf showContentNotificationBottomSheet];
         }
+        break;
+      case SetUpListItemType::kDocking:
+        // TODO(crbug.com/379305809): Show docking promo.
+        break;
+      case SetUpListItemType::kAddressBar:
+        // TODO(crbug.com/379305809): Show Address Bar promo.
         break;
       case SetUpListItemType::kFollow:
       case SetUpListItemType::kAllSet:
