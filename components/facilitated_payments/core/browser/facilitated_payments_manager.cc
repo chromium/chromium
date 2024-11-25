@@ -312,12 +312,17 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {
-      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      if (ui_state_ == UiState::kFopSelector) {
+        LogPayflowExitedReason(
+            PayflowExitedReason::kFopSelectorClosedNotByUser);
+      }
       ui_state_ = UiState::kHidden;
       break;
     }
     case UiEvent::kScreenClosedByUser: {
-      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      if (ui_state_ == UiState::kFopSelector) {
+        LogPayflowExitedReason(PayflowExitedReason::kFopSelectorClosedByUser);
+      }
       ui_state_ = UiState::kHidden;
       break;
     }

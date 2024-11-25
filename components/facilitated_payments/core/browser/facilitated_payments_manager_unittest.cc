@@ -1103,29 +1103,44 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, NewScreenShown) {
 
 // Test that when a new screen could not be shown, UI state is updated.
 TEST_P(FacilitatedPaymentsManagerTestForUiScreens, NewScreenCouldNotBeShown) {
+  base::HistogramTester histogram_tester;
+
   // Simulate new screen could not be shown.
   manager_->OnUiEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
+  // Verify that the payflow exited histogram is logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
 }
 
-// Test that when the UI screen is closed without user interaction, the feature
-// updates the UI state.
-TEST_P(FacilitatedPaymentsManagerTestForUiScreens,
-       ScreenClosedWithoutUserInteraction) {
+// Test that when the UI screen is closed, but it was not due to a user action,
+// the feature updates the UI state.
+TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedNotByUser) {
+  base::HistogramTester histogram_tester;
+
   // Simulate new screen was shown successfully.
   manager_->OnUiEvent(UiEvent::kNewScreenShown);
-  // Simulate UI screen was closed without user interaction.
+  // Simulate UI screen was closed, but it was not due to a user action.
   manager_->OnUiEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
+  // Verify that the payflow exited histogram is logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
 }
 
 // Test that when the UI screen is closed by the user, the feature updates the
 // UI state.
 TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedByUser) {
+  base::HistogramTester histogram_tester;
+
   // Simulate new screen was shown successfully.
   manager_->OnUiEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
@@ -1133,6 +1148,11 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedByUser) {
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
+  // Verify that the payflow exited histogram is logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kFopSelectorClosedByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
 }
 
 }  // namespace payments::facilitated

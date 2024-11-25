@@ -43,7 +43,13 @@ enum class PayflowExitedReason {
   kActionTokenNotAvailable = 9,
   // The user has logged out after selecting a payment method.
   kUserLoggedOut = 10,
-  kMaxValue = kUserLoggedOut
+  // The FOP selector either wasn't shown, or was dismissed not as a result of a
+  // user action.
+  kFopSelectorClosedNotByUser = 11,
+  // The FOP selector was dismissed by a user action e.g., swiping down, tapping
+  // on the webpage behind the FOP selector, or tapping on the omnibox.
+  kFopSelectorClosedByUser = 12,
+  kMaxValue = kFopSelectorClosedByUser
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
