@@ -857,9 +857,13 @@ void WebViewGuest::UpdateUserAgentMetadata() {
           ? web_view_guest_delegate_->GetDefaultUserAgentOverride()
           : std::nullopt;
 
-  // TODO(crbug.com/376085326): MPArch migration for "User-Agent" override.
-  const std::string& retained_ua_string_override =
-      web_contents()->GetUserAgentOverride().ua_string_override;
+  std::string retained_ua_string_override;
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    retained_ua_string_override = ua_override_.ua_string_override;
+  } else {
+    retained_ua_string_override =
+        web_contents()->GetUserAgentOverride().ua_string_override;
+  }
 
   is_overriding_user_agent_ = !retained_ua_string_override.empty() ||
                               default_user_agent_override.has_value();
