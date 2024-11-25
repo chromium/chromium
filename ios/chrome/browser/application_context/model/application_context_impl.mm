@@ -217,13 +217,13 @@ void ApplicationContextImpl::StartTearDown() {
   }
 
   // Need to clear profiles before the IO thread. In detail:
-  // - First destroy the profiles, including their keyed services, which may
-  //   depend on the AccountProfileMapper.
+  // - First unload the profiles (which deallocate them), including their
+  // keyed services, which may depend on the AccountProfileMapper.
   // - Then destroy the AccountProfileMapper, which depends on the
   //   ProfileManagerIOS.
   // - Finally destroy the ProfileManagerIOS.
   if (profile_manager_) {
-    profile_manager_->DestroyAllProfiles();
+    profile_manager_->UnloadAllProfiles();
   }
   account_profile_mapper_.reset();
   profile_manager_.reset();

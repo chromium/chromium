@@ -34,10 +34,10 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     observer.OnProfileManagerDestroyed(this);
   }
 
-  // The profiles must be destroyed before the AccountProfileMapper is removed
+  // The profiles must be unloaded before the AccountProfileMapper is removed
   // from the ApplicationContext, since some keyed services (owned by the
   // profiles) might access the AccountProfileMapper during their destruction.
-  DestroyAllProfiles();
+  UnloadAllProfiles();
 
   TestingApplicationContext* app_context =
       TestingApplicationContext::GetGlobal();
@@ -124,8 +124,13 @@ ProfileIOS* TestProfileManagerIOS::CreateProfile(std::string_view name) {
   return GetProfileWithName(name);
 }
 
-void TestProfileManagerIOS::DestroyAllProfiles() {
-  profiles_map_.clear();
+void TestProfileManagerIOS::UnloadAllProfiles() {
+  ProfileMap profiles_map = std::exchange(profiles_map_, {});
+  for (auto& [_, profile] : profiles_map) {
+    for (auto& observer : observers_) {
+      observer.OnProfileUnloaded(this, profile.get());
+    }
+  }
 }
 
 ProfileAttributesStorageIOS*

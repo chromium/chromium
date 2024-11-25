@@ -354,8 +354,22 @@ ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
   return iter->second.profile();
 }
 
-void ProfileManagerIOSImpl::DestroyAllProfiles() {
-  profiles_map_.clear();
+void ProfileManagerIOSImpl::UnloadAllProfiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ProfileMap profiles_map = std::exchange(profiles_map_, {});
+  for (auto& [_, profile_info] : profiles_map) {
+    if (!profile_info.is_loaded()) {
+      // The profile is unloaded before it could be fully loaded, notify
+      // any pending callback that the load has failed.
+      for (auto& callback : profile_info.TakeCallbacks()) {
+        std::move(callback).Run(nullptr);
+      }
+    } else {
+      for (auto& observer : observers_) {
+        observer.OnProfileUnloaded(this, profile_info.profile());
+      }
+    }
+  }
 }
 
 ProfileAttributesStorageIOS*

@@ -53,6 +53,14 @@ class ScopedTestProfileManagerObserverIOS final
 
   bool on_profile_loaded_called() const { return on_profile_loaded_called_; }
 
+  bool on_profile_unloaded_called() const {
+    return on_profile_unloaded_called_;
+  }
+
+  bool on_profile_marked_for_permanent_deletation_called() const {
+    return on_profile_marked_for_permanent_deletation_called_;
+  }
+
   // ProfileManagerObserverIOS implementation:
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) final {
     DCHECK(scoped_observation_.IsObservingSource(manager));
@@ -69,12 +77,26 @@ class ScopedTestProfileManagerObserverIOS final
     on_profile_loaded_called_ = true;
   }
 
+  void OnProfileUnloaded(ProfileManagerIOS* manager,
+                         ProfileIOS* profile) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    on_profile_unloaded_called_ = true;
+  }
+
+  void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
+                                           ProfileIOS* profile) final {
+    DCHECK(scoped_observation_.IsObservingSource(manager));
+    on_profile_marked_for_permanent_deletation_called_ = true;
+  }
+
  private:
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       scoped_observation_{this};
 
   bool on_profile_created_called_ = false;
   bool on_profile_loaded_called_ = false;
+  bool on_profile_unloaded_called_ = false;
+  bool on_profile_marked_for_permanent_deletation_called_ = false;
 };
 
 // Returns a callback that fail the current test if invoked.
@@ -181,10 +203,10 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
     optimization_guide::IOSChromePredictionModelStore::GetInstance()
         ->ResetForTesting();
 
-    // The profiles must be destroyed before the AccountProfileMapper gets
+    // The profiles must be unloaded before the AccountProfileMapper gets
     // unregistered from the ApplicationContext, because keyed services may
     // depend on the AccountProfileMapper.
-    profile_manager_.DestroyAllProfiles();
+    profile_manager_.UnloadAllProfiles();
 
     application_context->GetBrowserPolicyConnector()->Shutdown();
     application_context->GetIOSChromeIOThread()->NetworkTearDown();
@@ -726,6 +748,59 @@ TEST_F(ProfileManagerIOSImplTest, AssignPersonalProfileName_KeepValidValue) {
   // The personal profile name should be unchanged.
   EXPECT_EQ(profile_attributes_storage().GetPersonalProfileName(),
             kIOSChromeInitialProfile);
+}
+
+// Tests that unloading all profiles invoke OnProfileUnloaded(...) on the
+// observers.
+TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+
+  // Unload all profiles, they should not longer be accessible and the
+  // observer must have been notified of that.
+  profile_manager().UnloadAllProfiles();
+
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_TRUE(observer.on_profile_unloaded_called());
+}
+
+// Tests that OnProfileUnloaded(...) is not called if a profile in unloaded
+// while still loading.
+TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles_LoadPending) {
+  // Load a profile asynchronously.
+  base::RunLoop run_loop;
+  ProfileIOS* loaded_profile = nullptr;
+  ProfileIOS* created_profile = nullptr;
+  const bool success = profile_manager().CreateProfileAsync(
+      kProfileName1, CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
+      CaptureParam(&created_profile));
+
+  EXPECT_TRUE(created_profile);
+  EXPECT_TRUE(success);
+
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+
+  // Unload all profiles. The profile whose load is pending should no longer
+  // be loading, and the load should be considered as failed.
+  profile_manager().UnloadAllProfiles();
+
+  // The callback should be called from UnloadAllProfiles(), so the RunLoop
+  // should be considered as having quit called, and thus Run() should return
+  // immediately.
+  run_loop.Run();
+
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+  EXPECT_FALSE(loaded_profile);
 }
 
 using ProfileManagerIOSImplTest_HideLegacyProfile =

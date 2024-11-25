@@ -46,7 +46,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
                           ProfileLoadedCallback created_callback) override;
   ProfileIOS* LoadProfile(std::string_view name) override;
   ProfileIOS* CreateProfile(std::string_view name) override;
-  void DestroyAllProfiles() override;
+  void UnloadAllProfiles() override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile
@@ -54,6 +54,10 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   TestProfileIOS* AddProfileWithBuilder(TestProfileIOS::Builder builder);
 
  private:
+  // Storage for the TestProfileIOS.
+  using ProfileMap =
+      std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>;
+
   // The ProfileAttributesStorageIOS owned by this instance.
   ProfileAttributesStorageIOS profile_attributes_storage_;
 
@@ -63,8 +67,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   const base::FilePath profile_data_dir_;
 
   // Mapping of name to TestProfileIOS instances.
-  std::map<std::string, std::unique_ptr<TestProfileIOS>, std::less<>>
-      profiles_map_;
+  ProfileMap profiles_map_;
 
   // The list of registered observers.
   base::ObserverList<ProfileManagerObserverIOS, true> observers_;

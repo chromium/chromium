@@ -109,6 +109,10 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                         ProfileIOS* profile) override;
   void OnProfileLoaded(ProfileManagerIOS* manager,
                        ProfileIOS* profile) override;
+  void OnProfileUnloaded(ProfileManagerIOS* manager,
+                         ProfileIOS* profile) override;
+  void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
+                                           ProfileIOS* profile) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
