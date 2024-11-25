@@ -9,9 +9,13 @@
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
 #include "base/hash/sha1.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,58 +54,73 @@ void RegisterAndEnableAllPrefs(TestingPrefServiceSimple& pref) {
   pref.registry()->RegisterBooleanPref(kConsentAcceptedPref, true);
 }
 
-TEST(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPass) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
+class FeatureAccessCheckerTest : public testing::Test {
+ public:
+  FeatureAccessCheckerTest() {}
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(DefaultConfig(), pref).Check()),
-      IsEmpty());
+  FeatureAccessCheckerTest(const FeatureAccessCheckerTest&) = delete;
+  FeatureAccessCheckerTest& operator=(const FeatureAccessCheckerTest&) = delete;
+
+  ~FeatureAccessCheckerTest() override = default;
+
+  void SetUp() override { RegisterAndEnableAllPrefs(pref_); }
+
+  signin::IdentityManager* GetIdentityManager() {
+    return identity_test_environment_.identity_manager();
+  }
+
+ protected:
+  TestingPrefServiceSimple pref_;
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_environment_;
+};
+
+TEST_F(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPass) {
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
+                                                  *GetIdentityManager())
+                                 .Check()),
+              IsEmpty());
 }
 
-TEST(FeatureAccessCheckerTest, CheckSettingsPrefCheckFail) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
-  pref.SetBoolean(kSettingsTogglePref, false);
+TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckFail) {
+  pref_.SetBoolean(kSettingsTogglePref, false);
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(DefaultConfig(), pref).Check()),
-      ElementsAre(kDisabledInSettings));
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
+                                                  *GetIdentityManager())
+                                 .Check()),
+              ElementsAre(kDisabledInSettings));
 }
 
-TEST(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckFail) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
-  pref.SetBoolean(kConsentAcceptedPref, false);
+TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckFail) {
+  pref_.SetBoolean(kConsentAcceptedPref, false);
 
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(DefaultConfig(), pref).Check()),
-      ElementsAre(kConsentNotAccepted));
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
+                                                  *GetIdentityManager())
+                                 .Check()),
+              ElementsAre(kConsentNotAccepted));
 }
 
-TEST(FeatureAccessCheckerTest, FeatureFlagFail) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
+TEST_F(FeatureAccessCheckerTest, FeatureFlagFail) {
   FeatureAccessConfig config = DefaultConfig();
   config.feature_flag = kFeatureOffByDefault;
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
-              ElementsAre(kFeatureFlagDisabled));
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kFeatureFlagDisabled));
 }
 
-TEST(FeatureAccessCheckerTest, FeatureManagementFlagFail) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
+TEST_F(FeatureAccessCheckerTest, FeatureManagementFlagFail) {
   FeatureAccessConfig config = DefaultConfig();
   config.feature_management_flag = kFeatureOffByDefault;
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
-              ElementsAre(kFeatureManagementCheckFailed));
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kFeatureManagementCheckFailed));
 }
 
-TEST(FeatureAccessCheckerTest, SecretKeyCheckPass) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
+TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
   std::string key_val = "hunter2";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             key_val);
@@ -109,21 +128,74 @@ TEST(FeatureAccessCheckerTest, SecretKeyCheckPass) {
   std::string hashed = base::SHA1HashString(key_val);
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
-              IsEmpty());
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      IsEmpty());
 }
 
-TEST(FeatureAccessCheckerTest, SecretKeyCheckFail) {
-  TestingPrefServiceSimple pref;
-  RegisterAndEnableAllPrefs(pref);
+TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFail) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
                                                             "nothunter2atall");
   FeatureAccessConfig config = DefaultConfig();
   std::string hashed = base::SHA1HashString("hunter2");
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
-  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
-              ElementsAre(kSecretKeyCheckFailed));
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kSecretKeyCheckFailed));
+}
+
+TEST_F(FeatureAccessCheckerTest,
+       SecretKeyCheckFailsIfWrongKeyWithGoogleAccountIfExemptionNotSet) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "someone@google.com", signin::ConsentLevel::kSignin);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
+                                                            "nothunter2atall");
+  FeatureAccessConfig config = DefaultConfig();
+  std::string hashed = base::SHA1HashString("hunter2");
+  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kSecretKeyCheckFailed));
+}
+
+TEST_F(FeatureAccessCheckerTest,
+       SecretKeyCheckFailsIfWrongKeyNonGoogleAccountIfGoogleAccountsExempted) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "someone@gmail.com", signin::ConsentLevel::kSignin);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
+                                                            "nothunter2atall");
+  FeatureAccessConfig config = DefaultConfig();
+  std::string hashed = base::SHA1HashString("hunter2");
+  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.allow_google_accounts_skip_secret_key = true;
+
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kSecretKeyCheckFailed));
+}
+
+TEST_F(
+    FeatureAccessCheckerTest,
+    SecretKeyCheckPassesIfWrongKeyWithGoogleAccountIfGoogleAccountsExempted) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "someone@google.com", signin::ConsentLevel::kSignin);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
+                                                            "nothunter2atall");
+  FeatureAccessConfig config = DefaultConfig();
+  std::string hashed = base::SHA1HashString("hunter2");
+  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+  config.allow_google_accounts_skip_secret_key = true;
+
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      IsEmpty());
 }
 
 }  // namespace

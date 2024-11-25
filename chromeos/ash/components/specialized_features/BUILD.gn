@@ -15,6 +15,7 @@ component("specialized_features") {
   deps = [
     "//base",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
   ]
 }
 
@@ -25,6 +26,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
   sources = [ "feature_access_checker_unittest.cc" ]

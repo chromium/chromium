@@ -7,14 +7,19 @@
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_constants.h"
 
 namespace specialized_features {
 
 using enum FeatureAccessFailure;
 
-FeatureAccessChecker::FeatureAccessChecker(FeatureAccessConfig config,
-                                           const PrefService& prefs)
-    : config_(config), prefs_(prefs) {}
+FeatureAccessChecker::FeatureAccessChecker(
+    FeatureAccessConfig config,
+    const PrefService& prefs,
+    const signin::IdentityManager& identity_manager)
+    : config_(config), prefs_(prefs), identity_manager_(identity_manager) {}
 
 FeatureAccessFailureSet FeatureAccessChecker::Check() {
   FeatureAccessFailureSet failures;
@@ -40,7 +45,13 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
           base::SHA1HashString(
               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                   config_.secret_key->flag))) {
-    failures.Put(kSecretKeyCheckFailed);
+    if (!config_.allow_google_accounts_skip_secret_key ||
+        !gaia::IsGoogleInternalAccountEmail(
+            identity_manager_
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                .email)) {
+      failures.Put(kSecretKeyCheckFailed);
+    }
   }
 
   return failures;

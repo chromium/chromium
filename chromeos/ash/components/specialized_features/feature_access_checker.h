@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace specialized_features {
 
@@ -67,6 +68,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // FeatureAccessChecker::Check() will return kSecretKeyCheckFailed if this
   // value is set and the secret key check fails.
   std::optional<SecretKey> secret_key;
+  // Allow googlers to override the secret_key check.
+  bool allow_google_accounts_skip_secret_key;
 };
 
 // Creates a class to check different dependencies for specialized features.
@@ -75,8 +78,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
  public:
   // The config determines which dependencies to check.
   // Buffers referred to by string_views in `config` and instance referred to by
-  // `prefs` should not be destroyed before this class is destroyed.
-  FeatureAccessChecker(FeatureAccessConfig config, const PrefService& prefs);
+  // `prefs` and `identity_manager` should not be destroyed before this class is
+  // destroyed.
+  FeatureAccessChecker(FeatureAccessConfig config,
+                       const PrefService& prefs,
+                       const signin::IdentityManager& identity_manager);
 
   FeatureAccessChecker(const FeatureAccessChecker&) = delete;
   FeatureAccessChecker& operator=(const FeatureAccessChecker&) = delete;
@@ -88,6 +94,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
  private:
   FeatureAccessConfig config_;
   raw_ref<const PrefService> prefs_;
+  raw_ref<const signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace specialized_features
