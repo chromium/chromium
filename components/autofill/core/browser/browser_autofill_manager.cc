@@ -2104,7 +2104,6 @@ void BrowserAutofillManager::OnCreditCardFetched(
     CreditCardFetchResult result,
     const CreditCard* credit_card) {
   if (result != CreditCardFetchResult::kSuccess) {
-    driver().RendererShouldClearPreviewedForm();
     return;
   }
   // In the failure case, `credit_card` can be `nullptr`, but in the success
