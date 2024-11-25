@@ -2181,6 +2181,7 @@ chromium-metrics-reviews@google.com.
   <int value="1315" label="GenAiLensOverlaySettings"/>
   <int value="1316" label="PasswordManagerPasskeysEnabled"/>
   <int value="1317" label="FilePickerChooseFromDriveSettings"/>
+  <int value="1318" label="LiveTranslateEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
