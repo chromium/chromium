@@ -143,10 +143,7 @@ import java.util.concurrent.TimeoutException;
 // TODO(crbug.com/344672095): Failing when batched, batch this again.
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in
 // these tests.
-@DisableFeatures({
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX
-})
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
