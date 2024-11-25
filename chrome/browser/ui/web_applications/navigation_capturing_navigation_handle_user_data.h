@@ -176,14 +176,15 @@ class NavigationCapturingNavigationHandleUserData
     return redirection_info_;
   }
 
-  // Set the app id of the app that was/will be launched as a result of this
-  // navigation. This is used by `MaybePerformAppHandlingTasksInWebContents` to
-  // decide if launch params, launch metrics and possible navigation capturing
-  // IPH need to be triggered.
   std::optional<webapps::AppId> launched_app() const { return launched_app_; }
-  void set_launched_app(std::optional<webapps::AppId> launched_app) {
-    launched_app_ = launched_app;
-  }
+
+  // Sets the `launched_app` as the id of the app that was/will be launched as a
+  // result of this navigation.  Setting `force_iph_off` to `true` will prevent
+  // in-product-help from being displayed when it otherwise would. This is used
+  // by `MaybePerformAppHandlingTasksInWebContents` to decide if launch params,
+  // launch metrics and possible navigation capturing IPH need to be triggered.
+  void SetLaunchedAppState(std::optional<webapps::AppId> launched_app,
+                           bool force_iph_off);
 
   // If this navigation triggered a web app launch, this method will queue
   // launch params, record launch metrics and maybe show a navigation capturing
@@ -194,13 +195,15 @@ class NavigationCapturingNavigationHandleUserData
   NavigationCapturingNavigationHandleUserData(
       content::NavigationHandle& navigation_handle,
       std::optional<NavigationCapturingRedirectionInfo> redirection_info,
-      std::optional<webapps::AppId> launched_app);
+      std::optional<webapps::AppId> launched_app,
+      bool force_iph_off);
 
   friend NavigationHandleUserData;
 
   raw_ref<content::NavigationHandle> navigation_handle_;
   std::optional<NavigationCapturingRedirectionInfo> redirection_info_;
   std::optional<webapps::AppId> launched_app_;
+  bool force_iph_off_;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };

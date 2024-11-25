@@ -290,20 +290,29 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
     base::WeakPtr<content::NavigationHandle> navigation_handle,
     content::WebContents* web_contents,
     const web_app::NavigationCapturingRedirectionInfo& redirection_info,
-    std::optional<webapps::AppId> launched_app_id) {
+    std::optional<webapps::AppId> launched_app_id,
+    bool is_launching_in_app_window) {
   CHECK(web_contents);
   if (!ShouldEnqueueNavigationHandlingInfoForRedirects(
           redirection_info.initial_nav_handling_result())) {
     return;
   }
 
+  // Do not show iph when opening browser-tab-apps in a new browser tab, as this
+  // matches what is 'normal' - clicking on a link opens a new browser tab.
+  bool force_iph_off =
+      !is_launching_in_app_window &&
+      redirection_info.initial_nav_handling_result() !=
+          NavigationHandlingInitialResult::kNavigateCapturingNavigateExisting;
   if (navigation_handle) {
     web_app::NavigationCapturingNavigationHandleUserData::
         CreateForNavigationHandle(*navigation_handle, redirection_info,
-                                  std::move(launched_app_id));
+                                  std::move(launched_app_id),
+                                  /*force_iph_off=*/force_iph_off);
   } else {
     web_app::NavigationCapturingInformationForwarder::CreateForWebContents(
-        web_contents, redirection_info, std::move(launched_app_id));
+        web_contents, redirection_info, std::move(launched_app_id),
+        /*force_iph_off=*/force_iph_off);
   }
 }
 
@@ -1794,7 +1803,9 @@ void OnWebAppNavigationAfterWebContentsCreation(
       app_navigation_result.redirection_info(),
       app_navigation_result.browser_tab_override().has_value()
           ? first_navigation_app_id
-          : std::nullopt);
+          : std::nullopt,
+      /*is_launching_in_app_window=*/
+      WebAppBrowserController::IsWebApp(params.browser));
 
   base::Value::Dict debug_value = app_navigation_result.TakeDebugData();
   web_app::WebAppProvider* provider =

@@ -19,12 +19,14 @@ NavigationCapturingInformationForwarder::
     NavigationCapturingInformationForwarder(
         content::WebContents* contents,
         NavigationCapturingRedirectionInfo redirection_info,
-        std::optional<webapps::AppId> launched_app_id)
+        std::optional<webapps::AppId> launched_app_id,
+        bool force_iph_off)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<NavigationCapturingInformationForwarder>(
           *contents),
       redirection_info_(std::move(redirection_info)),
-      launched_app_id_(std::move(launched_app_id)) {}
+      launched_app_id_(std::move(launched_app_id)),
+      force_iph_off_(force_iph_off) {}
 
 void NavigationCapturingInformationForwarder::SelfDestruct() {
   GetWebContents().RemoveUserData(UserDataKey());
@@ -35,7 +37,7 @@ void NavigationCapturingInformationForwarder::DidStartNavigation(
   web_app::NavigationCapturingNavigationHandleUserData::
       CreateForNavigationHandle(*navigation_handle,
                                 std::move(redirection_info_),
-                                std::move(launched_app_id_));
+                                std::move(launched_app_id_), force_iph_off_);
   SelfDestruct();
 }
 
