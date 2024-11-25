@@ -40,7 +40,17 @@ HTTP_SERVER_PORT = get_free_local_port()
 LOG_DIR = os.environ.get('ISOLATED_OUTDIR', '/tmp')
 TEMP_DIR = os.environ.get('TMPDIR', '/tmp')
 
-VIDEOS = {'720p24fpsVP9_gangnam_sync.webm': {'length': 251}}
+VIDEOS = {
+    '720p24fpsH264_gangnam_sync.mp4': {
+        'length': 252
+    },
+    '720p24fpsAV1_gangnam_sync.mp4': {
+        'length': 252
+    },
+    '720p24fpsVP9_gangnam_sync.webm': {
+        'length': 252
+    },
+}
 
 
 class StartProcess(AbstractContextManager):
@@ -64,10 +74,13 @@ class StartProcess(AbstractContextManager):
 def parameters_of(file: str) -> camera.Parameters:
     result = camera.Parameters()
     result.file = file
-    # Recorded videos are huge, instead of placing them into the LOG_DIR which
-    # will be uploaded to CAS output, use TEMP_DIR provided by luci-swarming to
-    # be cleaned up automatically after the test run.
-    result.output_path = TEMP_DIR
+    if version.is_try_build():
+        result.output_path = LOG_DIR
+    else:
+        # Recorded videos are huge, instead of placing them into the LOG_DIR
+        # which will be uploaded to CAS output, use TEMP_DIR provided by
+        # luci-swarming to be cleaned up automatically after the test run.
+        result.output_path = TEMP_DIR
     # max_frames controls the maximum number of umcompressed frames in the
     # memory. And if the number of uncompressed frames reaches the max_frames,
     # the basler camera recorder will fail. The camera being used may use up to
@@ -109,7 +122,11 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
                                                  original_video)
 
     def record(key: str) -> None:
-        monitors.average(file, key).record(results[key])
+        # If the video_analyzer does not generate any result, treat it as an
+        # error and use the default value to filter them out instead of failing
+        # the tests.
+        # TODO(crbug.com/40935291): Revise the default value for errors.
+        monitors.average(file, key).record(results.get(key, -128))
 
     record('smoothness')
     record('freezing')
@@ -118,9 +135,10 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     record('dropped_frame_percentage')
     logging.warning('Video analysis result of %s: %s', file, results)
 
-    # Move the info csv to the cas-output for debugging purpose. Video files are
-    # huge and will be ignored.
-    shutil.move(camera_params.info_file, LOG_DIR)
+    if not version.is_try_build():
+        # Move the info csv to the cas-output for debugging purpose. Video files
+        # are huge and will be ignored.
+        shutil.move(camera_params.info_file, LOG_DIR)
 
 
 def run_test(proc: subprocess.Popen) -> None:
@@ -135,7 +153,7 @@ def run_test(proc: subprocess.Popen) -> None:
         # being accessible on the device by the fuchsia managed docker image.
         host = proxy_host + '0'
     with ChromeDriverWrapper((device, port)) as driver:
-        for file in ['720p24fpsVP9_gangnam_sync.webm']:
+        for file in VIDEOS.keys():
             run_video_perf_test(file, driver, host)
 
 
