@@ -342,6 +342,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);
+        when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
@@ -388,7 +389,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         mismatchNoticeSuppressedWatcher.assertExpected();
 
         // No profile
-        when(mProfileSupplier.get()).thenReturn(null);
+        when(mProfileSupplier.hasValue()).thenReturn(false);
         assertNull(
                 "Should NOT create checker for no profile",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
