@@ -52,6 +52,8 @@
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 
+@synthesize baseViewController = _baseViewController;
+
 #pragma mark - ChromeCoordinator
 
 - (instancetype)initWithBrowser:(Browser*)browser {

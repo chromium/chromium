@@ -210,6 +210,15 @@
 
 #pragma mark - Public
 
+- (UIViewController*)baseViewController {
+  return self.primaryToolbarCoordinator.baseViewController;
+}
+
+- (void)setBaseViewController:(UIViewController*)baseViewController {
+  self.primaryToolbarCoordinator.baseViewController = baseViewController;
+  self.secondaryToolbarCoordinator.baseViewController = baseViewController;
+}
+
 - (UIViewController*)primaryToolbarViewController {
   return self.primaryToolbarCoordinator.viewController;
 }

@@ -28,6 +28,9 @@
                          SideSwipeToolbarSnapshotProviding,
                          ToolbarCoordinating>
 
+// Redefined as readwrite to be able to set it after the BVC is created.
+@property(weak, nonatomic, readwrite) UIViewController* baseViewController;
+
 /// Delegate for focusing omnibox in `locationBarCoordinator`.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> omniboxFocusDelegate;
 /// Delegate for presenting the popup in `locationBarCoordinator`.

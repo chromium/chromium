@@ -22,6 +22,9 @@ class WebState;
 // the specific coordinator (primary or secondary).
 @interface AdaptiveToolbarCoordinator : ChromeCoordinator <ToolbarCoordinatee>
 
+// Redefined as readwrite to be able to set it after the BVC is created.
+@property(weak, nonatomic, readwrite) UIViewController* baseViewController;
+
 // The Toolbar view controller owned by this coordinator.
 @property(nonatomic, strong) AdaptiveToolbarViewController* viewController;
 

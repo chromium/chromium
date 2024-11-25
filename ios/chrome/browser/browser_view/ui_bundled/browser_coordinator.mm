@@ -1151,25 +1151,27 @@ enum class ToolbarKind {
 }
 
 - (void)updateViewControllerDependencies {
-  _bookmarksCoordinator.baseViewController = self.viewController;
+  BrowserViewController* viewController = self.viewController;
+  _bookmarksCoordinator.baseViewController = viewController;
 
-  _toolbarAccessoryPresenter.baseViewController = self.viewController;
+  _toolbarAccessoryPresenter.baseViewController = viewController;
 
-  self.qrScannerCoordinator.baseViewController = self.viewController;
+  self.qrScannerCoordinator.baseViewController = viewController;
   [self.qrScannerCoordinator start];
 
-  self.popupMenuCoordinator.baseViewController = self.viewController;
+  self.popupMenuCoordinator.baseViewController = viewController;
 
   // The Lens coordinator needs to be started before the primary toolbar
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
-  _lensCoordinator.baseViewController = self.viewController;
-  _lensCoordinator.delegate = self.viewController;
+  _lensCoordinator.baseViewController = viewController;
+  _lensCoordinator.delegate = viewController;
   [_lensCoordinator start];
 
-  _toolbarCoordinator.omniboxFocusDelegate = self.viewController;
-  _toolbarCoordinator.popupPresenterDelegate = self.viewController;
-  _toolbarCoordinator.toolbarHeightDelegate = self.viewController;
+  _toolbarCoordinator.baseViewController = viewController;
+  _toolbarCoordinator.omniboxFocusDelegate = viewController;
+  _toolbarCoordinator.popupPresenterDelegate = viewController;
+  _toolbarCoordinator.toolbarHeightDelegate = viewController;
   [_toolbarCoordinator start];
 
   _loadQueryCommandsHandler =
@@ -1180,12 +1182,12 @@ enum class ToolbarKind {
   _keyCommandsProvider.omniboxHandler = _omniboxCommandsHandler;
   _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
-  _legacyTabStripCoordinator.baseViewController = self.viewController;
-  _tabStripCoordinator.baseViewController = self.viewController;
-  _NTPCoordinator.baseViewController = self.viewController;
-  _bubblePresenterCoordinator.baseViewController = self.viewController;
+  _legacyTabStripCoordinator.baseViewController = viewController;
+  _tabStripCoordinator.baseViewController = viewController;
+  _NTPCoordinator.baseViewController = viewController;
+  _bubblePresenterCoordinator.baseViewController = viewController;
 
-  [_dispatcher startDispatchingToTarget:self.viewController
+  [_dispatcher startDispatchingToTarget:viewController
                             forProtocol:@protocol(BrowserCommands)];
 }
 
