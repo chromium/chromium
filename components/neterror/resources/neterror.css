@@ -694,3 +694,15 @@ html[dir='rtl'].offline .icon-offline {
     background: var(--google-blue-300);
   }
 }
+
+#main-frame-error:not(.showing-details) #details {
+  display: none;
+}
+
+@media (min-width: 240px) and (max-width: 420px) and (min-height: 401px),
+       (min-height: 240px) and (max-height: 560px) and (min-width: 421px) {
+  #main-frame-error.showing-details #main-content,
+  #main-frame-error.showing-details .runner-container {
+    display: none;
+  }
+}

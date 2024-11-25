@@ -4,7 +4,6 @@
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 
-import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
@@ -36,23 +35,15 @@ interface WithDetailsText {
 }
 
 function toggleHelpBox() {
-  const helpBoxOuter = getRequiredElement('details');
-  helpBoxOuter.classList.toggle(HIDDEN_CLASS);
+  const wrapper = getRequiredElement('main-frame-error');
+  wrapper.classList.toggle('showing-details');
+
   const detailsButton =
       getRequiredElement<HTMLElement&WithDetailsText>('details-button');
-  if (helpBoxOuter.classList.contains(HIDDEN_CLASS)) {
+  if (!wrapper.classList.contains('showing-details')) {
     detailsButton.innerText = detailsButton.detailsText;
   } else {
     detailsButton.innerText = detailsButton.hideDetailsText;
-  }
-
-  // Details appears over the main content on small screens.
-  if (mobileNav) {
-    getRequiredElement('main-content').classList.toggle(HIDDEN_CLASS);
-    const runnerContainer = document.querySelector('.runner-container');
-    if (runnerContainer) {
-      runnerContainer.classList.toggle(HIDDEN_CLASS);
-    }
   }
 }
 

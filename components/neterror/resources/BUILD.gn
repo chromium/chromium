@@ -41,10 +41,6 @@ webui_ts_library("build_ts") {
     "//third_party/jstemplate:library",
     "//ui/webui/resources/js:build_ts",
   ]
-  definitions = [ "mobile_nav.d.ts" ]
-  path_mappings =
-      [ "chrome://interstitials/common/resources/interstitial_mobile_nav.js|" +
-        rebase_path("mobile_nav.d.ts", target_gen_dir) ]
   extra_deps = [ ":preprocess" ]
 }
 
