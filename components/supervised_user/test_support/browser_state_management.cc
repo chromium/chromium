@@ -412,17 +412,24 @@ std::string BrowserState::ToggleIntent::GetRequest() const {
   kidsmanagement::DefineChromeTestStateRequest request;
   for (const auto& toggle : toggle_list_) {
     if (toggle.type == FamilyLinkToggleType::kExtensionsToggle) {
+      // TODO: b/380423710 - Remove duplicated code after migration.
       request.mutable_url_filtering_settings()->set_can_add_extensions(
           static_cast<bool>(toggle.state));
+      request.set_can_add_extensions(static_cast<bool>(toggle.state));
     }
     if (toggle.type == FamilyLinkToggleType::kPermissionsToggle) {
+      // TODO: b/380423710 - Remove duplicated code after migration.
       request.mutable_url_filtering_settings()
           ->set_websites_can_request_permissions(
               static_cast<bool>(toggle.state));
+      request.set_websites_can_request_permissions(
+          static_cast<bool>(toggle.state));
     }
     if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
+      // TODO: b/380423710 - Remove duplicated code after migration.
       request.mutable_url_filtering_settings()->set_can_block_cookies(
           static_cast<bool>(toggle.state));
+      request.set_can_block_cookies(static_cast<bool>(toggle.state));
     }
   }
   return request.SerializeAsString();
