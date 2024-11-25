@@ -15,6 +15,22 @@
 #include "url/gurl.h"
 
 namespace page_info {
+using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
+
+namespace {
+
+std::optional<page_info::proto::MerchantTrustSignalsV3> GetSampleData() {
+  page_info::proto::MerchantTrustSignalsV3 merchant_trust_signals;
+
+  merchant_trust_signals.set_star_rating(4.5);
+  merchant_trust_signals.set_count_rating(100);
+  merchant_trust_signals.set_page_url(
+      "https://customerreviews.google.com/v/merchant?q=amazon.com&c=AE&v=19");
+  merchant_trust_signals.set_overall_summary(
+      "This is a test summary for the merchant trust side panel.");
+  return merchant_trust_signals;
+}
+}  // namespace
 
 MerchantTrustService::MerchantTrustService(
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
@@ -39,22 +55,25 @@ MerchantTrustService::GetMerchantTrustInfo(const GURL& url,
   if (!IsOptimizationGuideAllowed()) {
     return std::nullopt;
   }
-  // TODO(crbug.com/378671877): Returning a stubbed response for now.
-  page_info::proto::MerchantTrustSignalsV3 merchant_trust_signals;
-  merchant_trust_signals.set_star_rating(4.5);
-  merchant_trust_signals.set_count_rating(100);
-  merchant_trust_signals.set_page_url(
-      "https://customerreviews.google.com/v/merchant?q=amazon.com&c=AE&v=19");
-  merchant_trust_signals.set_overall_summary(
-      "This is a test summary for the merchant trust side panel.");
 
-  // TODO(crbug.com/378671877): Call the optimization guide decider with the new
-  // optimization type.
+  std::optional<proto::MerchantTrustSignalsV3> merchant_trust_metadata;
+  optimization_guide::OptimizationGuideDecision decision;
+  optimization_guide::OptimizationMetadata metadata;
+  decision = CanApplyOptimization(url, &metadata);
+  merchant_trust_metadata =
+      metadata.ParsedMetadata<proto::MerchantTrustSignalsV3>();
 
-  // TODO(crbug.com/378671877): Add and log validation for
-  // MerchantTrustSignalsV3.
+  if(decision != optimization_guide::OptimizationGuideDecision::kUnknown) {
+    // TODO(tommasin): Add and log validation for
+    // MerchantTrustSignalsV3.
+    return merchant_trust_metadata;
+  }
 
-  return merchant_trust_signals;
+  if (kMerchantTrustEnabledWithSampleData.Get()) {
+    return GetSampleData();
+  }
+
+  return std::nullopt;
 }
 
 MerchantTrustService::~MerchantTrustService() = default;
@@ -62,6 +81,18 @@ MerchantTrustService::~MerchantTrustService() = default;
 bool MerchantTrustService::IsOptimizationGuideAllowed() const {
   return optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
       is_off_the_record_, prefs_);
+}
+
+optimization_guide::OptimizationGuideDecision
+MerchantTrustService::CanApplyOptimization(
+    const GURL& url,
+    optimization_guide::OptimizationMetadata* optimization_metadata) const {
+  if (!IsOptimizationGuideAllowed()) {
+    return optimization_guide::OptimizationGuideDecision::kUnknown;
+  }
+  return optimization_guide_decider_->CanApplyOptimization(
+      url, optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V3,
+      optimization_metadata);
 }
 
 }  // namespace page_info

@@ -20,9 +20,6 @@ bool IsAboutThisSiteAsyncFetchingEnabled();
 // metadata in a TabHelper.
 BASE_DECLARE_FEATURE(kAboutThisSiteAsyncFetching);
 
-// Enables the merchant trust Learning Experiment UI.
-BASE_DECLARE_FEATURE(kMerchantTrust);
-
 // Enables the privacy policy insights Learning Experiment UI.
 BASE_DECLARE_FEATURE(kPrivacyPolicyInsights);
 

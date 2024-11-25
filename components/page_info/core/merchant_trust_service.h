@@ -27,6 +27,10 @@ class MerchantTrustSignalsV3;
 // Provides merchant information for a web site.
 class MerchantTrustService : public KeyedService {
  public:
+  using DecisionAndMetadata =
+      std::pair<optimization_guide::OptimizationGuideDecision,
+                std::optional<page_info::proto::MerchantTrustSignalsV3>>;
+
   explicit MerchantTrustService(
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       bool is_off_the_record,
@@ -49,6 +53,9 @@ class MerchantTrustService : public KeyedService {
 
   // Virtual for tests.
   virtual bool IsOptimizationGuideAllowed() const;
+  virtual optimization_guide::OptimizationGuideDecision CanApplyOptimization(
+      const GURL& url,
+      optimization_guide::OptimizationMetadata* optimization_metadata) const;
 };
 
 }  // namespace page_info

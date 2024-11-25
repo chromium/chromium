@@ -4336,6 +4336,14 @@ const FeatureEntry::FeatureVariation
          std::size(kEnableFingerprintingProtectionFilter_DryRunWithLogging),
          nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kMerchantTrustEnabledWithSampleData[] = {
+    {page_info::kMerchantTrustEnabledWithSampleDataName, "true"}};
+const FeatureEntry::FeatureVariation kMerchantTrustVariations[] = {
+    {"Enabled with sample data", kMerchantTrustEnabledWithSampleData,
+     std::size(kMerchantTrustEnabledWithSampleData), nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -8556,7 +8564,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"merchant-trust", flag_descriptions::kMerchantTrustName,
      flag_descriptions::kMerchantTrustDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(page_info::kMerchantTrust)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(page_info::kMerchantTrust,
+                                    kMerchantTrustVariations,
+                                    "MerchantTrust")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
