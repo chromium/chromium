@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_H_
 
@@ -61,16 +56,16 @@ class CORE_EXPORT CustomElement {
       return false;
 
     if (name.Is8Bit()) {
-      const LChar* characters = name.Characters8();
-      for (wtf_size_t i = 1; i < name.length(); ++i) {
+      auto characters = name.Span8();
+      for (size_t i = 1; i < characters.size(); ++i) {
         if (!Character::IsPotentialCustomElementName8BitChar(characters[i]))
           return false;
       }
     } else {
-      const UChar* characters = name.Characters16();
-      for (wtf_size_t i = 1; i < name.length();) {
+      auto characters = name.Span16();
+      for (size_t i = 1; i < characters.size();) {
         UChar32 ch;
-        U16_NEXT(characters, i, name.length(), ch);
+        U16_NEXT(characters, i, characters.size(), ch);
         if (!Character::IsPotentialCustomElementNameChar(ch))
           return false;
       }

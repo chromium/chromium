@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 
+#include <array>
 #include <ios>
 #include <memory>
 
@@ -42,8 +38,8 @@ static void TestIsPotentialCustomElementName(const AtomicString& str,
 }
 
 static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
-  LChar str8[] = "a-X";
-  UChar str16[] = {'a', '-', 'X', '\0', '\0'};
+  std::array<LChar, 3> str8 = {'a', '-', 'X'};
+  std::array<UChar, 5> str16 = {'a', '-', 'X', '\0', '\0'};
   AtomicString str;
   if (c <= 0xFF) {
     str8[2] = c;
@@ -51,8 +47,7 @@ static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
   } else {
     size_t i = 2;
     U16_APPEND_UNSAFE(str16, i, c);
-    str16[i] = 0;
-    str = AtomicString(str16);
+    str = AtomicString(base::span(str16).first(i));
   }
   TestIsPotentialCustomElementName(str, expected);
 }
