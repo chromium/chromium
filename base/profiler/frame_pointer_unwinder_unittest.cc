@@ -97,6 +97,28 @@ class FramePointerUnwinderTest : public testing::Test {
   raw_ptr<ModuleCache::Module> non_native_module_;
 };
 
+TEST_F(FramePointerUnwinderTest, CanUnwindFromNonDelegated) {
+  EXPECT_FALSE(unwinder()->CanUnwindFrom(Frame(0, nullptr)));
+  EXPECT_TRUE(unwinder()->CanUnwindFrom(Frame(0, module())));
+  EXPECT_FALSE(unwinder()->CanUnwindFrom(Frame(0, non_native_module())));
+}
+
+TEST_F(FramePointerUnwinderTest, CanUnwindFromDelegated) {
+  auto unwinder_with_delegate = std::make_unique<FramePointerUnwinder>(
+      BindRepeating([](const Frame& frame) {
+        return frame.instruction_pointer == 0x10;
+      }));
+
+  EXPECT_FALSE(unwinder_with_delegate->CanUnwindFrom(Frame(0xa, nullptr)));
+  EXPECT_FALSE(unwinder_with_delegate->CanUnwindFrom(Frame(0xa, module())));
+  EXPECT_FALSE(
+      unwinder_with_delegate->CanUnwindFrom(Frame(0xa, non_native_module())));
+  EXPECT_TRUE(unwinder_with_delegate->CanUnwindFrom(Frame(0x10, nullptr)));
+  EXPECT_TRUE(unwinder_with_delegate->CanUnwindFrom(Frame(0x10, module())));
+  EXPECT_TRUE(
+      unwinder_with_delegate->CanUnwindFrom(Frame(0x10, non_native_module())));
+}
+
 TEST_F(FramePointerUnwinderTest, FPPointsOutsideOfStack) {
   InputStack input({
       {false, 0x1000},

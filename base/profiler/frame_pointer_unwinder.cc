@@ -50,9 +50,17 @@ uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
 
 namespace base {
 
-FramePointerUnwinder::FramePointerUnwinder() = default;
+FramePointerUnwinder::FramePointerUnwinder(
+    CanUnwindFromDelegate can_unwind_from_delegate)
+    : can_unwind_from_delegate_(can_unwind_from_delegate) {}
+
+FramePointerUnwinder::~FramePointerUnwinder() = default;
 
 bool FramePointerUnwinder::CanUnwindFrom(const Frame& current_frame) const {
+  if (can_unwind_from_delegate_) {
+    return can_unwind_from_delegate_.Run(current_frame);
+  }
+
   return current_frame.module && current_frame.module->IsNative();
 }
 
