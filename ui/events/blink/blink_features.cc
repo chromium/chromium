@@ -6,10 +6,6 @@
 
 namespace features {
 
-BASE_FEATURE(kSendMouseLeaveEvents,
-             "SendMouseLeaveEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDontSendKeyEventsToJavascript,
              "DontSendKeyEventsToJavascript",
              base::FEATURE_DISABLED_BY_DEFAULT);

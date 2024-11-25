@@ -382,10 +382,7 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
       if (props && props->contains(kPropertyMouseCrossedIntermediateWindow)) {
         type = blink::WebInputEvent::Type::kMouseMove;
       } else {
-        static bool s_send_leave =
-            base::FeatureList::IsEnabled(features::kSendMouseLeaveEvents);
-        type = s_send_leave ? blink::WebInputEvent::Type::kMouseLeave
-                            : blink::WebInputEvent::Type::kMouseMove;
+        type = blink::WebInputEvent::Type::kMouseLeave;
       }
       break;
     }
