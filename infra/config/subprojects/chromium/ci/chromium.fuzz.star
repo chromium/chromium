@@ -346,6 +346,7 @@ ci.builder(
         short_name = "centipede",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    execution_timeout = 4 * time.hour,
     properties = {
         "upload_bucket": "chromium-browser-centipede",
         "upload_directory": "asan",
