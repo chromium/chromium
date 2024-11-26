@@ -273,50 +273,69 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
         if f.LocalPath().endswith(".html"):
           html_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
         if f.LocalPath().endswith(".txt"):
-            if "-expected-android" in f.LocalPath():
+            if "-expected-android-" in f.LocalPath():
                 android_txt_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
 
     # If any Android txt files were found, check for Java file changes
-    for basename, html_path in android_txt_files.items():
-        name, ext = input_api.os_path.splitext(basename)
-        name = name.split("-expected-android")[0]
-        test_file = None
+    for txt_file_name, txt_file_path in android_txt_files.items():
+        ################
+        # txt_file_name: example-expected-android-external.txt
+        # txt_file_path: content/test/data/accessibility/html/example-expected-android-external.txt
+        # name:          example
+        # html_path:     content/test/data/accessibility/html/example.html
+        ################
+        name = txt_file_name.split("-expected-android")[0]
+        html_path = txt_file_path.split("-expected-android")[0] + ".html"
+
+        java_test_suite_file = None
         readable_file_name = None
 
-        if "event" in html_path:
+        if "/event/" in txt_file_path:
             readable_file_name = "//content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java"
-            test_file = os.path.join(input_api.change.RepositoryRoot(),
+            java_test_suite_file = os.path.join(input_api.change.RepositoryRoot(),
                 "content", "public", "android", "javatests", "src", "org", "chromium",
                 "content", "browser", "accessibility", "WebContentsAccessibilityEventsTest.java")
-        elif any(subdir in html_path for subdir in ["accname", "html", "aria", "css"]):
+        elif any(subdir in txt_file_path for subdir in ["/accname/", "/html/", "/aria/", "/css/"]):
+            # We do not want to include tree tests with <script>'s, they flake on Android.
+            try:
+                html_file_contents = input_api.ReadFile(html_path)
+                exclusion_rule = "<script>"
+                if exclusion_rule in html_file_contents:
+                    continue
+            except Exception as e:
+                problems.append(f"Error reading {html_path}: {e}")
+
             readable_file_name = "//content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java"
-            test_file = os.path.join(input_api.change.RepositoryRoot(),
+            java_test_suite_file = os.path.join(input_api.change.RepositoryRoot(),
                 "content", "public", "android", "javatests", "src", "org", "chromium",
                 "content", "browser", "accessibility", "WebContentsAccessibilityTreeTest.java")
 
-        if test_file is not None:
+        if java_test_suite_file is not None:
             try:
-                test_contents = input_api.ReadFile(test_file)
+                test_contents = input_api.ReadFile(java_test_suite_file)
                 expected_addition = f"{name}.html"
                 if expected_addition not in test_contents:
                     problems.append(f"{expected_addition} (missing reference in {readable_file_name})")
             except Exception as e:
-                problems.append(f"Error reading {test_file}: {e}")
+                problems.append(f"Error reading {java_test_suite_file}: {e}")
 
     # Check for cc changes for the remaining files
     for basename, html_path in html_files.items():
         test_file = None
         readable_file_name = None
 
-        if "node" in html_path:
+        if "/html/frame/" in html_path or "/aria/frames/" in html_path:
+            continue
+
+        if "/accname/" in html_path or "/mathml/" in html_path:
             readable_file_name = "//content/browser/accessibility/dump_accessibility_node_browsertest.cc"
             test_file = os.path.join(input_api.change.RepositoryRoot(),
                           "content", "browser", "accessibility", "dump_accessibility_node_browsertest.cc")
-        elif "event" in html_path:
+        elif "/event/" in html_path:
             readable_file_name = "//content/browser/accessibility/dump_accessibility_events_browsertest.cc"
             test_file = os.path.join(input_api.change.RepositoryRoot(),
                           "content", "browser", "accessibility", "dump_accessibility_events_browsertest.cc")
-        elif "mac" in html_path:
+        elif "/mac/" in html_path or "/win/ia2/" in html_path:
             readable_file_name = "//content/browser/accessibility/dump_accessibility_scripts_browsertest.cc"
             test_file = os.path.join(input_api.change.RepositoryRoot(),
                           "content", "browser", "accessibility", "dump_accessibility_scripts_browsertest.cc")
@@ -352,7 +371,7 @@ def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
 
     def FileFilter(affected_file):
         return input_api.FilterSourceFile(
-            affected_file, files_to_check=[r"content/test/data/accessibility/.+\.(html|txt)"]
+            affected_file, files_to_check=[r"content/test/data/accessibility/(?!(mac|win)/).+\.(html|txt)"]
         )
 
     problems = []

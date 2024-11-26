@@ -394,18 +394,7 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
     def testValidReferencesForNode(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
-            MockFile("content/test/data/accessibility/node/foo.html", [], action='A'),
-            MockFile("content/browser/accessibility/dump_accessibility_node_browsertest.cc", ["foo.html"]),
-        ]
-        results = PRESUBMIT.CheckAccessibilityHtmlFileTest(mock_input_api, MockOutputApi())
-        self.assertEqual(0, len(results))
-
-    # Test Android does not care about /node/
-    def testValidReferencesForNodeWithAndroid(self):
-        mock_input_api = MockInputApi()
-        mock_input_api.files = [
-            MockFile("content/test/data/accessibility/node/foo.html", [], action='A'),
-            MockFile("content/test/data/accessibility/node/foo-expected-android.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/accname/foo.html", [], action='A'),
             MockFile("content/browser/accessibility/dump_accessibility_node_browsertest.cc", ["foo.html"]),
         ]
         results = PRESUBMIT.CheckAccessibilityHtmlFileTest(mock_input_api, MockOutputApi())
@@ -482,6 +471,9 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
         mock_input_api.files = [
             MockFile("content/test/data/accessibility/accname/foo.html", [], action='A'),
             MockFile("content/test/data/accessibility/accname/foo-expected-android-external.txt", [], action='A'),
+            MockFile("content/browser/accessibility/dump_accessibility_node_browsertest.cc", [
+                "foo.html",
+            ], action='A'),
             MockFile("content/test/data/accessibility/css/bar.html", [], action='A'),
             MockFile("content/test/data/accessibility/css/bar-expected-android.txt", [], action='A'),
             MockFile("content/test/data/accessibility/aria/baz.html", [], action='A'),
@@ -523,7 +515,7 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
     def testMissingReferenceForNode(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
-            MockFile("content/test/data/accessibility/node/foo.html", [], action='A'),
+            MockFile("content/test/data/accessibility/accname/foo.html", [], action='A'),
             MockFile("content/browser/accessibility/dump_accessibility_node_browsertest.cc", []),
         ]
         results = PRESUBMIT.CheckAccessibilityHtmlFileTest(mock_input_api, MockOutputApi())
@@ -578,7 +570,7 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
             MockFile("content/test/data/accessibility/event/bar-with-dashes.html", [], action='A'),
-            MockFile("content/test/data/accessibility/event/bar-with-dashes-expected-android.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/event/bar-with-dashes-expected-android-external.txt", [], action='A'),
             MockFile("content/browser/accessibility/dump_accessibility_events_browsertest.cc", []),
             MockFile("content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java", []),
         ]
@@ -599,8 +591,11 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
         mock_input_api.files = [
             MockFile("content/test/data/accessibility/accname/foo.html", [], action='A'),
             MockFile("content/test/data/accessibility/accname/foo-expected-android-external.txt", [], action='A'),
+            MockFile("content/browser/accessibility/dump_accessibility_node_browsertest.cc", [
+                "foo.html",
+            ], action='A'),
             MockFile("content/test/data/accessibility/css/bar.html", [], action='A'),
-            MockFile("content/test/data/accessibility/css/bar-expected-android.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/css/bar-expected-android-external.txt", [], action='A'),
             MockFile("content/test/data/accessibility/aria/baz.html", [], action='A'),
             MockFile("content/test/data/accessibility/aria/baz-expected-android-assist-data.txt", [], action='A'),
             MockFile("content/test/data/accessibility/html/beep.html", [], action='A'),
