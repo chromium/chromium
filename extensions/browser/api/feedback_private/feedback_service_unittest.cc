@@ -470,7 +470,7 @@ TEST_F(FeedbackServiceTest, TestSendFeedbackWithVariationsBinary) {
 
   // Decryption.
   auto ciphertext =
-      base::as_byte_span(encrypted_data).subspan<X25519_PUBLIC_VALUE_LEN>();
+      base::span(encrypted_data).subspan<X25519_PUBLIC_VALUE_LEN>();
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
   ASSERT_TRUE(EVP_HPKE_CTX_open(/*ctx=*/recipient_ctx.get(),

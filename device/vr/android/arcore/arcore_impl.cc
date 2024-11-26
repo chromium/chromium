@@ -128,19 +128,18 @@ void CopyArCoreImage(const ArSession* session,
   ArImage_getPlanePixelStride(session, image, plane_index, &src_pixel_stride);
 
   // Naked pointer since ArImage_getPlaneData does not transfer ownership to us.
-  uint8_t const* src_buffer = nullptr;
+  const uint8_t* src_buffer = nullptr;
   int32_t src_buffer_length = 0;
   ArImage_getPlaneData(session, image, plane_index, &src_buffer,
                        &src_buffer_length);
   // size_t can hold more positive numbers than int32_t so as long as the length
   // is greater than 0 (which it should be) the static_cast is safe.
-  CHECK_GE(src_buffer_length, 0);
-  base::span<const uint8_t> src_span(src_buffer,
-                                     static_cast<size_t>(src_buffer_length));
+  base::span<const uint8_t> src_span(
+      src_buffer, base::checked_cast<size_t>(src_buffer_length));
 
   // Fast path: Source and destination have the same layout
-  bool const fast_path =
-      static_cast<size_t>(src_row_stride) == width * out_pixel_size;
+  const auto src_row_stride_s = base::checked_cast<size_t>(src_row_stride);
+  const bool fast_path = src_row_stride_s == width * out_pixel_size;
   TRACE_EVENT1("xr", "CopyArCoreImage: memcpy", "fastPath", fast_path);
   UMA_HISTOGRAM_BOOLEAN("XR.ARCore.ImageCopyFastPath", fast_path);
 
@@ -157,18 +156,19 @@ void CopyArCoreImage(const ArSession* session,
     return;
   }
 
-  CHECK_EQ(out_pixel_size, static_cast<size_t>(src_pixel_stride));
+  const auto src_pixel_stride_s = base::checked_cast<size_t>(src_pixel_stride);
+  CHECK_EQ(out_pixel_size, src_pixel_stride_s);
 
   // Slow path: copy row by row
   // If we're taking this path, it means that our row stride is longer than it
   // would otherwise be for a given row. First copy the relevant bytes worth of
   // data, then advance |out_pixels| by the amount of bytes copied, and src_span
   // by the row stride to advance each of them to the next row.
-  const size_t data_bytes_per_row = width * src_pixel_stride;
+  const size_t data_bytes_per_row = width * src_pixel_stride_s;
   for (uint32_t row = 0; row < height; ++row) {
     out_pixels.copy_prefix_from(src_span.first(data_bytes_per_row));
     out_pixels = out_pixels.subspan(data_bytes_per_row);
-    src_span = src_span.subspan(src_row_stride);
+    src_span = src_span.subspan(src_row_stride_s);
   }
 }
 

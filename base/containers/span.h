@@ -621,21 +621,24 @@ class GSL_POINTER span {
       return UNSAFE_BUFFERS(span<element_type, Count>(data() + Offset, Count));
     }
   }
-  constexpr auto subspan(size_type offset,
-                         size_type count = dynamic_extent) const {
-    CHECK_LE(offset, extent);
-    const size_type remaining = extent - offset;
+  constexpr auto subspan(
+      StrictNumeric<size_type> offset,
+      StrictNumeric<size_type> count = dynamic_extent) const {
+    CHECK_LE(size_type{offset}, extent);
+    const size_type remaining = extent - size_type{offset};
     if (count == dynamic_extent) {
       // SAFETY: `data()` points to at least `extent` elements, so `offset`
       // specifies a valid element index or the past-the-end index, and
       // `remaining` cannot index past-the-end elements.
-      return UNSAFE_BUFFERS(span<element_type>(data() + offset, remaining));
+      return UNSAFE_BUFFERS(
+          span<element_type>(data() + size_type{offset}, remaining));
     }
-    CHECK_LE(count, remaining);
+    CHECK_LE(size_type{count}, remaining);
     // SAFETY: `data()` points to at least `extent` elements, so `offset`
     // specifies a valid element index or the past-the-end index, and `count` is
     // no larger than the number of remaining valid elements.
-    return UNSAFE_BUFFERS(span<element_type>(data() + offset, count));
+    return UNSAFE_BUFFERS(
+        span<element_type>(data() + size_type{offset}, count));
   }
 
   template <size_t Offset>
@@ -661,7 +664,7 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the span contains at least `offset` elements and
   // will terminate otherwise.
-  constexpr auto split_at(size_type offset) const {
+  constexpr auto split_at(StrictNumeric<size_type> offset) const {
     return std::pair(first(offset), subspan(offset));
   }
 
@@ -763,8 +766,13 @@ class GSL_POINTER span {
   }
 
   // [span.elem], span element access
-  //
   // When `idx` is outside the span, the underlying call will `CHECK()`.
+  //
+  // Intentionally does not take `StrictNumeric<size_t>`, unlike all other APIs.
+  // There are far too many false positives on integer literals (e.g. `s[0]`),
+  // and while `ENABLE_IF_ATTR` can be used to work around those for Clang, that
+  // would leave the gcc build broken. The consequence of not upgrading this is
+  // that some errors will only be detected at runtime instead of compile time.
   constexpr reference operator[](size_type idx) const
     requires(extent > 0)
   {
@@ -772,7 +780,7 @@ class GSL_POINTER span {
   }
 
   // When `idx` is outside the span, the underlying call will `CHECK()`.
-  constexpr reference at(size_type idx) const
+  constexpr reference at(StrictNumeric<size_type> idx) const
     requires(extent > 0)
   {
     return *get_at(idx);
@@ -790,13 +798,13 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the `idx` is inside the span and will terminate
   // otherwise.
-  constexpr pointer get_at(size_type idx) const
+  constexpr pointer get_at(StrictNumeric<size_type> idx) const
     requires(extent > 0)
   {
-    CHECK_LT(idx, extent);
+    CHECK_LT(size_type{idx}, extent);
     // SAFETY: Since data() always points to at least `extent` elements, the
     // check above ensures `idx < extent` and is thus in range for data().
-    return UNSAFE_BUFFERS(data() + idx);
+    return UNSAFE_BUFFERS(data() + size_type{idx});
   }
 
   // Returns a reference to the first element in the span.
@@ -1123,21 +1131,24 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // no larger than the number of remaining valid elements.
     return UNSAFE_BUFFERS(span<element_type, Count>(data() + Offset, Count));
   }
-  constexpr auto subspan(size_type offset,
-                         size_type count = dynamic_extent) const {
-    CHECK_LE(offset, size());
-    const size_type remaining = size() - offset;
+  constexpr auto subspan(
+      StrictNumeric<size_type> offset,
+      StrictNumeric<size_type> count = dynamic_extent) const {
+    CHECK_LE(size_type{offset}, size());
+    const size_type remaining = size() - size_type{offset};
     if (count == dynamic_extent) {
       // SAFETY: `data()` points to at least `size()` elements, so `offset`
       // specifies a valid element index or the past-the-end index, and
       // `remaining` cannot index past-the-end elements.
-      return UNSAFE_BUFFERS(span<element_type>(data() + offset, remaining));
+      return UNSAFE_BUFFERS(
+          span<element_type>(data() + size_type{offset}, remaining));
     }
-    CHECK_LE(count, remaining);
+    CHECK_LE(size_type{count}, remaining);
     // SAFETY: `data()` points to at least `size()` elements, so `offset`
     // specifies a valid element index or the past-the-end index, and `count` is
     // no larger than the number of remaining valid elements.
-    return UNSAFE_BUFFERS(span<element_type>(data() + offset, count));
+    return UNSAFE_BUFFERS(
+        span<element_type>(data() + size_type{offset}, size_type{count}));
   }
 
   // An overload of `split_at` which returns a fixed-size span.
@@ -1168,7 +1179,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the span contains at least `offset` elements and
   // will terminate otherwise.
-  constexpr auto split_at(size_type offset) const {
+  constexpr auto split_at(StrictNumeric<size_type> offset) const {
     return std::pair(first(offset), subspan(offset));
   }
 
@@ -1268,12 +1279,16 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   }
 
   // [span.elem], span element access
-  //
   // When `idx` is outside the span, the underlying call will `CHECK()`.
+  //
+  // Intentionally does not take `StrictNumeric<size_type>`; see comments on
+  // fixed-extent version for rationale.
   constexpr reference operator[](size_type idx) const { return at(idx); }
 
   // When `idx` is outside the span, the underlying call will `CHECK()`.
-  constexpr reference at(size_type idx) const { return *get_at(idx); }
+  constexpr reference at(StrictNumeric<size_type> idx) const {
+    return *get_at(idx);
+  }
 
   // Returns a pointer to an element in the span.
   //
@@ -1287,11 +1302,11 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the `idx` is inside the span and will terminate
   // otherwise.
-  constexpr pointer get_at(size_type idx) const {
-    CHECK_LT(idx, size());
+  constexpr pointer get_at(StrictNumeric<size_type> idx) const {
+    CHECK_LT(size_type{idx}, size());
     // SAFETY: Since data() always points to at least `size()` elements, the
     // check above ensures `idx < size()` and is thus in range for data().
-    return UNSAFE_BUFFERS(data() + idx);
+    return UNSAFE_BUFFERS(data() + size_type{idx});
   }
 
   // Returns a reference to the first element in the span.
