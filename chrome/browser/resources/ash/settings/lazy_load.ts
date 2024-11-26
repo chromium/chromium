@@ -5,16 +5,11 @@
 /**
  * @fileoverview This file is the entry point for custom elements and other
  * modules that should be lazily loaded in the ChromeOS Settings frontend app.
- * This should include:
- *  - Top-level pages that exist in the "Advanced" section.
- *  - All subpages
+ * This should include all subpages and exclude all top-level pages.
  */
 
 import '/strings.m.js';
-/** Top-level Advanced pages & About page */
-import './os_about_page/os_about_page.js';
-import './os_files_page/os_files_page.js';
-import './os_languages_page/os_languages_section.js';
+
 /** Subpages */
 import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
