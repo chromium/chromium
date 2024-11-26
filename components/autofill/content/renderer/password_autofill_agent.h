@@ -476,11 +476,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
-  // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
-  // field.
+  // Uses `flags` to set appropriate `FieldPropertiesMask` for a filled field.
   void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential,
-                   AutofillSuggestionTriggerSource suggestion_source);
+                   FieldPropertiesFlags flags);
 
   // Given `username_element` and `password_element`, previews `username` and
   // `password` respectively into them.

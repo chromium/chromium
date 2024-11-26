@@ -586,6 +586,13 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+FieldPropertiesFlags GetFieldFlags(AutofillSuggestionTriggerSource source) {
+  return source == AutofillSuggestionTriggerSource::kManualFallbackPasswords
+             ? FieldPropertiesFlags::
+                   kAutofilledPasswordFormFilledViaManualFallback
+             : FieldPropertiesFlags::kAutofilledOnUserTrigger;
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -974,7 +981,7 @@ bool PasswordAutofillAgent::FillUsernameAndPasswordElements(
   if (IsUsernameAmendable(username_element, is_password_field_focused) &&
       !(username.empty() && is_password_field_focused) &&
       username_element.Value().Utf16() != username) {
-    DoFillField(username_element, username, suggestion_source);
+    DoFillField(username_element, username, GetFieldFlags(suggestion_source));
   }
   if (password_element && IsElementEditable(password_element)) {
     FillPasswordFieldAndSave(password_element, password, suggestion_source);
@@ -1011,7 +1018,7 @@ void PasswordAutofillAgent::FillIntoFocusedField(
   }
   if (!is_password) {
     DoFillField(focused_input, credential,
-                AutofillSuggestionTriggerSource::kUnspecified);
+                FieldPropertiesFlags::kAutofilledOnUserTrigger);
   }
   if (focused_input.FormControlTypeForAutofill() != kInputPassword) {
     return;
@@ -1043,7 +1050,7 @@ void PasswordAutofillAgent::FillField(
     // Early return for non-input fields such as textarea.
     return;
   }
-  DoFillField(input_element, value, suggestion_source);
+  DoFillField(input_element, value, GetFieldFlags(suggestion_source));
 }
 
 void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
@@ -1058,18 +1065,13 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
   input.SetSuggestedValue(WebString::FromUTF16(credential));
 }
 
-void PasswordAutofillAgent::DoFillField(
-    WebInputElement input,
-    const std::u16string& credential,
-    AutofillSuggestionTriggerSource suggestion_source) {
+void PasswordAutofillAgent::DoFillField(WebInputElement input,
+                                        const std::u16string& credential,
+                                        FieldPropertiesFlags flag) {
   CHECK(input);
   input.SetAutofillValue(WebString::FromUTF16(credential));
-  field_data_manager().UpdateFieldDataMap(
-      form_util::GetFieldRendererId(input), credential,
-      suggestion_source ==
-              AutofillSuggestionTriggerSource::kManualFallbackPasswords
-          ? FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback
-          : FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  field_data_manager().UpdateFieldDataMap(form_util::GetFieldRendererId(input),
+                                          credential, flag);
   TrackAutofilledElement(input);
 }
 
@@ -1078,7 +1080,7 @@ void PasswordAutofillAgent::FillPasswordFieldAndSave(
     const std::u16string& credential,
     AutofillSuggestionTriggerSource suggestion_source) {
   CHECK(password_input.FormControlTypeForAutofill() == kInputPassword);
-  DoFillField(password_input, credential, suggestion_source);
+  DoFillField(password_input, credential, GetFieldFlags(suggestion_source));
   InformBrowserAboutUserInput(form_util::GetOwningForm(password_input),
                               password_input);
 }
