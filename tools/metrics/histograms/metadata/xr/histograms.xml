@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2025-01-07">
+<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2026-01-07">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
