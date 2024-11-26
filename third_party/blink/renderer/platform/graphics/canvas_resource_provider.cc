@@ -157,7 +157,6 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
                                info,
                                filter_quality,
                                /*context_provider_wrapper=*/nullptr,
-                               std::move(resource_dispatcher),
                                resource_host) {}
 
   ~CanvasResourceProviderBitmap() override = default;
@@ -206,7 +205,6 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
             shared_image_interface_provider
                 ? shared_image_interface_provider->GetWeakPtr()
                 : nullptr) {
-    DCHECK(ResourceDispatcher());
     type_ = kSharedBitmap;
 
     if (shared_image_interface_provider_) {
@@ -289,7 +287,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
                                info,
                                filter_quality,
                                std::move(context_provider_wrapper),
-                               /*resource_dispatcher=*/nullptr,
                                resource_host),
         is_accelerated_(is_accelerated),
         shared_image_usage_flags_(shared_image_usage_flags),
@@ -829,7 +826,6 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
                                info,
                                filter_quality,
                                std::move(context_provider_wrapper),
-                               std::move(resource_dispatcher),
                                resource_host) {}
 
   ~CanvasResourceProviderPassThrough() override = default;
@@ -877,7 +873,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                info,
                                filter_quality,
                                std::move(context_provider_wrapper),
-                               std::move(resource_dispatcher),
                                resource_host),
         use_oop_rasterization_(ContextProviderWrapper()
                                    ->ContextProvider()
@@ -1433,11 +1428,9 @@ CanvasResourceProvider::CanvasResourceProvider(
     const SkImageInfo& info,
     cc::PaintFlags::FilterQuality filter_quality,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     CanvasResourceHost* resource_host)
     : type_(type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      resource_dispatcher_(resource_dispatcher),
       info_(info),
       filter_quality_(filter_quality),
       resource_host_(resource_host),

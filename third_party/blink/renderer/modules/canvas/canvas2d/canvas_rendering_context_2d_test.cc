@@ -477,7 +477,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
             SkImageInfo::MakeN32Premul(size.width(), size.height()),
             cc::PaintFlags::FilterQuality::kLow,
             SharedGpuContext::ContextProviderWrapper(),
-            /*resource_dispatcher=*/nullptr,
             resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(

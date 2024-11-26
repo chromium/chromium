@@ -186,9 +186,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool SupportsDirectCompositing() const = 0;
   virtual bool SupportsSingleBuffering() const { return false; }
   uint32_t ContentUniqueID() const;
-  CanvasResourceDispatcher* ResourceDispatcher() {
-    return resource_dispatcher_.get();
-  }
 
   // Indicates that the compositing path is single buffered, meaning that
   // ProduceCanvasResource() return a reference to the same resource each time,
@@ -368,7 +365,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintFlags::FilterQuality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
       CanvasResourceHost* resource_host);
 
   // Its important to use this method for generating PaintImage wrapped canvas
@@ -440,7 +436,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void ReleaseLockedImages();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-  base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;
   // Note that `info_` should be const, but the relevant SkImageInfo
   // constructors do not exist.
   SkImageInfo info_;
