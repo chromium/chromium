@@ -4,7 +4,6 @@
         padding: 0 var(--cr-section-padding);
       }
 
-
       .bullet-line {
         align-items: center;
         display: flex;
@@ -71,7 +70,12 @@
         padding-inline-start: 20px;
       }
 
+      #learnMoreLabelContainerOld {
+        pointer-events: auto;
+      }
+
       #learnMoreLabelContainer {
+        padding-bottom: 12px;
         pointer-events: auto;
       }
     </style>
@@ -91,7 +95,8 @@
             expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
             on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
             no-automatic-collapse>
-            <div id="enhancedProtectionDescContainer" slot="collapse"
+          <div slot="collapse">
+            <div id="enhancedProtectionDescContainer"
                 class="settings-columned-section">
               <div class="column">
                 <h3 class="description-header">
@@ -136,11 +141,6 @@
                     </li>
                   </template>
                 </ul>
-                <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
-                  <div id="learnMoreLabelContainer" class="cr-secondary-text">
-                    $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
-                  </div>
-                </template>
               </div>
               <div class="column">
                 <h3 class="description-header">
@@ -167,12 +167,21 @@
                   </li>
                 </ul>
                 <template is="dom-if" if="[[!enablePasswordLeakToggleMove_]]">
-                  <div id="learnMoreLabelContainer" class="cr-secondary-text">
+                  <div id="learnMoreLabelContainerOld"
+                      class="cr-secondary-text">
                     $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
                   </div>
                 </template>
               </div>
             </div>
+            <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
+              <div id="learnMoreLabelContainer">
+                <div class="cr-secondary-text">
+                  $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
+                </div>
+              </div>
+            </template>
+          </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingStandard"
             no-collapse="[[computeSafeBrowsingStandardNoCollapse_(
