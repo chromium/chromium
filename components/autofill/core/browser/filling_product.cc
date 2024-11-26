@@ -40,21 +40,14 @@ std::string FillingProductToString(FillingProduct filling_product) {
   NOTREACHED();
 }
 // LINT.ThenChange(
-//   /tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct,
-//   /tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct.Condensed
+//   //tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct,
+//   //tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.FillingProduct.Condensed
 // )
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillEverythingFromAddressProfile:
-    case SuggestionType::kFillFullPhoneNumber:
-    case SuggestionType::kFillFullEmail:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:

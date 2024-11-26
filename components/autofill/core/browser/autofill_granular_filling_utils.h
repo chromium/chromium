@@ -42,8 +42,6 @@ enum class FillingMethod : uint8_t {
 // FieldTypeGroup::kAddress and FieldTypeGroup::kCompany.
 FieldTypeSet GetAddressFieldsForGroupFilling();
 
-FillingMethod GetFillingMethodFromSuggestionType(SuggestionType type);
-
 FieldTypeSet GetTargetFieldTypesFromFillingMethod(FillingMethod filling_method);
 
 }  // namespace autofill

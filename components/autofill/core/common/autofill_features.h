@@ -158,9 +158,6 @@ extern const base::FeatureParam<bool>
     kAutofillGranularFillingAvailableWithImprovedLabelsParam;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>
-    kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<bool>
     kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillForUnclassifiedFieldsAvailable);

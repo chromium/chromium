@@ -9,21 +9,6 @@
 
 namespace autofill {
 
-FillingMethod GetFillingMethodFromSuggestionType(SuggestionType type) {
-  switch (type) {
-    case SuggestionType::kFillFullAddress:
-      return FillingMethod::kGroupFillingAddress;
-    case SuggestionType::kFillFullName:
-      return FillingMethod::kGroupFillingName;
-    case SuggestionType::kFillFullPhoneNumber:
-      return FillingMethod::kGroupFillingPhoneNumber;
-    case SuggestionType::kFillFullEmail:
-      return FillingMethod::kGroupFillingEmail;
-    default:
-      NOTREACHED();  // Unrelated SuggestionTypes.
-  }
-}
-
 FieldTypeSet GetAddressFieldsForGroupFilling() {
   FieldTypeSet fields = GetFieldTypesOfGroup(FieldTypeGroup::kAddress);
   fields.insert_all(GetFieldTypesOfGroup(FieldTypeGroup::kCompany));

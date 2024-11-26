@@ -511,19 +511,6 @@ const base::FeatureParam<bool>
         &kAutofillGranularFillingAvailable,
         "autofill_granular_filling_with_improved_labels", true};
 
-// This variation controls whether the "Fill everything" button is displayed at
-// the top or at the bottom. When at the top, it is displayed regardless of the
-// filling mode. When at the bottom, it is displayed in all modes but the full
-// form filling mode.
-// The feature variation exists to separate the granular filling feature into
-// multiple sub-features. Thus, metrics can be evaluated separately for each
-// sub-feature.
-// TODO(crbug.com/40274514): Clean up when launched.
-const base::FeatureParam<bool>
-    kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam{
-        &kAutofillGranularFillingAvailable,
-        "autofill_granular_filling_with_fill_everything_in_the_footer", true};
-
 // This variation controls whether the expand children suggestions control is
 // hidden for non-selected/non-expanded suggestions (and the control shows up
 // when any part of the suggestion row is selected/hovered).

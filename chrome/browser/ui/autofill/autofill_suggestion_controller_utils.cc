@@ -46,8 +46,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:
-    case SuggestionType::kDeleteAddressProfile:
-    case SuggestionType::kEditAddressProfile:
     case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kPasswordAccountStorageOptIn:
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
@@ -60,10 +58,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kEditPredictionImprovementsInformation:
       return true;
-    case SuggestionType::kFillEverythingFromAddressProfile:
-      return features::
-          kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
-              .Get();
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -82,10 +76,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillPassword:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kIbanEntry:
