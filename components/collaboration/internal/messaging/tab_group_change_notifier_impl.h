@@ -52,6 +52,10 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
 
   void NotifyTabGroupChangeNotifierInitializedAndProcessChanges();
 
+  // Processes updates to group metadata and tabs within a group.
+  void ProcessTabGroupUpdates(const tab_groups::SavedTabGroup& before,
+                              const tab_groups::SavedTabGroup& after);
+
   std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
   ConvertToMapOfSharedTabGroup(
       const std::vector<tab_groups::SavedTabGroup>& groups);

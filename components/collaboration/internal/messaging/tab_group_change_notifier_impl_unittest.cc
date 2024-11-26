@@ -38,8 +38,24 @@ MATCHER_P(TabGroupGuidEq, expected_group, "") {
   return TabGroupsHaveSameGuidAndType(arg, expected_group);
 }
 
+bool TabsHaveSameGuid(tab_groups::SavedTabGroupTab a,
+                      tab_groups::SavedTabGroupTab b) {
+  return a.saved_tab_guid() == b.saved_tab_guid();
+}
+
+MATCHER_P(TabGuidEq, expected_tab, "") {
+  return TabsHaveSameGuid(arg, expected_tab);
+}
+
 tab_groups::SavedTabGroup CreateTestSharedTabGroup() {
   tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
+  return group;
+}
+
+tab_groups::SavedTabGroup CreateTestSharedTabGroupWithNoTabs() {
+  tab_groups::SavedTabGroup group =
+      tab_groups::test::CreateTestSavedTabGroupWithNoTabs();
   group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
   return group;
 }
@@ -515,6 +531,82 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupAddedUpdatedRemoved) {
             tab_group_title_and_color_changed.title());
   EXPECT_EQ(tab_group_received.color(),
             tab_group_title_and_color_changed.color());
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtStartup) {
+  tab_groups::SavedTabGroup tab_group_startup =
+      CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab1 = tab_groups::test::CreateSavedTabGroupTab(
+      "url1", u"title1", tab_group_startup.saved_guid());
+  tab_groups::SavedTabGroupTab tab2 = tab_groups::test::CreateSavedTabGroupTab(
+      "url2", u"title2", tab_group_startup.saved_guid());
+  tab_group_startup.AddTabFromSync(tab1);
+  tab_group_startup.AddTabFromSync(tab2);
+
+  // At init one tab was added and one removed.
+  tab_groups::SavedTabGroup tab_group_init = tab_group_startup;
+  tab_groups::SavedTabGroupTab tab3 = tab_groups::test::CreateSavedTabGroupTab(
+      "url3", u"title3", tab_group_init.saved_guid());
+  tab_group_init.RemoveTabFromSync(tab1.saved_tab_guid());
+  tab_group_init.AddTabFromSync(tab3);
+
+  // This tab will be overridden by the callback.
+  tab_groups::SavedTabGroupTab tab_received_added =
+      tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
+                                               tab_group_startup.saved_guid());
+  tab_groups::SavedTabGroupTab tab_received_removed =
+      tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
+                                               tab_group_startup.saved_guid());
+  EXPECT_CALL(*notifier_observer_, OnTabAdded(TabGuidEq(tab3)))
+      .WillOnce(SaveArg<0>(&tab_received_added));
+  EXPECT_CALL(*notifier_observer_, OnTabRemoved(TabGuidEq(tab1)))
+      .WillOnce(SaveArg<0>(&tab_received_removed));
+
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(
+          {tab_group_startup}),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(
+          {tab_group_init}));
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
+  // Initialize the notifier with an empty set of tab groups available on
+  // startup and on init.
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab1 = tab_groups::test::CreateSavedTabGroupTab(
+      "url1", u"title1", tab_group.saved_guid());
+  tab_groups::SavedTabGroupTab tab2 = tab_groups::test::CreateSavedTabGroupTab(
+      "url2", u"title2", tab_group.saved_guid());
+  tab_group.AddTabFromSync(tab1);
+  tab_group.AddTabFromSync(tab2);
+
+  // First add the group.
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(_));
+  tgss_observer_->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
+
+  // Add a new tab to the group and update it.
+  tab_groups::SavedTabGroupTab tab3 = tab_groups::test::CreateSavedTabGroupTab(
+      "url3", u"title3", tab_group.saved_guid());
+  tab_group.AddTabFromSync(tab3);
+  // This tab will be overridden by the callback.
+  tab_groups::SavedTabGroupTab tab_received =
+      tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
+                                               tab_group.saved_guid());
+  EXPECT_CALL(*notifier_observer_, OnTabAdded(TabGuidEq(tab3)))
+      .WillOnce(SaveArg<0>(&tab_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group,
+                                    tab_groups::TriggerSource::REMOTE);
+
+  // Remove a tab from the group and update it.
+  tab_group.RemoveTabFromSync(tab1.saved_tab_guid());
+  EXPECT_CALL(*notifier_observer_, OnTabRemoved(TabGuidEq(tab1)))
+      .WillOnce(SaveArg<0>(&tab_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group,
+                                    tab_groups::TriggerSource::REMOTE);
 }
 
 }  // namespace collaboration::messaging

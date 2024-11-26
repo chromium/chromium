@@ -27,6 +27,30 @@ bool HasEqualColor(const tab_groups::SavedTabGroup& a,
                    const tab_groups::SavedTabGroup& b) {
   return a.color() == b.color();
 }
+
+std::vector<tab_groups::SavedTabGroupTab> GetAddedTabs(
+    const tab_groups::SavedTabGroup& before,
+    const tab_groups::SavedTabGroup& after) {
+  std::vector<tab_groups::SavedTabGroupTab> added_tabs;
+  for (const auto& tab : after.saved_tabs()) {
+    if (!before.ContainsTab(tab.saved_tab_guid())) {
+      added_tabs.emplace_back(tab);
+    }
+  }
+  return added_tabs;
+}
+
+std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
+    const tab_groups::SavedTabGroup& before,
+    const tab_groups::SavedTabGroup& after) {
+  std::vector<tab_groups::SavedTabGroupTab> removed_tabs;
+  for (const auto& tab : before.saved_tabs()) {
+    if (!after.ContainsTab(tab.saved_tab_guid())) {
+      removed_tabs.emplace_back(tab);
+    }
+  }
+  return removed_tabs;
+}
 }  // namespace
 
 TabGroupChangeNotifierImpl::TabGroupChangeNotifierImpl(
@@ -134,18 +158,7 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
     return;
   }
 
-  if (!HasEqualTitle(last_known_group, group)) {
-    for (auto& observer : observers_) {
-      observer.OnTabGroupNameUpdated(group);
-    }
-  }
-  if (!HasEqualColor(last_known_group, group)) {
-    for (auto& observer : observers_) {
-      observer.OnTabGroupColorUpdated(group);
-    }
-  }
-
-  // TODO(crbug.com/378421557): Handle updated group tabs.
+  ProcessTabGroupUpdates(last_known_group, group);
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
@@ -186,31 +199,16 @@ void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
     }
   }
 
-  // Find removed tab groups.
+  // Find updated and removed tab groups.
+  std::vector<tab_groups::SavedTabGroup> updated_groups;
   std::vector<tab_groups::SavedTabGroup> removed_tab_groups;
   for (const auto& [guid, group] : last_known_tab_groups_) {
     if (current_tab_groups.find(guid) == current_tab_groups.end()) {
       removed_tab_groups.emplace_back(group);
+    } else {
+      updated_groups.emplace_back(group);
     }
   }
-
-  // Find groups with updated titles and colors.
-  std::vector<tab_groups::SavedTabGroup> tab_groups_title_changed;
-  std::vector<tab_groups::SavedTabGroup> tab_groups_color_changed;
-  for (const auto& [guid, group] : last_known_tab_groups_) {
-    auto current_group_it = current_tab_groups.find(guid);
-    if (current_group_it == current_tab_groups.end()) {
-      continue;
-    }
-    if (!HasEqualTitle(group, current_tab_groups.at(guid))) {
-      tab_groups_title_changed.emplace_back(current_tab_groups.at(guid));
-    }
-    if (!HasEqualColor(group, current_tab_groups.at(guid))) {
-      tab_groups_color_changed.emplace_back(current_tab_groups.at(guid));
-    }
-  }
-
-  // TODO(crbug.com/378421557): Handle updated group tabs.
 
   last_known_tab_groups_ = current_tab_groups;
 
@@ -228,19 +226,49 @@ void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
     }
   }
 
-  // Publish groups with title changes.
-  for (const auto& group : tab_groups_title_changed) {
+  // Process all metadata and tab updates within updated groups.
+  for (const tab_groups::SavedTabGroup& old_group : updated_groups) {
+    ProcessTabGroupUpdates(old_group,
+                           current_tab_groups.at(old_group.saved_guid()));
+  }
+}
+
+void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
+    const tab_groups::SavedTabGroup& before,
+    const tab_groups::SavedTabGroup& after) {
+  if (!HasEqualTitle(before, after)) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupNameUpdated(group);
+      observer.OnTabGroupNameUpdated(after);
+    }
+  }
+  if (!HasEqualColor(before, after)) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupColorUpdated(after);
     }
   }
 
-  // Publish groups with color changes.
-  for (const auto& group : tab_groups_color_changed) {
+  std::vector<tab_groups::SavedTabGroupTab> added_tabs =
+      GetAddedTabs(before, after);
+  std::vector<tab_groups::SavedTabGroupTab> removed_tabs =
+      GetRemovedTabs(before, after);
+
+  if (added_tabs.size() > 0) {
     for (auto& observer : observers_) {
-      observer.OnTabGroupColorUpdated(group);
+      for (auto& tab : added_tabs) {
+        observer.OnTabAdded(tab);
+      }
     }
   }
+
+  if (removed_tabs.size() > 0) {
+    for (auto& observer : observers_) {
+      for (auto& tab : removed_tabs) {
+        observer.OnTabRemoved(tab);
+      }
+    }
+  }
+
+  // TODO(crbug.com/378421557): Handle updated group tabs.
 }
 
 std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>
