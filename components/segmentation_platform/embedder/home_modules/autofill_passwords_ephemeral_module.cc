@@ -29,6 +29,13 @@ constexpr auto kRequiredSignals = base::MakeFixedFlatSet<std::string_view>({
     segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
 });
 
+// Defines the signals that, if any are present and evaluate to true, will
+// prevent `AutofillPasswordsEphemeralModule` from being shown.
+constexpr auto kDisqualifyingSignals =
+    base::MakeFixedFlatSet<std::string_view>({
+        segmentation_platform::kIsNewUser,
+    });
+
 }  // namespace
 
 // static
@@ -63,6 +70,9 @@ AutofillPasswordsEphemeralModule::GetInputs() {
       {segmentation_platform::kDidNotUsePasswordAutofill,
        CreateFeatureQueryFromCustomInputName(
            segmentation_platform::kDidNotUsePasswordAutofill)},
+      {segmentation_platform::kIsNewUser,
+       CreateFeatureQueryFromCustomInputName(
+           segmentation_platform::kIsNewUser)},
       {segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy,
        CreateFeatureQueryFromCustomInputName(
            segmentation_platform::kPasswordManagerAllowedByEnterprisePolicy)},
@@ -96,6 +106,16 @@ AutofillPasswordsEphemeralModule::ComputeCardResult(
     std::optional<float> result = signals.GetSignal(std::string(signal));
 
     if (!result.has_value() || result.value() <= 0) {
+      return ShowResult(EphemeralHomeModuleRank::kNotShown);
+    }
+  }
+
+  // Checks if any of the disqualifying signals are present and have a positive
+  // value in the provided `signals`.
+  for (const auto& signal : kDisqualifyingSignals) {
+    std::optional<float> result = signals.GetSignal(std::string(signal));
+
+    if (result.has_value() && result.value() > 0) {
       return ShowResult(EphemeralHomeModuleRank::kNotShown);
     }
   }

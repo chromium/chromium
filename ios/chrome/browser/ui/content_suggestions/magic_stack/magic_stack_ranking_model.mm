@@ -385,11 +385,15 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       base::MakeRefCounted<segmentation_platform::InputContext>();
   // This check has to match check in HomeModulesCardRegistry::CreateAllCards()
   // so that expected inputs match passed inputs.
-  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
+  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo) ||
+      (IsTipsMagicStackEnabled() && _tipsManager)) {
     inputContext->metadata_args.emplace(
         segmentation_platform::kIsNewUser,
         segmentation_platform::processing::ProcessedValue::FromFloat(
             IsFirstRunRecent(base::Days(14))));
+  }
+
+  if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
     inputContext->metadata_args.emplace(
         segmentation_platform::kIsSynced,
         segmentation_platform::processing::ProcessedValue::FromFloat(

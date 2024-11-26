@@ -65,7 +65,7 @@ TEST_F(LensEphemeralModuleTest, OutputLabelsReturnsExpectedLabels) {
 TEST_F(LensEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   auto ephemeral_module = std::make_unique<LensEphemeralModule>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module->GetInputs();
-  EXPECT_EQ(inputs.size(), 5u);
+  EXPECT_EQ(inputs.size(), 6u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kLensNotUsedRecently),
             inputs.end());
@@ -82,6 +82,7 @@ TEST_F(LensEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
       inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kLensAllowedByEnterprisePolicy),
             inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsNewUser), inputs.end());
 }
 
 // Verifies that `ComputeCardResult(…)` does not show a module when no signals
@@ -95,6 +96,7 @@ TEST_F(LensEphemeralModuleTest,
                                   /* kOpenedShoppingWebsite */ 0,
                                   /* kOpenedWebsiteInAnotherLanguage */ 0,
                                   /* kUsedGoogleTranslation */ 0,
+                                  /* kIsNewUser */ 0,
                                   /* kLensNotUsedRecently */ 0,
                                   /* kLensAllowedByEnterprisePolicy */ 0,
                               });
@@ -118,6 +120,7 @@ TEST_F(LensEphemeralModuleTest,
                                   /* kOpenedShoppingWebsite */ 1,
                                   /* kOpenedWebsiteInAnotherLanguage */ 0,
                                   /* kUsedGoogleTranslation */ 0,
+                                  /* kIsNewUser */ 0,
                                   /* kLensNotUsedRecently */ 1,
                                   /* kLensAllowedByEnterprisePolicy */ 1,
                               });
@@ -143,6 +146,7 @@ TEST_F(
                                   /* kOpenedShoppingWebsite */ 0,
                                   /* kOpenedWebsiteInAnotherLanguage */ 1,
                                   /* kUsedGoogleTranslation */ 1,
+                                  /* kIsNewUser */ 0,
                                   /* kLensNotUsedRecently */ 1,
                                   /* kLensAllowedByEnterprisePolicy */ 1,
                               });
@@ -168,6 +172,7 @@ TEST_F(
                                   /* kOpenedShoppingWebsite */ 0,
                                   /* kOpenedWebsiteInAnotherLanguage */ 0,
                                   /* kUsedGoogleTranslation */ 0,
+                                  /* kIsNewUser */ 0,
                                   /* kLensNotUsedRecently */ 1,
                                   /* kLensAllowedByEnterprisePolicy */ 1,
                               });
@@ -192,6 +197,7 @@ TEST_F(LensEphemeralModuleTest,
                                   /* kOpenedShoppingWebsite */ 1,
                                   /* kOpenedWebsiteInAnotherLanguage */ 1,
                                   /* kUsedGoogleTranslation */ 1,
+                                  /* kIsNewUser */ 0,
                                   /* kLensNotUsedRecently */ 1,
                                   /* kLensAllowedByEnterprisePolicy */ 1,
                               });
@@ -219,9 +225,86 @@ TEST_F(LensEphemeralModuleTest,
           /* kOpenedShoppingWebsite */ 1,
           /* kOpenedWebsiteInAnotherLanguage */ 1,
           /* kUsedGoogleTranslation */ 1,
+          /* kIsNewUser */ 0,
           /* kLensNotUsedRecently */ 1,
           /* kLensAllowedByEnterprisePolicy */ 0,  // Disallowed by policy
       });
+
+  CardSelectionSignals selection_signals(&signals, kLensEphemeralModule);
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(...)` does not show the Lens Search module
+// when the disqualifying signal `kIsNewUser` is present, even if other
+// required signals are present.
+TEST_F(LensEphemeralModuleTest,
+       ComputeCardResultDoesNotShowLensSearchWhenDisqualifyingSignalIsPresent) {
+  auto ephemeral_module = std::make_unique<LensEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      ephemeral_module.get(), {
+                                  /* kOpenedShoppingWebsite */ 0,
+                                  /* kOpenedWebsiteInAnotherLanguage */ 0,
+                                  /* kUsedGoogleTranslation */ 0,
+                                  /* kIsNewUser */ 1,  // Disqualifying signal
+                                  /* kLensNotUsedRecently */ 1,
+                                  /* kLensAllowedByEnterprisePolicy */ 1,
+                              });
+
+  CardSelectionSignals selection_signals(&signals, kLensEphemeralModule);
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(...)` does not show the Lens Shop module
+// when the disqualifying signal `kIsNewUser` is present, even if other
+// required signals are present.
+TEST_F(LensEphemeralModuleTest,
+       ComputeCardResultDoesNotShowLensShopWhenDisqualifyingSignalIsPresent) {
+  auto ephemeral_module = std::make_unique<LensEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      ephemeral_module.get(), {
+                                  /* kOpenedShoppingWebsite */ 1,
+                                  /* kOpenedWebsiteInAnotherLanguage */ 0,
+                                  /* kUsedGoogleTranslation */ 0,
+                                  /* kIsNewUser */ 1,  // Disqualifying signal
+                                  /* kLensNotUsedRecently */ 1,
+                                  /* kLensAllowedByEnterprisePolicy */ 1,
+                              });
+
+  CardSelectionSignals selection_signals(&signals, kLensEphemeralModule);
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Verifies that `ComputeCardResult(...)` does not show the Lens Translate
+// module when the disqualifying signal `kIsNewUser` is present, even if other
+// required signals are present.
+TEST_F(
+    LensEphemeralModuleTest,
+    ComputeCardResultDoesNotShowLensTranslateWhenDisqualifyingSignalIsPresent) {
+  auto ephemeral_module = std::make_unique<LensEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      ephemeral_module.get(), {
+                                  /* kOpenedShoppingWebsite */ 0,
+                                  /* kOpenedWebsiteInAnotherLanguage */ 1,
+                                  /* kUsedGoogleTranslation */ 1,
+                                  /* kIsNewUser */ 1,  // Disqualifying signal
+                                  /* kLensNotUsedRecently */ 1,
+                                  /* kLensAllowedByEnterprisePolicy */ 1,
+                              });
 
   CardSelectionSignals selection_signals(&signals, kLensEphemeralModule);
 

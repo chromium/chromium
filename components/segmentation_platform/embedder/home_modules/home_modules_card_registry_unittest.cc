@@ -70,7 +70,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(1u,
             registry_->get_label_index(kLensEphemeralModuleSearchVariation));
-  ASSERT_EQ(11u, registry_->all_cards_input_size());
+  ASSERT_EQ(15u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   ASSERT_EQ(4u, all_cards.size());
@@ -79,7 +79,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
   ASSERT_EQ(std::string(kLensEphemeralModule),
             std::string(all_cards.front()->card_name()));
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
-  ASSERT_EQ(4u, signal_map.find(kLensEphemeralModule)
+  ASSERT_EQ(5u, signal_map.find(kLensEphemeralModule)
                     ->second.find(segmentation_platform::kLensNotUsedRecently)
                     ->second);
 #endif

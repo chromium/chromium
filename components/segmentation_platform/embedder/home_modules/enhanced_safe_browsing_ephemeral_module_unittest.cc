@@ -66,13 +66,14 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
   auto ephemeral_module =
       std::make_unique<EnhancedSafeBrowsingEphemeralModule>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module->GetInputs();
-  EXPECT_EQ(inputs.size(), 2u);
+  EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kLacksEnhancedSafeBrowsing),
             inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::
                             kEnhancedSafeBrowsingAllowedByEnterprisePolicy),
             inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsNewUser), inputs.end());
 }
 
 // Verifies that `ComputeCardResult(…)` does not show the module when no signals
@@ -86,6 +87,7 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
       ephemeral_module.get(),
       {
           /* kLacksEnhancedSafeBrowsing */ 0,
+          /* kIsNewUser */ 0,
           /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 0,
       });
 
@@ -109,6 +111,7 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
       ephemeral_module.get(),
       {
           /* kLacksEnhancedSafeBrowsing */ 0,
+          /* kIsNewUser */ 0,
           /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       });
 
@@ -132,6 +135,7 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
       ephemeral_module.get(),
       {
           /* kLacksEnhancedSafeBrowsing */ 1,
+          /* kIsNewUser */ 0,
           /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
       });
 
@@ -157,6 +161,7 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
       ephemeral_module.get(),
       {
           /* kLacksEnhancedSafeBrowsing */ 1,
+          /* kIsNewUser */ 0,
           /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 0,
       });
 
@@ -167,6 +172,31 @@ TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
       ephemeral_module->ComputeCardResult(selection_signals);
 
   EXPECT_EQ(result.position, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Verifies that `ComputeCardResult(...)` does not show the module when the
+// disqualifying signal `kIsNewUser` is present, even if other required signals
+// are present.
+TEST_F(EnhancedSafeBrowsingEphemeralModuleTest,
+       ComputeCardResultDoesNotShowModuleWhenDisqualifyingSignalIsPresent) {
+  auto ephemeral_module =
+      std::make_unique<EnhancedSafeBrowsingEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals = CreateAllCardSignals(
+      ephemeral_module.get(),
+      {
+          /* kLacksEnhancedSafeBrowsing */ 1,
+          /* kIsNewUser */ 1,  // Disqualifying signal
+          /* kEnhancedSafeBrowsingAllowedByEnterprisePolicy */ 1,
+      });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kEnhancedSafeBrowsingEphemeralModule);
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 // Validates that `IsEnabled(…)` returns true when under the impression limit

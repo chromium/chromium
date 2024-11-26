@@ -65,7 +65,7 @@ TEST_F(AddressBarPositionEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
   auto ephemeral_module =
       std::make_unique<AddressBarPositionEphemeralModule>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = ephemeral_module->GetInputs();
-  EXPECT_EQ(inputs.size(), 2u);
+  EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(
       inputs.find(
@@ -73,6 +73,7 @@ TEST_F(AddressBarPositionEphemeralModuleTest, GetInputsReturnsExpectedInputs) {
       inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kIsPhoneFormFactor),
             inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kIsNewUser), inputs.end());
 }
 
 // Verifies that `ComputeCardResult(…)` does not show the module when no signals
@@ -86,6 +87,7 @@ TEST_F(AddressBarPositionEphemeralModuleTest,
       CreateAllCardSignals(ephemeral_module.get(),
                            {
                                /* kDidNotSeeAddressBarPositionChoiceScreen */ 0,
+                               /* kIsNewUser */ 0,
                                /* kIsPhoneFormFactor */ 0,
                            });
 
@@ -109,6 +111,7 @@ TEST_F(AddressBarPositionEphemeralModuleTest,
       CreateAllCardSignals(ephemeral_module.get(),
                            {
                                /* kDidNotSeeAddressBarPositionChoiceScreen */ 0,
+                               /* kIsNewUser */ 0,
                                /* kIsPhoneFormFactor */ 1,
                            });
 
@@ -132,6 +135,7 @@ TEST_F(AddressBarPositionEphemeralModuleTest,
       CreateAllCardSignals(ephemeral_module.get(),
                            {
                                /* kDidNotSeeAddressBarPositionChoiceScreen */ 1,
+                               /* kIsNewUser */ 0,
                                /* kIsPhoneFormFactor */ 1,
                            });
 
@@ -143,6 +147,31 @@ TEST_F(AddressBarPositionEphemeralModuleTest,
 
   EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
   EXPECT_EQ(kAddressBarPositionEphemeralModule, result.result_label);
+}
+
+// Verifies that `ComputeCardResult(...)` does not show the module when the
+// disqualifying signal `kIsNewUser` is present, even if other required signals
+// are present.
+TEST_F(AddressBarPositionEphemeralModuleTest,
+       ComputeCardResultDoesNotShowModuleWhenDisqualifyingSignalIsPresent) {
+  auto ephemeral_module =
+      std::make_unique<AddressBarPositionEphemeralModule>(&pref_service_);
+
+  AllCardSignals signals =
+      CreateAllCardSignals(ephemeral_module.get(),
+                           {
+                               /* kDidNotSeeAddressBarPositionChoiceScreen */ 1,
+                               /* kIsNewUser */ 1,  // Disqualifying signal
+                               /* kIsPhoneFormFactor */ 1,
+                           });
+
+  CardSelectionSignals selection_signals(&signals,
+                                         kAddressBarPositionEphemeralModule);
+
+  CardSelectionInfo::ShowResult result =
+      ephemeral_module->ComputeCardResult(selection_signals);
+
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 // Validates that `IsEnabled(…)` returns true when under the impression limit
