@@ -1519,6 +1519,11 @@ BASE_FEATURE(kImeUsEnglishModelUpdate,
              "ImeUsEnglishModelUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable or disable proto-based communication for IME Service.
+BASE_FEATURE(kImeServiceProto,
+             "ImeServiceProto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable system emoji picker GIF support
 BASE_FEATURE(kImeSystemEmojiPickerGIFSupport,
              "SystemEmojiPickerGIFSupport",
@@ -2222,6 +2227,11 @@ BASE_FEATURE(kOrcaOnWorkspace,
 BASE_FEATURE(kOrcaServiceConnection,
              "OrcaServiceConnection",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables proto-based Orca service communication logic.
+BASE_FEATURE(kOrcaServiceProto,
+             "OrcaServiceProto",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Orca will only be available in English locales.
 BASE_FEATURE(kOrcaOnlyInEnglishLocales,
