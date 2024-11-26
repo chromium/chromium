@@ -2315,6 +2315,16 @@ TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
   EXPECT_EQ(0u, history->debug_rects().size());
 }
 
+TEST_F(LayerTreeImplTest, MaxSafeAreaInsetsUpdate) {
+  gfx::Insets insets(1);
+  insets.set_bottom(30);
+  host_impl().SetMaxSafeAreaInsets(insets);
+  host_impl().CreatePendingTree();
+
+  EXPECT_EQ(30, host_impl().pending_tree()->MaxSafeAreaInsets().bottom());
+  EXPECT_EQ(30, host_impl().active_tree()->MaxSafeAreaInsets().bottom());
+}
+
 namespace {
 
 class PersistentSwapPromise final : public SwapPromise {

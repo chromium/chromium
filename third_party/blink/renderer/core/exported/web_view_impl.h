@@ -517,6 +517,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // changed.
   void DidUpdateBrowserControls();
 
+  void DidUpdateMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
+
   void AddAutoplayFlags(int32_t) override;
   void ClearAutoplayFlags() override;
   int32_t AutoplayFlagsForTest() const override;

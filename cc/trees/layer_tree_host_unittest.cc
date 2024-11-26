@@ -11037,5 +11037,27 @@ class LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestDetachInputDelegateAndRenderFrameObserver);
 
+class LayerTreeHostTestSetMaxSafeAreaInsets : public LayerTreeHostTest {
+ public:
+  LayerTreeHostTestSetMaxSafeAreaInsets() : LayerTreeHostTest() {}
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void SetupTree() override {
+    LayerTreeHostTest::SetupTree();
+
+    gfx::Insets insets(10);
+    insets.set_bottom(20);
+    layer_tree_host()->SetMaxSafeAreaInsets(insets);
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_EQ(20, host_impl->MaxSafeAreaInsets().bottom());
+    EndTest();
+  }
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestSetMaxSafeAreaInsets);
+
 }  // namespace
 }  // namespace cc

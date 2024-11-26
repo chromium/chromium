@@ -713,6 +713,7 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
     RecordGpuRasterizationHistogram();
   SetDebugState(commit_state.debug_state);
   SetVisualDeviceViewportSize(commit_state.visual_device_viewport_size);
+  SetMaxSafeAreaInsets(commit_state.max_safe_area_insets);
   set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
   SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
@@ -4523,6 +4524,15 @@ void LayerTreeHostImpl::SetVisualDeviceViewportSize(
 
 gfx::Size LayerTreeHostImpl::VisualDeviceViewportSize() const {
   return visual_device_viewport_size_;
+}
+
+void LayerTreeHostImpl::SetMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  max_safe_area_insets_ = max_safe_area_insets;
+}
+
+gfx::Insets LayerTreeHostImpl::MaxSafeAreaInsets() const {
+  return max_safe_area_insets_;
 }
 
 void LayerTreeHostImpl::SetPrefersReducedMotion(bool prefers_reduced_motion) {

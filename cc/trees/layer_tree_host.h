@@ -518,6 +518,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // compositors. This is specified in device viewport coordinate space.
   void SetVisualDeviceViewportSize(const gfx::Size&);
 
+  void SetMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
   gfx::Rect device_viewport_rect() const {
     return pending_commit_state()->device_viewport_rect;
   }

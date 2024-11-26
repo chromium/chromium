@@ -753,6 +753,8 @@ class CC_EXPORT LayerTreeImpl {
 
   void UpdateViewportContainerSizes();
 
+  gfx::Insets MaxSafeAreaInsets() const;
+
   LayerTreeLifecycle& lifecycle() { return lifecycle_; }
 
   std::string LayerListAsJson() const;

@@ -1477,6 +1477,17 @@ void LayerTreeHost::SetVisualDeviceViewportSize(
   SetNeedsCommit();
 }
 
+void LayerTreeHost::SetMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  if (pending_commit_state()->max_safe_area_insets == max_safe_area_insets) {
+    return;
+  }
+
+  pending_commit_state()->max_safe_area_insets = max_safe_area_insets;
+
+  SetNeedsCommit();
+}
+
 void LayerTreeHost::SetBrowserControlsParams(
     const BrowserControlsParams& params) {
   if (pending_commit_state()->browser_controls_params == params)

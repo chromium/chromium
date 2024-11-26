@@ -1318,6 +1318,17 @@ void WebViewImpl::DidUpdateBrowserControls() {
   }
 }
 
+void WebViewImpl::DidUpdateMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  WebLocalFrameImpl* main_frame = MainFrameImpl();
+  if (!main_frame || !main_frame->IsOutermostMainFrame()) {
+    return;
+  }
+
+  WebFrameWidgetImpl* widget = main_frame->LocalRootFrameWidget();
+  widget->SetMaxSafeAreaInsets(max_safe_area_insets);
+}
+
 BrowserControls& WebViewImpl::GetBrowserControls() {
   return GetPage()->GetBrowserControls();
 }

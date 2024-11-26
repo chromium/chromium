@@ -476,6 +476,8 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   delta_from_top_controls +=
       bottom_controls_layout_height - bottom_content_offset;
 
+  // TODO: use MaxSafeAreaInsets().bottom() for SafeAreaInsets support.
+
   // Adjust the viewport layers by shrinking/expanding the container to account
   // for changes in the size (e.g. browser controls) since the last resize from
   // Blink.
@@ -523,6 +525,10 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   // Viewport scrollbar positions are determined using the viewport bounds
   // delta.
   UpdateViewportScrollbarGeometries();
+}
+
+gfx::Insets LayerTreeImpl::MaxSafeAreaInsets() const {
+  return host_impl_->MaxSafeAreaInsets();
 }
 
 bool LayerTreeImpl::IsRootLayer(const LayerImpl* layer) const {

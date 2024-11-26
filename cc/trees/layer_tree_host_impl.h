@@ -420,6 +420,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // compositors. This is specified in device viewport coordinate space.
   void SetVisualDeviceViewportSize(const gfx::Size&);
 
+  void SetMaxSafeAreaInsets(const gfx::Insets& max_safe_area_insets);
+  gfx::Insets MaxSafeAreaInsets() const;
+
   void set_viewport_mobile_optimized(bool viewport_mobile_optimized) {
     is_viewport_mobile_optimized_ = viewport_mobile_optimized;
   }
@@ -1253,6 +1256,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<Viewport> viewport_;
 
   gfx::Size visual_device_viewport_size_;
+
+  // Used for supporting dynamic safe area insets in the Clank Edge-to-Edge
+  // bottom bar feature(go/cc-dynamic-sai) This is originally passed down from
+  // browser for the display cutout.
+  gfx::Insets max_safe_area_insets_;
+
   // Set to true if viewport is mobile optimized by using meta tag
   // <meta name="viewport" content="width=device-width">
   // or

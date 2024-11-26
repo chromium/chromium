@@ -2171,6 +2171,11 @@ void WebFrameWidgetImpl::SetBrowserControlsParams(
   widget_base_->LayerTreeHost()->SetBrowserControlsParams(params);
 }
 
+void WebFrameWidgetImpl::SetMaxSafeAreaInsets(
+    const gfx::Insets& max_safe_area_insets) {
+  widget_base_->LayerTreeHost()->SetMaxSafeAreaInsets(max_safe_area_insets);
+}
+
 void WebFrameWidgetImpl::SynchronouslyCompositeForTesting(
     base::TimeTicks frame_time) {
   widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false,

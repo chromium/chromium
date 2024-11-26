@@ -36,6 +36,7 @@ CommitState::CommitState(const CommitState& prev)
       device_viewport_rect(prev.device_viewport_rect),
       visual_device_viewport_size(prev.visual_device_viewport_size),
       elastic_overscroll(prev.elastic_overscroll),
+      max_safe_area_insets(prev.max_safe_area_insets),
       hud_layer_id(prev.hud_layer_id),
       source_frame_number(prev.source_frame_number),
       selection(prev.selection),
