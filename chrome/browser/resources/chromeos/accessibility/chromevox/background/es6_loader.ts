@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 import {Background} from './background.js';
+
+Background.init();
