@@ -36,7 +36,6 @@ bool HasIsolatedStorage(const std::string& extension_id,
 bool HasIsolatedStorage(const Extension& extension,
                         content::BrowserContext* context);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Sets whether |extension_id| can run in an incognito window. Reloads the
 // extension if it's enabled since this permission is applied at loading time
 // only. Note that an ExtensionService must exist.
@@ -44,6 +43,9 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled);
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 // Sets whether |extension_id| can inject scripts into pages with file URLs.
 // Reloads the extension if it's enabled since this permission is applied at
 // loading time only. Note than an ExtensionService must exist.
@@ -83,7 +85,7 @@ std::u16string GetFixupExtensionNameForUIDisplay(
     const std::u16string& extension_name);
 std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace util
 }  // namespace extensions

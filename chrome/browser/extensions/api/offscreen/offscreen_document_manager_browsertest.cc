@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
@@ -471,8 +472,6 @@ IN_PROC_BROWSER_TEST_F(
                 *extension));
 }
 
-// TODO(crbug.com/378916068): Port the test for desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests creating offscreen documents for an incognito split-mode extension.
 IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
                        IncognitoOffscreenDocuments) {
@@ -499,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     // wait for that to finish and update the `extension` pointer.
     TestExtensionRegistryObserver registry_observer(
         ExtensionRegistry::Get(profile()), extension->id());
-    util::SetIsIncognitoEnabled(extension->id(), browser()->profile(),
+    util::SetIsIncognitoEnabled(extension->id(), profile(),
                                 /*enabled=*/true);
     extension = registry_observer.WaitForExtensionLoaded();
   }
@@ -522,13 +521,19 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
                    ->GetBrowserContext()
                    ->IsOffTheRecord());
 
+#if BUILDFLAG(IS_ANDROID)
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+#else
   // Create an incognito browser and an incognito offscreen document, and
   // validate that the proper context is used.
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_browser);
+  Profile* incognito_profile = incognito_browser->profile();
+#endif
 
   OffscreenDocumentHost* incognito_host = CreateDocumentAndWaitForLoad(
-      *extension, offscreen_url, *incognito_browser->profile());
+      *extension, offscreen_url, *incognito_profile);
   ASSERT_TRUE(incognito_host);
   EXPECT_TRUE(
       incognito_host->host_contents()->GetBrowserContext()->IsOffTheRecord());
@@ -547,16 +552,21 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
   EXPECT_EQ(on_the_record_host,
             OffscreenDocumentManager::Get(profile())
                 ->GetOffscreenDocumentForExtension(*extension));
-  EXPECT_EQ(incognito_host,
-            OffscreenDocumentManager::Get(incognito_browser->profile())
+  EXPECT_EQ(incognito_host, OffscreenDocumentManager::Get(incognito_profile)
                 ->GetOffscreenDocumentForExtension(*extension));
 
   {
-    // Shut down the incognito browser. The `incognito_host` should be
-    // destroyed.
-    ExtensionHostTestHelper host_waiter(incognito_browser->profile());
+    ExtensionHostTestHelper host_waiter(incognito_profile);
     host_waiter.RestrictToHost(incognito_host);
+#if BUILDFLAG(IS_ANDROID)
+    // Destroy OTR profile. Consequently, the `incognito_host` should be
+    // destroyed.
+    ProfileDestroyer::DestroyOTRProfileWhenAppropriate(incognito_profile);
+#else
+    // Shut down the incognito browser, OTR profile will be destroyed.
+    // Consequently, the `incognito_host` should be destroyed.
     CloseBrowserSynchronously(incognito_browser);
+#endif
     host_waiter.WaitForHostDestroyed();
     // Note: `incognito_host` is destroyed at this point.
   }
@@ -566,6 +576,5 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
             offscreen_document_manager()->GetOffscreenDocumentForExtension(
                 *extension));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
