@@ -1503,6 +1503,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.SearchPolicyConflict.HasConflictWith.{ConflictType}"
+    enum="Boolean" expires_after="2025-01-02">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records whether at least one search engine created by SiteSearchSettings
+    policy and {ConflictType} has the same keyword as an existing search engine
+    the user manually edited, counted once per user regardless of the number of
+    conflicting search engines the policy creates.
+
+    Search engines created by the policy can be marked as &quot;featured&quot;,
+    and they override search engines with the same keyword that were manually
+    edited by the user. Search engine created by the policy and not marked as
+    featured do not override search engines manually edited by the user.
+
+    Use &quot;Search.SearchPolicyConflict.NumberOfSearchEngines&quot; for the
+    number of search engines created by policy that conflict with search engines
+    manually edited by the user.
+
+    Collected when the SiteSearchSettings policy is enabled or updated and after
+    that on every browser start.
+  </summary>
+  <token key="ConflictType">
+    <variant name="Featured" summary="marked as 'featured'"/>
+    <variant name="NonFeatured" summary="not marked as 'featured'"/>
+  </token>
+</histogram>
+
+<histogram name="Search.SearchPolicyConflict.NumberOfSearchEngines"
+    enum="SearchPolicyConflictType" expires_after="2025-05-22">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Records the number of search engines created by SiteSearchSettings policy
+    with the same keyword as an existing search engine the user manually edited.
+
+    Search engines created by the policy can be marked as &quot;featured&quot;,
+    and they override search engines with the same keyword that were manually
+    edited by the user. Search engine created by the policy and not marked as
+    featured do not override search engines manually edited by the user.
+
+    Each count corresponds to one search engine, so the total count per user
+    equals the number of search engines created by the policy.
+
+    Use &quot;Search.SearchPolicyConflict.HasConflictWith.*&quot; for the number
+    of users that have at least one conflict with featured or non-featured
+    search engines created by policy.
+
+    Collected when the SiteSearchSettings policy is enabled or updated and after
+    that on every browser start.
+  </summary>
+</histogram>
+
 <histogram name="Search.SearchProviderOverrideStatus"
     enum="SearchProviderOverrideStatus" expires_after="2025-04-13">
   <owner>dgn@chromium.org</owner>
@@ -1523,60 +1576,6 @@ chromium-metrics-reviews@google.com.
     The current state for search widget use and whether the device is a
     partnership device related with the Android Search Widget. Collected on
     every cold start.
-  </summary>
-</histogram>
-
-<histogram
-    name="Search.SiteSearchPolicyConflict.HasConflictWith.{ConflictType}"
-    enum="Boolean" expires_after="2025-01-02">
-  <owner>ftirelo@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records whether at least one search engine created by SiteSearchSettings
-    policy and {ConflictType} has the same keyword as an existing search engine
-    the user manually edited, counted once per user regardless of the number of
-    conflicting search engines the policy creates.
-
-    Search engines created by the policy can be marked as &quot;featured&quot;,
-    and they override search engines with the same keyword that were manually
-    edited by the user. Search engine created by the policy and not marked as
-    featured do not override search engines manually edited by the user.
-
-    Use &quot;Search.SiteSearchPolicyConflict.NumberOfSearchEngines&quot; for
-    the number of search engines created by policy that conflict with search
-    engines manually edited by the user.
-
-    Collected when the SiteSearchSettings policy is enabled or updated and after
-    that on every browser start.
-  </summary>
-  <token key="ConflictType">
-    <variant name="Featured" summary="marked as 'featured'"/>
-    <variant name="NonFeatured" summary="not marked as 'featured'"/>
-  </token>
-</histogram>
-
-<histogram name="Search.SiteSearchPolicyConflict.NumberOfSearchEngines"
-    enum="SiteSearchPolicyConflictType" expires_after="2025-01-02">
-  <owner>ftirelo@chromium.org</owner>
-  <owner>pastarmovj@chromium.org</owner>
-  <summary>
-    Records the number of search engines created by SiteSearchSettings policy
-    with the same keyword as an existing search engine the user manually edited.
-
-    Search engines created by the policy can be marked as &quot;featured&quot;,
-    and they override search engines with the same keyword that were manually
-    edited by the user. Search engine created by the policy and not marked as
-    featured do not override search engines manually edited by the user.
-
-    Each count corresponds to one search engine, so the total count per user
-    equals the number of search engines created by the policy.
-
-    Use &quot;Search.SiteSearchPolicyConflict.HasConflictWith.*&quot; for the
-    number of users that have at least one conflict with featured or
-    non-featured search engines created by policy.
-
-    Collected when the SiteSearchSettings policy is enabled or updated and after
-    that on every browser start.
   </summary>
 </histogram>
 

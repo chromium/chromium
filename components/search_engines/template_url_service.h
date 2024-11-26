@@ -55,7 +55,7 @@ class TemplateUrlServiceAndroid;
 namespace search_engines {
 class SearchEngineChoiceService;
 class ChoiceScreenData;
-}
+}  // namespace search_engines
 
 namespace syncer {
 class SyncData;
@@ -99,14 +99,12 @@ class TemplateURLService final : public WebDataServiceConsumer,
   using OwnedTemplateURLDataVector =
       EnterpriseSearchManager::OwnedTemplateURLDataVector;
 
-  static constexpr char kSiteSearchPolicyConflictCountHistogramName[] =
-      "Search.SiteSearchPolicyConflict";
-  static constexpr char
-      kSiteSearchPolicyHasConflictWithFeaturedHistogramName[] =
-          "Search.SiteSearchPolicyConflict.HasConflictWith.WithFeatured";
-  static constexpr char
-      kSiteSearchPolicyHasConflictWithNonFeaturedHistogramName[] =
-          "Search.SiteSearchPolicyConflict.HasConflictWith.WithNonFeatured";
+  static constexpr char kSearchPolicyConflictCountHistogramName[] =
+      "Search.SearchPolicyConflict.NumberOfSearchEngines";
+  static constexpr char kSearchPolicyHasConflictWithFeaturedHistogramName[] =
+      "Search.SearchPolicyConflict.HasConflictWith.WithFeatured";
+  static constexpr char kSearchPolicyHasConflictWithNonFeaturedHistogramName[] =
+      "Search.SearchPolicyConflict.HasConflictWith.WithNonFeatured";
 
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
@@ -129,10 +127,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   };
 
   // Values for an enumerated histogram used to track keyword conflicts between
-  // search engines created by the SiteSearchSettings policy and search engines
-  // the user manually edited. Keep in sync with `SiteSearchPolicyConflictType`
-  // in tools/metrics/histograms/enums.xml.
-  enum class SiteSearchPolicyConflictType {
+  // search engines created by policy and search engines the user manually
+  // edited. Keep in sync with `SearchPolicyConflictType` in
+  // tools/metrics/histograms/enums.xml.
+  enum class SearchPolicyConflictType {
     kNone = 0,
     kWithFeatured = 1,
     kWithNonFeatured = 2,
@@ -193,7 +191,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns whether |template_url| should be shown in the list of active
   // engines, including active search engines and search engines created by
-  // the SiteSearchSettings policy.
+  // policy.
   bool ShowInActivesList(const TemplateURL* template_url) const;
 
   // Returns whether |template_url| should be hidden from all lists of engines.
@@ -723,18 +721,18 @@ class TemplateURLService final : public WebDataServiceConsumer,
                                 DefaultSearchManager::Source source);
 
   // Applies site search changes and reports metrics if appropriate.
-  void EnterpriseSiteSearchChanged(
-      OwnedTemplateURLDataVector&& policy_site_search_engines);
+  void EnterpriseSearchChanged(
+      OwnedTemplateURLDataVector&& policy_search_engines);
 
   // Applies a DSE change. May be called at startup or after transitioning to
   // the loaded state. Returns true if a change actually occurred.
   bool ApplyDefaultSearchChangeNoMetrics(const TemplateURLData* new_dse_data,
                                          DefaultSearchManager::Source source);
 
-  // Applies changes due to Enterprise policy `SiteSearchSettings`. Called after
-  // transitioning to the loaded state.
-  void ApplyEnterpriseSiteSearchChanges(
-      OwnedTemplateURLVector&& policy_site_search_engines);
+  // Applies changes due to Enterprise policy. Called after transitioning to the
+  // loaded state.
+  void ApplyEnterpriseSearchChanges(
+      OwnedTemplateURLVector&& policy_search_engines);
 
   // Returns false if there is a TemplateURL that has a search url with the
   // specified host and that TemplateURL has been manually modified.
@@ -885,10 +883,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
       PrefService* prefs);
 
   // Logs a histogram to track keyword conflicts between search engines created
-  // by the SiteSearchSettings policy and search engines the user manually
-  // edited.
-  void LogSiteSearchPolicyConflict(
-      const OwnedTemplateURLVector& policy_site_search_engines);
+  // by policy and search engines the user manually edited.
+  void LogSearchPolicyConflict(
+      const OwnedTemplateURLVector& policy_search_engines);
 
   int initial_keywords_database_country() {
     return initial_keywords_database_country_;
@@ -923,10 +920,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Mapping from Sync GUIDs to the TemplateURL.
   GUIDToTURL guid_to_turl_;
 
-  // Mapping from keyword to TemplateURLs created by the `SiteSearchSettings`
-  // policy.
+  // Mapping from keyword to TemplateURLs created by the policy.
   base::flat_map<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>
-      enterprise_site_search_keyword_to_turl_;
+      enterprise_search_keyword_to_turl_;
 
   OwnedTemplateURLVector template_urls_;
 
@@ -1016,7 +1012,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   DefaultSearchManager default_search_manager_;
 
   // Site search engines defined by enterprise policy.
-  std::unique_ptr<EnterpriseSearchManager> enterprise_site_search_manager_;
+  std::unique_ptr<EnterpriseSearchManager> enterprise_search_manager_;
 
   // This tracks how many Scoper handles exist. When the number of handles drops
   // to zero, a notification is made to observers if

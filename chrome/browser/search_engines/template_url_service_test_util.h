@@ -38,10 +38,10 @@ void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
                                             bool enabled,
                                             TestingProfile* profile);
 
-// Sets the managed preferences for site search providers.
-void SetManagedSiteSearchSettingsPreference(
+// Sets the managed preferences for search providers.
+void SetManagedSearchSettingsPreference(
     const EnterpriseSearchManager::OwnedTemplateURLDataVector&
-        site_search_engines,
+        enterprise_search_engines,
     TestingProfile* profile);
 
 // Creates a TemplateURL with some test values. The caller owns the returned

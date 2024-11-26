@@ -56,8 +56,7 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
-using SiteSearchPolicyConflictType =
-    TemplateURLService::SiteSearchPolicyConflictType;
+using SearchPolicyConflictType = TemplateURLService::SearchPolicyConflictType;
 using testing::NotNull;
 
 namespace {
@@ -86,8 +85,9 @@ std::unique_ptr<TemplateURL> CreateKeywordWithDate(
   data.SetKeyword(base::UTF8ToUTF16(keyword));
   data.SetURL(url);
   data.suggestions_url = suggest_url;
-  if (!alternate_url.empty())
+  if (!alternate_url.empty()) {
     data.alternate_urls.push_back(alternate_url);
+  }
   data.favicon_url = GURL(favicon_url);
   data.safe_for_autoreplace = safe_for_autoreplace;
   data.prepopulate_id = prepopulate_id;
@@ -141,10 +141,10 @@ std::unique_ptr<TemplateURLData> CreateTestSearchEngine() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Creates a `TemplateURLData` corresponding to a site search engine set by
-// policy, with some fake data generated from `keyword` and the
+// Creates a `TemplateURLData` corresponding to a enterprise search engine set
+// by policy, with some fake data generated from `keyword` and the
 // `featured_by_policy` field set according to the corresponding parameter.
-std::unique_ptr<TemplateURLData> CreateTestSiteSearchEntry(
+std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
     const std::string& keyword,
     bool featured_by_policy) {
   auto data = std::make_unique<TemplateURLData>();
@@ -163,12 +163,12 @@ std::unique_ptr<TemplateURLData> CreateTestSiteSearchEntry(
   return data;
 }
 
-// Creates a `TemplateURLData` corresponding to a site search engine set by
-// policy, with some fake data generated from `keyword` and
+// Creates a `TemplateURLData` corresponding to a enterprise search engine set
+// by policy, with some fake data generated from `keyword` and
 // `featured_by_policy` set as false.
-std::unique_ptr<TemplateURLData> CreateTestSiteSearchEntry(
+std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
     const std::string& keyword) {
-  return CreateTestSiteSearchEntry(keyword, /*featured_by_policy=*/false);
+  return CreateEnterpriseSearchEntry(keyword, /*featured_by_policy=*/false);
 }
 
 // Creates a `TemplateURLData` with some fake data generated from `keyword`
@@ -185,22 +185,20 @@ TemplateURLData CreateTestSearchEngineWithSafeForAutoreplace(
   return data;
 }
 
-void VerifySiteSearchPolicyConflictHistograms(
+void VerifyEnterpriseSearchPolicyConflictHistograms(
     const base::HistogramTester& histogram_tester,
-    const base::flat_map<SiteSearchPolicyConflictType, int>& expected_counts) {
+    const base::flat_map<SearchPolicyConflictType, int>& expected_counts) {
   for (auto [type, count] : expected_counts) {
     histogram_tester.ExpectBucketCount(
-        TemplateURLService::kSiteSearchPolicyConflictCountHistogramName, type,
+        TemplateURLService::kSearchPolicyConflictCountHistogramName, type,
         count);
   }
   histogram_tester.ExpectBucketCount(
-      TemplateURLService::kSiteSearchPolicyHasConflictWithFeaturedHistogramName,
-      expected_counts.at(SiteSearchPolicyConflictType::kWithFeatured) > 0, 1);
+      TemplateURLService::kSearchPolicyHasConflictWithFeaturedHistogramName,
+      expected_counts.at(SearchPolicyConflictType::kWithFeatured) > 0, 1);
   histogram_tester.ExpectBucketCount(
-      TemplateURLService::
-          kSiteSearchPolicyHasConflictWithNonFeaturedHistogramName,
-      expected_counts.at(SiteSearchPolicyConflictType::kWithNonFeatured) > 0,
-      1);
+      TemplateURLService::kSearchPolicyHasConflictWithNonFeaturedHistogramName,
+      expected_counts.at(SearchPolicyConflictType::kWithNonFeatured) > 0, 1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -211,7 +209,6 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
 }
 
 }  // namespace
-
 
 // TemplateURLServiceTest -----------------------------------------------------
 
@@ -1487,9 +1484,7 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
                      "http://icon1", false, "UTF-8;UTF-16");
 
   for (size_t i = 0; i < std::size(data); ++i) {
-    TemplateURLService::URLVisitedDetails details = {
-      GURL(data[i].url), false
-    };
+    TemplateURLService::URLVisitedDetails details = {GURL(data[i].url), false};
     model()->UpdateKeywordSearchTermsForURL(details);
     EXPECT_EQ(data[i].term, test_util()->GetAndClearSearchTerm());
   }
@@ -1499,9 +1494,9 @@ TEST_P(TemplateURLServiceTest, DontUpdateKeywordSearchForNonReplaceable) {
   struct TestData {
     const std::string url;
   } data[] = {
-    { "http://foo/" },
-    { "http://x/bar?q=xx" },
-    { "http://x/foo?y=xx" },
+      {"http://foo/"},
+      {"http://x/bar?q=xx"},
+      {"http://x/foo?y=xx"},
   };
 
   test_util()->ChangeModelToLoadState();
@@ -1509,9 +1504,7 @@ TEST_P(TemplateURLServiceTest, DontUpdateKeywordSearchForNonReplaceable) {
                      "http://icon1", false, "UTF-8;UTF-16");
 
   for (size_t i = 0; i < std::size(data); ++i) {
-    TemplateURLService::URLVisitedDetails details = {
-      GURL(data[i].url), false
-    };
+    TemplateURLService::URLVisitedDetails details = {GURL(data[i].url), false};
     model()->UpdateKeywordSearchTermsForURL(details);
     ASSERT_EQ(std::u16string(), test_util()->GetAndClearSearchTerm());
   }
@@ -2612,26 +2605,26 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
-  constexpr char kKeyword1[] = "site_search_1";
-  constexpr char kKeyword2[] = "site_search_2";
+TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyBeforeLoading) {
+  constexpr char kKeyword1[] = "enterprise_search_1";
+  constexpr char kKeyword2[] = "enterprise_search_2";
 
   // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/false);
 
-  // Set a managed preference that establishes site search providers before
-  // the keywords table is loaded.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+  // Set a managed preference that establishes enterprise search providers
+  // before the keywords table is loaded.
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword1));
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword2));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
-  // Ensure managed site search engines can be accessed even before the keywords
-  // table loading is completed.
-  for (auto& engine : site_search_engines) {
+  // Ensure managed enterprise search engines can be accessed even before the
+  // keywords table loading is completed.
+  for (auto& engine : enterprise_search_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2641,9 +2634,9 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
   // Complete loading the DB.
   test_util()->VerifyLoad();
 
-  // Ensure managed site search engines can still be accessed after the keywords
-  // table is loaded.
-  for (auto& engine : site_search_engines) {
+  // Ensure managed enterprise search engines can still be accessed after the
+  // keywords table is loaded.
+  for (auto& engine : enterprise_search_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2653,7 +2646,7 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
   // The following call has no effect on managed search engines.
   model()->RepairPrepopulatedSearchEngines();
 
-  for (auto& engine : site_search_engines) {
+  for (auto& engine : enterprise_search_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2661,25 +2654,25 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
   }
 }
 
-TEST_P(TemplateURLServiceTest, SiteSearchPolicyAfterLoading) {
-  constexpr char kKeyword1[] = "site_search_1";
-  constexpr char kKeyword2[] = "site_search_2";
+TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyAfterLoading) {
+  constexpr char kKeyword1[] = "enterprise_search_1";
+  constexpr char kKeyword2[] = "enterprise_search_2";
 
   // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
-  // Set a managed preference that establishes site search providers after
+  // Set a managed preference that establishes enterprise search providers after
   // the keywords table loading is completed.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword1));
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword2));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
-  // Ensure managed site search engines can be accessed.
-  for (auto& engine : site_search_engines) {
+  // Ensure managed enterprise search engines can be accessed.
+  for (auto& engine : enterprise_search_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2687,34 +2680,37 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyAfterLoading) {
   }
 }
 
-TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
-  constexpr char kKeyword1[] = "site_search_1";
-  constexpr char kKeyword2[] = "site_search_2";
-  constexpr char kKeyword3[] = "site_search_3";
-  constexpr char kKeyword4[] = "site_search_4";
+TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyUpdates) {
+  constexpr char kKeyword1[] = "enterprise_search_1";
+  constexpr char kKeyword2[] = "enterprise_search_2";
+  constexpr char kKeyword3[] = "enterprise_search_3";
+  constexpr char kKeyword4[] = "enterprise_search_4";
 
-  constexpr char16_t kKeyword1U16[] = u"site_search_1";
-  constexpr char16_t kKeyword2U16[] = u"site_search_2";
-  constexpr char16_t kKeyword3U16[] = u"site_search_3";
-  constexpr char16_t kKeyword4U16[] = u"site_search_4";
+  constexpr char16_t kKeyword1U16[] = u"enterprise_search_1";
+  constexpr char16_t kKeyword2U16[] = u"enterprise_search_2";
+  constexpr char16_t kKeyword3U16[] = u"enterprise_search_3";
+  constexpr char16_t kKeyword4U16[] = u"enterprise_search_4";
 
   // Reset the model to ensure an `EnterpriseSearchManager` instance is
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
-  // Set a managed preference that establishes site search providers.
+  // Set a managed preference that establishes enterprise search providers.
   // In the first stage, add keywords `kKeyword1`, `kKeyword2`, and `kKeyword3`.
   EnterpriseSearchManager::OwnedTemplateURLDataVector
-      initial_site_search_engines;
-  initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
-  initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
-  initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword3));
+      initial_enterprise_search_engines;
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword1));
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword2));
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword3));
 
-  SetManagedSiteSearchSettingsPreference(initial_site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(initial_enterprise_search_engines,
+                                     test_util()->profile());
 
-  // Ensure managed site search engines can be accessed.
-  for (auto& engine : initial_site_search_engines) {
+  // Ensure managed enterprise search engines can be accessed.
+  for (auto& engine : initial_enterprise_search_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2724,22 +2720,24 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
   // Update the policy including one addition (`kKeyword4`), one deletion
   // (`kKeyword3`), one update (`kKeyword2`).
   EnterpriseSearchManager::OwnedTemplateURLDataVector
-      updated_site_search_engines;
-  updated_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
+      updated_enterprise_search_engines;
+  updated_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword1));
   std::unique_ptr<TemplateURLData> updated_engine_2 =
-      CreateTestSiteSearchEntry(kKeyword2);
+      CreateEnterpriseSearchEntry(kKeyword2);
   updated_engine_2->SetShortName(u"newname");
-  updated_site_search_engines.push_back(std::move(updated_engine_2));
-  updated_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword4));
+  updated_enterprise_search_engines.push_back(std::move(updated_engine_2));
+  updated_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword4));
 
-  SetManagedSiteSearchSettingsPreference(updated_site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(updated_enterprise_search_engines,
+                                     test_util()->profile());
 
-  // Ensure the deleted site search engine can no longer be accessed.
+  // Ensure the deleted enterprise search engine can no longer be accessed.
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword3U16));
 
-  // Ensure updated managed site search engines can be accessed.
-  for (auto& engine : updated_site_search_engines) {
+  // Ensure updated managed enterprise search engines can be accessed.
+  for (auto& engine : updated_enterprise_search_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(engine->keyword());
     ASSERT_TRUE(actual_turl);
@@ -2747,7 +2745,7 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
   }
 
   // Delete all the entries, and ensure they can no longer be accessed.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword1U16));
@@ -2757,9 +2755,9 @@ TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
 }
 
 TEST_P(TemplateURLServiceTest,
-       NonFeaturedSiteSearchPolicyConflictWithExistingEngines) {
-  constexpr char kKeyword1[] = "site_search_1";
-  constexpr char kKeyword2[] = "site_search_2";
+       NonFeaturedEnterpriseSearchPolicyConflictWithExistingEngines) {
+  constexpr char kKeyword1[] = "enterprise_search_1";
+  constexpr char kKeyword2[] = "enterprise_search_2";
 
   base::HistogramTester histogram_tester;
 
@@ -2767,7 +2765,7 @@ TEST_P(TemplateURLServiceTest,
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
-  // Create two pre-existing site search engines.
+  // Create two pre-existing enterprise search engines.
   TemplateURLService::TemplateURLVector existing_engines{
       model()->Add(std::make_unique<TemplateURL>(
           CreateTestSearchEngineWithSafeForAutoreplace(
@@ -2777,21 +2775,21 @@ TEST_P(TemplateURLServiceTest,
               kKeyword2, /*safe_for_autoreplace=*/false))),
   };
 
-  // Set a managed preference that establishes site search providers conflicting
-  // with pre-existing search engines.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+  // Set a managed preference that establishes enterprise search providers
+  // conflicting with pre-existing search engines.
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword1));
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword2));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
-  // A search engine set by the `SiteSearchSettings` policy only overrides
+  // A search engine set by policy only overrides
   // an existing engine if the latter has not been manually edited by the user
   // (`safe_for_autoreplace` is true).
   std::vector<const TemplateURLData*> expectations_after_policy{
       // Override existing engine because `safe_for_autoreplace` is true.
-      site_search_engines[0].get(),
+      enterprise_search_engines[0].get(),
       // Do not override existing engine because `safe_for_autoreplace` is
       // false.
       &existing_engines[1]->data(),
@@ -2803,20 +2801,20 @@ TEST_P(TemplateURLServiceTest,
     ExpectSimilar(engine, &actual_turl->data());
   }
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 1},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                            {SearchPolicyConflictType::kNone, 1},
+                            {SearchPolicyConflictType::kWithFeatured, 0},
+                            {SearchPolicyConflictType::kWithNonFeatured, 1},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // Once the policy no longer applies, the user should be able to continue
-  // using the site search engines originally defined.
+  // using the enterprise search engines originally defined.
   for (const TemplateURL* user_engine : existing_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(user_engine->keyword());
@@ -2826,11 +2824,11 @@ TEST_P(TemplateURLServiceTest,
 }
 
 TEST_P(TemplateURLServiceTest,
-       FeaturedSiteSearchPolicyConflictWithExistingEngines) {
-  constexpr char kKeyword1[] = "site_search_1";
-  constexpr char kKeywordWithAt1[] = "@site_search_1";
-  constexpr char kKeyword2[] = "site_search_2";
-  constexpr char kKeywordWithAt2[] = "@site_search_2";
+       FeaturedEnterpriseSearchPolicyConflictWithExistingEngines) {
+  constexpr char kKeyword1[] = "enterprise_search_1";
+  constexpr char kKeywordWithAt1[] = "@enterprise_search_1";
+  constexpr char kKeyword2[] = "enterprise_search_2";
+  constexpr char kKeywordWithAt2[] = "@enterprise_search_2";
 
   base::HistogramTester histogram_tester;
 
@@ -2838,8 +2836,8 @@ TEST_P(TemplateURLServiceTest,
   // created.
   test_util()->ResetModel(/*verify_load=*/true);
 
-  // Create some pre-existing site search engines with variations of starting/
-  // not starting with "@" and `safe_for_autoreplace` .
+  // Create some pre-existing enterprise search engines with variations of
+  // starting/ not starting with "@" and `safe_for_autoreplace` .
   TemplateURLService::TemplateURLVector existing_engines{
       model()->Add(std::make_unique<TemplateURL>(
           CreateTestSearchEngineWithSafeForAutoreplace(
@@ -2855,29 +2853,29 @@ TEST_P(TemplateURLServiceTest,
               kKeywordWithAt2, /*safe_for_autoreplace=*/false))),
   };
 
-  // Set a managed preference that establishes site search providers
+  // Set a managed preference that establishes enterprise search providers
   // conflicting with pre-existing search engines.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
-  site_search_engines.push_back(
-      CreateTestSiteSearchEntry(kKeywordWithAt1, /*featured_by_policy=*/true));
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
-  site_search_engines.push_back(
-      CreateTestSiteSearchEntry(kKeywordWithAt2, /*featured_by_policy=*/true));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword1));
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(
+      kKeywordWithAt1, /*featured_by_policy=*/true));
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword2));
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(
+      kKeywordWithAt2, /*featured_by_policy=*/true));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
   std::vector<const TemplateURLData*> expectations_after_policy{
       // Override existing engine because `safe_for_autoreplace` is true.
-      site_search_engines[0].get(),
+      enterprise_search_engines[0].get(),
       // Override existing engine because keyword starts with "@".
-      site_search_engines[1].get(),
+      enterprise_search_engines[1].get(),
       // Do not override existing engine because `safe_for_autoreplace` is
       // false.
       &existing_engines[2]->data(),
       // Override existing engine because keyword starts with "@".
-      site_search_engines[3].get(),
+      enterprise_search_engines[3].get(),
   };
   for (auto* engine : expectations_after_policy) {
     const TemplateURL* actual_turl =
@@ -2886,20 +2884,20 @@ TEST_P(TemplateURLServiceTest,
     ExpectSimilar(engine, &actual_turl->data());
   }
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 2},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 1},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                            {SearchPolicyConflictType::kNone, 2},
+                            {SearchPolicyConflictType::kWithFeatured, 1},
+                            {SearchPolicyConflictType::kWithNonFeatured, 1},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
   // Once the policy no longer applies, the user should be able to continue
-  // using the site search engines originally defined.
+  // using the enterprise search engines originally defined.
   for (const TemplateURL* user_engine : existing_engines) {
     const TemplateURL* actual_turl =
         model()->GetTemplateURLForKeyword(user_engine->keyword());
@@ -2908,7 +2906,8 @@ TEST_P(TemplateURLServiceTest,
   }
 }
 
-TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
+TEST_P(TemplateURLServiceTest,
+       NonFeaturedEnterpriseSearchPolicyConflictWithDSP) {
   base::HistogramTester histogram_tester;
 
   // Reset the model to ensure an `EnterpriseSearchManager` instance is
@@ -2920,31 +2919,31 @@ TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
 
   AssertEquals(dse, model()->GetTemplateURLForKeyword(dse->keyword()));
 
-  // Set a managed preference that establishes a site search provider
+  // Set a managed preference that establishes a enterprise search provider
   // conflicting with pre-defined default search engine not customized by the
   // user.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(
-      CreateTestSiteSearchEntry(base::UTF16ToUTF8(dse->keyword())));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(base::UTF16ToUTF8(dse->keyword())));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
   // Expect no change in default search engine.
   EXPECT_EQ(dse, model()->GetDefaultSearchProvider());
   // Override DES for keyword search because `safe_for_autoreplace` is true.
-  ExpectSimilar(site_search_engines[0].get(),
+  ExpectSimilar(enterprise_search_engines[0].get(),
                 &model()->GetTemplateURLForKeyword(dse->keyword())->data());
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 1},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                            {SearchPolicyConflictType::kNone, 1},
+                            {SearchPolicyConflictType::kWithFeatured, 0},
+                            {SearchPolicyConflictType::kWithNonFeatured, 0},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
@@ -2954,7 +2953,7 @@ TEST_P(TemplateURLServiceTest, NonFeaturedSiteSearchPolicyConflictWithDSP) {
 }
 
 TEST_P(TemplateURLServiceTest,
-       NonFeaturedSiteSearchPolicyConflictWithUserDefinedDSP) {
+       NonFeaturedEnterpriseSearchPolicyConflictWithUserDefinedDSP) {
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
 
@@ -2972,13 +2971,13 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
   AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 
-  // Set a managed preference that establishes a site search provider
+  // Set a managed preference that establishes a enterprise search provider
   // conflicting with user-defined default search engine.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
   // Expect no change in default search engine.
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
@@ -2986,15 +2985,15 @@ TEST_P(TemplateURLServiceTest,
   // false.
   AssertEquals(*user_dse, *model()->GetTemplateURLForKeyword(kKeywordU16));
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 0},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                            {SearchPolicyConflictType::kNone, 0},
+                            {SearchPolicyConflictType::kWithFeatured, 0},
+                            {SearchPolicyConflictType::kWithNonFeatured, 1},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
@@ -3004,7 +3003,7 @@ TEST_P(TemplateURLServiceTest,
 }
 
 TEST_P(TemplateURLServiceTest,
-       NonFeaturedSiteSearchPolicyConflictWithDSPSetByExtension) {
+       NonFeaturedEnterpriseSearchPolicyConflictWithDSPSetByExtension) {
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
 
@@ -3019,13 +3018,13 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 
-  // Set a managed preference that establishes a site search provider
+  // Set a managed preference that establishes a enterprise search provider
   // conflicting with default search engine set by extension.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(kKeyword));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
   // Expect no change in default search engine.
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
@@ -3033,15 +3032,15 @@ TEST_P(TemplateURLServiceTest,
   // false.
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 0},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 1},
+                            {SearchPolicyConflictType::kNone, 0},
+                            {SearchPolicyConflictType::kWithFeatured, 0},
+                            {SearchPolicyConflictType::kWithNonFeatured, 1},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
@@ -3051,7 +3050,7 @@ TEST_P(TemplateURLServiceTest,
 }
 
 TEST_P(TemplateURLServiceTest,
-       FeaturedSiteSearchPolicyConflictWithUserDefinedDSP) {
+       FeaturedEnterpriseSearchPolicyConflictWithUserDefinedDSP) {
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
 
@@ -3069,30 +3068,31 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
   AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 
-  // Set a managed preference that establishes a site search provider
+  // Set a managed preference that establishes a enterprise search provider
   // conflicting with user-defined default search engine.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(
-      CreateTestSiteSearchEntry(kKeyword, /*featured_by_policy=*/true));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword, /*featured_by_policy=*/true));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
   // Expect no change in default search engine.
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
-  // Override DES for keyword search because the site search engine is featured.
-  ExpectSimilar(site_search_engines[0].get(),
+  // Override DES for keyword search because the enterprise search engine is
+  // featured.
+  ExpectSimilar(enterprise_search_engines[0].get(),
                 &model()->GetTemplateURLForKeyword(kKeywordU16)->data());
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 0},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 1},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                            {SearchPolicyConflictType::kNone, 0},
+                            {SearchPolicyConflictType::kWithFeatured, 1},
+                            {SearchPolicyConflictType::kWithNonFeatured, 0},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
@@ -3102,7 +3102,7 @@ TEST_P(TemplateURLServiceTest,
 }
 
 TEST_P(TemplateURLServiceTest,
-       FeaturedSiteSearchPolicyConflictWithDSPSetByExtension) {
+       FeaturedEnterpriseSearchPolicyConflictWithDSPSetByExtension) {
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
 
@@ -3117,30 +3117,31 @@ TEST_P(TemplateURLServiceTest,
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 
-  // Set a managed preference that establishes a site search provider
+  // Set a managed preference that establishes a enterprise search provider
   // conflicting with default search engine set by extension.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(
-      CreateTestSiteSearchEntry(kKeyword, /*featured_by_policy=*/true));
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword, /*featured_by_policy=*/true));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
   // Expect no change in default search engine.
   EXPECT_EQ(extension_dse, model()->GetDefaultSearchProvider());
-  // Override DES for keyword search because the site search engine is featured.
-  ExpectSimilar(site_search_engines[0].get(),
+  // Override DES for keyword search because the enterprise search engine is
+  // featured.
+  ExpectSimilar(enterprise_search_engines[0].get(),
                 &model()->GetTemplateURLForKeyword(kKeywordU16)->data());
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 0},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 1},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                            {SearchPolicyConflictType::kNone, 0},
+                            {SearchPolicyConflictType::kWithFeatured, 1},
+                            {SearchPolicyConflictType::kWithNonFeatured, 0},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 
@@ -3150,7 +3151,7 @@ TEST_P(TemplateURLServiceTest,
 }
 
 TEST_P(TemplateURLServiceTest,
-       FeaturedSiteSearchPolicyConflictWithStarterPack) {
+       FeaturedEnterpriseSearchPolicyConflictWithStarterPack) {
   constexpr char kBookmarksKeyword[] = "@bookmarks";
   constexpr char16_t kBookmarksKeywordU16[] = u"@bookmarks";
 
@@ -3164,31 +3165,31 @@ TEST_P(TemplateURLServiceTest,
       model()->GetTemplateURLForKeyword(kBookmarksKeywordU16);
   ASSERT_TRUE(bookmarks_entry);
 
-  // Set a managed preference that establishes a site search provider
+  // Set a managed preference that establishes a enterprise search provider
   // conflicting with pre-defined default search engine not customized by the
   // user.
-  EnterpriseSearchManager::OwnedTemplateURLDataVector site_search_engines;
-  site_search_engines.push_back(CreateTestSiteSearchEntry(
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  enterprise_search_engines.push_back(CreateEnterpriseSearchEntry(
       kBookmarksKeyword, /*featured_by_policy=*/true));
 
-  SetManagedSiteSearchSettingsPreference(site_search_engines,
-                                         test_util()->profile());
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
 
-  // Override bookmarks for keyword search because the site search engine is
-  // featured.
+  // Override bookmarks for keyword search because the enterprise search engine
+  // is featured.
   ExpectSimilar(
-      site_search_engines[0].get(),
+      enterprise_search_engines[0].get(),
       &model()->GetTemplateURLForKeyword(kBookmarksKeywordU16)->data());
 
-  VerifySiteSearchPolicyConflictHistograms(
+  VerifyEnterpriseSearchPolicyConflictHistograms(
       histogram_tester, {
-                            {SiteSearchPolicyConflictType::kNone, 1},
-                            {SiteSearchPolicyConflictType::kWithFeatured, 0},
-                            {SiteSearchPolicyConflictType::kWithNonFeatured, 0},
+                            {SearchPolicyConflictType::kNone, 1},
+                            {SearchPolicyConflictType::kWithFeatured, 0},
+                            {SearchPolicyConflictType::kWithNonFeatured, 0},
                         });
 
   // Reset the policy.
-  SetManagedSiteSearchSettingsPreference(
+  SetManagedSearchSettingsPreference(
       EnterpriseSearchManager::OwnedTemplateURLDataVector(),
       test_util()->profile());
 

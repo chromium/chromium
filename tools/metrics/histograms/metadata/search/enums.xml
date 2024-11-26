@@ -384,6 +384,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="From omnibox"/>
 </enum>
 
+<enum name="SearchPolicyConflictType">
+  <int value="0" label="No conflict"/>
+  <int value="1" label="Conflict with featured search engine"/>
+  <int value="2" label="Conflict with non-featured search engine"/>
+</enum>
+
 <enum name="SearchProviderOverrideStatus">
   <int value="0" label="kNoPref"/>
   <int value="1" label="kEmptyPref"/>
@@ -409,12 +415,6 @@ chromium-metrics-reviews@google.com.
   <int value="11"
       label="Not Present in non-partnership device (Removed after first
              start)"/>
-</enum>
-
-<enum name="SiteSearchPolicyConflictType">
-  <int value="0" label="No conflict"/>
-  <int value="1" label="Conflict with featured search engine"/>
-  <int value="2" label="Conflict with non-featured search engine"/>
 </enum>
 
 <enum name="TrendingTileEvent">
