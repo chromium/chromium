@@ -1704,10 +1704,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertEquals(
-                "Second tab should be interacting tab.",
-                tabs[1],
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getInitialMouseClickedView());
         assertFalse(
                 "Should not start reorder mode when pressing down on tab without mouse.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1754,16 +1751,13 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertEquals(
-                "Second tab should be interacting tab.",
-                tabs[1],
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getInitialMouseClickedView());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1780,16 +1774,13 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button with mouse.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, 0);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertEquals(
-                "Second tab should be interacting tab.",
-                tabs[1],
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertNull("No tab was clicked by mouse.", mStripLayoutHelper.getInitialMouseClickedView());
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -3850,6 +3841,7 @@ public class StripLayoutHelperTest {
 
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         mStripLayoutHelper.setLastOffsetXForTesting(expectedOffsetX);
         mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
 
@@ -3876,6 +3868,7 @@ public class StripLayoutHelperTest {
 
         // Drag tab out of strip.
         float expectedOffsetX = 123.45f;
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
         StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
         draggedTab.setOffsetX(expectedOffsetX);
