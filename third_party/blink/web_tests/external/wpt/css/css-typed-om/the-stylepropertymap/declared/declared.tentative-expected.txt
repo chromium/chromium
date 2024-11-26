@@ -4,3 +4,4 @@ This is a testharness.js-based test.
 [FAIL] Declared StylePropertyMap does not contain properties with invalid values
   assert_equals: expected (undefined) undefined but got (object) null
 Harness: the test ran to completion.
+
