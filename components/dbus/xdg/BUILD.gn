@@ -6,9 +6,12 @@ source_set("xdg") {
   sources = [
     "request.cc",
     "request.h",
+    "systemd.cc",
+    "systemd.h",
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/dbus/properties",
     "//dbus",
   ]
