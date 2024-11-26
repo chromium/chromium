@@ -345,7 +345,6 @@ ExternalTexture CreateExternalTexture(
   // - Reset origin of visible rect in ExternalTextureDesc and use internal
   // shader to
   //   handle visible rect.
-  external_texture_desc.visibleOrigin = {};
   external_texture_desc.cropOrigin = {};
 
   std::unique_ptr<media::PaintCanvasVideoRenderer> local_video_renderer;
