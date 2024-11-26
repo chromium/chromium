@@ -24,6 +24,10 @@ export class BrowserProxyImpl implements BrowserProxy {
         (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 
+  static setInstance(obj: BrowserProxy) {
+    instance = obj;
+  }
+
   static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxyImpl());
   }

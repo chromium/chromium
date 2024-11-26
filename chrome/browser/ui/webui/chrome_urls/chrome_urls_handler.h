@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROME_URLS_CHROME_URLS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROME_URLS_CHROME_URLS_HANDLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/chrome_urls_ui/mojom/chrome_urls.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,6 +27,7 @@ class ChromeUrlsHandler : public chrome_urls::mojom::PageHandler {
  private:
   // chrome_urls::mojom::PageHandler
   void GetUrls(GetUrlsCallback callback) override;
+  FRIEND_TEST_ALL_PREFIXES(ChromeUrlsHandlerTest, GetUrls);
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

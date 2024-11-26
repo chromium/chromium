@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chrome_urls/chrome_urls_handler.h"
 
+#include "base/feature_list.h"
+#include "chrome/common/chrome_features.h"
 #include "url/gurl.h"
 
 namespace chrome_urls {
@@ -11,7 +13,9 @@ namespace chrome_urls {
 ChromeUrlsHandler::ChromeUrlsHandler(
     mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver,
     mojo::PendingRemote<chrome_urls::mojom::Page> page)
-    : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
+    : receiver_(this, std::move(receiver)), page_(std::move(page)) {
+  DCHECK(base::FeatureList::IsEnabled(features::kInternalOnlyUisPref));
+}
 
 ChromeUrlsHandler::~ChromeUrlsHandler() = default;
 

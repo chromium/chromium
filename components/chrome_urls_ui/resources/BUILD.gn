@@ -14,6 +14,7 @@ build_webui("build") {
   ]
   css_files = [ "app.css" ]
 
+  ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

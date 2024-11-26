@@ -43,4 +43,10 @@ export class ChromeUrlsAppElement extends CrLitElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'chrome-urls-app': ChromeUrlsAppElement;
+  }
+}
+
 customElements.define(ChromeUrlsAppElement.is, ChromeUrlsAppElement);
