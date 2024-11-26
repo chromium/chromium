@@ -2274,10 +2274,10 @@ void GraphBuilderCoreml::AddOperationForGather(
 void GraphBuilderCoreml::AddOperationForGatherElements(
     const mojom::GatherElements& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
+  CHECK(context_properties_.data_type_limits.gather_elements_input.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.input_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+  CHECK(context_properties_.data_type_limits.gather_elements_indices.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.indices_operand_id).mil_data_type)));
 
@@ -2302,10 +2302,10 @@ void GraphBuilderCoreml::AddOperationForGatherElements(
 void GraphBuilderCoreml::AddOperationForGatherND(
     const mojom::GatherND& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
+  CHECK(context_properties_.data_type_limits.gather_nd_input.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.input_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+  CHECK(context_properties_.data_type_limits.gather_nd_indices.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.indices_operand_id).mil_data_type)));
 
@@ -3425,13 +3425,13 @@ GraphBuilderCoreml::AddOperationForReshape(
 void GraphBuilderCoreml::AddOperationForScatterElements(
     const mojom::ScatterElements& operation,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
+  CHECK(context_properties_.data_type_limits.scatter_elements_input.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.input_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+  CHECK(context_properties_.data_type_limits.scatter_elements_indices.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.indices_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
+  CHECK(context_properties_.data_type_limits.scatter_elements_input.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(operation.updates_operand_id).mil_data_type)));
 
@@ -3463,13 +3463,13 @@ void GraphBuilderCoreml::AddOperationForScatterND(
     uint64_t updates_operand_id,
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
+  CHECK(context_properties_.data_type_limits.scatter_nd_input.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(input_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_indices.Has(
+  CHECK(context_properties_.data_type_limits.scatter_nd_indices.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(indices_operand_id).mil_data_type)));
-  CHECK(context_properties_.data_type_limits.gather_input.Has(
+  CHECK(context_properties_.data_type_limits.scatter_nd_input.Has(
       MILDataTypeToOperandType(
           GetOperandInfo(updates_operand_id).mil_data_type)));
 
