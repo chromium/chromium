@@ -115,7 +115,7 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
               // Create a new JS ArrayBuffer, then transfer into serializer.
               v8::Local<v8::ArrayBuffer> message_as_array_buffer =
                   v8::ArrayBuffer::New(isolate, array_buffer->GetLength());
-              array_buffer->CopyInto(base::make_span(
+              array_buffer->CopyInto(base::span(
                   reinterpret_cast<uint8_t*>(message_as_array_buffer->Data()),
                   message_as_array_buffer->ByteLength()));
               if (transferable) {
@@ -175,7 +175,7 @@ void CheckVectorEQ(const std::optional<WebMessagePayload>& optional_payload,
   }
 
   std::vector<uint8_t> temp(array_buffer->GetLength());
-  array_buffer->CopyInto(base::make_span(temp));
+  array_buffer->CopyInto(base::span(temp));
   EXPECT_EQ(temp, buffer);
 }
 
