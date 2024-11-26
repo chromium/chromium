@@ -26,24 +26,6 @@
 
 namespace extensions {
 
-namespace {
-
-constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
-constexpr char kPortalObjectPath[] = "/org/freedesktop/portal/desktop";
-constexpr char kGlobalShortcutsInterface[] =
-    "org.freedesktop.portal.GlobalShortcuts";
-constexpr char kSessionInterface[] = "org.freedesktop.portal.Session";
-
-constexpr char kMethodCreateSession[] = "CreateSession";
-constexpr char kMethodListShortcuts[] = "ListShortcuts";
-constexpr char kMethodBindShortcuts[] = "BindShortcuts";
-constexpr char kMethodCloseSession[] = "Close";
-constexpr char kSignalActivated[] = "Activated";
-
-constexpr char kSessionTokenPrefix[] = "chromium_";
-
-}  // namespace
-
 using DbusShortcut = DbusStruct<DbusString, DbusDictionary>;
 using DbusShortcuts = DbusArray<DbusShortcut>;
 

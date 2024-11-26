@@ -9061,24 +9061,23 @@ test("unit_tests") {
     deps += [ "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests" ]
 
     if (use_dbus) {
-      sources += [ "../browser/notifications/notification_platform_bridge_linux_unittest.cc" ]
-      deps += [ "//components/dbus/thread_linux" ]
+      sources += [
+        "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc",
+        "../browser/extensions/global_shortcut_listener_linux_unittest.cc",
+        "../browser/notifications/notification_platform_bridge_linux_unittest.cc",
+        "../browser/ui/views/dark_mode_manager_linux_unittest.cc",
+      ]
+      deps += [
+        "//components/dbus/properties",
+        "//components/dbus/thread_linux",
+        "//dbus:test_support",
+        "//ui/linux:test_support",
+      ]
     }
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
-  }
-
-  if (is_linux && use_dbus) {
-    sources += [
-      "../browser/dbus_memory_pressure_evaluator_linux_unittest.cc",
-      "../browser/ui/views/dark_mode_manager_linux_unittest.cc",
-    ]
-    deps += [
-      "//dbus:test_support",
-      "//ui/linux:test_support",
-    ]
   }
 
   if (is_android || is_chromeos_ash || is_win) {

@@ -38,6 +38,23 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   ~GlobalShortcutListenerLinux() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(GlobalShortcutListenerLinuxTest, OnCommandsChanged);
+
+  // These are exposed in the header for testing.
+  static constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
+  static constexpr char kPortalObjectPath[] = "/org/freedesktop/portal/desktop";
+  static constexpr char kGlobalShortcutsInterface[] =
+      "org.freedesktop.portal.GlobalShortcuts";
+  static constexpr char kSessionInterface[] = "org.freedesktop.portal.Session";
+
+  static constexpr char kMethodCreateSession[] = "CreateSession";
+  static constexpr char kMethodListShortcuts[] = "ListShortcuts";
+  static constexpr char kMethodBindShortcuts[] = "BindShortcuts";
+  static constexpr char kMethodCloseSession[] = "Close";
+  static constexpr char kSignalActivated[] = "Activated";
+
+  static constexpr char kSessionTokenPrefix[] = "chromium_";
+
   struct SessionKey {
     ExtensionId extension_id;
     std::string profile_id;
