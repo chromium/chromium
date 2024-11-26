@@ -200,8 +200,9 @@ suite('VoiceSelectionMenu', () => {
           getDropdownItemForVoice(selectedVoice)
               .querySelector<HTMLElement>('#check-mark')!;
 
-      assertFalse(hasStyle(checkMarkSelectedVoice, 'visibility', 'hidden'));
-      assertTrue(hasStyle(checkMarkVoice0, 'visibility', 'hidden'));
+      assertFalse(
+          hasStyle(checkMarkSelectedVoice, 'color', 'rgba(0, 0, 0, 0)'));
+      assertTrue(hasStyle(checkMarkVoice0, 'color', 'rgba(0, 0, 0, 0)'));
     });
 
     test('it groups voices by language', () => {
@@ -341,7 +342,7 @@ suite('VoiceSelectionMenu', () => {
 
       // The spinner should be visible and the preview button should be
       // disabled.
-      assertTrue(spinnerVoice0.classList.contains('item-invisible-false'));
+      assertTrue(spinnerVoice0.classList.contains('item-hidden-false'));
       assertTrue(previewButton.classList.contains('clickable-false'));
       assertTrue(hasStyle(previewButton, 'pointer-events', 'none'));
 
@@ -352,7 +353,7 @@ suite('VoiceSelectionMenu', () => {
 
       // After onstart, the spinner shouldn't be showing and the buttons
       // shouldn't be disabled.
-      assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
+      assertTrue(spinnerVoice0.classList.contains('item-hidden-true'));
       assertFalse(previewButton.classList.contains('clickable-false'));
       assertFalse(hasStyle(previewButton, 'pointer-events', 'none'));
     });
@@ -373,7 +374,7 @@ suite('VoiceSelectionMenu', () => {
               '#spinner-span')!;
 
       // The spinner shouldn't be visible
-      assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
+      assertTrue(spinnerVoice0.classList.contains('item-hidden-true'));
 
       // The play icon should flip to stop for the voice being previewed
       assertTrue(isPositionedOnPage(playIconOfPreviewVoice));

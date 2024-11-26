@@ -30,12 +30,13 @@
                 <cr-icon id="check-mark"
                     class="item-invisible-${!voice.selected} check-mark"
                     icon="read-anything-20:check-mark"
-                    aria-label="$i18n{selected}">
+                    aria-label="${this.selectedAriaLabel_(voice.selected)}">
                 </cr-icon>
                 ${voice.title}
               </span>
 
-              <span id="spinner-span" class="item-invisible-${this.hideSpinner_(voice)}">
+              <span id="spinner-span"
+                  class="item-hidden-${this.hideSpinner_(voice)}">
                 <picture class="spinner">
                   <source media="(prefers-color-scheme: dark)"
                       srcset="//resources/images/throbber_small_dark.svg">

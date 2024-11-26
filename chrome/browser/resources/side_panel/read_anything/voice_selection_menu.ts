@@ -393,6 +393,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     }
   }
 
+  protected selectedAriaLabel_(selected: boolean) {
+    return selected ? loadTimeData.getString('selected') : '';
+  }
+
   protected shouldDisableButton_(voiceDropdown: VoiceDropdownItem) {
     return (
         voiceDropdown.previewInitiated &&
