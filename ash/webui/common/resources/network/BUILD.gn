@@ -19,7 +19,6 @@ js_type_check("closure_compile_module") {
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
-    ":network_choose_mobile",
     ":network_config_element_behavior",
     ":network_config_input",
     ":network_config_select",
@@ -71,18 +70,6 @@ js_library("apn_list_item") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "//ash/webui/common/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js" ]
-}
-
-js_library("network_choose_mobile") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-  ]
 }
 
 js_library("apn_detail_dialog") {
