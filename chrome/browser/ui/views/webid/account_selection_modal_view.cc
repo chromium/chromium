@@ -160,6 +160,12 @@ AccountSelectionModalView::AccountSelectionModalView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   title_ = webid::GetTitle(rp_for_display_, idp_title, rp_context);
+
+  header_view_ = AddChildView(CreateHeader());
+  AddChildView(CreatePlaceholderAccountRow());
+  AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
+                               /*use_other_account_callback=*/std::nullopt,
+                               /*back_callback=*/std::nullopt));
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
@@ -225,12 +231,9 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
-    std::optional<views::Button::PressedCallback> continue_callback =
-        std::nullopt,
-    std::optional<views::Button::PressedCallback> use_other_account_callback =
-        std::nullopt,
-    std::optional<views::Button::PressedCallback> back_callback =
-        std::nullopt) {
+    std::optional<views::Button::PressedCallback> continue_callback,
+    std::optional<views::Button::PressedCallback> use_other_account_callback,
+    std::optional<views::Button::PressedCallback> back_callback) {
   std::unique_ptr<views::View> button_container = CreateButtonContainer();
 
   std::unique_ptr<views::MdTextButton> cancel_button =
@@ -395,7 +398,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
         idp_list[0]->idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
-                               std::move(use_other_account_callback)));
+                               std::move(use_other_account_callback),
+                               /*back_callback=*/std::nullopt));
 
   // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
@@ -565,7 +569,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
         idp_data.idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
-                               std::move(use_other_account_callback)));
+                               std::move(use_other_account_callback),
+                               /*back_callback=*/std::nullopt));
 
   // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
@@ -616,12 +621,6 @@ void AccountSelectionModalView::ShowErrorDialog(
   button_container->AddChildView(std::move(got_it_button));
 
   AddChildView(std::move(button_container));
-}
-
-void AccountSelectionModalView::ShowLoadingDialog() {
-  header_view_ = AddChildView(CreateHeader());
-  AddChildView(CreatePlaceholderAccountRow());
-  AddChildView(CreateButtonRow());
 }
 
 void AccountSelectionModalView::OnIdpBrandIconFetched() {

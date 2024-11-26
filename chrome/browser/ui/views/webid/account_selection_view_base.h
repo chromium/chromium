@@ -251,9 +251,6 @@ class AccountSelectionViewBase {
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) = 0;
 
-  // Updates the FedCM dialog to show the "loading" sheet.
-  virtual void ShowLoadingDialog() = 0;
-
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;
 

@@ -75,8 +75,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
-  void ShowLoadingDialog() override;
-
   std::string GetDialogTitle() const override;
 
   // views::DialogDelegateView:

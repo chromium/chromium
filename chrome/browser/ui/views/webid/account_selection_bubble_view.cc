@@ -408,11 +408,6 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   PreferredSizeChanged();
 }
 
-void AccountSelectionBubbleView::ShowLoadingDialog() {
-  NOTREACHED()
-      << "ShowLoadingDialog is only implemented for AccountSelectionModalView";
-}
-
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_data) {
