@@ -30,11 +30,12 @@ SharedStorageTestURLLoaderNetworkObserver::
 
 void SharedStorageTestURLLoaderNetworkObserver::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
-    std::vector<mojom::SharedStorageModifierMethodPtr> methods,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
     OnSharedStorageHeaderReceivedCallback callback) {
   std::vector<SharedStorageMethodWrapper> transformed =
-      base::ToVector(methods, [](auto& method) {
-        return SharedStorageMethodWrapper(std::move(method));
+      base::ToVector(methods_with_options, [](auto& methods_with_options) {
+        return SharedStorageMethodWrapper(std::move(methods_with_options));
       });
 
   headers_received_.emplace_back(request_origin, std::move(transformed));

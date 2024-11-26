@@ -44,10 +44,11 @@ void TestSharedStorageHeaderObserver::OnHeaderProcessed(
 
 void TestSharedStorageHeaderObserver::OnMethodFinished(
     const url::Origin& request_origin,
-    MethodPtr method,
-    OperationResult result) {
-  operations_.emplace_back(request_origin, std::move(method),
-                           std::move(result));
+    MethodWithOptionsPtr method_with_options,
+    const std::string& error_message) {
+  bool success = error_message.empty();
+  operations_.emplace_back(request_origin, std::move(method_with_options),
+                           success);
 
   if (loop_ && loop_->running() && operations_.size() >= expected_total_) {
     loop_->Quit();

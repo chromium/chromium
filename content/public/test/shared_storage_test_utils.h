@@ -28,21 +28,26 @@ class TestSharedStorageHeaderObserver;
 
 using FencedFrameNavigationTarget = absl::variant<GURL, std::string>;
 using OperationResult = storage::SharedStorageManager::OperationResult;
-using MethodPtr = network::mojom::SharedStorageModifierMethodPtr;
+using MethodWithOptionsPtr =
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 
-network::mojom::SharedStorageModifierMethodPtr MojomSetMethod(
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomSetMethod(
     const std::u16string& key,
     const std::u16string& value,
-    bool ignore_if_present);
+    bool ignore_if_present,
+    std::optional<std::string> with_lock = std::nullopt);
 
-network::mojom::SharedStorageModifierMethodPtr MojomAppendMethod(
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomAppendMethod(
     const std::u16string& key,
-    const std::u16string& value);
+    const std::u16string& value,
+    std::optional<std::string> with_lock = std::nullopt);
 
-network::mojom::SharedStorageModifierMethodPtr MojomDeleteMethod(
-    const std::u16string& key);
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomDeleteMethod(
+    const std::u16string& key,
+    std::optional<std::string> with_lock = std::nullopt);
 
-network::mojom::SharedStorageModifierMethodPtr MojomClearMethod();
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomClearMethod(
+    std::optional<std::string> with_lock = std::nullopt);
 
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition);
@@ -68,12 +73,13 @@ size_t GetKeepAliveSharedStorageWorkletHostsCount(
 RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
                                    const FencedFrameNavigationTarget& target);
 
-// In order to use gmock matchers, it's necessary to wrap `method` into a
-// copyable struct. We also bundle them with the `request_origin` and `result`.
+// In order to use gmock matchers, it's necessary to wrap `method_with_options`
+// into a copyable struct. We also bundle them with the `request_origin` and
+// `success`.
 struct SharedStorageWriteOperationAndResult {
   SharedStorageWriteOperationAndResult(const url::Origin& request_origin,
-                                       MethodPtr method,
-                                       OperationResult result);
+                                       MethodWithOptionsPtr method_with_options,
+                                       bool success);
 
   SharedStorageWriteOperationAndResult(
       const SharedStorageWriteOperationAndResult& other);
@@ -87,8 +93,8 @@ struct SharedStorageWriteOperationAndResult {
       default;
 
   url::Origin request_origin;
-  MethodPtr method;
-  OperationResult result;
+  MethodWithOptionsPtr method_with_options;
+  bool success;
 };
 
 std::ostream& operator<<(std::ostream& os,

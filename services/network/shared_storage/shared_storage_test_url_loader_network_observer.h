@@ -36,7 +36,8 @@ class SharedStorageTestURLLoaderNetworkObserver
   // TestURLLoaderNetworkObserver:
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
-      std::vector<mojom::SharedStorageModifierMethodPtr> methods,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
       OnSharedStorageHeaderReceivedCallback callback) override;
 
   void WaitForHeadersReceived(size_t expected_total);

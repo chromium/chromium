@@ -32,62 +32,47 @@
 
 namespace content {
 
-namespace {
-
-std::string SharedStorageOperationResultToString(OperationResult result) {
-  switch (result) {
-    case OperationResult::kSuccess:
-      return "Success";
-    case OperationResult::kSet:
-      return "Set";
-    case OperationResult::kIgnored:
-      return "Ignored";
-    case OperationResult::kSqlError:
-      return "SqlError";
-    case OperationResult::kInitFailure:
-      return "InitFailure";
-    case OperationResult::kNoCapacity:
-      return "NoCapacity";
-    case OperationResult::kInvalidAppend:
-      return "InvalidAppend";
-    case OperationResult::kNotFound:
-      return "NotFound";
-    case OperationResult::kTooManyFound:
-      return "TooManyFound";
-    case OperationResult::kExpired:
-      return "Expired";
-    default:
-      NOTREACHED();
-  }
-}
-
-}  // namespace
-
-network::mojom::SharedStorageModifierMethodPtr MojomSetMethod(
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomSetMethod(
     const std::u16string& key,
     const std::u16string& value,
-    bool ignore_if_present) {
-  return network::mojom::SharedStorageModifierMethod::NewSetMethod(
+    bool ignore_if_present,
+    std::optional<std::string> with_lock) {
+  auto method = network::mojom::SharedStorageModifierMethod::NewSetMethod(
       network::mojom::SharedStorageSetMethod::New(key, value,
                                                   ignore_if_present));
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
 }
 
-network::mojom::SharedStorageModifierMethodPtr MojomAppendMethod(
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomAppendMethod(
     const std::u16string& key,
-    const std::u16string& value) {
-  return network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+    const std::u16string& value,
+    std::optional<std::string> with_lock) {
+  auto method = network::mojom::SharedStorageModifierMethod::NewAppendMethod(
       network::mojom::SharedStorageAppendMethod::New(key, value));
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
 }
 
-network::mojom::SharedStorageModifierMethodPtr MojomDeleteMethod(
-    const std::u16string& key) {
-  return network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomDeleteMethod(
+    const std::u16string& key,
+    std::optional<std::string> with_lock) {
+  auto method = network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
       network::mojom::SharedStorageDeleteMethod::New(key));
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
 }
 
-network::mojom::SharedStorageModifierMethodPtr MojomClearMethod() {
-  return network::mojom::SharedStorageModifierMethod::NewClearMethod(
+network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomClearMethod(
+    std::optional<std::string> with_lock) {
+  auto method = network::mojom::SharedStorageModifierMethod::NewClearMethod(
       network::mojom::SharedStorageClearMethod::New());
+
+  return network::mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
 }
 
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
@@ -178,25 +163,25 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
 
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
     const url::Origin& request_origin,
-    MethodPtr method,
-    OperationResult result)
+    MethodWithOptionsPtr method_with_options,
+    bool success)
     : request_origin(request_origin),
-      method(std::move(method)),
-      result(result) {}
+      method_with_options(std::move(method_with_options)),
+      success(success) {}
 
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
     const SharedStorageWriteOperationAndResult& other)
     : request_origin(other.request_origin),
-      method(other.method.Clone()),
-      result(other.result) {}
+      method_with_options(other.method_with_options.Clone()),
+      success(other.success) {}
 
 SharedStorageWriteOperationAndResult&
 SharedStorageWriteOperationAndResult::operator=(
     const SharedStorageWriteOperationAndResult& other) {
   if (this != &other) {
     request_origin = other.request_origin;
-    method = other.method.Clone();
-    result = other.result;
+    method_with_options = other.method_with_options.Clone();
+    success = other.success;
   }
   return *this;
 }
@@ -208,24 +193,24 @@ std::ostream& operator<<(std::ostream& os,
                          const SharedStorageWriteOperationAndResult& op) {
   os << "Request Origin: " << op.request_origin;
 
-  switch (op.method->which()) {
+  switch (op.method_with_options->method->which()) {
     case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
       network::mojom::SharedStorageSetMethodPtr& set_method =
-          op.method->get_set_method();
+          op.method_with_options->method->get_set_method();
       os << "; Method: Set(" << set_method->key << "," << set_method->value
          << "," << (set_method->ignore_if_present ? "true" : "false") << ")";
       break;
     }
     case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
       network::mojom::SharedStorageAppendMethodPtr& append_method =
-          op.method->get_append_method();
+          op.method_with_options->method->get_append_method();
       os << "; Method: Append(" << append_method->key << ","
          << append_method->value << ")";
       break;
     }
     case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
       network::mojom::SharedStorageDeleteMethodPtr& delete_method =
-          op.method->get_delete_method();
+          op.method_with_options->method->get_delete_method();
       os << "; Method: Delete(" << delete_method->key << ")";
       break;
     }
@@ -235,7 +220,14 @@ std::ostream& operator<<(std::ostream& os,
     }
   }
 
-  os << "; Result: " << SharedStorageOperationResultToString(op.result);
+  const std::optional<std::string>& with_lock =
+      op.method_with_options->with_lock;
+  if (with_lock) {
+    os << "; WithLock: " << with_lock.value();
+  }
+
+  os << "; Result: " << (op.success ? "Success" : "Failure");
+
   return os;
 }
 

@@ -28,6 +28,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/test/test_web_contents.h"
+#include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,7 +51,8 @@ const char kTestOrigin1[] = "https://a.test";
 const char kTestOrigin2[] = "https://b.test";
 const char kTestOrigin3[] = "https://c.test";
 
-using MethodPtr = network::mojom::SharedStorageModifierMethodPtr;
+using MethodWithOptionsPtr =
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 using ContextType = StoragePartitionImpl::ContextType;
@@ -410,8 +412,9 @@ class SharedStorageHeaderObserverTest
         .get();
   }
 
-  void RunHeaderReceived(const url::Origin& request_origin,
-                         std::vector<MethodPtr> methods) {
+  void RunHeaderReceived(
+      const url::Origin& request_origin,
+      std::vector<MethodWithOptionsPtr> methods_with_options) {
     base::RunLoop loop;
     base::OnceCallback<void(std::string_view error)> bad_message_callback =
         base::BindLambdaForTesting([&](std::string_view error) {
@@ -422,7 +425,8 @@ class SharedStorageHeaderObserverTest
         GetNavigationOrDocumentHandle(request_origin);
     observer_->HeaderReceived(
         request_origin, GetContextType(), navigation_or_document_handle,
-        std::move(methods), loop.QuitClosure(), std::move(bad_message_callback),
+        std::move(methods_with_options), loop.QuitClosure(),
+        std::move(bad_message_callback),
         /*can_defer=*/true);
     loop.Run();
 
@@ -564,23 +568,74 @@ TEST_P(SharedStorageHeaderObserverTest, SharedStorageNotAllowed) {
 
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
-  std::vector<MethodPtr> methods;
-  methods.push_back(MojomClearMethod());
-  methods.push_back(MojomSetMethod(/*key=*/u"key1", /*value=*/u"value1",
-                                   /*ignore_if_present=*/false));
-  methods.push_back(MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"));
-  methods.push_back(MojomSetMethod(/*key=*/u"key1", /*value=*/u"value2",
-                                   /*ignore_if_present=*/true));
-  methods.push_back(MojomSetMethod(/*key=*/u"key2", /*value=*/u"value2",
-                                   /*ignore_if_present=*/false));
-  methods.push_back(MojomDeleteMethod(/*key=*/u"key2"));
+  std::vector<MethodWithOptionsPtr> methods_with_options;
+  methods_with_options.push_back(MojomClearMethod());
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value1",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(
+      MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/true));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key2",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(MojomDeleteMethod(/*key=*/u"key2"));
 
   // No operations are invoked because we've simulated shared storage being
   // disabled in user preferences.
-  RunHeaderReceived(kOrigin1, std::move(methods));
+  RunHeaderReceived(kOrigin1, std::move(methods_with_options));
   EXPECT_TRUE(observer_->header_results().empty());
   EXPECT_TRUE(observer_->operations().empty());
   EXPECT_EQ(Length(kOrigin1), 0);
+}
+
+TEST_P(SharedStorageHeaderObserverTest, Append_NoCapacity) {
+  set_bypass_shared_storage_allowed_count(1);
+
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
+
+  auto* manager = GetSharedStorageManager();
+  DCHECK(manager);
+
+  // Set the value at `key` to the maximum allowed length.
+  base::test::TestFuture<OperationResult> future;
+  std::u16string key(u"key1");
+  std::u16string value(
+      network::kMaxSharedStorageBytesPerOrigin / 2u - key.size(), u'a');
+  manager->Set(kOrigin1, key, value, future.GetCallback(),
+               storage::SharedStorageManager::SetBehavior::kDefault);
+  OperationResult result = future.Take();
+
+  ASSERT_EQ(result, OperationResult::kSet);
+
+  std::vector<MethodWithOptionsPtr> methods_with_options;
+
+  methods_with_options.push_back(MojomAppendMethod(key, /*value=*/u"a"));
+
+  RunHeaderReceived(kOrigin1, std::move(methods_with_options));
+
+  if (!ExpectSuccess()) {
+    EXPECT_TRUE(observer_->header_results().empty());
+    EXPECT_TRUE(observer_->operations().empty());
+    return;
+  }
+
+  ASSERT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().back(), kOrigin1);
+
+  observer_->WaitForOperations(1);
+
+  // Expect that the database attempted the 'append' method but failed. This is
+  // due to insufficient capacity for the origin.
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(OperationAndResult(
+                  kOrigin1, MojomAppendMethod(key, /*value=*/u"a"),
+                  /*success=*/false)));
+
+  EXPECT_EQ(GetExistingValue(kOrigin1, base::UTF16ToUTF8(key)),
+            base::UTF16ToUTF8(value));
 }
 
 TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
@@ -588,18 +643,22 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
 
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 
-  std::vector<MethodPtr> methods;
-  methods.push_back(MojomClearMethod());
-  methods.push_back(MojomSetMethod(/*key=*/u"key1", /*value=*/u"value1",
-                                   /*ignore_if_present=*/false));
-  methods.push_back(MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"));
-  methods.push_back(MojomSetMethod(/*key=*/u"key1", /*value=*/u"value2",
-                                   /*ignore_if_present=*/true));
-  methods.push_back(MojomSetMethod(/*key=*/u"key2", /*value=*/u"value2",
-                                   /*ignore_if_present=*/false));
-  methods.push_back(MojomDeleteMethod(/*key=*/u"key2"));
+  std::vector<MethodWithOptionsPtr> methods_with_options;
+  methods_with_options.push_back(MojomClearMethod());
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value1",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(
+      MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key1",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/true));
+  methods_with_options.push_back(MojomSetMethod(/*key=*/u"key2",
+                                                /*value=*/u"value2",
+                                                /*ignore_if_present=*/false));
+  methods_with_options.push_back(MojomDeleteMethod(/*key=*/u"key2"));
 
-  RunHeaderReceived(kOrigin1, std::move(methods));
+  RunHeaderReceived(kOrigin1, std::move(methods_with_options));
 
   if (!ExpectSuccess()) {
     EXPECT_TRUE(observer_->header_results().empty());
@@ -616,27 +675,27 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_SingleOrigin_AllSuccessful) {
       observer_->operations(),
       testing::ElementsAre(
           OperationAndResult(kOrigin1, MojomClearMethod(),
-                             OperationResult::kSuccess),
+                             /*success=*/true),
           OperationAndResult(
               kOrigin1,
               MojomSetMethod(/*key=*/u"key1", /*value=*/u"value1",
                              /*ignore_if_present=*/false),
-              OperationResult::kSet),
+              /*success=*/true),
           OperationAndResult(
               kOrigin1, MojomAppendMethod(/*key=*/u"key1", /*value=*/u"value1"),
-              OperationResult::kSet),
+              /*success=*/true),
           OperationAndResult(
               kOrigin1,
               MojomSetMethod(/*key=*/u"key1", /*value=*/u"value2",
                              /*ignore_if_present=*/true),
-              OperationResult::kIgnored),
+              /*success=*/true),
           OperationAndResult(
               kOrigin1,
               MojomSetMethod(/*key=*/u"key2", /*value=*/u"value2",
                              /*ignore_if_present=*/false),
-              OperationResult::kSet),
+              /*success=*/true),
           OperationAndResult(kOrigin1, MojomDeleteMethod(/*key=*/u"key2"),
-                             OperationResult::kSuccess)));
+                             /*success=*/true)));
 
   EXPECT_EQ(GetExistingValue(kOrigin1, "key1"), "value1value1");
   EXPECT_TRUE(ValueNotFound(kOrigin1, "key2"));
@@ -650,22 +709,22 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   const url::Origin kOrigin2 = url::Origin::Create(GURL(kTestOrigin2));
   const url::Origin kOrigin3 = url::Origin::Create(GURL(kTestOrigin3));
 
-  std::vector<MethodPtr> methods1;
-  methods1.push_back(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                                    /*ignore_if_present=*/false));
+  std::vector<MethodWithOptionsPtr> methods_with_options1;
+  methods_with_options1.push_back(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                                 /*ignore_if_present=*/false));
 
-  std::vector<MethodPtr> methods2;
-  methods2.push_back(
+  std::vector<MethodWithOptionsPtr> methods_with_options2;
+  methods_with_options2.push_back(
       MojomSetMethod(/*key=*/u"a", /*value=*/u"c", /*ignore_if_present=*/true));
 
-  std::vector<MethodPtr> methods3;
-  methods3.push_back(MojomDeleteMethod(/*key=*/u"a"));
+  std::vector<MethodWithOptionsPtr> methods_with_options3;
+  methods_with_options3.push_back(MojomDeleteMethod(/*key=*/u"a"));
 
-  RunHeaderReceived(kOrigin1, std::move(methods1));
+  RunHeaderReceived(kOrigin1, std::move(methods_with_options1));
 
   if (!ExpectSuccess()) {
-    RunHeaderReceived(kOrigin2, std::move(methods2));
-    RunHeaderReceived(kOrigin3, std::move(methods3));
+    RunHeaderReceived(kOrigin2, std::move(methods_with_options2));
+    RunHeaderReceived(kOrigin3, std::move(methods_with_options3));
     EXPECT_TRUE(observer_->header_results().empty());
     EXPECT_TRUE(observer_->operations().empty());
     EXPECT_EQ(Length(kOrigin1), 0);
@@ -677,11 +736,11 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
   ASSERT_EQ(observer_->header_results().size(), 1u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin1);
 
-  RunHeaderReceived(kOrigin2, std::move(methods2));
+  RunHeaderReceived(kOrigin2, std::move(methods_with_options2));
   ASSERT_EQ(observer_->header_results().size(), 2u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin2);
 
-  RunHeaderReceived(kOrigin3, std::move(methods3));
+  RunHeaderReceived(kOrigin3, std::move(methods_with_options3));
   ASSERT_EQ(observer_->header_results().size(), 3u);
   EXPECT_EQ(observer_->header_results().back(), kOrigin3);
 
@@ -692,13 +751,13 @@ TEST_P(SharedStorageHeaderObserverTest, Basic_MultiOrigin_AllSuccessful) {
           OperationAndResult(kOrigin1,
                              MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
                                             /*ignore_if_present=*/false),
-                             OperationResult::kSet),
+                             /*success=*/true),
           OperationAndResult(kOrigin2,
                              MojomSetMethod(/*key=*/u"a", /*value=*/u"c",
                                             /*ignore_if_present=*/true),
-                             OperationResult::kSet),
+                             /*success=*/true),
           OperationAndResult(kOrigin3, MojomDeleteMethod(/*key=*/u"a"),
-                             OperationResult::kSuccess)));
+                             /*success=*/true)));
 
   // Operations on different origins don't affect each other.
   EXPECT_EQ(GetExistingValue(kOrigin1, "a"), "b");

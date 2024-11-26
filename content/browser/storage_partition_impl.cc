@@ -2317,7 +2317,8 @@ void StoragePartitionImpl::OnDataUseUpdate(
 
 void StoragePartitionImpl::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageModifierMethodPtr> methods,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
     OnSharedStorageHeaderReceivedCallback callback) {
   if (!shared_storage_header_observer_) {
     std::move(callback).Run();
@@ -2337,8 +2338,8 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
 
   shared_storage_header_observer_->HeaderReceived(
       request_origin, url_loader_network_observers_.current_context().type(),
-      navigation_or_document, std::move(methods), std::move(callback),
-      mojo::GetBadMessageCallback(), /*can_defer=*/true);
+      navigation_or_document, std::move(methods_with_options),
+      std::move(callback), mojo::GetBadMessageCallback(), /*can_defer=*/true);
 }
 
 void StoragePartitionImpl::Clone(

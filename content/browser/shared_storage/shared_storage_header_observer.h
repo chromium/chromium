@@ -35,7 +35,8 @@ using AccessType =
 class CONTENT_EXPORT SharedStorageHeaderObserver {
  public:
   using OperationResult = storage::SharedStorageManager::OperationResult;
-  using MethodPtr = network::mojom::SharedStorageModifierMethodPtr;
+  using MethodWithOptionsPtr =
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr;
   using ContextType = StoragePartitionImpl::ContextType;
 
   // Enum for tracking how often the `PermissionsPolicy` double check runs along
@@ -94,7 +95,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   void HeaderReceived(const url::Origin& request_origin,
                       ContextType context_type,
                       NavigationOrDocumentHandle* navigation_or_document_handle,
-                      std::vector<MethodPtr> methods,
+                      std::vector<MethodWithOptionsPtr> methods_with_options,
                       base::OnceClosure callback,
                       mojo::ReportBadMessageCallback bad_message_callback,
                       bool can_defer);
@@ -103,16 +104,10 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   // virtual for testing.
   virtual void OnHeaderProcessed(const url::Origin& request_origin) {}
   virtual void OnMethodFinished(const url::Origin& request_origin,
-                                MethodPtr method,
-                                OperationResult result) {}
+                                MethodWithOptionsPtr method_with_options,
+                                const std::string& error_message) {}
 
  private:
-  void Invoke(const url::Origin& request_origin,
-              FrameTreeNodeId main_frame_id,
-              MethodPtr method);
-
-  storage::SharedStorageManager* GetSharedStorageManager();
-
   PermissionsPolicyDoubleCheckStatus DoPermissionsPolicyDoubleCheck(
       const url::Origin& request_origin,
       ContextType context_type,

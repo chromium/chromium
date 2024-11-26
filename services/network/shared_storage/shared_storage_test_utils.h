@@ -37,24 +37,29 @@ class SharedStorageRequestCount {
   static size_t count_;
 };
 
-network::mojom::SharedStorageModifierMethodPtr MojomSetMethod(
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomSetMethod(
     const std::u16string& key,
     const std::u16string& value,
-    bool ignore_if_present);
+    bool ignore_if_present,
+    std::optional<std::string> with_lock = std::nullopt);
 
-network::mojom::SharedStorageModifierMethodPtr MojomAppendMethod(
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomAppendMethod(
     const std::u16string& key,
-    const std::u16string& value);
+    const std::u16string& value,
+    std::optional<std::string> with_lock = std::nullopt);
 
-network::mojom::SharedStorageModifierMethodPtr MojomDeleteMethod(
-    const std::u16string& key);
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomDeleteMethod(
+    const std::u16string& key,
+    std::optional<std::string> with_lock = std::nullopt);
 
-network::mojom::SharedStorageModifierMethodPtr MojomClearMethod();
+mojom::SharedStorageModifierMethodWithOptionsPtr MojomClearMethod(
+    std::optional<std::string> with_lock = std::nullopt);
 
-// Wraps `mojom::SharedStorageModifierMethodPtr` to use gmock matchers.
+// Wraps `mojom::SharedStorageModifierMethodWithOptionsPtr` to use gmock
+// matchers.
 struct SharedStorageMethodWrapper {
   explicit SharedStorageMethodWrapper(
-      mojom::SharedStorageModifierMethodPtr method);
+      mojom::SharedStorageModifierMethodWithOptionsPtr method_with_options);
 
   SharedStorageMethodWrapper(const SharedStorageMethodWrapper& other);
   SharedStorageMethodWrapper& operator=(
@@ -65,7 +70,7 @@ struct SharedStorageMethodWrapper {
   friend bool operator==(const SharedStorageMethodWrapper& a,
                          const SharedStorageMethodWrapper& b) = default;
 
-  mojom::SharedStorageModifierMethodPtr method;
+  mojom::SharedStorageModifierMethodWithOptionsPtr method_with_options;
 };
 
 std::ostream& operator<<(std::ostream& os,

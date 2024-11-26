@@ -125,10 +125,8 @@ TEST_F(SharedStorageLockManagerTest,
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 
   auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                         /*ignore_if_present=*/true),
-          /*with_lock=*/"lock1");
+      MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                     /*ignore_if_present=*/true, /*with_lock=*/"lock1");
 
   std::optional<std::string> callback_error_message;
   auto callback =
@@ -157,10 +155,8 @@ TEST_F(SharedStorageLockManagerTest,
                             blink::mojom::LockManager::WaitMode::WAIT);
 
   auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                         /*ignore_if_present=*/true),
-          /*with_lock=*/"lock1");
+      MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                     /*ignore_if_present=*/true, /*with_lock=*/"lock1");
 
   std::optional<std::string> callback_error_message;
   auto callback =
@@ -196,10 +192,8 @@ TEST_F(SharedStorageLockManagerTest,
                             blink::mojom::LockManager::WaitMode::WAIT);
 
   auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                         /*ignore_if_present=*/true),
-          /*with_lock=*/std::nullopt);
+      MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                     /*ignore_if_present=*/true, /*with_lock=*/std::nullopt);
 
   std::optional<std::string> callback_error_message;
   auto callback =
@@ -225,10 +219,8 @@ TEST_F(SharedStorageLockManagerTest,
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 
   auto method_with_options =
-      network::mojom::SharedStorageModifierMethodWithOptions::New(
-          MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
-                         /*ignore_if_present=*/true),
-          /*with_lock=*/"lock1");
+      MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                     /*ignore_if_present=*/true, /*with_lock=*/"lock1");
 
   std::optional<std::string> callback_error_message;
   auto callback =

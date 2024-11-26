@@ -26,6 +26,7 @@
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
+#include "content/browser/shared_storage/shared_storage_lock_manager.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,8 +39,10 @@ namespace content {
 
 namespace {
 
-using MethodPtr = network::mojom::SharedStorageModifierMethodPtr;
+using MethodWithOptionsPtr =
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr;
 using ContextType = StoragePartitionImpl::ContextType;
+using AccessScope = SharedStorageLockManager::AccessScope;
 
 bool IsSharedStorageAllowedByPermissionsPolicy(
     SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus
@@ -82,7 +85,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
     const url::Origin& request_origin,
     ContextType context_type,
     NavigationOrDocumentHandle* navigation_or_document_handle,
-    std::vector<MethodPtr> methods,
+    std::vector<MethodWithOptionsPtr> methods_with_options,
     base::OnceClosure callback,
     mojo::ReportBadMessageCallback bad_message_callback,
     bool can_defer) {
@@ -175,19 +178,21 @@ void SharedStorageHeaderObserver::HeaderReceived(
             base::BindOnce(
                 [](base::WeakPtr<SharedStorageHeaderObserver> header_observer,
                    const url::Origin& request_origin, ContextType context_type,
-                   std::vector<MethodPtr> methods,
+                   std::vector<MethodWithOptionsPtr> methods_with_options,
                    mojo::ReportBadMessageCallback bad_message_callback,
                    NavigationOrDocumentHandle* navigation_or_document_handle) {
                   if (header_observer) {
                     header_observer->HeaderReceived(
                         request_origin, context_type,
-                        navigation_or_document_handle, std::move(methods),
-                        base::DoNothing(), std::move(bad_message_callback),
+                        navigation_or_document_handle,
+                        std::move(methods_with_options), base::DoNothing(),
+                        std::move(bad_message_callback),
                         /*can_defer=*/false);
                   }
                 },
                 weak_ptr_factory_.GetWeakPtr(), request_origin, context_type,
-                std::move(methods), std::move(bad_message_callback));
+                std::move(methods_with_options),
+                std::move(bad_message_callback));
         static_cast<RenderFrameHostImpl*>(rfh)
             ->AddDeferredSharedStorageHeaderCallback(std::move(defer_callback));
       }
@@ -237,101 +242,20 @@ void SharedStorageHeaderObserver::HeaderReceived(
   FrameTreeNodeId main_frame_id = GetMainFrameIdFromNavigationOrDocumentHandle(
       navigation_or_document_handle);
 
-  for (auto& method : methods) {
-    Invoke(request_origin, main_frame_id, std::move(method));
+  for (auto& method_with_options : methods_with_options) {
+    auto cloned_method_with_options = method_with_options.Clone();
+    storage_partition_->GetSharedStorageRuntimeManager()
+        ->lock_manager()
+        .SharedStorageUpdate(
+            std::move(method_with_options), request_origin,
+            AccessScope::kHeader, main_frame_id,
+            base::BindOnce(&SharedStorageHeaderObserver::OnMethodFinished,
+                           weak_ptr_factory_.GetWeakPtr(), request_origin,
+                           std::move(cloned_method_with_options)));
   }
 
   OnHeaderProcessed(request_origin);
   std::move(callback).Run();
-}
-
-void SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
-                                         FrameTreeNodeId main_frame_id,
-                                         MethodPtr method) {
-  switch (method->which()) {
-    case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
-      network::mojom::SharedStorageSetMethodPtr& set_method =
-          method->get_set_method();
-
-      storage::SharedStorageDatabase::SetBehavior set_behavior =
-          set_method->ignore_if_present
-              ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
-              : storage::SharedStorageDatabase::SetBehavior::kDefault;
-
-      NotifySharedStorageAccessed(AccessType::kHeaderSet, main_frame_id,
-                                  request_origin,
-                                  SharedStorageEventParams::CreateForSet(
-                                      base::UTF16ToUTF8(set_method->key),
-                                      base::UTF16ToUTF8(set_method->value),
-                                      set_method->ignore_if_present));
-
-      GetSharedStorageManager()->Set(
-          request_origin, set_method->key, set_method->value,
-          base::BindOnce(&SharedStorageHeaderObserver::OnMethodFinished,
-                         weak_ptr_factory_.GetWeakPtr(), request_origin,
-                         method.Clone()),
-          set_behavior);
-      break;
-    }
-    case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
-      network::mojom::SharedStorageAppendMethodPtr& append_method =
-          method->get_append_method();
-
-      NotifySharedStorageAccessed(AccessType::kHeaderAppend, main_frame_id,
-                                  request_origin,
-                                  SharedStorageEventParams::CreateForAppend(
-                                      base::UTF16ToUTF8(append_method->key),
-                                      base::UTF16ToUTF8(append_method->value)));
-
-      GetSharedStorageManager()->Append(
-          request_origin, append_method->key, append_method->value,
-          base::BindOnce(&SharedStorageHeaderObserver::OnMethodFinished,
-                         weak_ptr_factory_.GetWeakPtr(), request_origin,
-                         method.Clone()));
-      break;
-    }
-    case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
-      network::mojom::SharedStorageDeleteMethodPtr& delete_method =
-          method->get_delete_method();
-
-      NotifySharedStorageAccessed(
-          AccessType::kHeaderDelete, main_frame_id, request_origin,
-          SharedStorageEventParams::CreateForGetOrDelete(
-              base::UTF16ToUTF8(delete_method->key)));
-
-      GetSharedStorageManager()->Delete(
-          request_origin, delete_method->key,
-          base::BindOnce(&SharedStorageHeaderObserver::OnMethodFinished,
-                         weak_ptr_factory_.GetWeakPtr(), request_origin,
-                         method.Clone()));
-      break;
-    }
-    case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
-      NotifySharedStorageAccessed(AccessType::kHeaderClear, main_frame_id,
-                                  request_origin,
-                                  SharedStorageEventParams::CreateDefault());
-
-      GetSharedStorageManager()->Clear(
-          request_origin,
-          base::BindOnce(&SharedStorageHeaderObserver::OnMethodFinished,
-                         weak_ptr_factory_.GetWeakPtr(), request_origin,
-                         method.Clone()));
-      break;
-    }
-  }
-}
-
-storage::SharedStorageManager*
-SharedStorageHeaderObserver::GetSharedStorageManager() {
-  DCHECK(storage_partition_);
-  storage::SharedStorageManager* shared_storage_manager =
-      storage_partition_->GetSharedStorageManager();
-
-  // This `SharedStorageHeaderObserver` is created only if
-  // `kSharedStorageAPI` is enabled, in which case the `shared_storage_manager`
-  // must be valid.
-  DCHECK(shared_storage_manager);
-  return shared_storage_manager;
 }
 
 SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus

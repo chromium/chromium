@@ -54,7 +54,8 @@ void RemoveSharedStorageWriteHeader(net::URLRequest& request) {
   request.response_headers()->RemoveHeader(kSharedStorageWriteHeader);
 }
 
-mojom::SharedStorageModifierMethodPtr MakeSharedStorageModifierMethod(
+mojom::SharedStorageModifierMethodWithOptionsPtr
+MakeSharedStorageModifierMethodWithOptions(
     const net::structured_headers::ParameterizedMember& parameterized_member) {
   if (parameterized_member.member_is_inner_list ||
       parameterized_member.member.size() != 1) {
@@ -78,6 +79,7 @@ mojom::SharedStorageModifierMethodPtr MakeSharedStorageModifierMethod(
   std::optional<std::u16string> key;
   std::optional<std::u16string> value;
   bool ignore_if_present = false;
+  std::optional<std::string> with_lock;
 
   for (const auto& [param_key, param_item] : parameterized_member.params) {
     if (!IsStringLike(param_item) && !param_item.is_boolean()) {
@@ -99,6 +101,11 @@ mojom::SharedStorageModifierMethodPtr MakeSharedStorageModifierMethod(
         continue;
       }
       ignore_if_present = param_item.GetBoolean();
+      continue;
+    }
+
+    if (param_type.value() == SharedStorageHeaderParamType::kWithLock) {
+      with_lock = param_item.GetString();
       continue;
     }
 
@@ -126,8 +133,13 @@ mojom::SharedStorageModifierMethodPtr MakeSharedStorageModifierMethod(
       case SharedStorageHeaderParamType::kIgnoreIfPresent: {
         NOTREACHED();
       }
+      case SharedStorageHeaderParamType::kWithLock: {
+        NOTREACHED();
+      }
     }
   }
+
+  mojom::SharedStorageModifierMethodPtr method;
 
   switch (method_type.value()) {
     case SharedStorageModifierMethodType::kSet: {
@@ -135,33 +147,38 @@ mojom::SharedStorageModifierMethodPtr MakeSharedStorageModifierMethod(
         return nullptr;
       }
 
-      return mojom::SharedStorageModifierMethod::NewSetMethod(
+      method = mojom::SharedStorageModifierMethod::NewSetMethod(
           mojom::SharedStorageSetMethod::New(key.value(), value.value(),
                                              ignore_if_present));
+      break;
     }
     case SharedStorageModifierMethodType::kAppend: {
       if (!key || !value) {
         return nullptr;
       }
 
-      return mojom::SharedStorageModifierMethod::NewAppendMethod(
+      method = mojom::SharedStorageModifierMethod::NewAppendMethod(
           mojom::SharedStorageAppendMethod::New(key.value(), value.value()));
+      break;
     }
     case SharedStorageModifierMethodType::kDelete: {
       if (!key) {
         return nullptr;
       }
 
-      return mojom::SharedStorageModifierMethod::NewDeleteMethod(
+      method = mojom::SharedStorageModifierMethod::NewDeleteMethod(
           mojom::SharedStorageDeleteMethod::New(key.value()));
+      break;
     }
     case SharedStorageModifierMethodType::kClear: {
-      return mojom::SharedStorageModifierMethod::NewClearMethod(
+      method = mojom::SharedStorageModifierMethod::NewClearMethod(
           mojom::SharedStorageClearMethod::New());
+      break;
     }
   }
 
-  NOTREACHED();
+  return mojom::SharedStorageModifierMethodWithOptions::New(
+      std::move(method), std::move(with_lock));
 }
 
 }  // namespace
@@ -245,27 +262,29 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
   std::vector<bool> parse_results;
   parse_results.reserve(list.value().size());
 
-  std::vector<mojom::SharedStorageModifierMethodPtr> methods;
-  methods.reserve(list.value().size());
+  std::vector<mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.reserve(list.value().size());
 
   for (const auto& member : list.value()) {
-    auto method = MakeSharedStorageModifierMethod(member);
-    if (method) {
-      methods.push_back(std::move(method));
+    auto method_with_options =
+        MakeSharedStorageModifierMethodWithOptions(member);
+    if (method_with_options) {
+      methods_with_options.push_back(std::move(method_with_options));
       parse_results.push_back(true);
     } else {
       parse_results.push_back(false);
     }
   }
 
-  if (methods.empty()) {
+  if (methods_with_options.empty()) {
     // Either the header value parsed to an empty list, or else none of the
     // items on the list parsed to a recognized `SharedStorageModifierMethod`.
     return false;
   }
 
   observer_->OnSharedStorageHeaderReceived(
-      url::Origin::Create(request.url()), std::move(methods),
+      url::Origin::Create(request.url()), std::move(methods_with_options),
       base::BindOnce(&SharedStorageRequestHelper::OnMethodsQueued,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done)));
   return true;

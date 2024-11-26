@@ -26,8 +26,8 @@ constexpr auto kSharedStorageHeaderParamTypeMap =
     base::MakeFixedFlatMap<std::string_view, SharedStorageHeaderParamType>(
         {{"key", SharedStorageHeaderParamType::kKey},
          {"value", SharedStorageHeaderParamType::kValue},
-         {"ignore_if_present",
-          SharedStorageHeaderParamType::kIgnoreIfPresent}});
+         {"ignore_if_present", SharedStorageHeaderParamType::kIgnoreIfPresent},
+         {"with_lock", SharedStorageHeaderParamType::kWithLock}});
 
 }  // namespace
 

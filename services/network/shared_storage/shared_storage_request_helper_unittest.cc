@@ -517,6 +517,32 @@ TEST_F(SharedStorageRequestHelperProcessHeaderTest,
                                  /*ignore_if_present=*/false))));
 }
 
+TEST_F(SharedStorageRequestHelperProcessHeaderTest, WithLockOption) {
+  const std::string kHeader =
+      "set;key=k;value=v;with_lock=lock1, append;key=k;value=v;with_lock=\"\", "
+      "delete;key=k, clear;with_lock=lock2";
+
+  RegisterSharedStorageHandlerAndStartServer(kHeader);
+
+  auto r = CreateSharedStorageRequest();
+  StartRequestAndProcessHeader(r.get(), kHeader);
+  WaitForHeadersReceived(1);
+
+  EXPECT_EQ(observer_->headers_received().size(), 1u);
+  EXPECT_EQ(observer_->headers_received().front().first, request_origin_);
+
+  EXPECT_THAT(
+      observer_->headers_received().front().second,
+      ElementsAre(
+          SharedStorageMethodWrapper(MojomSetMethod(
+              /*key=*/u"k", /*value=*/u"v",
+              /*ignore_if_present=*/false, /*with_lock=*/"lock1")),
+          SharedStorageMethodWrapper(MojomAppendMethod(
+              /*key=*/u"k", /*value=*/u"v", /*with_lock=*/"")),
+          SharedStorageMethodWrapper(MojomDeleteMethod(/*key=*/u"k")),
+          SharedStorageMethodWrapper(MojomClearMethod(/*with_lock=*/"lock2"))));
+}
+
 namespace {
 
 class SharedStorageRequestHelperProcessHeaderMultiConnectionTest

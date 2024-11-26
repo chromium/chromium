@@ -86,7 +86,8 @@ class BruschettaNetworkContext
                        int64_t sent_bytes) override;
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
-      std::vector<network::mojom::SharedStorageModifierMethodPtr> methods,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
       OnSharedStorageHeaderReceivedCallback callback) override;
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>

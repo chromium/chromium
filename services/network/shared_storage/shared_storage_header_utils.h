@@ -33,6 +33,7 @@ enum class SharedStorageHeaderParamType {
   kKey,
   kValue,
   kIgnoreIfPresent,
+  kWithLock,
 };
 
 std::optional<SharedStorageModifierMethodType>

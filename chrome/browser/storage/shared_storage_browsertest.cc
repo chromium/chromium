@@ -5020,16 +5020,16 @@ IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
       observer_->operations(),
       testing::ElementsAre(
           HeaderOperationResult(fetch_origin, content::MojomClearMethod(),
-                                OperationResult::kSuccess),
+                                /*success=*/true),
           HeaderOperationResult(
               fetch_origin,
               content::MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
                                       /*ignore_if_present=*/true),
-              OperationResult::kSet),
+              /*success=*/true),
           HeaderOperationResult(
               fetch_origin,
               content::MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
-              OperationResult::kSet)));
+              /*success=*/true)));
 
   response.Done();
 
