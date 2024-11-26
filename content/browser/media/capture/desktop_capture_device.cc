@@ -906,24 +906,18 @@ DesktopCaptureDevice::DesktopCaptureDevice(
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
   const bool wgc_window_zero_hertz =
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz);
-  // TODO(crbug.com/40259358): 0Hz mode seems to cause a flickering
-  // cursor in some setups. This flag allows us to disable 0Hz when needed.
-  const bool dxgi_gdi_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowDxgiGdiZeroHz);
   const bool wgc_screen_capturer =
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
   const bool wgc_window_capturer =
       base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer);
   if (!wgc_window_capturer && !wgc_screen_capturer) {
-    zero_hertz_is_supported = dxgi_gdi_zero_hertz;
+    zero_hertz_is_supported = true;
   } else if (!wgc_window_capturer && wgc_screen_capturer) {
-    zero_hertz_is_supported = (type == DesktopMediaID::TYPE_SCREEN)
-                                  ? wgc_screen_zero_hertz
-                                  : dxgi_gdi_zero_hertz;
+    zero_hertz_is_supported =
+        (type == DesktopMediaID::TYPE_SCREEN) ? wgc_screen_zero_hertz : true;
   } else if (wgc_window_capturer && !wgc_screen_capturer) {
-    zero_hertz_is_supported = (type == DesktopMediaID::TYPE_WINDOW)
-                                  ? wgc_window_zero_hertz
-                                  : dxgi_gdi_zero_hertz;
+    zero_hertz_is_supported =
+        (type == DesktopMediaID::TYPE_WINDOW) ? wgc_window_zero_hertz : true;
   } else {
     if (type == DesktopMediaID::TYPE_SCREEN) {
       zero_hertz_is_supported = wgc_screen_zero_hertz;
