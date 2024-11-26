@@ -172,7 +172,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private readonly postMessageReceiver: PostMessageRequestReceiver;
   private sender: PostMessageRequestSender;
   private handler: WebClientHandlerRemote;
-
+  private bootstrapPingIntervalId: number|undefined;
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
       private embeddedOrigin: string) {
@@ -183,6 +183,36 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler = new HostMessageHandler(this.handler, this.sender);
+
+    this.bootstrapPingIntervalId =
+        window.setInterval(this.bootstrapPing.bind(this), 50);
+    this.bootstrapPing();
+  }
+
+  destroy() {
+    window.clearInterval(this.bootstrapPingIntervalId);
+    this.postMessageReceiver.destroy();
+    this.messageHandler.destroy();
+    this.sender.destroy();
+  }
+
+  // Called when the webview page is loaded.
+  contentLoaded() {
+    // Send the ping message one more time. At this point, the webview should
+    // be able to handle the message, if it hasn't already.
+    this.bootstrapPing();
+    this.stopBootstrapPing();
+  }
+
+  // Sends a message to the webview which is required to initialize the client.
+  // Because we don't know when the client will be ready to receive this
+  // message, we start sending this every 50ms as soon as navigation commits on
+  // the webview, and stop sending this when the page loads, or we receive a
+  // request from the client.
+  bootstrapPing() {
+    if (this.bootstrapPingIntervalId === undefined) {
+      return;
+    }
     this.windowProxy.postMessage(
         {
           type: 'glic-bootstrap',
@@ -191,10 +221,11 @@ export class GlicApiHost implements PostMessageRequestHandler {
         this.embeddedOrigin);
   }
 
-  destroy() {
-    this.postMessageReceiver.destroy();
-    this.messageHandler.destroy();
-    this.sender.destroy();
+  stopBootstrapPing() {
+    if (this.bootstrapPingIntervalId !== undefined) {
+      window.clearInterval(this.bootstrapPingIntervalId);
+      this.bootstrapPingIntervalId = undefined;
+    }
   }
 
   // PostMessageRequestHandler implementation.
@@ -206,6 +237,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
       return;
     }
 
+    this.stopBootstrapPing();
     const transfer: Transferable[] = [];
     const response =
         await handlerFunction.call(this.messageHandler, payload, transfer);

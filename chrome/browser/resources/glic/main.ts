@@ -18,12 +18,14 @@ const webview =
 class GlicAppHostManager {
   host: GlicApiHost|undefined;
   constructor() {
+    webview.addEventListener('loadcommit', () => {
+      this.loadCommit();
+    });
     webview.addEventListener('contentload', () => {
       this.contentLoaded();
     });
   }
-
-  contentLoaded() {
+  loadCommit() {
     if (this.host) {
       this.host.destroy();
       this.host = undefined;
@@ -32,6 +34,11 @@ class GlicAppHostManager {
       this.host = new GlicApiHost(
           browserProxy, webview.contentWindow,
           new URL(loadTimeData.getString('glicGuestURL')).origin);
+    }
+  }
+  contentLoaded() {
+    if (this.host) {
+      this.host.contentLoaded();
     }
   }
 }
