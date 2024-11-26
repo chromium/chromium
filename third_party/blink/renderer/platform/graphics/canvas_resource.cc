@@ -211,7 +211,7 @@ bool CanvasResource::PrepareTransferableResource(
       viz::SinglePlaneFormat::kBGRA_8888,
       viz::TransferableResource::ResourceSource::kCanvas);
 
-  out_resource->color_space = GetColorSpace();
+  out_resource->color_space = client_shared_image->color_space();
 
   return true;
 }
@@ -241,7 +241,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
       client_shared_image->size(), client_shared_image->format(),
       IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
 
-  out_resource->color_space = GetColorSpace();
+  out_resource->color_space = client_shared_image->color_space();
 
   // When a resource is returned by the display compositor, a sync token is
   // provided to indicate when the compositor's commands using the resource are
@@ -263,10 +263,6 @@ SkImageInfo CanvasResource::CreateSkImageInfo() const {
       SkISize::Make(size_.width(), size_.height()),
       viz::ToClosestSkColorType(/*gpu_compositing=*/true, format_), alpha_type_,
       color_space_.ToSkColorSpace());
-}
-
-gfx::ColorSpace CanvasResource::GetColorSpace() const {
-  return color_space_;
 }
 
 // CanvasResourceSharedBitmap
