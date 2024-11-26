@@ -33,6 +33,7 @@
 #include <optional>
 
 #include "base/containers/adapters.h"
+#include "base/memory/stack_allocated.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
@@ -1904,6 +1905,62 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
   return CompositorKeyframeValueFactory::Create(property, *style, offset);
 }
 
+// For now, viewport units are resolved differently for page / page margin
+// contexts [1], compared to when inside actual document contents [2]. Should we
+// be able to start resolving them the same way, this size change scope class
+// could go away.
+//
+// See https://github.com/w3c/csswg-drafts/issues/5437
+//
+// [1] The default page *box* size from print parameters, i.e. ignoring any
+// @page rules. This is inspired by what
+// https://drafts.csswg.org/mediaqueries-5/#width says for @media width, and
+// https://drafts.csswg.org/css-page-3/#page-size-prop ("Media queries do not
+// honor size: they assume the paper size that would be chosen if no @page rules
+// were specified"). It's important here that any @page rules are ignored, since
+// the 'size' property may also use viewport units, and then there would be
+// circular dependencies.
+//
+// [2] The actual page *area* size of the first page (after having taken @page
+// rules into account and considered named pages), aka the initial containing
+// block.
+class ViewportSizeChangeScopeForPrinting {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ViewportSizeChangeScopeForPrinting(Document* document)
+      : document_(document) {
+    // TODO(crbug.com/41477900): Being here without being in print mode seems
+    // kind of pointless, but InitiateStyleOrLayoutDependentLoadForPrint() in
+    // Document does that.
+    if (!document_->Printing()) {
+      return;
+    }
+
+    LayoutView* layout_view = document_->GetLayoutView();
+    document_icb_size_ = layout_view->InitialContainingBlockSizeForPrinting();
+
+    const LocalFrame* frame = document_->GetFrame();
+    auto page_context_viewport_size = PhysicalSize::FromSizeFRound(
+        frame->GetPrintParams().default_page_description.size);
+    layout_view->SetInitialContainingBlockSizeForPrinting(
+        page_context_viewport_size);
+    document->GetStyleEngine().UpdateViewportSize();
+  }
+  ~ViewportSizeChangeScopeForPrinting() {
+    if (!document_icb_size_) {
+      return;
+    }
+    document_->GetLayoutView()->SetInitialContainingBlockSizeForPrinting(
+        *document_icb_size_);
+    document_->GetStyleEngine().UpdateViewportSize();
+  }
+
+ private:
+  Document* document_;
+  std::optional<PhysicalSize> document_icb_size_;
+};
+
 const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
                                                  const AtomicString& page_name,
                                                  float page_fitting_scale,
@@ -1929,6 +1986,10 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
   auto& builder = state.StyleBuilder();
   // Page boxes are blocks.
   builder.SetDisplay(EDisplay::kBlock);
+
+  // Temporarily set the viewport size to the size of the default page box
+  // specified in the print parameters.
+  ViewportSizeChangeScopeForPrinting use_default_page_box_size(&GetDocument());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -2022,6 +2083,10 @@ void StyleResolver::StyleForPageMargins(const ComputedStyle& page_style,
        CSSAtRuleID::kCSSAtRuleBottomRightCorner},
       {PageMarginsStyle::BottomLeftCorner,
        CSSAtRuleID::kCSSAtRuleBottomLeftCorner}};
+
+  // Temporarily set the viewport size to the size of the default page box
+  // specified in the print parameters.
+  ViewportSizeChangeScopeForPrinting use_default_page_box_size(&GetDocument());
 
   for (const Entry& entry : table) {
     StyleResolverState margin_state(GetDocument(), *root_element,
