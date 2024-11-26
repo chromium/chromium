@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/site_access_requests_helper.h"
+#include "extensions/browser/host_access_request_helper.h"
 
 #include <sys/types.h>
 
@@ -15,7 +15,7 @@
 
 namespace extensions {
 
-SiteAccessRequestsHelper::SiteAccessRequestsHelper(
+HostAccessRequestsHelper::HostAccessRequestsHelper(
     PassKey pass_key,
     PermissionsManager* permissions_manager,
     content::WebContents* web_contents,
@@ -28,9 +28,9 @@ SiteAccessRequestsHelper::SiteAccessRequestsHelper(
       ExtensionRegistry::Get(web_contents->GetBrowserContext()));
 }
 
-SiteAccessRequestsHelper::~SiteAccessRequestsHelper() = default;
+HostAccessRequestsHelper::~HostAccessRequestsHelper() = default;
 
-void SiteAccessRequestsHelper::AddRequest(
+void HostAccessRequestsHelper::AddRequest(
     const Extension& extension,
     const std::optional<URLPattern>& filter) {
   // Extension must not have granted access to the current site.
@@ -41,7 +41,7 @@ void SiteAccessRequestsHelper::AddRequest(
   extensions_with_requests_.insert({extension.id(), filter});
 }
 
-void SiteAccessRequestsHelper::UpdateRequest(
+void HostAccessRequestsHelper::UpdateRequest(
     const Extension& extension,
     const std::optional<URLPattern>& filter) {
   // We can only update a request if there is an existent one.
@@ -55,7 +55,7 @@ void SiteAccessRequestsHelper::UpdateRequest(
   extensions_with_requests_.at(extension.id()) = filter;
 }
 
-bool SiteAccessRequestsHelper::RemoveRequest(
+bool HostAccessRequestsHelper::RemoveRequest(
     const ExtensionId& extension_id,
     const std::optional<URLPattern>& filter) {
   auto requests_iter = extensions_with_requests_.find(extension_id);
@@ -73,7 +73,7 @@ bool SiteAccessRequestsHelper::RemoveRequest(
   return false;
 }
 
-bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
+bool HostAccessRequestsHelper::RemoveRequestIfGrantedAccess(
     const Extension& extension) {
   // Request is removed iff extension has access to the current site.
   const GURL& url = web_contents_->GetLastCommittedURL();
@@ -87,18 +87,18 @@ bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
   return RemoveRequest(extension.id(), /*filter=*/std::nullopt);
 }
 
-void SiteAccessRequestsHelper::UserDismissedRequest(
+void HostAccessRequestsHelper::UserDismissedRequest(
     const ExtensionId& extension_id) {
   CHECK(extensions_with_requests_.contains(extension_id));
   extensions_with_requests_dismissed_.insert(extension_id);
 }
 
-bool SiteAccessRequestsHelper::HasRequest(
+bool HostAccessRequestsHelper::HasRequest(
     const ExtensionId& extension_id) const {
   return extensions_with_requests_.contains(extension_id);
 }
 
-bool SiteAccessRequestsHelper::HasActiveRequest(
+bool HostAccessRequestsHelper::HasActiveRequest(
     const ExtensionId& extension_id) const {
   if (!extensions_with_requests_.contains(extension_id)) {
     return false;
@@ -115,23 +115,23 @@ bool SiteAccessRequestsHelper::HasActiveRequest(
          filter.value().MatchesURL(web_contents_->GetLastCommittedURL());
 }
 
-bool SiteAccessRequestsHelper::HasRequests() {
+bool HostAccessRequestsHelper::HasRequests() {
   return !extensions_with_requests_.empty();
 }
 
-void SiteAccessRequestsHelper::OnExtensionUnloaded(
+void HostAccessRequestsHelper::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
   RemoveRequest(extension->id(), /*filter=*/std::nullopt);
 
   if (!HasRequests()) {
-    permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
+    permissions_manager_->DeleteHostAccessRequestHelperFor(tab_id_);
     // IMPORTANT: This object is now deleted and is unsafe to use.
   }
 }
 
-void SiteAccessRequestsHelper::DidFinishNavigation(
+void HostAccessRequestsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Sub-frames don't get specific requests.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -148,19 +148,19 @@ void SiteAccessRequestsHelper::DidFinishNavigation(
   extensions_with_requests_.clear();
   extensions_with_requests_dismissed_.clear();
 
-  permissions_manager_->NotifySiteAccessRequestsCleared(tab_id_);
-  permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
+  permissions_manager_->NotifyHostAccessRequestsCleared(tab_id_);
+  permissions_manager_->DeleteHostAccessRequestHelperFor(tab_id_);
   // IMPORTANT: This object is now deleted and is unsafe to use.
 }
 
-void SiteAccessRequestsHelper::WebContentsDestroyed() {
+void HostAccessRequestsHelper::WebContentsDestroyed() {
   // Delete web contents pointer so it's not dangling at helper's destruction.
   web_contents_ = nullptr;
 
   extensions_with_requests_.clear();
   extensions_with_requests_dismissed_.clear();
 
-  permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
+  permissions_manager_->DeleteHostAccessRequestHelperFor(tab_id_);
   // IMPORTANT: This object is now deleted and is unsafe to use.
 }
 

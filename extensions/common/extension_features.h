@@ -51,7 +51,7 @@ BASE_DECLARE_FEATURE(kApiRuntimeActionData);
 
 // Controls the availability of adding and removing site access requests with
 // the permissions API.
-BASE_DECLARE_FEATURE(kApiPermissionsSiteAccessRequests);
+BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
 
 // Controls the availability of specifying different world IDs in the
 // userScripts API.

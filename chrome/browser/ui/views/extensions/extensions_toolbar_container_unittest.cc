@@ -626,20 +626,20 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
   // Add a site access request for extension A and verify it's not visible on
   // the request access button since extensions with only activeTab can't add a
   // request.
-  AddSiteAccessRequest(*extension_A,
+  AddHostAccessRequest(*extension_A,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
   // Add a site access request for extension B and verify it's not visible on
   // the request access button since extension didn't request access for the
   // current site.
-  AddSiteAccessRequest(*extension_B,
+  AddHostAccessRequest(*extension_B,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
   // Add a site access request for extension C and verify it's visible on the
   // request access button.
-  AddSiteAccessRequest(*extension_C,
+  AddHostAccessRequest(*extension_C,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
@@ -653,7 +653,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
 
   // Add a site access request for extension B and verify it's visible on
   // the request access button.
-  AddSiteAccessRequest(*extension_B,
+  AddHostAccessRequest(*extension_B,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
@@ -661,7 +661,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
 
   // Add a site access request for extension C and verify it's visible on the
   // request access button.
-  AddSiteAccessRequest(*extension_C,
+  AddHostAccessRequest(*extension_C,
                        browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
@@ -669,7 +669,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
 
   // Remove the site access request for extension B and verify only extension
   // C is visible on the request access button.
-  RemoveSiteAccessRequest(*extension_B,
+  RemoveHostAccessRequest(*extension_B,
                           browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
@@ -677,7 +677,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
 
   // Remove the site access request for extension C and verify request access
   // button is not visible.
-  RemoveSiteAccessRequest(*extension_C,
+  RemoveHostAccessRequest(*extension_C,
                           browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
@@ -699,7 +699,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // contents. Verify request access button is hidden.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
                     "http://www.other.com/");
-  AddSiteAccessRequest(
+  AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
@@ -707,7 +707,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // contents. Verify extension is visible on the request access button.
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
                       "http://www.example.com/");
-  AddSiteAccessRequest(
+  AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
@@ -718,7 +718,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // removed).
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
                       "http://www.other.com/");
-  AddSiteAccessRequest(
+  AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
@@ -742,8 +742,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Add site access requests for both extensions and verify they are visible
   // on the request access button.
-  AddSiteAccessRequest(*extension_A, web_contents);
-  AddSiteAccessRequest(*extension_B, web_contents);
+  AddHostAccessRequest(*extension_A, web_contents);
+  AddHostAccessRequest(*extension_B, web_contents);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extension_A->id(), extension_B->id()));
@@ -766,7 +766,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   WithholdHostPermissions(extension.get());
 
   NavigateAndCommit(GURL("http://www.a.com"));
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_TRUE(IsRequestAccessButtonVisible());
@@ -807,7 +807,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // current web contents. Verify request access button is hidden.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
                     "*://*/path");
-  AddSiteAccessRequest(
+  AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
@@ -823,7 +823,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // hidden.
   filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
                       "http://www.other.com/path");
-  AddSiteAccessRequest(
+  AddHostAccessRequest(
       *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
@@ -849,7 +849,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Navigate to url and add a site request for the extension.
   NavigateAndCommit(url);
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   // A site has "customize by extensions" site setting by default,
@@ -908,8 +908,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extension_a, web_contents);
-  AddSiteAccessRequest(*extension_b, web_contents);
+  AddHostAccessRequest(*extension_a, web_contents);
+  AddHostAccessRequest(*extension_b, web_contents);
 
   // Verify request access button has both extensions.
   EXPECT_TRUE(IsRequestAccessButtonVisible());
@@ -960,8 +960,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extension_a, web_contents);
-  AddSiteAccessRequest(*extension_b, web_contents);
+  AddHostAccessRequest(*extension_a, web_contents);
+  AddHostAccessRequest(*extension_b, web_contents);
 
   // Verify request access button has both extensions.
   EXPECT_TRUE(IsRequestAccessButtonVisible());
@@ -974,7 +974,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Dismiss extension A's requests. Verify only extension B is visible in the
   // button.
-  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+  permissions_manager->UserDismissedHostAccessRequest(web_contents, tab_id,
                                                       extension_a->id());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_EQ(
@@ -982,7 +982,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
 
   // Dismiss extension B's requests. Verify button is not visible anymore.
-  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+  permissions_manager->UserDismissedHostAccessRequest(web_contents, tab_id,
                                                       extension_b->id());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
@@ -996,7 +996,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   // Navigate to url and add a site access request for extension.
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
   LayoutContainerIfNecessary();
 
@@ -1069,8 +1069,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Add site access requests for extension A and B.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extension_A, web_contents);
-  AddSiteAccessRequest(*extension_B, web_contents);
+  AddHostAccessRequest(*extension_A, web_contents);
+  AddHostAccessRequest(*extension_B, web_contents);
   LayoutContainerIfNecessary();
 
   // Request access button is visible because extension A and B have site access
@@ -1092,7 +1092,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   // Add a site access request for extension C before the confirmation is
   // collapsed.
-  AddSiteAccessRequest(*extension_C, web_contents);
+  AddHostAccessRequest(*extension_C, web_contents);
 
   // Confirmation is still showing since collapse time hasn't elapsed.
   EXPECT_TRUE(request_access_button()->GetVisible());
@@ -1147,7 +1147,7 @@ TEST_F(ExtensionsToolbarContainerWithPermittedSitesUnitTest,
   // Navigate to a site and add a site access request for the extension.
   NavigateAndCommit(url);
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extension, web_contents);
+  AddHostAccessRequest(*extension, web_contents);
 
   // A site has "customize by extensions" site setting by default,
   ASSERT_EQ(GetUserSiteSetting(url),

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_SITE_ACCESS_REQUESTS_HELPER_H_
-#define EXTENSIONS_BROWSER_SITE_ACCESS_REQUESTS_HELPER_H_
+#ifndef EXTENSIONS_BROWSER_HOST_ACCESS_REQUEST_HELPER_H_
+#define EXTENSIONS_BROWSER_HOST_ACCESS_REQUEST_HELPER_H_
 
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,19 +24,19 @@ class PermissionsManager;
 // them on cross-origin navigations.
 // This class should only be used by PermissionsManager since it's an
 // implementation detail that was pulled out for legibility.
-class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
+class HostAccessRequestsHelper : public ExtensionRegistryObserver,
                                  public content::WebContentsObserver {
  public:
   using PassKey = base::PassKey<PermissionsManager>;
 
-  SiteAccessRequestsHelper(PassKey pass_key,
+  HostAccessRequestsHelper(PassKey pass_key,
                            PermissionsManager* permissions_manager,
                            content::WebContents* web_contents,
                            int tab_id);
-  SiteAccessRequestsHelper(const SiteAccessRequestsHelper&) = delete;
-  const SiteAccessRequestsHelper& operator=(const SiteAccessRequestsHelper&) =
+  HostAccessRequestsHelper(const HostAccessRequestsHelper&) = delete;
+  const HostAccessRequestsHelper& operator=(const HostAccessRequestsHelper&) =
       delete;
-  ~SiteAccessRequestsHelper() override;
+  ~HostAccessRequestsHelper() override;
 
   // Adds `extension` to the set of extensions with site access requests.
   // Request will be matched to `filter`, if existent. Extension must not have
@@ -109,4 +109,4 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_SITE_ACCESS_REQUESTS_HELPER_H_
+#endif  // EXTENSIONS_BROWSER_HOST_ACCESS_REQUEST_HELPER_H_

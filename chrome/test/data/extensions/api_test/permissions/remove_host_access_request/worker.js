@@ -18,7 +18,7 @@ chrome.test.runTests([
   async function noDocumentOrTabId() {
     const request = {};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.removeSiteAccessRequest(request),
+        chrome.permissions.removeHostAccessRequest(request),
         `Error: Must specify either 'documentId' or 'tabId'.`);
 
     chrome.test.succeed();
@@ -29,7 +29,7 @@ chrome.test.runTests([
   async function bothDocumentOrTabId() {
     const request = {documentId: '123', tabId: 456};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.removeSiteAccessRequest(request),
+        chrome.permissions.removeHostAccessRequest(request),
         `Error: Must specify either 'documentId' or 'tabId'.`);
 
     chrome.test.succeed();
@@ -40,7 +40,7 @@ chrome.test.runTests([
     const tabId = 123;
     const request = {tabId: tabId};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.removeSiteAccessRequest(request),
+        chrome.permissions.removeHostAccessRequest(request),
         `Error: No tab with ID '${tabId}'.`);
 
     chrome.test.succeed();
@@ -51,7 +51,7 @@ chrome.test.runTests([
     const documentId = 'invalid id';
     const request = {documentId: documentId};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.removeSiteAccessRequest(request),
+        chrome.permissions.removeHostAccessRequest(request),
         `Error: No document with ID '${documentId}'.`);
 
     chrome.test.succeed();
@@ -63,8 +63,8 @@ chrome.test.runTests([
     const tab = await navigateTo('example.com');
     const request = {tabId: tab.id};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.removeSiteAccessRequest(request),
-        `Error: Extension cannot remove a site access request that doesn't ` +
+        chrome.permissions.removeHostAccessRequest(request),
+        `Error: Extension cannot remove a host access request that doesn't ` +
             `exist.`);
 
     chrome.test.succeed();
@@ -77,7 +77,7 @@ chrome.test.runTests([
 
     const request = {tabId: tab.id, pattern: 'invalid pattern'};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.removeSiteAccessRequest(request),
+        chrome.permissions.removeHostAccessRequest(request),
         `Error: Extension cannot remove a request with an invalid value for ` +
             `'pattern'.`);
 

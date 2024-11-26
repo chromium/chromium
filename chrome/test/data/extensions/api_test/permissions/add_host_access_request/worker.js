@@ -18,7 +18,7 @@ chrome.test.runTests([
   async function noDocumentOrTabId() {
     const request = {};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
+        chrome.permissions.addHostAccessRequest(request),
         `Error: Must specify either 'documentId' or 'tabId'.`);
 
     chrome.test.succeed();
@@ -29,7 +29,7 @@ chrome.test.runTests([
   async function bothDocumentOrTabId() {
     const request = {documentId: '123', tabId: 456};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
+        chrome.permissions.addHostAccessRequest(request),
         `Error: Must specify either 'documentId' or 'tabId'.`);
 
     chrome.test.succeed();
@@ -40,7 +40,7 @@ chrome.test.runTests([
     const tabId = 123;
     const request = {tabId: tabId};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
+        chrome.permissions.addHostAccessRequest(request),
         `Error: No tab with ID '${tabId}'.`);
 
     chrome.test.succeed();
@@ -51,7 +51,7 @@ chrome.test.runTests([
     const documentId = 'invalid id';
     const request = {documentId: documentId};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
+        chrome.permissions.addHostAccessRequest(request),
         `Error: No document with ID '${documentId}'.`);
 
     chrome.test.succeed();
@@ -64,8 +64,8 @@ chrome.test.runTests([
 
     const request = {tabId: tab.id};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
-        `Error: Extension cannot add a site access request for a site it ` +
+        chrome.permissions.addHostAccessRequest(request),
+        `Error: Extension cannot add a host access request for a host it ` +
             `already has access to.`);
 
     chrome.test.succeed();
@@ -79,8 +79,8 @@ chrome.test.runTests([
 
     const request = {documentId: frame.documentId};
     await chrome.test.assertPromiseRejects(
-      chrome.permissions.addSiteAccessRequest(request),
-      `Error: Extension cannot add a site access request for a site it ` +
+      chrome.permissions.addHostAccessRequest(request),
+      `Error: Extension cannot add a host access request for a host it ` +
           `already has access to.`);
 
     chrome.test.succeed();
@@ -93,7 +93,7 @@ chrome.test.runTests([
 
     const request = {tabId: tab.id, pattern: 'invalid pattern'};
     await chrome.test.assertPromiseRejects(
-        chrome.permissions.addSiteAccessRequest(request),
+        chrome.permissions.addHostAccessRequest(request),
         `Error: Extension cannot add a request with an invalid value for ` +
             `'pattern'.`);
 

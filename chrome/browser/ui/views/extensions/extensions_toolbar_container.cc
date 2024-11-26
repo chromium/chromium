@@ -369,7 +369,7 @@ void ExtensionsToolbarContainer::UpdateRequestAccessButton(
     for (const auto& action : actions_) {
       std::string action_id = action->GetId();
       bool has_active_request =
-          permissions_manager->HasActiveSiteAccessRequest(tab_id, action_id);
+          permissions_manager->HasActiveHostAccessRequest(tab_id, action_id);
       bool can_show_access_requests_in_toolbar =
           site_permissions_helper.ShowAccessRequestsInToolbar(action_id);
 

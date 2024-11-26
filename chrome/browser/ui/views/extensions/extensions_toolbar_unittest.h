@@ -114,14 +114,14 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
   // Adds a site access request with an optional `filter` for `extension` in
   // `web_contents`.
-  void AddSiteAccessRequest(
+  void AddHostAccessRequest(
       const extensions::Extension& extension,
       content::WebContents* web_contents,
       const std::optional<URLPattern>& filter = std::nullopt);
 
   // Removes the site access request for `extension` in `web_contents`, if
   // existent.
-  void RemoveSiteAccessRequest(const extensions::Extension& extension,
+  void RemoveHostAccessRequest(const extensions::Extension& extension,
                                content::WebContents* web_contents);
 
   // Returns the user's site setting for `url`.

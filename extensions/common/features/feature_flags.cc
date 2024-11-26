@@ -23,7 +23,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiActionOpenPopup,
     &extensions_features::kApiContentSettingsClipboard,
     &extensions_features::kApiEnterpriseKioskInput,
-    &extensions_features::kApiPermissionsSiteAccessRequests,
+    &extensions_features::kApiPermissionsHostAccessRequests,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiOdfsConfigPrivate,
     &extensions_features::kExtensionIconVariants,

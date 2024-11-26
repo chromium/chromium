@@ -241,8 +241,8 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
 
   // Add site access requests for both extensions.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  AddSiteAccessRequest(*extensionA, web_contents);
-  AddSiteAccessRequest(*extensionB, web_contents);
+  AddHostAccessRequest(*extensionA, web_contents);
+  AddHostAccessRequest(*extensionB, web_contents);
 
   // Both extensions should have a visible request in the toolbar.
   EXPECT_THAT(GetExtensionsShowingRequests(),
@@ -276,7 +276,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
   // Add site access request for extension.
-  AddSiteAccessRequest(*extension,
+  AddHostAccessRequest(*extension,
                        browser()->tab_strip_model()->GetActiveWebContents());
 
   // By default, extensions are allowed to show request access in the toolbar.
