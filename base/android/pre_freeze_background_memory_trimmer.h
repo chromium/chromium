@@ -21,6 +21,7 @@ namespace base::android {
 class MemoryPurgeManagerAndroid;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
+BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
 
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
@@ -127,6 +128,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
+
+  static void OnSelfFreeze() LOCKS_EXCLUDED(lock_);
 
   static bool SupportsModernTrim();
   static bool ShouldUseModernTrim();

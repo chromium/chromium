@@ -28,6 +28,7 @@ import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.base.memory.SelfFreezeCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
@@ -262,6 +263,7 @@ public class ChildProcessConnection {
     private boolean mKilledByUs;
 
     private MemoryPressureCallback mMemoryPressureCallback;
+    private SelfFreezeCallback mSelfFreezeCallback;
 
     // If the process threw an exception before entering the main loop, the exception
     // string is reported here.
@@ -654,6 +656,12 @@ public class ChildProcessConnection {
                 mMemoryPressureCallback = callback;
             }
 
+            if (mSelfFreezeCallback == null) {
+                final SelfFreezeCallback callback = this::onSelfFreeze;
+                MemoryPressureListener.addSelfFreezeCallback(callback);
+                mSelfFreezeCallback = callback;
+            }
+
             // Run the setup if the connection parameters have already been provided. If
             // not, doConnectionSetup() will be called from setupConnection().
             if (mConnectionParams != null) {
@@ -943,6 +951,12 @@ public class ChildProcessConnection {
             ThreadUtils.postOnUiThread(() -> MemoryPressureListener.removeCallback(callback));
             mMemoryPressureCallback = null;
         }
+
+        if (mSelfFreezeCallback != null) {
+            final SelfFreezeCallback callback = mSelfFreezeCallback;
+            MemoryPressureListener.removeSelfFreezeCallback(callback);
+            mSelfFreezeCallback = null;
+        }
     }
 
     public void updateGroupImportance(int group, int importanceInGroup) {
@@ -1190,6 +1204,23 @@ public class ChildProcessConnection {
         if (mService == null) return;
         try {
             mService.onMemoryPressure(pressure);
+        } catch (RemoteException ex) {
+            // Ignore
+        }
+    }
+
+    private void onSelfFreeze() {
+        assert isRunningOnLauncherThread();
+        synchronized (mBindingStateLock) {
+            // This will handle all processes with only a WAIVED binding, and
+            // the last visible tab, which covers all renderers (W or WV), but
+            // excludes the GPU process (WS).
+            if (mBindingState != ChildBindingState.WAIVED
+                    && mBindingState != ChildBindingState.VISIBLE) return;
+        }
+        if (mService == null) return;
+        try {
+            mService.onSelfFreeze();
         } catch (RemoteException ex) {
             // Ignore
         }

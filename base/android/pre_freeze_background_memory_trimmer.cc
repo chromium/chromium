@@ -142,6 +142,10 @@ BASE_FEATURE(kIsTrimMemoryBackgroundCritical,
              "IsTrimMemoryBackgroundCritical",
              FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShouldFreezeSelf,
+             "ShouldFreezeSelf",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
     : supports_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
                             SDK_VERSION_U) {}
@@ -434,6 +438,11 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
     return;
   }
   PostMetricsTask();
+}
+
+// static
+void PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze() {
+  // TODO
 }
 
 // static

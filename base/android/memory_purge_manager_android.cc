@@ -30,3 +30,7 @@ static jboolean JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
     JNIEnv* env) {
   return base::android::PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim();
 }
+
+static jboolean JNI_MemoryPurgeManager_IsSelfFreezeEnabled(JNIEnv* env) {
+  return base::FeatureList::IsEnabled(base::android::kShouldFreezeSelf);
+}

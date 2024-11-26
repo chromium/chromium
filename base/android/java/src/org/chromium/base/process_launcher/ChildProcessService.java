@@ -229,6 +229,11 @@ public class ChildProcessService {
                 }
 
                 @Override
+                public void onSelfFreeze() {
+                    ChildProcessServiceJni.get().onSelfFreeze();
+                }
+
+                @Override
                 public void dumpProcessStack() {
                     assert mServiceBound;
                     synchronized (mLibraryInitializedLock) {
@@ -447,5 +452,8 @@ public class ChildProcessService {
 
         /** Dumps the child process stack without crashing it. */
         void dumpProcessStack();
+
+        /** Calls pending background tasks, then compacts the process's memory. */
+        void onSelfFreeze();
     }
 }

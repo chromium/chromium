@@ -4606,6 +4606,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/memory/MemoryPressureMonitor.java",
       "android/java/src/org/chromium/base/memory/MemoryPressureUma.java",
       "android/java/src/org/chromium/base/memory/MemoryPurgeManager.java",
+      "android/java/src/org/chromium/base/memory/SelfFreezeCallback.java",
     ]
     deps = [
       ":library_loader_java",
