@@ -34,6 +34,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "controller/canvas_drawer.ts",
+    "controller/line_chart_controller.ts",
     "controller/unit_label.ts",
     "model/cpu_usage_helper.ts",
     "model/data_manager.ts",

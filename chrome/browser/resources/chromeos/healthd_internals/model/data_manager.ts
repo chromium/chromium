@@ -182,32 +182,13 @@ export class DataManager {
 
   private removeOutdatedData(endTime: number) {
     const newStartTime = endTime - this.dataRetentionDuration;
-    const shouldUpdateChart = (dataSeriesList: DataSeries[]) => {
-      return dataSeriesList.reduce(
-          // The order within `or` expression is important because
-          // `removeOutdatedData` should be called for each `dataSeries`.
-          (isDataRemoved, dataSeries) =>
-              dataSeries.removeOutdatedData(newStartTime) || isDataRemoved,
-          false);
-    };
-
-    if (shouldUpdateChart(this.batteryDataSeries)) {
-      this.chartPages.battery.updateStartTime(newStartTime);
-    }
-    if (shouldUpdateChart(this.cpuFrequencyDataSeries)) {
-      this.chartPages.cpuFrequency.updateStartTime(newStartTime);
-    }
-    if (shouldUpdateChart(this.cpuUsageDataSeries)) {
-      this.chartPages.cpuUsage.updateStartTime(newStartTime);
-    }
-    if (shouldUpdateChart(this.memoryDataSeries)) {
-      this.chartPages.memory.updateStartTime(newStartTime);
-    }
-    if (shouldUpdateChart(this.thermalDataSeries)) {
-      this.chartPages.thermal.updateStartTime(newStartTime);
-    }
-    if (shouldUpdateChart(this.zramDataSeries)) {
-      this.chartPages.zram.updateStartTime(newStartTime);
+    for (const dataSeriesList
+             of [this.batteryDataSeries, this.cpuFrequencyDataSeries,
+                 this.cpuUsageDataSeries, this.memoryDataSeries,
+                 this.thermalDataSeries, this.zramDataSeries]) {
+      for (const dataSeries of dataSeriesList) {
+        dataSeries.removeOutdatedData(newStartTime);
+      }
     }
   }
 
@@ -324,7 +305,7 @@ export class DataManager {
       this.batteryDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.chartPages.battery.addDataSeries(this.batteryDataSeries);
+    this.chartPages.battery.setupDataSeriesList(this.batteryDataSeries);
   }
 
   private initCpuFrequencyDataSeries(cpu: HealthdApiCpuResult) {
@@ -337,7 +318,8 @@ export class DataManager {
         count += 1;
       }
     }
-    this.chartPages.cpuFrequency.addDataSeries(this.cpuFrequencyDataSeries);
+    this.chartPages.cpuFrequency.setupDataSeriesList(
+        this.cpuFrequencyDataSeries);
   }
 
   private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
@@ -352,7 +334,7 @@ export class DataManager {
         count += 1;
       }
     }
-    this.chartPages.cpuUsage.addDataSeries(this.cpuUsageDataSeries);
+    this.chartPages.cpuUsage.setupDataSeriesList(this.cpuUsageDataSeries);
   }
 
   private initMemoryDataSeries() {
@@ -360,7 +342,7 @@ export class DataManager {
       this.memoryDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.chartPages.memory.addDataSeries(this.memoryDataSeries);
+    this.chartPages.memory.setupDataSeriesList(this.memoryDataSeries);
   }
 
   private initThermalDataSeries(thermals: HealthdApiThermalResult[]) {
@@ -368,7 +350,7 @@ export class DataManager {
       this.thermalDataSeries.push(new DataSeries(
           `${thermal.name} (${thermal.source})`, getLineChartColor(index)));
     }
-    this.chartPages.thermal.addDataSeries(this.thermalDataSeries);
+    this.chartPages.thermal.setupDataSeriesList(this.thermalDataSeries);
   }
 
   private initZramDataSeries() {
@@ -376,6 +358,6 @@ export class DataManager {
       this.zramDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.chartPages.zram.addDataSeries(this.zramDataSeries);
+    this.chartPages.zram.setupDataSeriesList(this.zramDataSeries);
   }
 }

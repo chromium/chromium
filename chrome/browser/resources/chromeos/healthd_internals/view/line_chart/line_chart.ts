@@ -8,8 +8,8 @@ import './chart_summary_table.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CanvasDrawer} from '../../controller/canvas_drawer.js';
-import {DataSeries} from '../../model/data_series.js';
+import {LineChartController} from '../../controller/line_chart_controller.js'
+import type {DataSeries} from '../../model/data_series.js';
 import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from '../../utils/line_chart_configs.js';
 
 import type {HealthdInternalsChartSummaryTableElement} from './chart_summary_table.js';
@@ -38,9 +38,9 @@ export interface HealthdInternalsLineChartElement {
 }
 
 /**
- * Create a line chart canvas, including a left button menu and a bottom
- * scrollbar. This element will enroll the events of the line chart, handle the
- * scroll, touch and resize events, and render canvas by `canvasDrawer`.
+ * Create a line chart element, including a left button menu, a bottom scrollbar
+ * and a canvas. This element will enroll events of the line chart, handle
+ * scroll, touch and resize events, and update canvas.
  */
 export class HealthdInternalsLineChartElement extends PolymerElement {
   static get is() {
@@ -53,39 +53,29 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.startTime = Date.now();
-    this.endTime = this.startTime + 1;
 
     this.initCanvasEventHandlers();
 
     const resizeObserver = new ResizeObserver(() => {
-      this.resizeChart();
-      this.updateChart();
+      this.resizeCanvas();
+      this.updateCanvas();
     });
     resizeObserver.observe(this.$.chartRoot);
 
     window.addEventListener('bar-scroll', () => {
-      this.updateChart();
+      this.updateCanvas();
     });
 
     window.addEventListener('menu-buttons-updated', () => {
-      this.updateChart();
+      this.updateCanvas();
     });
   }
 
-  // The start time of the time line chart. (Unix time)
-  private startTime: number;
-  // The end time of the time line chart. (Unix time)
-  private endTime: number;
+  // Controller for this UI element.
+  private controller: LineChartController = new LineChartController(this);
 
   // Horizontal scale of line chart. Number of milliseconds between two pixels.
   private timeScale: number = DEFAULT_TIME_SCALE;
-
-  // The helper class to draw the canvas.
-  private canvasDrawer: CanvasDrawer|null = null;
-
-  // Used to avoid updating the graph multiple times in a single operation.
-  private chartUpdateTimer: number = 0;
 
   // Status of dragging and touching events for scrolling and zooming.
   private isDragging: boolean = false;
@@ -97,48 +87,25 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   // Whether the line chart is visible. If not, we don't need to render canvas.
   private isVisible: boolean = false;
 
-  // Initialize the `canvasDrawer`.
-  initCanvasDrawer(units: string[], unitBase: number) {
-    this.canvasDrawer = new CanvasDrawer(units, unitBase);
-    this.updateChart();
+  getController(): LineChartController {
+    return this.controller;
   }
 
-  // Add a data series to the line chart. Call `initCanvasDrawer()` before
-  // calling this function.
-  addDataSeries(dataSeries: DataSeries) {
-    if (this.canvasDrawer === null) {
-      console.warn(
-          'This `canvasDrawer` has not been initilaized yet. Call ',
-          '`initCanvasDrawer()` before calling this function.');
-      return;
-    }
-    this.canvasDrawer.addDataSeries(dataSeries);
-    this.$.chartMenu.addDataSeries(dataSeries);
-    this.$.summaryTable.addDataSeries(dataSeries);
-    this.resizeChart();
-    this.updateChart();
+  getSummaryTable(): HealthdInternalsChartSummaryTableElement {
+    return this.$.summaryTable;
   }
 
-  // Update the end time of the line chart. Also update the line chart and
-  // scrollbar to display latest data.
-  updateEndTime(endTime: number) {
-    if (this.canvasDrawer === null) {
-      console.warn(
-          'This `canvasDrawer` has not been initilaized yet. Call ',
-          '`initCanvasDrawer()` before calling this function.');
-      return;
-    }
-    this.endTime = endTime;
+  // Update to display the latest data.
+  update() {
     this.updateScrollBar();
-    this.updateChart();
+    this.updateCanvas();
   }
 
-  // Update the start time of the line chart when removing data. Also update the
-  // line chart and scrollbar to display latest data.
-  updateStartTime(startTime: number) {
-    this.startTime = Math.max(this.startTime, startTime);
-    this.updateScrollBar();
-    this.updateChart();
+  setupDataSeriesList(dataSeriesList: DataSeries[]) {
+    this.controller.setupDataSeriesList(dataSeriesList);
+    this.$.chartMenu.setupDataSeriesList(dataSeriesList);
+    this.$.summaryTable.setupDataSeriesList(dataSeriesList);
+    this.update();
   }
 
   // Update the visibility of line chart. We don't need to render the chart when
@@ -146,20 +113,8 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   updateVisibility(isVisible: boolean) {
     this.isVisible = isVisible;
     if (isVisible) {
-      this.updateScrollBar();
-      this.updateChart();
+      this.update();
     }
-  }
-
-  // Overwrite the maximum value of the chart.
-  setChartMaxValue(maxValue: number|null) {
-    if (this.canvasDrawer === null) {
-      console.warn(
-          'This `canvasDrawer` has not been initilaized yet. Call ',
-          '`initCanvasDrawer()` before calling this function.');
-      return;
-    }
-    this.canvasDrawer.setFixedMaxValue(maxValue);
   }
 
   renderChartSummaryTable(isVisible: boolean) {
@@ -268,24 +223,20 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
       return;
     }
 
-    if (this.$.chartScrollbar.isScrolledToRightEdge()) {
-      this.updateScrollBar();
-      this.$.chartScrollbar.scrollToRightEdge();
-      this.updateChart();
-      return;
-    }
-
-    // To try to make the chart keep right, make the right edge of the chart
-    // stop at the same position.
-    const oldPosition: number = this.$.chartScrollbar.getPosition();
-    const canvasWidth: number = this.$.mainCanvas.width;
-    const visibleEndTime: number = oldScale * (oldPosition + canvasWidth);
-    const newPosition: number =
-        Math.round(visibleEndTime / this.timeScale) - canvasWidth;
-
     this.updateScrollBar();
-    this.$.chartScrollbar.setPosition(newPosition);
-    this.updateChart();
+    if (this.$.chartScrollbar.isScrolledToRightEdge()) {
+      this.$.chartScrollbar.scrollToRightEdge();
+    } else {
+      // To try to make the chart keep right, make the right edge of the chart
+      // stop at the same position.
+      const oldPosition: number = this.$.chartScrollbar.getPosition();
+      const canvasWidth: number = this.$.mainCanvas.width;
+      const visibleEndTime: number = oldScale * (oldPosition + canvasWidth);
+      const newPosition: number =
+          Math.round(visibleEndTime / this.timeScale) - canvasWidth;
+      this.$.chartScrollbar.setPosition(newPosition);
+    }
+    this.updateCanvas();
   }
 
   // Scroll the line chart by moving forward `delta` pixels.
@@ -297,96 +248,55 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     if (this.$.chartScrollbar.getPosition() === oldPosition) {
       return;
     }
-    this.updateChart();
+    this.updateCanvas();
   }
 
-  private resizeChart() {
-    const width = this.getChartVisibleWidth();
-    const height = this.getChartVisibleHeight();
-    if (this.$.mainCanvas.width === width &&
-        this.$.mainCanvas.height === height) {
+  // Canvas requires explicit resizing instead of relying on CSS auto-rendering.
+  private resizeCanvas() {
+    const expectedWidth =
+        this.$.chartRoot.offsetWidth - this.$.chartMenu.getWidth();
+    const expectedHeight =
+        this.$.chartRoot.offsetHeight - this.$.chartScrollbar.getHeight();
+    if (this.$.mainCanvas.width === expectedWidth &&
+        this.$.mainCanvas.height === expectedHeight) {
       return;
     }
 
-    this.$.mainCanvas.width = width;
-    this.$.mainCanvas.height = height;
-    this.$.chartScrollbar.resize(width);
+    this.$.mainCanvas.width = expectedWidth;
+    this.$.mainCanvas.height = expectedHeight;
+    this.$.chartScrollbar.resize(expectedWidth);
     this.updateScrollBar();
   }
 
   // Update the scrollbar to the current line chart status after zooming,
-  // scrolling... etc.
+  // scrolling, and resizing.
   private updateScrollBar() {
     if (!this.isVisible) {
       return;
     }
-    const scrollRange: number =
-        Math.max(this.getChartWidth() - this.getChartVisibleWidth(), 0);
-    const isScrolledToRightEdge: boolean =
-        this.$.chartScrollbar.isScrolledToRightEdge();
-    this.$.chartScrollbar.setScrollableRange(scrollRange);
+
+    const scrollbar = this.$.chartScrollbar;
+    const range = this.controller.getScrollableRange(
+        this.$.mainCanvas.width, this.timeScale);
+    scrollbar.setScrollableRange(range);
+
+    const isScrolledToRightEdge = scrollbar.isScrolledToRightEdge();
     if (isScrolledToRightEdge && !this.isDragging) {
-      this.$.chartScrollbar.scrollToRightEdge();
+      scrollbar.scrollToRightEdge();
     }
   }
 
-  // Get the whole line chart width, in pixel.
-  private getChartWidth(): number {
-    const timeRange: number = this.endTime - this.startTime;
-    return Math.floor(timeRange / this.timeScale);
-  }
-
-  // Get the visible chart width.
-  private getChartVisibleWidth(): number {
-    return this.$.chartRoot.offsetWidth - this.$.chartMenu.getWidth();
-  }
-
-  // Get the visible chart height.
-  private getChartVisibleHeight(): number {
-    return this.$.chartRoot.offsetHeight - this.$.chartScrollbar.getHeight();
-  }
-
-  // Render the line chart. Note that to avoid calling render function
-  // multiple times in a single operation, this function will set a timeout
-  // rather than calling render function directly.
-  private updateChart() {
-    clearTimeout(this.chartUpdateTimer);
-    const context: CanvasRenderingContext2D|null =
-        this.$.mainCanvas.getContext('2d');
-    if (context === null || this.canvasDrawer === null ||
-        !this.canvasDrawer.shouldRender() || !this.isVisible) {
-      return;
-    }
-    this.chartUpdateTimer = setTimeout(() => this.renderCanvas(context));
-  }
-
-  // Render the chart content by `canvasDrawer`.
-  private renderCanvas(context: CanvasRenderingContext2D) {
-    // To reduce CPU usage, the chart do not draw points at every pixels.
-    // We need to know the offset of data from `scrollbarPosition`.
-    let scrollbarPosition: number = this.$.chartScrollbar.getPosition();
-    if (this.$.chartScrollbar.getScrollableRange() === 0) {
-      // If the chart width less than the visible width, make the chart align
-      // right by setting the negative position.
-      scrollbarPosition = this.getChartWidth() - this.$.mainCanvas.width;
-    }
-
-    if (this.canvasDrawer === null) {
+  // Render the latest content in canvas context.
+  private updateCanvas() {
+    const canvas = this.$.mainCanvas;
+    const context: CanvasRenderingContext2D|null = canvas.getContext('2d');
+    if (context === null || !this.isVisible) {
       return;
     }
 
-    const visibleStartTime: number =
-        this.startTime + scrollbarPosition * this.timeScale;
-    const visibleEndTime: number =
-        visibleStartTime + this.getChartVisibleWidth() * this.timeScale;
-    this.canvasDrawer.renderCanvas(
-        context, this.$.mainCanvas.width, this.$.mainCanvas.height,
-        visibleStartTime, visibleEndTime, this.timeScale);
-
-    this.$.summaryTable.updateDisplayedInfo(
-        visibleStartTime, visibleEndTime,
-        this.canvasDrawer.getCurrentUnitString(),
-        this.canvasDrawer.getCurrentUnitScale());
+    this.controller.updateCanvas(
+        context, canvas.width, canvas.height, this.timeScale,
+        this.$.chartScrollbar.getPosition());
   }
 }
 

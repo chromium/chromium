@@ -40,29 +40,19 @@ export class HealthdInternalsLineChartScrollbarElement extends PolymerElement {
 
   // The range the scrollbar can scroll.
   private scrollableRange: number = 0;
+
   // The current position of the scrollbar.
   private currentPosition: number = 0;
+
   // The visible width of this scrollbar.
   private visibleWidth: number = 0;
 
-  // Scrolling event handler.
-  private onScroll() {
-    const newPosition: number = this.$.outerDiv.scrollLeft;
-    if (newPosition === this.currentPosition) {
-      return;
-    }
-    this.currentPosition = newPosition;
-    this.dispatchEvent(
-        new CustomEvent('bar-scroll', {bubbles: true, composed: true}));
-  }
+  // Whether the scrollbar is at the right edge.
+  private atRightEdge: boolean = true;
 
   // Return the height of scrollbar element.
   getHeight(): number {
     return this.$.outerDiv.offsetHeight;
-  }
-
-  getScrollableRange(): number {
-    return this.scrollableRange;
   }
 
   // Position may be float point number because `scrollLeft` may be float point
@@ -84,11 +74,15 @@ export class HealthdInternalsLineChartScrollbarElement extends PolymerElement {
   // the scrollable range. If position go out of range after range update, set
   // it to the boundary value.
   setScrollableRange(range: number) {
+    if (this.scrollableRange === range) {
+      return;
+    }
     this.scrollableRange = range;
+
     this.$.innerDiv.style.width =
         (this.visibleWidth + this.scrollableRange) + 'px';
-    if (range < this.currentPosition) {
-      this.currentPosition = range;
+    if (this.scrollableRange < this.currentPosition) {
+      this.currentPosition = this.scrollableRange;
       this.updateScrollbarPosition();
     }
   }
@@ -104,11 +98,7 @@ export class HealthdInternalsLineChartScrollbarElement extends PolymerElement {
 
   // Return true if scrollbar is at the right edge of the chart.
   isScrolledToRightEdge(): boolean {
-    // `scrollLeft` may become a float point number even if we set it to some
-    // integer value. If the distance to the right edge less than 2 pixels, we
-    // consider that it is scrolled to the right edge.
-    const scrollLeftErrorAmount: number = 2;
-    return this.currentPosition + scrollLeftErrorAmount > this.scrollableRange;
+    return this.atRightEdge;
   }
 
   // Scroll the scrollbar to the right edge.
@@ -122,6 +112,25 @@ export class HealthdInternalsLineChartScrollbarElement extends PolymerElement {
       return;
     }
     this.$.outerDiv.scrollLeft = this.currentPosition;
+  }
+
+  // Scrolling event handler.
+  private onScroll() {
+    const newPosition: number = this.$.outerDiv.scrollLeft;
+    if (newPosition === this.currentPosition) {
+      return;
+    }
+
+    this.currentPosition = newPosition;
+    // `scrollLeft` may become a float point number even if we set it to some
+    // integer value. If the distance to the right edge less than 2 pixels, we
+    // consider that it is scrolled to the right edge.
+    const scrollLeftErrorAmount: number = 2;
+    this.atRightEdge =
+        this.currentPosition + scrollLeftErrorAmount > this.scrollableRange;
+
+    this.dispatchEvent(
+        new CustomEvent('bar-scroll', {bubbles: true, composed: true}));
   }
 }
 

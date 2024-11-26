@@ -4,7 +4,6 @@
 
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 
-import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DataSeries} from '../../model/data_series.js';
@@ -28,6 +27,13 @@ export interface HealthdInternalsLineChartMenuElement {
   };
 }
 
+interface ButtonState {
+  // Used to get the button visible state and color.
+  data: DataSeries;
+  // The element for menu button.
+  element: HTMLElement;
+}
+
 /**
  * A menu as a button container to control the visibility of each `DataSeries`
  * in current line chart.
@@ -41,30 +47,28 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
     return getTemplate();
   }
 
-  // Buttons of data series.
-  private displayedButtons: HTMLElement[] = [];
-
   // Used to display buttons for changing visibility of each data.
-  private dataSeries: DataSeries[] = [];
+  private buttons: ButtonState[] = [];
 
   getWidth(): number {
     return this.$.dataButtonsContainer.offsetWidth;
   }
 
   /**
-   * Add a data series to the menu.
+   * Set up the list of data series for the menu.
    */
-  addDataSeries(dataSeries: DataSeries) {
-    const idx: number = this.dataSeries.indexOf(dataSeries);
-    if (idx !== -1) {
-      return;
+  setupDataSeriesList(dataSeriesList: DataSeries[]) {
+    const buttonContainer = this.$.dataButtonsContainer;
+    while (buttonContainer.lastElementChild) {
+      buttonContainer.removeChild(buttonContainer.lastElementChild);
     }
-    const button: HTMLElement = this.createButton(dataSeries);
-    this.$.dataButtonsContainer.appendChild(button);
-    this.dataSeries.push(dataSeries);
-    this.displayedButtons.push(button);
+    this.buttons = [];
 
-    this.fireMenuButtonsUpdatedEvent();
+    for (const dataSeries of dataSeriesList) {
+      const button = this.createButton(dataSeries);
+      buttonContainer.appendChild(button);
+      this.buttons.push({data: dataSeries, element: button});
+    }
   }
 
   private fireMenuButtonsUpdatedEvent() {
@@ -113,19 +117,17 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   }
 
   private onEnableAllButtonClick() {
-    assert(this.dataSeries.length === this.displayedButtons.length);
-    for (let i: number = 0; i < this.dataSeries.length; ++i) {
-      this.dataSeries[i].setVisible(true);
-      this.updateButtonStyle(this.displayedButtons[i], this.dataSeries[i]);
+    for (const button of this.buttons) {
+      button.data.setVisible(true);
+      this.updateButtonStyle(button.element, button.data);
     }
     this.fireMenuButtonsUpdatedEvent();
   }
 
   private onDisableAllButtonClicked() {
-    assert(this.dataSeries.length === this.displayedButtons.length);
-    for (let i: number = 0; i < this.dataSeries.length; ++i) {
-      this.dataSeries[i].setVisible(false);
-      this.updateButtonStyle(this.displayedButtons[i], this.dataSeries[i]);
+    for (const button of this.buttons) {
+      button.data.setVisible(false);
+      this.updateButtonStyle(button.element, button.data);
     }
     this.fireMenuButtonsUpdatedEvent();
   }

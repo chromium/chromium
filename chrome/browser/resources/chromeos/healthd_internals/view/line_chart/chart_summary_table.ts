@@ -84,17 +84,20 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
   // The time duration for lines in the chart summary table.
   private displayedDuration: string = '';
 
-  addDataSeries(dataSeries: DataSeries) {
-    this.dataSeriesList.push(dataSeries);
-    this.displayedData.push({
-      legendColor: dataSeries.getColor(),
-      name: dataSeries.getTitle(),
-      isVisible: false,
-      latestValue: 0,
-      minValue: 0,
-      maxValue: 0,
-      averageValue: 0
-    });
+  // Set up the list of data series.
+  setupDataSeriesList(dataSeriesList: DataSeries[]) {
+    this.dataSeriesList = dataSeriesList;
+    for (const dataSeries of dataSeriesList) {
+      this.displayedData.push({
+        legendColor: dataSeries.getColor(),
+        name: dataSeries.getTitle(),
+        isVisible: false,
+        latestValue: 0,
+        minValue: 0,
+        maxValue: 0,
+        averageValue: 0
+      });
+    }
     // Create a copy to trigger a change for the new row in table.
     this.set('displayedData', this.displayedData.slice());
   }

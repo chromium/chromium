@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 import type {DataPoint} from '../model/data_series.js';
-import {DataSeries} from '../model/data_series.js';
-import {BACKGROUND_COLOR, GRID_COLOR, MIN_LABEL_HORIZONTAL_SPACING, MIN_LABEL_VERTICAL_SPACING, MIN_TIME_LABEL_HORIZONTAL_SPACING, MIN_TIME_SCALE, SAMPLE_RATE, TEXT_COLOR, TEXT_SIZE, TIME_STEP_UNITS, Y_AXIS_TICK_LENGTH} from '../utils/line_chart_configs.js';
-
-import {UnitLabel} from './unit_label.js';
+import {BACKGROUND_COLOR, GRID_COLOR, MIN_LABEL_HORIZONTAL_SPACING, MIN_LABEL_VERTICAL_SPACING, MIN_TIME_LABEL_HORIZONTAL_SPACING, TEXT_COLOR, TEXT_SIZE, TIME_STEP_UNITS, Y_AXIS_TICK_LENGTH} from '../utils/line_chart_configs.js';
 
 /**
  * Find the minimum time step for rendering time labels.
@@ -25,21 +22,6 @@ function getMinimumTimeStep(minSpacing: number, timeScale: number): number {
   }
   return timeStep;
 }
-/**
- * Get the step size based on the current time scale. We will only display one
- * point in one step.
- *
- * @param timeScale - The horizontal scale of the line chart.
- * @returns - The step size in millisecond.
- */
-function getStepSize(timeScale: number): number {
-  const baseStepSize: number = MIN_TIME_SCALE * SAMPLE_RATE;
-  const minStepSize: number = timeScale * SAMPLE_RATE;
-  const minExponent = Math.log(minStepSize / baseStepSize) / Math.LN2;
-  // Round up to the next `baseStepSize` multiplied by the power of 2 to avoid
-  // shaking during zooming.
-  return baseStepSize * Math.pow(2, Math.ceil(minExponent));
-}
 
 /**
  * Helper class to draw the canvas from data series which share the same unit
@@ -47,83 +29,35 @@ function getStepSize(timeScale: number): number {
  * on the line chart.
  */
 export class CanvasDrawer {
-  constructor(units: string[], unitBase: number) {
-    this.unitLabel = new UnitLabel(units, unitBase);
-  }
-
-  // Set in constructor.
-  private readonly unitLabel: UnitLabel;
-
-  // List of displayed data.
-  private dataSeriesList: DataSeries[] = [];
-
-  // The fixed maximum value in line chart. If this value is null, the maximum
-  // value of unit label will be set from the real maximum value of data series.
-  private fixedMaxValue: number|null = null;
-
   // The width and height of the graph for drawing line chart, excluding the
-  // bottom labels.
+  // labels in canvas footer.
   private graphWidth: number = 1;
   private graphHeight: number = 1;
 
-  // Add a data series to this sub chart.
-  addDataSeries(dataSeries: DataSeries) {
-    this.dataSeriesList.push(dataSeries);
-  }
-
-  // Overwrite the maximum value of this chart.
-  setFixedMaxValue(maxValue: number|null) {
-    this.fixedMaxValue = maxValue;
-  }
-
-  // Return true if there is any data series in this chart.
-  shouldRender(): boolean {
-    return this.dataSeriesList.length > 0;
-  }
+  private readonly footerHeight = TEXT_SIZE + MIN_LABEL_VERTICAL_SPACING;
 
   /**
-   * Render the canvas content.
+   * Initialize the canvas content.
    *
    * @param context - 2D rendering context for the drawing the line chart.
    * @param canvasWidth - The width of canvas element.
    * @param canvasHeight - The height of canvas element.
-   * @param visibleStartTime - The start time of visible part of line chart.
-   * @param visibleEndTime - The end time of visible part of line chart.
-   * @param timeScale - The number of milliseconds between two pixels.
    */
-  renderCanvas(
+  initCanvas(
       context: CanvasRenderingContext2D, canvasWidth: number,
-      canvasHeight: number, visibleStartTime: number, visibleEndTime: number,
-      timeScale: number) {
+      canvasHeight: number) {
     this.initAndClearContext(context, canvasWidth, canvasHeight);
 
     this.graphWidth = canvasWidth;
-    this.graphHeight = canvasHeight - TEXT_SIZE - MIN_LABEL_VERTICAL_SPACING;
+    this.graphHeight = canvasHeight - this.footerHeight;
 
     this.renderChartGrid(context);
-    this.renderTimeLabels(context, visibleStartTime, timeScale);
-
-    const stepSize: number = getStepSize(timeScale);
-    const maxValue: number =
-        this.getVisibleMaxValue(visibleStartTime, visibleEndTime, stepSize);
-    this.renderUnitLabel(context, maxValue);
-    this.renderLines(
-        context, visibleStartTime, visibleEndTime, timeScale, stepSize);
   }
 
-  /**
-   * Get current displayed unit string.
-   */
-  getCurrentUnitString(): string {
-    return this.unitLabel.getCurrentUnitString();
-  }
-
-  /**
-   * Get current unit scale, which is a multiplier to convert displayed value to
-   * real value.
-   */
-  getCurrentUnitScale(): number {
-    return this.unitLabel.getCurrentUnitScale();
+  // Get the height for unit labels displayed in canvas.
+  getUnitLabelHeight(): number {
+    // Cannot draw the line at the top and the bottom pixel.
+    return this.graphHeight - 2;
   }
 
   private initAndClearContext(
@@ -142,8 +76,14 @@ export class CanvasDrawer {
     context.strokeRect(0, 0, this.graphWidth - 1, this.graphHeight);
   }
 
-  // Render the time label under the line chart.
-  private renderTimeLabels(
+  /**
+   * Render the time label under the line chart.
+   *
+   * @param context - 2D rendering context for the drawing the line chart.
+   * @param startTime - The start time of visible part of line chart.
+   * @param timeScale - The number of milliseconds between two pixels.
+   */
+  renderTimeLabels(
       context: CanvasRenderingContext2D, startTime: number, timeScale: number) {
     const sampleText: string = new Date(startTime).toLocaleTimeString();
     const minSpacing: number = context.measureText(sampleText).width +
@@ -159,8 +99,7 @@ export class CanvasDrawer {
     context.fillStyle = TEXT_COLOR;
     context.strokeStyle = GRID_COLOR;
     context.beginPath();
-    const yCoord: number =
-        this.graphHeight + TEXT_SIZE + MIN_LABEL_VERTICAL_SPACING;
+    const yCoord: number = this.graphHeight + this.footerHeight;
     const firstTimeTick: number = Math.ceil(startTime / timeStep) * timeStep;
     let time: number = firstTimeTick;
     while (true) {
@@ -177,32 +116,24 @@ export class CanvasDrawer {
     context.stroke();
   }
 
-  // Render lines for all data series.
-  private renderLines(
-      context: CanvasRenderingContext2D, startTime: number, endTime: number,
-      timeScale: number, stepSize: number) {
-    for (const dataSeries of this.dataSeriesList) {
-      this.renderLine(
-          context, dataSeries, startTime, endTime, timeScale, stepSize);
-    }
-  }
-
-  // Render the line for one data series.
-  private renderLine(
-      context: CanvasRenderingContext2D, dataSeries: DataSeries,
-      startTime: number, endTime: number, timeScale: number, stepSize: number) {
-    // Query the the values of data points from the data series.
-    const dataPoints: DataPoint[] =
-        dataSeries.getDisplayedPoints(startTime, endTime, stepSize);
-    if (dataPoints.length === 0) {
-      return;
-    }
-
-    context.strokeStyle = dataSeries.getColor();
-    context.fillStyle = dataSeries.getColor();
+  /**
+   * Render the line for one data series.
+   *
+   * @param context - 2D rendering context for the drawing the line chart.
+   * @param dataPoints - The data points to be displayed.
+   * @param displayedColor - The color of the displayed line.
+   * @param startTime - The start time of visible part of line chart.
+   * @param timeScale - The number of milliseconds between two pixels.
+   * @param valueScale - The real value between two pixels.
+   */
+  renderLine(
+      context: CanvasRenderingContext2D, dataPoints: DataPoint[],
+      displayedColor: string, startTime: number, timeScale: number,
+      valueScale: number) {
+    context.strokeStyle = displayedColor;
+    context.fillStyle = displayedColor;
     context.beginPath();
 
-    const valueScale: number = this.unitLabel.getValueScale();
     for (const point of dataPoints) {
       const xCoord: number = Math.round((point.time - startTime) / timeScale);
       const chartYCoord: number = Math.round(point.value / valueScale);
@@ -227,15 +158,13 @@ export class CanvasDrawer {
     context.globalAlpha = 1.0;
   }
 
-  // Render the unit label on the right side of line chart.
-  private renderUnitLabel(context: CanvasRenderingContext2D, maxValue: number) {
-    this.unitLabel.setMaxValue(maxValue);
-
-    // Cannot draw the line at the top and the bottom pixel.
-    const labelHeight: number = this.graphHeight - 2;
-    this.unitLabel.setLayout(labelHeight, /* precision */ 2);
-
-    const labelTexts: string[] = this.unitLabel.getLabels();
+  /**
+   * Render the unit label on the right side of line chart.
+   *
+   * @param context - 2D rendering context for the drawing the line chart.
+   * @param labelTexts - The list of unit labels to displayed.
+   */
+  renderUnitLabel(context: CanvasRenderingContext2D, labelTexts: string[]) {
     if (labelTexts.length === 0) {
       return;
     }
@@ -249,18 +178,6 @@ export class CanvasDrawer {
     this.renderLabelTicks(
         context, labelTexts, labelYStep, tickStartX, tickEndX);
     this.renderLabelTexts(context, labelTexts, labelYStep, textXCoord);
-  }
-
-  // Calculate the max value for the current layout of unit label.
-  private getVisibleMaxValue(
-      startTime: number, endTime: number, stepSize: number): number {
-    if (this.fixedMaxValue != null) {
-      return this.fixedMaxValue;
-    }
-    return this.dataSeriesList.reduce(
-        (maxValue, item) => Math.max(
-            maxValue, item.getDisplayedMaxValue(startTime, endTime, stepSize)),
-        0);
   }
 
   // Render the tick line for the unit label.

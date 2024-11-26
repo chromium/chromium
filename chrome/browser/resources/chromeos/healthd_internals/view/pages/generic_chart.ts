@@ -41,7 +41,7 @@ export class HealthdInternalsGenericChartElement extends PolymerElement
     super.connectedCallback();
 
     this.updateHelper = new UiUpdateHelper(() => {
-      this.$.lineChart.updateEndTime(Date.now());
+      this.$.lineChart.update();
     });
   }
 
@@ -59,21 +59,15 @@ export class HealthdInternalsGenericChartElement extends PolymerElement
   }
 
   initCanvasDrawer(units: string[], unitBase: number) {
-    this.$.lineChart.initCanvasDrawer(units, unitBase);
+    this.$.lineChart.getController().initUnitLabel(units, unitBase);
   }
 
   setChartMaxValue(maxValue: number) {
-    this.$.lineChart.setChartMaxValue(maxValue);
+    this.$.lineChart.getController().setChartMaxValue(maxValue);
   }
 
-  addDataSeries(dataSeriesList: DataSeries[]) {
-    for (const dataSeries of dataSeriesList) {
-      this.$.lineChart.addDataSeries(dataSeries);
-    }
-  }
-
-  updateStartTime(startTime: number) {
-    this.$.lineChart.updateStartTime(startTime);
+  setupDataSeriesList(dataSeriesList: DataSeries[]) {
+    this.$.lineChart.setupDataSeriesList(dataSeriesList);
   }
 
   updateVisibility(isVisible: boolean) {
