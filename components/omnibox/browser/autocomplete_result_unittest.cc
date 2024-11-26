@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -2852,6 +2853,26 @@ TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+
+TEST_F(AutocompleteResultTest, BadDestinationUrls) {
+  AutocompleteMatch empty_url_match;
+  empty_url_match.destination_url = GURL();
+  AutocompleteMatch invalid_scheme_match;
+  invalid_scheme_match.destination_url = GURL("bad_scheme");
+  AutocompleteMatch invalid_url_match;
+  invalid_url_match.destination_url = GURL("https://?k=v");
+
+  ACMatches invalid_matches;
+  invalid_matches.push_back(empty_url_match);
+  invalid_matches.push_back(invalid_scheme_match);
+  invalid_matches.push_back(invalid_url_match);
+
+  AutocompleteResult result;
+  EXPECT_DCHECK_DEATH(result.AppendMatches(invalid_matches));
+
+  // Result set of matches should remain empty.
+  EXPECT_TRUE(result.empty());
+}
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteResultTest, Android_InspireMe) {
