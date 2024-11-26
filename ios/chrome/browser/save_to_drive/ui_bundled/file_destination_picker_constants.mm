@@ -6,5 +6,9 @@
 
 NSString* const kFileDestinationPickerFilesAccessibilityIdentifier =
     @"kFileDestinationPickerFilesAccessibilityIdentifier";
+NSString* const
+    kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifier =
+        @"kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifie"
+        @"r";
 NSString* const kFileDestinationPickerDriveAccessibilityIdentifier =
     @"kFileDestinationPickerDriveAccessibilityIdentifier";

@@ -5,6 +5,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_constants.h"
@@ -60,6 +61,15 @@ id<GREYMatcher> DownloadButton() {
 id<GREYMatcher> FileDestinationFilesButton() {
   return grey_allOf(
       grey_accessibilityID(kFileDestinationPickerFilesAccessibilityIdentifier),
+      grey_interactable(), nil);
+}
+
+// Matcher for "Files" with subtitle "Blocked by your organization" destination
+// button in File destination picker UI.
+id<GREYMatcher> FileDestinationDownloadRestrictionFilesButton() {
+  return grey_allOf(
+      grey_accessibilityID(
+          kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifier),
       grey_interactable(), nil);
 }
 
@@ -175,6 +185,29 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       waitForUIElementToAppearWithMatcher:chrome_test_util::OpenInButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
+}
+
+// Tests that when the user is signed-in, the destination "Files" shows a
+// subtitle regarding download restrictions.
+- (void)testDownloadRestrictionToFiles {
+  [ChromeEarlGrey
+      setIntegerValue:static_cast<int>(policy::DownloadRestriction::ALL_FILES)
+          forUserPref:policy::policy_prefs::kDownloadRestrictions];
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "Save in" button is presented and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to appear with download restrictions on files.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      FileDestinationDownloadRestrictionFilesButton()];
 }
 
 // Tests that when the user is signed-in, they can choose "Drive" as destination

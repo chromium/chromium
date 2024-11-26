@@ -9,6 +9,8 @@
 
 // Accessibility identifiers for file destination picker table view cells.
 extern NSString* const kFileDestinationPickerFilesAccessibilityIdentifier;
+extern NSString* const
+    kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifier;
 extern NSString* const kFileDestinationPickerDriveAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_FILE_DESTINATION_PICKER_CONSTANTS_H_

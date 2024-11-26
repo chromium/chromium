@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -96,7 +97,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
     _prefService = prefService;
     _driveService = driveService;
     _accountManagerService = accountManagerService;
-    _fileDestination = FileDestination::kFiles;
+    _fileDestination = [self shouldBlockDownloadToFile]
+                           ? FileDestination::kDrive
+                           : FileDestination::kFiles;
   }
   return self;
 }
@@ -238,6 +241,12 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   [self updateConsumersAnimated:YES];
 }
 
+- (bool)shouldBlockDownloadToFile {
+  return static_cast<policy::DownloadRestriction>(_prefService->GetInteger(
+             policy::policy_prefs::kDownloadRestrictions)) ==
+         policy::DownloadRestriction::ALL_FILES;
+}
+
 #pragma mark - Private
 
 // Updates consumers.
@@ -266,7 +275,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   } else {
     // Otherwise, clear any memorized GAIA ID from prefs.
     _prefService->ClearPref(prefs::kIosSaveToDriveDefaultGaiaId);
-    _fileDestination = FileDestination::kFiles;
+    _fileDestination = [self shouldBlockDownloadToFile]
+                           ? FileDestination::kDrive
+                           : FileDestination::kFiles;
   }
 }
 

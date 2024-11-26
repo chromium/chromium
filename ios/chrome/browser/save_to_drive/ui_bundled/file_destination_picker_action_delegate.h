@@ -16,6 +16,9 @@
 - (void)fileDestinationPicker:(UIViewController*)picker
          didSelectDestination:(FileDestination)destination;
 
+// Called to check whether or not downloads to the file should be blocked.
+- (bool)shouldBlockDownloadToFile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_FILE_DESTINATION_PICKER_ACTION_DELEGATE_H_

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_view_controller.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_action_delegate.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -175,13 +176,26 @@ using FileDestinationPickerDataSourceSnapshot =
       destination == FileDestination::kFiles
           ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES)
           : l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE);
+
+  // Checks if download should be restricted.
+  if ([self.actionDelegate shouldBlockDownloadToFile] &&
+      destination == FileDestination::kFiles) {
+    cell.userInteractionEnabled = NO;
+    cell.textLabel.enabled = NO;
+    cell.detailTextLabel.text =
+        l10n_util::GetNSString(IDS_POLICY_DOWNLOAD_STATUS_BLOCKED_ORGANIZATION);
+    cell.detailTextLabel.enabled = NO;
+  }
+
   cell.accessoryType = selected ? UITableViewCellAccessoryCheckmark
                                 : UITableViewCellAccessoryNone;
   cell.backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.accessibilityIdentifier =
       destination == FileDestination::kFiles
-          ? kFileDestinationPickerFilesAccessibilityIdentifier
+          ? [self.actionDelegate shouldBlockDownloadToFile]
+                ? kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifier
+                : kFileDestinationPickerFilesAccessibilityIdentifier
           : kFileDestinationPickerDriveAccessibilityIdentifier;
   cell.useCustomSeparator = NO;
   [self.tableView setSeparatorInset:UIEdgeInsetsMake(0, kSeparatorInset, 0, 0)];

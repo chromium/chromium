@@ -13,6 +13,7 @@ source_set("ui_bundled") {
     ":file_destination_picker",
     ":util",
     "//base",
+    "//components/policy/core/common",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/account_picker/ui_bundled",
@@ -57,6 +58,7 @@ source_set("file_destination_picker") {
   ]
   deps = [
     ":file_destination_picker_constants",
+    "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -125,6 +127,7 @@ source_set("eg2_tests") {
   deps = [
     ":file_destination_picker_constants",
     "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation:constants",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen:account_picker_screen",
