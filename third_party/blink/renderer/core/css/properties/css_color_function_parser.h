@@ -26,6 +26,15 @@ class CORE_EXPORT ColorFunctionParser {
   CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenStream& stream,
                                          const CSSParserContext& context);
 
+  // These are exposed so that StyleColor::UnresolvedRelativeColor
+  // or similar can reuse our logic.
+  static void MakePerColorSpaceAdjustments(
+      bool is_relative_color,
+      bool is_legacy_syntax,
+      Color::ColorSpace color_space,
+      std::array<std::optional<double>, 3>& channels,
+      std::optional<double>& alpha);
+
  private:
   enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
   bool ConsumeColorSpaceAndOriginColor(CSSParserTokenStream& stream,
@@ -56,11 +65,9 @@ class CORE_EXPORT ColorFunctionParser {
 
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
   std::array<const CSSValue*, 3> unresolved_channels_;
-  std::array<std::optional<double>, 3> channels_;
   std::array<ChannelType, 3> channel_types_;
   const CSSValue* unresolved_alpha_ = nullptr;
   ChannelType alpha_channel_type_;
-  std::optional<double> alpha_ = 1.0;
 
   // Metadata about the current function being parsed. Set by
   // `ConsumeColorSpaceAndOriginColor()` after parsing the preamble of the
