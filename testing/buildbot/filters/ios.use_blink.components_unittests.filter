@@ -374,3 +374,10 @@
 # https://crrev.com/c/5888544.
 -SharedPasswordControllerTest.PresavesGeneratedPassword_Empty
 -SharedPasswordControllerTest.TriggerPasswordGeneration_Proactively
+
+# TODO(crbug.com/380309588): These tests have been failing since
+# https://crrev.com/c/6000833.
+-All/FormSubmittedHookTest.TestFormSubmittedHook/0
+-All/FormSubmittedHookTest.TestFormSubmittedHook/1
+-All/FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes/0
+-All/FormSubmittedHookTest.TestFormSubmittedHookAcrossIframes/1
