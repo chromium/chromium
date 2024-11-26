@@ -171,11 +171,11 @@ static int ReturnZeroThreadProcessInformation(base::span<uint8_t> buffer) {
   std::wstring image_name =
       base::PathService::CheckedGet(base::FILE_EXE).BaseName().value();
 
-  const int kImageNameBytes = image_name.length() * sizeof(char16_t);
-  const size_t kRequiredBytes =
-      sizeof(SYSTEM_PROCESS_INFORMATION) + kImageNameBytes + sizeof(char16_t);
-  if (kRequiredBytes > buffer.size()) {
-    return kRequiredBytes;
+  const size_t image_name_bytes = image_name.length() * sizeof(char16_t);
+  const size_t required_bytes =
+      sizeof(SYSTEM_PROCESS_INFORMATION) + image_name_bytes + sizeof(char16_t);
+  if (required_bytes > buffer.size()) {
+    return required_bytes;
   }
 
   // Create a zero'd structure, so that fields such as thread count will be zero
@@ -186,9 +186,9 @@ static int ReturnZeroThreadProcessInformation(base::span<uint8_t> buffer) {
       reinterpret_cast<SYSTEM_PROCESS_INFORMATION*>(buffer.data());
   process_info->ProcessId = reinterpret_cast<HANDLE>(base::GetCurrentProcId());
   process_info->ImageName.Length = process_info->ImageName.MaximumLength =
-      kImageNameBytes;
+      image_name_bytes;
   auto image_name_buffer =
-      buffer.subspan(sizeof(SYSTEM_PROCESS_INFORMATION), kImageNameBytes);
+      buffer.subspan(sizeof(SYSTEM_PROCESS_INFORMATION), image_name_bytes);
   process_info->ImageName.Buffer =
       reinterpret_cast<LPWSTR>(image_name_buffer.data());
   process_info->NumberOfThreads = 0u;
@@ -198,7 +198,7 @@ static int ReturnZeroThreadProcessInformation(base::span<uint8_t> buffer) {
   // termination.
   image_name_buffer.copy_from(base::as_byte_span(image_name));
 
-  return kRequiredBytes;
+  return required_bytes;
 }
 
 // Verifies that the SharedSampler copes with zero-thread processes.
