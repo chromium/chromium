@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
 
 #include <inttypes.h>
+
 #include <cstdio>
 #include <sstream>
 #include <string>
@@ -83,8 +84,9 @@ bool GetCpuInfo(std::vector<CpuInfo>* infos) {
   //   cpu3 2033 32 1075 1400 52 0 1 0 0 0
   const char kProcStat[] = "/proc/stat";
   std::string contents;
-  if (!base::ReadFileToString(base::FilePath(kProcStat), &contents))
+  if (!base::ReadFileToString(base::FilePath(kProcStat), &contents)) {
     return false;
+  }
 
   std::istringstream iss(contents);
   std::string line;
@@ -93,10 +95,12 @@ bool GetCpuInfo(std::vector<CpuInfo>* infos) {
   // all cpuN lines.
   std::getline(iss, line);
   while (std::getline(iss, line)) {
-    if (line.compare(0, 3, "cpu") != 0)
+    if (line.compare(0, 3, "cpu") != 0) {
       continue;
-    if (!ParseProcStatLine(line, infos))
+    }
+    if (!ParseProcStatLine(line, infos)) {
       return false;
+    }
   }
 
   return true;
@@ -184,7 +188,7 @@ base::Value::Dict GetSysInfo() {
   }
   base::SwapInfo swap_info;
   if (!GetSwapInfo(&swap_info)) {
-    DLOG(WARNING) << ("Failed to get system zram info.");
+    DLOG(WARNING) << "Failed to get system zram info.";
   }
 
   base::Value::Dict result;
@@ -198,9 +202,9 @@ base::Value::Dict GetSysInfo() {
 
 }  // namespace
 
-SysInternalsMessageHandler::SysInternalsMessageHandler() {}
+SysInternalsMessageHandler::SysInternalsMessageHandler() = default;
 
-SysInternalsMessageHandler::~SysInternalsMessageHandler() {}
+SysInternalsMessageHandler::~SysInternalsMessageHandler() = default;
 
 void SysInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
