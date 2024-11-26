@@ -820,6 +820,42 @@ base::Value::Dict SerializeImageFeatureEmbedding(
   return dict;
 }
 
+base::Value::Dict SerializeClientReportingMetadata(
+    const enterprise_connectors::ClientMetadata& client_metadata) {
+  base::Value::Dict client_metadata_dict;
+  if (client_metadata.has_browser()) {
+    base::Value::Dict browser_dict;
+    browser_dict.Set("browser_id", client_metadata.browser().browser_id());
+    browser_dict.Set("user_agent", client_metadata.browser().user_agent());
+    browser_dict.Set("chrome_version",
+                     client_metadata.browser().chrome_version());
+    browser_dict.Set("machine_user", client_metadata.browser().machine_user());
+    client_metadata_dict.Set("browser", std::move(browser_dict));
+  }
+  if (client_metadata.has_device()) {
+    base::Value::Dict device_dict;
+    device_dict.Set("dm_token", client_metadata.device().dm_token());
+    device_dict.Set("client_id", client_metadata.device().client_id());
+    device_dict.Set("os_version", client_metadata.device().os_version());
+    device_dict.Set("os_platform", client_metadata.device().os_platform());
+    device_dict.Set("name", client_metadata.device().name());
+    client_metadata_dict.Set("device", std::move(device_dict));
+  }
+  if (client_metadata.has_profile()) {
+    base::Value::Dict profile_dict;
+    profile_dict.Set("dm_token", client_metadata.profile().dm_token());
+    profile_dict.Set("gaia_email", client_metadata.profile().gaia_email());
+    profile_dict.Set("profile_path", client_metadata.profile().profile_path());
+    profile_dict.Set("profile_name", client_metadata.profile().profile_name());
+    profile_dict.Set("client_id", client_metadata.profile().client_id());
+    client_metadata_dict.Set("profile", std::move(profile_dict));
+  }
+  client_metadata_dict.Set(
+      "is_chrome_os_managed_guest_session",
+      client_metadata.is_chrome_os_managed_guest_session());
+  return client_metadata_dict;
+}
+
 base::Value::Dict SerializeChromeUserPopulation(
     const ChromeUserPopulation& population) {
   base::Value::Dict population_dict;
@@ -1895,6 +1931,11 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
   request_dict.Set("profile_dm_token", request.profile_dm_token());
   request_dict.Set("browser_dm_token", request.browser_dm_token());
   request_dict.Set("email", request.email());
+  if (request.has_client_reporting_metadata()) {
+    request_dict.Set(
+        "client_reporting_metadata",
+        SerializeClientReportingMetadata(request.client_reporting_metadata()));
+  }
 
   request_dict.Set("lookup_type",
                    RTLookupRequest_LookupType_Name(request.lookup_type()));
