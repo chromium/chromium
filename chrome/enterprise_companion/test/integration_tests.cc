@@ -330,6 +330,51 @@ TEST_F(IntegrationTests, Install) {
   ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
 }
 
+// Running the application installer multiple times should configure a valid
+// installation.
+TEST_F(IntegrationTests, OverInstall) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+}
+
+// Running the application installer when an existing installation is running
+// should instruct it to stop and shut down.
+TEST_F(IntegrationTests, OverInstallRunning) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+
+  // The server process should be shut down by the install process. Reset the
+  // handle in the test fixture to ensure that a second shutdown is not
+  // attempted during `TearDown`.
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+  server_process_ = base::Process();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+}
+
+// If a server instance is already running, other invocations should be unable
+// to acquire the global singleton lock.
+TEST_F(IntegrationTests, MultipleConcurrentInstancesDisallowed) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  std::optional<base::FilePath> exe_path = FindExistingInstall();
+  ASSERT_TRUE(exe_path);
+  base::CommandLine command_line(*exe_path);
+  base::Process process = base::LaunchProcess(command_line, {});
+  ASSERT_TRUE(process.IsValid());
+
+  EXPECT_EQ(WaitForProcess(process), 1);
+}
+
 // Running the application uninstaller should remove all traces of the app from
 // the system.
 TEST_F(IntegrationTests, Uninstall) {
