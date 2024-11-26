@@ -4121,9 +4121,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_TITLE" desc="Title shown for the Tracking Protection bubble.">
-        Tracking Protection
-      </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are allowed.">
         Third-party cookies allowed
       </message>
@@ -4169,15 +4166,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" desc="In the feedback text box accessible from the cookie controls bubble, this is the default text the user replaces with their feedback.">
         Tell us why you allowed third-party cookies on this site
       </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are allowed.">
-        Allowed
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are blocked.">
-        Blocked
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL" desc="A label for the third-party cookies toggle in the tracking protection bubble that tells the user third-party cookies are limited.">
-        Limited
-      </message>
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are allowed on the current site.">
         Third-party cookies allowed
       </message>
@@ -4189,9 +4177,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL" desc="Label for the Page Action (omnibox) icon that highlights the Tracking Protection bubble entrypoint when cookies are blocked and we have high confidence that this is breaking the current site.">
         Site not working?
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL" desc="Tooltip for the Page Action (omnibox) icon for the Tracking Protection bubble entrypoint.">
-        Tracking Protection
       </message>
       <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the cookie controls bubble. Indicates that cookies are blocked on the current site.">
         Third-party cookies blocked
