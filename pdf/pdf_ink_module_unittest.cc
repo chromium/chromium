@@ -760,6 +760,11 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     }
   }
 
+  void ApplyStrokeWithMouseAtMouseDownPoint() {
+    ApplyStrokeWithMouseAtPoints(
+        kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+  }
+
   void ApplyStrokeWithTouchAtPoints(
       base::span<const gfx::PointF> touch_start_points,
       std::vector<base::span<const gfx::PointF>> all_touch_move_points,
@@ -1160,8 +1165,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
 
   // Stroke with the eraser tool.
   SelectEraserToolOfSize(3.0f);
-  ApplyStrokeWithMouseAtPoints(
-      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+  ApplyStrokeWithMouseAtMouseDownPoint();
 
   // Now there are no visible strokes left.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
@@ -1170,8 +1174,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
   // Stroke again. The stroke that have already been erased should stay erased.
-  ApplyStrokeWithMouseAtPoints(
-      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+  ApplyStrokeWithMouseAtMouseDownPoint();
 
   // Still no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
@@ -1189,8 +1192,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseOnPageWithoutStrokes) {
 
   // Stroke with the eraser tool when there are no strokes on the page.
   SelectEraserToolOfSize(3.0f);
-  ApplyStrokeWithMouseAtPoints(
-      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+  ApplyStrokeWithMouseAtMouseDownPoint();
 
   // Verify there are still no visible strokes and StrokeFinished() never got
   // called.
@@ -1412,8 +1414,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
   // Stroke again with the mouse gets the same results.
-  ApplyStrokeWithMouseAtPoints(
-      kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
+  ApplyStrokeWithMouseAtMouseDownPoint();
 
   // Still no visible strokes.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
