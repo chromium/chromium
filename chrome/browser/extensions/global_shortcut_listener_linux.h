@@ -14,8 +14,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
+#include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
+
+namespace dbus_xdg {
+class Request;
+}
 
 namespace extensions {
 
@@ -45,44 +50,16 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
     }
   };
 
-  // This helper manages ObjectProxy lifetimes for XDG Requests. This is
-  // required to prevent leaks as the only way to unregister a signal registered
-  // on an ObjectProxy object is to Detach() the ObjectProxy. On XDG requests,
-  // the signal handler is emitted at most once when the request finishes, and
-  // is not needed after that.
-  class ScopedObjectProxy {
-   public:
-    ScopedObjectProxy();
-    ScopedObjectProxy(scoped_refptr<dbus::Bus> bus,
-                      dbus::ObjectProxy* object_proxy);
-    ScopedObjectProxy(ScopedObjectProxy&& other) noexcept;
-    ScopedObjectProxy& operator=(ScopedObjectProxy&& other) noexcept;
-    ~ScopedObjectProxy();
-
-    dbus::ObjectProxy* get() { return object_proxy_; }
-    const dbus::ObjectProxy* get() const { return object_proxy_; }
-
-    dbus::ObjectProxy* operator->() { return object_proxy_; }
-    const dbus::ObjectProxy* operator->() const { return object_proxy_; }
-
-   private:
-    scoped_refptr<dbus::Bus> bus_;
-    raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
-  };
-
   struct SessionContext {
     SessionContext(Observer* observer, const CommandMap& commands);
     ~SessionContext();
 
-    ScopedObjectProxy session_proxy;
-    // There may be at most one outstanding request at a time. This proxy
-    // corresponds to one type of request (CreateSession, BindShortcuts,
-    // ListShortcuts). If the proxy is nullptr, then there are no outstanding
-    // requests.
-    ScopedObjectProxy request_proxy;
+    scoped_refptr<dbus::Bus> bus;
+    raw_ptr<dbus::ObjectProxy> session_proxy;
     const raw_ptr<Observer> observer;
     CommandMap commands;
     bool bind_shortcuts_called = false;
+    std::unique_ptr<dbus_xdg::Request> request;
   };
 
   using SessionMap =
@@ -101,20 +78,16 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
                          const CommandMap& commands,
                          Observer* observer) override;
 
-  // Callbacks for DBus responses.
-  void OnCreateSessionResponse(const SessionKey& session_key,
-                               dbus::Response* response);
-  void OnListShortcutsResponse(const SessionKey& session_key,
-                               dbus::Response* response);
-  void OnBindShortcutsResponse(const SessionKey& session_key,
-                               dbus::Response* response);
+  void OnCreateSession(
+      const SessionKey& session_key,
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+  void OnListShortcuts(
+      const SessionKey& session_key,
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+  void OnBindShortcuts(
+      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
 
   // Callbacks for DBus signals.
-  void OnCreateSessionSignal(const SessionKey& session_key,
-                             dbus::Signal* signal);
-  void OnListShortcutsSignal(const SessionKey& session_key,
-                             dbus::Signal* signal);
-  void OnBindShortcutsSignal(dbus::Signal* signal);
   void OnActivatedSignal(dbus::Signal* signal);
 
   void OnSignalConnected(const std::string& interface_name,
@@ -125,7 +98,7 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
 
   void CreateSession(SessionMapPair& pair);
 
-  void BindShortcuts(SessionMapPair& pair);
+  void BindShortcuts(SessionContext& session_context);
 
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;

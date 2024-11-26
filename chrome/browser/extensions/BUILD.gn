@@ -1383,6 +1383,7 @@ source_set("extensions") {
           "//components/dbus/properties",
           "//components/dbus/thread_linux",
           "//components/dbus/utils",
+          "//components/dbus/xdg",
         ]
       }
     }
