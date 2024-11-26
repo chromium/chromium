@@ -4,25 +4,34 @@
 
 package org.chromium.wolvic.payments.ui;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.Section;
 
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+
+import org.chromium.wolvic.WolvicWebContentsFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -241,8 +250,35 @@ public class WolvicPaymentUiService {
      *     successful; null if failed.
      */
     public @Nullable WebContents showPaymentHandlerUI(GURL url) {
-      //TODO(jfernandez): PaymentHandler feature is not implemented.
-      return null;
+      WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
+      if (windowAndroid == null) return null;
+      Activity activity = windowAndroid.getActivity().get();
+      if (activity == null) return null;
+
+      WebContents paymentHandlerWebContents = createWebContents(mIsOffTheRecord);
+      if (paymentHandlerWebContents == null)
+        return null;
+      PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(paymentHandlerWebContents);
+      ContentView webContentView =
+             ContentView.createContentView(
+                     activity, /* eventOffsetHandler= */ null, paymentHandlerWebContents);
+      paymentHandlerWebContents.initialize(
+                VersionInfo.getProductVersion(),
+                ViewAndroidDelegate.createBasicDelegate(webContentView),
+                webContentView,
+                windowAndroid,
+                WebContents.createDefaultInternalsHolder());
+      paymentHandlerWebContents
+               .getNavigationController()
+               .loadUrl(new LoadUrlParams(url.getSpec()));
+
+      mWebContents.notifyOnCreateNewPaymentHandler(paymentHandlerWebContents);
+
+      return paymentHandlerWebContents;
+    }
+
+    private @Nullable WebContents createWebContents(boolean isOffTheRecord) {
+      return WolvicWebContentsFactory.createWebContents(isOffTheRecord);
     }
 
     /**
