@@ -316,7 +316,6 @@ class NET_EXPORT CookieInclusionStatus {
 
   bool operator==(const CookieInclusionStatus& other) const;
   bool operator!=(const CookieInclusionStatus& other) const;
-  bool operator<(const CookieInclusionStatus& other) const;
 
   // Whether the status is to include the cookie, and has no other reasons for
   // exclusion.
@@ -388,12 +387,12 @@ class NET_EXPORT CookieInclusionStatus {
   // Checks whether the exclusion reasons are exactly the set of exclusion
   // reasons in the vector. (Ignores warnings.)
   bool HasExactlyExclusionReasonsForTesting(
-      std::vector<ExclusionReason> reasons) const;
+      const std::vector<ExclusionReason>& reasons) const;
 
   // Checks whether the warning reasons are exactly the set of warning
   // reasons in the vector. (Ignores exclusions.)
   bool HasExactlyWarningReasonsForTesting(
-      std::vector<WarningReason> reasons) const;
+      const std::vector<WarningReason>& reasons) const;
 
   // Validates mojo data, since mojo does not support bitsets. ExemptionReason
   // is omitted intendedly.

@@ -39,16 +39,10 @@ CookieInclusionStatus& CookieInclusionStatus::operator=(
     const CookieInclusionStatus& other) = default;
 
 bool CookieInclusionStatus::operator==(
-    const CookieInclusionStatus& other) const {
-  return exclusion_reasons_ == other.exclusion_reasons_ &&
-         warning_reasons_ == other.warning_reasons_ &&
-         exemption_reason_ == other.exemption_reason_;
-}
+    const CookieInclusionStatus& other) const = default;
 
 bool CookieInclusionStatus::operator!=(
-    const CookieInclusionStatus& other) const {
-  return !operator==(other);
-}
+    const CookieInclusionStatus& other) const = default;
 
 bool CookieInclusionStatus::IsInclude() const {
   return exclusion_reasons_.none();
@@ -365,16 +359,14 @@ std::string CookieInclusionStatus::GetDebugString() const {
 }
 
 bool CookieInclusionStatus::HasExactlyExclusionReasonsForTesting(
-    std::vector<CookieInclusionStatus::ExclusionReason> reasons) const {
-  CookieInclusionStatus expected =
-      MakeFromReasonsForTesting(std::move(reasons));
+    const std::vector<CookieInclusionStatus::ExclusionReason>& reasons) const {
+  CookieInclusionStatus expected = MakeFromReasonsForTesting(reasons);
   return expected.exclusion_reasons_ == exclusion_reasons_;
 }
 
 bool CookieInclusionStatus::HasExactlyWarningReasonsForTesting(
-    std::vector<WarningReason> reasons) const {
-  CookieInclusionStatus expected =
-      MakeFromReasonsForTesting({}, std::move(reasons));
+    const std::vector<WarningReason>& reasons) const {
+  CookieInclusionStatus expected = MakeFromReasonsForTesting({}, reasons);
   return expected.warning_reasons_ == warning_reasons_;
 }
 
