@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/channel_info.h"
@@ -14,8 +13,7 @@
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/version_info/channel.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,12 +73,6 @@ void FlagsUIHandler::RegisterMessages() {
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsUIHandler::HandleResetAllFlags,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS)
-  web_ui()->RegisterMessageCallback(
-      flags_ui::kCrosUrlFlagsRedirect,
-      base::BindRepeating(&FlagsUIHandler::HandleCrosUrlFlagsRedirect,
-                          base::Unretained(this)));
-#endif
 }
 
 void FlagsUIHandler::Init(std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
@@ -150,14 +142,7 @@ void FlagsUIHandler::SendExperimentalFeatures(bool deprecated_features_only) {
   results.Set(flags_ui::kShowOwnerWarning,
               access_ == flags_ui::kGeneralAccessFlagsOnly);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool show_system_flags_link = crosapi::browser_util::IsLacrosEnabled();
-#else
-  const bool show_system_flags_link = true;
-#endif
-  results.Set(flags_ui::kShowSystemFlagsLink, show_system_flags_link);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   version_info::Channel channel = chrome::GetChannel();
   results.Set(
       flags_ui::kShowBetaChannelPromotion,
@@ -225,7 +210,7 @@ void FlagsUIHandler::HandleSetStringFlagMessage(const base::Value::List& args) {
 
 void FlagsUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   DCHECK(flags_storage_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS be less intrusive and restart inside the user session after
   // we apply the newly selected flags.
   VLOG(1) << "Restarting to apply per-session flags...";
@@ -240,9 +225,3 @@ void FlagsUIHandler::HandleResetAllFlags(const base::Value::List& args) {
   DCHECK(flags_storage_);
   about_flags::ResetAllFlags(flags_storage_.get());
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void FlagsUIHandler::HandleCrosUrlFlagsRedirect(const base::Value::List& args) {
-  about_flags::CrosUrlFlagsRedirect();
-}
-#endif

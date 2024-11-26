@@ -32,19 +32,6 @@ export function getHtml(this: AppElement) {
 </div>
 <div id="body-container">
   <div id="flagsTemplate">
-<if expr="chromeos_ash">
-    <div class="os-link-container" id="os-link-container"
-          ?hidden="${!this.data.showSystemFlagsLink}">
-      <span id="os-flags-link-container" class="os-link-icon"></span>
-      <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
-      <a href="#" id="os-link-href" aria-describedby="os-link-desc"
-          @click="${this.onOsLinkHrefClick_}">
-        $i18n{os-flags-link}
-      </a>
-      <span aria-hidden="true">$i18n{os-flags-text2}</span>
-    </div>
-</if>
-
     <div class="flex-container">
       <div class="flex">
         <h1 class="section-header-title">$i18n{heading}</h1>

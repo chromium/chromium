@@ -143,11 +143,8 @@ export class FlagsAppElement extends CrLitElement {
     needsRestart: false,
     showBetaChannelPromotion: false,
     showDevChannelPromotion: false,
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     showOwnerWarning: false,
-    // </if>
-    // <if expr="chromeos_ash">
-    showSystemFlagsLink: false,
     // </if>
   };
 
@@ -525,12 +522,6 @@ export class FlagsAppElement extends CrLitElement {
   // <if expr="not is_ios">
   protected onRestartButtonClick_() {
     FlagsBrowserProxyImpl.getInstance().restartBrowser();
-  }
-  // </if>
-
-  // <if expr="is_chromeos">
-  protected onOsLinkHrefClick_() {
-    FlagsBrowserProxyImpl.getInstance().crosUrlFlagsRedirect();
   }
   // </if>
 

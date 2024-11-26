@@ -67,9 +67,8 @@ suite('FlagsAppTest', function() {
     'needsRestart': false,
     'showBetaChannelPromotion': false,
     'showDevChannelPromotion': false,
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     'showOwnerWarning': true,
-    'showSystemFlagsLink': true,
     // </if>
   };
 
@@ -127,17 +126,13 @@ suite('FlagsAppTest', function() {
     assertFalse(isVisible(clearSearch));
     assertTrue(isVisible(resetAllButton));
 
-    // <if expr="chromeos_ash">
-    assertTrue(isVisible(app.getRequiredElement('#os-link-container')));
-    // </if>
-
     // Title and version
     assertTrue(isVisible(app.getRequiredElement('.section-header-title')));
     assertTrue(isVisible(app.getRequiredElement('#version')));
 
     // Blurb warning
     assertTrue(isVisible(app.getRequiredElement('.blurb-container')));
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // Owner warning
     assertTrue(!!app.getRequiredElement('#owner-warning'));
     // </if>
