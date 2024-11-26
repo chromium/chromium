@@ -315,17 +315,6 @@ struct ToV8Traits<NotShared<T>> {
     DCHECK(!value.IsNull());
     return ToV8Traits<T>::ToV8(script_state, value.Get());
   }
-
-  // TODO(crbug.com/1183647): Remove this overload. It is used in generated
-  // code, but it might cause bugs because T* cannot tell whether it's NotShared
-  // or MaybeShared.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 T* value) {
-    // TODO(canonmukai): Remove this if-branch and add DCHECK(value) instead.
-    if (!value)
-      return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<T>::ToV8(script_state, value);
-  }
 };
 
 // MaybeShared
@@ -709,14 +698,6 @@ struct ToV8Traits<IDLNullable<NotShared<T>>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  NotShared<T> value) {
     if (value.IsNull())
-      return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<NotShared<T>>::ToV8(script_state, value);
-  }
-
-  // TODO(crbug.com/1183647): Remove this overload.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 T* value) {
-    if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<NotShared<T>>::ToV8(script_state, value);
   }

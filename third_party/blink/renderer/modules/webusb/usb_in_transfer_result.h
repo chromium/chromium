@@ -22,27 +22,29 @@ class USBInTransferResult final : public ScriptWrappable {
  public:
   static USBInTransferResult* Create(const V8USBTransferStatus& status,
                                      base::span<const uint8_t> data) {
-    DOMDataView* data_view =
-        DOMDataView::Create(DOMArrayBuffer::Create(data), 0, data.size());
+    auto data_view = NotShared(
+        DOMDataView::Create(DOMArrayBuffer::Create(data), 0, data.size()));
     return MakeGarbageCollected<USBInTransferResult>(status, data_view);
   }
 
   static USBInTransferResult* Create(const V8USBTransferStatus& status) {
-    return MakeGarbageCollected<USBInTransferResult>(status, nullptr);
+    return MakeGarbageCollected<USBInTransferResult>(status,
+                                                     NotShared<DOMDataView>());
   }
 
   static USBInTransferResult* Create(const V8USBTransferStatus& status,
                                      NotShared<DOMDataView> data) {
-    return MakeGarbageCollected<USBInTransferResult>(status, data.Get());
+    return MakeGarbageCollected<USBInTransferResult>(status, data);
   }
 
-  USBInTransferResult(const V8USBTransferStatus& status, DOMDataView* data)
+  USBInTransferResult(const V8USBTransferStatus& status,
+                      NotShared<DOMDataView> data)
       : status_(status), data_(data) {}
 
   ~USBInTransferResult() override = default;
 
   V8USBTransferStatus status() const { return status_; }
-  DOMDataView* data() const { return data_.Get(); }
+  NotShared<DOMDataView> data() const { return data_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(data_);
@@ -51,7 +53,7 @@ class USBInTransferResult final : public ScriptWrappable {
 
  private:
   const V8USBTransferStatus status_;
-  const NotShared<DOMDataView> data_;
+  NotShared<DOMDataView> data_;
 };
 
 }  // namespace blink

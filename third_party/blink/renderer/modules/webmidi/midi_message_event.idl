@@ -35,5 +35,5 @@
     SecureContext
 ] interface MIDIMessageEvent : Event {
     constructor(DOMString type, optional MIDIMessageEventInit eventInitDict = {});
-    readonly attribute Uint8Array data;
+    readonly attribute Uint8Array? data;
 };

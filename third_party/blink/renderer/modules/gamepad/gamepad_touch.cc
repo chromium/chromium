@@ -10,15 +10,16 @@ namespace blink {
 
 namespace {
 
-DOMFloat32Array* ToFloat32Array(const double x, const double y) {
+NotShared<DOMFloat32Array> ToFloat32Array(const double x, const double y) {
   const std::array<float, 2> values = {static_cast<float>(x),
                                        static_cast<float>(y)};
-  return DOMFloat32Array::Create(values);
+  return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(values));
 }
 
-DOMUint32Array* ToUint32Array(const uint32_t width, const uint32_t height) {
+NotShared<DOMUint32Array> ToUint32Array(const uint32_t width,
+                                        const uint32_t height) {
   const std::array<uint32_t, 2> values = {width, height};
-  return DOMUint32Array::Create(values);
+  return NotShared<DOMUint32Array>(DOMUint32Array::Create(values));
 }
 
 }  // namespace

@@ -39,10 +39,8 @@ void BluetoothRemoteGATTDescriptor::ReadValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    DOMDataView* dom_data_view =
-        BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
-    value_ = dom_data_view;
-    resolver->Resolve(NotShared(dom_data_view));
+    value_ = BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
+    resolver->Resolve(value_);
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
   }
@@ -95,7 +93,7 @@ void BluetoothRemoteGATTDescriptor::WriteValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    value_ = new_value;
+    value_ = NotShared(new_value);
     resolver->Resolve();
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -134,7 +132,7 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
   }
 
   // Let newValue be a copy of the bytes held by value.
-  DOMDataView* new_value =
+  NotShared<DOMDataView> new_value =
       BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -145,7 +143,7 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
       descriptor_->instance_id, value,
       WTF::BindOnce(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
                     WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(new_value)));
+                    WrapPersistent(new_value.Get())));
 
   return promise;
 }
