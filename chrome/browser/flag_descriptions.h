@@ -3525,9 +3525,6 @@ extern const char kCaptureModeEducationDescription[];
 extern const char kCaptureModeEducationBypassLimitsName[];
 extern const char kCaptureModeEducationBypassLimitsDescription[];
 
-extern const char kCaptureModeGifRecordingName[];
-extern const char kCaptureModeGifRecordingDescription[];
-
 extern const char kCrosContentAdjustedRefreshRateName[];
 extern const char kCrosContentAdjustedRefreshRateDescription[];
 
@@ -4378,9 +4375,6 @@ extern const char kSysUiShouldHoldbackFocusModeDescription[];
 
 extern const char kSysUiShouldHoldbackForestName[];
 extern const char kSysUiShouldHoldbackForestDescription[];
-
-extern const char kSysUiShouldHoldbackGifRecordingName[];
-extern const char kSysUiShouldHoldbackGifRecordingDescription[];
 
 extern const char kSysUiShouldHoldbackTaskManagementName[];
 extern const char kSysUiShouldHoldbackTaskManagementDescription[];

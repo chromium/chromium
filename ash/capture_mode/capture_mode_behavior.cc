@@ -571,12 +571,7 @@ void CaptureModeBehavior::CreateCaptureFolder(
 
 std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
     const {
-  std::vector<RecordingType> supported_recording_types;
-  supported_recording_types.push_back(RecordingType::kWebM);
-  if (features::IsGifRecordingEnabled()) {
-    supported_recording_types.push_back(RecordingType::kGif);
-  }
-  return supported_recording_types;
+  return {RecordingType::kWebM, RecordingType::kGif};
 }
 
 void CaptureModeBehavior::SetPreSelectedWindow(

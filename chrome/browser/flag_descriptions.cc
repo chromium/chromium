@@ -6103,11 +6103,6 @@ const char kCaptureModeEducationBypassLimitsDescription[] =
     "Education nudges and tutorials, so they can be viewed repeatedly for "
     "testing purposes.";
 
-const char kCaptureModeGifRecordingName[] =
-    "Enable GIF recording in screen capture";
-const char kCaptureModeGifRecordingDescription[] =
-    "Enables the ability to record the screen into animated GIFs.";
-
 const char kDeskButtonName[] = "Desk button in shelf";
 const char kDeskButtonDescription[] =
     "Show a desk button that provides quick access to the desk menu in the "
@@ -7560,11 +7555,6 @@ const char kSysUiShouldHoldbackFocusModeDescription[] =
 const char kSysUiShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
 const char kSysUiShouldHoldbackForestDescription[] =
     "Enables holdback for Forest.";
-
-const char kSysUiShouldHoldbackGifRecordingName[] =
-    "Holdback for GIF recording on chromeOS";
-const char kSysUiShouldHoldbackGifRecordingDescription[] =
-    "Enables holdback for GIF recording.";
 
 const char kSysUiShouldHoldbackTaskManagementName[] =
     "Holdback for Task Management on chromeOS";

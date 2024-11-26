@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/check.h"
@@ -381,15 +380,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
 // -----------------------------------------------------------------------------
 // GifRecordingBrowserTest:
 
-class GifRecordingBrowserTest : public InProcessBrowserTest {
- public:
-  GifRecordingBrowserTest()
-      : scoped_feature_list_(ash::features::kGifRecording) {}
-  ~GifRecordingBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using GifRecordingBrowserTest = InProcessBrowserTest;
 
 // Records a GIF image of a region that fills the entire screen, then attempts
 // to decode the resulting file to verify the GIF encoding was successful.

@@ -436,11 +436,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "ash-capture-mode-gif-recording",
-    "owners": [ "afakhry@chromium.org", "gzadina@chromium.org" ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "ash-debug-shortcuts",
     "owners": [ "//ash/OWNERS" ],
     // Used by developers for debugging and to dump extra information to logs
@@ -8368,11 +8363,6 @@
     "name": "sys-ui-holdback-forest",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 135
-  },
-  {
-    "name": "sys-ui-holdback-gif-recording",
-    "owners": ["newcomer@chromium.org"],
-    "expiry_milestone": 130
   },
   {
     "name": "sys-ui-holdback-task-management",

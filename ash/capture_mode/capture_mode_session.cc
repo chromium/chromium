@@ -3194,7 +3194,6 @@ void CaptureModeSession::SetRecordingTypeMenuShown(bool shown,
   }
 
   if (!recording_type_menu_widget_) {
-    DCHECK(features::IsGifRecordingEnabled());
     DCHECK(capture_label_widget_);
     DCHECK(capture_label_widget_->IsVisible());
 

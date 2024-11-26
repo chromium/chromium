@@ -1173,10 +1173,6 @@ BASE_FEATURE(kGesturePropertiesDBusService,
              "GesturePropertiesDBusService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the ability to record the screen into an animated GIF image from the
-// native screen capture tool.
-BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Graduation app for EDU users if the Graduation policy allows it.
 BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -1938,11 +1934,6 @@ BASE_FEATURE(kSysUiShouldHoldbackFocusMode,
 // Enables a holdback experiment for Forest.
 BASE_FEATURE(kSysUiShouldHoldbackForest,
              "SysUiShouldHoldbackForest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables a holdback experiment for GIF Recording.
-BASE_FEATURE(kSysUiShouldHoldbackGifRecording,
-             "SysUiShouldHoldbackGifRecording",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a holdback experiment for Task Management
@@ -3727,15 +3718,6 @@ bool IsBlockFwupdClientEnabled() {
 
 bool IsGaiaRecordAccountCreationEnabled() {
   return base::FeatureList::IsEnabled(kGaiaRecordAccountCreation);
-}
-
-bool IsGifRecordingEnabled() {
-  const bool device_enrolled_in_holdback =
-      !base::FeatureList::IsEnabled(
-          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
-      base::FeatureList::IsEnabled(kSysUiShouldHoldbackGifRecording);
-  return !device_enrolled_in_holdback &&
-         base::FeatureList::IsEnabled(kGifRecording);
 }
 
 bool IsGraduationEnabled() {
