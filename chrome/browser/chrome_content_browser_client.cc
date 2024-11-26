@@ -5967,64 +5967,63 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     Profile* profile) {
-  bool matches_enterprise_allowlist = safe_browsing::IsURLAllowlistedByPolicy(
-      request.url, *profile->GetPrefs());
-  if (!matches_enterprise_allowlist) {
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-    auto* connectors_service =
-        enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-            browser_context);
-    bool has_valid_dm_token =
-        connectors_service &&
-        connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
-    bool is_enterprise_lookup_enabled =
-        safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-            profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
-            profile->IsGuestSession());
-#else
-    bool is_enterprise_lookup_enabled = false;
-#endif
-    bool is_consumer_lookup_enabled =
-        safe_browsing::RealTimePolicyEngine::CanPerformFullURLLookup(
-            profile->GetPrefs(), profile->IsOffTheRecord(),
-            g_browser_process->variations_service());
-
-    // |url_lookup_service| is used when real time url check is enabled.
-    safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
-        GetUrlLookupService(browser_context, is_enterprise_lookup_enabled,
-                            is_consumer_lookup_enabled);
-    safe_browsing::HashRealTimeService* hash_realtime_service =
-        safe_browsing_service_
-            ? safe_browsing_service_->GetHashRealTimeService(profile)
-            : nullptr;
-    safe_browsing::hash_realtime_utils::HashRealTimeSelection
-        hash_realtime_selection =
-            safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
-                profile->IsOffTheRecord(), profile->GetPrefs(),
-                safe_browsing::hash_realtime_utils::GetCountryCode(
-                    g_browser_process->variations_service()),
-                /*log_usage_histograms=*/true,
-                /*are_background_lookups_allowed=*/true);
-    safe_browsing::AsyncCheckTracker* async_check_tracker =
-        GetAsyncCheckTracker(wc_getter, is_enterprise_lookup_enabled,
-                             is_consumer_lookup_enabled,
-                             hash_realtime_selection, frame_tree_node_id);
-
-    return safe_browsing::BrowserURLLoaderThrottle::Create(
-        base::BindRepeating(
-            &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
-            base::Unretained(this),
-            safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),
-            // Should check for enterprise when safe browsing is disabled.
-            /*should_check_on_sb_disabled=*/is_enterprise_lookup_enabled,
-            safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
-        wc_getter, frame_tree_node_id, navigation_id,
-        url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
-        hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
-        hash_realtime_selection,
-        async_check_tracker ? async_check_tracker->GetWeakPtr() : nullptr);
+  if (safe_browsing::IsURLAllowlistedByPolicy(request.url,
+                                              *profile->GetPrefs())) {
+    // Don't run checks if it matches the enterprise allowlist.
+    return nullptr;
   }
-  return nullptr;
+#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
+  auto* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          browser_context);
+  bool has_valid_dm_token =
+      connectors_service &&
+      connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
+  bool is_enterprise_lookup_enabled =
+      safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
+          profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
+          profile->IsGuestSession());
+#else
+  bool is_enterprise_lookup_enabled = false;
+#endif
+  bool is_consumer_lookup_enabled =
+      safe_browsing::RealTimePolicyEngine::CanPerformFullURLLookup(
+          profile->GetPrefs(), profile->IsOffTheRecord(),
+          g_browser_process->variations_service());
+
+  // |url_lookup_service| is used when real time url check is enabled.
+  safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
+      GetUrlLookupService(browser_context, is_enterprise_lookup_enabled,
+                          is_consumer_lookup_enabled);
+  safe_browsing::HashRealTimeService* hash_realtime_service =
+      safe_browsing_service_
+          ? safe_browsing_service_->GetHashRealTimeService(profile)
+          : nullptr;
+  safe_browsing::hash_realtime_utils::HashRealTimeSelection
+      hash_realtime_selection =
+          safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
+              profile->IsOffTheRecord(), profile->GetPrefs(),
+              safe_browsing::hash_realtime_utils::GetCountryCode(
+                  g_browser_process->variations_service()),
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/true);
+  safe_browsing::AsyncCheckTracker* async_check_tracker = GetAsyncCheckTracker(
+      wc_getter, is_enterprise_lookup_enabled, is_consumer_lookup_enabled,
+      hash_realtime_selection, frame_tree_node_id);
+
+  return safe_browsing::BrowserURLLoaderThrottle::Create(
+      base::BindRepeating(
+          &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
+          base::Unretained(this),
+          safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),
+          // Should check for enterprise when safe browsing is disabled.
+          /*should_check_on_sb_disabled=*/is_enterprise_lookup_enabled,
+          safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
+      wc_getter, frame_tree_node_id, navigation_id,
+      url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
+      hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
+      hash_realtime_selection,
+      async_check_tracker ? async_check_tracker->GetWeakPtr() : nullptr);
 }
 #endif
 
