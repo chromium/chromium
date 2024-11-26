@@ -22,7 +22,20 @@ enum class SharedTabGroupRecallTypeDesktop {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupRecallTypeDesktop)
 
+// Types of Manage UI actions a user can trigger.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(SharedTabGroupManageTypeDesktop)
+enum class SharedTabGroupManageTypeDesktop {
+  kShareGroup = 0,
+  kManageGroup = 1,
+  kDeleteGroup = 2,
+  kMaxValue = kDeleteGroup
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupManageTypeDesktop)
+
 void RecordSharedTabGroupRecallType(SharedTabGroupRecallTypeDesktop action);
+void RecordSharedTabGroupManageType(SharedTabGroupManageTypeDesktop action);
 
 }  // namespace tab_groups::saved_tab_groups::metrics
 

@@ -12,4 +12,8 @@ void RecordSharedTabGroupRecallType(SharedTabGroupRecallTypeDesktop action) {
   base::UmaHistogramEnumeration("TabGroups.Shared.Recall.Desktop", action);
 }
 
+void RecordSharedTabGroupManageType(SharedTabGroupManageTypeDesktop action) {
+  base::UmaHistogramEnumeration("TabGroups.Shared.Manage.Desktop", action);
+}
+
 }  // namespace tab_groups::saved_tab_groups::metrics

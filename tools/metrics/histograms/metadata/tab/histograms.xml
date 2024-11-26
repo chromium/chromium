@@ -950,6 +950,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Shared.Manage.Desktop"
+    enum="SharedTabGroupManageTypeDesktop" expires_after="2025-10-10">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ Desktop ] Tracks the type of manage action a user explicitly performs on a
+    shared tab group such as clicking the share / manage group button, or
+    deleting a shared group. Recorded when a user triggers a manage action.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Shared.Recall.Desktop"
     enum="SharedTabGroupRecallTypeDesktop" expires_after="2025-10-10">
   <owner>dljames@chromium.org</owner>

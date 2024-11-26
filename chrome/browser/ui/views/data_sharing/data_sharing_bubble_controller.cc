@@ -12,11 +12,14 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "net/base/url_util.h"
 #include "ui/views/view_class_properties.h"
 
@@ -71,6 +74,21 @@ content::WebContents* DataSharingBubbleDialogView::AddNewContents(
 BEGIN_METADATA(DataSharingBubbleDialogView)
 END_METADATA
 
+views::View* GetAnchorViewForShare(const BrowserView* browser_view,
+                                   tab_groups::LocalTabGroupID group_id) {
+  if (!browser_view->tabstrip()) {
+    return nullptr;
+  }
+
+  TabGroupHeader* const group_header =
+      browser_view->tabstrip()->group_header(group_id);
+  if (!group_header) {
+    return nullptr;
+  }
+
+  return group_header;
+}
+
 }  // namespace
 
 DataSharingBubbleController::~DataSharingBubbleController() = default;
@@ -87,34 +105,30 @@ void DataSharingBubbleController::Show(
   if (!url) {
     return;
   }
+
+  std::string flow_value;
+  CHECK(net::GetValueForKeyInQuery(url.value(), data_sharing::kQueryParamFlow,
+                                   &flow_value));
+
+  const BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(&GetBrowser());
+
+  views::View* anchor_view_for_share = nullptr;
+  if (flow_value == data_sharing::kFlowShare) {
+    anchor_view_for_share = GetAnchorViewForShare(
+        browser_view, std::get<tab_groups::TabGroupId>(request_info));
+    if (!anchor_view_for_share) {
+      // The share bubble has nothing to anchor from; return early.
+      return;
+    }
+  }
+
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<DataSharingUI>>(
           url.value(), GetBrowser().profile(),
           IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
-
-  std::string flow_value;
-  bool flow_has_value = net::GetValueForKeyInQuery(
-      url.value(), data_sharing::kQueryParamFlow, &flow_value);
-  CHECK(flow_has_value);
-  views::View* anchor_view_for_share = nullptr;
-  const auto* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(&GetBrowser());
-
-  if (flow_value == data_sharing::kFlowShare) {
-    if (const auto* const tab_strip = browser_view->tabstrip()) {
-      if (auto* const group_header =
-              tab_strip->group_header(std::get<0>(request_info))) {
-        anchor_view_for_share = group_header;
-      }
-    }
-    // The share bubble should anchor to the tab group header according to the
-    // design.
-    if (!anchor_view_for_share) {
-      return;
-    }
-  }
 
   auto bubble_view = std::make_unique<DataSharingBubbleDialogView>(
       &GetBrowser(), anchor_view_for_share, std::move(contents_wrapper));

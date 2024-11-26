@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -28,6 +29,7 @@
 namespace tab_groups {
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 constexpr char kRecallHistogram[] = "TabGroups.Shared.Recall.Desktop";
+constexpr char kManageHistogram[] = "TabGroups.Shared.Manage.Desktop";
 
 class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
  public:
@@ -264,6 +266,80 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       kRecallHistogram,
       saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
           kOpenedFromSubmenu,
+      1);
+}
+
+// Verify the ShareGroup metric is recorded when the "Share group" button is
+// pressed in the tab group editor bubble.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricWhenShareGroupPressed) {
+  ::base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  // ShareTabGroup(group_id, "fake_collaboration_id");
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(kTabGroupEditorBubbleId),
+      PressButton(kTabGroupEditorBubbleShareGroupButtonId),
+      WaitForShow(kDataSharingBubbleElementId),
+      // Close the dialog to prevent flakes on mac.
+      HoverTabAt(0), ClickMouse(), WaitForHide(kDataSharingBubbleElementId),
+      FinishTabstripAnimations());
+
+  histogram_tester.ExpectUniqueSample(
+      kManageHistogram,
+      saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::kShareGroup,
+      1);
+}
+
+// Verify the ManageGroup metric is recorded when the "Manage group" button is
+// pressed in the tab group editor bubble.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricWhenManagedGroupPressed) {
+  ::base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id");
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(kTabGroupEditorBubbleId),
+      PressButton(kTabGroupEditorBubbleManageSharedGroupButtonId),
+      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
+        DataSharingBubbleController::GetOrCreateForBrowser(browser())->Close();
+      }),
+      WaitForHide(kDataSharingBubbleElementId));
+
+  histogram_tester.ExpectUniqueSample(
+      kManageHistogram,
+      saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::kManageGroup,
+      1);
+}
+
+// Verify the DeleteGroup metric is recorded when the "Delete group" button is
+// pressed in the tab group editor bubble.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricWhenDeleteGroupPressed) {
+  ::base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id");
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(kTabGroupEditorBubbleId),
+      PressButton(kTabGroupEditorBubbleDeleteGroupButtonId),
+      WaitForShow(kDeletionDialogCancelButtonId),
+      PressButton(kDeletionDialogCancelButtonId),
+      WaitForHide(kDeletionDialogCancelButtonId), FinishTabstripAnimations());
+
+  histogram_tester.ExpectUniqueSample(
+      kManageHistogram,
+      saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::kDeleteGroup,
       1);
 }
 
