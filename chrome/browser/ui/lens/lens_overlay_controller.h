@@ -474,8 +474,11 @@ class LensOverlayController : public LensSearchboxClient,
   // testing.
   void OnThumbnailRemovedForTesting();
 
-  // Handles the event where serachbox was focused for testing.
+  // Handles the event where searchbox was focused for testing.
   void OnFocusChangedForTesting(bool focused);
+
+  // Handles the event where zero suggest was shown for testing.
+  void OnZeroSuggestShownForTesting();
 
   // Returns the lens suggest inputs stored in this controller for testing.
   const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
@@ -802,6 +805,7 @@ class LensOverlayController : public LensSearchboxClient,
   void OnFocusChanged(bool focused) override;
   void OnPageBound() override;
   void ShowGhostLoaderErrorState() override;
+  void OnZeroSuggestShown() override;
 
   // Called anytime the side panel opens. Used to close lens overlay when
   // another side panel opens.
@@ -1095,10 +1099,13 @@ class LensOverlayController : public LensSearchboxClient,
   // was performed.
   bool search_performed_in_session_ = false;
 
+  // Indicates whether contextual zero suggest was shown in a session.
+  bool contextual_zps_shown_in_session_ = false;
+
   // Indicates whether the contextual searchbox was focused in the current
   // session. Used to record interaction rate, defined by whether or not a
   // user focused the contextual searchbox in sessions in which it was shown.
-  // Not set if contextual searchbox is not shown.
+  // Set if contextual searchbox is shown.
   std::optional<bool> contextual_searchbox_focused_in_session_;
 
   // The page content type when the lens overlay was initialized. This is used

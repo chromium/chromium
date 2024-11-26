@@ -1245,6 +1245,10 @@ void LensOverlayController::OnFocusChangedForTesting(bool focused) {
   OnFocusChanged(focused);
 }
 
+void LensOverlayController::OnZeroSuggestShownForTesting() {
+  OnZeroSuggestShown();
+}
+
 const lens::proto::LensOverlaySuggestInputs&
 LensOverlayController::GetLensSuggestInputsForTesting() {
   return GetLensSuggestInputs();
@@ -1933,6 +1937,8 @@ void LensOverlayController::InitializeOverlayUI(
       !init_data.page_content_bytes_.empty();
   if (should_show_contextual_search_box) {
     contextual_searchbox_focused_in_session_ = false;
+    // Reset in case it was set to true previously and the overlay was closed.
+    contextual_zps_shown_in_session_ = false;
   }
   initial_page_content_type_ = init_data.page_content_type_;
   page_->ShouldShowContextualSearchBox(should_show_contextual_search_box);
@@ -2191,6 +2197,12 @@ void LensOverlayController::ShowGhostLoaderErrorState() {
   }
   if (side_panel_ghost_loader_page_) {
     side_panel_ghost_loader_page_->ShowErrorState();
+  }
+}
+
+void LensOverlayController::OnZeroSuggestShown() {
+  if (IsContextualSearchbox()) {
+    contextual_zps_shown_in_session_ = true;
   }
 }
 
@@ -2730,11 +2742,12 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
   lens::RecordSessionDuration(invocation_source_, session_duration);
 
-  // UMA contextual searchbox focused in session.
+  // UMA contextual searchbox focused in session and contextual zero suggest
+  // shown in session.
   if (contextual_searchbox_focused_in_session_.has_value()) {
-    lens::RecordContextualSearchboxFocusedInSession(
+    lens::RecordContextualSearchboxSessionEndMetrics(
         contextual_searchbox_focused_in_session_.value(),
-        initial_page_content_type_);
+        contextual_zps_shown_in_session_, initial_page_content_type_);
   }
 
   // UKM session end metrics. Includes invocation source, whether the
