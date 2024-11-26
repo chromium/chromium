@@ -2648,12 +2648,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
                                                                   profile_path);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 12/2023.
-  password_manager::features_util::MigrateDeclinedSaveOptInToExplicitOptOut(
-      profile_prefs);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
   // Added 12/2023.
   profile_prefs->ClearPref(kTemplatesRandomOrder);

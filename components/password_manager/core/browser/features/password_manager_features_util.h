@@ -191,16 +191,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<std::string>& gaia_ids);
 
-// When the user declines the opt-in offer during saving, the default
-// store pref is set to kProfileStore, to signal the opt-in shouldn't be
-// offered again (see PasswordFeatureManagerImpl::
-// ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()).
-// This function additionally ensures that the opt-in pref is explicitly
-// set to false in that state, which is relevant for GetUserSettings().
-// Opt-in offers from other flows are unaffected (e.g. filling).
-// See crbug.com/1509865.
-void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service);
-
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(
     const PrefService* pref_service,
