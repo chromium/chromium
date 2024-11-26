@@ -40,7 +40,6 @@ import {
   SodaSession,
   TimeDelta,
 } from '../../core/soda/types.js';
-import {settings} from '../../core/state/settings.js';
 import {
   assert,
   assertEnumVariant,
@@ -116,8 +115,10 @@ class ModelLoaderDev<T> extends ModelLoader<T> {
     return this.model;
   }
 
-  override async loadAndExecute(content: string, language: LanguageCode):
-    Promise<ModelResponse<T>> {
+  override async loadAndExecute(
+    content: string,
+    language: LanguageCode,
+  ): Promise<ModelResponse<T>> {
     // TODO: b/357526521 - Create and use `UNSUPPORTED_LANGUAGE` error.
     if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
       return {kind: 'error', error: ModelResponseError.GENERAL};
@@ -449,12 +450,6 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override getSodaState(language: LanguageCode): Signal<ModelState> {
     return assertExists(this.sodaStates.get(language));
-  }
-
-  override getSelectedLanguageState(): Signal<ModelState>|null {
-    const selectedLanguage = settings.value.transcriptionLanguage;
-    return selectedLanguage === null ? null :
-                                       this.getSodaState(selectedLanguage);
   }
 
   override async newSodaSession(_language: LanguageCode): Promise<SodaSession> {

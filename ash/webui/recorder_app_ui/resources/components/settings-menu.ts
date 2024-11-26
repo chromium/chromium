@@ -39,7 +39,6 @@ import {
 } from '../core/state/settings.js';
 import {
   enableTranscription,
-  setTranscriptionLanguage,
   toggleTranscriptionEnabled,
 } from '../core/state/transcription.js';
 import {HELP_URL} from '../core/url_constants.js';
@@ -313,7 +312,7 @@ export class SettingsMenu extends ReactiveLitElement {
       return nothing;
     }
     let description = '';
-    const selectedLanguage = settings.value.transcriptionLanguage;
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
     if (selectedLanguage !== null) {
       const sodaState = this.platformHandler.getSodaState(selectedLanguage);
       const langPackInfo =
@@ -439,13 +438,10 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onInstallSodaClick() {
-    if (!toggleTranscriptionEnabled()) {
+    if (!enableTranscription()) {
       this.transcriptionConsentDialog.value?.show();
       return;
     }
-    // Forces transcription to be enabled.
-    enableTranscription();
-    setTranscriptionLanguage(LanguageCode.EN_US);
   }
 
   private get transcriptionEnabled() {

@@ -152,6 +152,10 @@ export const settingsSchema = z.object({
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
+  // Language selected by the user.
+  // Note that most usage should use `getSelectedLanguage` in PlatformHandler,
+  // to automatically fall back to default language when there's only one
+  // language available.
   transcriptionLanguage: z.withDefault(
     z.nullable(z.nativeEnum(LanguageCode)),
     null,
