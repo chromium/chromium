@@ -492,6 +492,7 @@ static_library("ui") {
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/feature_engagement",
+    "//components/feature_engagement/public:feature_constants",
     "//components/feed:feature_list",
     "//components/feedback",
     "//components/feedback/content",

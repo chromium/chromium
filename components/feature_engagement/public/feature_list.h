@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -20,7 +21,7 @@ using FeatureVector = std::vector<const base::Feature*>;
 // chrome://flags to set the variable name for the selected feature. The Tracker
 // backend will then read this to figure out which feature (if any) was selected
 // by the end user.
-extern const char kIPHDemoModeFeatureChoiceParam[];
+inline constexpr char kIPHDemoModeFeatureChoiceParam[] = "chosen_feature";
 
 // Defines a const flags_ui::FeatureEntry::FeatureParam for the given
 // base::Feature. The constant name will be on the form
@@ -764,6 +765,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 #undef VARIATION_ENTRY
 
 // Returns all the features that are in use for engagement tracking.
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 FeatureVector GetAllFeatures();
 
 }  // namespace feature_engagement

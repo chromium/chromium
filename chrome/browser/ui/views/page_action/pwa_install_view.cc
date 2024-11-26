@@ -58,7 +58,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
 // Site engagement score threshold to show In-Product Help.
 // Add x_ prefix so the IPH feature engagement tracker can ignore this.
-constexpr base::FeatureParam<int> kIphSiteEngagementThresholdParam{
+const base::FeatureParam<int> kIphSiteEngagementThresholdParam{
     &feature_engagement::kIPHDesktopPwaInstallFeature,
     "x_site_engagement_threshold",
     web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold};

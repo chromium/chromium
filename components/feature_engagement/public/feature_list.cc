@@ -296,8 +296,6 @@ const base::Feature* const kAllFeatures[] = {
 };
 }  // namespace
 
-const char kIPHDemoModeFeatureChoiceParam[] = "chosen_feature";
-
 std::vector<const base::Feature*> GetAllFeatures() {
   return std::vector<const base::Feature*>(
       kAllFeatures, kAllFeatures + std::size(kAllFeatures));

@@ -159,7 +159,7 @@ you would have to add it to the following places:
 1.  `//components/feature_engagement/public/feature_constants.h`:
 
     ```c++
-    BASE_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
+    FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
     ```
 
 1.  `//components/feature_engagement/public/feature_list.cc`:
@@ -1007,7 +1007,7 @@ The configuration will look like this:
 In `//components/feature_engagement/public/feature_constants.h`:
 
 ```c++
-BASE_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
 ```
 
 In `//components/feature_engagement/public/event_constants.h`
