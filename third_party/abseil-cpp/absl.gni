@@ -37,8 +37,11 @@ template("absl_source_set") {
         "//third_party/abseil-cpp:absl_define_config",
       ]
 
+      if (!defined(defines)) {
+        defines = []
+      }
       if (is_component_build) {
-        defines = [ "ABSL_BUILD_DLL" ]
+        defines += [ "ABSL_BUILD_DLL" ]
         if (!is_win && current_os != "aix") {
           configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
           configs += [ "//build/config/gcc:symbol_visibility_default" ]
