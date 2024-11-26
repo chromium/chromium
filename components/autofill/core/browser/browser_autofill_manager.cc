@@ -1674,9 +1674,6 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
                                     autofill_field, trigger_source);
     return;
   }
-  metrics_->credit_card_form_event_logger.LogDeprecatedCreditCardSelectedMetric(
-      credit_card, *form_structure, metrics_->signin_state_for_metrics);
-
   GetCreditCardAccessManager().FetchCreditCard(
       &credit_card, base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
                                    weak_ptr_factory_.GetWeakPtr(), form,

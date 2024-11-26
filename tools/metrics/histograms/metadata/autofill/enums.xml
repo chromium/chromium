@@ -1819,14 +1819,11 @@ Called by update_autofill_enums.py.-->
              (once)"/>
   <int value="12"
       label="Submitted with masked server card suggestion filled (once)"/>
-  <int value="13"
-      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
-             selected">
+  <int value="13" label="(Obsolete) Masked server card suggestion selected">
     The user selected a masked server card that triggered an unmask attempt.
   </int>
   <int value="14"
-      label="(DEPRECATED, USE NEW VERSION) Masked server card suggestion
-             selected (once)">
+      label="(Obsolete) Masked server card suggestion selected (once)">
     The user selected a masked server card that triggered an unmask attempt at
     least once.
   </int>

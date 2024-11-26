@@ -125,30 +125,6 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   }
 }
 
-void CreditCardFormEventLogger::LogDeprecatedCreditCardSelectedMetric(
-    const CreditCard& credit_card,
-    const FormStructure& form,
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-
-  switch (credit_card.record_type()) {
-    case CreditCard::RecordType::kLocalCard:
-    case CreditCard::RecordType::kFullServerCard:
-    case CreditCard::RecordType::kVirtualCard:
-      // No need to log selections for these types; crbug/1513307 only focused
-      // on masked server cards.
-      break;
-    case CreditCard::RecordType::kMaskedServerCard:
-      Log(DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, form);
-      if (!has_logged_legacy_masked_server_card_suggestion_selected_) {
-        has_logged_legacy_masked_server_card_suggestion_selected_ = true;
-        Log(DEPRECATED_FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE,
-            form);
-      }
-      break;
-  }
-}
-
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
