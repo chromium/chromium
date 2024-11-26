@@ -38,7 +38,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
@@ -82,7 +82,7 @@
             "pool": "chrome.tests.perf-webview"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -121,7 +121,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
@@ -160,7 +160,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
@@ -199,7 +199,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
@@ -238,7 +238,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {},
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
@@ -282,7 +282,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -326,7 +326,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -371,7 +371,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 44
@@ -416,7 +416,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 28
@@ -461,7 +461,7 @@
             "pool": "chrome.tests.perf-webview"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 23
@@ -506,7 +506,7 @@
             "pool": "chrome.tests.perf-webview-pgo"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -551,7 +551,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 14
@@ -596,7 +596,7 @@
             "pool": "chrome.tests.perf-pgo"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -641,7 +641,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
@@ -686,7 +686,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 16
@@ -739,7 +739,7 @@
             "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 22
@@ -784,7 +784,7 @@
             "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 26
@@ -829,7 +829,7 @@
             "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -881,7 +881,7 @@
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 30
@@ -931,7 +931,7 @@
             "synthetic_product_name": "Macmini8,1_x86-64-i7-8700B_Intel UHD Graphics 630_65536_APPLE SSD AP1024M"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
@@ -981,7 +981,7 @@
             "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 23
@@ -1027,7 +1027,7 @@
             "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 26
@@ -1085,7 +1085,7 @@
             "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 23
@@ -1131,7 +1131,7 @@
             "synthetic_product_name": "MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 26
@@ -1184,7 +1184,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -1229,7 +1229,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1274,7 +1274,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 28
@@ -1319,7 +1319,7 @@
             "pool": "chrome.tests.perf-pgo"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
@@ -1365,7 +1365,7 @@
             "synthetic_product_name": "Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1413,7 +1413,7 @@
             "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
@@ -1457,7 +1457,7 @@
             "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
@@ -1510,7 +1510,7 @@
             "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1555,7 +1555,7 @@
             "synthetic_product_name": "OMEN by HP Laptop 16-c0xxx [ ] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1604,7 +1604,7 @@
             "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 45
@@ -1648,7 +1648,7 @@
             "pool": "chrome.tests.perf"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 40
@@ -1705,7 +1705,7 @@
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1750,7 +1750,7 @@
             "synthetic_product_name": "PowerEdge R350 (Dell Inc.)"
           },
           "expiration": 7200,
-          "hard_timeout": 21600,
+          "hard_timeout": 14400,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 26

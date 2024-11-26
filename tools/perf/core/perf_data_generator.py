@@ -1815,7 +1815,7 @@ def generate_performance_test(tester_config, test, builder_name):
       # (crbug.com/1036447), so we must timeout the shards within ~6 hours to
       # allow for other overhead. If the overall builder times out then we
       # don't get data even from the passing shards.
-      'hard_timeout': test.get('timeout', 6 * 60 * 60),  # default 6 hours
+      'hard_timeout': test.get('timeout', 4 * 60 * 60),  # default 4 hours
       # This is effectively the timeout for a
       # benchmarking subprocess to run since we intentionally do not stream
       # subprocess output to the task stdout.
