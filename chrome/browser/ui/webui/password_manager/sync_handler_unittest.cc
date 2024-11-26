@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/test/test_web_ui.h"
@@ -26,6 +29,11 @@ const char kTestCallbackId[] = "test-callback-id";
 std::unique_ptr<KeyedService> BuildMockSyncService(
     content::BrowserContext* context) {
   return std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
+}
+
+std::unique_ptr<KeyedService> BuildNullSyncService(
+    content::BrowserContext* context) {
+  return nullptr;
 }
 
 bool CallbackReturnedSuccessfully(const content::TestWebUI::CallData& data) {
@@ -101,6 +109,15 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
       }
     }
     return arguments;
+  }
+
+  void DestroySyncService() {
+    static_cast<content::WebUIMessageHandler*>(handler_)->DisallowJavascript();
+    mock_sync_service_ = nullptr;
+    SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(), base::BindRepeating(&BuildNullSyncService));
+    static_cast<content::WebUIMessageHandler*>(handler_)
+        ->AllowJavascriptForTesting();
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -250,6 +267,50 @@ TEST_F(SyncHandlerTest, NotEligibleForAccountStorageWhenSetupNotComplete) {
   ASSERT_TRUE(CallbackReturnedSuccessfully(data));
   ASSERT_TRUE(data.arg3()->is_dict());
   EXPECT_FALSE(*data.arg3()->GetDict().FindBool("isEligibleForAccountStorage"));
+}
+
+TEST_F(SyncHandlerTest, GetLocalPasswordCount) {
+  CreateTestSyncAccount();
+  int password_count = 10;
+  // Make sure `SyncService::GetLocalDataDescriptions()` returns a list of
+  // `password_count` (model content doesn't matter) for `syncer::PASSWORDS`.
+  ON_CALL(*sync_service(), GetLocalDataDescriptions)
+      .WillByDefault(
+          [&password_count](
+              syncer::DataTypeSet types,
+              base::OnceCallback<void(
+                  std::map<syncer::DataType, syncer::LocalDataDescription>)>
+                  callback) {
+            syncer::LocalDataDescription description;
+            description.local_data_models =
+                std::vector<syncer::LocalDataItemModel>(
+                    password_count, syncer::LocalDataItemModel());
+            std::move(callback).Run({{syncer::PASSWORDS, description}});
+          });
+
+  base::Value::List args;
+  args.Append(kTestCallbackId);
+  web_ui()->ProcessWebUIMessage(GURL(), "GetLocalPasswordCount",
+                                std::move(args));
+
+  auto& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(CallbackReturnedSuccessfully(data));
+  ASSERT_TRUE(data.arg3()->is_int());
+  EXPECT_EQ(data.arg3()->GetInt(), password_count);
+}
+
+TEST_F(SyncHandlerTest, GetLocalPasswordCountWithNoSyncService) {
+  DestroySyncService();
+
+  base::Value::List args;
+  args.Append(kTestCallbackId);
+  web_ui()->ProcessWebUIMessage(GURL(), "GetLocalPasswordCount",
+                                std::move(args));
+
+  auto& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(CallbackReturnedSuccessfully(data));
+  ASSERT_TRUE(data.arg3()->is_int());
+  EXPECT_EQ(data.arg3()->GetInt(), 0);
 }
 
 }  // namespace password_manager
