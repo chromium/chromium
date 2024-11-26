@@ -2971,24 +2971,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadFailure"
-    enum="EnterpriseReportingEventType" expires_after="2024-06-01">
+    enum="EnterpriseReportingEventType" expires_after="2025-11-27">
   <owner>xanth@google.com</owner>
   <owner>alshawwa@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
     Failures to upload reporting events to the reporting server bucketed by
-    event type.
+    event type. Expired in June 2024. Revived in M133 for monitoring upcoming
+    work on the reporting pipeline.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadSuccess"
-    enum="EnterpriseReportingEventType" expires_after="2025-04-06">
+    enum="EnterpriseReportingEventType" expires_after="2025-11-27">
   <owner>xanth@google.com</owner>
   <owner>alshawwa@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
     Reporting events successfully uploaded to the reporting server bucketed by
-    event type.
+    event type. Expired in June 2024. Revived in M133 for monitoring upcoming
+    work on the reporting pipeline.
   </summary>
 </histogram>
 
