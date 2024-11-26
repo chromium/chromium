@@ -376,14 +376,8 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Used for serialization/deserialization.
   ExclusionReasonBitset exclusion_reasons() const { return exclusion_reasons_; }
-  void set_exclusion_reasons(ExclusionReasonBitset exclusion_reasons) {
-    exclusion_reasons_ = exclusion_reasons;
-  }
 
   WarningReasonBitset warning_reasons() const { return warning_reasons_; }
-  void set_warning_reasons(WarningReasonBitset warning_reasons) {
-    warning_reasons_ = warning_reasons;
-  }
 
   ContextDowngradeMetricValues GetBreakingDowngradeMetricsEnumValue(
       const GURL& url) const;
@@ -408,14 +402,12 @@ class NET_EXPORT CookieInclusionStatus {
   static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
                                                   uint32_t warning_reasons);
 
-  // Makes a status that contains the given reasons. If 'use_literal' is true,
-  // this method permits status to have reason combinations that cannot occur
-  // under normal circumstances; otherwise it can cause a CHECK failure.
+  // Makes a status that contains the given reasons. If the given reasons are
+  // self-inconsistent, CHECKs.
   static CookieInclusionStatus MakeFromReasonsForTesting(
-      std::vector<ExclusionReason> exclusions,
-      std::vector<WarningReason> warnings = std::vector<WarningReason>(),
-      ExemptionReason exemption = ExemptionReason::kNone,
-      bool use_literal = false);
+      const std::vector<ExclusionReason>& exclusions,
+      const std::vector<WarningReason>& warnings = std::vector<WarningReason>(),
+      ExemptionReason exemption = ExemptionReason::kNone);
 
   // Returns true if the cookie was excluded because of user preferences or
   // 3PCD.
@@ -428,12 +420,6 @@ class NET_EXPORT CookieInclusionStatus {
   }
 
  private:
-  // Makes a status that contains the exact given exclusion reason and warning
-  // and exemption.
-  CookieInclusionStatus(std::vector<ExclusionReason> exclusions,
-                        std::vector<WarningReason> warnings,
-                        ExemptionReason exemption);
-
   // Returns the `exclusion_reasons_` with the given `reasons` unset.
   ExclusionReasonBitset ExclusionReasonsWithout(
       const std::vector<ExclusionReason>& reasons) const;

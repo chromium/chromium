@@ -33,19 +33,6 @@ CookieInclusionStatus::CookieInclusionStatus(WarningReason warning) {
 }
 
 CookieInclusionStatus::CookieInclusionStatus(
-    std::vector<ExclusionReason> exclusions,
-    std::vector<WarningReason> warnings,
-    ExemptionReason exemption) {
-  for (ExclusionReason reason : exclusions) {
-    exclusion_reasons_[reason] = true;
-  }
-  for (WarningReason warning : warnings) {
-    warning_reasons_[warning] = true;
-  }
-  exemption_reason_ = exemption;
-}
-
-CookieInclusionStatus::CookieInclusionStatus(
     const CookieInclusionStatus& other) = default;
 
 CookieInclusionStatus& CookieInclusionStatus::operator=(
@@ -404,14 +391,9 @@ bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
 }
 
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
-    std::vector<ExclusionReason> exclusions,
-    std::vector<WarningReason> warnings,
-    ExemptionReason exemption,
-    bool use_literal) {
-  CookieInclusionStatus literal_status(exclusions, warnings, exemption);
-  if (use_literal) {
-    return literal_status;
-  }
+    const std::vector<ExclusionReason>& exclusions,
+    const std::vector<WarningReason>& warnings,
+    ExemptionReason exemption) {
   CookieInclusionStatus status;
   for (ExclusionReason reason : exclusions) {
     status.AddExclusionReason(reason);
@@ -421,7 +403,19 @@ CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
   }
   status.MaybeSetExemptionReason(exemption);
 
-  CHECK_EQ(status, literal_status);
+  for (auto reason : exclusions) {
+    CHECK(status.HasExclusionReason(reason))
+        << "Exemption " << reason << " could not be applied";
+  }
+  CHECK_EQ(status.exclusion_reasons_.count(), exclusions.size());
+  for (auto reason : warnings) {
+    CHECK(status.HasWarningReason(reason))
+        << "Warning " << reason << " could not be applied";
+  }
+  CHECK_EQ(status.warning_reasons_.count(), warnings.size());
+  CHECK_EQ(status.exemption_reason(), exemption)
+      << "Exemption " << static_cast<int>(exemption) << " could not be applied";
+
   return status;
 }
 
