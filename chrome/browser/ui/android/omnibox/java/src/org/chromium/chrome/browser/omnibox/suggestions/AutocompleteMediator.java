@@ -947,8 +947,9 @@ class AutocompleteMediator
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
         cancelAutocompleteRequests();
 
-        if (mAutocompleteInput.getPageClassification().getAsInt()
-                == PageClassification.ANDROID_HUB_VALUE) {
+        if (mAutocompleteInput.getPageClassification().isPresent()
+                && mAutocompleteInput.getPageClassification().getAsInt()
+                        == PageClassification.ANDROID_HUB_VALUE) {
             RecordUserAction.record("HubSearch.KeyboardEnterPressed");
 
             if (!OmniboxFeatures.sAndroidHubSearchEnterPerformsSearch.getValue()) {
