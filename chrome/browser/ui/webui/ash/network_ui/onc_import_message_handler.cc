@@ -4,16 +4,23 @@
 
 #include "chrome/browser/ui/webui/ash/network_ui/onc_import_message_handler.h"
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/net/server_certificate_database.h"
+#include "chrome/browser/net/server_certificate_database.pb.h"
+#include "chrome/browser/net/server_certificate_database_service.h"
+#include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
@@ -22,7 +29,9 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
+#include "crypto/sha2.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 namespace ash {
 
 namespace {
@@ -120,23 +129,141 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
     return;
   }
 
-  auto cert_importer = std::make_unique<onc::CertificateImporterImpl>(
-      content::GetIOThreadTaskRunner({}), nssdb);
-  auto certs =
+  std::unique_ptr<chromeos::onc::OncParsedCertificates> certs =
       std::make_unique<chromeos::onc::OncParsedCertificates>(certificates);
   if (certs->has_error()) {
     has_error = true;
     result += "Some certificates could not be parsed.\n";
   }
-  auto* const cert_importer_ptr = cert_importer.get();
-  cert_importer_ptr->ImportAllCertificatesUserInitiated(
-      certs->server_or_authority_certificates(), certs->client_certificates(),
-      base::BindOnce(&OncImportMessageHandler::OnCertificatesImported,
+
+  if (certs->server_or_authority_certificates().empty() &&
+      certs->client_certificates().empty()) {
+    Respond(callback_id, result, has_error);
+    return;
+  }
+
+  auto cert_importer = std::make_unique<onc::CertificateImporterImpl>(
+      content::GetIOThreadTaskRunner({}), nssdb);
+  onc::CertificateImporterImpl* cert_importer_ptr = cert_importer.get();
+  if (!base::FeatureList::IsEnabled(
+          ::features::kEnableCertManagementUIV2Write)) {
+    cert_importer_ptr->ImportAllCertificatesUserInitiated(
+        certs->server_or_authority_certificates(), certs->client_certificates(),
+        base::BindOnce(
+            &OncImportMessageHandler::OnAllCertificatesImportedUserInitiated,
+            weak_factory_.GetWeakPtr(), std::move(cert_importer), callback_id,
+            result, has_error));
+    return;
+  }
+
+  const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
+      client_certs = certs->client_certificates();
+  // Import client certs first, and then do server certificates separately.
+  cert_importer_ptr->ImportClientCertificates(
+      client_certs,
+      base::BindOnce(&OncImportMessageHandler::GetAllServerCertificates,
                      weak_factory_.GetWeakPtr(), std::move(cert_importer),
-                     callback_id, result, has_error));
+                     std::move(certs), callback_id, result, has_error));
 }
 
-void OncImportMessageHandler::OnCertificatesImported(
+void OncImportMessageHandler::GetAllServerCertificates(
+    std::unique_ptr<onc::CertificateImporterImpl> cert_importer,
+    std::unique_ptr<chromeos::onc::OncParsedCertificates> certs,
+    const std::string& callback_id,
+    const std::string& previous_result,
+    bool has_error,
+    bool cert_import_success) {
+  std::string result = previous_result;
+  if (!cert_import_success) {
+    has_error = true;
+    result += "Some client certificates couldn't be imported.\n";
+  }
+
+  if (certs->server_or_authority_certificates().empty()) {
+    Respond(callback_id, result, has_error);
+    return;
+  }
+
+  net::ServerCertificateDatabaseService* server_cert_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  if (!server_cert_service) {
+    has_error = true;
+    result += "Server certificates could not be imported.\n";
+    Respond(callback_id, result, has_error);
+    return;
+  }
+  // Fetch the current server certs in the DB.
+  server_cert_service->GetAllCertificates(
+      base::BindOnce(&OncImportMessageHandler::ImportServerCertificates,
+                     weak_factory_.GetWeakPtr(), std::move(certs), callback_id,
+                     result, has_error));
+  // |cert_importer| will be destroyed when the callback exits.
+}
+
+void OncImportMessageHandler::ImportServerCertificates(
+    std::unique_ptr<chromeos::onc::OncParsedCertificates> certs,
+    const std::string& callback_id,
+    const std::string& previous_result,
+    bool has_error,
+    std::vector<net::ServerCertificateDatabase::CertInformation>
+        current_certs) {
+  std::string result = previous_result;
+  net::ServerCertificateDatabaseService* server_cert_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  if (!server_cert_service) {
+    has_error = true;
+    result += "Server certificates could not be imported.\n";
+    Respond(callback_id, result, has_error);
+    return;
+  }
+  std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+  for (const auto& cert : certs->server_or_authority_certificates()) {
+    scoped_refptr<net::X509Certificate> cert_to_import = cert.certificate();
+
+    net::ServerCertificateDatabase::CertInformation cert_info;
+    cert_info.sha256hash_hex = base::ToLowerASCII(
+        base::HexEncode(net::X509Certificate::CalculateFingerprint256(
+                            cert_to_import->cert_buffer())
+                            .data));
+
+    bool found = false;
+    for (const auto& current_cert : current_certs) {
+      found |= current_cert.sha256hash_hex == cert_info.sha256hash_hex;
+    }
+
+    // Don't change a cert's metadata if its already in the cert store.
+    if (found) {
+      result += "Server certificate with hash " + cert_info.sha256hash_hex +
+                " already in cert store.\n";
+    } else {
+      cert_info.cert_metadata.mutable_trust()->set_trust_type(
+          cert.web_trust_requested()
+              ? chrome_browser_server_certificate_database::CertificateTrust::
+                    CERTIFICATE_TRUST_TYPE_TRUSTED
+              : chrome_browser_server_certificate_database::CertificateTrust::
+                    CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
+      cert_info.der_cert = base::ToVector(cert_to_import->cert_span());
+
+      cert_infos.push_back(std::move(cert_info));
+    }
+  }
+
+  if (cert_infos.empty()) {
+    Respond(callback_id, result, has_error);
+    return;
+  }
+
+  server_cert_service->AddOrUpdateUserCertificates(
+      std::move(cert_infos),
+      base::BindOnce(&OncImportMessageHandler::OnServerCertsImportedDb,
+                     weak_factory_.GetWeakPtr(), callback_id, result,
+                     has_error));
+  // |certs| will be destroyed when the callback exits.
+}
+
+void OncImportMessageHandler::OnAllCertificatesImportedUserInitiated(
     std::unique_ptr<onc::CertificateImporterImpl> cert_importer,
     const std::string& callback_id,
     const std::string& previous_result,
@@ -149,6 +276,19 @@ void OncImportMessageHandler::OnCertificatesImported(
   }
   Respond(callback_id, result, has_error);
   // |cert_importer| will be destroyed when the callback exits.
+}
+
+void OncImportMessageHandler::OnServerCertsImportedDb(
+    const std::string& callback_id,
+    const std::string& previous_result,
+    bool has_error,
+    bool cert_import_success) {
+  std::string result = previous_result;
+  if (!cert_import_success) {
+    has_error = true;
+    result += "Server certificates couldn't be imported.\n";
+  }
+  Respond(callback_id, result, has_error);
 }
 
 }  // namespace ash
