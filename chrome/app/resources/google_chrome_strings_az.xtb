@@ -371,6 +371,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5602351063754773347">Chrome onu silməyinizi tövsiyə edir. <ph name="BEGIN_LINK" />Dəstəklənən artırmalar haqqında ətraflı məlumat əldə edin<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome onlayn güvənliyinizi təmin etmək üçün daha çox iş görür</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> təlükəli ola bilər, bu səbəbdən Chrome onu blok etdi.</translation>
+<translation id="566568153320186256">Chrome arxa fon fəaliyyətini, habelə rahat sürüşdürmə və video çərçivə səviyyələri kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Enerjiyə Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir}=1{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. Anonim pəncərəniz yenidən açılmayacaq.}other{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="5686916850681061684">Google Chrome'u fərdiləşdirin və nəzarət edin. Buna baxmalısınız - ətraflı məlumat üçün klikləyin.</translation>
 <translation id="5690427481109656848">Google MMC</translation>
@@ -519,6 +520,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="7477130805345743099">Chrome təhlükəli bağlantı ilə sayt yükləməzdən əvvəl xəbərdarlıq edəcək</translation>
 <translation id="7481213027396403996">Chrome’un ən güclü güvənlik sistemini əldə edin</translation>
 <translation id="749228101751499733">Daxil olduğunuz müddətdə Chrome-da Google Hesabınızdan əldə edilən parolları və s. istifadə edə bilərsiniz. <ph name="SHORTCUT" /> Google xidmətləri ayarlarınızı dəyişə bilər.</translation>
+<translation id="7496017508659652909">Chrome səhifələri əvvəlcədən yükləyərək baxış və axtarışı sürətləndirir. <ph name="BEGIN_LINK" />Səhifələri əvvəlcədən yükləmək haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome daha çox məlumat növünü anlaya və formaları sürətlə avtomatik doldura bilər. <ph name="BEGIN_LINK" />Chrome avtodoldurma<ph name="END_LINK" /> haqqında ətraflı məlumat əldə edin</translation>
 <translation id="7514258452813684157">Google Güncəlləyici Xidməti</translation>
 <translation id="7515191208480168435">Asan giriş üçün Google Linzanı bərkidə bilərsiniz</translation>
@@ -635,6 +637,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="8712767363896337380">Güncəllənmək üzrədir! Güncəlləməni tamamlamaq üçün Chrome'u yenidən başladın.</translation>
 <translation id="8718062187489036808">Chrome'dan çıxın</translation>
 <translation id="873133009373065397">Google Chrome defolt brauzeri müəyyən edə və ya ayarlaya bilmir</translation>
+<translation id="8748735421235723888">Chrome deaktiv tabların yaddaşını boşaldır. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chrome-u sürətləndirir. Qayıtdığınız zaman deaktiv tablar avtomatik olaraq yenidən aktivləşir. <ph name="BEGIN_LINK" />Yaddaşa Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Ünvan panelinə və ya axtarış xanasına mətn daxil etdiyiniz zaman Chrome sizə daha yaxşı təkliflər təqdim etmək üçün yazdıqlarınızı defolt axtarış sisteminizə göndərir. Bu, Anonim rejimdə deaktivdir.</translation>
 <translation id="8781673607513845160">Kameradan istifadə etmək üçün Chrome-a <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> giriş imkanı verin</translation>
 <translation id="878572486461146056">Quraşdırma xətası: Şəbəkə administratoru quraşdırmanın qarşısını alan Qrup Siyasəti tətbiq edib: <ph name="INSTALL_ERROR" /></translation>

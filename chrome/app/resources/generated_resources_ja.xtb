@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">ツール(&amp;T)</translation>
 <translation id="1122242684574577509">認証できませんでした。クリックして、ご利用の Wi-Fi ネットワーク（<ph name="NETWORK_ID" />）のログインページにアクセスしてください。</translation>
 <translation id="1122587596907914265">ユニークな壁紙にカスタマイズ</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{不正使用されたパスワードが 1 件見つかりました}other{不正使用されたパスワードが {NUM_SITES} 件見つかりました}}</translation>
 <translation id="1122913801042512795">アカウントのログイン情報が古くなっています。いったんログアウトしてからもう一度ログインしてください。</translation>
 <translation id="1122960773616686544">ブックマーク名</translation>
 <translation id="1124772482545689468">ユーザー</translation>
@@ -1053,7 +1054,7 @@
 <translation id="1714644264617423774">ユーザー補助機能を有効にするとデバイスが使いやすくなります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> のサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>
 <translation id="171826447717908393">独立したウェブアプリ（ベータ版）</translation>
-<translation id="1718835860248848330">1 時間以内</translation>
+<translation id="1718835860248848330">過去 1 時間</translation>
 <translation id="1719312230114180055">注: 指紋は複雑なパスワードや PIN より安全面で劣る場合があります。</translation>
 <translation id="1720244237656138008">印象派</translation>
 <translation id="1720318856472900922">TLS WWW サーバー認証</translation>

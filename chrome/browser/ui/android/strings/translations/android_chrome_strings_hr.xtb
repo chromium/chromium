@@ -650,7 +650,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3985022125189960801">Dodajte web-lokaciju natrag ako je želite u grupi web-lokacija koje mogu pogoditi što vam se sviđa</translation>
 <translation id="3985215325736559418">Želite li ponovo preuzeti datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiraj vezu</translation>
-<translation id="3991055816270226534">Upravljajte kolačićima trećih strana i zaštitama od praćenja</translation>
 <translation id="4000212216660919741">Početna stranica offline</translation>
 <translation id="4016425174436051808">Praćenje nije uspjelo. Došlo je do pogreške.</translation>
 <translation id="4024768890073681126">Preglednikom upravlja tvoj roditelj</translation>
@@ -1167,7 +1166,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6341580099087024258">Pitaj gdje spremiti datoteke</translation>
 <translation id="6342069812937806050">Upravo sada</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="6345878117466430440">Označi kao pročitano</translation>
 <translation id="6356893102071098867">Provjerite jeste li odabrali odgovarajući račun</translation>
 <translation id="6363990818884053551">Za pokretanje sinkronizacije potvrdite da ste to vi.</translation>

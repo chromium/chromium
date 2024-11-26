@@ -1755,7 +1755,6 @@
 <translation id="4123572138124678573">નીચેની તરફ ત્રણ કાણાં પાડો</translation>
 <translation id="412601465078863288">અપલોડ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="4127317221386336246">વસ્ત્રો સાથે પહેરાતી ઍક્સેસરી</translation>
-<translation id="4127575959421463246">ChromeOS ફ્લૅગ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 અન્ય}one{# અન્ય}other{# અન્ય}}</translation>
 <translation id="4129992181550680635">શૈક્ષણિક સંસાધનો</translation>
 <translation id="4130226655945681476">નેટવર્ક કેબલ્સ, મૉડેમ અને રાઉટર તપાસીને</translation>
@@ -4317,7 +4316,6 @@
 <translation id="8792626944327216835">માઇક્રોફોન</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> દ્વારા તમારા બ્રાઉઝર પર Chrome Enterprise Connectors ચાલુ કરવામાં આવ્યું છે. આ કનેક્ટરને તમારા અમુક ડેટાનો ઍક્સેસ છે.</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
-<translation id="8798739476508189189">બ્રાઉઝર ફ્લૅગ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="8800034312320686233">સાઇટ કામ નથી કરતી?</translation>
 <translation id="8805819170075074995">સૂચિ એન્ટ્રી "<ph name="LANGUAGE_ID" />": એન્ટ્રીને અવગણવામાં આવી, કારણ કે તેનો SpellcheckLanguage નીતિમાં પણ સમાવેશ કરવામાં આવ્યો છે.</translation>
 <translation id="8806062468703310719">ફોન સેવા પ્રદાતાઓ</translation>

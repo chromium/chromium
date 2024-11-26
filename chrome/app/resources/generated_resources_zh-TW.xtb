@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">驗證失敗。按一下即可造訪目前所用 Wi-Fi 網路 (<ph name="NETWORK_ID" />) 的登入頁面。</translation>
 <translation id="1122587596907914265">設計獨特桌布樣式</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{找到 1 個遭外洩的密碼}other{找到 {NUM_SITES} 個遭外洩的密碼}}</translation>
 <translation id="1122913801042512795">你的帳戶登入詳細資料已過期，請登出後再登入。</translation>
 <translation id="1122960773616686544">書籤名稱</translation>
 <translation id="1124772482545689468">使用者</translation>
@@ -2167,6 +2168,7 @@
 <translation id="2477065602824695373">你已設定多個外接切換裝置，因此自動掃描功能已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
+<translation id="2479541499757560845">無障礙鍵盤設定</translation>
 <translation id="2480868415629598489">修改你複製和貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁已移至包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組</translation>
@@ -3085,6 +3087,7 @@
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每天更新</translation>
+<translation id="3134312457920437826">擴充功能使用不支援的資訊清單版本，因此無法安裝。</translation>
 <translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
@@ -4351,6 +4354,7 @@
 <translation id="4012509903424054869">自動轉換 PDF 檔案，方便搜尋及選取文字</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4015163439792426608">你有使用擴充功能嗎？<ph name="BEGIN_LINK" />集中管理擴充功能<ph name="END_LINK" />，輕鬆又方便。</translation>
+<translation id="4015250302257349679">按下 <ph name="ACCELERATOR" /> 鍵可聚焦這個泡泡，再次按下即可聚焦泡泡指向的元素。</translation>
 <translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為這個連結建立 QR 圖碼</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
@@ -5741,6 +5745,7 @@
 <translation id="5045367873597907704">關於 HID 裝置</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正於現有瀏覽器工作階段中開啟。</translation>
+<translation id="504953514574706691">已從建議群組中排除分頁</translation>
 <translation id="5049614114599109018">使用輸入歷史記錄</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{這個網站最近傳送了大量通知。你可以禁止這個網站再傳送通知。}other{這些網站最近傳送了大量通知，你可以禁止這些網站再傳送通知。}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5792,6 +5797,7 @@
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
 <translation id="5081124414979006563">開啟訪客設定檔(&amp;O)</translation>
+<translation id="508209203623347828">停用這張資訊卡，也會一併停用 Sharepoint 和 Outlook 行事曆等 Microsoft 資訊卡。</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上鍵</translation>
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5084622689760736648">網站較有可能會正常運作</translation>
@@ -5909,6 +5915,8 @@
 <translation id="5157250307065481244">查看網站詳細資料</translation>
 <translation id="5158206172605340248">重音符號選單已關閉。</translation>
 <translation id="5159094275429367735">設定 Crostini</translation>
+<translation id="5159236862360390997">將顯示一系列內含操作說明的教學課程泡泡。
+          按下 <ph name="ACCELERATOR" /> 鍵可聚焦某個泡泡，再次按下即可聚焦該泡泡指向的元素。</translation>
 <translation id="5159419673777902220">貴家長已停用擴充功能權限</translation>
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
@@ -5989,6 +5997,7 @@
 <translation id="5216674789212441076">自動翻譯即時字幕 (送給 Google 進行翻譯)。</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" />。</translation>
+<translation id="5221834113325601057">已從清單中排除分頁</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
@@ -6188,6 +6197,7 @@
 <translation id="5372579129492968947">取消固定擴充功能</translation>
 <translation id="5372632722660566343">繼續進行設定但不選擇帳戶</translation>
 <translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
+<translation id="5374324662289354619">內部偵錯頁面目前已停用。</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用鄰近分享功能，請把對方用來連結 Google 帳戶的電子郵件地址，加到聯絡人清單。</translation>
 <translation id="5375374982898812658">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組會從你的所有裝置中刪除</translation>
 <translation id="5375577102295339548">網站可協助確認你不是機器人</translation>
@@ -6468,6 +6478,7 @@
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="5571092938913434726">全域媒體控制項</translation>
 <translation id="5571832155627049070">自訂你的設定檔</translation>
+<translation id="5572000034319109899">清理未使用的分頁</translation>
 <translation id="5572166921642484567">選擇色彩配置模式</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 的網站詳細資料</translation>
 <translation id="557506220935336383">查看其他網站的擴充功能權限</translation>
@@ -6975,6 +6986,7 @@
 <translation id="5943127421590245687">你已完成驗證程序。如要解鎖及還原本機資料，請輸入舊的 <ph name="DEVICE_TYPE" /> 密碼。</translation>
 <translation id="5943209617717087975">「<ph name="THIRD_PARTY_NTP_MANAGER" />」正在管理你的新分頁</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危險內容，要送交 Google 安全瀏覽服務進行掃描嗎？</translation>
+<translation id="5945192511027649793">停用觸控板</translation>
 <translation id="5945363896952315544">你的安全金鑰無法再儲存其他指紋。如要新增指紋，請先刪除現有的指紋。</translation>
 <translation id="5946591249682680882">報表 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">按兩下滑鼠左鍵</translation>
@@ -8028,6 +8040,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6725073593266469338">UI 服務</translation>
 <translation id="6725206449694821596">網際網路列印通訊協定 (IPP)</translation>
+<translation id="6725627354629889015">要清理未使用的分頁嗎？</translation>
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看新功能</translation>
 <translation id="6726800386221816228">特殊字元</translation>
@@ -8473,6 +8486,7 @@
 <translation id="7025190659207909717">行動數據服務管理</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕視窗中開啟所有網址(&amp;I)}=1{在無痕視窗中開啟(&amp;I)}other{在無痕視窗中開啟所有 ({COUNT} 個) 網址(&amp;I)}}</translation>
+<translation id="7027432471322992835">停用觸控板</translation>
 <translation id="7029307918966275733">未安裝 Crostini。請安裝 Crostini 以查看開發人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">系統會將網址傳送給安全瀏覽功能進行檢查</translation>
@@ -9440,6 +9454,7 @@
 <translation id="7737846262459425222">你隨時可以前往 [設定] &gt; [Google 助理] &gt; [畫面內容] 變更這項設定。</translation>
 <translation id="7737948071472253612">不得使用攝影機</translation>
 <translation id="77381465218432215">顯示重音標記和特殊字元</translation>
+<translation id="7739524723876359011">按下 <ph name="ACCELERATOR" /> 鍵即可聚焦這個泡泡。</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="7742706086992565332">你可以設定特定網站的縮放比例</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{找到 1 個遭外洩的密碼}other{找到 {NUM_SITES} 個遭外洩的密碼}}</translation>
@@ -10005,6 +10020,7 @@
 <translation id="8119438628456698432">正在產生記錄檔...</translation>
 <translation id="811994229154425014">按兩下空格鍵可輸入句號</translation>
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
+<translation id="8121537075864592453">已停用全螢幕模式</translation>
 <translation id="8121750884985440809">你目前正在投放螢幕畫面</translation>
 <translation id="8122898034710982882">Phone Hub、<ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">黃色和白色花朵</translation>
@@ -10226,6 +10242,7 @@
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
 <translation id="8276850948802942358">進一步瞭解如何授予網站使用第三方 Cookie 的臨時權限</translation>
 <translation id="8277907305629781277">你在「<ph name="DATE" />」建立了這個密碼金鑰</translation>
+<translation id="827966378414194229">透過頭部動作和臉部表情操控 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">網站語言版本</translation>
 <translation id="8280848878018088610">海浪洶湧，背景呈現奇幻的城市和城堡，色調偏暗。</translation>
 <translation id="828180235270931531">其他的可用印表機</translation>

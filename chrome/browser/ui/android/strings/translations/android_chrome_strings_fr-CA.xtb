@@ -650,7 +650,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3985022125189960801">Ajoutez un site si vous souhaitez qu’il fasse partie de la liste de sites qui peuvent deviner ce que vous aimez</translation>
 <translation id="3985215325736559418">Voulez-vous télécharger <ph name="FILE_NAME" /> à nouveau?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
-<translation id="3991055816270226534">Gérer les témoins tiers et les protections de suivi</translation>
 <translation id="4000212216660919741">Accueil hors ligne</translation>
 <translation id="4016425174436051808">L'abonnement a échoué. Un problème est survenu.</translation>
 <translation id="4024768890073681126">Votre navigateur est géré par votre parent</translation>
@@ -1112,6 +1111,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6108923351542677676">Configuration en cours...</translation>
 <translation id="6112702117600201073">Actualisation de la page en cours</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
+<translation id="6125202119952209826">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Plus de détails<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6130303040046284160">Réduire l'onglet</translation>
@@ -1166,7 +1166,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6341580099087024258">Demander où enregistrer les fichiers</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres adresses}}</translation>
-<translation id="6344622098450209924">Protection contre le suivi</translation>
 <translation id="6345878117466430440">Marquer comme lu</translation>
 <translation id="6356893102071098867">Vérifiez que vous avez choisi le bon compte</translation>
 <translation id="6363990818884053551">Pour lancer la synchronisation, confirmez votre identité</translation>
@@ -1611,6 +1610,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="820568752112382238">Sites les plus visités</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autre}one{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autre}other{Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUMBER_OF_OTHER_MEMBERS" /> autres}}</translation>
 <translation id="8209050860603202033">Ouvrir l'image</translation>
 <translation id="8210770465353466621">Vous trouverez vos onglets ici</translation>
 <translation id="8211101263765532799">Certains mots de passe cesseront bientôt de fonctionner</translation>

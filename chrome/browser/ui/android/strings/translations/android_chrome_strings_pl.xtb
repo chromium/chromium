@@ -650,7 +650,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3985022125189960801">Jeśli chcesz, aby witryna była dostępna w puli witryn, które mogą próbować rozpoznać Twoje zainteresowania, dodaj ją ponownie</translation>
 <translation id="3985215325736559418">Czy chcesz ponownie pobrać plik <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
-<translation id="3991055816270226534">Zarządzaj plikami cookie innych firm i ochroną przed śledzeniem</translation>
 <translation id="4000212216660919741">Ekran główny offline</translation>
 <translation id="4016425174436051808">Nie udało się dodać do obserwowanych. Coś poszło nie tak.</translation>
 <translation id="4024768890073681126">Przeglądarką zarządza Twój rodzic</translation>
@@ -1167,7 +1166,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6341580099087024258">Pytaj, gdzie zapisać pliki</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Ochrona przed śledzeniem</translation>
 <translation id="6345878117466430440">Oznacz jako przeczytane</translation>
 <translation id="6356893102071098867">Sprawdź, czy zostało wybrane właściwe konto</translation>
 <translation id="6363990818884053551">Aby rozpocząć synchronizację, potwierdź swoją tożsamość</translation>

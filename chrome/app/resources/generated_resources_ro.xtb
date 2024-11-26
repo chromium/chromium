@@ -184,6 +184,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1122198203221319518">&amp;Instrumente</translation>
 <translation id="1122242684574577509">Autentificarea nu a reușit. Dă clic pentru a accesa pagina de conectare a rețelei Wi-Fi pe care o folosești (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Imagini de fundal unice cu stil</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{S-a găsit o parolă compromisă}few{S-au găsit {NUM_SITES} parole compromise}other{S-au găsit {NUM_SITES} de parole compromise}}</translation>
 <translation id="1122913801042512795">Detaliile de conectare la cont sunt învechite. Deconectează-te și conectează-te din nou.</translation>
 <translation id="1122960773616686544">Nume marcaj</translation>
 <translation id="1124772482545689468">Utilizator</translation>
@@ -6991,6 +6992,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5943127421590245687">S-a confirmat. Pentru a debloca și a restabili datele locale, introdu parola veche pentru <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestionează pagina Filă nouă</translation>
 <translation id="5945002094477276055">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Navigare sigură Google pentru scanare?</translation>
+<translation id="5945192511027649793">Dezactivează touchpadul</translation>
 <translation id="5945363896952315544">Cheia de securitate nu poate stoca amprente suplimentare. Pentru a adăuga una nouă, mai întâi șterge o amprentă existentă.</translation>
 <translation id="5946591249682680882">ID raport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Dă dublu clic cu mouse-ul</translation>
@@ -8494,6 +8496,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7025190659207909717">Gestionarea serviciului de date mobile</translation>
 <translation id="7025895441903756761">Securitate și confidențialitate</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;incognito}=1{Deschide într-o fereastră &amp;incognito}few{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}other{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}}</translation>
+<translation id="7027432471322992835">Dezactivează trackpadul</translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7030304022046916278">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica</translation>
@@ -10028,6 +10031,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8119438628456698432">Se generează fișiere jurnal...</translation>
 <translation id="811994229154425014">Spațiu dublu pentru a insera punct</translation>
 <translation id="8120505434908124087">Instalează profilul eSIM</translation>
+<translation id="8121537075864592453">Ecranul complet este dezactivat</translation>
 <translation id="8121750884985440809">Momentan proiectezi ecranul</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Floare galbenă și albă</translation>
@@ -10249,6 +10253,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8276560076771292512">Goliți memoria cache și reîncărcați forțat</translation>
 <translation id="8276850948802942358">Află mai multe despre acordarea permisiunii temporare unui site de a folosi cookie-uri terță parte</translation>
 <translation id="8277907305629781277">Ai creat această cheie de acces pe <ph name="DATE" /></translation>
+<translation id="827966378414194229">Folosește mișcările capului și expresiile faciale pentru a-ți controla Chromebookul. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Site-uri în limbile tale</translation>
 <translation id="8280848878018088610">Valuri care se sparg în mare, cu un oraș și un castel fantastic în fundal, într-o atmosferă întunecată.</translation>
 <translation id="828180235270931531">Alte imprimante disponibile</translation>

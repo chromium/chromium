@@ -184,6 +184,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1122198203221319518">&amp;Công cụ</translation>
 <translation id="1122242684574577509">Xác thực bị lỗi. Nhấp để truy cập trang đăng nhập của mạng Wi-Fi mà bạn đang sử dụng (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Thiết kế hình nền độc đáo</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Đã phát hiện 1 mật khẩu bị lộ}other{Đã phát hiện {NUM_SITES} mật khẩu bị lộ}}</translation>
 <translation id="1122913801042512795">Thông tin chi tiết đăng nhập vào tài khoản của bạn đã cũ. Vui lòng đăng xuất và đăng nhập lại.</translation>
 <translation id="1122960773616686544">Tên dấu trang</translation>
 <translation id="1124772482545689468">Người dùng</translation>

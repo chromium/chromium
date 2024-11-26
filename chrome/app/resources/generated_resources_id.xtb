@@ -184,6 +184,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1122198203221319518">&amp;Alat</translation>
 <translation id="1122242684574577509">Autentikasi gagal. Klik untuk mengunjungi halaman masuk untuk jaringan Wi-Fi yang Anda gunakan (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Tentukan gaya wallpaper yang unik</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Ditemukan 1 sandi yang telah dibobol}other{Ditemukan {NUM_SITES} sandi yang telah dibobol}}</translation>
 <translation id="1122913801042512795">Detail login akun Anda sudah tidak berlaku. Harap logout lalu login lagi.</translation>
 <translation id="1122960773616686544">Nama bookmark</translation>
 <translation id="1124772482545689468">Pengguna</translation>
@@ -7006,6 +7007,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5943127421590245687">Verifikasi Anda berhasil. Untuk membuka kunci dan memulihkan data lokal, masukkan sandi <ph name="DEVICE_TYPE" /> lama.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> mengelola halaman tab baru Anda</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> mungkin berbahaya. Kirim ke Google Safe Browsing untuk dipindai?</translation>
+<translation id="5945192511027649793">Nonaktifkan Touchpad</translation>
 <translation id="5945363896952315544">Kunci keamanan Anda tidak dapat menyimpan sidik jari lagi. Untuk menambahkan sidik jari baru, hapus sidik jari yang sudah ada terlebih dahulu.</translation>
 <translation id="5946591249682680882">ID Laporan <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Klik dua kali mouse</translation>
@@ -8507,6 +8509,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7025190659207909717">Pengelolaan layanan data seluler</translation>
 <translation id="7025895441903756761">Keamanan dan Privasi</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buka Semua di &amp;Jendela Samaran}=1{Buka di &amp;Jendela Samaran}other{Buka Semua ({COUNT}) di &amp;Jendela Samaran}}</translation>
+<translation id="7027432471322992835">Nonaktifkan Trackpad</translation>
 <translation id="7029307918966275733">Crostini tidak diinstal. Instal Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7030304022046916278">Mengirimkan URL ke Safe Browsing untuk memeriksanya</translation>
@@ -10040,6 +10043,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8119438628456698432">Membuat file log ...</translation>
 <translation id="811994229154425014">Spasi dua kali untuk mengetik titik</translation>
 <translation id="8120505434908124087">Instal profil eSIM</translation>
+<translation id="8121537075864592453">Layar penuh dinonaktifkan</translation>
 <translation id="8121750884985440809">Anda sedang mentransmisikan layar</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Bunga kuning dan putih</translation>
@@ -10261,6 +10265,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8276560076771292512">Kosongkan Cache dan Muat Ulang Keras</translation>
 <translation id="8276850948802942358">Pelajari lebih lanjut cara memberikan izin sementara kepada situs untuk menggunakan cookie pihak ketiga</translation>
 <translation id="8277907305629781277">Anda membuat kunci sandi ini pada <ph name="DATE" /></translation>
+<translation id="827966378414194229">Gunakan gerakan kepala dan ekspresi wajah untuk mengontrol Chromebook. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Situs dalam bahasa Anda</translation>
 <translation id="8280848878018088610">Deburan ombak di laut, dengan latar belakang kota dan kastil yang mengagumkan, dalam suasana gelap.</translation>
 <translation id="828180235270931531">Printer lain yang tersedia</translation>

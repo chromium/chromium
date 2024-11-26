@@ -650,7 +650,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3985022125189960801">Vuelve a añadir un sitio si quieres incluirlo entre los sitios que pueden estimar tus gustos</translation>
 <translation id="3985215325736559418">¿Quieres volver a descargar el archivo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copiar enlace</translation>
-<translation id="3991055816270226534">Gestionar cookies de terceros y protecciones antirrastreo</translation>
 <translation id="4000212216660919741">Página principal del modo sin conexión</translation>
 <translation id="4016425174436051808">No se puede seguir. Se ha producido un error.</translation>
 <translation id="4024768890073681126">Tu padre o madre gestiona tu navegador</translation>
@@ -1167,7 +1166,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6341580099087024258">Preguntar dónde guardar los archivos</translation>
 <translation id="6342069812937806050">Justo ahora</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
-<translation id="6344622098450209924">Protección Antirrastreo</translation>
 <translation id="6345878117466430440">Marcar como leído</translation>
 <translation id="6356893102071098867">Comprueba que has elegido la cuenta correcta.</translation>
 <translation id="6363990818884053551">Para iniciar la sincronización, verifica tu identidad</translation>

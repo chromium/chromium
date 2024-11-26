@@ -650,7 +650,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3985022125189960801">Ponovo dodajte web lokaciju ako želite da bude u skupini web lokacija koje mogu pogađati šta vam se sviđa</translation>
 <translation id="3985215325736559418">Želite li ponovo preuzeti fajl <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
-<translation id="3991055816270226534">Upravljajte kolačićima trećih strana i zaštitama od praćenja</translation>
 <translation id="4000212216660919741">Početna stranica van mreže</translation>
 <translation id="4016425174436051808">Nije moguće pratiti. Nešto nije uredu.</translation>
 <translation id="4024768890073681126">Roditelj upravlja tvojim preglednikom</translation>
@@ -1112,7 +1111,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6108923351542677676">U toku je postavljanje…</translation>
 <translation id="6112702117600201073">Osvježavanje stranice</translation>
 <translation id="6122831415929794347">Isključiti Sigurno pregledanje?</translation>
-<translation id="6125202119952209826">Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /></translation>
+<translation id="6125202119952209826">Pridružite se grupi kartica koju koristi <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Više detalja<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6130303040046284160">Minimiziranje kartice</translation>
@@ -1167,7 +1166,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6341580099087024258">Pitaj gdje pohranjivati fajlove</translation>
 <translation id="6342069812937806050">Maloprije</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Zaštita od praćenja</translation>
 <translation id="6345878117466430440">Označi kao pročitano</translation>
 <translation id="6356893102071098867">Provjerite jeste li odabrali pravi račun</translation>
 <translation id="6363990818884053551">Da započnete sinhronizaciju, potvrdite identitet</translation>
@@ -1612,7 +1610,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaši uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="820568752112382238">Najposjećenije web lokacije</translation>
-<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osobom}one{Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osobom}few{Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osobe}other{Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osoba}}</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osoba}one{Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osoba}few{Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osobe}other{Pridružite se grupi kartica koju koriste <ph name="OWNER_FIRST_NAME" /> i još <ph name="NUMBER_OF_OTHER_MEMBERS" /> osoba}}</translation>
 <translation id="8209050860603202033">Otvori sliku</translation>
 <translation id="8210770465353466621">Kartice ćete pronaći ovdje</translation>
 <translation id="8211101263765532799">Određene lozinke će uskoro prestati funkcionirati</translation>

@@ -249,6 +249,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
 <translation id="4434353761996769206">Oʻrnatish vositasi xatosi: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium <ph name="MANAGER" /> boshqaruvida</translation>
+<translation id="444069871276811466">Chromium profilini qoʻshish</translation>
 <translation id="4447409407328223819">Chrome for Testing haqida</translation>
 <translation id="4470974262661801543">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun kodli iborani kiriting</translation>
 <translation id="4493028449971051158">Ishga tushirishda xato: oʻrnatish faylini administrator nomidan ishga tushiring.</translation>
@@ -579,6 +580,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatilishi:<ph name="END_BOLD" /> Bu qurilmada Chromium orqali siz kirgan saytlar tarixidagi qaydlar.</translation>
 <translation id="8852026904190808918">Bu tildan Chromiumda menyular, sozlamalar, ogohlantirishlar va boshqa matnlarni koʻrsatish uchun foydalaniladi</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>
+<translation id="8876044221123442390">Chromium profilini qoʻshish</translation>
 <translation id="8880203542552872219">Agar shunday boʻlsa, Chromium brauzeriga saqlangan parolingizni yangi parolingiz bilan bir xil boʻlishi uchun tahrirlang</translation>
 <translation id="8891709362986793894">Tashkilotingiz Chromium hisobiga kirishni talab qiladi</translation>
 <translation id="8907580949721785412">Chromium parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>

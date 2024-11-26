@@ -1756,7 +1756,6 @@
 <translation id="4123572138124678573">Доод буланд гурван нүх цоолох</translation>
 <translation id="412601465078863288">Байршуулах үйлдэл завсарласан</translation>
 <translation id="4127317221386336246">Хувцасны чимэглэлүүд</translation>
-<translation id="4127575959421463246">ChromeOS дарцгуудыг хайж байна уу? Зочлох</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 бусад}other{# бусад}}</translation>
 <translation id="4129992181550680635">Боловсролын нөөцүүд</translation>
 <translation id="4130226655945681476">Сүлжээний кабель, модем болон чиглүүлэгчийг шалгаж байна</translation>
@@ -4316,7 +4315,6 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> нь Chrome Enterprise Connectors-г таны хөтөч дээр асаасан. Эдгээр холбогч нь таны зарим өгөгдөлд хандах эрхтэй.</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
-<translation id="8798739476508189189">Хөтчийн дарцгуудыг хайж байна уу? Зочлох</translation>
 <translation id="8800034312320686233">Сайт ажиллахгүй байна уу?</translation>
 <translation id="8805819170075074995">Жагсаалтын оролт "<ph name="LANGUAGE_ID" />": Энэ оролт SpellcheckLanguage удирдамжид мөн адил багтсан тул үүнийг үл хэрэгссэн болно.</translation>
 <translation id="8806062468703310719">Утасны үйлчилгээ үзүүлэгчид</translation>

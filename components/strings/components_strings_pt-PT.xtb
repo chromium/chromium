@@ -1755,7 +1755,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
 <translation id="412601465078863288">O carregamento excedeu o tempo limite</translation>
 <translation id="4127317221386336246">Acessórios de vestuário</translation>
-<translation id="4127575959421463246">Está à procura das sinalizações do Chrome OS? Visite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
 <translation id="4129992181550680635">Recursos educacionais</translation>
 <translation id="4130226655945681476">Rever os cabos de rede, o modem e o router</translation>
@@ -3470,6 +3469,7 @@ Detalhes adicionais:
 <translation id="725866823122871198">Não é possível estabelecer uma ligação privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda a guardar todas as páginas de compras num único lugar, bem como a monitorizar preços automaticamente, extrair estatísticas de preço e muito mais</translation>
 <translation id="7265608370113700582">A morada só está disponível neste dispositivo</translation>
+<translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Os ficheiros que transfere são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
 <translation id="7275334191706090484">Marcadores Geridos</translation>
 <translation id="7275808129217605899">Alimentação saudável</translation>
@@ -4317,7 +4317,6 @@ Detalhes adicionais:
 <translation id="8792626944327216835">microfone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ativou os Chrome Enterprise Connectors no navegador. Estes conetores têm acesso a alguns dos seus dados.</translation>
 <translation id="8798099450830957504">Predefinição</translation>
-<translation id="8798739476508189189">Está à procura das sinalizações do navegador? Visite</translation>
 <translation id="8800034312320686233">O site não funciona?</translation>
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": a entrada foi ignorada porque também está incluída na política SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Fornecedores de serviços telefónicos</translation>

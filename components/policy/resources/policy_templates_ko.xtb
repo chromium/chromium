@@ -4601,9 +4601,6 @@ Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 <translation id="4410236409016356088">네트워크 대역폭 조절 사용</translation>
 <translation id="4410361389637971319">분리형 웹 앱 출처에서 Direct Sockets를 사용하도록 허용</translation>
 <translation id="4411734231900934213">자녀와 부모 기기의 시계 간에 허용되는 차이(초)입니다.</translation>
-<translation id="4411759973223339687">정책을 true로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" /> 및 <ph name="LACROS_NAME" />가 게스트 로그인을 사용 설정합니다. 게스트 로그인은 모든 창이 시크릿 모드인 <ph name="PRODUCT_NAME" /> 프로필입니다.
-
-      정책을 false로 설정하면 <ph name="PRODUCT_NAME" /> 및 <ph name="LACROS_NAME" />가 게스트 프로필이 시작하도록 허용하지 않습니다.</translation>
 <translation id="441217499641439905"><ph name="PRODUCT_OS_NAME" /> 파일 앱에서 모바일 데이터로 연결 시 Google Drive 사용 중지</translation>
 <translation id="4412885120239670573">정책을 Enabled로 설정하면 <ph name="PRODUCT_NAME" />의 내부 PDF 뷰어를 사용 중지하고, PDF 파일을 다운로드 파일로 처리하며, 사용자가 기본 애플리케이션으로 PDF를 열 수 있습니다.
 

@@ -252,6 +252,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">A <ph name="MANAGER" /> gere o Chromium</translation>
+<translation id="444069871276811466">Adicionar perfil do Chromium</translation>
 <translation id="4447409407328223819">Acerca do Chrome for Testing</translation>
 <translation id="4470974262661801543">Para usar e guardar dados do Chromium na sua Conta Google, introduza a sua frase de acesso</translation>
 <translation id="4493028449971051158">Erro de arranque: execute o instalador como administrador.</translation>
@@ -582,6 +583,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> o seu histórico de navegação, um registo dos sites que visitou através do Chromium neste dispositivo.</translation>
 <translation id="8852026904190808918">Este idioma é usado para apresentar menus, definições, alertas e outro texto no Chromium</translation>
 <translation id="8862326446509486874">Não tem os direitos adequados para uma instalação ao nível do sistema. Tente executar o programa de instalação novamente como Administrador.</translation>
+<translation id="8876044221123442390">Adicionar perfil do Chromium</translation>
 <translation id="8880203542552872219">Em caso afirmativo, edite a sua palavra-passe guardada no Chromium para que corresponda à nova palavra-passe.</translation>
 <translation id="8891709362986793894">A sua organização requer que inicie sessão no Chromium</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>

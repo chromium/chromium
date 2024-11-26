@@ -64,6 +64,7 @@
 <translation id="1863308913976887472">網站可以將你的興趣喜好相關資訊儲存在 Chromium 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
 <translation id="1880677175115548835">選取文字</translation>
 <translation id="1881322772814446296">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chromium 設定檔。你的 Chromium 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新工具服務</translation>
 <translation id="1911763535808217981">關閉這項功能後，你可以單獨登入 Gmail 等這類 Google 網站，不必同時登入 Chromium</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
@@ -261,6 +262,7 @@
 <translation id="4544142686420020088">發生錯誤，Chromium 未能更新。<ph name="BEGIN_LINK" />請修正 Chromium 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium 可以將這個分頁設為閒置分頁，以改善瀏覽體驗並維持快速運作。</translation>
 <translation id="454579500955453258">要繼續使用新的 Chromium 設定檔嗎？</translation>
+<translation id="4548534452171747496">Chromium 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">你已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用你的書籤、記錄和其他設定。</translation>
 <translation id="4570813286784708942">安全瀏覽功能已關閉，系統無法驗證這個檔案，因此 Chromium 已禁止下載</translation>
 <translation id="4594305310729380060">儲存至這部裝置的密碼管理工具中</translation>
@@ -334,6 +336,7 @@
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
 <translation id="569897634095159764">無法連線至網際網路。Proxy 伺服器需要驗證。</translation>
 <translation id="5761096224651992291">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和「<ph name="PERMISSION_3" />」權限</translation>
+<translation id="5768371961535086509">Chromium 會釋出閒置分頁占用的記憶體，將更多電腦資源提供給使用中的分頁和其他應用程式，同時保持 Chromium 快速運作。當你切回閒置分頁時，這些分頁會自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">自訂及管理 Chromium。將 Chromium 設為預設瀏覽器。</translation>
 <translation id="5809516625706423866">無法連線至網際網路。發生 HTTP 401 未授權錯誤，請檢查 Proxy 設定。</translation>
 <translation id="5821520528363214608">如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請更新 Chromium</translation>

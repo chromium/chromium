@@ -920,7 +920,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2622754869869445457">Tu pestaña más reciente</translation>
 <translation id="2625385379895617796">Tu reloj está adelantado</translation>
 <translation id="262745152991669301">Puede solicitar permiso para conectarse a dispositivos USB</translation>
-<translation id="2627847595568876492">Extrayendo texto de PDF...</translation>
+<translation id="2627847595568876492">Extrayendo texto del PDF...</translation>
 <translation id="2628224721443278970">Iniciar sesión en Microsoft OneDrive</translation>
 <translation id="2634124572758952069">No se ha podido encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Estado:</translation>
@@ -1755,7 +1755,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4123572138124678573">Perforado triple en la parte inferior</translation>
 <translation id="412601465078863288">Tiempo de espera de subida agotado</translation>
 <translation id="4127317221386336246">Accesorios de vestir</translation>
-<translation id="4127575959421463246">¿Buscas las marcas de ChromeOS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Uno más}other{# más}}</translation>
 <translation id="4129992181550680635">Recursos educativos</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
@@ -4317,7 +4316,6 @@ Más información:
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ha activado Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
-<translation id="8798739476508189189">¿Buscas las marcas del navegador? Visita</translation>
 <translation id="8800034312320686233">¿El sitio web no funciona?</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": se ha ignorado la entrada porque también está incluida en la política SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Proveedores de servicios telefónicos</translation>

@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">ଯଦି ଆପଣ ଏକ ସାଇଟକୁ ସାଇଟଗୁଡ଼ିକର ପୁଲରେ ରହୁ ବୋଲି ଚାହାଁନ୍ତି ତେବେ ଏହାକୁ ପୁଣି ଯୋଗ କରନ୍ତୁ ଯାହା ଆପଣ କଣ ପସନ୍ଦ କରନ୍ତି ତାହା ଅନୁମାନ କରିପାରିବ</translation>
 <translation id="3985215325736559418">ଆପଣ କ’ଣ ପୁଣି <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍‍ କରିବାକୁ ଚାହିଁବେ?</translation>
 <translation id="3987993985790029246">ଲିଙ୍କ୍ କପି କରନ୍ତୁ</translation>
-<translation id="3991055816270226534">ତୃତୀୟ-ପକ୍ଷ କୁକୀ ଏବଂ ଟ୍ରାକିଂ ଟ୍ରାକିଂ ସୁରକ୍ଷାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4000212216660919741">ଅଫ୍‌ଲାଇନ୍ ହୋମ୍</translation>
 <translation id="4016425174436051808">ଅନୁସରଣ କରାଯାଇପାରିବ ନାହିଁ। କିଛି ତ୍ରୁଟି ହୋଇଛି।</translation>
 <translation id="4024768890073681126">ତୁମ ବ୍ରାଉଜର ତୁମର ବାପାମାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
@@ -1112,6 +1111,7 @@
 <translation id="6108923351542677676">ସେଟ୍ ଅପ୍ ପ୍ରକ୍ରିୟା ଚାଲିଛି…</translation>
 <translation id="6112702117600201073">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ ହେଉଛି</translation>
 <translation id="6122831415929794347">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ କରିବେ?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />ଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ଅଧିକ ବିବରଣୀ<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ଆଇଟମକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="6130303040046284160">ଟାବକୁ ଛୋଟ କରନ୍ତୁ</translation>
@@ -1166,7 +1166,6 @@
 <translation id="6341580099087024258">କେଉଁଠି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ସେଭ୍ କରିବେ, ପଚାରନ୍ତୁ</translation>
 <translation id="6342069812937806050">ଏହିକ୍ଷଣି</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ଅଧିକ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ଅଧିକ}}</translation>
-<translation id="6344622098450209924">ଟ୍ରାକିଂ ସୁରକ୍ଷା</translation>
 <translation id="6345878117466430440">ପଢ଼ାଯାଇଛି ଭାବରେ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="6356893102071098867">ଆପଣ ସଠିକ ଆକାଉଣ୍ଟ ବାଛିଛନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6363990818884053551">ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1611,6 +1610,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="820568752112382238">ଅଧିକ ଦେଖାଯାଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ଏବଂ ଅନ୍ୟ <ph name="NUMBER_OF_OTHER_MEMBERS" /> ଜଣଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ}other{<ph name="OWNER_FIRST_NAME" /> ଏବଂ ଅନ୍ୟ <ph name="NUMBER_OF_OTHER_MEMBERS" /> ଜଣଙ୍କ ସହ ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦିଅନ୍ତୁ}}</translation>
 <translation id="8209050860603202033">ଛବି ଖୋଲନ୍ତୁ</translation>
 <translation id="8210770465353466621">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ପାଇବେ</translation>
 <translation id="8211101263765532799">କିଛି ପାସୱାର୍ଡ ଶୀଘ୍ର କାମ କରିବା ବନ୍ଦ କରିଦେବ</translation>

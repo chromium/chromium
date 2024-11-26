@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">ឧបករណ៍</translation>
 <translation id="1122242684574577509">បានបរាជ័យក្នុងការផ្ទៀងផ្ទាត់ ចុចដើម្បីចូលទៅកាន់ទំព័រចូលសម្រាប់បណ្តាញ Wi-Fi ដែលអ្នកកំពុងប្រើប្រាស់ (<ph name="NETWORK_ID" />)។</translation>
 <translation id="1122587596907914265">បង្កើត​រចនាប័ទ្ម​ផ្ទាំង​រូបភាព​ខុសប្លែក​ពីគេ</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{បាន​រកឃើញ​ពាក្យសម្ងាត់ដែល​រងការលុកលុយ 1}other{បាន​រកឃើញ​ពាក្យសម្ងាត់ដែល​រងការលុកលុយ {NUM_SITES}}}</translation>
 <translation id="1122913801042512795">ព័ត៌មានលម្អិតអំពីការចូលគណនីរបស់អ្នកហួសសម័យហើយ។ សូមចេញ រួចចូលគណនីម្ដងទៀត។</translation>
 <translation id="1122960773616686544">ឈ្មោះចំណាំ</translation>
 <translation id="1124772482545689468">អ្នកប្រើ</translation>
@@ -3470,6 +3471,7 @@
 <translation id="3421387094817716717">សោសាធារណ: Elliptic Curve</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ចំណាំ៖<ph name="END_BOLD" /> សំឡេងថត ឬ​សំឡេង​ដែលស្រដៀង​ប្រហែលជា​អាចចូលប្រើ​លទ្ធផល​ផ្ទាល់ខ្លួន ឬជំនួយការ​របស់អ្នក​បាន។</translation>
 <translation id="3421835120203732951">បញ្ចូល​កម្រងព័ត៌មានថ្មី</translation>
+<translation id="3422989558057853751">បាន​ជ្រើសរើស​ធាតុ​ចុងក្រោយ, ការដក​ការជ្រើសរើសវា​នឹងចាកចេញពី​មុខងារ​ជ្រើសរើស</translation>
 <translation id="3423111258700187173">បានរកឃើញ​លទ្ធផល​នៅក្នុង <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">ស្វែងយល់​បន្ថែម​អំពី​ធាតុ AI នេះ</translation>
 <translation id="3423275441470187644">ជឿទុកចិត្ត</translation>
@@ -4966,6 +4968,7 @@
 <translation id="4461483878391246134">បញ្ចូល​ភាសាទៅក្នុងបញ្ជីភាសាមិនផ្ដល់​ជូន​ការ​បកប្រែ</translation>
 <translation id="4462159676511157176">ម៉ាស៊ីនមេឈ្មោះផ្ទាល់ខ្លូន</translation>
 <translation id="4465236939126352372">បានកំណត់រយៈពេលកំណត់ <ph name="TIME" /> សម្រាប់ <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">កូដ PIN មិន​ត្រឹមត្រូវទេ</translation>
 <translation id="4467561276409486506">&amp;បិទ/បើកមុខងារចង្អៀតខ្លាំង</translation>
 <translation id="4469324811108161144">កំណត់ចំណាំ​អាចមាន​រហូតដល់ <ph name="CHARACTER_LIMIT" /> តួអក្សរ។</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> អាចកែ​ឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /></translation>

@@ -866,6 +866,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2521736961081452453">Crea modulo</translation>
 <translation id="2523886232349826891">Salvataggio effettuato solo su questo dispositivo</translation>
 <translation id="2524461107774643265">Aggiungi altre informazioni</translation>
+<translation id="2526062290525841862">Per eseguire questa app, riattiva la modalità sviluppatore per app web isolate</translation>
 <translation id="2526280916094749336">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Il CVC si trova sul lato anteriore della tua carta. È il codice di 4 cifre in alto a destra, sopra il numero della carta.</translation>
 <translation id="2529899080962247600">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in più verranno ignorate.</translation>
@@ -1751,7 +1752,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
 <translation id="412601465078863288">Timeout del caricamento</translation>
 <translation id="4127317221386336246">Accessori di abbigliamento</translation>
-<translation id="4127575959421463246">Stai cercando i flag di ChromeOS? Visita la pagina</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
 <translation id="4129992181550680635">Risorse didattiche</translation>
 <translation id="4130226655945681476">Controllare i cavi di rete, il modem e il router</translation>
@@ -4313,7 +4313,6 @@ Ulteriori dettagli:
 <translation id="8792626944327216835">microfono</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ha attivato Chrome Enterprise Connectors sul tuo browser. Questi connettori hanno accesso ad alcuni dei tuoi dati.</translation>
 <translation id="8798099450830957504">Predefinito</translation>
-<translation id="8798739476508189189">Stai cercando i flag del browser? Visita la pagina</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8805819170075074995">Voce "<ph name="LANGUAGE_ID" />": voce ignorata perché è inclusa anche nella norma SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Fornitori di servizi di telefonia</translation>

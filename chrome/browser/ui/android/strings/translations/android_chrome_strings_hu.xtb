@@ -650,7 +650,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3985022125189960801">Újra felvehet egyes webhelyeket, ha azt szeretné, hogy azon webhelyek csoportjában legyenek, amelyek kitalálhatják, hogy mi tetszik Önnek.</translation>
 <translation id="3985215325736559418">Ismét letölti a(z) <ph name="FILE_NAME" /> fájlt?</translation>
 <translation id="3987993985790029246">Link másolása</translation>
-<translation id="3991055816270226534">A harmadik féltől származó cookie-k és a követés elleni védelmek kezelése</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
 <translation id="4016425174436051808">Nem lehet követni. Hiba történt.</translation>
 <translation id="4024768890073681126">Böngésződet a szülőd kezeli</translation>
@@ -1167,7 +1166,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6341580099087024258">Rákérdezés a fájlok mentésének helyére</translation>
 <translation id="6342069812937806050">Éppen most</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Nyomon követés elleni védelem</translation>
 <translation id="6345878117466430440">Megjelölés olvasottként</translation>
 <translation id="6356893102071098867">Ellenőrizze, hogy a megfelelő fiókot választotta-e ki</translation>
 <translation id="6363990818884053551">A kezdéshez igazolja személyazonosságát</translation>

@@ -1755,7 +1755,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4123572138124678573">Encunyació triple a la part inferior</translation>
 <translation id="412601465078863288">S'ha esgotat el temps d'espera per a la pujada</translation>
 <translation id="4127317221386336246">Accessoris de moda</translation>
-<translation id="4127575959421463246">Cerques les marques de Chrome OS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 element més}other{# elements més}}</translation>
 <translation id="4129992181550680635">Recursos educatius</translation>
 <translation id="4130226655945681476">Comprova els cables de xarxa, el mòdem i l'encaminador.</translation>
@@ -4317,7 +4316,6 @@ Detalls addicionals:
 <translation id="8792626944327216835">micròfon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ha activat Chrome Enterprise Connectors al navegador. Aquests connectors tenen accés a algunes de les teves dades.</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
-<translation id="8798739476508189189">Cerques les marques del navegador? Visita</translation>
 <translation id="8800034312320686233">El lloc web no funciona?</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'entrada s'ha ignorat perquè també s'inclou a la política SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Proveïdors de servei telefònic</translation>

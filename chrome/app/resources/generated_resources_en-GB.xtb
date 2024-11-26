@@ -184,6 +184,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Authentication failed. Click to visit the login page for the Wi-Fi network you are using (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Style unique wallpapers</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Found 1 compromised password}other{Found {NUM_SITES} compromised passwords}}</translation>
 <translation id="1122913801042512795">Your account sign-in details are out of date. Please sign out and sign in again.</translation>
 <translation id="1122960773616686544">Bookmark name</translation>
 <translation id="1124772482545689468">User</translation>

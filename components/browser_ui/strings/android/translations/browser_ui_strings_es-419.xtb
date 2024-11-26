@@ -430,7 +430,6 @@
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Permitidos: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Cuando está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
-<translation id="7302486331832100261">Por lo general, bloqueas las notificaciones. Para permitirlas, presiona Detalles.</translation>
 <translation id="7366415735885268578">Agregar un sitio</translation>
 <translation id="7368695150573390554">Se borrarán los datos sin conexión</translation>
 <translation id="7383715096023715447">Configuración de <ph name="DOMAIN" /></translation>

@@ -184,6 +184,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1122198203221319518">&amp;Verktyg</translation>
 <translation id="1122242684574577509">Autentiseringen misslyckades. Klicka här om du vill visa inloggningssidan för wifi-nätverket du använder (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Skapa unika bakgrunder</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 utsatt lösenord hittades}other{{NUM_SITES} utsatta lösenord hittades}}</translation>
 <translation id="1122913801042512795">Dina inloggningsuppgifter för kontot är inaktuella. Logga ut och logga sedan in igen.</translation>
 <translation id="1122960773616686544">Bokmärkets namn</translation>
 <translation id="1124772482545689468">Användare</translation>
@@ -2180,6 +2181,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2477065602824695373">Eftersom du har konfigurerat flera brytare har automatisk genomsökning inaktiverats.</translation>
 <translation id="2478176599153288112">Mediefilsbehörigheter för <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Aktivera tjänsten för dataåterställning.</translation>
+<translation id="2479541499757560845">Tillgänglighetsinställningar för tangentbord</translation>
 <translation id="2480868415629598489">Ändra data som du kopierar och klistrar in</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2482895651873876648">Fliken flyttades till gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3098,6 +3100,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3132277757485842847">Det gick inte att upprätthålla en anslutning till telefonen. Kontrollera att telefonen finns i närheten, att den är olåst och att Bluetooth och wifi är aktiverat på den.</translation>
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Uppdatera dagligen</translation>
+<translation id="3134312457920437826">Det går inte att installera tillägget eftersom det använder en manifestversion som inte stöds.</translation>
 <translation id="3134393957315651797">Välj experimentstatus för experimentet <ph name="EXPERIMENT_NAME" />. Beskrivning av experimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
 <translation id="3141093262818886744">Öppna ändå</translation>
@@ -4368,6 +4371,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4012509903424054869">PDF-filer konverteras automatiskt så att du kan söka efter och markera text</translation>
 <translation id="4014432863917027322">Vill du reparera <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Använder du tillägg? <ph name="BEGIN_LINK" />Hantera tilläggen<ph name="END_LINK" /> enkelt på ett ställe.</translation>
+<translation id="4015250302257349679">Flytta fokus till den här bubblan genom att trycka på <ph name="ACCELERATOR" />. Flytta sedan fokus till det som bubblan pekar på genom att trycka på samma tangent en gång till.</translation>
 <translation id="4016762287427926315">Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts också för den här appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Skapa QR-kod för den här länken</translation>
 <translation id="4019983356493507433">Redigera bokmärkeslista</translation>
@@ -5759,6 +5763,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5045367873597907704">Om styrdon</translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="504561833207953641">Öppnas i en befintlig webbläsarsession.</translation>
+<translation id="504953514574706691">Fliken har uteslutits från föreslagen grupp</translation>
 <translation id="5049614114599109018">Använd inmatningshistorik</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Den här webbplatsen har nyligen skickat många aviseringar. Du kan förhindra att den skickar aviseringar i fortsättningen.}other{De här webbplatserna har nyligen skickat många aviseringar. Du kan förhindra att de skickar aviseringar i fortsättningen.}}</translation>
 <translation id="5050330054928994520">Text till tal</translation>
@@ -5810,6 +5815,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5079950360618752063">Använd det föreslagna lösenordet</translation>
 <translation id="508059534790499809">Uppdatera en Kerberos-biljett</translation>
 <translation id="5081124414979006563">&amp;Öppna gästprofil</translation>
+<translation id="508209203623347828">Om det här kortet inaktiveras kommer även dina Microsoft-kort, som det för Sharepoint och Outlook-kalendern att inaktiveras.</translation>
 <translation id="5083035541015925118">ctrl + alt + uppåtpil</translation>
 <translation id="5084328598860513926">Administrationsflödet avbröts. Försök igen eller kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Webbplatser fungerar sannolikt som förväntat</translation>
@@ -5927,6 +5933,8 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5157250307065481244">Visa webbplatsinformation</translation>
 <translation id="5158206172605340248">Menyn för accenttecken har stängts.</translation>
 <translation id="5159094275429367735">Konfigurera Crostini</translation>
+<translation id="5159236862360390997">En serie hjälpbubblor med anvisningar visas nu.
+          Flytta fokus till en bubbla genom att trycka på <ph name="ACCELERATOR" />. Flytta sedan fokus till det som bubblan pekar på genom att trycka på samma tangent en gång till.</translation>
 <translation id="5159419673777902220">Din förälder har inaktiverat behörigheter för tillägg</translation>
 <translation id="5160634252433617617">Fysiskt tangentbord</translation>
 <translation id="5160857336552977725">Logga in på din <ph name="DEVICE_TYPE" /></translation>
@@ -6007,6 +6015,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5216674789212441076">Översätter livetextning automatiskt. Textning skickas till Google för översättning.</translation>
 <translation id="5220011581825921581">sök + uppåtpil</translation>
 <translation id="5221516927483787768">Det gick inte att casta <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Fliken har uteslutits från listan</translation>
 <translation id="5222403284441421673">En osäker nedladdning blockerades</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5225324770654022472">Visa genväg för appar</translation>
@@ -6207,6 +6216,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5372579129492968947">Lossa tillägg</translation>
 <translation id="5372632722660566343">Fortsätt utan konto</translation>
 <translation id="5372990315769030589">Vill du behålla <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5374324662289354619">Interna felsökningssidor är för närvarande inaktiverade.</translation>
 <translation id="5375318608039113175">Om du vill använda Närdelning med de här kontakterna lägger du till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter.</translation>
 <translation id="5375374982898812658">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="5375577102295339548">Webbplatser kan hjälpa till att verifiera att du inte är en bot</translation>
@@ -6487,6 +6497,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5571066253365925590">Bluetooth aktiverad</translation>
 <translation id="5571092938913434726">Globala mediareglage</translation>
 <translation id="5571832155627049070">Anpassa din profil</translation>
+<translation id="5572000034319109899">Rensa flikar du inte använder</translation>
 <translation id="5572166921642484567">Välj ett läge för färgschema</translation>
 <translation id="5572252023412311448">Visa webbplatsinformation för <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Se vilka behörigheter som tillägg har på andra webbplatser</translation>
@@ -8051,6 +8062,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6725073593266469338">Gränssnittstjänst</translation>
 <translation id="6725206449694821596">Protokoll för internetutskrift (IPP)</translation>
+<translation id="6725627354629889015">Vill du rensa flikar du inte använder?</translation>
 <translation id="6725970970008349185">Antal kandidater som ska visas per sida</translation>
 <translation id="672609503628871915">Kolla nyheterna</translation>
 <translation id="6726800386221816228">Specialtecken</translation>
@@ -9464,6 +9476,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7737846262459425222">Du kan när som helst ändra detta i Inställningar &gt; Google Assistent &gt; Skärmkontext.</translation>
 <translation id="7737948071472253612">Får inte använda kameran</translation>
 <translation id="77381465218432215">Visa accenttecken och specialtecken</translation>
+<translation id="7739524723876359011">Flytta fokus till den här bubblan genom att trycka på <ph name="ACCELERATOR" />.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Du kan ange hur mycket du vill zooma in eller ut på vissa webbplatser</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 utsatt lösenord hittades}other{{NUM_SITES} utsatta lösenord hittades}}</translation>

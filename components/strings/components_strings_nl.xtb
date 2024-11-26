@@ -866,6 +866,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2521736961081452453">Formulier maken</translation>
 <translation id="2523886232349826891">Alleen opgeslagen op dit apparaat</translation>
 <translation id="2524461107774643265">Meer informatie toevoegen</translation>
+<translation id="2526062290525841862">Zet de ontwikkelaarsmodus voor geïsoleerde web-apps weer aan om deze app uit te voeren</translation>
 <translation id="2526280916094749336">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres wordt opgeslagen in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">De CVC-code staat voor op je kaart. Het is de 4-cijferige code rechtsboven het kaartnummer.</translation>
 <translation id="2529899080962247600">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Alle andere items worden genegeerd.</translation>
@@ -1748,7 +1749,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4123572138124678573">Drie perforaties onder</translation>
 <translation id="412601465078863288">Time-out bij uploaden</translation>
 <translation id="4127317221386336246">Kledingaccessoires</translation>
-<translation id="4127575959421463246">Zoek je de Chrome OS-flags? Ga naar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
 <translation id="4129992181550680635">Onderwijsinformatie</translation>
 <translation id="4130226655945681476">Controleer de netwerkkabels, modem en router</translation>
@@ -4309,7 +4309,6 @@ Aanvullende informatie:
 <translation id="8792626944327216835">microfoon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> heeft Chrome Enterprise Connectors voor je browser aangezet. Deze connectors hebben toegang tot sommige van je gegevens.</translation>
 <translation id="8798099450830957504">Standaard</translation>
-<translation id="8798739476508189189">Zoek je browserflags? Ga naar</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
 <translation id="8805819170075074995">Lijstitem '<ph name="LANGUAGE_ID" />': Item is genegeerd omdat dit ook is opgenomen in het beleid SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Telefoondienstenaanbieders</translation>

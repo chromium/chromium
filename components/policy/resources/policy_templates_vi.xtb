@@ -4611,9 +4611,6 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 <translation id="4410236409016356088">Cho phép điều chỉnh băng thông mạng</translation>
 <translation id="4410361389637971319">Cho phép các nguồn gốc của Ứng dụng web tách biệt sử dụng Direct Sockets</translation>
 <translation id="4411734231900934213">Mức chênh lệch được phép giữa đồng hồ trên thiết bị của con và thiết bị của cha mẹ (tính bằng giây).</translation>
-<translation id="4411759973223339687">Nếu bạn đặt chính sách này true (đúng) hoặc không định cấu hình thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ chấp nhận phiên khách đăng nhập. Phiên khách đăng nhập là hồ sơ <ph name="PRODUCT_NAME" />, trong đó tất cả cửa sổ đều ở chế độ ẩn danh.
-
-      Nếu bạn đặt chính sách này thành false (sai) thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ không cho phép khởi động hồ sơ khách.</translation>
 <translation id="441217499641439905">Tắt Google Drive qua các kết nối di động trong ứng dụng Tệp dành cho <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Nếu bạn đặt chính sách này thành Enabled (Bật), thì trình xem PDF nội bộ trong <ph name="PRODUCT_NAME" /> sẽ tắt, tệp PDF sẽ được xem là tệp tải xuống và người dùng sẽ mở tệp PDF bằng ứng dụng mặc định.
 
@@ -11187,7 +11184,7 @@ Chính sách này không còn được dùng trong M69 và đã bị thay bằng
 
       Chính sách này chỉ là biện pháp tạm thời và sẽ bị xóa trong các phiên bản <ph name="PRODUCT_NAME" /> sau này. Sau khi chính sách này bị xóa, <ph name="PRODUCT_NAME" /> luôn có thể truy vấn các loại DNS khác.</translation>
 <translation id="9167719789236691545">Tắt Drive trong ứng dụng Tệp dành cho <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="9171359005568194889">Bật lưu khoá truy cập cho trình quản lý mật khẩu</translation>
+<translation id="9171359005568194889">Bật tính năng lưu khoá truy cập trong trình quản lý mật khẩu</translation>
 <translation id="9172648973829444124">Buộc bật chế độ Chỉ giao thức HTTPS ở chế độ Cân bằng</translation>
 <translation id="9172911925443428317">Không cho phép hiển thị quảng cáo Xếp hạng trong App Store</translation>
 <translation id="9173133289347070466">Khảo sát trong sản phẩm <ph name="PRODUCT_NAME" /> thu thập phản hồi của người dùng đối với trình duyệt. Các câu trả lời khảo sát không được liên kết với tài khoản người dùng.

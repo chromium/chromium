@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">আপুনি কি ভাল পায় সেয়া অনুমান কৰিব পৰা ছাইটৰ সূচীত আপুনি ৰাখিবলৈ বিচৰা কোনো ছাইট পুনৰায় যোগ দিয়ক</translation>
 <translation id="3985215325736559418">আপুনি <ph name="FILE_NAME" /> পুনৰ ডাউনল'ড কৰিব খোজে নেকি?</translation>
 <translation id="3987993985790029246">লিংক প্ৰতিলিপি কৰক</translation>
-<translation id="3991055816270226534">তৃতীয় পক্ষৰ কুকি আৰু সুৰক্ষা ট্ৰেক কৰাটো পৰিচালনা কৰক</translation>
 <translation id="4000212216660919741">অফলাইন গৃহপৃষ্ঠা</translation>
 <translation id="4016425174436051808">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="4024768890073681126">আপোনাৰ অভিভাৱকে আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
@@ -1167,7 +1166,6 @@
 <translation id="6341580099087024258">ফাইল ক’ত ছেভ কৰিব লাগে সোধক</translation>
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}}</translation>
-<translation id="6344622098450209924">ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰাৰ সুবিধা</translation>
 <translation id="6345878117466430440">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="6356893102071098867">আপুনি সঠিক একাউণ্টটো বাছনি কৰিছেনে নাই পৰীক্ষা কৰক</translation>
 <translation id="6363990818884053551">ছিংক আৰম্ভ কৰিবলৈ এয়া আপুনি বুলি সত্যাপন কৰক</translation>

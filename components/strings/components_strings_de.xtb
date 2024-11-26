@@ -866,6 +866,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2521736961081452453">Formular erstellen</translation>
 <translation id="2523886232349826891">Nur auf diesem Gerät gespeichert</translation>
 <translation id="2524461107774643265">Weitere Informationen hinzufügen</translation>
+<translation id="2526062290525841862">Wenn du diese App ausführen möchtest, aktiviere den Entwicklermodus für isolierte Web-Apps wieder</translation>
 <translation id="2526280916094749336">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="2527451058878391043">Der CVC befindet sich auf der Vorderseite deiner Karte. Er ist der vierstellige Code rechts oben über der Kartennummer.</translation>
 <translation id="2529899080962247600">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren Einträge werden ignoriert.</translation>
@@ -1752,7 +1753,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4123572138124678573">Dreifache Lochung unten</translation>
 <translation id="412601465078863288">Zeitüberschreitung beim Hochladen</translation>
 <translation id="4127317221386336246">Accessoires</translation>
-<translation id="4127575959421463246">Suchst du die ChromeOS-Flags? Besuche</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
 <translation id="4129992181550680635">Bildungsressourcen</translation>
 <translation id="4130226655945681476">Netzwerkkabel, Modem und Router prüfen</translation>
@@ -4315,7 +4315,6 @@ Weitere Details:
 <translation id="8792626944327216835">Mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> hat Chrome Enterprise Connectors für deinen Browser aktiviert. Diese Connectors haben Zugriff auf einen Teil deiner Daten.</translation>
 <translation id="8798099450830957504">Standard</translation>
-<translation id="8798739476508189189">Suchst du Browser-Flags? Besuche</translation>
 <translation id="8800034312320686233">Website funktioniert nicht?</translation>
 <translation id="8805819170075074995">Listeneintrag "<ph name="LANGUAGE_ID" />": Der Eintrag wird ignoriert, weil er auch in der Richtlinie "SpellcheckLanguage" enthalten ist.</translation>
 <translation id="8806062468703310719">Telekommunikationsunternehmen</translation>

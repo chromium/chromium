@@ -374,6 +374,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5602351063754773347">Chrome rekomandon që ta heqësh atë. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome bën më shumë për të të mbajtur të sigurt online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>
+<translation id="566568153320186256">Chrome kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove të videove. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e memories"<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="5686916850681061684">Personalizo dhe kontrollo Google Chrome. Diçka ka nevojë për vëmendjen tënde - kliko për detaje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -522,6 +523,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7477130805345743099">Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="749228101751499733">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chrome. <ph name="SHORTCUT" /> mund të ndryshojë cilësimet e shërbimeve të tua të Google.</translation>
+<translation id="7496017508659652909">Chrome i ngarkon paraprakisht faqet, gjë që e bën më të shpejtë shfletimin dhe kërkimin. <ph name="BEGIN_LINK" />Mëso më shumë për ngarkimin paraprak të faqeve<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome mund të kuptojë më shumë lloje informacionesh dhe t'i plotësojë automatikisht më shpejt formularët e tu. Mëso më shumë rreth <ph name="BEGIN_LINK" />"Plotësimit automatik" të Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Mund të gozhdosh "Lenten e Google" për qasje të lehtë</translation>
@@ -638,6 +640,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8712767363896337380">Pothuajse u përditësua! Nis Chrome sërish për të përfunduar përditësimin.</translation>
 <translation id="8718062187489036808">Dil nga Chrome</translation>
 <translation id="873133009373065397">Google Chrome nuk mund të përcaktojë ose të vendosë shfletuesin e parazgjedhur</translation>
+<translation id="8748735421235723888">Chrome liron memorien nga skedat joaktive. Kjo u jep më shumë burime kompjuterike skedave aktive dhe aplikacioneve të tjera dhe bën që Chrome të jetë i shpejtë. Skedat e tua joaktive bëhen përsëri aktive në mënyrë automatike kur kthehesh tek ato. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e memories"<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="8781673607513845160">Për të përdorur kamerën, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>

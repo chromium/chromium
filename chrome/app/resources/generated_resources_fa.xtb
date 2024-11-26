@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;ابزارها</translation>
 <translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">کاغذدیواری‌های منحصربه‌فرد طراحی کنید</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{۱ گذرواژه لورفته پیدا شد}one{{NUM_SITES} گذرواژه لورفته پیدا شد}other{{NUM_SITES} گذرواژه لورفته پیدا شد}}</translation>
 <translation id="1122913801042512795">جزئیات ورود به سیستم حسابتان قدیمی است. لطفاً از سیستم خارج شوید و دوباره وارد شوید.</translation>
 <translation id="1122960773616686544">نام نشانک</translation>
 <translation id="1124772482545689468">کاربر</translation>
@@ -7003,6 +7004,7 @@
 <translation id="5943127421590245687">درستی‌سنجی باموفقیت انجام شد. برای باز کردن قفل و بازیابی داده‌های محلی‌تان، لطفاً گذرواژه <ph name="DEVICE_TYPE" /> قدیمی‌تان را وارد کنید.</translation>
 <translation id="5943209617717087975">‫<ph name="THIRD_PARTY_NTP_MANAGER" /> صفحه برگه جدیدتان را مدیریت می‌کند</translation>
 <translation id="5945002094477276055">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به «مرور ایمن Google» ارسال شود؟</translation>
+<translation id="5945192511027649793">غیرفعال کردن صفحه لمسی</translation>
 <translation id="5945363896952315544">کلید ایمنی شما نمی‌تواند اثر انگشت دیگری ذخیره کند. برای افزودن مورد جدید، ابتدا یکی از اثر انگشت‌های موجود را حذف کنید.</translation>
 <translation id="5946591249682680882">شناسه گزارش <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">دوکلیک با موشواره</translation>
@@ -8506,6 +8508,7 @@
 <translation id="7025190659207909717">مدیریت خدمات داده‌های تلفن همراه</translation>
 <translation id="7025895441903756761">امنیت و حریم خصوصی</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{باز کردن همه در پنجره ناشناس}=1{باز کردن در پنجره ناشناس}one{باز کردن همه ({COUNT}) در پنجره ناشناس}other{باز کردن همه ({COUNT}) در پنجره ناشناس}}</translation>
+<translation id="7027432471322992835">غیرفعال کردن پد لمسی</translation>
 <translation id="7029307918966275733">‏Crostini نصب نشده است. لطفاً برای مشاهده اعتبارها، Crostini را نصب کنید.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030304022046916278">نشانی‌های وب را به «مرور ایمن» ارسال می‌کند تا بررسی شوند</translation>
@@ -10039,6 +10042,7 @@
 <translation id="8119438628456698432">درحال ایجاد فایل‌های گزارش…</translation>
 <translation id="811994229154425014">دوفاصله برای تایپ نقطه</translation>
 <translation id="8120505434908124087">نصب نمایه سیم‌کارت داخلی</translation>
+<translation id="8121537075864592453">تمام‌صفحه غیرفعال شد</translation>
 <translation id="8121750884985440809">اکنون درحال پخش محتوای صفحه‌نمایش خود هستید</translation>
 <translation id="8122898034710982882">مرکز کنترل تلفن، <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">گل زرد و سفید</translation>
@@ -10260,6 +10264,7 @@
 <translation id="8276560076771292512">خالی کردن حافظه پنهان و بار کردن مجدد سخت</translation>
 <translation id="8276850948802942358">درباره دادن اجازه موقت به سایت برای استفاده از کوکی شخص ثالث بیشتر بدانید</translation>
 <translation id="8277907305629781277">این گذرکلید را در <ph name="DATE" /> ایجاد کردید</translation>
+<translation id="827966378414194229">‏از حرکت‌های سر و حالت‌های چهره برای کنترل کردن Chromebook خود استفاده کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">نمایش وب‌سایت‌ها به زبان شما</translation>
 <translation id="8280848878018088610">موج‌های خروشان در دریا و پس‌زمینه‌ای از شهر و قلعه‌ای خارق‌العاده با حال‌وهوای تاریک.</translation>
 <translation id="828180235270931531">دیگر چاپگرهای موجود</translation>

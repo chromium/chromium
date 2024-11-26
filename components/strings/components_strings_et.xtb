@@ -866,6 +866,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2521736961081452453">Loo vorm</translation>
 <translation id="2523886232349826891">Salvestatakse ainult sellesse seadmesse</translation>
 <translation id="2524461107774643265">Lisateabe lisamine</translation>
+<translation id="2526062290525841862">Selle rakenduse käitamiseks lubage uuesti isoleeritud veebirakenduse arendaja režiim</translation>
 <translation id="2526280916094749336">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">CVC asub kaardi esiküljel. See on kaardinumbrist paremal ülal asuv neljakohaline kood.</translation>
 <translation id="2529899080962247600">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõiki järgnevaid kirjeid eiratakse.</translation>
@@ -1754,7 +1755,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4123572138124678573">Kolm auku all</translation>
 <translation id="412601465078863288">Üleslaadimine aegus</translation>
 <translation id="4127317221386336246">Aksessuaarid</translation>
-<translation id="4127575959421463246">Kas otsite Chrome OS-i lippe? Külastage</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{veel 1}other{veel #}}</translation>
 <translation id="4129992181550680635">Haridusressursid</translation>
 <translation id="4130226655945681476">Kontrollige võrgukaableid, modemit ja ruuterit</translation>
@@ -4316,7 +4316,6 @@ Lisateave:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> lülitas teie brauseris sisse teenuse Chrome Enterprise Connectors. Nendel liidestel on juurdepääs osadele teie andmetele.</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
-<translation id="8798739476508189189">Kas otsite brauseri lippe? Külastage</translation>
 <translation id="8800034312320686233">Kas sait ei tööta?</translation>
 <translation id="8805819170075074995">Loendikirje „<ph name="LANGUAGE_ID" />”: kirjet eiratakse, kuna seda hõlmab ka reegel SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Telefoniteenuse pakkujad</translation>

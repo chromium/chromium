@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;সরঞ্জামসমূহ</translation>
 <translation id="1122242684574577509">যাচাইকরণ করা যায়নি৷ আপনি যে ওয়াই-ফাই নেটওয়ার্ক ব্যবহার করছেন তার লগ-ইন পেজ দেখতে ক্লিক করুন <ph name="NETWORK_ID" />৷</translation>
 <translation id="1122587596907914265">অনন্য ওয়ালপেপার ডিজাইন করুন</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড পাওয়া গেছে}one{চুরি হয়ে যাওয়া {NUM_SITES}টি পাসওয়ার্ড পাওয়া গেছে}other{চুরি হয়ে যাওয়া {NUM_SITES}টি পাসওয়ার্ড পাওয়া গেছে}}</translation>
 <translation id="1122913801042512795">আপনার অ্যাকাউন্টে সাইন-ইন করার তারিখ ভুল রয়েছে। সাইন-আউট করে আবার সাইন-ইন করুন।</translation>
 <translation id="1122960773616686544">বুকমার্কের নাম</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
@@ -2181,6 +2182,7 @@
 <translation id="2477065602824695373">আপনি একাধিক সুইচ সেট আপ করার জন্য, অটো-স্ক্যান বন্ধ হয়ে গেছে।</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" এর জন্য মিডিয়া-ফাইলের অনুমতি</translation>
 <translation id="24786041351753425">ডেটা আগের অবস্থায় ফেরানোর পরিষেবা চালু করুন।</translation>
+<translation id="2479541499757560845">অ্যাক্সেসিবিলিটি কীবোর্ডের সেটিংস</translation>
 <translation id="2480868415629598489">আপনি যে ডেটা কপি করে আটকান তা সংশোধন করুন</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2482895651873876648">এই গ্রুপে ট্যাব সরানো হয়েছে: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -3099,6 +3101,7 @@
 <translation id="3132277757485842847">আমরা আপনার ফোনে সাথে কানেক্ট করে রাখতে পারছি না। আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে কিনা এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা দেখে নিন।</translation>
 <translation id="3132896062549112541">নিয়ম</translation>
 <translation id="3132996321662585180">প্রতিদিন রিফ্রেশ করুন</translation>
+<translation id="3134312457920437826">এক্সটেনশন ইনস্টল করা যাচ্ছে না কারণ এটি কাজ করে না এমন ম্যানিফেস্ট ভার্সন ব্যবহার করে।</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পরীক্ষার জন্য স্ট্যাটাস বেছে নিন। পরীক্ষার বিবরণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">ডিফল্ট হলুদ রঙের অবতার</translation>
 <translation id="3141093262818886744">যাই হোক, খুলতে চাই</translation>
@@ -4368,6 +4371,7 @@
 <translation id="4012509903424054869">PDF অটোমেটিক রূপান্তর হয়ে যায় যাতে আপনি সার্চ করতে ও টেক্সট বেছে নিতে পারেন</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" মেরামত করবেন?</translation>
 <translation id="4015163439792426608">ব্রাউজারে এক্সটেনশন ব্যবহার করছেন? একটি জায়গা থেকে সহজেই <ph name="BEGIN_LINK" />আপনার এক্সটেনশন ম্যানেজ করুন<ph name="END_LINK" />।</translation>
+<translation id="4015250302257349679">প্রথমে এই বাবলে, তারপরে এটি যে এলিমেন্টের দিকে নির্দেশ করছে আবার তাতে ফোকাস করতে <ph name="ACCELERATOR" /> প্রেস করুন।</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" />-এর জন্য আপনি যেসব অনুমতি দেন সেইসব অনুমতি এই অ্যাপও পেয়ে যাবে। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">এই লিঙ্কের জন্য QR কোড তৈরি করুন</translation>
 <translation id="4019983356493507433">বুকমার্ক তালিকা এডিট করুন</translation>
@@ -5930,6 +5934,8 @@
 <translation id="5157250307065481244">সাইটের বিবরণ দেখুন</translation>
 <translation id="5158206172605340248">অ্যাকসেন্ট চিহ্ন মেনু বাতিল করা হয়েছে।</translation>
 <translation id="5159094275429367735">Crostini সেট আপ করুন</translation>
+<translation id="5159236862360390997">টিউটোরিয়াল সহ সহায়তা বাবলের একটি সিরিজ দেখানো হবে।
+          প্রথমে বাবলে, তারপরে এটি যে এলিমেন্টের দিকে নির্দেশ করছে আবার তাতে ফোকাস করতে <ph name="ACCELERATOR" /> প্রেস করুন।</translation>
 <translation id="5159419673777902220">আপনার অভিভাবক এক্সটেনশন ব্যবহারের অনুমতি বন্ধ করে দিয়েছেন।</translation>
 <translation id="5160634252433617617">ফিজিক্যাল কীবোর্ড</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
@@ -6211,6 +6217,7 @@
 <translation id="5372579129492968947">এক্সটেনশন আনপিন করুন</translation>
 <translation id="5372632722660566343">অ্যাকাউন্ট ছাড়াই সেট আপ করুন</translation>
 <translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" রেখে দেবেন?</translation>
+<translation id="5374324662289354619">ইন্টার্নাল ডিবাগিং পৃষ্ঠা বর্তমানে বন্ধ করা আছে।</translation>
 <translation id="5375318608039113175">এই পরিচিতিগুলির সাথে 'নিয়ারবাই শেয়ার' ফিচারের সুবিধা ব্যবহার করার জন্য, তাদের Google অ্যাকাউন্টের সাথে যুক্ত ইমেল আইডি আপনার পরিচিতিতে যোগ করুন।</translation>
 <translation id="5375374982898812658">আপনি অবিলম্বে “<ph name="GROUP_NAME" />” ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং আপনার সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>
 <translation id="5375577102295339548">আপনি বট নন তা যাচাই করতে সাইটগুলি সাহায্য করতে পারে</translation>
@@ -9473,6 +9480,7 @@
 <translation id="7737846262459425222">আপনি যেকোনও সময় 'সেটিংস' &gt; 'Google Assistant' &gt; 'স্ক্রিনের তথ্য' বিকল্প থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="7737948071472253612">আপনার ক্যামেরা ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="77381465218432215">অ্যাকসেন্ট চিহ্ন ও বিশেষ অক্ষর দেখুন</translation>
+<translation id="7739524723876359011">এই বাবলে ফোকাস করতে <ph name="ACCELERATOR" /> প্রেস করুন।</translation>
 <translation id="7740996059027112821">মানক</translation>
 <translation id="7742706086992565332">কিছু ওয়েবসাইট কতটা বড় অথবা ছোট করে দেখা যাবে তা আপনি সেট করতে পারবেন</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড পাওয়া গেছে}one{চুরি হয়ে যাওয়া {NUM_SITES}টি পাসওয়ার্ড পাওয়া গেছে}other{চুরি হয়ে যাওয়া {NUM_SITES}টি পাসওয়ার্ড পাওয়া গেছে}}</translation>

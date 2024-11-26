@@ -650,7 +650,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3985022125189960801">Adicione um site novamente se você quiser que ele faça parte de um grupo de sites que podem determinar do que você gosta</translation>
 <translation id="3985215325736559418">Quer fazer o download do arquivo <ph name="FILE_NAME" /> novamente?</translation>
 <translation id="3987993985790029246">Copiar link</translation>
-<translation id="3991055816270226534">Gerenciar cookies de terceiros e a Proteção antirrastreamento</translation>
 <translation id="4000212216660919741">Página inicial off-line</translation>
 <translation id="4016425174436051808">Não foi possível seguir. Algo deu errado.</translation>
 <translation id="4024768890073681126">O navegador é gerenciado pelo seu familiar responsável</translation>
@@ -1168,7 +1167,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6341580099087024258">Perguntar onde salvar os arquivos</translation>
 <translation id="6342069812937806050">Neste instante</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Proteção antirrastreamento</translation>
 <translation id="6345878117466430440">Marcar como lida</translation>
 <translation id="6356893102071098867">Confirme se você escolheu a conta certa</translation>
 <translation id="6363990818884053551">Para iniciar a sincronização, confirme sua identidade</translation>

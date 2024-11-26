@@ -650,7 +650,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3985022125189960801">Spletno mesto dodajte nazaj, če želite, da bo znova v skupini spletnih mest, ki lahko ugotovijo, kaj vam je všeč.</translation>
 <translation id="3985215325736559418">Ali želite znova prenesti datoteko <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiranje povezave</translation>
-<translation id="3991055816270226534">Upravljanje piškotkov tretjih oseb in zaščite pred sledenjem</translation>
 <translation id="4000212216660919741">Začetna stran brez povezave</translation>
 <translation id="4016425174436051808">Ni mogoče spremljati. Prišlo je do napake.</translation>
 <translation id="4024768890073681126">Vaš brskalnik upravlja starš</translation>
@@ -1167,7 +1166,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6341580099087024258">Vprašaj, kje shraniti datoteke</translation>
 <translation id="6342069812937806050">Pravkar</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Zaščita pred sledenjem</translation>
 <translation id="6345878117466430440">Označi kot prebrano</translation>
 <translation id="6356893102071098867">Preverite, ali ste izbrali pravi račun</translation>
 <translation id="6363990818884053551">Če želite začeti sinhronizacijo, potrdite, da ste to vi.</translation>

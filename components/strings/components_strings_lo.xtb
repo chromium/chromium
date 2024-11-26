@@ -1755,7 +1755,6 @@
 <translation id="4123572138124678573">ເຈາະຮູຢູ່ລຸ່ມສຸດສາມຮູ</translation>
 <translation id="412601465078863288">ການອັບໂຫຼດໝົດເວລາແລ້ວ</translation>
 <translation id="4127317221386336246">ເຄື່ອງປະດັບເສື້ອຜ້າ</translation>
-<translation id="4127575959421463246">ກຳລັງຊອກຫາປັກທຸງ ChromeOS ບໍ? ເຂົ້າເບິ່ງ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ລາຍການອື່ນ}other{# ລາຍການອື່ນ}}</translation>
 <translation id="4129992181550680635">ແຫຼ່ງຂໍ້ມູນການສຶກສາ</translation>
 <translation id="4130226655945681476">ກຳລັງກວດເບິ່ງສາຍເຊື່ອມຕໍ່ເຄືອຂ່າຍ, ໂມເດັມ ແລະ ເຣົາເຕີ</translation>
@@ -3469,6 +3468,7 @@
 <translation id="725866823122871198">ບໍ່​ສາ​ມາດ​ຕັ້ງ​ການ​ເຊື່ອມ​ຕໍ່​ສ່ວນ​ຕົວ​ກັບ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ໄດ້ ເພາະ​ວ່າ​ວັນ​ທີ ແລະ​ເວ​ລາ​ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ (<ph name="DATE_AND_TIME" />) ບໍ່​ຖືກ​ຕ້ອງ.</translation>
 <translation id="7260075294900977274">ໂຟນເດີອັດສະລິຍະໃໝ່ທີ່ຊ່ວຍໃຫ້ທ່ານບັນທຶກໜ້າຊື້ເຄື່ອງທັງໝົດຂອງທ່ານໄວ້ໃນບ່ອນດຽວ, ຮວມທັງຕິດຕາມລາຄາ, ຮັບຂໍ້ມູນເຈາະເລິກດ້ານລາຄາ ແລະ ຂໍ້ມູນອື່ນໆໄດ້ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7265608370113700582">ທີ່ຢູ່ມີໃຫ້ຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
+<translation id="7269151392155523061">ທາງລັດຕ້ອງບໍ່ຄືກັບຄີເວີດຂອງຜູ້ຮວບຮວມການຊອກຫາທີ່ກຳນົດໂດຍ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ໄຟລ໌ທີ່ທ່ານດາວໂຫຼດຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ພວກມັນອາດຖືກສະແກນເພື່ອຊອກຫາຂໍ້ມູນທີ່ລະອຽດອ່ອນ ຫຼື ເມົາແວ ແລະ ອາດຖືກຈັດເກັບຕາມນະໂຍບາຍບໍລິສັດ ແລະ ສະແດງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຫັນ.</translation>
 <translation id="7275334191706090484">ບຸກມາກສ໌ທີ່ຄຸ້ມຄອງ:</translation>
 <translation id="7275808129217605899">ການກິນເພື່ອສຸຂະພາບ</translation>
@@ -4316,7 +4316,6 @@
 <translation id="8792626944327216835">ໄມໂຄຣໂຟນ</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ໄດ້ເປີດ Chrome Enterprise Connectors ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານແລ້ວ. ເຄື່ອງມືເຊື່ອມຕໍ່ເຫຼົ່ານີ້ມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
-<translation id="8798739476508189189">ກຳລັງຊອກຫາປັກທຸງໂປຣແກຣມທ່ອງເວັບບໍ? ເຂົ້າເບິ່ງ</translation>
 <translation id="8800034312320686233">ເວັບໄຊໃຊ້ບໍ່ໄດ້ບໍ?</translation>
 <translation id="8805819170075074995">ບອກລາຍການ "<ph name="LANGUAGE_ID" />": ລາຍການຖືກລະເລີຍ ເພາະວ່າມັນຮວມມີຢູ່ໃນນະໂຍບາຍ SpellcheckLanguage ນຳ.</translation>
 <translation id="8806062468703310719">ຜູ້ໃຫ້ບໍລິການໂທລະສັບ</translation>

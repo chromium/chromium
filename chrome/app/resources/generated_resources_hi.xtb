@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;टूल</translation>
 <translation id="1122242684574577509">पुष्टि नहीं हो सकी. आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसके लॉगिन पेज पर जाएं.</translation>
 <translation id="1122587596907914265">यूनीक वॉलपेपर बनाएं</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{हैक या चोरी हुआ 1 पासवर्ड मिला}one{हैक या चोरी हुआ {NUM_SITES} पासवर्ड मिला}other{हैक या चोरी हए {NUM_SITES} पासवर्ड मिले}}</translation>
 <translation id="1122913801042512795">आपके साइन इन क्रेडेंशियल अप-टू-डेट नहीं हैं. कृपया साइन आउट करके, फिर से साइन इन करें.</translation>
 <translation id="1122960773616686544">बुकमार्क का नाम</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
@@ -5761,6 +5762,7 @@
 <translation id="5045367873597907704">एचआईडी डिवाइसों के बारे में जानकारी</translation>
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
 <translation id="504561833207953641">मौजूदा ब्राउज़र सत्र में खुल रहा है.</translation>
+<translation id="504953514574706691">सुझाए गए ग्रुप से टैब को हटाया गया</translation>
 <translation id="5049614114599109018">इनपुट इतिहास का इस्तेमाल करें</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{इस साइट ने हाल ही में बहुत सारी सूचनाएं भेजी हैं. आने वाले समय में, इसे सूचनाएं भेजने से रोका जा सकता है.}one{इन साइटों ने हाल ही में बहुत सारी सूचनाएं भेजी हैं. आने वाले समय में, इन्हें सूचनाएं भेजने से रोका जा सकता है.}other{इन साइटों ने हाल ही में बहुत सारी सूचनाएं भेजी हैं. आने वाले समय में, इन्हें सूचनाएं भेजने से रोका जा सकता है.}}</translation>
 <translation id="5050330054928994520">TTS (लिखाई को बोली में बदलना)</translation>
@@ -5812,6 +5814,7 @@
 <translation id="5079950360618752063">सुझाए गए पासवर्ड का इस्तेमाल करें</translation>
 <translation id="508059534790499809">Kerberos टिकट रीफ़्रेश करें</translation>
 <translation id="5081124414979006563">मेहमान प्रोफ़ाइल खोलें</translation>
+<translation id="508209203623347828">अगर इस कार्ड को बंद किया जाता है, तो आपके Sharepoint और Outlook Calendar जैसे Microsoft कार्ड भी बंद हो जाएंगे.</translation>
 <translation id="5083035541015925118">ctrl + alt + अप ऐरो</translation>
 <translation id="5084328598860513926">सेट अप करने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">इस बात की संभावना ज़्यादा है कि साइटें आपकी उम्मीद के मुताबिक काम करें</translation>
@@ -6011,6 +6014,7 @@
 <translation id="5216674789212441076">लाइव कैप्शन का अनुवाद अपने-आप होता है. कैप्शन को अनुवाद के लिए Google को भेजा जाता है.</translation>
 <translation id="5220011581825921581">खोज बटन + अप ऐरो</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> पर कास्ट नहीं हो पाया</translation>
+<translation id="5221834113325601057">सूची से टैब को हटाया गया</translation>
 <translation id="5222403284441421673">डाउनलोड हो रही असुरक्षित फ़ाइल ब्लॉक की गई</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5225324770654022472">ऐप्स  शॉर्टकट दिखाएं</translation>
@@ -6491,6 +6495,7 @@
 <translation id="5571066253365925590">ब्लूटूथ सक्षम किया गया</translation>
 <translation id="5571092938913434726">ग्लोबल मीडिया कंट्रोल</translation>
 <translation id="5571832155627049070">अपनी प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
+<translation id="5572000034319109899">इस्तेमाल नहीं किए जा रहे टैब हटाएं</translation>
 <translation id="5572166921642484567">कलर स्कीम मोड चुनें</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> के लिए साइट की जानकारी दिखाएं</translation>
 <translation id="557506220935336383">दूसरी साइटों के लिए, एक्सटेंशन से जुड़ी अनुमतियां देखें</translation>
@@ -8058,6 +8063,7 @@
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6725073593266469338">यूज़र इंटरफ़ेस (यूआई) सेवा</translation>
 <translation id="6725206449694821596">इंटरनेट प्रिंटिंग प्रोटोकॉल (IPP)</translation>
+<translation id="6725627354629889015">क्या आपको इस्तेमाल नहीं किए जा रहे टैब हटाने हैं?</translation>
 <translation id="6725970970008349185">प्रति पेज प्रदर्शित किए जाने वाले उम्मीदवारों की संख्या</translation>
 <translation id="672609503628871915">देखें कि नया क्या है</translation>
 <translation id="6726800386221816228">खास वर्ण</translation>

@@ -66,6 +66,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="1863308913976887472">Les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chromium. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="1880677175115548835">Sélectionnez du texte</translation>
 <translation id="1881322772814446296">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Chromium. Vos données de Chromium, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. Vous pouvez également créer un nouveau profil pour maintenir vos données Chromium séparées. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur d'énergie<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Service de mise à jour Chromium</translation>
 <translation id="1911763535808217981">En désactivant cette option, vous pouvez vous connecter aux sites Google tels que Gmail sans vous connecter à Chromium</translation>
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant?</translation>
@@ -263,6 +264,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4544142686420020088">La mise à jour de Chromium n'a pas été installée. Une erreur s'est produite. <ph name="BEGIN_LINK" />Découvrez comment résoudre les problèmes de mise à jour de Chromium.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium peut rendre cet onglet inactif pour améliorer votre expérience de navigation et accélérer les choses.</translation>
 <translation id="454579500955453258">Continuer avec un nouveau profil Chromium?</translation>
+<translation id="4548534452171747496">Chromium précharge les pages, ce qui accélère la navigation et la recherche. <ph name="BEGIN_LINK" />En savoir plus sur les pages de préchargement<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse de courriel <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à votre historique et à vos paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="4570813286784708942">Chromium a bloqué ce téléchargement, car vous avez désactivé la Navigation sécurisée et le fichier ne peut pas être vérifié</translation>
 <translation id="4594305310729380060">Dans le gestionnaire de mots de passe sur cet appareil</translation>
@@ -336,6 +338,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur mandataire nécessite une authentification.</translation>
 <translation id="5761096224651992291">Vous n'êtes pas venu récemment. Chromium a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applis plus de ressources informatiques, et assure la rapidité de Chromium. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur de mémoire<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Personnalisez et gérez Chromium. Définissez Chromium comme navigateur par défaut.</translation>
 <translation id="5809516625706423866">Impossible de se connecter à Internet. HTTP 401 Unauthorized. Veuillez vérifier la configuration de votre mandataire.</translation>
 <translation id="5821520528363214608">Pour utiliser et enregistrer les données Chromium dans votre compte Google, mettez à jour Chromium</translation>

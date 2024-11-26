@@ -184,6 +184,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1122198203221319518">&amp;Alat</translation>
 <translation id="1122242684574577509">Pengesahan gagal. Klik untuk melawati halaman log masuk untuk rangkaian Wi-Fi yang anda gunakan (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Gayakan hiasan latar unik</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 kata laluan yang terjejas ditemukan}other{{NUM_SITES} kata laluan yang terjejas ditemukan}}</translation>
 <translation id="1122913801042512795">Butiran log masuk akaun anda sudah lapuk. Sila log keluar dan log masuk sekali lagi.</translation>
 <translation id="1122960773616686544">Nama penanda halaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
@@ -3472,6 +3473,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3421387094817716717">Kunci Awam Lengkung Eliptik</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian atau Assistant anda.</translation>
 <translation id="3421835120203732951">Tambahkan Profil Baharu</translation>
+<translation id="3422989558057853751">Item terakhir dipilih, tindakan menyahpilih item tersebut akan menyebabkan anda keluar daripada mod pemilihan</translation>
 <translation id="3423111258700187173">Hasil carian ditemukan dalam <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Ketahui lebih lanjut tentang ciri AI ini</translation>
 <translation id="3423275441470187644">Amanah</translation>
@@ -4968,6 +4970,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4461483878391246134">Tambahkan bahasa kepada tidak sekali-kali menawarkan terjemahan</translation>
 <translation id="4462159676511157176">Nama pelayan tersuai</translation>
 <translation id="4465236939126352372">Had masa <ph name="TIME" /> ditetapkan untuk <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">PIN salah</translation>
 <translation id="4467561276409486506">&amp;Togol Mod Sarat</translation>
 <translation id="4469324811108161144">Nota boleh menyimpan hingga <ph name="CHARACTER_LIMIT" /> aksara.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> boleh mengedit fail dalam <ph name="FOLDERNAME" /></translation>
@@ -7006,6 +7009,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5943127421590245687">Pengesahan anda berjaya. Untuk membuka kunci dan memulihkan data setempat anda, sila masukkan kata laluan <ph name="DEVICE_TYPE" /> lama anda.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> mengurus halaman tab baharu anda</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> mungkin berbahaya. Hantar kepada Penyemakan Imbas Selamat Google untuk diimbas?</translation>
+<translation id="5945192511027649793">Lumpuhkan Pad Sentuh</translation>
 <translation id="5945363896952315544">Kunci keselamatan anda tidak dapat menyimpan sebarang cap jari lagi. Untuk menambah cap jari baharu, padamkan cap jari yang sedia ada dahulu.</translation>
 <translation id="5946591249682680882">ID Laporan <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Klik dua kali tetikus</translation>
@@ -8507,6 +8511,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7025190659207909717">Pengurusan perkhidmatan data mudah alih</translation>
 <translation id="7025895441903756761">Keselamatan dan Privasi</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buka Semua dalam Tetingkap &amp;Inkognito}=1{Buka dalam Tetingkap &amp;Inkognito}other{Buka Semua ({COUNT}) dalam Tetingkap &amp;Inkognito}}</translation>
+<translation id="7027432471322992835">Lumpuhkan Pad Jejak</translation>
 <translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7030304022046916278">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan</translation>
@@ -10041,6 +10046,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8119438628456698432">Menjana fail log...</translation>
 <translation id="811994229154425014">Dwiruang untuk menaip noktah</translation>
 <translation id="8120505434908124087">Pasang profil eSIM</translation>
+<translation id="8121537075864592453">Skrin penuh dilumpuhkan</translation>
 <translation id="8121750884985440809">Anda sedang menghantar skrin anda</translation>
 <translation id="8122898034710982882">Hab Telefon, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Bunga kuning dan putih</translation>
@@ -10262,6 +10268,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8276560076771292512">Cache kosong dan Muat Semula Keras</translation>
 <translation id="8276850948802942358">Ketahui lebih lanjut tentang pemberian kebenaran sementara kepada laman untuk menggunakan kuki pihak ketiga</translation>
 <translation id="8277907305629781277">Anda mencipta kunci laluan ini pada <ph name="DATE" /></translation>
+<translation id="827966378414194229">Gunakan pergerakan kepala dan riak wajah untuk mengawal Chromebook anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Laman web dalam bahasa anda</translation>
 <translation id="8280848878018088610">Ombak bergulung di laut, dengan kota dan istana yang hebat pada latar, dalam suasana gelap.</translation>
 <translation id="828180235270931531">Pencetak lain yang tersedia</translation>

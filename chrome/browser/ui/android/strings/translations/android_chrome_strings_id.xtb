@@ -650,7 +650,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3985022125189960801">Tambahkan situs kembali jika Anda menginginkannya berada di kumpulan situs yang dapat menebak hal-hal yang Anda sukai</translation>
 <translation id="3985215325736559418">Ingin mendownload <ph name="FILE_NAME" /> lagi?</translation>
 <translation id="3987993985790029246">Salin link</translation>
-<translation id="3991055816270226534">Kelola cookie pihak ketiga dan fitur anti-pelacakan</translation>
 <translation id="4000212216660919741">Beranda Offline</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Terjadi error.</translation>
 <translation id="4024768890073681126">Browser dikelola oleh orang tuamu</translation>
@@ -1167,7 +1166,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6341580099087024258">Tanya lokasi menyimpan file</translation>
 <translation id="6342069812937806050">Baru saja</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}}</translation>
-<translation id="6344622098450209924">Perlindungan Pelacakan</translation>
 <translation id="6345878117466430440">Tandai telah dibaca</translation>
 <translation id="6356893102071098867">Pastikan Anda memilih akun yang benar</translation>
 <translation id="6363990818884053551">Untuk memulai sinkronisasi, verifikasi diri Anda</translation>

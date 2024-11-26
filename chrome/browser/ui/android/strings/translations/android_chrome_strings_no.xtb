@@ -650,7 +650,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3985022125189960801">Legg til et nettsted igjen hvis du vil ha det i gruppen med nettsteder som kan gjette hva du liker</translation>
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
-<translation id="3991055816270226534">Administrer sporingsbeskyttelse og informasjonskapsler fra tredjeparter</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
 <translation id="4016425174436051808">Kan ikke følge. Noe gikk galt.</translation>
 <translation id="4024768890073681126">Nettleseren administreres av forelderen din</translation>
@@ -1112,6 +1111,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6108923351542677676">Konfigurasjon pågår …</translation>
 <translation id="6112702117600201073">Oppdaterer siden.</translation>
 <translation id="6122831415929794347">Vil du slå av Safe Browsing?</translation>
+<translation id="6125202119952209826">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6130303040046284160">Minimer fanen</translation>
@@ -1166,7 +1166,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6341580099087024258">Spør hvor filer skal lagres</translation>
 <translation id="6342069812937806050">Akkurat nå</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}}</translation>
-<translation id="6344622098450209924">Sporingsbeskyttelse</translation>
 <translation id="6345878117466430440">Merk som lest</translation>
 <translation id="6356893102071098867">Sjekk at du har valgt riktig konto</translation>
 <translation id="6363990818884053551">For å starte synkroniseringen, bekreft at det er deg</translation>
@@ -1611,6 +1610,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Enhetene dine<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="820568752112382238">Mest besøkte nettsteder</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUMBER_OF_OTHER_MEMBERS" /> til}other{Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og <ph name="NUMBER_OF_OTHER_MEMBERS" /> til}}</translation>
 <translation id="8209050860603202033">Åpne bildet</translation>
 <translation id="8210770465353466621">Her finner du fanene dine</translation>
 <translation id="8211101263765532799">Noen passord slutter snart å fungere</translation>

@@ -184,6 +184,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1122198203221319518">S&amp;trumenti</translation>
 <translation id="1122242684574577509">Autenticazione non riuscita. Fai clic per visitare la pagina di accesso della rete Wi-Fi in uso (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Crea sfondi unici</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 password compromessa trovata}other{{NUM_SITES} password compromesse trovate}}</translation>
 <translation id="1122913801042512795">I dati di accesso del tuo account sono obsoleti. Esci ed esegui nuovamente l'accesso.</translation>
 <translation id="1122960773616686544">Aggiungi il nome ai segnalibri</translation>
 <translation id="1124772482545689468">Utente</translation>
@@ -2167,6 +2168,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2477065602824695373">Dato che hai configurato più sensori, la scansione automatica è stata disattivata.</translation>
 <translation id="2478176599153288112">Autorizzazioni file multimediali per "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Attiva il servizio di recupero dati</translation>
+<translation id="2479541499757560845">Impostazioni della tastiera di accessibilità</translation>
 <translation id="2480868415629598489">Modifica dei dati copiati e incollati</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2482895651873876648">Scheda spostata nel gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -3085,6 +3087,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3132277757485842847">Impossibile mantenere una connessione col telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="3132896062549112541">Regola</translation>
 <translation id="3132996321662585180">Aggiorna ogni giorno</translation>
+<translation id="3134312457920437826">Impossibile installare l'estensione perché utilizza una versione del manifest non supportata.</translation>
 <translation id="3134393957315651797">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />. Descrizione dell'esperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar giallo predefinito</translation>
 <translation id="3141093262818886744">Apri comunque</translation>
@@ -4355,6 +4358,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4012509903424054869">I PDF vengono convertiti automaticamente in modo che tu possa cercare e selezionare il testo</translation>
 <translation id="4014432863917027322">Riparare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Usi delle estensioni? <ph name="BEGIN_LINK" />Gestiscile<ph name="END_LINK" /> da un unico punto di facile accesso.</translation>
+<translation id="4015250302257349679">Premi <ph name="ACCELERATOR" /> per selezionare questo fumetto, quindi premi di nuovo per selezionare l'elemento a cui rimanda il fumetto.</translation>
 <translation id="4016762287427926315">Le autorizzazioni consentite per <ph name="APP_NAME" /> saranno consentite anche per questa app. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crea codice QR per questo link</translation>
 <translation id="4019983356493507433">Modifica elenco di preferiti</translation>
@@ -5915,6 +5919,8 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5157250307065481244">Visualizza i dettagli del sito</translation>
 <translation id="5158206172605340248">Menu degli accenti ignorato.</translation>
 <translation id="5159094275429367735">Configura Crostini</translation>
+<translation id="5159236862360390997">Verrà visualizzata una serie di fumetti di assistenza contenenti istruzioni.
+          Premi <ph name="ACCELERATOR" /> per selezionare un fumetto, quindi premi di nuovo per selezionare l'elemento a cui rimanda il fumetto.</translation>
 <translation id="5159419673777902220">Uno dei tuoi genitori ha disattivato le autorizzazioni per le estensioni</translation>
 <translation id="5160634252433617617">Tastiera fisica</translation>
 <translation id="5160857336552977725">Accedi al tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -6196,6 +6202,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5372579129492968947">Sblocca estensione</translation>
 <translation id="5372632722660566343">Continua senza un account</translation>
 <translation id="5372990315769030589">Vuoi conservare "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5374324662289354619">Le pagine di debug interno sono attualmente disattivate.</translation>
 <translation id="5375318608039113175">Per usare la funzionalità Condivisione nelle vicinanze con questi contatti, aggiungi ai contatti l'indirizzo email collegato al loro Account Google.</translation>
 <translation id="5375374982898812658">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="5375577102295339548">I siti possono aiutarti a verificare che non sei un bot</translation>
@@ -9452,6 +9459,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7737846262459425222">Puoi modificare questa preferenza in qualsiasi momento in Impostazioni &gt; Assistente Google &gt; Contesto dello schermo.</translation>
 <translation id="7737948071472253612">Non possono utilizzare la videocamera</translation>
 <translation id="77381465218432215">Mostra lettere accentate e caratteri speciali</translation>
+<translation id="7739524723876359011">Premi <ph name="ACCELERATOR" /> per selezionare questo fumetto.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Puoi decidere di quanto aumentare o diminuire lo zoom in determinati siti web</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 password compromessa trovata}other{{NUM_SITES} password compromesse trovate}}</translation>

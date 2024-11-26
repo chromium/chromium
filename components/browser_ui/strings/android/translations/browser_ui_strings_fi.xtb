@@ -430,7 +430,6 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>
 <translation id="7276071417425470385">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää virtuaalitodellisuuslaitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää virtuaalitodellisuuslaitteita.</translation>
-<translation id="7302486331832100261">Estät yleensä ilmoitukset. Voit sallia ne valitsemalla Tiedot.</translation>
 <translation id="7366415735885268578">Lisää sivusto</translation>
 <translation id="7368695150573390554">Kaikki offline-data poistetaan</translation>
 <translation id="7383715096023715447">Asetukset: <ph name="DOMAIN" /></translation>

@@ -650,7 +650,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3985022125189960801">Voeg ’n werf weer by as jy dit in die poel werwe wil hê wat kan raai waarvan jy hou</translation>
 <translation id="3985215325736559418">Wil jy <ph name="FILE_NAME" /> weer aflaai?</translation>
 <translation id="3987993985790029246">Kopieer skakel</translation>
-<translation id="3991055816270226534">Bestuur derdepartywebkoekies en nasporingbeskerming</translation>
 <translation id="4000212216660919741">Vanlyn tuisblad</translation>
 <translation id="4016425174436051808">Kan nie volg nie. Iets was fout.</translation>
 <translation id="4024768890073681126">Jou ouer bestuur jou blaaier</translation>
@@ -1112,6 +1111,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6108923351542677676">Opstelling is besig …</translation>
 <translation id="6112702117600201073">Herlaai tans bladsy</translation>
 <translation id="6122831415929794347">Skakel Veiligblaai af?</translation>
+<translation id="6125202119952209826">Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Meer besonderhede<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item is verwyder</translation>
 <translation id="6130303040046284160">Maak oortjie klein</translation>
@@ -1166,7 +1166,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6341580099087024258">Vra waar om lêers te stoor</translation>
 <translation id="6342069812937806050">Nou net</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Nasporing-beskerming</translation>
 <translation id="6345878117466430440">Merk as gelees</translation>
 <translation id="6356893102071098867">Maak seker dat jy die regte rekening gekies het</translation>
 <translation id="6363990818884053551">Verifieer dis jy om sinkronisering te begin</translation>
@@ -1611,6 +1610,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="820568752112382238">Mees besoekte werwe</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /> en <ph name="NUMBER_OF_OTHER_MEMBERS" /> ander mens}other{Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /> en <ph name="NUMBER_OF_OTHER_MEMBERS" /> ander mense}}</translation>
 <translation id="8209050860603202033">Maak prent oop</translation>
 <translation id="8210770465353466621">Jy sal jou oortjies hier kry</translation>
 <translation id="8211101263765532799">Sommige wagwoorde sal binnekort ophou werk</translation>

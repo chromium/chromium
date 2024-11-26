@@ -4381,9 +4381,6 @@ WebSQL は M112 で削除されました。</translation>
 <translation id="4410236409016356088">ネットワークの帯域幅制限を有効にする</translation>
 <translation id="4410361389637971319">独立したウェブアプリのオリジンに Direct Sockets の使用を許可する</translation>
 <translation id="4411734231900934213">お子様と保護者のデバイス間で許容される時計の時間差（秒）です。</translation>
-<translation id="4411759973223339687">このポリシーを true に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> と <ph name="LACROS_NAME" /> ではゲストモードでのログインが可能です。ゲストモードでのログインには、すべてのウィンドウをシークレット モードで表示する <ph name="PRODUCT_NAME" /> プロフィールが適用されます。
-
-      このポリシーを false に設定した場合、<ph name="PRODUCT_NAME" /> と <ph name="LACROS_NAME" /> ではゲストモードのプロフィールの使用が許可されません。</translation>
 <translation id="441217499641439905">モバイル接続時に <ph name="PRODUCT_OS_NAME" /> ファイルアプリで Google ドライブを無効にする</translation>
 <translation id="4412885120239670573">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> で内部 PDF ビューアがオフになります。この場合、PDF ファイルはダウンロードしたファイルと同じように扱われ、ユーザーはデフォルトのアプリで開くことができます。
 

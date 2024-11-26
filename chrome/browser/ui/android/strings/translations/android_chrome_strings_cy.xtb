@@ -650,7 +650,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3985022125189960801">Ychwanegu gwefan yn ôl os ydych ei heisiau yn y gronfa o wefannau sy'n gallu dyfalu beth rydych yn ei hoffi</translation>
 <translation id="3985215325736559418">Ydych chi am lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
 <translation id="3987993985790029246">Copïo'r ddolen</translation>
-<translation id="3991055816270226534">Rheoli cwcis trydydd parti ac amddiffyniadau olrhain</translation>
 <translation id="4000212216660919741">Hafan All-lein</translation>
 <translation id="4016425174436051808">Methu â dilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="4024768890073681126">Rheolir dy borwr gan dy riant</translation>
@@ -1112,6 +1111,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6108923351542677676">Wrthi'n gosod…</translation>
 <translation id="6112702117600201073">Ail-lwytho'r dudalen</translation>
 <translation id="6122831415929794347">Diffodd Pori'n Ddiogel?</translation>
+<translation id="6125202119952209826">Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Rhagor o fanylion<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Tynnwyd eitem</translation>
 <translation id="6130303040046284160">Minimeiddio tab</translation>
@@ -1166,7 +1166,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6341580099087024258">Gofyn ble i gadw ffeiliau</translation>
 <translation id="6342069812937806050">Newydd ddigwydd</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}zero{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}two{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}}</translation>
-<translation id="6344622098450209924">Diogelwch Olrhain</translation>
 <translation id="6345878117466430440">Marcio fel wedi'i darllen</translation>
 <translation id="6356893102071098867">Gwiriwch eich bod wedi dewis y cyfrif cywir</translation>
 <translation id="6363990818884053551">I ddechrau cysoni, cadarnhewch mai chi sydd yno</translation>
@@ -1611,6 +1610,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Eich dyfeisiau<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="820568752112382238">Gwefannau yr ymwelwyd â nhw y mwyaf</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> ac <ph name="NUMBER_OF_OTHER_MEMBERS" /> arall}zero{Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> arall}two{Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> arall}few{Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> arall}many{Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> arall}other{Ymuno â grŵp tabiau gyda <ph name="OWNER_FIRST_NAME" /> a <ph name="NUMBER_OF_OTHER_MEMBERS" /> arall}}</translation>
 <translation id="8209050860603202033">Agor llun</translation>
 <translation id="8210770465353466621">Byddwch yn gweld eich tabiau yma</translation>
 <translation id="8211101263765532799">Bydd rhai cyfrineiriau yn stopio gweithio yn fuan</translation>

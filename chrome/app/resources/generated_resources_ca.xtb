@@ -184,6 +184,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1122198203221319518">&amp;Eines</translation>
 <translation id="1122242684574577509">L'autenticació ha fallat. Feu clic per accedir a la pàgina d'inici de sessió de la xarxa Wi-Fi que esteu utilitzant (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Dissenya fons de pantalla únics</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{S'ha trobat 1 contrasenya en perill}other{S'han trobat {NUM_SITES} contrasenyes en perill}}</translation>
 <translation id="1122913801042512795">Els detalls d'inici de sessió del teu compte no estan actualitzats. Tanca la sessió i torna-la a iniciar.</translation>
 <translation id="1122960773616686544">Nom de l'adreça d'interès</translation>
 <translation id="1124772482545689468">Usuari</translation>
@@ -6988,6 +6989,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5943127421590245687">La verificació s'ha dut a terme correctament. Per desbloquejar i restaurar les dades locals, introdueix la contrasenya antiga del dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestiona la teva pàgina Pestanya nova</translation>
 <translation id="5945002094477276055">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a Navegació segura de Google perquè s'escanegi?</translation>
+<translation id="5945192511027649793">Desactiva el ratolí tàctil</translation>
 <translation id="5945363896952315544">La teva clau de seguretat no pot emmagatzemar més empremtes digitals. Per afegir-ne una de nova, primer n'has de suprimir una.</translation>
 <translation id="5946591249682680882">Identificador de l'informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Fes doble clic amb el ratolí</translation>
@@ -8488,6 +8490,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7025895441903756761">Seguretat i privadesa</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Obre-les totes en una finestra d'&amp;incògnit}=1{Obre en una finestra d'&amp;incògnit}other{Obre-les totes ({COUNT}) en una finestra d'&amp;incògnit}}</translation>
+<translation id="7027432471322992835">Desactiva el ratolí tàctil</translation>
 <translation id="7029307918966275733">Crostini no està instal·lat. Instal·la'l per veure els crèdits.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7030304022046916278">Envia els URL a Navegació segura perquè els comprovi</translation>
@@ -10022,6 +10025,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8119438628456698432">S'estan generant fitxers de registre...</translation>
 <translation id="811994229154425014">Espai doble per introduir un punt</translation>
 <translation id="8120505434908124087">Instal·la el perfil de l'eSIM</translation>
+<translation id="8121537075864592453">La pantalla completa està desactivada</translation>
 <translation id="8121750884985440809">Estàs emetent la teva pantalla</translation>
 <translation id="8122898034710982882">El meu telèfon, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor groga i blanca</translation>
@@ -10243,6 +10247,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8276560076771292512">Buida la memòria cau i torna a carregar de manera forçada</translation>
 <translation id="8276850948802942358">Més informació sobre com es pot concedir permís temporal a un lloc web per utilitzar galetes de tercers</translation>
 <translation id="8277907305629781277">Vas crear aquesta clau d'accés el dia <ph name="DATE" /></translation>
+<translation id="827966378414194229">Utilitza moviments de cap i expressions facials per controlar el Chromebook. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Llocs web en els teus idiomes</translation>
 <translation id="8280848878018088610">Onades del mar que xoquen, amb una ciutat fantàstica i un castell al fons, en un ambient fosc.</translation>
 <translation id="828180235270931531">Altres impressores disponibles</translation>

@@ -250,6 +250,7 @@
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4434353761996769206">שגיאת מנהל התקנה: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">‏הארגון '<ph name="MANAGER" />' מנהל את Chromium</translation>
+<translation id="444069871276811466">‏הוספת פרופיל Chromium</translation>
 <translation id="4447409407328223819">‏מידע על Chrome for Testing</translation>
 <translation id="4470974262661801543">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
 <translation id="4493028449971051158">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כאדמין.</translation>
@@ -580,6 +581,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chromium במכשיר הזה.</translation>
 <translation id="8852026904190808918">‏זו השפה שבה מוצגים תפריטים, הגדרות, התראות וטקסטים אחרים ב-Chromium</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>
+<translation id="8876044221123442390">‏הוספת פרופיל Chromium</translation>
 <translation id="8880203542552872219">‏אם שינית את הסיסמה הזו, יש לערוך את הסיסמה השמורה ב-Chromium כך שהיא תתאים לסיסמה החדשה שלך.</translation>
 <translation id="8891709362986793894">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון ב-Chromium</translation>
 <translation id="8907580949721785412">‏Chromium מנסה להציג סיסמאות. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>

@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">Ако искате даден сайт да прави предположения за това какво харесвате, можете отново да го добавите в съответната група</translation>
 <translation id="3985215325736559418">Искате ли отново да изтеглите „<ph name="FILE_NAME" />“?</translation>
 <translation id="3987993985790029246">Връзка: Коп.</translation>
-<translation id="3991055816270226534">Управление на „бисквитките“ на трети страни и защитата от проследяване</translation>
 <translation id="4000212216660919741">Начална страница в офлайн режим</translation>
 <translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
 <translation id="4024768890073681126">Браузърът се управлява от родител</translation>
@@ -1167,7 +1166,6 @@
 <translation id="6341580099087024258">Извеждане на запитване къде да се запазват файловете</translation>
 <translation id="6342069812937806050">Току-що</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Защита от проследяване</translation>
 <translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6356893102071098867">Проверете дали сте избрали правилния профил</translation>
 <translation id="6363990818884053551">За да стартирате синхронизирането, потвърдете, че сте вие</translation>

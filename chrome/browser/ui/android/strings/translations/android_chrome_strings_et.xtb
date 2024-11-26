@@ -650,7 +650,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3985022125189960801">Lisage sait tagasi, kui soovite selle kaasata saitide hulka, mis teie huvisid prognoosivad</translation>
 <translation id="3985215325736559418">Kas soovite faili <ph name="FILE_NAME" /> uuesti alla laadida?</translation>
 <translation id="3987993985790029246">Kop. link</translation>
-<translation id="3991055816270226534">Hallake kolmanda osapoole küpsisefaile ja jälgimiskaitseid</translation>
 <translation id="4000212216660919741">Võrguühenduseta avaleht</translation>
 <translation id="4016425174436051808">Ei saanud jälgida. Midagi läks valesti.</translation>
 <translation id="4024768890073681126">Sinu brauserit haldab sinu vanem</translation>
@@ -1167,7 +1166,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6341580099087024258">Küsi, kuhu failid salvestada</translation>
 <translation id="6342069812937806050">Äsja</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Jälgimiskaitse</translation>
 <translation id="6345878117466430440">Märgi loetuks</translation>
 <translation id="6356893102071098867">Kontrollige, kas valisite õige konto</translation>
 <translation id="6363990818884053551">Sünkroonimise alustamiseks kinnitage oma isik</translation>

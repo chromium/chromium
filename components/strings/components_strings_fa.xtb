@@ -1291,7 +1291,7 @@
 <translation id="333839153442689579">تمرین‌های بدنی تناوبی تنشی</translation>
 <translation id="3339446062576134663">‏ابر (Ash)</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
-<translation id="3342018947887487892">بعداً، سایتی که از آن بازدید می‌کنید می‌تواند این اطلاعات را (یا موضوع‌های آگهی یا آگهی‌های پیشنهادهای سایت‌هایی که بازدید کرده‌اید) درخواست کند.</translation>
+<translation id="3342018947887487892">بعداً، سایتی که از آن بازدید می‌کنید می‌تواند این اطلاعات را درخواست کند: یا موضوع‌های آگهی یا آگهی‌هایی که براساس سایت‌های بازدید شده شما پیشنهاد شده است.</translation>
 <translation id="334438173029876234">تجهیزات اسکیت بورد</translation>
 <translation id="3347146863028219517">اسکی و اسنوبردسواری</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1755,7 +1755,6 @@
 <translation id="4123572138124678573">سه سوراخ در پایین</translation>
 <translation id="412601465078863288">مهلت زمانی بارگذاری تمام شد</translation>
 <translation id="4127317221386336246">لوازم جانبی لباس</translation>
-<translation id="4127575959421463246">‏به‌دنبال پرچم‌های ChromeOS هستید؟ بازدید</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{۱ مورد دیگر}one{# مورد دیگر}other{# مورد دیگر}}</translation>
 <translation id="4129992181550680635">منابع آموزشی</translation>
 <translation id="4130226655945681476">بررسی کابل‌های شبکه، مودم یا رهیاب</translation>
@@ -4317,7 +4316,6 @@
 <translation id="8792626944327216835">میکروفون</translation>
 <translation id="8793655568873652685">‏<ph name="ENROLLMENT_DOMAIN" /> «رابط‌های Chrome Enterprise» را در مرورگرتان روشن کرده است. این رابط‌ها به برخی از داده‌هایتان دسترسی دارند.</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
-<translation id="8798739476508189189">به‌دنبال پرچم‌های مرورگر هستید؟ بازدید</translation>
 <translation id="8800034312320686233">سایت کار نمی‌کند؟</translation>
 <translation id="8805819170075074995">‏ورودی فهرست «<ph name="LANGUAGE_ID" />»: ورودی نادیده گرفته شد زیرا در خط‌مشی SpellcheckLanguage نیز لحاظ شده است.</translation>
 <translation id="8806062468703310719">رساننده خدمات تلفن</translation>

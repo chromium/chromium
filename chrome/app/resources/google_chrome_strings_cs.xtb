@@ -374,6 +374,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5602351063754773347">Chrome vám doporučuje odstranit ho. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome dělá více pro vaši bezpečnost na internetu</translation>
 <translation id="565744775970812598">Soubor <ph name="FILE_NAME" /> může být nebezpečný, proto jej Chrome zablokoval.</translation>
+<translation id="566568153320186256">Chrome šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí. <ph name="BEGIN_LINK" />Další informace o Spořiči energie<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="5686916850681061684">Přizpůsobte si Google Chrome a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -522,6 +523,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7477130805345743099">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chrome upozorní</translation>
 <translation id="7481213027396403996">Aktivujte si v Chromu maximální zabezpečení</translation>
 <translation id="749228101751499733">Když jste přihlášeni, můžete v Chromu používat hesla a další položky ze svého účtu Google. Pomocí zkratky <ph name="SHORTCUT" /> můžete nastavení služeb Google změnit.</translation>
+<translation id="7496017508659652909">Chrome načítá stránky předběžně, což zrychluje procházení a vyhledávání. <ph name="BEGIN_LINK" />Další informace o předběžném načítání stránek<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome dokáže porozumět více typům informací a vyplňovat automaticky formuláře rychleji. <ph name="BEGIN_LINK" />Další informace o automatickém vyplňování v Chromu<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Aktualizační služba Google</translation>
 <translation id="7515191208480168435">Google Lens si můžete pro snadný přístup připnout</translation>
@@ -638,6 +640,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8712767363896337380">Aktualizace je téměř hotová. Aktualizaci dokončíte restartováním prohlížeče Chrome.</translation>
 <translation id="8718062187489036808">Odhlásit se z Chromu</translation>
 <translation id="873133009373065397">Google Chrome nemůže určit ani nastavit výchozí prohlížeč</translation>
+<translation id="8748735421235723888">Chrome uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chrome zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují. <ph name="BEGIN_LINK" />Další informace o Spořiči paměti<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="8781673607513845160">Pokud chcete používat kameru, udělte Chromu přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>

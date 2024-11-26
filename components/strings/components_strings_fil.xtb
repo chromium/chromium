@@ -1755,7 +1755,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4123572138124678573">Triple punch bottom</translation>
 <translation id="412601465078863288">Nag-time out ang pag-upload</translation>
 <translation id="4127317221386336246">Mga Accessory sa Pananamit</translation>
-<translation id="4127575959421463246">Hinahanap ang mga ChromeOS flag? Bisitahin</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 pa}one{# pa}other{# pa}}</translation>
 <translation id="4129992181550680635">Mga Pang-edukasyong Resource</translation>
 <translation id="4130226655945681476">Suriin ang mga cable, modem at router ng network</translation>
@@ -4317,7 +4316,6 @@ Mga karagdagang detalye:
 <translation id="8792626944327216835">mikropono</translation>
 <translation id="8793655568873652685">Na-on ng <ph name="ENROLLMENT_DOMAIN" /> ang Chrome Enterprise Connectors sa iyong browser. May access ang mga connector na ito sa ilan sa iyong data.</translation>
 <translation id="8798099450830957504">Default</translation>
-<translation id="8798739476508189189">Hinahanap ang mga flag ng browser? Bisitahin</translation>
 <translation id="8800034312320686233">Hindi gumagana ang site?</translation>
 <translation id="8805819170075074995">Listahan ng entry na "<ph name="LANGUAGE_ID" />": Binalewala ang entry dahil kasama rin ito sa patakarang SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Mga Service Provider sa Telepono</translation>

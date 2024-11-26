@@ -650,7 +650,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3985022125189960801">Bættu vefsvæði aftur við ef þú vilt að það tilheyri hópi vefsvæða sem geta áætlað hvað höfðar til þín</translation>
 <translation id="3985215325736559418">Viltu sækja <ph name="FILE_NAME" /> aftur?</translation>
 <translation id="3987993985790029246">Afrita tengil</translation>
-<translation id="3991055816270226534">Stjórna fótsporum þriðju aðila og rakningarvörn</translation>
 <translation id="4000212216660919741">Ónettengt</translation>
 <translation id="4016425174436051808">Ekkki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="4024768890073681126">Foreldri þitt stjórnar vafranum</translation>
@@ -1167,7 +1166,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6341580099087024258">Spyja hvar á að vista skrár</translation>
 <translation id="6342069812937806050">Rétt í þessu</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}}</translation>
-<translation id="6344622098450209924">Rakningarvörn</translation>
 <translation id="6345878117466430440">Merkja sem lesið</translation>
 <translation id="6356893102071098867">Kannaðu hvort þú hafir valið réttan reikning.</translation>
 <translation id="6363990818884053551">Staðfestu að þetta sért þú til að hefja samstillingu</translation>

@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">നിങ്ങൾക്ക് ഇഷ്ടമുള്ളതെന്തെന്ന് ഊഹിക്കാനാകുന്ന സൈറ്റുകളുടെ പൂളിൽ ഒരു സൈറ്റ് വേണമെന്ന് തോന്നുകയാണെങ്കിൽ ആ സൈറ്റ് വീണ്ടും ചേർക്കുക</translation>
 <translation id="3985215325736559418">നിങ്ങൾക്ക് വീണ്ടും <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="3987993985790029246">ലിങ്ക് പകർത്തുക</translation>
-<translation id="3991055816270226534">മൂന്നാം കക്ഷി കുക്കികളും ട്രാക്ക് ചെയ്യൽ പരിരക്ഷകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="4000212216660919741">ഓഫ്‌ലൈൻ ഹോം</translation>
 <translation id="4016425174436051808">പിന്തുടരാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="4024768890073681126">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാവാണ്</translation>
@@ -1167,7 +1166,6 @@
 <translation id="6341580099087024258">ഫയലുകൾ എവിടെയാണ് സംരക്ഷിക്കേണ്ടതെന്ന് ചോദിക്കുക</translation>
 <translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
-<translation id="6344622098450209924">ട്രാക്ക് ചെയ്യൽ പരിരക്ഷ</translation>
 <translation id="6345878117466430440">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="6356893102071098867">നിങ്ങൾ ശരിയായ അക്കൗണ്ടാണോ തിരഞ്ഞെടുത്തതെന്ന് പരിശോധിക്കുക</translation>
 <translation id="6363990818884053551">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>

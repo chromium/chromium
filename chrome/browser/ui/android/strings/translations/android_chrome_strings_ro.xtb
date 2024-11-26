@@ -650,7 +650,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3985022125189960801">Adaugă din nou un site, dacă dorești, în grupul de site-uri care pot estima lucrurile care te interesează</translation>
 <translation id="3985215325736559418">Dorești să descarci <ph name="FILE_NAME" /> din nou?</translation>
 <translation id="3987993985790029246">Copiază linkul</translation>
-<translation id="3991055816270226534">Gestionează cookie-urile terță parte și protecțiile împotriva urmăririi</translation>
 <translation id="4000212216660919741">Pagina de pornire offline</translation>
 <translation id="4016425174436051808">Nu se poate urmări. A apărut o eroare.</translation>
 <translation id="4024768890073681126">Browserul este gestionat de un părinte</translation>
@@ -1167,7 +1166,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6341580099087024258">Întreabă unde să fie salvate fișierele</translation>
 <translation id="6342069812937806050">Adineauri</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Protecție împotriva urmăririi</translation>
 <translation id="6345878117466430440">Marchează ca citit</translation>
 <translation id="6356893102071098867">Verifică dacă ai ales contul corect</translation>
 <translation id="6363990818884053551">Pentru a începe sincronizarea, confirmă-ți identitatea</translation>

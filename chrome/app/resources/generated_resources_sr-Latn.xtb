@@ -184,6 +184,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1122198203221319518">&amp;Alatke</translation>
 <translation id="1122242684574577509">Potvrda autentičnosti nije uspela. Kliknite da biste posetili stranicu za prijavljivanje za WiFi mrežu koju koristite (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Pravite jedinstvene pozadine</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Pronađena je 1 ugrožena lozinka}one{Pronađene je {NUM_SITES} ugrožena lozinka}few{Pronađene su {NUM_SITES} ugrožene lozinke}other{Pronađeno je {NUM_SITES} ugroženih lozinki}}</translation>
 <translation id="1122913801042512795">Podaci za prijavljivanje na nalog su zastareli. Odjavite se i prijavite se ponovo.</translation>
 <translation id="1122960773616686544">Naziv obeleživača</translation>
 <translation id="1124772482545689468">Korisnik</translation>
@@ -3457,6 +3458,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3421387094817716717">Javni ključ eliptične krive</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: Sličan glas ili snimak će možda moći da pristupa vašim ličnim rezultatima ili Pomoćniku.</translation>
 <translation id="3421835120203732951">Dodaj novi profil</translation>
+<translation id="3422989558057853751">Izabrali ste poslednju stavku. Poništavanjem izbora ćete izaći iz režima izbora</translation>
 <translation id="3423111258700187173">Rezultati su pronađeni u folderu <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saznajte više o ovoj funkciji veštačke inteligencije</translation>
 <translation id="3423275441470187644">Pouzdanost</translation>
@@ -4953,6 +4955,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4461483878391246134">Dodajte jezike za koje se prevod nikada neće nuditi</translation>
 <translation id="4462159676511157176">Prilagođeni serveri naziva</translation>
 <translation id="4465236939126352372">Vremensko ograničenje od <ph name="TIME" /> je podešeno za aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Pogrešan PIN</translation>
 <translation id="4467561276409486506">&amp;Uključi/isključi kompaktni režim</translation>
 <translation id="4469324811108161144">Beleške mogu da sačuvaju najviše <ph name="CHARACTER_LIMIT" /> znakova.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> može da menja datoteke u direktorijumu <ph name="FOLDERNAME" /></translation>

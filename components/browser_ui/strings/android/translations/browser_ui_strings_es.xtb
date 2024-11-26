@@ -24,7 +24,7 @@
 <translation id="1371239764779356792">Permite que un sitio guarde datos en tu dispositivo</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
-<translation id="1396327438254055134">Permitir que el sitio use el optimizador de V8.</translation>
+<translation id="1396327438254055134">Permite que el sitio use el optimizador de V8.</translation>
 <translation id="1415402041810619267">URL truncada</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
@@ -430,7 +430,6 @@
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> permitidos</translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Si está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
-<translation id="7302486331832100261">Sueles bloquear las notificaciones. Para permitirlas, toca Detalles.</translation>
 <translation id="7366415735885268578">Añadir un sitio</translation>
 <translation id="7368695150573390554">Se eliminarán todos los datos offline</translation>
 <translation id="7383715096023715447">Configuración de <ph name="DOMAIN" /></translation>
@@ -564,5 +563,5 @@
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="959682366969460160">Mantenlo todo organizado</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
-<translation id="969975166333045662">Bloquear que el sitio use el optimizador de V8.</translation>
+<translation id="969975166333045662">Bloquea que el sitio use el optimizador de V8.</translation>
 </translationbundle>

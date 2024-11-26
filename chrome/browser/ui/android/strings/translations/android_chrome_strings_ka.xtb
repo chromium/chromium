@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">კვლავ დაამატეთ საიტი, თუ გსურთ, რომ ის იმ საიტების რიგებში მოხვდეს, რომლებსაც შეუძლია თქვენთვის საინტერესო კონტენტის პროგნოზირება</translation>
 <translation id="3985215325736559418">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">ბმულის კოპირება</translation>
-<translation id="3991055816270226534">მართეთ მესამე მხარის ქუქი-ჩანაწერები და თვალის დევნებისგან დაცვის საშუალებები</translation>
 <translation id="4000212216660919741">ხაზგარეშე მთავარი გვერდი</translation>
 <translation id="4016425174436051808">თვალის მიდევნება ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="4024768890073681126">თქვენს ბრაუზერს მართავს თქვენი მშობელი</translation>
@@ -1112,6 +1111,7 @@
 <translation id="6108923351542677676">მიმდინარეობს დაყენება…</translation>
 <translation id="6112702117600201073">გვერდის განახლება</translation>
 <translation id="6122831415929794347">გსურთ Safe Browsing-ის გამორთვა?</translation>
+<translation id="6125202119952209826">შეუერთდით ჩანართების ჯგუფს <ph name="OWNER_FIRST_NAME" />-სთან ერთად</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />დაწვრილებით<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6130303040046284160">ჩანართის ჩაკეცვა</translation>
@@ -1166,7 +1166,6 @@
 <translation id="6341580099087024258">შეკითხვა ფაილების შენახვის ადგილის შესახებ</translation>
 <translation id="6342069812937806050">ახლახან</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
-<translation id="6344622098450209924">თვალის დევნებისგან დაცვა</translation>
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
 <translation id="6356893102071098867">შეამოწმეთ, სწორი ანგარიში აირჩიეთ თუ არა</translation>
 <translation id="6363990818884053551">სინქრონიზაციის დასაწყებად დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
@@ -1611,6 +1610,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />თქვენი მოწყობილობები<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="820568752112382238">ყველაზე ხშირად მონახულებადი საიტები</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{შეუერთდით ჩანართების ჯგუფს <ph name="OWNER_FIRST_NAME" />-სთან <ph name="NUMBER_OF_OTHER_MEMBERS" /> სხვასთან ერთად}other{შეუერთდით ჩანართების ჯგუფს <ph name="OWNER_FIRST_NAME" />-სთან <ph name="NUMBER_OF_OTHER_MEMBERS" /> სხვასთან ერთად}}</translation>
 <translation id="8209050860603202033">გამოსახულების გახსნა</translation>
 <translation id="8210770465353466621">აქ იპოვით თქვენს ჩანართებს</translation>
 <translation id="8211101263765532799">რამდენიმე პაროლი მალე შეწყვეტს მოქმედებას</translation>

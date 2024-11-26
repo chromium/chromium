@@ -184,6 +184,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1122198203221319518">&amp;Veglat</translation>
 <translation id="1122242684574577509">Vërtetimi dështoi. Kliko për të vizituar faqen e identifikimit për rrjetin Wi-Fi që po përdor (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Dizajno imazhe unike sfondi</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{U gjet 1 fjalëkalim i komprometuar}other{U gjetën {NUM_SITES} fjalëkalime të komprometuara}}</translation>
 <translation id="1122913801042512795">Detajet e identifikimit të llogarisë sate nuk janë të përditësuara. Dil dhe identifikohu sërish.</translation>
 <translation id="1122960773616686544">Emri i faqeshënuesit</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
@@ -2165,6 +2166,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2477065602824695373">Duke qenë se ke konfiguruar shumë çelësa, skanimi automatik është çaktivizuar.</translation>
 <translation id="2478176599153288112">Lejet e skedarëve të medias për "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Aktivizo shërbimin e rikuperimit të të dhënave.</translation>
+<translation id="2479541499757560845">Cilësimet e tastierës për qasshmërinë</translation>
 <translation id="2480868415629598489">Modifiko të dhënat që kopjon dhe ngjit</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2482895651873876648">Tasti u zhvendos në grupin <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -3083,6 +3085,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3132277757485842847">Nuk ishim në gjendje të ruanim një lidhje me telefonin tënd. Sigurohu që telefoni yt të jetë pranë, i shkyçur dhe të ketë të aktivizuar Bluetooth-in dhe Wi-Fi.</translation>
 <translation id="3132896062549112541">Rregull</translation>
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
+<translation id="3134312457920437826">Shtesa nuk mund të instalohet sepse përdor një version të manifestit që nuk mbështetet.</translation>
 <translation id="3134393957315651797">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />. Përshkrimi i eksperimentit: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatari i parazgjedhur i verdhë</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
@@ -4351,6 +4354,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4012509903424054869">Skedarët PDF konvertohen automatikisht që të mund të kërkosh dhe të zgjedhësh tekstint</translation>
 <translation id="4014432863917027322">Të riparohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Ke shtesa? <ph name="BEGIN_LINK" />Menaxho shtesat e tua<ph name="END_LINK" /> në një vend me lehtësi.</translation>
+<translation id="4015250302257349679">Shtyp <ph name="ACCELERATOR" /> për të fokusuar këtë flluskë dhe më pas shtype përsëri për të fokusuar elementin të cilit i drejtohet.</translation>
 <translation id="4016762287427926315">Lejet që lejon për <ph name="APP_NAME" /> do të lejohen edhe për këtë aplikacion. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Krijo një kod QR për këtë lidhje</translation>
 <translation id="4019983356493507433">Modifiko listën e faqeshënuesve</translation>
@@ -5741,6 +5745,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5045367873597907704">Rreth pajisjeve HID</translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="504561833207953641">Po hapet në sesionin ekzistues të shfletuesit.</translation>
+<translation id="504953514574706691">Skeda u përjashtua nga grupi i sugjeruar</translation>
 <translation id="5049614114599109018">Përdor historikun e hyrjeve</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Ky sajt ka dërguar shumë njoftime së fundi. Mund ta ndalosh që të mos dërgojë njoftime në të ardhmen.}other{Këto sajte kanë dërguar shumë njoftime së fundi. Mund t'i ndalosh që të mos dërgojnë njoftime në të ardhmen.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5792,6 +5797,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5079950360618752063">Përdor fjalëkalimin e sugjeruar</translation>
 <translation id="508059534790499809">Rifresko një biletë Kerberos</translation>
 <translation id="5081124414979006563">&amp;Hap "Profilin e vizitorit"</translation>
+<translation id="508209203623347828">Nëse kjo kartë është e çaktivizuar, kartat e tua të Microsoft si Sharepoint dhe "Kalendari i Outlook" do të çaktivizohen gjithashtu.</translation>
 <translation id="5083035541015925118">ctrl + alt + shigjeta lart</translation>
 <translation id="5084328598860513926">Fluksi i përgatitjes u ndërpre. Provo përsëri ose kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Sajtet ka më shumë mundësi të funksionojnë siç pritet</translation>
@@ -5909,6 +5915,8 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5157250307065481244">Shiko detajet e sajtit</translation>
 <translation id="5158206172605340248">Menyja e shenjave të theksimit u hoq.</translation>
 <translation id="5159094275429367735">Konfiguro Crostini</translation>
+<translation id="5159236862360390997">Do të shfaqen një sërë flluskash udhëzuese me udhëzime.
+          Shtyp <ph name="ACCELERATOR" /> për të fokusuar një flluskë dhe më pas shtype përsëri për të fokusuar elementin të cilit i drejtohet.</translation>
 <translation id="5159419673777902220">Prindi yt ka çaktivizuar lejet e shtesës</translation>
 <translation id="5160634252433617617">Tastiera fizike</translation>
 <translation id="5160857336552977725">Identifikohu në <ph name="DEVICE_TYPE" /></translation>
@@ -5989,6 +5997,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5216674789212441076">Përkthen automatikisht titrat në çast. Titrat dërgohen te Google për përkthim.</translation>
 <translation id="5220011581825921581">kërko + shigjeta lart</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> nuk mund të transmetohet</translation>
+<translation id="5221834113325601057">Skeda u përjashtua nga lista</translation>
 <translation id="5222403284441421673">Një shkarkim i pasigurt u bllokua</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5225324770654022472">Shfaq shkurtoren e aplikacioneve</translation>
@@ -6188,6 +6197,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5372579129492968947">Zhgozhdo shtesën</translation>
 <translation id="5372632722660566343">Vazhdo pa një llogari</translation>
 <translation id="5372990315769030589">Të mbahet "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5374324662289354619">Faqet e korrigjimit të brendshëm janë çaktivizuar aktualisht.</translation>
 <translation id="5375318608039113175">Për të përdorur "Ndarjen në afërsi" me këto kontakte, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tyre të Google".</translation>
 <translation id="5375374982898812658">Do të humbasësh menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
 <translation id="5375577102295339548">Sajtet mund të ndihmojnë për të verifikuar që nuk je një robot</translation>
@@ -6468,6 +6478,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5571066253365925590">Bluetooth-i u aktivizua</translation>
 <translation id="5571092938913434726">Kontrollet globale të medias</translation>
 <translation id="5571832155627049070">Personalizo profilin tënd</translation>
+<translation id="5572000034319109899">Pastro skedat e papërdorura</translation>
 <translation id="5572166921642484567">Zgjidh një modalitet të skemës së ngjyrës</translation>
 <translation id="5572252023412311448">Shfaq detajet e sajtit për <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Shiko lejet e shtesave për sajtet e tjera</translation>
@@ -8032,6 +8043,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="6725073593266469338">Shërbimi i ndërfaqes së përdorimit</translation>
 <translation id="6725206449694821596">Protokolli i printimit në internet (IPP)</translation>
+<translation id="6725627354629889015">Të pastrohen skedat e papërdorura?</translation>
 <translation id="6725970970008349185">Numri i kandidatëve për t'u shfaqur për faqe</translation>
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
 <translation id="6726800386221816228">Karakteret e veçanta</translation>
@@ -9444,6 +9456,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7737846262459425222">Këtë mund ta ndryshosh në çdo kohë te Cilësimet &gt; Asistenti i Google &gt; Konteksti i ekranit.</translation>
 <translation id="7737948071472253612">Nuk lejohen të përdorin kamerën tënde</translation>
 <translation id="77381465218432215">Shfaq shenjat e theksimit dhe karakteret e veçanta</translation>
+<translation id="7739524723876359011">Shtyp <ph name="ACCELERATOR" /> për të fokusuar këtë flluskë.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Mund të caktosh nivelin e zmadhimit ose zvogëlimit në sajte të caktuara uebi</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{U gjet 1 fjalëkalim i komprometuar}other{U gjetën {NUM_SITES} fjalëkalime të komprometuara}}</translation>

@@ -367,6 +367,7 @@
 <translation id="5602351063754773347">Chrome suosittelee poistamaan sen. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome pitää sinut paremmin turvassa verkossa</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
+<translation id="566568153320186256">Chrome säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää Virransäästöstä<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="5686916850681061684">Yksilöi ja ylläpidä Google Chromea. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -515,6 +516,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7477130805345743099">Chrome varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="749228101751499733">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. <ph name="SHORTCUT" /> voi muuttaa Googlen palvelujen asetuksiasi.</translation>
+<translation id="7496017508659652909">Chrome esilataa sivuja, mikä nopeuttaa selaamista ja hakemista. <ph name="BEGIN_LINK" />Lue lisää sivujen esilatauksesta<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome ymmärtää useampia tietotyyppejä ja täyttää lomakkeet nopeammin. Lue lisää <ph name="BEGIN_LINK" />Chromen automaattisesta täytöstä<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Googlen päivityspalvelu</translation>
 <translation id="7515191208480168435">Kiinnitä Google Lens, niin voit käyttää sitä helposti</translation>
@@ -631,6 +633,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8712767363896337380">Melkein ajan tasalla. Viimeistele päivitys käynnistämällä Chrome uudelleen.</translation>
 <translation id="8718062187489036808">Kirjaudu ulos Chromesta</translation>
 <translation id="873133009373065397">Google Chrome ei voi tunnistaa tai asettaa oletusselainta.</translation>
+<translation id="8748735421235723888">Chrome vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chrome pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää Muistinsäästöstä<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8781673607513845160">Anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää kameraa.</translation>
 <translation id="878572486461146056">Asennusvirhe: Verkon järjestelmänvalvojan käyttämä ryhmäkäytäntö estää asennuksen: <ph name="INSTALL_ERROR" /></translation>

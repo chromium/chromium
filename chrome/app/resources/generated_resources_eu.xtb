@@ -184,6 +184,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1122198203221319518">&amp;Tresnak</translation>
 <translation id="1122242684574577509">Ezin izan da autentifikatu. Erabiltzen ari zaren wifi-sarean (<ph name="NETWORK_ID" />) saioa hasteko orrira joateko, egin klik hemen.</translation>
 <translation id="1122587596907914265">Atondu horma-paper esklusiboak</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Arriskuan dagoen pasahitz bat aurkitu da}other{Arriskuan dauden {NUM_SITES} pasahitz aurkitu dira}}</translation>
 <translation id="1122913801042512795">Kontuan saioa hasteko xehetasunak zaharkituta daude. Amaitu saioa eta has ezazu berriro.</translation>
 <translation id="1122960773616686544">Laster-markaren izena</translation>
 <translation id="1124772482545689468">Erabiltzailea</translation>
@@ -2167,6 +2168,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2477065602824695373">Erabilerraztasun-etengailu bat baino gehiago konfiguratu dituzunez, desaktibatu egin da pantailan automatikoki mugitzeko eginbidea.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" luzapenaren baimenak multimedia-fitxategietarako</translation>
 <translation id="24786041351753425">Gaitu datuak berreskuratzeko zerbitzua.</translation>
+<translation id="2479541499757560845">Erabilerraztasun-teklatuaren ezarpenak</translation>
 <translation id="2480868415629598489">Kopiatzen eta itsasten dituzun datuak aldatu.</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> taldera eraman da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
@@ -3085,6 +3087,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3132277757485842847">Ezin izan dugu mantendu gailua telefonoarekin konektatuta. Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetootha eta wifia aktibatuta dauzkala.</translation>
 <translation id="3132896062549112541">Araua</translation>
 <translation id="3132996321662585180">Freskatu egunero</translation>
+<translation id="3134312457920437826">Ezin da instalatu luzapena bateraezina den manifestuaren bertsio bat darabilelako.</translation>
 <translation id="3134393957315651797">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera. Probaren azalpena: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Abatar hori lehenetsia</translation>
 <translation id="3141093262818886744">Ireki halere</translation>
@@ -4353,6 +4356,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4012509903424054869">PDFak automatikoki bihurtzen dira, testua bilatu eta hautatu ahal izan dezazun</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" konpondu nahi duzu?</translation>
 <translation id="4015163439792426608">Luzapenak dituzu? <ph name="BEGIN_LINK" />Kudeatu luzapen guztiak<ph name="END_LINK" /> toki berean.</translation>
+<translation id="4015250302257349679">Burbuila fokuratzeko, sakatu <ph name="ACCELERATOR" />. Gero, saka ezazu berriro burbuilak seinalatzen duen elementua fokuratzeko.</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak aplikazio honi ere emango zaizkio. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Sortu esteka honen QR kodea</translation>
 <translation id="4019983356493507433">Editatu laster-marken zerrenda</translation>
@@ -5913,6 +5917,8 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5157250307065481244">Ikusi webgunearen xehetasunak</translation>
 <translation id="5158206172605340248">Azentu-marken menua baztertu da.</translation>
 <translation id="5159094275429367735">Konfiguratu Crostini</translation>
+<translation id="5159236862360390997">Argibideak dituzten tutorial-burbuila sorta bat bistaratuko da.
+          Burbuila bat fokuratzeko, sakatu <ph name="ACCELERATOR" />. Gero, saka ezazu berriro burbuilak seinalatzen duen elementua fokuratzeko.</translation>
 <translation id="5159419673777902220">Guraso batek desgaitu egin ditu luzapenaren baimenak</translation>
 <translation id="5160634252433617617">Teklatu fisikoa</translation>
 <translation id="5160857336552977725">Hasi saioa <ph name="DEVICE_TYPE" /> gailuan</translation>
@@ -6193,6 +6199,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5372579129492968947">Kendu aingura luzapenari</translation>
 <translation id="5372632722660566343">Egin aurrera konturik gabe</translation>
 <translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" mantendu nahi duzu?</translation>
+<translation id="5374324662289354619">Barneko arazketa-orriak desgaituta daude.</translation>
 <translation id="5375318608039113175">Kontaktu hauekin Nearby Share erabiltzeko, gehitu zure kontaktuetan haien Google-ko kontuarekin lotuta dagoen helbide elektronikoa.</translation>
 <translation id="5375374982898812658">Berehala galduko duzu "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta zure gailu guztietatik ezabatuko da</translation>
 <translation id="5375577102295339548">Webguneek robot bat ez zarela egiaztatzen lagun dezakete</translation>
@@ -9447,6 +9454,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7737846262459425222">Aukera hori aldatzeko, joan Ezarpenak &gt; Google-ren Laguntzailea &gt; Pantailaren testuingurua atalera.</translation>
 <translation id="7737948071472253612">Ezin dute erabili kamera</translation>
 <translation id="77381465218432215">Erakutsi azentu-markak eta karaktere bereziak</translation>
+<translation id="7739524723876359011">Burbuila fokuratzeko, sakatu <ph name="ACCELERATOR" />.</translation>
 <translation id="7740996059027112821">Estandarra</translation>
 <translation id="7742706086992565332">Webgune jakin batzuetan webgunea zenbat handitzen edo txikitzen duzun ezartzeko aukera duzu</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Arriskuan dagoen pasahitz bat aurkitu da}other{Arriskuan dauden {NUM_SITES} pasahitz aurkitu dira}}</translation>

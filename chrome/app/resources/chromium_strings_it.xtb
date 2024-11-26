@@ -64,6 +64,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="1863308913976887472">I siti possono memorizzare su Chromium informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="1880677175115548835">Seleziona testo</translation>
 <translation id="1881322772814446296">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Chromium. I tuoi dati di Chromium, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. Se preferisci puoi creare un nuovo profilo per mantenere separati i dati di Chromium esistenti. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento fluido e le frequenze fotogrammi dei video. <ph name="BEGIN_LINK" />Scopri di più sulla modalità Risparmio energetico<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Servizio di Chromium Updater</translation>
 <translation id="1911763535808217981">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chromium</translation>
 <translation id="1929939181775079593">Chromium non risponde. Riavviarlo ora?</translation>
@@ -261,6 +262,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4544142686420020088">Si è verificato un errore: Chromium non si è aggiornato. <ph name="BEGIN_LINK" />Risolvi i problemi di aggiornamento e gli aggiornamenti non riusciti di Chromium.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium può rendere inattiva questa scheda per migliorare la tua esperienza di navigazione e mantenere la velocità delle prestazioni.</translation>
 <translation id="454579500955453258">Vuoi continuare con un nuovo profilo Chromium?</translation>
+<translation id="4548534452171747496">Chromium precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Hai eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" />. Ora puoi accedere ai tuoi Preferiti, alla tua cronologia e ad altre impostazioni su tutti i tuoi dispositivi su cui esegui l'accesso.</translation>
 <translation id="4570813286784708942">Chromium ha bloccato questo download perché hai disattivato Navigazione sicura e non è possibile verificare il file</translation>
 <translation id="4594305310729380060">In Gestore delle password su questo dispositivo</translation>
@@ -334,6 +336,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
 <translation id="569897634095159764">Impossibile connettersi a internet. Il server proxy richiede l'autenticazione.</translation>
 <translation id="5761096224651992291">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium libera la memoria dalle schede non attive. In questo modo le schede attive e altre app hanno più risorse per il computer e mantengono Chromium veloce. Le schede inattive si riattivano automaticamente quando ci torni. <ph name="BEGIN_LINK" />Scopri di più sulla modalità Risparmio memoria<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Personalizza e controlla Chromium. Imposta Chromium come browser predefinito.</translation>
 <translation id="5809516625706423866">Impossibile connettersi a internet. HTTP 401 Autorizzazione assente. Controlla la configurazione del proxy.</translation>
 <translation id="5821520528363214608">Aggiorna Chromium per usare e salvare i dati di Chromium nel tuo Account Google</translation>

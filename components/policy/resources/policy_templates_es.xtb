@@ -4540,9 +4540,6 @@ Se eliminó en la versión M112.</translation>
 <translation id="4410236409016356088">Habilitar la limitación de ancho de banda</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de aplicaciones web aisladas usen Direct Sockets</translation>
 <translation id="4411734231900934213">La diferencia permitida entre el reloj de los dispositivos del niño/a y del padre o madre (en segundos).</translation>
-<translation id="4411759973223339687">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los inicios de sesión como invitado. Los inicios de sesión como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo Incógnito.
-
-      Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles de invitados.</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Si se habilita esta política, se desactivará el visor interno de PDF en <ph name="PRODUCT_NAME" />, los archivos PDF se tratarán como descargas y los usuarios podrán abrir PDFs con la aplicación predeterminada.
 

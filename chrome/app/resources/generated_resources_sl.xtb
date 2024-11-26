@@ -184,6 +184,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1122198203221319518">&amp;Orodja</translation>
 <translation id="1122242684574577509">Preverjanje pristnosti ni uspelo. Kliknite, da obiščete prijavno stran za omrežje Wi-Fi, ki ga uporabljate (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Oblikujte edinstvena zaslonska ozadja</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Najdeno je bilo 1 ogroženo geslo}one{Najdeno je bilo {NUM_SITES} ogroženo geslo}two{Najdeni sta bili {NUM_SITES} ogroženi gesli}few{Najdena so bila {NUM_SITES} ogrožena gesla}other{Najdenih je bilo {NUM_SITES} ogroženih gesel}}</translation>
 <translation id="1122913801042512795">Podrobnosti za prijavo v račun so zastarele. Odjavite se in se znova prijavite.</translation>
 <translation id="1122960773616686544">Ime zaznamka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>

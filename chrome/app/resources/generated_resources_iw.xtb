@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;כלים</translation>
 <translation id="1122242684574577509">‏האימות נכשל. יש ללחוץ כדי לעבור אל דף ההתחברות של רשת ה-Wi-Fi שבה משתמשים (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">עיצוב טפטים ייחודיים</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{נמצאה סיסמה אחת שנחשפה}one{נמצאו {NUM_SITES} סיסמאות שנחשפו}two{נמצאו {NUM_SITES} סיסמאות שנחשפו}other{נמצאו {NUM_SITES} סיסמאות שנחשפו}}</translation>
 <translation id="1122913801042512795">פרטי הכניסה של החשבון שלך לא מעודכנים. עליך לצאת מהחשבון ולהיכנס מחדש.</translation>
 <translation id="1122960773616686544">שם סימנייה</translation>
 <translation id="1124772482545689468">משתמש</translation>
@@ -3471,6 +3472,7 @@
 <translation id="3421387094817716717">מפתח ציבורי עם עקומה אליפטית</translation>
 <translation id="3421672904902642628">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת לתוצאות האישיות או ל-Assistant גם באמצעות קול דומה או הקלטה.</translation>
 <translation id="3421835120203732951">הוספת פרופיל חדש</translation>
+<translation id="3422989558057853751">הפריט האחרון נבחר. ביטול הבחירה בו יבטל את מצב הבחירה</translation>
 <translation id="3423111258700187173">תוצאות שנמצאו בתיקייה <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">‏מידע נוסף על התכונה מבוססת ה-AI הזו</translation>
 <translation id="3423275441470187644">ניתן לבטוח</translation>
@@ -4968,6 +4970,7 @@
 <translation id="4461483878391246134">הוספת שפות שאף פעם לא יוצגו הצעות לתרגם אותן</translation>
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
 <translation id="4465236939126352372">מגבלת זמן של <ph name="TIME" /> הוגדרה לאפליקציה <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">קוד האימות שגוי</translation>
 <translation id="4467561276409486506">&amp;החלפה למצב קומפקטי</translation>
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="4469762931504673593">ל-<ph name="ORIGIN" /> יש הרשאה לערוך קבצים בתיקייה <ph name="FOLDERNAME" /></translation>

@@ -254,6 +254,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4427306783828095590">Poboljšana zaštita nudi više mogućnosti za blokiranje „pecanja“ i malvera</translation>
 <translation id="4434353761996769206">Greška programa za instalaciju: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> upravlja Chromium-om</translation>
+<translation id="444069871276811466">Dodaj Chromium profil</translation>
 <translation id="4447409407328223819">O verziji Chrome for Testing</translation>
 <translation id="4470974262661801543">Da biste koristili i čuvali Chromium podatke na Google nalogu, unesite pristupnu frazu</translation>
 <translation id="4493028449971051158">Greška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
@@ -584,6 +585,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chromium-a na ovom uređaju.</translation>
 <translation id="8852026904190808918">Ovaj jezik se koristi za prikazivanje menija, podešavanja, upozorenja i drugog teksta u Chromium-u</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Probajte ponovo da pokrenete program za instalaciju, ovoga puta kao administrator.</translation>
+<translation id="8876044221123442390">Dodaj Chromium profil</translation>
 <translation id="8880203542552872219">Ako je tako, izmenite sačuvanu lozinku u Chromium-u tako da se podudara sa novom lozinkom.</translation>
 <translation id="8891709362986793894">Organizacija zahteva da se prijavite u Chromium</translation>
 <translation id="8907580949721785412">Chromium pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>

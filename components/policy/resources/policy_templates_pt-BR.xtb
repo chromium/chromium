@@ -4726,9 +4726,6 @@ A remoção foi feita na versão M112.</translation>
 <translation id="4410236409016356088">Ativar o acelerador de largura de banda da rede</translation>
 <translation id="4410361389637971319">Permitir que origens de Apps Isolados da Web usem a API Direct Sockets</translation>
 <translation id="4411734231900934213">A diferença permitida entre o relógio dos dispositivos do familiar responsável e da criança (em segundos).</translation>
-<translation id="4411759973223339687">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão ativar os logins de visitantes. Esses são perfis do <ph name="PRODUCT_NAME" /> em que todas as janelas estão no modo de navegação anônima.
-
-      Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que perfis de visitantes sejam iniciados.</translation>
 <translation id="441217499641439905">Desativar o Google Drive em conexões celulares no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Se a política for ativada, o visualizador de PDF interno será desativado no <ph name="PRODUCT_NAME" />, os arquivos PDF serão tratados como downloads e os usuários poderão abrir PDFs com o aplicativo padrão.
 

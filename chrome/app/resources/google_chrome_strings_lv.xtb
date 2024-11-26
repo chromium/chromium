@@ -370,6 +370,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5602351063754773347">Chrome iesaka to noņemt. <ph name="BEGIN_LINK" />Uzziniet vairāk par atbalstītajiem paplašinājumiem<ph name="END_LINK" />.</translation>
 <translation id="5648328599815354043">Chrome piedāvā daudz iespēju, lai gādātu par jūsu drošību tiešsaistē.</translation>
 <translation id="565744775970812598">Fails <ph name="FILE_NAME" /> var būt bīstams, tādēļ Chrome to bloķēja.</translation>
+<translation id="566568153320186256">Pārlūkā Chrome tiek taupīta akumulatora enerģija, ierobežojot darbības fonā un vizuālos efektus, piemēram, vienmērīgu ritināšanu un video kadru nomaiņas ātrumu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par enerģijas taupīšanas režīmu<ph name="END_LINK" />.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome.}=1{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="5686916850681061684">Pielāgojiet un kontrolējiet pārlūkprogrammu Google Chrome. Ir nepieciešama jūsu uzmanība. Noklikšķiniet, lai skatītu plašāku informāciju.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -518,6 +519,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7477130805345743099">Pārlūkā Chrome tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="7481213027396403996">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="749228101751499733">Kamēr esat pierakstījies, pārlūkā Chrome varat izmantot savas paroles un citu saturu no Google konta. <ph name="SHORTCUT" /> var mainīt jūsu Google pakalpojumu iestatījumus.</translation>
+<translation id="7496017508659652909">Pārlūkā Chrome tiek iepriekš ielādētas lapas, tādējādi paātrinot pārlūkošanu un meklēšanu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par lapu iepriekšēju ielādi<ph name="END_LINK" />.</translation>
 <translation id="7512187482580860950">Chrome var saprast vairāk informācijas veidu un ātrāk automātiski aizpildīt veidlapas. Uzziniet vairāk par <ph name="BEGIN_LINK" />automātisko aizpildi pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="7514258452813684157">Google atjauninātāja pakalpojums</translation>
 <translation id="7515191208480168435">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu.</translation>
@@ -634,6 +636,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8712767363896337380">Gandrīz atjaunināts! Lai pabeigtu atjaunināšanu, atkārtoti palaidiet pārlūkprogrammu Chrome.</translation>
 <translation id="8718062187489036808">Izrakstīties no pārlūka Chrome</translation>
 <translation id="873133009373065397">Google Chrome nevar noteikt vai iestatīt noklusējuma pārlūku.</translation>
+<translation id="8748735421235723888">Pārlūkā Chrome neaktīvās cilnēs tiek atbrīvota atmiņa. Tādējādi aktīvajām cilnēm un citām lietotnēm tiek nodrošināts vairāk datora resursu un tiek uzlabots Chrome darbības ātrums. Neaktīvās cilnes atkal tiek automātiski aktivizētas, kad tās atverat. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par atmiņas taupīšanas režīmu<ph name="END_LINK" />.</translation>
 <translation id="8765470054473112089">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="8781673607513845160">Lai varētu izmantot kameru, piešķiriet pārlūkam Chrome piekļuvi <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="878572486461146056">Instalēšanas kļūda: administrators ir piemērojis grupas politiku, kas neļauj veikt instalēšanu: <ph name="INSTALL_ERROR" />.</translation>

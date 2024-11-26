@@ -184,6 +184,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1122198203221319518">&amp;Narzędzia</translation>
 <translation id="1122242684574577509">Uwierzytelnianie nie powiodło się. Kliknij, by otworzyć stronę logowania do sieci Wi-Fi (<ph name="NETWORK_ID" />), której używasz.</translation>
 <translation id="1122587596907914265">Nadaj wyjątkowy charakter tapetom</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Znaleziono 1 przejęte hasło}few{Znaleziono {NUM_SITES} przejęte hasła}many{Znaleziono {NUM_SITES} przejętych haseł}other{Znaleziono {NUM_SITES} przejętego hasła}}</translation>
 <translation id="1122913801042512795">Twoje dane logowania na konto są nieaktualne. Wyloguj i zaloguj się ponownie.</translation>
 <translation id="1122960773616686544">Nazwa zakładki</translation>
 <translation id="1124772482545689468">Użytkownik</translation>

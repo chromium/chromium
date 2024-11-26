@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">你重新新增的網站可再次推斷你的興趣喜好</translation>
 <translation id="3985215325736559418">你要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
-<translation id="3991055816270226534">管理第三方 Cookie 和追蹤保護功能</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
@@ -1112,6 +1111,7 @@
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6112702117600201073">重新整理網頁</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
+<translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />的分頁群組</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />更多詳細資料<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">已移除項目</translation>
 <translation id="6130303040046284160">將分頁縮到最小</translation>
@@ -1166,7 +1166,6 @@
 <translation id="6341580099087024258">詢問檔案儲存位置</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
-<translation id="6344622098450209924">追蹤防護</translation>
 <translation id="6345878117466430440">標示為已讀取</translation>
 <translation id="6356893102071098867">請確認所選的帳戶是否正確</translation>
 <translation id="6363990818884053551">如要開始同步處理，請驗證你的身分</translation>
@@ -1611,6 +1610,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="820568752112382238">最常造訪的網站</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUMBER_OF_OTHER_MEMBERS" /> 人的分頁群組}other{加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUMBER_OF_OTHER_MEMBERS" /> 人的分頁群組}}</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
 <translation id="8210770465353466621">這裡會顯示你的分頁</translation>
 <translation id="8211101263765532799">部分密碼不久後將無法存取</translation>

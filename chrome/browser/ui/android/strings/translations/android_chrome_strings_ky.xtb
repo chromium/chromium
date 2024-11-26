@@ -650,7 +650,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3985022125189960801">Сайтты сизге жактырган нерселерди аныктай алган сайттарга кайра кошсоңуз болот</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> файлын кайра жүктөп аласызбы?</translation>
 <translation id="3987993985790029246">Шилтм көчр</translation>
-<translation id="3991055816270226534">Үчүнчү тараптын cookie файлдарын жана көз салуудан коргоо параметрлерин тескөө</translation>
 <translation id="4000212216660919741">Үйдө оффлайн режиминде</translation>
 <translation id="4016425174436051808">Жазылган жок. Бир жерден ката кетти.</translation>
 <translation id="4024768890073681126">Серепчиңди ата-энең башкарат</translation>
@@ -1112,6 +1111,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6108923351542677676">Орнотулуп жатат…</translation>
 <translation id="6112702117600201073">Баракты жаңыртуу</translation>
 <translation id="6122831415929794347">Коопсуз серептөө өчүрүлсүнбү?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> бар өтмөктөр тобуна кошулуңуз</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Толук маалымат<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Нерсе өчүрүлдү</translation>
 <translation id="6130303040046284160">Өтмөктү кичирейтүү</translation>
@@ -1166,7 +1166,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6341580099087024258">Файлдарды кайсы папкага сактоо керек экени суралсын</translation>
 <translation id="6342069812937806050">Жаңы эле</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Көз салуудан коргоо</translation>
 <translation id="6345878117466430440">Окулду деп белгилөө</translation>
 <translation id="6356893102071098867">Туура аккаунтту тандаганыңызды текшериңиз</translation>
 <translation id="6363990818884053551">Шайкештирүүнү баштоо үчүн өзүңүз экениңизди ырастаңыз</translation>
@@ -1611,6 +1610,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Түзмөктөрүңүз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="820568752112382238">Эң көп кирген сайттар</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> жана дагы <ph name="NUMBER_OF_OTHER_MEMBERS" /> колдонуучу бар өтмөктөр тобуна кошулуңуз}other{<ph name="OWNER_FIRST_NAME" /> жана дагы <ph name="NUMBER_OF_OTHER_MEMBERS" /> колдонуучу бар өтмөктөр тобуна кошулуңуз}}</translation>
 <translation id="8209050860603202033">Сүрөттү ачуу</translation>
 <translation id="8210770465353466621">Өтмөктөрүңүздү ушул жерден табасыз</translation>
 <translation id="8211101263765532799">Жакында айрым сырсөздөр иштебей калат</translation>

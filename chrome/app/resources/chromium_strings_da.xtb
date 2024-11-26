@@ -65,6 +65,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="1863308913976887472">Websites kan gemme oplysninger med Chromium om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="1880677175115548835">Vælg tekst</translation>
 <translation id="1881322772814446296">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine Chromium-data adskilt. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du genstarte nu?</translation>
@@ -262,6 +263,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4544142686420020088">Chromium kunne ikke opdateres, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chromium og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium kan gøre denne fane inaktiv for at forbedre din browseroplevelse og give dig hurtigere indlæsning.</translation>
 <translation id="454579500955453258">Vil du fortsætte på en ny Chromium-profil?</translation>
+<translation id="4548534452171747496">Chromium forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
 <translation id="4570813286784708942">Chromium har blokeret denne download, fordi du har deaktiveret Beskyttet browsing, og filen ikke kan verificeres</translation>
 <translation id="4594305310729380060">I Adgangs­kode­admin­istrator på denne enhed</translation>
@@ -335,6 +337,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5698481217667032250">Vis Chromium på dette sprog</translation>
 <translation id="569897634095159764">Der kan ikke oprettes forbindelse til internettet. Proxyserveren kræver godkendelse.</translation>
 <translation id="5761096224651992291">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium frigør hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chromium hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger om Hukommelsessparefunktion<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Tilpas og styr Chromium. Angiv Chromium som din standardbrowser.</translation>
 <translation id="5809516625706423866">Der kan ikke oprettes forbindelse til internettet. HTTP 401 (uautoriseret). Tjek din proxykonfiguration.</translation>
 <translation id="5821520528363214608">For at bruge og gemme Chromium-data på din Google-konto skal du opdatere Chromium</translation>

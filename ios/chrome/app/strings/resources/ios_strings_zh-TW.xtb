@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">已嘗試配送，之後會再次嘗試</translation>
 <translation id="3557336313807607643">新增為聯絡人</translation>
 <translation id="355765753469272474">復原</translation>
+<translation id="3562379378751492229">選取最適合你的位置。</translation>
 <translation id="3565930036634619844">分頁。第 <ph name="NUMBER_OF_TABS" /> 個，共 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3570693105179140209">輕觸兩下可查看更多密碼。</translation>
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
@@ -830,6 +831,7 @@
 <translation id="484280513275854557">系統已將你登出並刪除瀏覽資料</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4860895144060829044">撥號</translation>
+<translation id="4861953997778766866">所有人都能變更你的共用分頁群組</translation>
 <translation id="4869146460927742717">網址列位置</translation>
 <translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
 <translation id="4872664437015695612">在「下載」資料夾開啟</translation>
@@ -968,6 +970,7 @@
 <translation id="5506763544823940561">將圖片儲存到…</translation>
 <translation id="5511959326926949696">選用的瀏覽器極端保護措施。除非你認為自己有可能成為網路攻擊的目標，否則不建議採用這項措施。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
+<translation id="5524590039848017563">已收合主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 組低強度密碼}other{有 {COUNT} 組低強度密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話方塊</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
@@ -992,6 +995,7 @@
 <translation id="5611398002774823980">儲存到帳戶</translation>
 <translation id="5613297089029360427">由新到舊排序</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
+<translation id="5614805397884895755">從主畫面更快存取。</translation>
 <translation id="5619871095170816857">這張卡片會顯示所有已同步裝置在過去 24 小時內最後開啟的分頁。</translation>
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="5624637933505983014">請勿開啟同步功能</translation>
@@ -1496,6 +1500,7 @@
 <translation id="7812377703891978671">選取「<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />」可存取所有瀏覽記錄。</translation>
 <translation id="78146569776629510">下載</translation>
 <translation id="7815852444315004084">暫時隱藏</translation>
+<translation id="7831876841288640403">選擇最適合你的網址列位置。</translation>
 <translation id="7839994177130598711">現在起，當家庭成員透過 Google 密碼管理工具登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以直接使用你的使用者名稱和密碼。</translation>
 <translation id="7840771868269352570">系統將移除所選項目。</translation>
 <translation id="7841180087127694526">搜尋複製的文字</translation>

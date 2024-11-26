@@ -371,6 +371,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5602351063754773347">Chrome soovitab selle eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome teeb veebis teie turvalisuse tagamiseks rohkem</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> võib olla ohtlik, mistõttu Chrome blokeeris selle.</translation>
+<translation id="566568153320186256">Chrome säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave Energiasäästja kohta<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administraator palub teil Chrome'i selle värskenduse rakendamiseks uuesti käivitada}=1{Administraator palub teil Chrome'i selle värskenduse rakendamiseks uuesti käivitada. Teie inkognito akent ei avata uuesti.}other{Administraator palub teil Chrome'i selle värskenduse rakendamiseks uuesti käivitada. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="5686916850681061684">Kohandage ja hallake Google Chrome'i. Miski vajab teie tähelepanu – klõpsake üksikasjade nägemiseks.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -519,6 +520,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7477130805345743099">Chrome hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
+<translation id="7496017508659652909">Chrome eellaadib lehed, muutes sirvimise ja otsimise kiiremaks. <ph name="BEGIN_LINK" />Lisateave lehtede eellaadimise kohta<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome mõistab enamaid teabetüüpe ja automaattäidab teie vormid kiiremini. Lisateave <ph name="BEGIN_LINK" />Chrome'i automaattäite kohta<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Saate Google Lensi hõlpsaks juurdepääsuks kinnitada</translation>
@@ -635,6 +637,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8712767363896337380">Peaaegu ajakohane! Värskendamise lõpuleviimiseks käivitage Chrome uuesti.</translation>
 <translation id="8718062187489036808">Logi Chrome'ist välja</translation>
 <translation id="873133009373065397">Google Chrome ei saa määrata ega seadistada vaikebrauserit</translation>
+<translation id="8748735421235723888">Chrome vabastab inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chrome'i kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete. <ph name="BEGIN_LINK" />Lisateave mälusäästja kohta<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="8781673607513845160">Kaamera kasutamiseks andke Chrome'ile <ph name="BEGIN_LINK" />süsteemiseadetes<ph name="END_LINK" /> juurdepääs</translation>
 <translation id="878572486461146056">Installimisviga: teie võrguadministraator on kehtestanud rühmareegli, mis takistab installimist: <ph name="INSTALL_ERROR" /></translation>

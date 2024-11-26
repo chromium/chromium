@@ -866,6 +866,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2523886232349826891">Salvo apenas neste dispositivo</translation>
 <translation id="2524461107774643265">Adicione Mais Informações</translation>
+<translation id="2526062290525841862">Para executar esse app, reative o modo de desenvolvedor para App Isolado da Web</translation>
 <translation id="2526280916094749336">Os endereços salvos podem ser usados em vários produtos do Google. Esse será salvo na sua conta <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">O CVC é um código de quatro dígitos que fica no canto superior direito da parte da frente do cartão, logo acima do número dele.</translation>
 <translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas futuras serão ignoradas.</translation>
@@ -1754,7 +1755,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
 <translation id="412601465078863288">O tempo de upload expirou</translation>
 <translation id="4127317221386336246">Acessórios para roupas</translation>
-<translation id="4127575959421463246">Procurando as sinalizações do ChromeOS? Visitar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{mais 1}one{mais #}other{mais #}}</translation>
 <translation id="4129992181550680635">Recursos educacionais</translation>
 <translation id="4130226655945681476">Verificar os cabos de rede, modem e roteador</translation>
@@ -4317,7 +4317,6 @@ Mais detalhes:
 <translation id="8792626944327216835">microfone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ativou os Chrome Enterprise Connectors no seu navegador. Esses conectores têm acesso a alguns dos seus dados.</translation>
 <translation id="8798099450830957504">Padrão</translation>
-<translation id="8798739476508189189">Procurando as sinalizações do navegador? Visitar</translation>
 <translation id="8800034312320686233">Site indisponível?</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />": entrada ignorada porque também foi incluída na política SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Provedores de serviço telefônico</translation>

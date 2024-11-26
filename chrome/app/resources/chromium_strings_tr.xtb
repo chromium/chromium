@@ -64,6 +64,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="1863308913976887472">Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="1880677175115548835">Metin seç</translation>
 <translation id="1881322772814446296">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Chromium profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chromium verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chromium verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium, arka plan etkinliğini ve görsel efektleri (ör. kolay kaydırma ve video kare hızı) sınırlandırarak pil gücünden tasarruf eder. <ph name="BEGIN_LINK" />Enerji Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="1900969832270057921">Chromium Güncelleyici Hizmeti</translation>
 <translation id="1911763535808217981">Bu özelliği kapatarak Chromium'da oturum açmadan Gmail gibi Google sitelerinde oturum açabilirsiniz</translation>
 <translation id="1929939181775079593">Chromium yanıt vermiyor. Şimdi yeniden başlatılsın mı?</translation>
@@ -259,6 +260,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="4544142686420020088">Chromium güncellenmedi. Bir sorun oluştu. <ph name="BEGIN_LINK" />Chrome güncelleme sorunlarını ve başarısız güncellemeleri düzeltin.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium, web'de gezinme deneyiminizi daha iyi hale getirmek ve her şeyin hızlı çalışmasını sağlamak için bu sekmeyi devre dışı bırakabilir.</translation>
 <translation id="454579500955453258">Yeni bir Chromium profilinde devam edilsin mi?</translation>
+<translation id="4548534452171747496">Chromium, sayfaları önceden yükleyerek internette gezinme ve arama işlemlerini hızlandırır. <ph name="BEGIN_LINK" />Önceden yükleme sayfaları hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Şimdi oturum açtığınız tüm cihazlarda yer işaretlerinize, geçmişinize ve diğer ayarlarınıza erişebilirsiniz.</translation>
 <translation id="4570813286784708942">Güvenli Tarama'yı devre dışı bıraktığınız ve dosya doğrulanamadığı için Chromium bu indirme işlemini engelledi</translation>
 <translation id="4594305310729380060">Bu cihazdaki Şifre Yöneticisi'ne</translation>
@@ -332,6 +334,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="569897634095159764">İnternet'e bağlanılamıyor. Proxy sunucu kimlik doğrulama gerektiriyor.</translation>
 <translation id="5761096224651992291">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
+<translation id="5768371961535086509">Chromium, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chromium hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir. <ph name="BEGIN_LINK" />Bellek Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="5800158606660203929">Chromium'u özelleştirin ve kontrol edin. Chromium'u varsayılan tarayıcınız olarak ayarlayın.</translation>
 <translation id="5809516625706423866">İnternet'e bağlanılamadı. HTTP 401 Yetkisiz. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="5821520528363214608">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için Chromium'u güncelleyin</translation>

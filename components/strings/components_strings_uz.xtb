@@ -1750,7 +1750,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4123572138124678573">Quyidan 3 ta teshik ochish</translation>
 <translation id="412601465078863288">Yuklash vaqti tugadi</translation>
 <translation id="4127317221386336246">Kiyim aksessuarlari</translation>
-<translation id="4127575959421463246">ChromeOS bayroqlarini qidiryapsizmi? Bu yerga tashrif buyuring</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{yana 1 ta}other{yana # ta}}</translation>
 <translation id="4129992181550680635">Taʼlim resurslari</translation>
 <translation id="4130226655945681476">Tarmoq kabellari, modem va routerni tekshiring</translation>
@@ -3463,6 +3462,7 @@ Batafsil axborot:
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi uchun havfsiz aloqa o‘rnatib bo'lmadi.</translation>
 <translation id="7260075294900977274">Barcha xarid sahifalaringizni bir joyda saqlashga va narxlarni avtomatik kuzatishga, narxlar haqidagi maʼlumotga ega boʻlishga yordam beruvchi yangi smart jild</translation>
 <translation id="7265608370113700582">Manzil faqat shu qurilmada mavjud</translation>
+<translation id="7269151392155523061">Buyruq <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> belgilagan qidiruv agregatori kalit soʻzi bilan bir xil boʻlishi mumkin emas: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Siz yuklab oladigan fayllar tekshiruv uchun Google Cloud yoki boshqa tashqi xizmatlarga yuboriladi. Masalan, fayllar tarkibida maxfiy yoki zararli axborotlar mavjudligini aniqlash uchun tekshirilishi mumkin. Ular sizning administratoringiz uchun ham ochiq boʻlishi va kompaniya qoidalari asosida saqlanishi mumkin.</translation>
 <translation id="7275334191706090484">Boshqariladigan xatcho‘plar</translation>
 <translation id="7275808129217605899">Sogʻlom ovqatlanish</translation>
@@ -4310,7 +4310,6 @@ Batafsil axborot:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> brauzeringizda Chrome korporativ konnektorlarini faollashtirdi. Bu konnektorlar ayrim axborotlaringizdan foydalana oladi.</translation>
 <translation id="8798099450830957504">Standart</translation>
-<translation id="8798739476508189189">Brauzer bayroqlarini qidiryapsizmi? Bu yerga tashrif buyuring</translation>
 <translation id="8800034312320686233">Sayt ishlamayaptimi?</translation>
 <translation id="8805819170075074995">“<ph name="LANGUAGE_ID" />” tili: Bu til SpellcheckLanguage parametrida borligi uchun inkor etildi.</translation>
 <translation id="8806062468703310719">Telefon xizmati provayderlari</translation>

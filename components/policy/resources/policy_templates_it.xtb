@@ -4595,9 +4595,6 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>
 <translation id="4410361389637971319">Consenti alle origini delle app web isolate di utilizzare Direct Sockets</translation>
 <translation id="4411734231900934213">La differenza (in secondi) consentita tra gli orologi sui dispositivi di figli e genitori.</translation>
-<translation id="4411759973223339687">Se la policy viene impostata su true o se non viene configurata, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> abilitano gli accessi come ospite. Gli accessi come ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono in modalità di navigazione in incognito.
-
-      Se viene impostata su false, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'avvio dei profili ospite.</translation>
 <translation id="441217499641439905">Disattiva Google Drive su reti cellulari nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Se il criterio viene impostato su Attivato, il visualizzatore di PDF interno viene disattivato in <ph name="PRODUCT_NAME" />, i file PDF vengono considerati come file scaricati e gli utenti possono aprire i PDF con l'applicazione predefinita.
 

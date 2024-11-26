@@ -184,6 +184,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1122198203221319518">Ou&amp;tils</translation>
 <translation id="1122242684574577509">L’authentification a échoué. Cliquez pour accéder à la page de connexion au réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Stylisez des fonds d'écran uniques</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 mot de passe compromis trouvé}one{{NUM_SITES} mot de passe compromis trouvé}other{{NUM_SITES} mots de passe compromis trouvés}}</translation>
 <translation id="1122913801042512795">Les renseignements de connexion de votre compte sont obsolètes. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="1122960773616686544">Nom du favori</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
@@ -2168,6 +2169,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2477065602824695373">Comme vous avez configuré plusieurs commutateurs, la recherche automatique a été désactivée.</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour « <ph name="EXTENSION" /> »</translation>
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
+<translation id="2479541499757560845">Paramètres du clavier d'accessibilité</translation>
 <translation id="2480868415629598489">Modifier les données que vous copiez et collez</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Onglet déplacé vers le groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
@@ -3088,6 +3090,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3132277757485842847">Nous n'avons pas pu maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="3132896062549112541">Règle</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
+<translation id="3134312457920437826">Impossible d'installer l'extension, car elle utilise une version du fichier de configuration non prise en charge.</translation>
 <translation id="3134393957315651797">Sélectionner l'état de la fonctionnalité expérimentale <ph name="EXPERIMENT_NAME" />. Description de la fonctionnalité expérimentale : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
@@ -4358,6 +4361,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4012509903424054869">Les PDF sont convertis automatiquement afin que vous puissiez rechercher et sélectionner du texte</translation>
 <translation id="4014432863917027322">Réparer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="4015163439792426608">Vous avez des extensions? <ph name="BEGIN_LINK" />Gérez vos extensions<ph name="END_LINK" /> à un seul et même endroit.</translation>
+<translation id="4015250302257349679">Appuyez sur <ph name="ACCELERATOR" /> pour sélectionner cette bulle. Faites-le une deuxième fois pour sélectionner l'élément qu'elle indique.</translation>
 <translation id="4016762287427926315">Les autorisations que vous accordez à <ph name="APP_NAME" /> seront également accordées à cette application. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Créer un code QR pour ce lien</translation>
 <translation id="4019983356493507433">Modifier la liste des favoris</translation>
@@ -5748,6 +5752,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5045367873597907704">À propos des appareils HID</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="504561833207953641">Ouverture dans une session de navigateur existante.</translation>
+<translation id="504953514574706691">Onglet exclu du groupe suggéré</translation>
 <translation id="5049614114599109018">Utiliser l'historique d'entrée</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Ce site a envoyé beaucoup de notifications récemment. Vous pouvez l'empêcher d'envoyer des notifications à l'avenir.}one{Ce site a envoyé beaucoup de notifications récemment. Vous pouvez l'empêcher d'envoyer des notifications à l'avenir.}other{Ces sites ont envoyé beaucoup de notifications récemment. Vous pouvez les empêcher d'envoyer des notifications à l'avenir.}}</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
@@ -5799,6 +5804,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="508059534790499809">Actualiser un ticket Kerberos</translation>
 <translation id="5081124414979006563">&amp;Ouvrir le profil d'invité</translation>
+<translation id="508209203623347828">Si cette carte est désactivée, vos cartes Microsoft telles que SharePoint et l'agenda Outlook seront également désactivées.</translation>
 <translation id="5083035541015925118">ctrl+alt+flèche vers le haut</translation>
 <translation id="5084328598860513926">Le flux d'approvisionnement a été interrompu. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Il est probable que les sites fonctionneront comme prévu</translation>
@@ -5916,6 +5922,8 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5157250307065481244">Afficher les détails du site</translation>
 <translation id="5158206172605340248">Menu des accents fermé.</translation>
 <translation id="5159094275429367735">Configurer Crostini</translation>
+<translation id="5159236862360390997">Une série de bulles tutorielles contenant des instructions seront affichées.
+          Appuyez sur <ph name="ACCELERATOR" /> pour sélectionner une bulle. Faites-le une deuxième fois pour sélectionner l'élément qu'elle indique.</translation>
 <translation id="5159419673777902220">Ton parent a désactivé les autorisations pour les extensions</translation>
 <translation id="5160634252433617617">Clavier physique</translation>
 <translation id="5160857336552977725">Connexion à votre <ph name="DEVICE_TYPE" /></translation>
@@ -5996,6 +6004,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5216674789212441076">Traduit automatiquement les Sous-titres instantanés. Les sous-titres sont envoyés à Google pour être traduits.</translation>
 <translation id="5220011581825921581">rechercher+flèche vers le haut</translation>
 <translation id="5221516927483787768">Impossible de diffuser <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Onglet exclu de la liste</translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5225324770654022472">Afficher le raccourci des applications</translation>
@@ -6195,6 +6204,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5372579129492968947">Annuler l'épinglage de l'extension</translation>
 <translation id="5372632722660566343">Continuer sans compte</translation>
 <translation id="5372990315769030589">Conserver « <ph name="EXTENSION_NAME" /> »?</translation>
+<translation id="5374324662289354619">Les pages de débogage interne sont actuellement désactivées.</translation>
 <translation id="5375318608039113175">Pour utiliser la fonctionnalité Partage à proximité avec ces contacts, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.</translation>
 <translation id="5375374982898812658">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils.</translation>
 <translation id="5375577102295339548">Les sites peuvent aider à vérifier que vous n'êtes pas un robot</translation>
@@ -6475,6 +6485,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5571066253365925590">Bluetooth activé</translation>
 <translation id="5571092938913434726">Commandes multimédias générales</translation>
 <translation id="5571832155627049070">Personnaliser votre profil</translation>
+<translation id="5572000034319109899">Nettoyer les onglets inutilisés</translation>
 <translation id="5572166921642484567">Choisir un mode de modèle de couleurs</translation>
 <translation id="5572252023412311448">Afficher les détails du site pour <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Voir les autorisations d'extension pour d'autres sites</translation>
@@ -6984,6 +6995,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5943127421590245687">Votre vérification a réussi. Pour déverrouiller et restaurer vos données locales, veuillez entrer votre ancien mot de passe <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gère votre page Nouvel Onglet</translation>
 <translation id="5945002094477276055">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer au service de navigation sécurisée Google pour le faire analyser?</translation>
+<translation id="5945192511027649793">Désactiver le pavé tactile</translation>
 <translation id="5945363896952315544">Votre clé de sécurité ne peut pas stocker davantage d'empreintes digitales. Pour en ajouter une, commencer par supprimer une empreinte digitale existante.</translation>
 <translation id="5946591249682680882">Identifiant de rapport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Double-cliquer sur la souris</translation>
@@ -8041,6 +8053,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6725073593266469338">Service d'IU</translation>
 <translation id="6725206449694821596">Protocole IPP d'impression Internet</translation>
+<translation id="6725627354629889015">Nettoyer les onglets inutilisés?</translation>
 <translation id="6725970970008349185">Nombre de suggestions par page</translation>
 <translation id="672609503628871915">Découvrir les nouveautés</translation>
 <translation id="6726800386221816228">Caractères spéciaux</translation>
@@ -8485,6 +8498,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7025190659207909717">Gestion des services de données mobiles</translation>
 <translation id="7025895441903756761">Sécurité et confidentialité</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Tout ouvrir dans une fenêtre de &amp;navigation privée}=1{Ouvrir dans une fenêtre de &amp;navigation privée}one{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}other{Tout ouvrir ({COUNT}) dans une fenêtre de &amp;navigation privée}}</translation>
+<translation id="7027432471322992835">Désactiver le pavé tactile</translation>
 <translation id="7029307918966275733">Crostini n'est pas installé. Veuillez installer Crostini pour voir le générique.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030304022046916278">Il envoie des URL à la navigation sécurisée pour les vérifier</translation>
@@ -9453,6 +9467,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7737846262459425222">Vous pouvez modifier cette option en tout temps dans Paramètres &gt; Assistant Google &gt; Contexte à l'écran.</translation>
 <translation id="7737948071472253612">Non autorisés à utiliser votre caméra</translation>
 <translation id="77381465218432215">Afficher les accents et les caractères spéciaux</translation>
+<translation id="7739524723876359011">Appuyez sur <ph name="ACCELERATOR" /> pour sélectionner cette bulle.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Vous pouvez définir le niveau de zoom à appliquer à certains sites Web</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 mot de passe compromis trouvé}one{{NUM_SITES} mot de passe compromis trouvé}other{{NUM_SITES} mots de passe compromis trouvés}}</translation>
@@ -10017,6 +10032,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8119438628456698432">Création des fichiers journaux en cours…</translation>
 <translation id="811994229154425014">Appuyer deux fois sur la barre d'espacement pour entrer un point</translation>
 <translation id="8120505434908124087">Installer un profil eSIM</translation>
+<translation id="8121537075864592453">Plein écran désactivé</translation>
 <translation id="8121750884985440809">Vous diffusez actuellement votre écran</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Fleur jaune et blanche</translation>
@@ -10238,6 +10254,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8276560076771292512">Vider le cache et effectuer une actualisation forcée</translation>
 <translation id="8276850948802942358">En savoir plus sur l'octroi à un site d'une autorisation temporaire d'utiliser des témoins tiers</translation>
 <translation id="8277907305629781277">Vous avez créé cette clé d'accès le <ph name="DATE" /></translation>
+<translation id="827966378414194229">Utilisez des mouvements de la tête et des expressions faciales pour contrôler votre Chromebook. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sites Web dans vos langues</translation>
 <translation id="8280848878018088610">Vagues déferlantes dans la mer, avec une ville et un château fantastiques en arrière-plan, dans une ambiance sombre.</translation>
 <translation id="828180235270931531">Autres imprimantes accessibles</translation>

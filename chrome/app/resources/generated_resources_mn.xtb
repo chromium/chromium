@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp; Хэрэгслүүд</translation>
 <translation id="1122242684574577509">Таниулах үйлдэл амжилтгүй боллоо. Өөрийн ашиглаж байгаа Wi-Fi сүлжээний нэвтрэх хуудас руу орохоор дарна уу (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Өвөмрөц дэлгэцийн зургуудыг загварчлах</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Алдагдсан 1 нууц үг оллоо}other{Алдагдсан {NUM_SITES} нууц үг оллоо}}</translation>
 <translation id="1122913801042512795">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан байна. Гараад дахин нэвтэрнэ үү.</translation>
 <translation id="1122960773616686544">Хадгалагдсан хуудасны нэр</translation>
 <translation id="1124772482545689468">Хэрэглэгч</translation>
@@ -7001,6 +7002,7 @@
 <translation id="5943127421590245687">Та амжилттай баталгаажууллаа. Та дотоод өгөгдлийнхөө түгжээг тайлж, сэргээхийн тулд <ph name="DEVICE_TYPE" />-н хуучин нууц үгээ оруулна уу.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> таны шинэ таб хуудсыг удирдаж байна</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> аюултай байж болзошгүй. Google-н аюулгүй хөтөч рүү скан хийлгэхээр илгээх үү?</translation>
+<translation id="5945192511027649793">Мэдрэгч самбарыг идэвхгүй болгох</translation>
 <translation id="5945363896952315544">Таны аюулгүй байдлын түлхүүр дахин ямар нэг хурууны хээ хадгалах боломжгүй. Шинийг нэмэхийн тулд эхлээд одоо байгаа аль нэг хурууны хээг устгана уу.</translation>
 <translation id="5946591249682680882"><ph name="WEBRTC_LOG_REPORT_ID" /> ID-ыг мэдээлэх</translation>
 <translation id="5947651424015173580">Хулганын зүүн талыг 2 товших</translation>
@@ -8501,6 +8503,7 @@
 <translation id="7025190659207909717">Гар утасны өгөгдлийн үйлчилгээний менежмент</translation>
 <translation id="7025895441903756761">Аюулгүй байдал болон нууцлал</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Бүгдийг &amp;Нууцлалтай цонхонд нээх}=1{&amp;Нууцлалтай цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;Нууцлалтай цонхонд нээх}}</translation>
+<translation id="7027432471322992835">Мэдрэгч самбарыг идэвхгүй болгох</translation>
 <translation id="7029307918966275733">Crostini-г суулгаагүй байна. Кредитийг харахын тулд Crostini-г суулгана уу.</translation>
 <translation id="7029809446516969842">Нууц үг</translation>
 <translation id="7030304022046916278">URL-г шалгуулахаар Аюулгүй үзэх рүү илгээнэ</translation>
@@ -10032,6 +10035,7 @@
 <translation id="8119438628456698432">Лог файлуудыг үүсгэж байна...</translation>
 <translation id="811994229154425014">Цэг бичихийн тулд хоёр зай авах</translation>
 <translation id="8120505434908124087">eSIM профайл суулгах</translation>
+<translation id="8121537075864592453">Бүтэн дэлгэцийг идэвхгүй болгосон</translation>
 <translation id="8121750884985440809">Та одоогоор дэлгэцээ дамжуулж байна</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Шар, цагаан цэцэг</translation>
@@ -10253,6 +10257,7 @@
 <translation id="8276560076771292512">Хоосон кэш ба эрчтэйгээр дахин ачаалах</translation>
 <translation id="8276850948802942358">Сайтад гуравдагч талын күүкинүүдийг ашиглах түр зөвшөөрөл өгөх талаар нэмэлт мэдээлэл авна уу</translation>
 <translation id="8277907305629781277">Та <ph name="DATE" />-нд энэ нэвтрэх түлхүүрийг үүсгэсэн</translation>
+<translation id="827966378414194229">Chromebook-ээ хянахад толгойн хөдөлгөөн, нүүрний хувирал ашиглана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Таны хэлээрх вебсайтууд</translation>
 <translation id="8280848878018088610">Бараан уур амьсгалд ард нь уран зөгнөлт хот, цайз харагдах далайд хүчтэй цохилох давлагаа.</translation>
 <translation id="828180235270931531">Боломжтой бусад хэвлэгч</translation>

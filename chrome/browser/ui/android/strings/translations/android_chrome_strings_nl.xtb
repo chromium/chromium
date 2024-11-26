@@ -650,7 +650,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3985022125189960801">Voeg een site weer toe als je deze wilt opnemen in de groep met sites die mogen raden wat je leuk vindt</translation>
 <translation id="3985215325736559418">Wil je <ph name="FILE_NAME" /> opnieuw downloaden?</translation>
 <translation id="3987993985790029246">Link kopiëren</translation>
-<translation id="3991055816270226534">Cookies van derden en trackingbeveiliging beheren</translation>
 <translation id="4000212216660919741">Homepage voor offline</translation>
 <translation id="4016425174436051808">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="4024768890073681126">Je browser wordt beheerd door je ouder</translation>
@@ -1167,7 +1166,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6341580099087024258">Vragen waar bestanden moeten worden opgeslagen</translation>
 <translation id="6342069812937806050">Zojuist</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> andere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> andere}}</translation>
-<translation id="6344622098450209924">Trackingbeveiliging</translation>
 <translation id="6345878117466430440">Markeren als gelezen</translation>
 <translation id="6356893102071098867">Check of je het juiste account hebt gekozen</translation>
 <translation id="6363990818884053551">Bevestig dat jij het bent om de synchronisatie te starten</translation>

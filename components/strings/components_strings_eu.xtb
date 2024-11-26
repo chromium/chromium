@@ -866,6 +866,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2521736961081452453">Sortu inprimaki bat</translation>
 <translation id="2523886232349826891">Gailu honetan soilik gordeko da</translation>
 <translation id="2524461107774643265">Gehitu informazio gehiago</translation>
+<translation id="2526062290525841862">Aplikazio hau exekutatzeko, gaitu berriro sareko aplikazio isolatuen garatzaile modua</translation>
 <translation id="2526280916094749336">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbidea Google-ko kontuan (<ph name="ACCOUNT" />) gordeko da.</translation>
 <translation id="2527451058878391043">CVCa txartelaren aurrealdean dago. Txartel-zenbakiaren gainean, eskuinaldean dagoen lau digituko kodea da.</translation>
 <translation id="2529899080962247600">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Sarrera gehiagorik badago, ez ikusi egingo zaie.</translation>
@@ -1750,7 +1751,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4123572138124678573">Hiru zulo behean</translation>
 <translation id="412601465078863288">Kargatzeko denbora-muga gainditu da</translation>
 <translation id="4127317221386336246">Jantzien osagarriak</translation>
-<translation id="4127575959421463246">ChromeOS-ko eginbide esperimentalen bila zabiltza? Joan helbide honetara:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
 <translation id="4129992181550680635">Hezkuntza-baliabideak</translation>
 <translation id="4130226655945681476">Sareko kablea, modema eta bideratzailea egiaztatu.</translation>
@@ -4310,7 +4310,6 @@ Xehetasun gehiago:
 <translation id="8792626944327216835">mikrofonoa</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> domeinuak Chrome Enterprise Connectors gaitu du arakatzailean. Konektore horiek zure datu batzuetarako sarbidea dute.</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
-<translation id="8798739476508189189">Eginbide esperimentalen bila zabiltza? Joan helbide honetara:</translation>
 <translation id="8800034312320686233">Ez al du funtzionatzen webguneak?</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" zerrenda-sarrera: sarrerari ez ikusi egin zaio, SpellcheckLanguage gidalerroan ere agertzen delako.</translation>
 <translation id="8806062468703310719">Telefono-zerbitzuen hornitzaileak</translation>

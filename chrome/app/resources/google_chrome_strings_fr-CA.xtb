@@ -374,6 +374,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5602351063754773347">Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome en fait plus pour assurer votre sécurité en ligne</translation>
 <translation id="565744775970812598">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il peut être dangereux.</translation>
+<translation id="566568153320186256">Chrome économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur d'énergie<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour}=1{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur vous recommande de relancer Chrome pour appliquer cette mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="5686916850681061684">Personnaliser et gérer Google Chrome. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -522,6 +523,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7477130805345743099">Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="7481213027396403996">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="749228101751499733">Pendant que vous êtes connecté, vous pouvez utiliser vos mots de passe et bien plus encore à partir de votre compte Google dans Chrome. <ph name="SHORTCUT" /> peut modifier les paramètres de vos services Google.</translation>
+<translation id="7496017508659652909">Chrome précharge les pages, ce qui accélère la navigation et la recherche. <ph name="BEGIN_LINK" />En savoir plus sur les pages de préchargement<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome peut comprendre davantage de types d'informations et remplir automatiquement vos formulaires plus rapidement. En savoir plus sur le <ph name="BEGIN_LINK" />remplissage automatique de Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Service de mise à jour Google</translation>
 <translation id="7515191208480168435">Vous pouvez épingler Lentille Google pour un accès facile</translation>
@@ -638,6 +640,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8712767363896337380">La mise à jour est presque terminée! Redémarrez Chrome pour terminer la mise à jour.</translation>
 <translation id="8718062187489036808">Se déconnecter de Chrome</translation>
 <translation id="873133009373065397">Google Chrome ne parvient pas à déterminer quel est le navigateur par défaut ou à le définir</translation>
+<translation id="8748735421235723888">Chrome libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applis plus de ressources informatiques et assure la rapidité de Chrome. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur de mémoire<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8781673607513845160">Pour utiliser votre caméra, accordez l'accès à Chrome dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une politique de groupe qui empêche l'installation : <ph name="INSTALL_ERROR" /></translation>

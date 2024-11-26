@@ -1754,7 +1754,6 @@
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
 <translation id="412601465078863288">การอัปโหลดหมดเวลาแล้ว</translation>
 <translation id="4127317221386336246">เครื่องประดับเสื้อผ้า</translation>
-<translation id="4127575959421463246">กำลังมองหาการติดธงของ ChromeOS ใช่ไหม ไปที่</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{อีก 1 รายการ}other{อีก # รายการ}}</translation>
 <translation id="4129992181550680635">แหล่งข้อมูลการศึกษา</translation>
 <translation id="4130226655945681476">ตรวจสอบสายเครือข่าย โมเด็ม และเราเตอร์</translation>
@@ -3469,6 +3468,7 @@
 <translation id="725866823122871198">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของคอมพิวเตอร์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
 <translation id="7260075294900977274">โฟลเดอร์อัจฉริยะใหม่ที่ช่วยให้คุณบันทึกหน้าช็อปปิ้งทั้งหมดไว้ในที่เดียว รวมถึงติดตามราคา ดูข้อมูลเชิงลึกด้านราคา และอื่นๆ ได้โดยอัตโนมัติ</translation>
 <translation id="7265608370113700582">ที่อยู่จะใช้งานได้เฉพาะบนอุปกรณ์นี้เท่านั้น</translation>
+<translation id="7269151392155523061">ทางลัดต้องไม่เหมือนกับคีย์เวิร์ดของผู้รวบรวมข้อมูลการค้นหาที่กำหนดโดย <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ไฟล์ที่คุณดาวน์โหลดจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
 <translation id="7275334191706090484">บุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="7275808129217605899">การรับประทานอาหารเพื่อสุขภาพ</translation>
@@ -4317,7 +4317,6 @@
 <translation id="8792626944327216835">ไมโครโฟน</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ได้เปิดใช้เครื่องมือเชื่อมต่อ Chrome Enterprise ในเบราว์เซอร์ เครื่องมือเชื่อมต่อเหล่านี้เข้าถึงข้อมูลบางอย่างของคุณได้</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
-<translation id="8798739476508189189">กำลังมองหาการติดธงของเบราว์เซอร์ใช่ไหม ไปที่</translation>
 <translation id="8800034312320686233">หากเว็บไซต์ไม่ทำงาน</translation>
 <translation id="8805819170075074995">รายการ "<ph name="LANGUAGE_ID" />": ระบบไม่สนใจรายการนี้เพราะมีอยู่ในนโยบาย SpellcheckLanguage เช่นกัน</translation>
 <translation id="8806062468703310719">ผู้ให้บริการโทรศัพท์</translation>

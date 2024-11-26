@@ -65,6 +65,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="1863308913976887472">Nettsteder kan lagre informasjon om interessene dine i Chromium. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="1880677175115548835">Merk tekst</translation>
 <translation id="1881322772814446296">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chromium-dataene atskilte. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium sparer batteri ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer. <ph name="BEGIN_LINK" />Finn ut mer om strømsparing<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium-oppdateringstjeneste</translation>
 <translation id="1911763535808217981">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du starte den på nytt nå?</translation>
@@ -262,6 +263,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4544142686420020088">Chromium ble ikke oppdatert. Noe gikk galt. <ph name="BEGIN_LINK" />Løs problemer med Chromium-oppdateringer og mislykkede oppdateringer.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium kan gjøre denne fanen inaktiv for å holde seg rask og gi deg en bedre surfeopplevelse.</translation>
 <translation id="454579500955453258">Vil du fortsette i en ny Chromium-profil?</translation>
+<translation id="4548534452171747496">Chromium forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4570813286784708942">Chromium har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>
 <translation id="4594305310729380060">I Passordlagring på denne enheten</translation>
@@ -335,6 +337,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
 <translation id="5761096224651992291">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium frigjør minne fra inaktive faner. Dette gir aktive faner og andre apper flere datamaskinressurser og holder Chromium rask. De inaktive fanene dine blir automatisk aktive igjen når du går tilbake til dem. <ph name="BEGIN_LINK" />Finn ut mer om minnesparing<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Tilpass og kontroller Chromium. Angi Chromium som standard.</translation>
 <translation id="5809516625706423866">Kan ikke koble til internett. HTTP 401 – uautorisert. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="5821520528363214608">Oppdater Chromium for å bruke og lagre Chromium-data i Google-kontoen din.</translation>

@@ -650,7 +650,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3985022125189960801">Varat atkārtoti pievienot vietni, ja vēlaties to atkal iekļaut to vietņu grupā, kurām atļaujat prognozēt jūsu intereses</translation>
 <translation id="3985215325736559418">Vai vēlaties vēlreiz lejupielādēt failu <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Saites kopēšana</translation>
-<translation id="3991055816270226534">Trešo pušu sīkfailu un izsekošanas aizsardzības pārvaldība</translation>
 <translation id="4000212216660919741">Bezsaistes sākums</translation>
 <translation id="4016425174436051808">Nevar sekot. Radās kļūda.</translation>
 <translation id="4024768890073681126">Pārlūku pārvalda jūsu vecāki</translation>
@@ -1167,7 +1166,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6341580099087024258">Vaicāt, kur saglabāt failus</translation>
 <translation id="6342069812937806050">Tikko</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}zero{<ph name="SHIPPING_ADDRESS_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Izsekošanas aizsardzība</translation>
 <translation id="6345878117466430440">Atzīmēt kā izlasītu</translation>
 <translation id="6356893102071098867">Pārbaudiet, vai izvēlējāties pareizo kontu.</translation>
 <translation id="6363990818884053551">Lai sāktu sinhronizāciju, apstipriniet savu identitāti</translation>

@@ -866,6 +866,7 @@
 <translation id="2521736961081452453">Създаване на формуляр</translation>
 <translation id="2523886232349826891">Запазено само на това устройство</translation>
 <translation id="2524461107774643265">Добавяне на още информация</translation>
+<translation id="2526062290525841862">За да стартирате това приложение, активирайте отново режима за програмисти за изолирани уеб приложения</translation>
 <translation id="2526280916094749336">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Кодът за проверка се намира върху лицевата страна на картата ви. Това е 4-цифреният код горе вдясно над номера на картата.</translation>
 <translation id="2529899080962247600">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Следващите се пренебрегват.</translation>
@@ -1754,7 +1755,6 @@
 <translation id="4123572138124678573">Тройно перфориране в долната част</translation>
 <translation id="412601465078863288">Времето за изчакване при качване изтече</translation>
 <translation id="4127317221386336246">Аксесоари към облеклото</translation>
-<translation id="4127575959421463246">Търсите флаговете за Chrome OS? Посетете</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{още 1 елемент}other{още # елемента}}</translation>
 <translation id="4129992181550680635">Образователни ресурси</translation>
 <translation id="4130226655945681476">Проверете мрежовите кабели, модема и маршрутизатора.</translation>
@@ -4316,7 +4316,6 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685">Домейнът <ph name="ENROLLMENT_DOMAIN" /> е включил Chrome Enterprise Connectors в браузъра ви. Тези конектори имат достъп до някои от данните ви.</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
-<translation id="8798739476508189189">Търсите флаговете за браузъра? Посетете</translation>
 <translation id="8800034312320686233">Сайтът не работи?</translation>
 <translation id="8805819170075074995">Списъчен запис „<ph name="LANGUAGE_ID" />“: Записът е пренебрегнат, защото е включен и в правилото SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Телефонни оператори</translation>

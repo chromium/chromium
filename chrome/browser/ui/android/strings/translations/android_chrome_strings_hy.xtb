@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">Դուք ցանկացած պահի կարող եք հանել կայքը արգելափակվածների ցուցակից</translation>
 <translation id="3985215325736559418">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
 <translation id="3987993985790029246">Պատճենել հղումը</translation>
-<translation id="3991055816270226534">Երրորդ կողմի քուքիների և հետագծումից պաշտպանության կառավարում</translation>
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="4024768890073681126">Ձեր դիտարկիչը կառավարում է ձեր ծնողը</translation>
@@ -1167,7 +1166,6 @@
 <translation id="6341580099087024258">Հարցնել, թե որտեղ պահել ֆայլերը</translation>
 <translation id="6342069812937806050">Հենց նոր</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}}</translation>
-<translation id="6344622098450209924">Հետագծման արգելափակում</translation>
 <translation id="6345878117466430440">Նշել որպես կարդացված</translation>
 <translation id="6356893102071098867">Համոզվեք, որ ընտրել եք ճիշտ հաշիվը</translation>
 <translation id="6363990818884053551">Համաժամացումը սկսելու համար հաստատեք ձեր ինքնությունը</translation>

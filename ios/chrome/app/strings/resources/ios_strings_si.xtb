@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">භාර දීමට තැත් කරන ලදි. යළි උත්සාහ කරනු ඇත</translation>
 <translation id="3557336313807607643">සම්බන්ධතා වලට එක් කරන්න</translation>
 <translation id="355765753469272474">අස් කරන්න</translation>
+<translation id="3562379378751492229">ඔබට වඩාත් ගැළපෙන ස්ථානය තෝරන්න.</translation>
 <translation id="3565930036634619844">පටිත්ත. <ph name="NUMBER_OF_TABS" />න් <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">තවත් මුරපද සඳහා දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="3572607909481582402">ඔබේ Google ගිණුම තුළ</translation>
@@ -968,6 +969,7 @@
 <translation id="5506763544823940561">රූපය සුරකින්න…</translation>
 <translation id="5511959326926949696">ඔබේ බ්‍රව්සරය සඳහා අතිශය විකල්පමය ආරක්ෂණය. එය භාවිතා කළ යුත්තේ ඔබ ඉතා සංකීර්ණ සයිබර් ප්‍රහාරයකින් ඉලක්ක කළ හැකි යැයි ඔබ විශ්වාස කරන්නේ නම් පමණි.</translation>
 <translation id="5513681519188741830">පැ <ph name="TIME" />කට පෙර</translation>
+<translation id="5524590039848017563">හකුළන ලද මූලික මෙවලම් තීරු බොත්තම</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} දුර්වල මුරපදයක්}one{දුර්වල මුරපද {COUNT}ක්}other{දුර්වල මුරපද {COUNT}ක්}}</translation>
 <translation id="5532545557415295622">අකර්මණ්‍ය යල් පැනීම් සංවාදය</translation>
 <translation id="5548760955356983418">Handoff ඔබට මෙම උපාංගය මත වෙබ් අඩවියක් බ්‍රවුස් කිරීම ඇරඹීමට ඉඩ දෙන අතර අනතුරුව ඔබේ Mac එකේ දිගටම කරගෙන යාමට ඉඩ දෙයි. වත්මන් විවෘත යෙදුම ඔබේ Mac හි ඩොක් තුළ දිස් වනු ඇත.
@@ -992,6 +994,7 @@
 <translation id="5611398002774823980">ගිණුමේ සුරකින්න</translation>
 <translation id="5613297089029360427">නවතම අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="5614553682702429503">මුරපදය සුරකින්න ද?</translation>
+<translation id="5614805397884895755">ඔබේ මුල් තිරයෙන් වේගවත් ප්‍රවේශය ලබා ගන්න.</translation>
 <translation id="5619871095170816857">මෙම කාඩ්පත පසුගිය පැය 24 තුළ ඔබේ සියලු සමමුහුර්ත උපාංග හරහා ඔබ අවසන් වරට භාවිත කළ විවෘත පටිත්ත පෙන්වයි.</translation>
 <translation id="5624120631404540903">මුරපද පාලනය</translation>
 <translation id="5624637933505983014">සමමුහුර්ත කිරීම ක්‍රියාත්මක නොකරන්න</translation>
@@ -1496,6 +1499,7 @@
 <translation id="7812377703891978671">ඔබට <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> තේරීමෙන් ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාස සියල්ල වෙත ප්‍රවේශ විය හැක.</translation>
 <translation id="78146569776629510">බාගැනීම්</translation>
 <translation id="7815852444315004084">දැනට සඟවන්න</translation>
+<translation id="7831876841288640403">ඔබට වඩාත් ගැළපෙන ඔබේ ලිපින තීරුවෙහි පිහිටීම තෝරන්න.</translation>
 <translation id="7839994177130598711"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> වෙත පුරන්නට Google මුරපද කළමනාකරු භාවිත කරන විට ඔබේ පවුලේ සාමාජිකයින්ට දැන් ඔබේ පරිශීලක නාමය සහ මුරපදය භාවිත කළ හැක.</translation>
 <translation id="7840771868269352570">ඔබ තෝරාගත් අයිතම ඉවත් කෙරෙනු ඇත.</translation>
 <translation id="7841180087127694526">පිටපත් කළ පාඨය සොයන්න</translation>

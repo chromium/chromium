@@ -189,6 +189,19 @@ Le libellé est personnalisable avec la règle <ph name="ENTERPRISE_CUSTOM_LABEL
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Ne pas afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="1111824532252882775">Activé : les barres de défilement sont sélectionnables par défaut.</translation>
+<translation id="1112125878718482033">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Désactiver la fonctionnalité.
+
+Les fonctionnalités d'IA générative des outils de développement incluent les suivantes :
+
+- Console Insights : décrit les messages de la console et propose des suggestions pour corriger les erreurs dans la console.
+
+- Assistance IA : obtenez de l'aide pour mieux comprendre les styles CSS (depuis la version 131), les requêtes réseau, les performances et les fichiers (tous depuis la version 132).</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
@@ -4514,9 +4527,6 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 <translation id="4410236409016356088">Activer la limitation de la bande passante réseau</translation>
 <translation id="4410361389637971319">Autoriser les origines d'applis Web isolées à utiliser Direct Sockets</translation>
 <translation id="4411734231900934213">Différence autorisée, en secondes, entre l'horloge de l'appareil de l'enfant et celle de l'appareil des parents.</translation>
-<translation id="4411759973223339687">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent les connexions en mode Invité. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
-
-      Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'utilisation de profils Invité.</translation>
 <translation id="441217499641439905">Désactiver Google Drive en cas de connexion au réseau mobile dans l'application "Fichiers" de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Si cette règle est activée, la visionneuse de PDF interne est désactivée dans <ph name="PRODUCT_NAME" />, les fichiers PDF sont téléchargés, et les utilisateurs peuvent les ouvrir avec l'application par défaut.
 
@@ -10025,6 +10035,11 @@ Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantit
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Désactiver l'enregistrement de l'historique du navigateur</translation>
 <translation id="8499172469244085141">Paramètres par défaut (les utilisateurs peuvent les contourner)</translation>
+<translation id="8499359456965625209">Cette règle est obsolète.
+
+Si cette règle est activée ou si elle n'est pas configurée, les logiciels tiers ne peuvent pas injecter de code exécutable dans les processus de <ph name="PRODUCT_NAME" />.
+
+      Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8503018573167958506">Détermine si un utilisateur est autorisé à configurer le nom d'hôte de l'appareil.
 
       Si <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> est configurée, l'administrateur détermine le nom d'hôte et l'utilisateur n'est pas autorisé à en choisir un, peu importe ce sur quoi cette règle est définie.

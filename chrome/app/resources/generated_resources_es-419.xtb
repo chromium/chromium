@@ -184,6 +184,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación; haz clic para visitar la página de acceso correspondiente a la red Wi-Fi que estás usando (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Diseña fondos de pantalla únicos</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Se encontró 1 contraseña hackeada}other{Se encontraron {NUM_SITES} contraseñas hackeadas}}</translation>
 <translation id="1122913801042512795">Los detalles de acceso de tu cuenta están desactualizados. Sal y vuelve a acceder.</translation>
 <translation id="1122960773616686544">Nombre del marcador</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -5746,6 +5747,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5045367873597907704">Información acerca de los dispositivos HID</translation>
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="504561833207953641">Abriendo en una sesión existente del navegador</translation>
+<translation id="504953514574706691">Se excluyó la pestaña del grupo sugerido</translation>
 <translation id="5049614114599109018">Utilizar el historial de entrada</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Este sitio envió muchas notificaciones recientemente. Puedes impedir que te envíe notificaciones en el futuro.}other{Estos sitios enviaron muchas notificaciones recientemente. Puedes impedir que te envíen notificaciones en el futuro.}}</translation>
 <translation id="5050330054928994520">Texto a voz</translation>
@@ -5797,6 +5799,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5079950360618752063">Usar la contraseña sugerida</translation>
 <translation id="508059534790499809">Actualizar un ticket de Kerberos</translation>
 <translation id="5081124414979006563">&amp;Abrir el perfil de invitado</translation>
+<translation id="508209203623347828">Si inhabilitas esta tarjeta, también se inhabilitarán tus tarjetas de Microsoft, como SharePoint y el calendario de Outlook.</translation>
 <translation id="5083035541015925118">Ctrl + Alt + flecha hacia arriba</translation>
 <translation id="5084328598860513926">Se interrumpió el flujo de aprovisionamiento. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Es más probable que los sitios funcionen como esperas.</translation>
@@ -5996,6 +5999,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5216674789212441076">Traduce automáticamente los subtítulos instantáneos. Los subtítulos se envían a Google para su traducción.</translation>
 <translation id="5220011581825921581">Búsqueda + flecha hacia arriba</translation>
 <translation id="5221516927483787768">No se puede transmitir <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Se excluyó la pestaña de la lista</translation>
 <translation id="5222403284441421673">Se bloqueó una descarga no segura</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5225324770654022472">Mostrar acceso directo a las aplicaciones</translation>
@@ -6477,6 +6481,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="5571092938913434726">Controles generales de contenido multimedia</translation>
 <translation id="5571832155627049070">Personaliza tu perfil</translation>
+<translation id="5572000034319109899">Borrar pestañas sin usar</translation>
 <translation id="5572166921642484567">Elegir un modo de esquema de colores</translation>
 <translation id="5572252023412311448">Mostrar detalles del sitio para <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Ver los permisos de extensiones para otros sitios</translation>
@@ -6986,6 +6991,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5943127421590245687">Se completó correctamente la verificación de la cuenta. Para desbloquearla y restablecer los datos locales, ingresa la contraseña anterior de <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> administra tu página Nueva pestaña</translation>
 <translation id="5945002094477276055">El archivo <ph name="FILE_NAME" /> puede ser peligroso. ¿Quieres enviarlo a la Navegación segura de Google para analizarlo?</translation>
+<translation id="5945192511027649793">Inhabilitar Panel táctil</translation>
 <translation id="5945363896952315544">Tu llave de seguridad no puede almacenar más huellas digitales. Para agregar una nueva, primero borra una huella digital existente.</translation>
 <translation id="5946591249682680882">ID de informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Hacer doble clic con el mouse</translation>
@@ -8041,6 +8047,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6725073593266469338">Servicio de IU</translation>
 <translation id="6725206449694821596">Protocolo de impresión por Internet (IPP)</translation>
+<translation id="6725627354629889015">¿Quieres borrar las pestañas sin usar?</translation>
 <translation id="6725970970008349185">Cantidad de candidatos para mostrar por página</translation>
 <translation id="672609503628871915">Novedades</translation>
 <translation id="6726800386221816228">Caracteres especiales</translation>
@@ -8486,6 +8493,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7025190659207909717">Administración del servicio de datos para celulares</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todo en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todo ({COUNT}) en una ventana de &amp;incógnito}}</translation>
+<translation id="7027432471322992835">Inhabilitar Panel táctil</translation>
 <translation id="7029307918966275733">No se instaló Crostini. Instálalo para ver los créditos.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030304022046916278">Envía las URL a la Navegación segura para revisarlas.</translation>
@@ -10020,6 +10028,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8119438628456698432">Generando archivos de registro…</translation>
 <translation id="811994229154425014">Doble espacio para escribir un punto</translation>
 <translation id="8120505434908124087">Instalar el perfil de eSIM</translation>
+<translation id="8121537075864592453">Se inhabilitó la pantalla completa</translation>
 <translation id="8121750884985440809">Estás transmitiendo la pantalla</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor amarilla y blanca</translation>
@@ -10241,6 +10250,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8276560076771292512">Vaciar caché y volver a cargar de manera forzada</translation>
 <translation id="8276850948802942358">Más información para permitir temporalmente que un sitio use cookies de terceros</translation>
 <translation id="8277907305629781277">Creaste esta llave de acceso el <ph name="DATE" /></translation>
+<translation id="827966378414194229">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sitios web en tus idiomas</translation>
 <translation id="8280848878018088610">Olas rompiendo en el mar, con una ciudad fantástica y un castillo en el fondo, en un ambiente oscuro.</translation>
 <translation id="828180235270931531">Otras impresoras disponibles</translation>

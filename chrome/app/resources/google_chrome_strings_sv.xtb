@@ -375,6 +375,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5602351063754773347">Vi rekommenderar att du tar bort det. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome gör mer för att skydda dig online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan vara skadlig och har blockerats av Chrome.</translation>
+<translation id="566568153320186256">Chrome sparar batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer om strömsparläget<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas}=1{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="5686916850681061684">Anpassa och styr Google Chrome. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -523,6 +524,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7477130805345743099">Chrome varnar dig innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="7481213027396403996">Få det bästa skyddet i Chrome</translation>
 <translation id="749228101751499733">När du är inloggad kan du använda dina lösenord och annat från ditt Google-konto i Chrome. Du kan ändra dina inställningar för Googles tjänster med <ph name="SHORTCUT" />.</translation>
+<translation id="7496017508659652909">Sidor läses in i förväg i Chrome, vilket gör det snabbare att surfa och söka. <ph name="BEGIN_LINK" />Läs mer om att läsa in sidor i förväg<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome förstår flera typer av information och kan autofylla dina formulär snabbare. Läs mer om <ph name="BEGIN_LINK" />autofyll i Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google-uppdateringstjänst</translation>
 <translation id="7515191208480168435">Du kan fästa Google Lens för enkel åtkomst</translation>
@@ -639,6 +641,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8712767363896337380">Uppdateringen är snart klar! Starta om Chrome för att slutföra uppdateringen.</translation>
 <translation id="8718062187489036808">Logga ut från Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan inte fastställa eller ange standardwebbläsaren</translation>
+<translation id="8748735421235723888">Chrome frigör minne från inaktiva flikar. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chrome fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer om minnessparläget<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8781673607513845160">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda kameran</translation>
 <translation id="878572486461146056">Installationsfel: Nätverksadministratören har tillämpat en grupprincip som förhindrar installation: <ph name="INSTALL_ERROR" /></translation>

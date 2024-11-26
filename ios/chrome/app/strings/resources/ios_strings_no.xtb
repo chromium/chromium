@@ -554,6 +554,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3549391962818677448">Forsøkt levert. Kommer til å prøve på nytt</translation>
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="355765753469272474">Angre</translation>
+<translation id="3562379378751492229">Velg posisjonen som passer best for deg.</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Dobbelttrykk for å se flere passord.</translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
@@ -968,6 +969,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5506763544823940561">Lagre bildet i…</translation>
 <translation id="5511959326926949696">Ekstrem, valgfri beskyttelse for nettleseren din. Den skal bare brukes hvis du mener at du kan bli offer for et svært sofistikert cyberangrep.</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t siden</translation>
+<translation id="5524590039848017563">Skjult hovedknapp på verktøylinjen</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5532545557415295622">Dialogboks for tidsavbrudd ved inaktivitet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynne å se gjennom en nettside på denne enheten og deretter fortsette på Mac-en din uten problemer. Den åpne nettsiden vises i dokken til Mac-en din.
@@ -992,6 +994,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5611398002774823980">Lagre i kontoen</translation>
 <translation id="5613297089029360427">Sorter etter nyeste</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
+<translation id="5614805397884895755">Få raskere tilgang fra Hjem-skjermen.</translation>
 <translation id="5619871095170816857">Dette kortet viser den sist brukte åpne fanen på alle de synkroniserte enhetene dine i løpet av det siste døgnet.</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
 <translation id="5624637933505983014">Ikke slå på synkronisering</translation>
@@ -1496,6 +1499,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7812377703891978671">Du kan se hele nettleserloggen ved å velge <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Nedlastinger</translation>
 <translation id="7815852444315004084">Skjul for øyeblikket</translation>
+<translation id="7831876841288640403">Velg den posisjonen for adressefeltet som passer best for deg.</translation>
 <translation id="7839994177130598711">Nå kan familiemedlemmene dine bruke brukernavnet og passordet ditt når de bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">De valgte elementene blir fjernet.</translation>
 <translation id="7841180087127694526">Søk etter teksten du kopierte</translation>

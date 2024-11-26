@@ -184,6 +184,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Non se puido efectuar a autenticación. Fai clic para visitar a páxina de inicio de sesión da rede wifi que utilizas (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Deseña fondos de pantalla únicos</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Atopouse 1 contrasinal vulnerado}other{Atopáronse {NUM_SITES} contrasinais vulnerados}}</translation>
 <translation id="1122913801042512795">Os datos do inicio de sesión da túa conta non están actualizados. Pecha sesión e iníciaa de novo.</translation>
 <translation id="1122960773616686544">Nome do marcador</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -6993,6 +6994,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5943127421590245687">A verificación levouse a cabo correctamente. Para desbloquear e restaurar os teus datos locais, introduce o contrasinal antigo do dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> xestiona a túa páxina Nova pestana</translation>
 <translation id="5945002094477276055">O ficheiro <ph name="FILE_NAME" /> pode ser perigoso. Queres enviarllo á Navegación segura de Google para que o analice?</translation>
+<translation id="5945192511027649793">Desactivar o panel táctil</translation>
 <translation id="5945363896952315544">Non se poden almacenar máis impresións dixitais na chave de seguranza. Se queres engadir unha impresión dixital nova, primeiro elimina unha das que tes gardadas.</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Facer dobre clic co rato</translation>
@@ -8492,6 +8494,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7025190659207909717">Xestión de servizos de datos móbiles</translation>
 <translation id="7025895441903756761">Seguranza e privacidade</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todos nunha ventá de &amp;incógnito}=1{Abrir nunha ventá de &amp;incógnito}other{Abrir todos ({COUNT}) nunha ventá de &amp;incógnito}}</translation>
+<translation id="7027432471322992835">Desactivar o panel táctil</translation>
 <translation id="7029307918966275733">Crostini non está instalado. Instálao para ver os créditos.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7030304022046916278">Envía enderezos URL á función Navegación segura para comprobalos</translation>
@@ -10025,6 +10028,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8119438628456698432">Xerando ficheiros de rexistro…</translation>
 <translation id="811994229154425014">Escribir punto ao poñer dous espazos</translation>
 <translation id="8120505434908124087">Instalar perfil de eSIM</translation>
+<translation id="8121537075864592453">Pantalla completa desactivada</translation>
 <translation id="8121750884985440809">Estás emitindo a pantalla</translation>
 <translation id="8122898034710982882">O meu teléfono, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor branca e amarela</translation>
@@ -10246,6 +10250,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8276560076771292512">Baleirar a caché e cargar de novo desde cero</translation>
 <translation id="8276850948802942358">Máis información sobre como conceder permiso temporal a un sitio para que use cookies de terceiros</translation>
 <translation id="8277907305629781277">Creaches esta clave de acceso o <ph name="DATE" /></translation>
+<translation id="827966378414194229">Usa os movementos da cabeza e as expresións faciais para controlar o teu Chromebook. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sitios web nos teus idiomas</translation>
 <translation id="8280848878018088610">Ondas rompendo no mar, cun castelo e unha cidade fantásticos de fondo e un ambiente sombrío.</translation>
 <translation id="828180235270931531">Outras impresoras dispoñibles</translation>

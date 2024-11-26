@@ -67,6 +67,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="1863308913976887472">Webbplatser kan lagra information om dina intressen med Chromium. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="1880677175115548835">Markera text</translation>
 <translation id="1881322772814446296">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chromium-uppgifter separata. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium sparar batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer om strömsparläget<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium-uppdateringstjänst</translation>
 <translation id="1911763535808217981">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar inte. Vill du starta om?</translation>
@@ -264,6 +265,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4544142686420020088">Ett fel uppstod och Chromium uppdaterades inte. <ph name="BEGIN_LINK" />Åtgärda uppdateringsproblem och misslyckade uppdateringar i Chromium<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">Chromium kan inaktivera den här fliken så att allt förblir snabbt och din surfupplevelse blir bättre.</translation>
 <translation id="454579500955453258">Vill du fortsätta med en ny Chromium-profil?</translation>
+<translation id="4548534452171747496">Sidor läses in i förväg i Chromium, vilket gör det snabbare att surfa och söka. <ph name="BEGIN_LINK" />Läs mer om att läsa in sidor i förväg<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Du är inloggad som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du komma åt dina bokmärken, historik och andra inställningar på alla enheter som du är inloggad på.</translation>
 <translation id="4570813286784708942">Den här nedladdningen blockerades av Chromium eftersom du har inaktiverat Säker webbsökning och filen inte kan verifieras</translation>
 <translation id="4594305310729380060">I Lösenordshantering på den här enheten</translation>
@@ -337,6 +339,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
 <translation id="5761096224651992291">Du har inte besökt webbplatsen nyligen. Chromium har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium frigör minne från inaktiva flikar. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chromium fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer om minnessparläget<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Anpassa och kontrollera Chromium. Ställ in Chromium som standardwebbläsare.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
 <translation id="5821520528363214608">Uppdatera Chromium om du vill använda och spara Chromium-data i ditt Google-konto</translation>

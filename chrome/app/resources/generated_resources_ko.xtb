@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">도구(&amp;T)</translation>
 <translation id="1122242684574577509">인증에 실패했습니다. 클릭하여 사용 중인 Wi-Fi 네트워크(<ph name="NETWORK_ID" />)의 로그인 페이지로 이동하세요.</translation>
 <translation id="1122587596907914265">나만의 배경화면을 꾸며보세요.</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{유출된 비밀번호 1개 발견됨}other{유출된 비밀번호 {NUM_SITES}개 발견됨}}</translation>
 <translation id="1122913801042512795">계정 로그인 정보가 오래되었습니다. 로그아웃한 다음 다시 로그인하세요.</translation>
 <translation id="1122960773616686544">북마크 이름</translation>
 <translation id="1124772482545689468">사용자</translation>
@@ -7007,6 +7008,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5943127421590245687">인증이 완료되었습니다. 로컬 데이터를 잠금 해제하고 복원하려면 이전 <ph name="DEVICE_TYPE" /> 비밀번호를 입력하세요</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" />에서 새 탭 페이지를 관리합니다.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 세이프 브라우징으로 전송하시겠습니까?</translation>
+<translation id="5945192511027649793">터치패드 사용 중지</translation>
 <translation id="5945363896952315544">보안 키에 지문을 추가로 저장할 수 없습니다. 새 지문을 추가하려면 먼저 기존 지문을 삭제하세요.</translation>
 <translation id="5946591249682680882">보고서 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">마우스 더블클릭</translation>
@@ -8508,6 +8510,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7025190659207909717">모바일 데이터 서비스 관리</translation>
 <translation id="7025895441903756761">보안 및 개인 정보 보호</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{시크릿 창에서 모두 열기(&amp;I)}=1{시크릿 창에서 열기(&amp;I)}other{시크릿 창에서 {COUNT}개 모두 열기(&amp;I)}}</translation>
+<translation id="7027432471322992835">트랙패드 사용 중지</translation>
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7030304022046916278">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다.</translation>
@@ -10042,6 +10045,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8119438628456698432">로그 파일 생성 중...</translation>
 <translation id="811994229154425014">스페이스바를 2번 눌러 마침표 입력</translation>
 <translation id="8120505434908124087">eSIM 프로필 설치</translation>
+<translation id="8121537075864592453">전체 화면 사용 중지됨</translation>
 <translation id="8121750884985440809">현재 화면을 전송하고 있습니다</translation>
 <translation id="8122898034710982882">휴대전화 허브, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">노란색과 흰색 꽃</translation>
@@ -10263,6 +10267,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8276560076771292512">캐시 비우기 및 강력 새로고침</translation>
 <translation id="8276850948802942358">사이트에 서드 파티 쿠키를 사용할 수 있는 임시 권한 부여에 대해 자세히 알아보기</translation>
 <translation id="8277907305629781277"><ph name="DATE" />에 이 패스키를 생성했습니다</translation>
+<translation id="827966378414194229">머리 움직임과 표정을 사용하여 Chromebook을 제어합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">내 언어로 된 웹사이트</translation>
 <translation id="8280848878018088610">어두운 분위기의 바다에 파도가 치고, 그뒤로 환상적인 도시와 성이 보입니다.</translation>
 <translation id="828180235270931531">사용 가능한 다른 프린터</translation>

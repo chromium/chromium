@@ -369,6 +369,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5602351063754773347">Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome 會進一步保護你的上網安全</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chrome 封鎖。</translation>
+<translation id="566568153320186256">Chrome 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用這項更新}=1{系統管理員要求你重新啟動 Chrome，以套用這項更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用這項更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="5686916850681061684">自訂及管理 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -517,6 +518,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7477130805345743099">在使用不安全的連線載入任何網站前，Chrome 會發出警告</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入帳戶就能在 Chrome 中使用 Google 帳戶儲存的密碼和其他資訊。按下 <ph name="SHORTCUT" /> 可變更 Google 服務設定。</translation>
+<translation id="7496017508659652909">Chrome 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome 可以辨識更多類型的資訊，更快自動填入表單。進一步瞭解 <ph name="BEGIN_LINK" />Chrome 自動填入功能<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google 更新工具服務</translation>
 <translation id="7515191208480168435">固定 Google 智慧鏡頭可方便之後存取。</translation>
@@ -633,6 +635,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8712767363896337380">即將更新為最新版本！重新啟動 Chrome 即可完成更新程序。</translation>
 <translation id="8718062187489036808">登出 Chrome</translation>
 <translation id="873133009373065397">Google Chrome 無法偵測或設定預設瀏覽器</translation>
+<translation id="8748735421235723888">Chrome 會釋出閒置分頁占用的記憶體，將更多電腦資源提供給使用中的分頁和其他應用程式，同時保持 Chrome 快速運作。當你切回閒置分頁時，這些分頁會自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8781673607513845160">如要使用攝影機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chrome 存取權</translation>
 <translation id="878572486461146056">安裝錯誤：網路管理員採用的「群組原則」不允許安裝應用程式：<ph name="INSTALL_ERROR" /></translation>

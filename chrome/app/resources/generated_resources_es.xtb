@@ -184,6 +184,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación. Haz clic para acceder a la página de inicio de sesión de la red Wi-Fi que estés utilizando (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Diseña fondos de pantalla únicos</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Se ha encontrado 1 contraseña vulnerada}other{Se han encontrado {NUM_SITES} contraseñas vulneradas}}</translation>
 <translation id="1122913801042512795">La información de inicio de sesión de tu cuenta no está actualizada. Cierra la sesión y vuelve a iniciarla.</translation>
 <translation id="1122960773616686544">Nombre de marcador</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -2678,7 +2679,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2832124733806557606">Tu hijo/a puede usar el PIN para iniciar sesión en el dispositivo o para desbloquearlo.</translation>
 <translation id="2833144527504272627">Desplazarse con el cursor de texto</translation>
 <translation id="2833727845850279275">Este archivo contiene malware o procede de un sitio sospechoso.</translation>
-<translation id="2834091109531651093">Ver tus archivos del Calendario de Outlook y de SharePoint</translation>
+<translation id="2834091109531651093">Consulta tus archivos del Calendario de Outlook y de SharePoint</translation>
 <translation id="2835177225987815960">Se borrará la configuración de búsqueda actual, incluyendo todos los interruptores asignados y las preferencias de velocidad de la búsqueda automática.</translation>
 <translation id="2835547721736623118">Servicio de reconocimiento de voz</translation>
 <translation id="2835761321523638096">Leer y cambiar entradas en la lista de lectura</translation>
@@ -6991,6 +6992,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5943127421590245687">Verificación realizada correctamente. Para desbloquear y restaurar tus datos locales, introduce la contraseña anterior de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> gestiona tu página Nueva pestaña</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> podría ser peligroso. ¿Enviar a Navegación segura de Google para analizarlo?</translation>
+<translation id="5945192511027649793">Inhabilitar panel táctil</translation>
 <translation id="5945363896952315544">Tu llave de seguridad no puede almacenar más huellas digitales. Para añadir una huella nueva, elimina alguna de las que hay.</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Hacer doble clic con el ratón</translation>
@@ -8492,6 +8494,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7025190659207909717">Administración de servicio de datos para móviles</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todas en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todas ({COUNT}) en una ventana de &amp;incógnito}}</translation>
+<translation id="7027432471322992835">Inhabilitar panel táctil</translation>
 <translation id="7029307918966275733">Crostini no está instalado. Para ver los créditos, instala Crostini.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030304022046916278">Envía URLs a Navegación segura para comprobarlas.</translation>
@@ -10026,6 +10029,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8119438628456698432">Generando archivos de registro...</translation>
 <translation id="811994229154425014">Doble espacio para escribir un punto</translation>
 <translation id="8120505434908124087">Instalar perfil de eSIM</translation>
+<translation id="8121537075864592453">Pantalla completa inhabilitada</translation>
 <translation id="8121750884985440809">Estás enviando tu pantalla</translation>
 <translation id="8122898034710982882">Mi teléfono, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Flor blanca y amarilla</translation>
@@ -10247,6 +10251,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8276560076771292512">Vaciar la caché y volver a cargar de manera forzada</translation>
 <translation id="8276850948802942358">Más información sobre cómo dar permiso temporal a un sitio para que use cookies de terceros</translation>
 <translation id="8277907305629781277">Creaste esta llave de acceso el <ph name="DATE" /></translation>
+<translation id="827966378414194229">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sitios web en tus idiomas</translation>
 <translation id="8280848878018088610">Olas rompiendo en el mar con una ciudad fantástica y un castillo de fondo en un ambiente oscuro.</translation>
 <translation id="828180235270931531">Otras impresoras disponibles</translation>

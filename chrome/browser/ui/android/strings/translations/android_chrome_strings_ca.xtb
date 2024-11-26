@@ -650,7 +650,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3985022125189960801">Torna a afegir un lloc web si vols que aparegui al grup de llocs web que poden determinar què t'agrada</translation>
 <translation id="3985215325736559418">Vols tornar a baixar <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia l'enllaç</translation>
-<translation id="3991055816270226534">Gestiona les galetes de tercers i les proteccions antiseguiment</translation>
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
 <translation id="4016425174436051808">No es pot seguir. S'ha produït un error.</translation>
 <translation id="4024768890073681126">El pare o la mare gestiona el navegador</translation>
@@ -1167,7 +1166,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6341580099087024258">Pregunta on es desen els fitxers</translation>
 <translation id="6342069812937806050">Ara mateix</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}}</translation>
-<translation id="6344622098450209924">Protecció antiseguiment</translation>
 <translation id="6345878117466430440">Marca com a llegit</translation>
 <translation id="6356893102071098867">Comprova que hagis triat el compte correcte</translation>
 <translation id="6363990818884053551">Per iniciar la sincronització, verifica la teva identitat</translation>

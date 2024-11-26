@@ -1755,7 +1755,6 @@
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
 <translation id="412601465078863288">פג הזמן שהוקצב להעלאה</translation>
 <translation id="4127317221386336246">אביזרי הלבשה</translation>
-<translation id="4127575959421463246">‏רוצה למצוא את התכונות הניסיוניות של ChromeOS? אפשר להיכנס אל</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}one{# נוספים}two{שניים נוספים}other{# נוספים}}</translation>
 <translation id="4129992181550680635">משאבים חינוכיים</translation>
 <translation id="4130226655945681476">כדאי לבדוק את כבלי הרשת, את המודם ואת הנתב</translation>
@@ -3475,6 +3474,7 @@ Del</translation>
 <translation id="725866823122871198">לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> מפני שהתאריך והשעה (<ph name="DATE_AND_TIME" />) במחשב שלך שגויים.</translation>
 <translation id="7260075294900977274">תיקייה חכמה חדשה שעוזרת לך לשמור את כל דפי הקניות במקום אחד, ולעקוב אחר מחירים, לקבל מדדי מחירים באופן אוטומטי ועוד</translation>
 <translation id="7265608370113700582">הכתובת זמינה רק במכשיר הזה</translation>
+<translation id="7269151392155523061">קיצור הדרך לא יכול להיות זהה למילת המפתח של אגרגטור החיפוש שהוגדרה על ידי <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: ‏ <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">‏קבצים שמורידים נשלחים אל Google Cloud או אל צדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="7275334191706090484">סימניות מנוהלות</translation>
 <translation id="7275808129217605899">תזונה בריאה</translation>
@@ -4322,7 +4322,6 @@ Del</translation>
 <translation id="8792626944327216835">מיקרופון</translation>
 <translation id="8793655568873652685">‏הדומיין <ph name="ENROLLMENT_DOMAIN" /> הפעיל את Chrome Enterprise Connectors בדפדפן שלך. למחברים האלה יש גישה אל חלק מהנתונים שלך.</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
-<translation id="8798739476508189189">רוצה למצוא את התכונות הניסיוניות של הדפדפן? אפשר להיכנס אל</translation>
 <translation id="8800034312320686233">האתר לא פועל?</translation>
 <translation id="8805819170075074995">‏ערך רשימה "<ph name="LANGUAGE_ID" />": המערכת התעלמה מהערך מאחר שהוא כלול גם במדיניות SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">ספקי שירותים טלפוניים</translation>

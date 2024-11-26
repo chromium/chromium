@@ -200,6 +200,19 @@ La etiqueta se puede personalizar con la política <ph name="ENTERPRISE_CUSTOM_L
 <translation id="1110426799149444997">Inhabilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1111324374369583989">No mostrar la pantalla de configuración del tamaño de visualización durante el acceso</translation>
 <translation id="1111824532252882775">Habilitado: Los desplazadores son enfocables de forma predeterminada.</translation>
+<translation id="1112125878718482033">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
+
+0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función.
+
+Las funciones potenciadas por IA generativa de Herramientas para desarrolladores incluyen:
+
+- Estadísticas de la consola: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.
+
+- Asistencia de IA: Obtén ayuda para comprender los estilos de CSS (desde la versión 131), las solicitudes de red, el rendimiento y los archivos (todos desde la versión 132).</translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
@@ -4711,9 +4724,6 @@ Esto se quitó en M112.</translation>
 <translation id="4410236409016356088">Habilitar la velocidad moderada del ancho de banda de la red</translation>
 <translation id="4410361389637971319">Permitir que los orígenes de apps web aisladas usen Direct Sockets</translation>
 <translation id="4411734231900934213">La diferencia permitida entre el reloj del dispositivo del niño y el del padre o la madre (en segundos).</translation>
-<translation id="4411759973223339687">Si estableces la política como verdadera o no la configuras, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los accesos de invitado. Los accesos de invitado son perfiles de <ph name="PRODUCT_NAME" /> en donde todas las ventanas están en el modo Incógnito.
-
-      Si estableces esta política como falsa, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles de invitado.</translation>
 <translation id="441217499641439905">Inhabilitar Google Drive a través de conexiones móviles en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Si habilitas la política, se desactivará el visor de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la aplicación predeterminada.
 
@@ -10463,6 +10473,11 @@ El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Inhabilitar el almacenamiento del historial del navegador</translation>
 <translation id="8499172469244085141">Configuración predeterminada (los usuarios pueden modificarla)</translation>
+<translation id="8499359456965625209">Esta política dejó de estar disponible.
+
+Si habilitas la política o no la estableces, el software de terceros no podrá insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
+
+      Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8503018573167958506">Determina si un usuario puede configurar el nombre de host del dispositivo.
 
       Si estableces <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador establecerá el nombre de host, y el usuario no podrá elegirlo independientemente de cómo se establezca esta política.

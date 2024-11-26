@@ -866,6 +866,7 @@
 <translation id="2521736961081452453">படிவத்தை உருவாக்கு</translation>
 <translation id="2523886232349826891">இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்படும்</translation>
 <translation id="2524461107774643265">மேலும் தகவலைச் சேர்க்கவும்</translation>
+<translation id="2526062290525841862">இந்த ஆப்ஸை இயக்க, தனிப்பட்ட இணைய ஆப்ஸ் டெவெலப்பர் பயன்முறையை மீண்டும் இயக்கவும்</translation>
 <translation id="2526280916094749336">சேமிக்கப்படும் முகவரிகளை Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்தலாம். இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) சேமிக்கப்படும்.</translation>
 <translation id="2527451058878391043">கார்டின் முன்பக்கத்தில் CVC எண் இருக்கும். அது கார்டு எண்ணிற்கு மேல் வலதுபுறத்தில் உள்ள 4 இலக்க எண்ணாகும்.</translation>
 <translation id="2529899080962247600">இதில் <ph name="MAX_ITEMS_LIMIT" /> உள்ளீடுகளுக்கு மேல் இருக்கக்கூடாது. அதற்கு மேல் இருப்பவை நிராகரிக்கப்படும்.</translation>
@@ -1749,7 +1750,6 @@
 <translation id="4123572138124678573">டிரிப்பில் பஞ்ச் பாட்டம்</translation>
 <translation id="412601465078863288">பதிவேற்றுவதற்கான நேரம் முடிந்தது</translation>
 <translation id="4127317221386336246">ஆடை அணிகலன்கள்</translation>
-<translation id="4127575959421463246">ChromeOS கொடிகளைத் தேடுகிறீர்களா? செல்க</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{மேலும் ஒன்று}other{மேலும் #}}</translation>
 <translation id="4129992181550680635">கல்வி சார்ந்த தகவல்கள்</translation>
 <translation id="4130226655945681476">நெட்வொர்க் கேபிள்கள், மோடம், ரூட்டர் ஆகியவற்றைச் சரிபார்க்கவும்</translation>
@@ -4305,7 +4305,6 @@
 <translation id="8792626944327216835">மைக்ரோஃபோன்</translation>
 <translation id="8793655568873652685">உங்கள் உலாவியில் Chrome Enterprise Connectorsஸை <ph name="ENROLLMENT_DOMAIN" /> இயக்கியுள்ளது. இந்தக் கனெக்டர்களால் உங்களின் தரவு சிலவற்றை அணுக முடியும்.</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
-<translation id="8798739476508189189">உலாவிக் கொடிகளைத் தேடுகிறீர்களா? செல்க</translation>
 <translation id="8800034312320686233">தளம் இயங்கவில்லையா?</translation>
 <translation id="8805819170075074995">பட்டியல் உள்ளீடு "<ph name="LANGUAGE_ID" />": உள்ளீடானது SpellcheckLanguage கொள்கையிலும் சேர்க்கப்பட்டிருப்பதால் புறக்கணிக்கப்பட்டது.</translation>
 <translation id="8806062468703310719">ஃபோன் சேவை வழங்குநர்கள்</translation>

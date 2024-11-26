@@ -367,6 +367,7 @@
 <translation id="5602351063754773347">Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome gør mere for at beskytte dig på nettet</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>
+<translation id="566568153320186256">Chrome sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering}=1{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="5686916850681061684">Tilpas og administrer Google Chrome. Noget kræver din opmærksomhed – klik for at få oplysninger.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -515,6 +516,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7477130805345743099">Chrome advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
+<translation id="7496017508659652909">Chrome forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome kan forstå flere typer oplysninger og automatisk udfylde dine formularer hurtigere. Få flere oplysninger om <ph name="BEGIN_LINK" />autofyld i Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
@@ -631,6 +633,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
 <translation id="8718062187489036808">Log ud af Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
+<translation id="8748735421235723888">Chrome frigør hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger om Hukommelsessparefunktion<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="8781673607513845160">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge dit kamera</translation>
 <translation id="878572486461146056">Installationsfejl: Din netværksadministrator anvender en gruppepolitik, der forhindrer installationen: <ph name="INSTALL_ERROR" /></translation>

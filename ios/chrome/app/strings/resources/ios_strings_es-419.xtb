@@ -554,6 +554,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3549391962818677448">Se intentó realizar la entrega. Se volverá a intentar.</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
 <translation id="355765753469272474">Deshacer</translation>
+<translation id="3562379378751492229">Selecciona la posición que mejor se adapte a tus necesidades.</translation>
 <translation id="3565930036634619844">Pestaña. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Presiona dos veces para obtener más contraseñas.</translation>
 <translation id="3572607909481582402">En tu Cuenta de Google</translation>
@@ -830,6 +831,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="484280513275854557">Saliste de tu cuenta; se borraron los datos de navegación</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4860895144060829044">Llamar</translation>
+<translation id="4861953997778766866">Todos los usuarios pueden hacer cambios en tus grupos de pestañas compartidos</translation>
 <translation id="4869146460927742717">Posición de la barra de direcciones</translation>
 <translation id="4870911314065352661">¿Deseas cerrar todas las pestañas?</translation>
 <translation id="4872664437015695612">Abrir en Descargas</translation>
@@ -993,6 +995,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="5613297089029360427">Ordenar por más recientes</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
+<translation id="5614805397884895755">Accede más rápido desde la pantalla principal.</translation>
 <translation id="5619871095170816857">Esta tarjeta muestra la última pestaña abierta que usaste en todos los dispositivos sincronizados dentro de las últimas 24 horas.</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
 <translation id="5624637933505983014">No activar la sincronización</translation>
@@ -1497,6 +1500,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7812377703891978671">Puedes acceder a todo tu historial de navegación seleccionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Descargas</translation>
 <translation id="7815852444315004084">Ocultar por el momento</translation>
+<translation id="7831876841288640403">Elige la posición de la barra de direcciones que mejor se adapte a tus necesidades.</translation>
 <translation id="7839994177130598711">Los miembros de tu familia ahora pueden usar tu nombre de usuario y contraseña cuando usen el Administrador de contraseñas de Google para acceder a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Se quitarán los elementos seleccionados.</translation>
 <translation id="7841180087127694526">Busca el texto copiado</translation>

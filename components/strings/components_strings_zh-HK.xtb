@@ -1754,7 +1754,6 @@
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="412601465078863288">上載逾時</translation>
 <translation id="4127317221386336246">服裝配飾</translation>
-<translation id="4127575959421463246">在尋找 Chrome OS 標記嗎？瀏覽</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表格資料}other{以及另外 # 項表格資料}}</translation>
 <translation id="4129992181550680635">教育資源</translation>
 <translation id="4130226655945681476">檢查網絡連接線、數據機或路由器</translation>
@@ -4316,7 +4315,6 @@
 <translation id="8792626944327216835">麥克風</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> 已在您的瀏覽器上啟用 Chrome Enterprise Connectors。這些連接器可存取您的部分資料。</translation>
 <translation id="8798099450830957504">預設</translation>
-<translation id="8798739476508189189">在尋找瀏覽器標記嗎？瀏覽</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：此項目同時亦包括在 SpellcheckLanguage 政策中，因此系統會忽略該項目。</translation>
 <translation id="8806062468703310719">電話服務供應商</translation>

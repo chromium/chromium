@@ -184,6 +184,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1122198203221319518">&amp;Extra</translation>
 <translation id="1122242684574577509">Verificatie mislukt. Klik om naar de loginpagina te gaan van het wifi-netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Unieke achtergronden opmaken</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 gehackt wachtwoord gevonden}other{{NUM_SITES} gehackte wachtwoorden gevonden}}</translation>
 <translation id="1122913801042512795">De inloggegevens van je account zijn verouderd. Log uit en weer in.</translation>
 <translation id="1122960773616686544">Naam van bookmark</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
@@ -2167,6 +2168,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2477065602824695373">Automatische scan is uitgezet omdat je meerdere schakelaars hebt ingesteld.</translation>
 <translation id="2478176599153288112">Mediabestandsrechten voor '<ph name="EXTENSION" />'</translation>
 <translation id="24786041351753425">Gegevensherstelservice aanzetten</translation>
+<translation id="2479541499757560845">Instellingen voor toetsenbord voor toegankelijkheid</translation>
 <translation id="2480868415629598489">Gegevens aanpassen die je kopieert en plakt</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2482895651873876648">Tabblad verplaatst naar groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -3085,6 +3087,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3132277757485842847">We kunnen de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
+<translation id="3134312457920437826">Kan de extensie niet installeren omdat deze een niet-ondersteunde manifestversie gebruikt.</translation>
 <translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Standaard gele avatar</translation>
 <translation id="3141093262818886744">Toch openen</translation>
@@ -4353,6 +4356,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4012509903424054869">Pdf's worden automatisch geconverteerd zodat je tekst kunt zoeken en selecteren</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" repareren?</translation>
 <translation id="4015163439792426608">Heb je extensies? <ph name="BEGIN_LINK" />Beheer ze<ph name="END_LINK" /> overzichtelijk op één plaats.</translation>
+<translation id="4015250302257349679">Druk op <ph name="ACCELERATOR" /> om de focus op deze ballon te zetten en dan nogmaals om de focus op het element te zetten waarnaar de ballon wijst.</translation>
 <translation id="4016762287427926315">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor deze app. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">QR-code maken voor deze link</translation>
 <translation id="4019983356493507433">Bookmarklijst bewerken</translation>
@@ -5912,6 +5916,8 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5157250307065481244">Sitegegevens bekijken</translation>
 <translation id="5158206172605340248">Menu met accenttekens is gesloten.</translation>
 <translation id="5159094275429367735">Crostini instellen</translation>
+<translation id="5159236862360390997">Er verschijnt een reeks tutorial-ballonnen met instructies.
+          Druk op <ph name="ACCELERATOR" /> om de focus op een ballon te zetten en dan nogmaals om de focus op het element te zetten waarnaar de ballon wijst.</translation>
 <translation id="5159419673777902220">Je ouder heeft extensierechten uitgezet</translation>
 <translation id="5160634252433617617">Fysiek toetsenbord</translation>
 <translation id="5160857336552977725">Log in bij je <ph name="DEVICE_TYPE" /></translation>
@@ -6192,6 +6198,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5372579129492968947">Extensie losmaken</translation>
 <translation id="5372632722660566343">Doorgaan zonder account</translation>
 <translation id="5372990315769030589"><ph name="EXTENSION_NAME" /> behouden?</translation>
+<translation id="5374324662289354619">Interne foutopsporingspagina's staan op dit moment uit.</translation>
 <translation id="5375318608039113175">Als je Dichtbij delen met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>
 <translation id="5375374982898812658">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van al je apparaten</translation>
 <translation id="5375577102295339548">Sites kunnen verifiëren dat je geen bot bent</translation>
@@ -9449,6 +9456,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7737846262459425222">Je kunt dit altijd wijzigen via Instellingen &gt; Google Assistent &gt; Schermcontext.</translation>
 <translation id="7737948071472253612">Geen toestemming om je camera te gebruiken</translation>
 <translation id="77381465218432215">Accenttekens en speciale tekens tonen</translation>
+<translation id="7739524723876359011">Druk op <ph name="ACCELERATOR" /> om de focus op deze ballon te zetten.</translation>
 <translation id="7740996059027112821">Standaard</translation>
 <translation id="7742706086992565332">Je kunt instellen hoeveel je wilt in- of uitzoomen op bepaalde websites</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 gehackt wachtwoord gevonden}other{{NUM_SITES} gehackte wachtwoorden gevonden}}</translation>

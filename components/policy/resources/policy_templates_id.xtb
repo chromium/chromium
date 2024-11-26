@@ -4736,9 +4736,6 @@ Hal ini dihapus di M112.</translation>
 <translation id="4410236409016356088">Aktifkan pembatasan bandwidth jaringan</translation>
 <translation id="4410361389637971319">Izinkan origin Aplikasi Web Terisolasi menggunakan Direct Sockets</translation>
 <translation id="4411734231900934213">Perbedaan yang diizinkan antara jam di perangkat anak dan orang tua (dalam detik).</translation>
-<translation id="4411759973223339687">Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> akan mengaktifkan login tamu. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
-
-      Jika kebijakan ini disetel ke salah (false), <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> tidak akan mengizinkan profil tamu dimulai.</translation>
 <translation id="441217499641439905">Nonaktifkan Google Drive melalui koneksi seluler di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4412885120239670573">Jika kebijakan disetel ke Aktif, penampil PDF internal di <ph name="PRODUCT_NAME" /> akan dinonaktifkan, file PDF akan dianggap sebagai hasil download, dan pengguna akan diizinkan membuka PDF dengan aplikasi default.
 

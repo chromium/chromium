@@ -1755,7 +1755,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4123572138124678573">Trostruko bušenje na dnu</translation>
 <translation id="412601465078863288">Vreme za otpremanje je isteklo</translation>
 <translation id="4127317221386336246">Modni detalji</translation>
-<translation id="4127575959421463246">Tražite Chrome OS oznake? Poseti</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{još 1}one{još #}few{još #}other{još #}}</translation>
 <translation id="4129992181550680635">Obrazovna sredstva</translation>
 <translation id="4130226655945681476">da proverite mrežne kablove, modem i ruter</translation>
@@ -3469,6 +3468,7 @@ Dodatni detalji:
 <translation id="725866823122871198">Nije moguće uspostaviti privatnu vezu sa domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer vreme i datum na računaru (<ph name="DATE_AND_TIME" />) nisu tačni.</translation>
 <translation id="7260075294900977274">Nov pametni folder koji vam pomaže da sačuvate sve stranice za kupovinu na jednom mestu i automatski pratite cene, dobijate uvid u cene i drugo</translation>
 <translation id="7265608370113700582">Adresa je dostupna samo na ovom uređaju</translation>
+<translation id="7269151392155523061">Prečica ne može da bude ista kao ključna reč agregatora pretrage koju definiše <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fajlovi koje preuzmete se šalju u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skenirani u potrazi za osetljivim podacima ili malverom i mogu da budu sačuvani na osnovu smernica preduzeća i vidljivi su administratoru.</translation>
 <translation id="7275334191706090484">Obeleživači kojim se upravlja</translation>
 <translation id="7275808129217605899">Zdrava ishrana</translation>
@@ -4317,7 +4317,6 @@ Dodatni detalji:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> je uključio Chrome Enterprise Connectors u pregledaču. Ovi priključci imaju pristup nekim vašim podacima.</translation>
 <translation id="8798099450830957504">Podrazumevano</translation>
-<translation id="8798739476508189189">Tražite oznake pregledača? Poseti</translation>
 <translation id="8800034312320686233">Da li sajt ne radi?</translation>
 <translation id="8805819170075074995">Unos na listi „<ph name="LANGUAGE_ID" />“: Unos se zanemaruje jer je obuhvaćen i smernicama SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Dobavljači telefonskih usluga</translation>

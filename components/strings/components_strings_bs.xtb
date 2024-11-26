@@ -866,7 +866,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2521736961081452453">Kreiraj obrazac</translation>
 <translation id="2523886232349826891">Pohranjuje se samo na ovom uređaju</translation>
 <translation id="2524461107774643265">Dodajte više informacija</translation>
-<translation id="2526062290525841862">Da biste pokrenuli ovu aplikaciju, ponovno omogućite način rada razvojnog programera za izolirane web-aplikacije</translation>
+<translation id="2526062290525841862">Da pokrenete ovu aplikaciju, ponovo omogućite način rada za programere za izoliranu web aplikaciju</translation>
 <translation id="2526280916094749336">Možete koristiti sačuvane adrese na Googleovim proizvodima. Adresa će se sačuvati na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Vaš CVC je na prednjoj strani kartice. To je četverocifreni kôd u gornjem desnom uglu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Ovo polje ne smije sadržavati više od sljedećeg broja unosa: <ph name="MAX_ITEMS_LIMIT" />. Svi daljnji unosi će se zanemariti.</translation>
@@ -1579,7 +1579,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3799805948399000906">Font je zatražen</translation>
 <translation id="3801297763951514916">Često posjećujete</translation>
 <translation id="380329542618494757">Ime</translation>
-<translation id="3803481123869276674">Kad kupujete u Chromeu, e-novčanik će se prikazivati kao opcija</translation>
+<translation id="3803481123869276674">E-novčanik će se prikazivati kao opcija prilikom izvršavanja kupovina u Chromeu</translation>
 <translation id="3803801106042434208">Ovi pretraživači su popularni u vašoj regiji</translation>
 <translation id="380666903981445943">Sačuvajte način plaćanja na Google računu da ga automatski popunite za kupovine izvršene u Chromeu</translation>
 <translation id="3807366285948165054">Pomak slike X</translation>
@@ -1755,7 +1755,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4123572138124678573">Trostruko bušenje na donjoj strani</translation>
 <translation id="412601465078863288">Otpremanje je isteklo</translation>
 <translation id="4127317221386336246">Odjevni dodaci</translation>
-<translation id="4127575959421463246">Tražite oznake Chrome OS-a? Posjeti</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="4129992181550680635">Obrazovni izvori</translation>
 <translation id="4130226655945681476">Provjeriti mrežne kablove, modem i ruter</translation>
@@ -3283,7 +3282,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6944692733090228304">Unijeli ste lozinku na web lokaciji kojom ne upravlja organizacija <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da zaštitite račun, lozinku nemojte ponovo koristiti u drugim aplikacijama i na drugim web lokacijama.</translation>
 <translation id="6946949206576443118">Pretražite web u Chromeu</translation>
 <translation id="6948051842255602737">Igra je završena. Vaš rezultat je <ph name="SCORE" />.</translation>
-<translation id="6948223029286835408">Kad kupujete u Chromeu, Pix će se prikazivati kao opcija</translation>
+<translation id="6948223029286835408">Pix će se prikazivati kao opcija prilikom izvršavanja kupovina u Chromeu</translation>
 <translation id="6948701128805548767">Da vidite načine i uslove preuzimanja, odaberite adresu</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">Poništite lozinku</translation>
@@ -3599,7 +3598,7 @@ Dodatni detalji:
 <translation id="7489392576326061356">Šamponi i regeneratori</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Kontaktirajte vlasnika web lokacije da riješite problem.</translation>
 <translation id="749865518782565832">Vodoinstalacije</translation>
-<translation id="7499188644237027195">Kad kupujete u Chromeu, e-novčanik i Pix će se prikazivati kao opcije</translation>
+<translation id="7499188644237027195">E-novčanik i Pix će se prikazivati kao opcije prilikom izvršavanja kupovina u Chromeu</translation>
 <translation id="7500917112031739411">Prikaži po grupi</translation>
 <translation id="7501663406926337752">Vaša organizacija je prijavila web lokaciju koja slijedi</translation>
 <translation id="7507075214339298899">Koverta #9</translation>
@@ -4317,7 +4316,6 @@ Dodatni detalji:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Domena <ph name="ENROLLMENT_DOMAIN" /> je uključila Konektore Chromea za preduzeća u vašem pregledniku. Pomoću tih konektora je moguće pristupiti nekim vašim podacima.</translation>
 <translation id="8798099450830957504">Zadano</translation>
-<translation id="8798739476508189189">Tražite oznake preglednika? Posjeti</translation>
 <translation id="8800034312320686233">Web lokacija ne funkcionira?</translation>
 <translation id="8805819170075074995">Unos na listi "<ph name="LANGUAGE_ID" />": Unos je zanemaren jer je uključen i u pravilo SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Pružaoci telefonskih usluga</translation>

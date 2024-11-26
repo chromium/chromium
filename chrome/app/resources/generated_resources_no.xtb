@@ -184,6 +184,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1122198203221319518">&amp;Verktøy</translation>
 <translation id="1122242684574577509">Autentiseringen mislyktes. Klikk for å gå til påloggingssiden for wifi-nettverket du bruker (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Lag bakgrunner med unik stil</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Fant 1 passord som er utsatt for sikkerhetsbrudd}other{Fant {NUM_SITES} passord som er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="1122913801042512795">Påloggingsinformasjonen for kontoen din er utdatert. Logg av og på igjen.</translation>
 <translation id="1122960773616686544">Bokmerkenavn</translation>
 <translation id="1124772482545689468">Bruker</translation>
@@ -2174,6 +2175,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2477065602824695373">Siden du har konfigurert flere brytere, er automatisk skanning slått av.</translation>
 <translation id="2478176599153288112">Mediafilrettigheter for «<ph name="EXTENSION" />»</translation>
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
+<translation id="2479541499757560845">Innstillinger for tilgjengelighetstastatur</translation>
 <translation id="2480868415629598489">endre data du kopierer og limer inn</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2482895651873876648">Fanen er flyttet til gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3092,6 +3094,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3132277757485842847">Vi kunne ikke opprettholde tilkoblingen til telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på.</translation>
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Oppdater daglig</translation>
+<translation id="3134312457920437826">Kan ikke installere utvidelsen, fordi den bruker en manifestversjon som ikke støttes.</translation>
 <translation id="3134393957315651797">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet. Beskrivelse av eksperimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Gult standardbrukerbilde</translation>
 <translation id="3141093262818886744">Åpne likevel</translation>
@@ -4360,6 +4363,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4012509903424054869">PDF-filer konverteres automatisk, slik at du kan søke etter og markere tekst</translation>
 <translation id="4014432863917027322">Vil du reparere «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="4015163439792426608">Har du utvidelser? <ph name="BEGIN_LINK" />Administrer utvidelsene<ph name="END_LINK" /> på ett praktisk sted.</translation>
+<translation id="4015250302257349679">Trykk på <ph name="ACCELERATOR" /> for å fokusere på denne boblen, og trykk en gang til for å fokusere på elementet den peker på.</translation>
 <translation id="4016762287427926315">Tillatelser du gir <ph name="APP_NAME" />, blir også gitt til denne appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Opprett en QR-kode for denne linken</translation>
 <translation id="4019983356493507433">Rediger bokmerkeliste</translation>
@@ -5750,6 +5754,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5045367873597907704">Om HID-enheter</translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="504561833207953641">Åpner i den eksisterende nettleserøkten.</translation>
+<translation id="504953514574706691">Fanen er ekskludert fra den foreslåtte gruppen</translation>
 <translation id="5049614114599109018">Bruk inndatalogg</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Dette nettstedet har sendt mange varsler i det siste. Du kan forhindre det fra å sende flere varsler fremover.}other{Disse nettstedene har sendt mange varsler i det siste. Du kan forhindre dem fra å sende flere varsler fremover.}}</translation>
 <translation id="5050330054928994520">TTT</translation>
@@ -5801,6 +5806,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5079950360618752063">Bruk foreslått passord</translation>
 <translation id="508059534790499809">Oppdater en Kerberos-sak</translation>
 <translation id="5081124414979006563">&amp;Åpne gjesteprofil</translation>
+<translation id="508209203623347828">Hvis dette kortet er deaktivert, blir Microsoft-kortene dine, for eksempel Sharepoint og Outlook-kalenderen, også deaktivert.</translation>
 <translation id="5083035541015925118">ctrl + alt + oppoverpil</translation>
 <translation id="5084328598860513926">Identitetshåndteringen ble avbrutt. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Nettsteder har større sannsynlighet for å fungere som forventet</translation>
@@ -5918,6 +5924,8 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5157250307065481244">Se nettstedsdetaljer</translation>
 <translation id="5158206172605340248">Menyen med aksenttegn er lukket.</translation>
 <translation id="5159094275429367735">Konfigurer Crostini</translation>
+<translation id="5159236862360390997">En rekke veiledningsbobler vises.
+          Trykk på <ph name="ACCELERATOR" /> for å fokusere på en boble, og trykk en gang til for å fokusere på elementet den peker på.</translation>
 <translation id="5159419673777902220">Forelderen din har slått av utvidelsestillatelser</translation>
 <translation id="5160634252433617617">Fysisk tastatur</translation>
 <translation id="5160857336552977725">Logg på <ph name="DEVICE_TYPE" /></translation>
@@ -5998,6 +6006,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5216674789212441076">Oversetter direkteteksting automatisk. Teksting sendes til Google for oversettelse.</translation>
 <translation id="5220011581825921581">søketasten + oppoverpil</translation>
 <translation id="5221516927483787768">Kan ikke caste <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Fanen er ekskludert fra listen</translation>
 <translation id="5222403284441421673">En usikker nedlasting er blokkert</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5225324770654022472">Vis appsnarveien</translation>
@@ -6197,6 +6206,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5372579129492968947">Løsne utvidelsen</translation>
 <translation id="5372632722660566343">Fortsett uten konto</translation>
 <translation id="5372990315769030589">Vil du beholde «<ph name="EXTENSION_NAME" />»?</translation>
+<translation id="5374324662289354619">Interne feilsøkingssider er deaktivert for øyeblikket.</translation>
 <translation id="5375318608039113175">For å bruke nærdeling med disse kontaktene må du legge til e-postadressene som er knyttet til Google-kontoene deres, i kontaktene dine.</translation>
 <translation id="5375374982898812658">Du mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />», og den blir slettet fra alle enhetene dine</translation>
 <translation id="5375577102295339548">Nettsteder kan bidra til å bekrefte at du ikke er en robot</translation>
@@ -6476,6 +6486,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5571066253365925590">Bluetooth er aktivert</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Tilpass profilen din</translation>
+<translation id="5572000034319109899">Rydd opp i faner som ikke er i bruk</translation>
 <translation id="5572166921642484567">Velg en modus for fargevalg</translation>
 <translation id="5572252023412311448">Vis nettstedsdetaljer for <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Se utvidelsestillatelser for andre nettsteder</translation>
@@ -8040,6 +8051,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6725073593266469338">UI-tjeneste</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
+<translation id="6725627354629889015">Vil du rydde opp i faner som ikke er i bruk?</translation>
 <translation id="6725970970008349185">Antall kandidater som vises per side</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
 <translation id="6726800386221816228">Spesialtegn</translation>
@@ -9453,6 +9465,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7737846262459425222">Du kan når som helst endre dette i Innstillinger &gt; Google-assistent &gt; Skjermkontekst.</translation>
 <translation id="7737948071472253612">Nettsteder som ikke har lov til å bruke kameraet ditt</translation>
 <translation id="77381465218432215">Vis aksenttegn og spesialtegn</translation>
+<translation id="7739524723876359011">Trykk på <ph name="ACCELERATOR" /> for å fokusere på denne boblen.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Du kan velge hvor mye du vil zoome inn eller ut på bestemte nettsteder</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Fant 1 passord som er utsatt for sikkerhetsbrudd}other{Fant {NUM_SITES} passord som er utsatt for sikkerhetsbrudd}}</translation>

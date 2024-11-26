@@ -650,7 +650,6 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3985022125189960801">Engeza isayithi futhi uma ulifuna echibini lamasayithi angaqagela ukuthi yini oyithandayo</translation>
 <translation id="3985215325736559418">Ingabe ufuna ukulanda i-<ph name="FILE_NAME" /> futhi?</translation>
 <translation id="3987993985790029246">Kopisha isixhumanisi</translation>
-<translation id="3991055816270226534">Phatha amakhukhi ezinkampani zangaphandle kanye nokuvikela ukulandelela</translation>
 <translation id="4000212216660919741">Ikhaya elingaxhunyiwe ku-inthanethi</translation>
 <translation id="4016425174436051808">Ayikwazi ukulandela. Kunento engahambanga kahle.</translation>
 <translation id="4024768890073681126">Ibhrawuza yakho iphethwe yinhlangano yakho</translation>
@@ -1112,6 +1111,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="6108923351542677676">Ukusetha kuyaqhubeka…</translation>
 <translation id="6112702117600201073">Ivuselela ikhasi</translation>
 <translation id="6122831415929794347">Vala ukuphequlula ngokuphephile?</translation>
+<translation id="6125202119952209826">Joyina iqembu lethebhu no-<ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Imininingwane eyengeziwe<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Into isusiwe</translation>
 <translation id="6130303040046284160">Nciphisa ithebhu</translation>
@@ -1166,7 +1166,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6341580099087024258">Buza ukuthi uzowalondoloza kuphi amafayela</translation>
 <translation id="6342069812937806050">Khona manje</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}}</translation>
-<translation id="6344622098450209924">Ilandelela Ukuvikelwa</translation>
 <translation id="6345878117466430440">Maka njengokufundiwe</translation>
 <translation id="6356893102071098867">Hlola ukuthi ukhethe i-akhawunti efanele</translation>
 <translation id="6363990818884053551">Ukuze uqale ukuvumelanisa, qinisekisa ukuthi nguwe</translation>
@@ -1611,6 +1610,7 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Amadivayisi akho<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Qala futhi</translation>
 <translation id="820568752112382238">Amasayithi avakashelwe kaningi</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Joyina iqembu lethebhu no-<ph name="OWNER_FIRST_NAME" /> kanye nomunye ongu-<ph name="NUMBER_OF_OTHER_MEMBERS" />}one{Joyina iqembu lethebhu no-<ph name="OWNER_FIRST_NAME" /> kanye nabanye abangu-<ph name="NUMBER_OF_OTHER_MEMBERS" />}other{Joyina iqembu lethebhu no-<ph name="OWNER_FIRST_NAME" /> kanye nabanye abangu-<ph name="NUMBER_OF_OTHER_MEMBERS" />}}</translation>
 <translation id="8209050860603202033">Vula isithombe</translation>
 <translation id="8210770465353466621">Uzothola amathebhu wakho lapha</translation>
 <translation id="8211101263765532799">Amanye amaphasiwedi azoyeka ukusebenza maduze</translation>

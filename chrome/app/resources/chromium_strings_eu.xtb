@@ -66,6 +66,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="1863308913976887472">Webguneek zure interesei buruzko informazioa gorde dezakete Chromium-en; esaterako, webgune batera joaten bazara maratoi baterako oinetakoak erostera, baliteke webgune horrek "maratoiak" definitzea interes gisa. Ondorioz, beranduago beste webgune batera joaten bazara lasterketa batean izena emateko, litekeena da webgune horrek lasterketetarako oinetakoekin erlazionatutako iragarki bat erakustea zure interesetan oinarrituta.</translation>
 <translation id="1880677175115548835">Hautatu testua</translation>
 <translation id="1881322772814446296">Kontu kudeatu batekin hasten ari zara saioa eta kontuaren administratzaileari zure Chromium profila kontrolatzeko ahalmena ematera zoaz. Chromium aplikazioan dituzun datuak, esaterako, aplikazioak, laster-markak, historia, pasahitzak eta beste ezarpen batzuk betiko lotuko zaizkio <ph name="USER_NAME" /> erabiltzaileari. Google-ko kontuetako Panelaren bidez ezabatu ahalko dituzu datu horiek, baina ezingo dituzu beste kontu batekin lotu. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium-ek bateria aurrezten du atzeko planoko jarduerak eta ikusizko efektuak mugatuta (esaterako, gora eta behera modu leunean egiteko aukera eta bideoen irudi-abiadurak). <ph name="BEGIN_LINK" />Lortu energia-aurreztaileari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium eguneratzeko zerbitzua</translation>
 <translation id="1911763535808217981">Aukera hau desaktibatzen baduzu, Google-ren webguneetan saioa hasi ahalko duzu (adibidez, Gmail-en) Chromium-en saioa hasi beharrik gabe</translation>
 <translation id="1929939181775079593">Chromium-ek ez du eranzuten. Berrabiarazi nahi duzu?</translation>
@@ -263,6 +264,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4544142686420020088">Chromium ez da eguneratu arazoren bat izan delako. <ph name="BEGIN_LINK" />Konpondu Chromium eguneratzeko arazoak eta huts egindako eguneratzeak.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium-ek inaktibo ezar dezake fitxa hau, arakatzea hobetzeko eta bizkortzeko.</translation>
 <translation id="454579500955453258">Chromium-eko beste profil batean egin nahi duzu aurrera?</translation>
+<translation id="4548534452171747496">Chromium-ek orriak aurrez kargatzen ditu, bizkorrago arakatu eta bila dezazun. <ph name="BEGIN_LINK" />Lortu aurrez kargatutako orriei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Laster-markak, historia eta bestelako ezarpenak atzi ditzakezu saioa hasita daukaten gailu guztien bidez.</translation>
 <translation id="4570813286784708942">Chromium-ek deskarga hau blokeatu du, Arakatze segurua desaktibatu duzulako eta fitxategia egiaztatu ezin delako</translation>
 <translation id="4594305310729380060">Gailuko Pasahitz-kudeatzailea zerbitzuan</translation>
@@ -336,6 +338,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5698481217667032250">Bistaratu Chromium hizkuntza honetan</translation>
 <translation id="569897634095159764">Ezin da konektatu Internetera. Proxy-zerbitzariak autentifikazioa behar du.</translation>
 <translation id="5761096224651992291">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimenak kendu dizkio.</translation>
+<translation id="5768371961535086509">Chromium-ek tokia egiten du fitxa inaktiboei dagokienez. Horrela, fitxa aktiboek eta gainerako aplikazioek ordenagailuaren baliabide gehiago izango dituzte, eta bizkorrago ibiliko da Chromium. Fitxa inaktiboak haietara itzultzen zarenean aktibatuko dira berriro. <ph name="BEGIN_LINK" />Lortu memoria-aurreztaileari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Pertsonalizatu eta kontrolatu Chromium. Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="5809516625706423866">Ezin da konektatu Internetera. HTTP 401 (baimenik gabe). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="5821520528363214608">Chromium-eko datuak zure Google-ko kontuan erabiltzeko eta gordetzeko, eguneratu Chromium</translation>

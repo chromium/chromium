@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;साधने</translation>
 <translation id="1122242684574577509">ऑथेंटिकेशन अयशस्वी. तुम्ही वापरत असलेल्या (<ph name="NETWORK_ID" />) वाय-फाय नेटवर्कसाठी लॉग इन पेजला भेट देण्यासाठी वर क्लिक करा.</translation>
 <translation id="1122587596907914265">अनोखे वॉलपेपर तयार करा</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{धोक्यात असलेला १ पासवर्ड सापडला आहे}other{धोक्यात असलेले {NUM_SITES} पासवर्ड सापडले आहेत}}</translation>
 <translation id="1122913801042512795">तुमच्या खात्याचे साइन-इनशी संबंधित तपशील कालबाह्य झाले आहेत. कृपया साइन आउट करा आणि पुन्हा साइन इन करा.</translation>
 <translation id="1122960773616686544">बुकमार्क नाव</translation>
 <translation id="1124772482545689468">वापरकर्ता</translation>
@@ -2179,6 +2180,7 @@
 <translation id="2477065602824695373">तुम्ही एकाहून अधिक स्विच सेट केल्यामुळे ऑटो-स्कॅन बंद करण्यात आले आहे.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" साठी मीडिया-फाईल परवानग्या</translation>
 <translation id="24786041351753425">डेटा रिकव्‍हरी सेवा सुरू करा.</translation>
+<translation id="2479541499757560845">अ‍ॅक्सेसिबिलिटी कीबोर्ड सेटिंग्ज</translation>
 <translation id="2480868415629598489">तुम्ही कॉपी आणि पेस्ट करता तो डेटा सुधारित करा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2482895651873876648">टॅब गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> यामध्ये हलवला आहे</translation>
@@ -3097,6 +3099,7 @@
 <translation id="3132277757485842847">आम्हाला तुमच्या फोनसह कनेक्शन सुरू ठेवता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">दररोज रिफ्रेश करा</translation>
+<translation id="3134312457920437826">एक्स्टेंशन इंस्टॉल करू शकत नाही, कारण ते सपोर्ट नसलेली मॅनिफेस्ट आवृत्ती वापरते.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> प्रयोगासाठी प्रयोगाची स्थिती निवडा. प्रयोगाचे वर्णन: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">डीफॉल्ट पिवळा अवतार</translation>
 <translation id="3141093262818886744">तरीही उघडा</translation>
@@ -4367,6 +4370,7 @@
 <translation id="4012509903424054869">PDFs चे आपोआप रूपांतर होते, ज्यामुळे तुम्हाला मजकूर शोधता आणि निवडता येतो</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" दुरुस्त करायचे?</translation>
 <translation id="4015163439792426608">एक्स्टेंशन आहेत का? एकाच ठिकाणी सहजरीत्या <ph name="BEGIN_LINK" />तुमची एक्स्टेंशन व्यवस्थापित करा<ph name="END_LINK" />.</translation>
+<translation id="4015250302257349679">या बबलवर फोकस करण्यासाठी <ph name="ACCELERATOR" /> दाबा, त्यानंतर तो ज्या घटकाकडे निर्देश करत आहे त्यावर फोकस करण्याकरिता ते पुन्हा दाबा.</translation>
 <translation id="4016762287427926315">तुम्ही <ph name="APP_NAME" /> साठी ज्या परवानग्यांना अनुमती देता, त्यांना या अ‍ॅपसाठीदेखील अनुमती दिली जाईल. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">या लिंकसाठी QR कोड तयार करा</translation>
 <translation id="4019983356493507433">बुकमार्क सूची संपादित करा</translation>
@@ -5756,6 +5760,7 @@
 <translation id="5045367873597907704">HID डिव्हाइसबद्दल</translation>
 <translation id="5045550434625856497">चुकीचा पासवर्ड</translation>
 <translation id="504561833207953641">अस्तित्वात असलेल्या ब्राउझर सेशनमध्ये उघडत आहे.</translation>
+<translation id="504953514574706691">सुचवलेल्या गटामधून टॅब वगळण्यात आला आहे</translation>
 <translation id="5049614114599109018">इनपुट इतिहास वापरा</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{या साइटने अलीकडे खूप सूचना पाठवल्या आहेत. तुम्ही तिला भविष्यात सूचना पाठवण्यापासून थांबवू शकता.}other{या साइटनी अलीकडे खूप सूचना पाठवल्या आहेत. तुम्ही त्यांना भविष्यात सूचना पाठवण्यापासून थांबवू शकता.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5807,6 +5812,7 @@
 <translation id="5079950360618752063">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="508059534790499809">Kerberos तिकीट रिफ्रेश करा</translation>
 <translation id="5081124414979006563">&amp;अतिथी प्रोफाइल उघडा</translation>
+<translation id="508209203623347828">हे कार्ड बंद केले असल्यास, तुमची Sharepoint आणि Outlook Calendar यांसारखी Microsoft कार्डदेखील बंद केली जातील.</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
 <translation id="5084328598860513926">तरतूद प्रवाहात व्यत्यय आला. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या डिव्हाइसच्या मालकाशी अथवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">साइट या तुमच्या अपेक्षेनुसार काम करण्याची शक्यता अधिक आहे</translation>
@@ -5924,6 +5930,8 @@
 <translation id="5157250307065481244">साइटचे तपशील पहा</translation>
 <translation id="5158206172605340248">अ‍ॅक्सेंटच्या खुणांचा मेनू डिसमिस केला आहे.</translation>
 <translation id="5159094275429367735">Crostini सेट करा</translation>
+<translation id="5159236862360390997">सूचनांसह ट्यूटोरियल बबलची सिरीझ प्रदर्शित केली जाईल.
+          बबलवर फोकस करण्यासाठी <ph name="ACCELERATOR" /> दाबा, त्यानंतर तो ज्या घटकाकडे निर्देश करत आहे त्यावर फोकस करण्याकरिता ते पुन्हा दाबा.</translation>
 <translation id="5159419673777902220">तुमच्या पालकाने एक्स्टेंशन परवानग्या बंद केल्या आहेत</translation>
 <translation id="5160634252433617617">वास्तविक कीबोर्ड</translation>
 <translation id="5160857336552977725">आपल्या <ph name="DEVICE_TYPE" /> वर साइन इन करा</translation>
@@ -6004,6 +6012,7 @@
 <translation id="5216674789212441076">लाइव्ह कॅप्शनचे आपोआप भाषांतर करते. कॅप्शन भाषांतरासाठी Google कडे पाठवल्या जातात.</translation>
 <translation id="5220011581825921581">search + अप अ‍ॅरो</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> वरून कास्ट करता आले नाही</translation>
+<translation id="5221834113325601057">सूचीमधून टॅब वगळण्यात आला आहे</translation>
 <translation id="5222403284441421673">असुरक्षित डाउनलोड ब्लॉक केले</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5225324770654022472">अ‍ॅप्स शॉर्टकट दर्शवा</translation>
@@ -6204,6 +6213,7 @@
 <translation id="5372579129492968947">एक्स्टेंशन अनपिन करा</translation>
 <translation id="5372632722660566343">खात्याशिवाय पुढे सुरू ठेवा</translation>
 <translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" ठेवायचे आहे का?</translation>
+<translation id="5374324662289354619">अंतर्गत डीबगिंग पेज सध्या बंद आहेत.</translation>
 <translation id="5375318608039113175">या संपर्कांसोबत Nearby सह शेअरिंग वापरण्यासाठी, त्यांच्या Google खाते शी लिंक केलेला ईमेल अ‍ॅड्रेस तुमच्या संपर्कांमध्ये जोडा.</translation>
 <translation id="5375374982898812658">तुम्ही लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवाल आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="5375577102295339548">तुम्ही बॉट नाही याची पडताळणी करण्यात साइट मदत करू शकतात</translation>
@@ -6484,6 +6494,7 @@
 <translation id="5571066253365925590">ब्लूटूथ सक्षम</translation>
 <translation id="5571092938913434726">जागतिक मीडिया नियंत्रणे</translation>
 <translation id="5571832155627049070">तुमची प्रोफाइल कस्टमाइझ करा</translation>
+<translation id="5572000034319109899">न वापरलेले टॅब क्लीन अप करा</translation>
 <translation id="5572166921642484567">कलर स्‍कीम मोड निवडा</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> साठी साइटचे तपशील दाखवा</translation>
 <translation id="557506220935336383">इतर साइटसाठी एक्स्टेंशन परवानग्या पहा</translation>
@@ -8052,6 +8063,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6723839937902243910">पॉवर</translation>
 <translation id="6725073593266469338">UI सेवा</translation>
 <translation id="6725206449694821596">इंटरनेट प्रिंट प्रोटोकॉल (IPP)</translation>
+<translation id="6725627354629889015">न वापरलेले टॅब क्लीन अप करायचे आहेत का?</translation>
 <translation id="6725970970008349185">प्रति पेज दाखवल्या जाणार्‍या उमेदवारांची संख्या</translation>
 <translation id="672609503628871915">नवीन काय ते पहा</translation>
 <translation id="6726800386221816228">विशेष वर्ण</translation>
@@ -9466,6 +9478,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7737846262459425222">तुम्ही हे सेटिंग्ज &gt; Google Assistant &gt;स्क्रीन संदर्भ येथे कधीही बदलू शकता.</translation>
 <translation id="7737948071472253612">तुमचा कॅमेरा वापरण्याची अनुमती नाही</translation>
 <translation id="77381465218432215">आघातचिन्ह आणि विशेष वर्ण दाखवा</translation>
+<translation id="7739524723876359011">या बबलवर फोकस करण्यासाठी <ph name="ACCELERATOR" /> दाबा.</translation>
 <translation id="7740996059027112821">साधारण</translation>
 <translation id="7742706086992565332">ठरावीक वेबसाइटवर तुम्ही किती झूम इन किंवा आउट करायचे ते सेट करू शकता</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{धोक्यात असलेला १ पासवर्ड सापडला आहे}other{धोक्यात असलेले {NUM_SITES} पासवर्ड सापडले आहेत}}</translation>

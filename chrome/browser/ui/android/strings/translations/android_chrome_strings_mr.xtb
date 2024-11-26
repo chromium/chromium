@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">तुम्हाला काय आवडते याचा अंदाज लावू शकतील अशा साइटच्या गटामध्ये तुम्हाला साइट हवी असल्यास ती परत जोडा</translation>
 <translation id="3985215325736559418">तुम्ही <ph name="FILE_NAME" /> पुन्हा डाउनलोड करू इच्छिता?</translation>
 <translation id="3987993985790029246">लिंक कॉपी करा</translation>
-<translation id="3991055816270226534">तृतीय पक्ष कुकी आणि ट्रॅकिंगपासून संरक्षण व्यवस्थापित करा</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4024768890073681126">तुमचा ब्राउझर तुमच्या पालकाद्वारे व्यवस्थापित केला जातो</translation>
@@ -1112,6 +1111,7 @@
 <translation id="6108923351542677676">सेटअप प्रगती पथावर आहे...</translation>
 <translation id="6112702117600201073">पेज रिफ्रेश करत आहे</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउझिंग बंद करायचे का?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> सोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />आणखी तपशील<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">आयटम काढला</translation>
 <translation id="6130303040046284160">टॅब मिनिमाइझ करा</translation>
@@ -1166,7 +1166,6 @@
 <translation id="6341580099087024258">फाइल कुठे सेव्ह करायच्या ते विचारा</translation>
 <translation id="6342069812937806050">आत्ताच</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अधिक}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अधिक}}</translation>
-<translation id="6344622098450209924">ट्रॅकिंग संरक्षण</translation>
 <translation id="6345878117466430440">वाचलेले अशी खूण करा</translation>
 <translation id="6356893102071098867">तुम्ही योग्य खाते निवडले आहे का हे तपासा</translation>
 <translation id="6363990818884053551">सिंक सुरू करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
@@ -1611,6 +1610,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="820568752112382238">सर्वाधिक भेट दिलेल्या साइट</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUMBER_OF_OTHER_MEMBERS" /> व्यक्तीसोबत टॅब गटामध्ये सामील व्हा}other{<ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUMBER_OF_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा}}</translation>
 <translation id="8209050860603202033">इमेज उघडा</translation>
 <translation id="8210770465353466621">तुमचे टॅब तुम्हाला येथे सापडतील</translation>
 <translation id="8211101263765532799">काही पासवर्ड लवकरच काम करणे थांबवतील</translation>

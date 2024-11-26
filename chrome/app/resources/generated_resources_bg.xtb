@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;Инструменти</translation>
 <translation id="1122242684574577509">Удостоверяването не бе успешно. Кликнете, за да посетите страницата за вход в използваната от вас Wi-Fi мрежа (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Стилизирайте уникални тапети</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Открита е 1 компрометирана парола}other{Открити са {NUM_SITES} компрометирани пароли}}</translation>
 <translation id="1122913801042512795">Данните за вход в профила ви не са актуални. Моля, излезте и влезте отново.</translation>
 <translation id="1122960773616686544">Име на отметката</translation>
 <translation id="1124772482545689468">Потребител</translation>
@@ -2176,6 +2177,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2477065602824695373">Тъй като настроихте няколко превключвателя, автоматичното сканиране бе изключено.</translation>
 <translation id="2478176599153288112">Разрешения за медийни файлове за <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Активиране на услугата за възстановяване на данни.</translation>
+<translation id="2479541499757560845">Настройки за клавиатурата за достъпност</translation>
 <translation id="2480868415629598489">Промяна на данните, които копирате и поставяте</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2482895651873876648">Разделът бе преместен в групата „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
@@ -3094,6 +3096,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3132277757485842847">Връзката с телефона ви прекъсна. Проверете дали е наблизо, отключен е и Bluetooth и функцията за Wi-Fi са включени.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Ежедневно опресняване</translation>
+<translation id="3134312457920437826">Разширението не може да се инсталира, защото използва неподдържана версия на манифеста.</translation>
 <translation id="3134393957315651797">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“. Описание на експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Стандартен жълт аватар</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
@@ -4365,6 +4368,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4012509903424054869">PDF файловете се преобразуват автоматично, за да можете да търсите и избирате текст</translation>
 <translation id="4014432863917027322">Да се поправи ли <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Използвате разширения? <ph name="BEGIN_LINK" />Управлявайте ги<ph name="END_LINK" /> от едно лесно място.</translation>
+<translation id="4015250302257349679">Натиснете <ph name="ACCELERATOR" />, за да поставите фокуса върху това балонче, след което го натиснете отново, за да поставите фокуса върху елемента, към който сочи то.</translation>
 <translation id="4016762287427926315">Разрешенията, които дадете на <ph name="APP_NAME" />, ще бъдат предоставени и на това приложение. <ph name="BEGIN_LINK" />Управление<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Създаване на QR код за тази връзка</translation>
 <translation id="4019983356493507433">Редактиране на списъка с отметки</translation>
@@ -5926,6 +5930,8 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5157250307065481244">Преглед на подробностите за сайта</translation>
 <translation id="5158206172605340248">Менюто за диакритични знаци е отхвърлено.</translation>
 <translation id="5159094275429367735">Настройване на Crostini</translation>
+<translation id="5159236862360390997">Ще бъде показана поредица от балончета с инструкции.
+          Натиснете <ph name="ACCELERATOR" />, за да поставите фокуса върху балонче, след което го натиснете отново, за да поставите фокуса върху елемента, към който сочи то.</translation>
 <translation id="5159419673777902220">Родителят ви е деактивирал разрешенията за разширенията</translation>
 <translation id="5160634252433617617">Физическа клавиатура</translation>
 <translation id="5160857336552977725">Влезте в своя <ph name="DEVICE_TYPE" /></translation>
@@ -6207,6 +6213,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5372579129492968947">Освобождаване на разширението</translation>
 <translation id="5372632722660566343">Продължаване без профил</translation>
 <translation id="5372990315769030589">Искате ли да запазите <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5374324662289354619">Понастоящем вътрешните страници за отстраняване на грешки са деактивирани.</translation>
 <translation id="5375318608039113175">За да използвате функцията „Споделяне наблизо“ с тези контакти, добавете имейл адресите, свързани с профилите им в Google, към контактите си.</translation>
 <translation id="5375374982898812658">Незабавно ще загубите достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всичките ви устройства</translation>
 <translation id="5375577102295339548">Сайтовете могат да ви помогнат да потвърдите, че не сте робот</translation>
@@ -9469,6 +9476,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7737846262459425222">Можете да промените това по всяко време от „Настройки &gt; Google Асистент &gt; Контекст на екрана“.</translation>
 <translation id="7737948071472253612">Сайтове без разрешение за използване на камерата ви</translation>
 <translation id="77381465218432215">Показване на ударения и специални знаци</translation>
+<translation id="7739524723876359011">Натиснете <ph name="ACCELERATOR" />, за да поставите фокуса върху това балонче.</translation>
 <translation id="7740996059027112821">Стандартна</translation>
 <translation id="7742706086992565332">Можете да зададете колко да се увеличава или намалява мащабът за определени уебсайтове</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Открита е 1 компрометирана парола}other{Открити са {NUM_SITES} компрометирани пароли}}</translation>

@@ -184,6 +184,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1122198203221319518">&amp;Įrankiai</translation>
 <translation id="1122242684574577509">Nepavyko autentifikuoti. Spustelėkite, kad apsilankytumėte naudojamo „Wi-Fi“ tinklo (<ph name="NETWORK_ID" />) prisijungimo puslapyje.</translation>
 <translation id="1122587596907914265">Unikalūs stiliaus ekrano fonai</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Rastas vienas pažeistas slaptažodis}one{Rastas {NUM_SITES} pažeistas slaptažodis}few{Rasti {NUM_SITES} pažeisti slaptažodžiai}many{Rasta {NUM_SITES} pažeisto slaptažodžio}other{Rasta {NUM_SITES} pažeistų slaptažodžių}}</translation>
 <translation id="1122913801042512795">Išsami paskyros prisijungimo informacija pasenusi. Atsijunkite ir vėl prisijunkite.</translation>
 <translation id="1122960773616686544">Žymės pavadinimas</translation>
 <translation id="1124772482545689468">Naudotojas</translation>

@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਵਾਪਸ ਸ਼ਾਮਲ ਕਰੋ, ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਕਿ ਉਹ ਸਾਈਟ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੇ ਇਕੱਠ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੇ ਜੋ ਤੁਹਾਡੀ ਪਸੰਦ ਬਾਰੇ ਅੰਦਾਜ਼ਾ ਲਗਾਉਂਦੀਆਂ ਹਨ</translation>
 <translation id="3985215325736559418">ਕੀ ਤੁਸੀਂ <ph name="FILE_NAME" /> ਨੂੰ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3987993985790029246">ਲਿੰਕ ਕਾਪੀ ਕਰੋ</translation>
-<translation id="3991055816270226534">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਅਤੇ ਟਰੈਕਿੰਗ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4000212216660919741">ਆਫ਼ਲਾਈਨ ਹੋਮ</translation>
 <translation id="4016425174436051808">ਅਨੁਸਰਣ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="4024768890073681126">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -1167,7 +1166,6 @@
 <translation id="6341580099087024258">ਪੁੱਛੋ ਕਿ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਿੱਥੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ</translation>
 <translation id="6342069812937806050">ਬਿਲਕੁਲ ਹੁਣੇ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}}</translation>
-<translation id="6344622098450209924">ਟਰੈਕਿੰਗ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ</translation>
 <translation id="6345878117466430440">ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="6356893102071098867">ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਸੀਂ ਸਹੀ ਖਾਤਾ ਚੁਣਿਆ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="6363990818884053551">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>

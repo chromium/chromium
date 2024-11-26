@@ -866,6 +866,7 @@
 <translation id="2521736961081452453">Үлгі жасау</translation>
 <translation id="2523886232349826891">Тек осы құрылғыда сақталады</translation>
 <translation id="2524461107774643265">Қосымша ақпарат енгізу</translation>
+<translation id="2526062290525841862">Бұл қолданбаны іске қосу үшін оқшау веб-қолданбаның әзірлеуші режимін қайта қосыңыз.</translation>
 <translation id="2526280916094749336">Google өнімдерінде сақталған мекенжайларды пайдалана аласыз. Бұл мекенжай Google аккаунтыңызда (<ph name="ACCOUNT" />) сақталады.</translation>
 <translation id="2527451058878391043">CVC коды картаңыздың алдыңғы жағында. Бұл – карта нөмірінің жоғарғы оң жағындағы 4 цифрлық код.</translation>
 <translation id="2529899080962247600">Бұл өрістегі жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />. Қалған жазбалар еленбейтін болады.</translation>
@@ -1753,7 +1754,6 @@
 <translation id="4123572138124678573">Төменгі жағын үш рет тесу</translation>
 <translation id="412601465078863288">Жүктеп салу уақыты өтіп кетті</translation>
 <translation id="4127317221386336246">Киім аксессуарлары</translation>
-<translation id="4127575959421463246">ChromeOS жалаушаларын іздеудесіз бе? Кіру</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{тағы 1}other{тағы #}}</translation>
 <translation id="4129992181550680635">Оқу материалдары</translation>
 <translation id="4130226655945681476">Желі кабельдерін, модем және роутерді тексеру</translation>
@@ -4314,7 +4314,6 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> сіздің браузеріңізде Chrome Enterprise Connectors функциясын қосып қойды. Бұл коннекторлар кейбір деректеріңізді пайдалануы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
-<translation id="8798739476508189189">Браузер жалаушаларын іздеудесіз бе? Кіру</translation>
 <translation id="8800034312320686233">Сайт жұмыс істемей ме?</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" тізім жазбасы: жазба еленбейді, себебі ол SpellcheckLanguage саясатына енгізілген.</translation>
 <translation id="8806062468703310719">Телефон қызметін көрсетушілер</translation>

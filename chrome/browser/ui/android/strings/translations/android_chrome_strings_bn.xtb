@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">আপনি কী পছন্দ করেন তা অনুমান করতে পারে এমন সাইটগুলির পুলে আপনি চাইলে একটি সাইট আবার যোগ করুন</translation>
 <translation id="3985215325736559418">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
-<translation id="3991055816270226534">থার্ড-পার্টি কুকি ও ট্র্যাকিং থেকে সুরক্ষা সংক্রান্ত ব্যবস্থা ম্যানেজ করুন</translation>
 <translation id="4000212216660919741">অফলাইন হোম</translation>
 <translation id="4016425174436051808">ফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="4024768890073681126">আপনার অভিভাবক ব্রাউজার ম্যানেজ করছেন</translation>
@@ -1167,7 +1166,6 @@
 <translation id="6341580099087024258">কোথায় ফাইল সেভ করতে চান</translation>
 <translation id="6342069812937806050">এখনই</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> আরও অনেক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> আরও অনেক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> আরও অনেক}}</translation>
-<translation id="6344622098450209924">ট্র্যাকিং সংক্রান্ত সুরক্ষা</translation>
 <translation id="6345878117466430440">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="6356893102071098867">আপনি সঠিক অ্যাকাউন্ট বেছে নিয়েছেন কিনা তা চেক করে দেখে নিন</translation>
 <translation id="6363990818884053551">সিঙ্ক শুরু করতে, নিজের পরিচয় যাচাই করুন</translation>

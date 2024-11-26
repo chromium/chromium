@@ -184,6 +184,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1122198203221319518">Mga &amp;Tool</translation>
 <translation id="1122242684574577509">Hindi naisagawa ang pagpapatotoo. I-click upang bisitahin ang page ng login para sa Wi-Fi network na iyong ginagamit (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Magdisenyo ng mga natatanging wallpaper</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Nakakita ng 1 nakompromisong password}one{Nakakita ng {NUM_SITES} nakompromisong password}other{Nakakita ng {NUM_SITES} na nakompromisong password}}</translation>
 <translation id="1122913801042512795">Hindi napapanahon ang mga detalye sa pag-sign in ng iyong account. Mag-sign out at mag-sign in ulit.</translation>
 <translation id="1122960773616686544">Pangalan ng bookmark</translation>
 <translation id="1124772482545689468">User</translation>

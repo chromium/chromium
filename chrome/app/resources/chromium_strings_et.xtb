@@ -65,6 +65,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="1863308913976887472">Saidid võivad talletada Chromiumisse teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="1880677175115548835">Valige tekst</translation>
 <translation id="1881322772814446296">Logite sisse hallatud kontoga ja annate selle administraatorile üle Chromiumi profiili juhtimise. Teie Chromiumi andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed kustutada Google'i kontode juhtpaneeli kaudu, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave energiasäästja kohta<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chromiumisse sisse logimata</translation>
 <translation id="1929939181775079593">Chromium ei reageeri. Kas soovite kohe taaskäivitada?</translation>
@@ -262,6 +263,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4544142686420020088">Chromiumit ei värskendatud, midagi läks valesti. <ph name="BEGIN_LINK" />Lahendage Chromiumi värskendamisprobleemid ja parandage ebaõnnestunud värskendused.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium võib selle vahelehe interaktiivseks teha, et täiustada teie sirvimiskogemust ja säilitada teenuse kiiruse.</translation>
 <translation id="454579500955453258">Kas jätkata uuel Chromiumi profiilil?</translation>
+<translation id="4548534452171747496">Chromium eellaadib lehed, mis muudab sirvimise ja otsimise kiiremaks. <ph name="BEGIN_LINK" />Lisateave lehtede eellaadimise kohta<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Olete sisse logitud aadressiga <ph name="USER_EMAIL_ADDRESS" />. Nüüd on teil juurdepääs oma järjehoidjatele, ajaloole ja muudele seadetele kõigis seadmetes, kuhu olete sisse logitud.</translation>
 <translation id="4570813286784708942">Chromium blokeeris selle allalaadimise, kuna lülitasite Google'i ohutu sirvimise välja ja faili ei saa kinnitada</translation>
 <translation id="4594305310729380060">Selle seadme paroolihaldurisse</translation>
@@ -335,6 +337,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="5698481217667032250">Kuva Chromium selles keeles</translation>
 <translation id="569897634095159764">Internetiga ei õnnestu ühendust luua. Puhverserver nõuab autentimist.</translation>
 <translation id="5761096224651992291">Te pole hiljuti külastanud. Chromium eemaldas <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium vabastab inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chromiumi kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete. <ph name="BEGIN_LINK" />Lisateave mälusäästja kohta<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Kohandage ja hallake Chromiumi. Määrake Chromium vaikebrauseriks.</translation>
 <translation id="5809516625706423866">Internetiga ei õnnestu ühendust luua. HTTP 401 pole lubatud. Kontrollige puhverserveri seadistust.</translation>
 <translation id="5821520528363214608">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google'i kontol värskendage Chromiumi</translation>

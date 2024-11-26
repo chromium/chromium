@@ -1751,7 +1751,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4123572138124678573">Tri dierky dole</translation>
 <translation id="412601465078863288">Vypršal čas nahrania</translation>
 <translation id="4127317221386336246">Odevné doplnky</translation>
-<translation id="4127575959421463246">Hľadáte experimentálne funkcie systému ChromeOS? Prejdite na</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ďalšia}few{# ďalšie}many{# ďalšej}other{# ďalších}}</translation>
 <translation id="4129992181550680635">Vzdelávacie zdroje</translation>
 <translation id="4130226655945681476">Skontrolovať sieťové káble, modem a smerovač</translation>
@@ -4313,7 +4312,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8792626944327216835">mikrofón</translation>
 <translation id="8793655568873652685">Doména <ph name="ENROLLMENT_DOMAIN" /> zapla vo vašom prehliadači Chrome Enterprise Connectors. Tieto konektory majú prístup k niektorým vašim údajom.</translation>
 <translation id="8798099450830957504">Predvolené</translation>
-<translation id="8798739476508189189">Hľadáte experimentálne funkcie prehliadača? Prejdite na</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8805819170075074995">Položka zoznamu <ph name="LANGUAGE_ID" />: položka bola ignorovaná, pretože je tiež zahrnutá v pravidle SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Poskytovatelia telekomunikačných služieb</translation>

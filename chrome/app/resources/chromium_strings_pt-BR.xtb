@@ -65,6 +65,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="1863308913976887472">Sites podem armazenar informações sobre seus interesses com o Chromium. Por exemplo, se você visitar um site para comprar sapatos de maratona, ele pode definir "maratonas" como um dos seus interesses. Depois, se você visitar outro site para se inscrever em uma maratona, esse site pode mostrar um anúncio de sapatos de corrida com base nos seus interesses.</translation>
 <translation id="1880677175115548835">Selecionar texto</translation>
 <translation id="1881322772814446296">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Chromium. Seus dados do Chromium, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. Você tem a opção de criar um novo perfil para manter seus dados existentes do Chromium separados. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">O Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de energia<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chromium</translation>
 <translation id="1929939181775079593">O Chromium não está respondendo. Reiniciar agora?</translation>
@@ -260,6 +261,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="4544142686420020088">A atualização do Chromium não foi concluída. Algo deu errado. <ph name="BEGIN_LINK" />Corrija as atualizações com falhas e os problemas de atualização do Chromium<ph name="END_LINK" />.</translation>
 <translation id="4545268686623374213">O Chromium pode deixar esta guia inativa para melhorar sua experiência de navegação e manter a rapidez.</translation>
 <translation id="454579500955453258">Continuar em um perfil novo do Chromium?</translation>
+<translation id="4548534452171747496">O Chromium pré-carrega páginas, deixando a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Você está conectado como <ph name="USER_EMAIL_ADDRESS" />. Agora você pode acessar seus favoritos, histórico e outras configurações em todos os seus dispositivos conectados.</translation>
 <translation id="4570813286784708942">O Chromium bloqueou o download porque você desativou o recurso Navegação segura e não é possível verificar o arquivo</translation>
 <translation id="4594305310729380060">No Gerenciador de senhas neste dispositivo</translation>
@@ -333,6 +335,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5698481217667032250">Exibir Chromium neste idioma</translation>
 <translation id="569897634095159764">Não foi possível se conectar à Internet. O servidor proxy requer autenticação.</translation>
 <translation id="5761096224651992291">Você não visitou os sites recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">O Chromium libera memória de guias inativas. Isso permite que guias ativas e outros apps usem mais recursos do computador e deixa o Chromium rápido. Suas guias inativas são reativadas automaticamente quando você volta a elas. <ph name="BEGIN_LINK" />Saiba mais sobre a Economia de memória<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Personalize e controle o Chromium. Defina esse navegador como o padrão.</translation>
 <translation id="5809516625706423866">Não foi possível conectar à Internet. HTTP 401 Não autorizado. Verifique sua configuração do proxy.</translation>
 <translation id="5821520528363214608">Atualize o Chromium para usar e salvar dados dele na sua Conta do Google</translation>

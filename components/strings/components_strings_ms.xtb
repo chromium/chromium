@@ -1756,7 +1756,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4123572138124678573">Tiga tebukan bawah</translation>
 <translation id="412601465078863288">Muat naik tamat masa</translation>
 <translation id="4127317221386336246">Aksesori Pakaian</translation>
-<translation id="4127575959421463246">Mencari bendera ChromeOS? Lawati</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
 <translation id="4129992181550680635">Sumber Pendidikan</translation>
 <translation id="4130226655945681476">Memeriksa kabel rangkaian, modem dan penghala</translation>
@@ -3471,6 +3470,7 @@ Butiran tambahan:
 <translation id="725866823122871198">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa komputer anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>
 <translation id="7260075294900977274">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik</translation>
 <translation id="7265608370113700582">Alamat tersedia hanya pada peranti ini</translation>
+<translation id="7269151392155523061">Pintasan tidak boleh sama dengan kata kunci pengagregat carian yang ditakrifkan oleh <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fail yang anda muat turun dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail tersebut mungkin diimbas untuk mencari data sensitif atau perisian hasad dan mungkin disimpan berdasarkan dasar syarikat dan dapat dilihat oleh pentadbir anda.</translation>
 <translation id="7275334191706090484">Penanda Halaman Terurus</translation>
 <translation id="7275808129217605899">Pemakanan Sihat</translation>
@@ -4319,7 +4319,6 @@ Butiran tambahan:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> telah menghidupkan Chrome Enterprise Connectors pada penyemak imbas anda. Penyambung ini boleh mengakses sesetengah data anda.</translation>
 <translation id="8798099450830957504">Lalai</translation>
-<translation id="8798739476508189189">Mencari bendera penyemak imbas? Lawati</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8805819170075074995">Masukan senarai "<ph name="LANGUAGE_ID" />": Masukan diabaikan kerana masukan ini disertakan dalam dasar SpellcheckLanguage juga.</translation>
 <translation id="8806062468703310719">Penyedia Perkhidmatan Telefon</translation>

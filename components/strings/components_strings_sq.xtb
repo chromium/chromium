@@ -866,6 +866,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2521736961081452453">Krijo formular</translation>
 <translation id="2523886232349826891">Ruajtur vetëm në këtë pajisje</translation>
 <translation id="2524461107774643265">Shto më shumë informacion</translation>
+<translation id="2526062290525841862">Për ta ekzekutuar këtë aplikacion, aktivizo përsëri modalitetin "si zhvillues" për "Aplikacionin e izoluar të uebit"</translation>
 <translation id="2526280916094749336">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Numri CVC është në pjesën e përparme të kartës sate. Ai është kodi me 4 shifra në krye djathtas mbi numrin e kartës sate.</translation>
 <translation id="2529899080962247600">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha hyrjet e mëtejshme do të shpërfillen.</translation>
@@ -1578,6 +1579,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
 <translation id="3801297763951514916">E viziton shpesh</translation>
 <translation id="380329542618494757">Emri</translation>
+<translation id="3803481123869276674">Kur bën blerje në Chrome, shiko "Portofolin elektronik" si opsion</translation>
 <translation id="3803801106042434208">Këta motorë kërkimi janë të njohur në rajonin tënd</translation>
 <translation id="380666903981445943">Ruaj një mënyrë pagese në "Llogarinë tënde të Google" për ta plotësuar automatikisht për blerjet e bëra në Chrome</translation>
 <translation id="3807366285948165054">Zhvendosja e imazhit në boshtin X</translation>
@@ -1753,7 +1755,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4123572138124678573">Tri shpime poshtë</translation>
 <translation id="412601465078863288">Koha e ngarkimit skadoi</translation>
 <translation id="4127317221386336246">Aksesorë veshjesh</translation>
-<translation id="4127575959421463246">Të kërkohet për flamujt e ChromeOS? Vizito</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 tjetër}other{# të tjerë}}</translation>
 <translation id="4129992181550680635">Burime edukative</translation>
 <translation id="4130226655945681476">Të kontrollosh kabllot e rrjetit, modemin dhe router-in</translation>
@@ -2192,6 +2193,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4930714375720679147">Aktivizo</translation>
 <translation id="4932035752129140860">Teksti që ngjit ose bashkëngjit i dërgohet Google Cloud ose palëve të treta për analizim. Për shembull, ai mund të skanohet për të dhëna delikate dhe mund të ruhet bazuar në politikat e kompanisë dhe të jetë i dukshëm për administratorin tënd.</translation>
 <translation id="4933468175699107356">Kliko me butonin djathtas për të plotësuar automatikisht informacionet e ruajtura, si p.sh. emrin ose adresën tënde, në çdo formular</translation>
+<translation id="4933788293078559286">Paguaj me Pix</translation>
 <translation id="4934780484581617878">Menaxhimi i dritareve</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> që është futur nuk mund të gjendej.</translation>
 <translation id="4936573216809994970">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 ore</translation>
@@ -2466,6 +2468,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5452270690849572955">Kjo faqe e <ph name="HOST_NAME" /> nuk mund të gjendet</translation>
+<translation id="5452923259299906094">Paguaj me "Portofolin elektronik" dhe Pix</translation>
 <translation id="5455374756549232013">Vulë kohore politike e gabuar</translation>
 <translation id="5456428544444655325">Mos shfaq asnjëherë</translation>
 <translation id="5456839782162429664">Verifikohu manualisht sa herë që paguan duke përdorur plotësimin automatik</translation>
@@ -3278,6 +3281,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
 <translation id="6946949206576443118">Kërko në ueb në Chrome</translation>
 <translation id="6948051842255602737">Loja mbaroi. Rezultati yt është <ph name="SCORE" />.</translation>
+<translation id="6948223029286835408">Kur bën blerje në Chrome, shiko Pix si opsion</translation>
 <translation id="6948701128805548767">Për të parë mënyrat dhe kërkesat e marrjes, zgjidh një adresë</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">Rivendos fjalëkalimin</translation>
@@ -3592,6 +3596,7 @@ Detaje shtesë:
 <translation id="7489392576326061356">Shampo dhe zbutës flokësh</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
 <translation id="749865518782565832">Hidraulik</translation>
+<translation id="7499188644237027195">Kur bën blerje në Chrome, shiko "Portofolin elektronik" dhe Pix si opsione</translation>
 <translation id="7500917112031739411">Shfaq sipas grupit</translation>
 <translation id="7501663406926337752">Sajti ku je drejtuar është raportuar nga organizata jote</translation>
 <translation id="7507075214339298899">Zarf nr. 9</translation>
@@ -3705,6 +3710,7 @@ Detaje shtesë:
 <translation id="767550629621587224">Skeda të prera paraprakisht</translation>
 <translation id="7675756033024037212">Lëvizja dhe zmadhimi nuk lejohen</translation>
 <translation id="7676643023259824263">Kërko për tekstin e kujtesës së fragmenteve, <ph name="TEXT" /></translation>
+<translation id="7679287273775285018">Paguaj me "Portofolin elektronik"</translation>
 <translation id="7679367271685653708">Shiko dhe menaxho historikun e shfletimit te cilësimet e Chrome</translation>
 <translation id="7679947978757153706">Bejsbolli</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
@@ -4308,7 +4314,6 @@ Detaje shtesë:
 <translation id="8792626944327216835">mikrofoni</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ka aktivizuar Chrome Enterprise Connectors në shfletuesin tënd. Këta bashkues kanë qasje te disa nga të dhënat e tua.</translation>
 <translation id="8798099450830957504">I parazgjedhur</translation>
-<translation id="8798739476508189189">Të kërkohet për flamujt e shfletuesit? Vizito</translation>
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>
 <translation id="8805819170075074995">Hyrja e listës "<ph name="LANGUAGE_ID" />": Hyrja është shpërfillur sepse është e përfshirë edhe në politikën e SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Ofruesit e shërbimeve telefonike</translation>

@@ -1756,7 +1756,6 @@
 <translation id="4123572138124678573">عمل ثلاثة ثقوب بالأسفل</translation>
 <translation id="412601465078863288">انتهت مهلة التحميل</translation>
 <translation id="4127317221386336246">إكسسوارات ملابس</translation>
-<translation id="4127575959421463246">‏التعرّف على الميزات التجريبية لنظام التشغيل Chrome الانتقال</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{عنصر واحد آخر}zero{# عنصر آخر}two{عنصران آخران (#)}few{# عناصر أخرى}many{# عنصرًا آخر}other{# عنصر آخر}}</translation>
 <translation id="4129992181550680635">مراجع تعليمية</translation>
 <translation id="4130226655945681476">التحقق من كابلات الشبكة، والمودم، وجهاز التوجيه</translation>
@@ -4322,7 +4321,6 @@
 <translation id="8792626944327216835">الميكروفون</translation>
 <translation id="8793655568873652685">‏تم تفعيل "وصلات Chrome Enterprise" على متصفّحك من قِبل <ph name="ENROLLMENT_DOMAIN" />. لدى هذه الوصلات إذن بالوصول إلى بعض بياناتك.</translation>
 <translation id="8798099450830957504">التلقائي</translation>
-<translation id="8798739476508189189">التعرّف على الميزات التجريبية للمتصفّح الانتقال</translation>
 <translation id="8800034312320686233">هل الموقع الإلكتروني لا يعمل؟</translation>
 <translation id="8805819170075074995">‏إدخال في القائمة "<ph name="LANGUAGE_ID" />": تم تجاهل الإدخال لأنه مضمّن في سياسة SpellcheckLanguage أيضًا.</translation>
 <translation id="8806062468703310719">مقدّمو خدمات هاتفية</translation>

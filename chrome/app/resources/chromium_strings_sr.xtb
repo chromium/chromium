@@ -254,6 +254,7 @@
 <translation id="4427306783828095590">Побољшана заштита нуди више могућности за блокирање „пецања“ и малвера</translation>
 <translation id="4434353761996769206">Грешка програма за инсталацију: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> управља Chromium-ом</translation>
+<translation id="444069871276811466">Додај Chromium профил</translation>
 <translation id="4447409407328223819">О верзији Chrome for Testing</translation>
 <translation id="4470974262661801543">Да бисте користили и чували Chromium податке на Google налогу, унесите приступну фразу</translation>
 <translation id="4493028449971051158">Грешка при покретању: покрените програм за инсталацију као администратор.</translation>
@@ -584,6 +585,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Који подаци се користе:<ph name="END_BOLD" /> Историја прегледања, евиденција сајтова које сте посетили помоћу Chromium-а на овом уређају.</translation>
 <translation id="8852026904190808918">Овај језик се користи за приказивање менија, подешавања, упозорења и другог текста у Chromium-у</translation>
 <translation id="8862326446509486874">Немате одговарајућа права за инсталацију на нивоу система. Пробајте поново да покренете програм за инсталацију, овога пута као администратор.</translation>
+<translation id="8876044221123442390">Додај Chromium профил</translation>
 <translation id="8880203542552872219">Ако је тако, измените сачувану лозинку у Chromium-у тако да се подудара са новом лозинком.</translation>
 <translation id="8891709362986793894">Организација захтева да се пријавите у Chromium</translation>
 <translation id="8907580949721785412">Chromium покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>

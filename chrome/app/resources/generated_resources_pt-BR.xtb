@@ -184,6 +184,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Falha na autenticação. Clique para visitar a página de login da rede Wi-Fi que você está usando (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Use planos de fundo exclusivos com o seu estilo</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 senha comprometida encontrada}one{{NUM_SITES} senha comprometida encontrada}other{{NUM_SITES} senhas comprometidas encontradas}}</translation>
 <translation id="1122913801042512795">Seus detalhes de login estão desatualizados. Saia da conta e faça login novamente.</translation>
 <translation id="1122960773616686544">Nome do favorito</translation>
 <translation id="1124772482545689468">Usuário</translation>
@@ -2181,6 +2182,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2477065602824695373">A leitura automática foi desativada porque você configurou vários interruptores.</translation>
 <translation id="2478176599153288112">Permissões de arquivos de mídia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ativar o serviço de recuperação de dados.</translation>
+<translation id="2479541499757560845">Configurações de teclado de acessibilidade</translation>
 <translation id="2480868415629598489">Modificar os dados que você copia e cola</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2482895651873876648">A guia foi movida para o grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
@@ -3098,6 +3100,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3132277757485842847">Não foi possível manter uma conexão com o smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
 <translation id="3132896062549112541">Regra</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
+<translation id="3134312457920437826">Não é possível instalar a extensão porque ela usa uma versão incompatível do manifesto.</translation>
 <translation id="3134393957315651797">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />. Descrição do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarelo padrão</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
@@ -4369,6 +4372,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4012509903424054869">Os PDFs são convertidos automaticamente para que você possa pesquisar e selecionar o texto</translation>
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Instalou extensões? <ph name="BEGIN_LINK" />Gerencie suas extensões<ph name="END_LINK" /> em um só lugar.</translation>
+<translation id="4015250302257349679">Pressione <ph name="ACCELERATOR" /> para focar no balão e mais uma vez para focar no elemento relacionado a ele.</translation>
 <translation id="4016762287427926315">As permissões concedidas para <ph name="APP_NAME" /> também serão dadas para este app. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Criar um QR code para este link</translation>
 <translation id="4019983356493507433">Editar lista de favoritos</translation>
@@ -5930,6 +5934,8 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5157250307065481244">Mostrar detalhes do site</translation>
 <translation id="5158206172605340248">Menu de acentos dispensado.</translation>
 <translation id="5159094275429367735">Configurar o Crostini</translation>
+<translation id="5159236862360390997">Será mostrada uma série de balões de tutorial com instruções.
+          Pressione <ph name="ACCELERATOR" /> para focar em um balão e mais uma vez para focar no elemento relacionado a ele.</translation>
 <translation id="5159419673777902220">Seu familiar responsável desativou as permissões da extensão</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Faça login no seu <ph name="DEVICE_TYPE" /></translation>
@@ -6211,6 +6217,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5372579129492968947">Libere a extensão</translation>
 <translation id="5372632722660566343">Continuar sem uma conta</translation>
 <translation id="5372990315769030589">Manter "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5374324662289354619">As páginas de depuração internas estão desativadas no momento.</translation>
 <translation id="5375318608039113175">Para usar o "Compartilhar por proximidade" com esses contatos, adicione a eles o endereço de e-mail vinculado à Conta do Google de cada um.</translation>
 <translation id="5375374982898812658">Você vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e ele será excluído de todos seus dispositivos</translation>
 <translation id="5375577102295339548">Os sites podem ajudar a verificar que você é uma pessoa real</translation>
@@ -9473,6 +9480,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7737846262459425222">Você pode mudar essa opção a qualquer momento em Configurações &gt; Google Assistente &gt; Contexto na tela.</translation>
 <translation id="7737948071472253612">Bloquear o uso da câmera</translation>
 <translation id="77381465218432215">Mostrar acentos e caracteres especiais</translation>
+<translation id="7739524723876359011">Pressione <ph name="ACCELERATOR" /> para focar no balão.</translation>
 <translation id="7740996059027112821">Padrão</translation>
 <translation id="7742706086992565332">É possível definir o nível de zoom em alguns sites</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 senha comprometida encontrada}one{{NUM_SITES} senha comprometida encontrada}other{{NUM_SITES} senhas comprometidas encontradas}}</translation>

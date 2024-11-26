@@ -184,6 +184,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Falha na autenticação. Clique para aceder à página de início de sessão da rede Wi-Fi que está a utilizar (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Dê estilo a imagens de fundo únicas</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 palavra-passe comprometida encontrada}other{{NUM_SITES} palavras-passe comprometidas encontradas}}</translation>
 <translation id="1122913801042512795">Os detalhes de início de sessão da sua conta estão desatualizados. Termine e inicie novamente sessão.</translation>
 <translation id="1122960773616686544">Nome do marcador</translation>
 <translation id="1124772482545689468">Utilizador</translation>
@@ -3460,6 +3461,7 @@ Quer pará-lo?</translation>
 <translation id="3421387094817716717">Chave pública curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos seus resultados pessoais ou ao Assistente.</translation>
 <translation id="3421835120203732951">Adicionar novo perfil</translation>
+<translation id="3422989558057853751">Último item selecionado; se for desmarcado, sai do modo de seleção</translation>
 <translation id="3423111258700187173">Resultados encontrados na pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saber mais sobre esta funcionalidade de IA</translation>
 <translation id="3423275441470187644">Fidedignidade</translation>
@@ -4956,6 +4958,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4461483878391246134">Adicionar idiomas à opção Nunca disponibilizar tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465236939126352372">Limite de tempo de <ph name="TIME" /> definido para a app <ph name="APP_NAME" />.</translation>
+<translation id="4467373268340082204">PIN incorreto</translation>
 <translation id="4467561276409486506">&amp;Ativar/desativar modo compacto</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar ficheiros em <ph name="FOLDERNAME" /></translation>

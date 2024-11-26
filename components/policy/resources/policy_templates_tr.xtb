@@ -189,6 +189,18 @@ Etiket, <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_NAME" /> politikası kullanıla
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge aramayı devre dışı bırakın.</translation>
 <translation id="1111324374369583989">Oturum açma sırasında görüntü boyutu ayar ekranını gösterme</translation>
 <translation id="1111824532252882775">Etkin: Kaydırıcılar varsayılan olarak odaklanılabilir özelliğe sahip olur.</translation>
+<translation id="1112125878718482033"><ph name="PRODUCT_NAME" /> ürününün geliştirici araçlarında bulunan bu özellikler, ilave hata ayıklama bilgileri sağlamak için üretken yapay zeka modellerini kullanır. Bu özellikleri kullanmak için <ph name="PRODUCT_NAME" /> ürününün hata mesajı, yığın izleme (stack trace), kod snippet'i ve ağ istekleri gibi verileri toplayıp Google'ın sahip olduğu ve üretken yapay zeka modeli kullanan bir sunucuya göndermesi gerekir. Ağ isteklerindeki yanıt gövdesi veya kimlik doğrulama ve çerez başlıkları, sunucuya gönderilen verilere dahil edilmez.
+
+0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
+
+1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
+
+2 = Özelliği devre dışı bırakın.
+
+Aşağıdakiler Geliştirici Araçları üretken yapay zeka özellikleri arasındadır:
+- Konsol Analizleri: Konsol mesajlarını açıklar ve konsol hatalarının düzeltilmesine yönelik öneriler sunar.
+
+- Yapay zeka desteği: CSS stillerini (131. sürümden itibaren), ağ isteklerini, performansı ve dosyaları (tümü 132. sürümden itibaren) anlama konusunda yardım alın.</translation>
 <translation id="1117535567637097036">Bu politika aracılığıyla ayarlanan protokol işleyicileri, Android amaçları işlenirken kullanılmaz.</translation>
 <translation id="1118093128235245168">Sitelerin, bağlı bir USB cihazına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="111910763555783249">Bildirim ayarları</translation>
@@ -4616,9 +4628,6 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="4410236409016356088">Ağ bant genişliğini daraltmayı etkinleştir</translation>
 <translation id="4410361389637971319">Yalıtılmış web uygulaması kaynaklarının Direct Sockets'ı kullanmasına izin ver</translation>
 <translation id="4411734231900934213">Çocuğun ve ebeveynin cihazlarındaki saatler arasında olmasına izin verilen fark (saniye olarak).</translation>
-<translation id="4411759973223339687">Bu politika, Doğru değerine ayarlanırsa veya yapılandırılmazsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, misafir girişlerini etkinleştirir. Misafir girişleri, tüm pencerelerin gizli modda olduğu <ph name="PRODUCT_NAME" /> profilleridir.
-
-      Bu politika, Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, misafir profillerinin başlatılmasına izin vermez.</translation>
 <translation id="441217499641439905"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında hücresel bağlantılar üzerinden Google Drive erişimini devre dışı bırak</translation>
 <translation id="4412885120239670573">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> içinde dahili PDF görüntüleyicisi kapatılır, PDF dosyaları indirme olarak ele alınır ve kullanıcının PDF'leri varsayılan uygulamayla açmasına izin verilir.
 
@@ -10209,6 +10218,11 @@ Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_block
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Tarayıcı geçmişini kaydetmeyi devre dışı bırak</translation>
 <translation id="8499172469244085141">Varsayılan Ayarlar (kullanıcılar geçersiz kılabilir)</translation>
+<translation id="8499359456965625209">Bu politika kullanımdan kaldırılmıştır.
+
+Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf yazılımlarının <ph name="PRODUCT_NAME" /> işlemlerine çalıştırılabilir kod yerleştirmesi önlenir.
+
+      Politika Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.</translation>
 <translation id="8503018573167958506">Bir kullanıcının, cihazın ana makine adını yapılandırmasına izin verilip verilmediğini belirleyin.
 
       <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> ayarlanırsa ana makine adını yönetici belirler ve kullanıcı, bu politika neye ayarlanmış olursa olsun seçim yapamaz.

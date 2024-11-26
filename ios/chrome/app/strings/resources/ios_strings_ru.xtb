@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">Не доставлено. Будет повторная попытка</translation>
 <translation id="3557336313807607643">Добавить в контакты</translation>
 <translation id="355765753469272474">Отменить</translation>
+<translation id="3562379378751492229">Расположите ее там, где хотите.</translation>
 <translation id="3565930036634619844">Номер вкладки: <ph name="TAB_INDEX" /> из <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Чтобы посмотреть другие пароли, нажмите дважды.</translation>
 <translation id="3572607909481582402">В аккаунте Google</translation>
@@ -968,6 +969,7 @@
 <translation id="5506763544823940561">Сохранить изображение в…</translation>
 <translation id="5511959326926949696">Дополнительная защита для вашего браузера. Эта функция нужна, только если вы считаете, что можете стать целью очень сложной кибератаки.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ч. назад</translation>
+<translation id="5524590039848017563">Кнопка свернутой основной панели инструментов</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} простой пароль}one{{COUNT} простой пароль}few{{COUNT} простых пароля}many{{COUNT} простых паролей}other{{COUNT} простого пароля}}</translation>
 <translation id="5532545557415295622">Диалоговое окно о завершении сеанса из-за бездействия</translation>
 <translation id="5548760955356983418">Функция Handoff позволит начать просмотр веб-сайта на одном устройстве и продолжить на другом. Открытый сайт появится на панели Dock вашего компьютера Mac.
@@ -992,6 +994,7 @@
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
 <translation id="5613297089029360427">Сортировать по дате</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
+<translation id="5614805397884895755">Запускайте браузер с главного экрана.</translation>
 <translation id="5619871095170816857">Здесь показана последняя открытая вкладка на всех синхронизированных устройствах за прошедшие 24 часа</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
 <translation id="5624637933505983014">Не включать синхронизацию</translation>
@@ -1496,6 +1499,7 @@
 <translation id="7812377703891978671">Чтобы открыть историю браузера, выберите "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="78146569776629510">Скачанные файлы</translation>
 <translation id="7815852444315004084">Скрыть</translation>
+<translation id="7831876841288640403">Переместите ее в удобное для вас место.</translation>
 <translation id="7839994177130598711">Теперь участники вашей семейной группы могут использовать ваши имя пользователя и пароль при входе в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей.</translation>
 <translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7841180087127694526">Поиск скопированного текста</translation>

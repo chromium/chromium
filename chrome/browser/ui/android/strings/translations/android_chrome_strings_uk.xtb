@@ -650,7 +650,6 @@
 <translation id="3985022125189960801">Ви можете будь-коли знову включити сайт у список тих, які можуть визначати ваші інтереси</translation>
 <translation id="3985215325736559418">Завантажити файл "<ph name="FILE_NAME" />" повторно?</translation>
 <translation id="3987993985790029246">Копіювати</translation>
-<translation id="3991055816270226534">Керування сторонніми файлами cookie й захистом від відстеження</translation>
 <translation id="4000212216660919741">Дім у режимі офлайн</translation>
 <translation id="4016425174436051808">Не вдалося підписатися. Сталася помилка.</translation>
 <translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
@@ -1112,6 +1111,7 @@
 <translation id="6108923351542677676">Виконується налаштування…</translation>
 <translation id="6112702117600201073">Оновлення сторінки</translation>
 <translation id="6122831415929794347">Вимкнути Безпечний перегляд?</translation>
+<translation id="6125202119952209826">Приєднатися до групи вкладок, з якою працює <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Веб-сайт видалено</translation>
 <translation id="6130303040046284160">Згорнути вкладку</translation>
@@ -1166,7 +1166,6 @@
 <translation id="6341580099087024258">Запитувати, де зберігати файли</translation>
 <translation id="6342069812937806050">Щойно</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
-<translation id="6344622098450209924">Захист від відстеження</translation>
 <translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6356893102071098867">Переконайтеся, що ви вибрали правильний обліковий запис</translation>
 <translation id="6363990818884053551">Щоб почати синхронізацію, підтвердьте свою особу</translation>
@@ -1611,6 +1610,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="820568752112382238">Сайти, які часто відвідуються</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}one{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувач}few{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачі}many{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувачів}other{Приєднатися до групи вкладок, з якою працюють <ph name="OWNER_FIRST_NAME" /> і ще <ph name="NUMBER_OF_OTHER_MEMBERS" /> користувача}}</translation>
 <translation id="8209050860603202033">Відкрити зображення</translation>
 <translation id="8210770465353466621">Тут відображатимуться ваші вкладки</translation>
 <translation id="8211101263765532799">Деякі паролі незабаром припинять працювати</translation>

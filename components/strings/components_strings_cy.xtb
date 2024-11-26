@@ -1579,6 +1579,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3799805948399000906">Y ffont a geisiwyd</translation>
 <translation id="3801297763951514916">Rydych yn ymweld yn aml</translation>
 <translation id="380329542618494757">Enw</translation>
+<translation id="3803481123869276674">Pan fyddwch yn prynu yn Chrome, gwelwch eWaled fel opsiwn</translation>
 <translation id="3803801106042434208">Mae'r peiriannau chwilio hyn yn boblogaidd yn eich rhanbarth</translation>
 <translation id="380666903981445943">Cadw dull talu yn eich Cyfrif Google i'w awtolenwi ar gyfer pryniannau a wnaed yn Chrome</translation>
 <translation id="3807366285948165054">Llun X sifft</translation>
@@ -1754,7 +1755,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4123572138124678573">Tri thwll ar y gwaelod</translation>
 <translation id="412601465078863288">Mae uwchlwytho wedi cymryd gormod o amser</translation>
 <translation id="4127317221386336246">Ategolion Dillad</translation>
-<translation id="4127575959421463246">Chwilio am faneri ChromeOS? Ewch i</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 arall}zero{# arall}two{# arall}few{# arall}many{# arall}other{# arall}}</translation>
 <translation id="4129992181550680635">Adnoddau Addysgol</translation>
 <translation id="4130226655945681476">Wrthi'n gwirio'r ceblau rhwydwaith, y modem, a'r llwybrydd</translation>
@@ -2193,6 +2193,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4930714375720679147">Troi Ymlaen</translation>
 <translation id="4932035752129140860">Anfonir testun rydych wedi'i ludo neu ei atodi i Google Cloud neu drydydd partïon i'w ddadansoddi. Er enghraifft, mae'n bosib y bydd yn cael ei sganio am ddata sensitif a gallai gael ei storio yn seiliedig ar bolisïau cwmni ac yn weladwy i'ch gweinyddwr.</translation>
 <translation id="4933468175699107356">De-gliciwch i awtolenwi gwybodaeth sydd wedi'i chadw, megis eich enw neu gyfeiriad, ar unrhyw ffurflen</translation>
+<translation id="4933788293078559286">Talu â Pix</translation>
 <translation id="4934780484581617878">Rheoli ffenestri</translation>
 <translation id="4936134414789135531">Nid oedd modd dod o hyd i'r <ph name="VALUE_NAME" /> a fewnosodwyd.</translation>
 <translation id="4936573216809994970">Bydd eich uwchlwythiad ffeil i <ph name="CLOUD_PROVIDER" /> yn dechrau mewn 1 awr</translation>
@@ -2467,6 +2468,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5443468954631487277">Yn y drefn wrthol wyneb i fyny</translation>
 <translation id="5447235695608032700">Caniatáu i <ph name="SITE" /> ddefnyddio gwybodaeth y maent wedi cadw amdanoch chi</translation>
 <translation id="5452270690849572955">Ni ellir dod o hyd i'r dudalen <ph name="HOST_NAME" /> hon</translation>
+<translation id="5452923259299906094">Talu gydag eWallet a Pix</translation>
 <translation id="5455374756549232013">Stamp amser polisi gwael</translation>
 <translation id="5456428544444655325">Peidio byth â dangos</translation>
 <translation id="5456839782162429664">Dilysu yn bwrpasol bob tro y byddwch yn talu gan ddefnyddio awtolenwi</translation>
@@ -3280,6 +3282,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6944692733090228304">Gwnaethoch roi eich cyfrinair ar wefan nad yw'n cael ei reoli gan <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Er mwyn amddiffyn eich cyfrif, peidiwch ag ailddefnyddio eich cyfrinair ar apiau a gwefannau eraill.</translation>
 <translation id="6946949206576443118">Chwilio'r we yn Chrome</translation>
 <translation id="6948051842255602737">Gêm drosodd, eich sgôr yw <ph name="SCORE" />.</translation>
+<translation id="6948223029286835408">Pan fyddwch yn prynu yn Chrome, gwelwch Pix fel opsiwn</translation>
 <translation id="6948701128805548767">I weld dulliau casglu a gofynion, dewiswch gyfeiriad</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">Ailosod y Cyfrinair</translation>
@@ -3594,6 +3597,7 @@ Manylion ychwanegol:
 <translation id="7489392576326061356">Siampŵ a Chyflyrydd</translation>
 <translation id="7495528107193238112">Mae'r cynnwys hwn wedi'i rwystro. Cysylltwch â pherchennog y wefan i ddatrys y broblem.</translation>
 <translation id="749865518782565832">Plymwaith</translation>
+<translation id="7499188644237027195">Pan fyddwch yn prynu yn Chrome, gweler eWallet a Pix fel opsiynau</translation>
 <translation id="7500917112031739411">Dangos yn ôl grŵp</translation>
 <translation id="7501663406926337752">Mae'r wefan o'ch blaen wedi'i fflagio gan eich sefydliad</translation>
 <translation id="7507075214339298899">Amlen #9</translation>
@@ -3707,6 +3711,7 @@ Manylion ychwanegol:
 <translation id="767550629621587224">Tabiau a Ragdorrwyd</translation>
 <translation id="7675756033024037212">Ni chaniateir sgrolio a chwyddo</translation>
 <translation id="7676643023259824263">Chwilio am destun clipfwrdd, <ph name="TEXT" /></translation>
+<translation id="7679287273775285018">Talu gydag eWaled</translation>
 <translation id="7679367271685653708">Gweld a rheoli eich hanes pori yng ngosodiadau Chrome</translation>
 <translation id="7679947978757153706">Pêl fas</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, yn darfod <ph name="CARD_EXPIRATION" /></translation>
@@ -4310,7 +4315,6 @@ Manylion ychwanegol:
 <translation id="8792626944327216835">meicroffon</translation>
 <translation id="8793655568873652685">Mae <ph name="ENROLLMENT_DOMAIN" /> wedi diffodd Chrome Enterprise Connectors ar eich porwr. Mae gan y cysylltwyr hyn fynediad at rywfaint o'ch data.</translation>
 <translation id="8798099450830957504">Diofyn</translation>
-<translation id="8798739476508189189">Chwilio am faneri porwr? Ewch i</translation>
 <translation id="8800034312320686233">Gwefan ddim yn gweithio?</translation>
 <translation id="8805819170075074995">Cofnod rhestr "<ph name="LANGUAGE_ID" />": Cafodd y cofnod ei anwybyddu gan ei fod wedi'i gynnwys yn y polisi Iaith Gwirio Sillafu hefyd.</translation>
 <translation id="8806062468703310719">Darparwyr Gwasanaethau Ffôn</translation>

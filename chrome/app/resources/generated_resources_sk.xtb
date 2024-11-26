@@ -184,6 +184,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1122198203221319518">&amp;Nástroje</translation>
 <translation id="1122242684574577509">Overenie totožnosti zlyhalo. Kliknutím prejdete na prihlasovaciu stránku pre sieť Wi‑Fi, ktorú používate (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Vytvorte si jedinečné štýlové tapety</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Bolo nájdené 1 odhalené heslo}few{Boli nájdené {NUM_SITES} odhalené heslá}many{Found {NUM_SITES} compromised passwords}other{Bolo nájdených {NUM_SITES} odhalených hesiel}}</translation>
 <translation id="1122913801042512795">Prihlasovacie údaje vášho účtu sú zastarané. Odhláste sa a znova sa prihláste.</translation>
 <translation id="1122960773616686544">Názov záložky</translation>
 <translation id="1124772482545689468">Používateľ</translation>

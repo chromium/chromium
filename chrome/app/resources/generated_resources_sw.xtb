@@ -184,6 +184,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1122198203221319518">Zana</translation>
 <translation id="1122242684574577509">Uidhinishaji haujafaulu. Bofya ili kutembelea ukurasa wa kuingia katika akaunti kwa mtandao wa Wi-Fi unaotumia (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Wekea mandhari muundo maalum</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Nenosiri 1 lililoathiriwa limepatikana}other{Manenosiri {NUM_SITES} yaliyoathiriwa yamepatikana}}</translation>
 <translation id="1122913801042512795">Maelezo yako ya kuingia katika akaunti yamepitwa na wakati. Tafadhali ondoka kisha uingie katika akaunti tena.</translation>
 <translation id="1122960773616686544">Jina la alamisho</translation>
 <translation id="1124772482545689468">Mtumiaji</translation>
@@ -5757,6 +5758,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5045367873597907704">Kuhusu vifaa vya HID</translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
 <translation id="504561833207953641">Inafungua katika kipindi cha kuvinjari kilichopo.</translation>
+<translation id="504953514574706691">Kichupo hakijajumuishwa kwenye kikundi kilichopendekezwa</translation>
 <translation id="5049614114599109018">Tumia Historia ya Kuingiza data</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Tovuti hii imetuma arifa nyingi hivi karibuni. Unaweza kuizuia isitume arifa wakati mwingine.}other{Tovuti hizi zimetuma arifa nyingi hivi karibuni. Unaweza kuzizuia zisitume arifa wakati mwingine.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5808,6 +5810,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5079950360618752063">Tumia nenosiri linalopendekezwa</translation>
 <translation id="508059534790499809">Onyesha upya tiketi ya Kerberos</translation>
 <translation id="5081124414979006563">Fungua Wasifu wa Mgeni</translation>
+<translation id="508209203623347828">Iwapo kadi hii imezimwa, kadi zako za Microsoft kama vile Sharepoint na Outlook Calendar zitazimwa pia.</translation>
 <translation id="5083035541015925118">ctrl + alt + kishale cha juu</translation>
 <translation id="5084328598860513926">Utaratibu wa kuweka mipangilio umekatizwa. Tafadhali jaribu tena au uwasiliane na mmiliki au msimamizi wa kifaa chako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Tovuti zinaweza kufanya kazi kama unavyotarajia</translation>
@@ -6007,6 +6010,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5216674789212441076">Hutafsiri kiotomatiki manukuu papo hapo. Manukuu hutumwa kwa Google ili iyatafsiri.</translation>
 <translation id="5220011581825921581">tafuta pamoja na kishale cha juu</translation>
 <translation id="5221516927483787768">Imeshindwa kutuma <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Kichupo hakijajumuishwa kwenye orodha</translation>
 <translation id="5222403284441421673">Kipakuliwa kisicho salama kimezuiwa</translation>
 <translation id="5222676887888702881">Ondoka</translation>
 <translation id="5225324770654022472">Onyesha mkato wa programu</translation>
@@ -6488,6 +6492,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5571066253365925590">Bluetooth imewezeshwa</translation>
 <translation id="5571092938913434726">Vidhibiti vya Jumla vya Maudhui</translation>
 <translation id="5571832155627049070">Weka mapendeleo kwenye wasifu wako</translation>
+<translation id="5572000034319109899">Safisha vichupo visivyotumika</translation>
 <translation id="5572166921642484567">Chagua hali ya chati ya rangi</translation>
 <translation id="5572252023412311448">Onyesha maelezo ya tovuti ya <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Angalia ruhusa za viendelezi vya tovuti nyingine</translation>
@@ -6997,6 +7002,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5943127421590245687">Uthibitishaji wako umefaulu. Ili uweze kufungua na kurejesha data iliyo kwenye kompyuta yako, tafadhali weka nenosiri lako la zamani la <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> inadhibiti ukurasa wako mpya wa kichupo</translation>
 <translation id="5945002094477276055">Huenda <ph name="FILE_NAME" /> ni hatari. Ungependa kuituma kwa Kipengele cha Kuvinjari Salama na Google ili ikaguliwe?</translation>
+<translation id="5945192511027649793">Zima Padi ya Kugusa</translation>
 <translation id="5945363896952315544">Ufunguo wako wa usalama hauwezi kuhifadhi alama zingine za vidole. Ili uweke alama mpya ya kidole, futa alama ya kidole iliyopo kwanza.</translation>
 <translation id="5946591249682680882">Kitambulisho cha ripoti <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Bofya kipanya mara mbili</translation>
@@ -8052,6 +8058,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6723839937902243910">Nishati</translation>
 <translation id="6725073593266469338">Huduma ya Kiolesura</translation>
 <translation id="6725206449694821596">Itifaki ya Kuchapisha ya Intaneti (IPP)</translation>
+<translation id="6725627354629889015">Ungependa kusafisha vichupo visivyotumika?</translation>
 <translation id="6725970970008349185">Idadi ya wagombea ya kuonyesha kwa kila ukurasa</translation>
 <translation id="672609503628871915">Angalia yaliyo mapya</translation>
 <translation id="6726800386221816228">Herufi maalum</translation>
@@ -8497,6 +8504,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7025190659207909717">Udhibiti wa huduma ya data ya simu ya mkononi</translation>
 <translation id="7025895441903756761">Usalama na Faragha</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Fungua Zote katika &amp;Dirisha Fiche}=1{Fungua katika &amp;Dirisha Fiche}other{Fungua Zote ({COUNT}) katika &amp;Dirisha Fiche}}</translation>
+<translation id="7027432471322992835">Zima Padi ya Kusogeza</translation>
 <translation id="7029307918966275733">Crostini haijasakinishwa. Tafadhali sakinisha Crostini ili uone waliohusika.</translation>
 <translation id="7029809446516969842">Manenosiri</translation>
 <translation id="7030304022046916278">Hutuma URL kwenye kipengele cha Kuvinjari Salama ili zikaguliwe</translation>
@@ -10032,6 +10040,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8119438628456698432">Inatengeneza faili za kumbukumbu...</translation>
 <translation id="811994229154425014">Weka nafasi mbili ili kuandika kitone</translation>
 <translation id="8120505434908124087">Weka wasifu wa eSIM</translation>
+<translation id="8121537075864592453">Umezima hali ya skrini nzima</translation>
 <translation id="8121750884985440809">Sasa unatuma maudhui ya skrini yako</translation>
 <translation id="8122898034710982882">Kituo cha Kudhibiti Simu, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Ua la rangi ya manjano na nyeupe</translation>
@@ -10253,6 +10262,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8276560076771292512">Futa Akiba na Uanzishe Kivinjari Upya</translation>
 <translation id="8276850948802942358">Pata maelezo zaidi kuhusu kuipatia tovuti idhini ya muda ya kutumia vidakuzi vya washirika wengine</translation>
 <translation id="8277907305629781277">Umeunda ufunguo huu wa siri tarehe <ph name="DATE" /></translation>
+<translation id="827966378414194229">Tumia mijongeo ya kichwa na ishara za uso kudhibiti Chromebook yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Tovuti zilizo katika lugha zako</translation>
 <translation id="8280848878018088610">Mawimbi yanayovuma baharini, pamoja na jiji la kipekee na kasri kwenye mandharinyuma, katika hali ya giza.</translation>
 <translation id="828180235270931531">Printa zingine zinazopatikana</translation>

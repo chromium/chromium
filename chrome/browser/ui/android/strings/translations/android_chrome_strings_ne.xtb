@@ -650,7 +650,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3985022125189960801">तपाईं कुनै साइटलाई तपाईंलाई मन पर्ने कुराहरू अनुमान लगाउन सक्ने साइटहरूको समूहमा समावेश गर्न चाहनुहुन्छ भने उक्त साइट पुनः हाल्नुहोस्</translation>
 <translation id="3985215325736559418">तपाईं फेरि <ph name="FILE_NAME" /> डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="3987993985790029246">लिंक कपी गर्नुहोस्</translation>
-<translation id="3991055816270226534">तेस्रो पक्षीय कुकी तथा ट्र्याकिङसम्बन्धी सुरक्षाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
 <translation id="4016425174436051808">फलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="4024768890073681126">तपाईंका अभिभावक तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
@@ -1111,6 +1110,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6112702117600201073">पृष्ठ पुनः ताजा गर्दै</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउजिङ निष्क्रिय पार्ने हो?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />थप विवरणहरू<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
 <translation id="6130303040046284160">ट्याब मिनिमाइज गर्नुहोस्</translation>
@@ -1165,7 +1165,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6341580099087024258">फाइलहरू कहाँ सुरक्षित गर्ने भनी सोध्नुहोस्</translation>
 <translation id="6342069812937806050">अहिले भर्खर</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}}</translation>
-<translation id="6344622098450209924">सुरक्षाको जानकारी राखिँदै छ</translation>
 <translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6356893102071098867">तपाईंले सही खाता छनौट गर्नुभएको छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6363990818884053551">सिंक गर्ने कार्य सुरु गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
@@ -1610,6 +1609,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="820568752112382238">सबैभन्दा बढी हेरिएका साइटहरू</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> र अन्य <ph name="NUMBER_OF_OTHER_MEMBERS" /> जना सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्}other{<ph name="OWNER_FIRST_NAME" /> र अन्य <ph name="NUMBER_OF_OTHER_MEMBERS" /> जना सामेल हुनुभएको ट्याब समूहमा सामेल हुनुहोस्}}</translation>
 <translation id="8209050860603202033">फोटो खोल्नुहोस्</translation>
 <translation id="8210770465353466621">तपाईंका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="8211101263765532799">केही पासवर्डहरूले चाँडै नै काम गर्न छाड्ने छन्</translation>

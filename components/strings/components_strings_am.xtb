@@ -866,6 +866,7 @@
 <translation id="2521736961081452453">ቅጽ ፍጠር</translation>
 <translation id="2523886232349826891">በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
 <translation id="2524461107774643265">ተጨማሪ መረጃ ያክሉ</translation>
+<translation id="2526062290525841862">ይህን መተግበሪያ ለማሄድ ገለልተኛ የድር መተግበሪያ የገንቢ ሁነታን በድጋሚ ያንቁ</translation>
 <translation id="2526280916094749336">በመላው የGoogle ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ይቀመጣል።</translation>
 <translation id="2527451058878391043">ካርድ ማረጋገጫ ኮድዎ በካርድዎ ፊት ለፊት ላይ ነው። ከላይ በስተቀኝ በኩል ከካርድዎ ቁጥር በላይ ባለ4 አሃዙ ኮድ ነው።</translation>
 <translation id="2529899080962247600">ይህ መስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሁሉም ተጨማሪ ግቤቶች ችላ ይባላሉ።</translation>
@@ -1753,7 +1754,6 @@
 <translation id="4123572138124678573">ከታች ሦስቴ ብስ</translation>
 <translation id="412601465078863288">የእረፍት ጊዜን በመስቀል ላይ</translation>
 <translation id="4127317221386336246">የአልባሳት መለዋወጫዎች</translation>
-<translation id="4127575959421463246">የChromeOS ጥቆማዎችን እየፈለጉ ነው? ይጎብኙ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ሌላ}one{# ሌሎች}other{# ሌሎች}}</translation>
 <translation id="4129992181550680635">ትምህርታዊ መርጃዎች</translation>
 <translation id="4130226655945681476">የአውታረ መረብ ገመዶችን፣ ሞደም እና ራውተርን በመፈተሽ ላይ</translation>
@@ -4316,7 +4316,6 @@
 <translation id="8792626944327216835">ማይክሮፎን</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> የChrome Enterprise አገናኞችን በእርስዎ አሳሽ ላይ አብርቷል። እነዚህ አገናኞች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
-<translation id="8798739476508189189">የአሳሽ ጥቆማዎችን እየፈለጉ ነው? ይጎብኙ</translation>
 <translation id="8800034312320686233">ጣቢያው እየሰራ አይደለም?</translation>
 <translation id="8805819170075074995">የዝርዝር ግቤት «<ph name="LANGUAGE_ID" />»፦ ግቤት እንዲሁም በSpellcheckLanguage መመሪያው ላይ ስለተካተተ ችላ ተብሏል።</translation>
 <translation id="8806062468703310719">የስልክ አገልግሎት ሰጪዎች</translation>

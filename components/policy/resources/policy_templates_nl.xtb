@@ -4519,9 +4519,6 @@ Dit is verwijderd in M112.</translation>
 <translation id="4410236409016356088">Netwerkbandbreedte beperken</translation>
 <translation id="4410361389637971319">Toestaan dat geïsoleerde web-app-oorsprongen Direct Sockets gebruiken</translation>
 <translation id="4411734231900934213">Het toegestane verschil tussen de klok op het apparaat van het kind en het apparaat van de ouder (in seconden).</translation>
-<translation id="4411759973223339687">Als je dit beleid instelt op waar of niet instelt, zetten <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> gastlogins aan. Gastlogins zijn <ph name="PRODUCT_NAME" />-profielen waarbij alle vensters in de incognitomodus staan.
-
-      Als je dit beleid instelt op onwaar, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> niet toe dat er gastprofielen worden gestart.</translation>
 <translation id="441217499641439905">Google Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten bij mobiele verbindingen</translation>
 <translation id="4412885120239670573">Als je het beleid toepast, wordt de interne pdf-viewer in <ph name="PRODUCT_NAME" /> uitgezet, worden pdf-bestanden als downloads behandeld en kunnen gebruikers pdf's openen met de standaard-app.
 

@@ -865,6 +865,7 @@
 <translation id="2521736961081452453">建立表單</translation>
 <translation id="2523886232349826891">僅儲存在這部裝置</translation>
 <translation id="2524461107774643265">新增詳細資訊</translation>
+<translation id="2526062290525841862">如要執行這個應用程式，請重新啟用隔離網頁應用程式的開發人員模式</translation>
 <translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
@@ -1576,6 +1577,7 @@
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801297763951514916">經常造訪</translation>
 <translation id="380329542618494757">姓名</translation>
+<translation id="3803481123869276674">在 Chrome 中進行購買交易時可選擇「電子錢包」</translation>
 <translation id="3803801106042434208">以下是你所在地區的熱門搜尋引擎</translation>
 <translation id="380666903981445943">將付款方式儲存至 Google 帳戶，就能在 Chrome 中購物時自動填入</translation>
 <translation id="3807366285948165054">圖片 X 批次</translation>
@@ -1751,7 +1753,6 @@
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="412601465078863288">上傳作業逾時</translation>
 <translation id="4127317221386336246">服飾配件</translation>
-<translation id="4127575959421463246">在尋找 Chrome 作業系統旗標嗎？請前往</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表單資料}other{以及另外 # 項表單資料}}</translation>
 <translation id="4129992181550680635">教育資源</translation>
 <translation id="4130226655945681476">檢查網路線、數據機和路由器</translation>
@@ -2190,6 +2191,7 @@
 <translation id="4930714375720679147">開啟</translation>
 <translation id="4932035752129140860">你貼上或附加的文字會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描內容，檢查是否含有敏感資料，也可能會依據公司政策儲存這些資料，並通知系統管理員查看。</translation>
 <translation id="4933468175699107356">按一下滑鼠右鍵即可在任何表單自動填入已儲存的資訊，例如姓名或地址</translation>
+<translation id="4933788293078559286">使用 Pix 付款</translation>
 <translation id="4934780484581617878">視窗管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936573216809994970">1 小時後開始上傳檔案至 <ph name="CLOUD_PROVIDER" /></translation>
@@ -2464,6 +2466,7 @@
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
 <translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資訊</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 網頁</translation>
+<translation id="5452923259299906094">使用電子錢包和 Pix 付款</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
 <translation id="5456428544444655325">永不顯示</translation>
 <translation id="5456839782162429664">每次透過自動填入功能付款都要手動驗證身分</translation>
@@ -3277,6 +3280,7 @@
 <translation id="6944692733090228304">你在不是由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="6946949206576443118">使用 Chrome 搜尋網路</translation>
 <translation id="6948051842255602737">遊戲結束，你的得分為 <ph name="SCORE" />。</translation>
+<translation id="6948223029286835408">在 Chrome 中進行購買交易時可選擇「Pix」</translation>
 <translation id="6948701128805548767">如要查看取件方式和相關規定，請選取一個地址</translation>
 <translation id="6948874830249067134">A1 x 3</translation>
 <translation id="6949872517221025916">重設密碼</translation>
@@ -3592,6 +3596,7 @@
 <translation id="7489392576326061356">洗髮精與潤髮乳</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
 <translation id="749865518782565832">水管工程</translation>
+<translation id="7499188644237027195">在 Chrome 中進行購買交易時可選擇「電子錢包」和「Pix」</translation>
 <translation id="7500917112031739411">依群組顯示</translation>
 <translation id="7501663406926337752">貴機構標記了你要瀏覽的網站</translation>
 <translation id="7507075214339298899">Envelope #9</translation>
@@ -3705,6 +3710,7 @@
 <translation id="767550629621587224">預先裁切分隔紙</translation>
 <translation id="7675756033024037212">不允許捲動及縮放</translation>
 <translation id="7676643023259824263">搜尋剪貼簿文字：<ph name="TEXT" /></translation>
+<translation id="7679287273775285018">使用電子錢包付款</translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="7679947978757153706">棒球</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日為 <ph name="CARD_EXPIRATION" /></translation>
@@ -4308,7 +4314,6 @@
 <translation id="8792626944327216835">麥克風</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> 已為你的瀏覽器啟用 Chrome Enterprise 連接器。這些連接器可以存取你的部分資料。</translation>
 <translation id="8798099450830957504">預設</translation>
-<translation id="8798739476508189189">在尋找瀏覽器旗標嗎？請前往</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：這個項目同時也納入在 SpellcheckLanguage 政策中，因此系統已予以忽略。</translation>
 <translation id="8806062468703310719">電話服務供應商</translation>

@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;Алатке</translation>
 <translation id="1122242684574577509">Потврда аутентичности није успела. Кликните да бисте посетили страницу за пријављивање за WiFi мрежу коју користите (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Правите јединствене позадине</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{Пронађена је 1 угрожена лозинка}one{Пронађене је {NUM_SITES} угрожена лозинка}few{Пронађене су {NUM_SITES} угрожене лозинке}other{Пронађено је {NUM_SITES} угрожених лозинки}}</translation>
 <translation id="1122913801042512795">Подаци за пријављивање на налог су застарели. Одјавите се и пријавите се поново.</translation>
 <translation id="1122960773616686544">Назив обележивача</translation>
 <translation id="1124772482545689468">Корисник</translation>
@@ -3457,6 +3458,7 @@
 <translation id="3421387094817716717">Јавни кључ елиптичне криве</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Напомена<ph name="END_BOLD" />: Сличан глас или снимак ће можда моћи да приступа вашим личним резултатима или Помоћнику.</translation>
 <translation id="3421835120203732951">Додај нови профил</translation>
+<translation id="3422989558057853751">Изабрали сте последњу ставку. Поништавањем избора ћете изаћи из режима избора</translation>
 <translation id="3423111258700187173">Резултати су пронађени у фолдеру <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Сазнајте више о овој функцији вештачке интелигенције</translation>
 <translation id="3423275441470187644">Поузданост</translation>
@@ -4953,6 +4955,7 @@
 <translation id="4461483878391246134">Додајте језике за које се превод никада неће нудити</translation>
 <translation id="4462159676511157176">Прилагођени сервери назива</translation>
 <translation id="4465236939126352372">Временско ограничење од <ph name="TIME" /> је подешено за апликацију <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Погрешан PIN</translation>
 <translation id="4467561276409486506">&amp;Укључи/искључи компактни режим</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да мења датотеке у директоријуму <ph name="FOLDERNAME" /></translation>

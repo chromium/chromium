@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">&amp;ਟੂਲਸ</translation>
 <translation id="1122242684574577509">ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਰਿਹਾ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾ ਰਹੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ (<ph name="NETWORK_ID" />) ਦੇ ਲੌਗ-ਇਨ ਪੰਨੇ 'ਤੇ ਜਾਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="1122587596907914265">ਵਿਲੱਖਣ ਸਟਾਈਲ ਵਾਲੇ ਵਾਲਪੇਪਰਾਂ ਬਣਾਓ</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਮਿਲਿਆ}one{{NUM_SITES} ਛੇੜਛਾੜ ਵਾਲਾ ਪਾਸਵਰਡ ਮਿਲਿਆ}other{{NUM_SITES} ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡ ਮਿਲੇ}}</translation>
 <translation id="1122913801042512795">ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="1122960773616686544">ਬੁੱਕਮਾਰਕ ਨਾਮ</translation>
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
@@ -7007,6 +7008,7 @@
 <translation id="5943127421590245687">ਤੁਹਾਡਾ ਪੁਸ਼ਟੀਕਰਨ ਸਫਲ ਰਿਹਾ। ਆਪਣੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਅਣਲਾਕ ਅਤੇ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੁਰਾਣਾ <ph name="DEVICE_TYPE" /> ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> ਵੱਲੋਂ ਤੁਹਾਡੇ ਨਵੇਂ ਟੈਬ ਪੰਨੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ਖਤਰਨਾਕ ਹੋ ਸਕਦੀ ਹੈ। ਕੀ ਸਕੈਨ ਕਰਨ ਲਈ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜਣਾ ਹੈ?</translation>
+<translation id="5945192511027649793">ਟੱਚਪੈਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="5945363896952315544">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਕੋਈ ਹੋਰ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸਟੋਰ ਨਹੀਂ ਕਰ ਸਕਦੀ। ਨਵਾਂ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਪਹਿਲਾਂ ਕੋਈ ਮੌਜੂਦਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਮਿਟਾਓ।</translation>
 <translation id="5946591249682680882">ਰਿਪੋਰਟ ਆਈ.ਡੀ. <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">ਮਾਊਸ 'ਤੇ ਡਬਲ-ਕਲਿੱਕ ਕਰੋ</translation>
@@ -8510,6 +8512,7 @@
 <translation id="7025190659207909717">ਮੋਬਾਈਲ ਡਾਟਾ ਸੇਵਾ ਪ੍ਰਬੰਧਨ</translation>
 <translation id="7025895441903756761">ਸੁਰੱਖਿਆ ਅਤੇ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{ਸਾਰੇ &amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਾਰੇ ({COUNT}) &amp;ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
+<translation id="7027432471322992835">ਟਰੈਕਪੈਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="7029307918966275733">Crostini ਸਥਾਪਤ ਨਹੀਂ ਹੈ। ਕ੍ਰੈਡਿਟਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ Crostini ਨੂੰ ਸਥਾਪਤ ਕਰੋ।</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
 <translation id="7030304022046916278">URL ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਇਹ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
@@ -10042,6 +10045,7 @@
 <translation id="8119438628456698432">ਲੌਗ ਫ਼ਾਈਲਾਂ ਸਿਰਜੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...</translation>
 <translation id="811994229154425014">ਪੂਰਨ ਵਿਰਾਮ ਟਾਈਪ ਕਰਨ ਲਈ ਡਬਲ-ਸਪੇਸ</translation>
 <translation id="8120505434908124087">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="8121537075864592453">'ਪੂਰੀ ਸਕ੍ਰੀਨ' ਮੋਡ ਬੰਦ ਹੈ</translation>
 <translation id="8121750884985440809">ਤੁਸੀਂ ਫ਼ਿਲਹਾਲ ਆਪਣੀ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="8122898034710982882">ਫ਼ੋਨ ਹੱਬ, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ਪੀਲਾ ਅਤੇ ਸਫ਼ੈਦ ਫੁੱਲ</translation>
@@ -10263,6 +10267,7 @@
 <translation id="8276560076771292512">ਕੈਸ਼ੇ ਅਤੇ ਹਾਰਡ ਰੀਲੋਡ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="8276850948802942358">ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਅਸਥਾਈ ਇਜਾਜ਼ਤ ਦੇਣ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8277907305629781277">ਤੁਸੀਂ <ph name="DATE" /> ਨੂੰ ਇਸ ਪਾਸਕੀ ਨੂੰ ਬਣਾਇਆ</translation>
+<translation id="827966378414194229">ਆਪਣੀ Chromebook ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਸਿਰ ਦੀ ਹਰਕਤ ਅਤੇ ਚਿਹਰੇ ਦੇ ਹਾਵ-ਭਾਵ ਦੀ ਵਰਤੋਂ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">ਤੁਹਾਡੀਆਂ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਵੈੱਬਸਾਈਟਾਂ</translation>
 <translation id="8280848878018088610">ਗੂੜ੍ਹੇ ਥੀਮ ਵਾਲੀ ਪੇਂਟਿੰਗ ਵਿੱਚ, ਸਮੁੰਦਰ ਦੀਆਂ ਲਹਿਰਾਂ ਉੱਠ ਰਹੀਆਂ ਹਨ ਅਤੇ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਇੱਕ ਸ਼ਾਨਦਾਰ ਸ਼ਹਿਰ ਅਤੇ ਕਿਲ੍ਹਾ ਦਿਖਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="828180235270931531">ਹੋਰ ਉਪਲਬਧ ਪ੍ਰਿੰਟਰ</translation>

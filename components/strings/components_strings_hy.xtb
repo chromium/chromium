@@ -870,6 +870,7 @@
 <translation id="2521736961081452453">Ստեղծել ձև</translation>
 <translation id="2523886232349826891">Կպահվի միայն այս սարքում</translation>
 <translation id="2524461107774643265">Ավելացրեք լրացուցիչ տեղեկություններ</translation>
+<translation id="2526062290525841862">Այս հավելվածը գործարկելու համար նորից միացրեք մեկուսացված վեբ հավելվածների՝ մշակողի ռեժիմը։</translation>
 <translation id="2526280916094749336">Դուք կարող եք օգտագործել պահված հասցեները Google-ի արտադրանքներում։ Այս հասցեն կպահվի ձեր Google հաշվում (<ph name="ACCOUNT" />)։</translation>
 <translation id="2527451058878391043">CVC կոդը նշված է քարտի դիմերեսին։ Այն քառանիշ կոդ է, որը գտնվում է քարտի համարի վերևի աջ կողմում։</translation>
 <translation id="2529899080962247600">Այս դաշտում գրառումների առավելագույն քանակը՝ <ph name="MAX_ITEMS_LIMIT" />: Ավել գրառումները կանտեսվեն:</translation>
@@ -1760,7 +1761,6 @@
 <translation id="4123572138124678573">Երեք անցք ներքևում</translation>
 <translation id="412601465078863288">Վերբեռնման ժամանակը սպառվել է</translation>
 <translation id="4127317221386336246">Հագուստի պարագաներ</translation>
-<translation id="4127575959421463246">Արդյո՞ք փնտրում եք ChromeOS-ի մատնանշման տարրերը։ Անցեք</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 այլ}one{# այլ}other{# այլ}}</translation>
 <translation id="4129992181550680635">Ուսումնական նյութեր</translation>
 <translation id="4130226655945681476">Ստուգել ցանցային մալուխը, մոդեմը և երթուղիչը</translation>
@@ -4324,7 +4324,6 @@
 <translation id="8792626944327216835">խոսափող</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> կայքը միացրել է Chrome Enterprise Connectors-ը ձեր դիտարկիչում։ Այս միակցիչներին հասանելի են ձեզ պատկանող որոշ տվյալներ։</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
-<translation id="8798739476508189189">Արդյո՞ք փնտրում եք դիտարկիչի մատնանշման տարրերը։ Անցեք</translation>
 <translation id="8800034312320686233">Կայքը չի՞ աշխատում</translation>
 <translation id="8805819170075074995">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ անտեսված է, քանի որ այն արդեն ներառված է SpellcheckLanguage կանոնում։</translation>
 <translation id="8806062468703310719">Հեռախոսային կապի ծառայություններ մատուցողներ</translation>

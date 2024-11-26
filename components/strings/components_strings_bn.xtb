@@ -867,6 +867,7 @@
 <translation id="2521736961081452453">ফর্ম তৈরি করুন</translation>
 <translation id="2523886232349826891">শুধুমাত্র এই ডিভাইসে সেভ করা যাবে</translation>
 <translation id="2524461107774643265">আরও তথ্য যোগ করুন</translation>
+<translation id="2526062290525841862">এই অ্যাপ চালাতে, আইসোলেটেড ওয়েব অ্যাপ ডেভেলপার মোড আবার চালু করুন</translation>
 <translation id="2526280916094749336">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="2527451058878391043">আপনার CVC কার্ডের সামনে আছে। এটি ৪ সংখ্যার একটি কোড যা ডানদিকে আপনার কার্ড নম্বরের উপরের রয়েছে।</translation>
 <translation id="2529899080962247600">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
@@ -1755,7 +1756,6 @@
 <translation id="4123572138124678573">নিচে ট্রিপল পাঞ্চ</translation>
 <translation id="412601465078863288">আপলোড করার সময় শেষ হয়ে গেছে</translation>
 <translation id="4127317221386336246">পোশাকের অ্যাক্সেসরিজ</translation>
-<translation id="4127575959421463246">ChromeOS ফ্ল্যাগ খুঁজছেন? দেখুন</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{আরও ১টি}one{অন্যান্য #টি}other{অন্যান্য #টি}}</translation>
 <translation id="4129992181550680635">শিক্ষামূলক রিসোর্স</translation>
 <translation id="4130226655945681476">নেটওয়ার্কের তার, মডেম, এবং রাউটার পরীক্ষা করুন</translation>
@@ -4316,7 +4316,6 @@
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> আপনার ব্রাউজারে Chrome Enterprise কানেক্টর চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
-<translation id="8798739476508189189">ব্রাউজার ফ্ল্যাগ খুঁজছেন? দেখুন</translation>
 <translation id="8800034312320686233">সাইট কি কাজ করছে না?</translation>
 <translation id="8805819170075074995">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": এন্ট্রিটি SpellcheckLanguage নীতিতেও অন্তর্ভুক্ত থাকার জন্য এটি অগ্রাহ্য করা হয়েছে।</translation>
 <translation id="8806062468703310719">ফোন পরিষেবা প্রদানকারী</translation>

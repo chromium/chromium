@@ -184,6 +184,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicke hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">Gestalte individuelle Hintergründe</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 kompromittiertes Passwort gefunden}other{{NUM_SITES} kompromittierte Passwörter gefunden}}</translation>
 <translation id="1122913801042512795">Die Anmeldedaten für dein Konto sind veraltet. Bitte melde dich ab und wieder an.</translation>
 <translation id="1122960773616686544">Name des Lesezeichens</translation>
 <translation id="1124772482545689468">Nutzer</translation>
@@ -2164,6 +2165,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2477065602824695373">Da du mehrere Schalter eingerichtet hast, wurde der automatische Scan deaktiviert.</translation>
 <translation id="2478176599153288112">Mediendatei-Berechtigungen für "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Dienst zur Datenwiederherstellung aktivieren</translation>
+<translation id="2479541499757560845">Tastatureinstellungen für Bedienungshilfen</translation>
 <translation id="2480868415629598489">Daten ändern, die du kopierst und einfügst</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2482895651873876648">Tab wurde in die folgende Gruppe verschoben: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3082,6 +3084,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3132277757485842847">Die Verbindung zu deinem Smartphone konnte nicht aufrechterhalten werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3132896062549112541">Regel</translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
+<translation id="3134312457920437826">Die Erweiterung kann nicht installiert werden, da sie eine nicht unterstützte Manifestversion verwendet.</translation>
 <translation id="3134393957315651797">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
 <translation id="3141093262818886744">Trotzdem öffnen</translation>
@@ -4350,6 +4353,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4012509903424054869">PDFs werden automatisch konvertiert, damit du Text suchen und auswählen kannst</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" reparieren?</translation>
 <translation id="4015163439792426608">Du nutzt Erweiterungen? Diese kannst du jetzt <ph name="BEGIN_LINK" />ganz einfach an einem Ort verwalten<ph name="END_LINK" />.</translation>
+<translation id="4015250302257349679">Wenn du dieses Infofeld hervorheben möchtest, drücke auf „<ph name="ACCELERATOR" />“. Wenn du zu dem Element wechseln möchtest, auf das es zeigt, drücke noch einmal.</translation>
 <translation id="4016762287427926315">Für die <ph name="APP_NAME" /> App erteilte Berechtigungen werden auch auf diese App angewendet. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">QR-Code für diesen Link erstellen</translation>
 <translation id="4019983356493507433">Lesezeichenliste bearbeiten</translation>
@@ -5910,6 +5914,8 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5157250307065481244">Websitedetails ansehen</translation>
 <translation id="5158206172605340248">Akzent-Menü geschlossen.</translation>
 <translation id="5159094275429367735">Crostini einrichten</translation>
+<translation id="5159236862360390997">Es werden mehrere Infofelder mit Anleitungen angezeigt.
+          Wenn du ein Infofeld hervorheben möchtest, drücke auf „<ph name="ACCELERATOR" />“. Wenn du zu dem Element wechseln möchtest, auf das es zeigt, drücke noch einmal.</translation>
 <translation id="5159419673777902220">Deine Eltern haben die Berechtigungen für Erweiterungen deaktiviert</translation>
 <translation id="5160634252433617617">Physische Tastatur</translation>
 <translation id="5160857336552977725">Auf deinem <ph name="DEVICE_TYPE" /> anmelden</translation>
@@ -6190,6 +6196,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5372579129492968947">Erweiterung loslösen</translation>
 <translation id="5372632722660566343">Ohne Konto fortfahren</translation>
 <translation id="5372990315769030589">„<ph name="EXTENSION_NAME" />“ behalten?</translation>
+<translation id="5374324662289354619">Interne Debugging-Seiten sind derzeit deaktiviert.</translation>
 <translation id="5375318608039113175">Wenn du Nearby Share mit diesen Kontakten verwenden möchtest, musst du deinen Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.</translation>
 <translation id="5375374982898812658">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und sie wird von allen deinen Geräten gelöscht</translation>
 <translation id="5375577102295339548">Websites können helfen, zu bestätigen, dass du kein Bot bist</translation>
@@ -9446,6 +9453,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7737846262459425222">Du kannst dies jederzeit unter „Einstellungen“ &gt; „Google Assistant“ &gt; „Bildschirmkontext“ ändern.</translation>
 <translation id="7737948071472253612">Dürfen meine Kamera nicht verwenden</translation>
 <translation id="77381465218432215">Akzente und Sonderzeichen anzeigen</translation>
+<translation id="7739524723876359011">Wenn du dieses Infofeld hervorheben möchtest, drücke auf „<ph name="ACCELERATOR" />“.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">Du kannst bei bestimmten Websites die maximale oder minimale Vergrößerungsstufe für die Websitedarstellung festlegen</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 kompromittiertes Passwort gefunden}other{{NUM_SITES} kompromittierte Passwörter gefunden}}</translation>

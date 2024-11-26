@@ -1755,7 +1755,6 @@
 <translation id="4123572138124678573">하단 3공 펀칭</translation>
 <translation id="412601465078863288">업로드 시간 초과</translation>
 <translation id="4127317221386336246">의류 액세서리</translation>
-<translation id="4127575959421463246">ChromeOS 플래그를 찾으시나요? 방문</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="4129992181550680635">교육 자료</translation>
 <translation id="4130226655945681476">네트워크 케이블, 모뎀, 라우터 확인</translation>
@@ -4316,7 +4315,6 @@
 <translation id="8792626944327216835">마이크</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />에서 브라우저에 Chrome Enterprise 커넥터를 사용 설정했습니다. 커넥터가 내 데이터 중 일부에 액세스할 수 있습니다.</translation>
 <translation id="8798099450830957504">기본값</translation>
-<translation id="8798739476508189189">브라우저 플래그를 찾으시나요? 방문</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
 <translation id="8806062468703310719">전화 서비스 제공업체</translation>

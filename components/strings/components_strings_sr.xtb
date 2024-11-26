@@ -1755,7 +1755,6 @@
 <translation id="4123572138124678573">Троструко бушење на дну</translation>
 <translation id="412601465078863288">Време за отпремање је истекло</translation>
 <translation id="4127317221386336246">Модни детаљи</translation>
-<translation id="4127575959421463246">Тражите Chrome ОС ознаке? Посети</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{још 1}one{још #}few{још #}other{још #}}</translation>
 <translation id="4129992181550680635">Образовна средства</translation>
 <translation id="4130226655945681476">да проверите мрежне каблове, модем и рутер</translation>
@@ -3469,6 +3468,7 @@
 <translation id="725866823122871198">Није могуће успоставити приватну везу са доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> јер време и датум на рачунару (<ph name="DATE_AND_TIME" />) нису тачни.</translation>
 <translation id="7260075294900977274">Нов паметни фолдер који вам помаже да сачувате све странице за куповину на једном месту и аутоматски пратите цене, добијате увид у цене и друго</translation>
 <translation id="7265608370113700582">Адреса је доступна само на овом уређају</translation>
+<translation id="7269151392155523061">Пречица не може да буде иста као кључна реч агрегатора претраге коју дефинише <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Фајлови које преузмете се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скенирани у потрази за осетљивим подацима или малвером и могу да буду сачувани на основу смерница предузећа и видљиви су администратору.</translation>
 <translation id="7275334191706090484">Обележивачи којим се управља</translation>
 <translation id="7275808129217605899">Здрава исхрана</translation>
@@ -4317,7 +4317,6 @@
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
-<translation id="8798739476508189189">Тражите ознаке прегледача? Посети</translation>
 <translation id="8800034312320686233">Да ли сајт не ради?</translation>
 <translation id="8805819170075074995">Унос на листи „<ph name="LANGUAGE_ID" />“: Унос се занемарује јер је обухваћен и смерницама SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Добављачи телефонских услуга</translation>

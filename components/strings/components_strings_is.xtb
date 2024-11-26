@@ -1755,7 +1755,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4123572138124678573">Þrjú göt neðst</translation>
 <translation id="412601465078863288">Upphleðsla rann út á tíma</translation>
 <translation id="4127317221386336246">Fylgihlutir fatnaðar</translation>
-<translation id="4127575959421463246">Ertu að leita að ChromeOS flöggum? Opna</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 í viðbót}one{# í viðbót}other{# í viðbót}}</translation>
 <translation id="4129992181550680635">Menntunarleiðir</translation>
 <translation id="4130226655945681476">Athugar netsnúrur, mótaldið og beininn</translation>
@@ -4316,7 +4315,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8792626944327216835">hljóðnema</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> kveikti á Chrome Enterprise Connectors í vafranum. Þessi tengi hafa aðgang að sumum af gögnunum þínum.</translation>
 <translation id="8798099450830957504">Sjálfgefið</translation>
-<translation id="8798739476508189189">Ertu að leita að vafraflöggum? Opna</translation>
 <translation id="8800034312320686233">Virkar vefsvæðið ekki?</translation>
 <translation id="8805819170075074995">Listafærslan „<ph name="LANGUAGE_ID" />“: Færslan er hunsuð því hún kemur einnig fram í reglunni „SpellcheckLanguage“.</translation>
 <translation id="8806062468703310719">Símaþjónustuaðilar</translation>

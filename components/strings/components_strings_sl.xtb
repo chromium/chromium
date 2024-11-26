@@ -1755,7 +1755,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4123572138124678573">Trojno luknjanje spodaj</translation>
 <translation id="412601465078863288">Časovna omejitev za nalaganje je potekla</translation>
 <translation id="4127317221386336246">Modni dodatki</translation>
-<translation id="4127575959421463246">Iščete zastavice sistema Chrome OS? Obiščite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{in še 1 drug}one{in še # drug}two{in še # druga}few{in še # drugi}other{in še # drugih}}</translation>
 <translation id="4129992181550680635">Izobraževalni viri</translation>
 <translation id="4130226655945681476">preveriti omrežne kable, modem in usmerjevalnik</translation>
@@ -4317,7 +4316,6 @@ Dodatne podrobnosti:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Domena <ph name="ENROLLMENT_DOMAIN" /> je v brskalniku omogočila priključke Chrome Enterprise Connectors. Ti priključki imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="8798099450830957504">Privzeto</translation>
-<translation id="8798739476508189189">Iščete zastavice brskalnika? Obiščite</translation>
 <translation id="8800034312320686233">Ali spletno mesto ne deluje?</translation>
 <translation id="8805819170075074995">Vnos na seznamu »<ph name="LANGUAGE_ID" />«: vnos je prezrt, ker je vključen tudi v pravilnik SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Ponudniki telefonskih storitev</translation>

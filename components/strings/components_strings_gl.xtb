@@ -1755,7 +1755,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4123572138124678573">Tres perforacións na parte inferior</translation>
 <translation id="412601465078863288">Esgotouse o tempo de espera para a carga</translation>
 <translation id="4127317221386336246">Accesorios de moda</translation>
-<translation id="4127575959421463246">Buscas as funcións experimentais de Chrome OS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
 <translation id="4129992181550680635">Recursos educativos</translation>
 <translation id="4130226655945681476">Comproba os cables de rede, o módem e o router</translation>
@@ -4316,7 +4315,6 @@ Detalles adicionais:
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> activou Chrome Enterprise Connectors no teu navegador. Estes conectores teñen acceso a algúns dos teus datos.</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
-<translation id="8798739476508189189">Buscas as funcións experimentais do navegador? Visita</translation>
 <translation id="8800034312320686233">O sitio non funciona?</translation>
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": ignorouse a entrada debido a que tamén está incluída na política SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Fornecedores de servizos telefónicos</translation>

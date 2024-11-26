@@ -554,6 +554,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3549391962818677448">Ceisiwyd danfon. Bydd yn rhoi cynnig arall arni</translation>
 <translation id="3557336313807607643">Ychwanegu at gysylltiadau</translation>
 <translation id="355765753469272474">Dadwneud</translation>
+<translation id="3562379378751492229">Dewiswch y sefyllfa sy'n gweithio orau i chi.</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> o <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Tapiwch ddwywaith am ragor o gyfrineiriau.</translation>
 <translation id="3572607909481582402">Yn eich Cyfrif Google</translation>
@@ -830,6 +831,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="484280513275854557">Cawsoch eich allgofnodi; cafodd data pori eu dileu</translation>
 <translation id="4850886885716139402">Gweld</translation>
 <translation id="4860895144060829044">Galw</translation>
+<translation id="4861953997778766866">Gall pawb wneud newidiadau i'ch grwpiau tabiau a rennir</translation>
 <translation id="4869146460927742717">Safle bar cyfeiriad</translation>
 <translation id="4870911314065352661">Cau pob tab?</translation>
 <translation id="4872664437015695612">Agor yn lawrlwythiadau</translation>
@@ -993,6 +995,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5611398002774823980">Cadw yn y cyfrif</translation>
 <translation id="5613297089029360427">Trefnu yn ôl diweddaraf</translation>
 <translation id="5614553682702429503">Cadw'r cyfrinair?</translation>
+<translation id="5614805397884895755">Cael mynediad cyflymach o'ch Sgrîn Hafan</translation>
 <translation id="5619871095170816857">Mae'r cerdyn hwn yn dangos eich tab agored a ddefnyddiwyd ddiwethaf ar draws eich holl ddyfeisiau wedi cysoni o fewn y 24 awr ddiwethaf.</translation>
 <translation id="5624120631404540903">Rheoli cyfrineiriau</translation>
 <translation id="5624637933505983014">Peidio â throi cysoni ymlaen</translation>
@@ -1497,6 +1500,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7812377703891978671">Gallwch gael mynediad at eich holl hanes pori trwy ddewis <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Lawrlwythiadau</translation>
 <translation id="7815852444315004084">Cuddio Am Nawr</translation>
+<translation id="7831876841288640403">Dewiswch leoliad eich bar cyfeiriad sy'n gweithio orau i chi.</translation>
 <translation id="7839994177130598711">Gall aelodau'ch teulu bellach ddefnyddio'ch enw defnyddiwr a'ch cyfrinair pan fyddant yn defnyddio Rheolwr Cyfrineiriau Google i fewngofnodi i <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Bydd yr eitemau rydych yn eu dewis yn cael eu dileu.</translation>
 <translation id="7841180087127694526">Chwilio am destun sydd wedi'i gopïo</translation>

@@ -866,6 +866,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2521736961081452453">Skapa formulär</translation>
 <translation id="2523886232349826891">Endast sparat på den här enheten</translation>
 <translation id="2524461107774643265">Lägg till mer information</translation>
+<translation id="2526062290525841862">Aktivera utvecklarläget för isolerade webbappar igen om du vill köra appen</translation>
 <translation id="2526280916094749336">Du kan använda sparade adresser i Googles produkter. Den här adressen sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-koden finns på framsidan av kortet. Det är den fyrsiffriga koden uppe till höger ovanför kortnumret.</translation>
 <translation id="2529899080962247600">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver det ignoreras.</translation>
@@ -1578,6 +1579,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="3801297763951514916">Du besöker ofta</translation>
 <translation id="380329542618494757">Namn</translation>
+<translation id="3803481123869276674">Visa eWallet som alternativ när du gör köp i Chrome</translation>
 <translation id="3803801106042434208">Dessa sökmotorer är populära i din region</translation>
 <translation id="380666903981445943">Spara en betalningsmetod i Google-kontot för att fylla i den automatiskt vid köp i Chrome</translation>
 <translation id="3807366285948165054">Bild X – byte</translation>
@@ -1753,7 +1755,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4123572138124678573">Tre hål längst ned</translation>
 <translation id="412601465078863288">Tidsgränsen för uppladdning överskreds</translation>
 <translation id="4127317221386336246">Accessoarer</translation>
-<translation id="4127575959421463246">Letar du efter ChromeOS-flaggor? Besök</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 till}other{# till}}</translation>
 <translation id="4129992181550680635">Utbildningsresurser</translation>
 <translation id="4130226655945681476">Kontrollera nätverkskablar, modem och router</translation>
@@ -2192,6 +2193,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4930714375720679147">Aktivera</translation>
 <translation id="4932035752129140860">Text som du klistrar in eller bifogar skickas till Google Cloud eller tredje parter för analys. Den kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och den kan lagras i enlighet med företagspolicyer och är synlig för administratören.</translation>
 <translation id="4933468175699107356">Högerklicka för att autofylla sparade uppgifter, till exempel namn eller adress, i ett formulär</translation>
+<translation id="4933788293078559286">Betala med Pix</translation>
 <translation id="4934780484581617878">Fönsterhantering</translation>
 <translation id="4936134414789135531">Det gick inte att hitta de infogade värdet <ph name="VALUE_NAME" />.</translation>
 <translation id="4936573216809994970">Filerna börjar laddas upp till <ph name="CLOUD_PROVIDER" /> om 1 timme</translation>
@@ -2466,6 +2468,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5443468954631487277">Omvänd ordning – framsidan uppåt</translation>
 <translation id="5447235695608032700">Tillåt att <ph name="SITE" /> använder uppgifter som webbplatsen har sparat om dig</translation>
 <translation id="5452270690849572955">Sidan på <ph name="HOST_NAME" /> kan inte hittas</translation>
+<translation id="5452923259299906094">Betala med eWallet och Pix</translation>
 <translation id="5455374756549232013">Felaktig tidsstämpel för policy</translation>
 <translation id="5456428544444655325">Visa aldrig</translation>
 <translation id="5456839782162429664">Verifiera manuellt varje gång du betalar med autofyll</translation>
@@ -3279,6 +3282,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6944692733090228304">Du har angett ditt lösenord på en webbplats som inte hanteras av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Skydda kontot genom att inte återanvända lösenordet i andra appar och webbplatser.</translation>
 <translation id="6946949206576443118">Söka på webben i Chrome</translation>
 <translation id="6948051842255602737">Spelet är slut, du fick <ph name="SCORE" /> poäng.</translation>
+<translation id="6948223029286835408">Visa Pix som alternativ när du gör köp i Chrome</translation>
 <translation id="6948701128805548767">Välj en adress för att visa alternativ för utlämning och krav</translation>
 <translation id="6948874830249067134">A1 x 3</translation>
 <translation id="6949872517221025916">Återställ lösenord</translation>
@@ -3594,6 +3598,7 @@ Mer information.
 <translation id="7489392576326061356">Schampo och balsam</translation>
 <translation id="7495528107193238112">Det här innehållet har blockerats. Kontakta webbplatsägaren om du vill åtgärda problemet.</translation>
 <translation id="749865518782565832">Rörmokeri</translation>
+<translation id="7499188644237027195">Visa eWallet och Pix som alternativ när du gör köp i Chrome</translation>
 <translation id="7500917112031739411">Visa efter grupp</translation>
 <translation id="7501663406926337752">Webbplatsen har flaggats av din organisation</translation>
 <translation id="7507075214339298899">Kuvert nr 9</translation>
@@ -3707,6 +3712,7 @@ Mer information.
 <translation id="767550629621587224">Förskurna flikar</translation>
 <translation id="7675756033024037212">Scrollning och zoom tillåts inte</translation>
 <translation id="7676643023259824263">Sök efter texten i Urklipp, <ph name="TEXT" /></translation>
+<translation id="7679287273775285018">Betala med eWallet</translation>
 <translation id="7679367271685653708">Öppna och hantera webbhistoriken i Chrome-inställningarna</translation>
 <translation id="7679947978757153706">Baseboll</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
@@ -4311,7 +4317,6 @@ Mer information:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> har aktiverat Chrome Enterprise Connectors i din webbläsare. Dessa funktioner har åtkomst till en del av din data.</translation>
 <translation id="8798099450830957504">Standard</translation>
-<translation id="8798739476508189189">Letar du efter webbläsarflaggor? Besök</translation>
 <translation id="8800034312320686233">Fungerar inte webbplatsen?</translation>
 <translation id="8805819170075074995">Listposten <ph name="LANGUAGE_ID" />: Posten ignorerades eftersom den även ingår i principen SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Teletjänstleverantörer</translation>

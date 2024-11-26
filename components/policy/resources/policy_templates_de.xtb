@@ -4528,9 +4528,6 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 <translation id="4410236409016356088">Begrenzung der Netzwerkbandbreite erlauben</translation>
 <translation id="4410361389637971319">Ursprüngen der isolierten Web-App erlauben, Direct Sockets zu verwenden</translation>
 <translation id="4411734231900934213">Zulässiger Unterschied zwischen der Uhrzeit auf den Geräten von Kindern und Eltern, angegeben in Sekunden.</translation>
-<translation id="4411759973223339687">Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich. Gastanmeldungen sind <ph name="PRODUCT_NAME" />-Profile, bei denen alle Fenster im Inkognitomodus geöffnet werden.
-
-      Ist die Richtlinie auf „false“ gesetzt, sind keine Gastanmeldungen in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> möglich.</translation>
 <translation id="441217499641439905">Synchronisierung zwischen Google Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> per Mobilfunkverbindung deaktivieren</translation>
 <translation id="4412885120239670573">Wenn die Richtlinie aktiviert ist, wird der interne PDF-Viewer in <ph name="PRODUCT_NAME" /> ausgeschaltet und PDF-Dateien werden als Download behandelt. Nutzer können sie dann mit der Standardanwendung öffnen.
 

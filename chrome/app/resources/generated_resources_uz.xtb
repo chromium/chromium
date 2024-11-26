@@ -184,6 +184,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1122198203221319518">&amp;Asboblar</translation>
 <translation id="1122242684574577509">Haqiqiylik tekshiruvida xatolik yuz berdi. Wi-Fi (<ph name="NETWORK_ID" />) tarmog‘ining kirish sahifasiga qaytish uchun bosing.</translation>
 <translation id="1122587596907914265">Unikal uslubdagi fon rasmlari</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{1 ta parol oshkor qilingani aniqlandi}other{{NUM_SITES} ta parol oshkor qilingani aniqlandi}}</translation>
 <translation id="1122913801042512795">Hisobingiz haqidagi maʼlumotlar eskirgan. Tizimdan chiqib, qaytadan kiring.</translation>
 <translation id="1122960773616686544">Xatcho‘p nomi</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
@@ -3459,6 +3460,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3421387094817716717">Elliptik egri chiziqli ochiq kalit</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovoz yordamida shaxsiy natijalarga kirish va Assistentdan foydalanish mumkin.</translation>
 <translation id="3421835120203732951">Yangi profil kiritish</translation>
+<translation id="3422989558057853751">Oxirgi tanlangan elementni olib tashlasangiz, tanlash rejimidan chiqiladi</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> jildi natijalari</translation>
 <translation id="3423226218833787854">Mazkur AI funksiyasi haqida batafsil</translation>
 <translation id="3423275441470187644">Ishonch</translation>
@@ -4955,6 +4957,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4461483878391246134">Hech qachon tarjima qilishni taklif qilmaydigan tillarni qoʻshing</translation>
 <translation id="4462159676511157176">Boshqa nom serverlari</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> uchun <ph name="TIME" /> cheklov oʻrnatildi</translation>
+<translation id="4467373268340082204">PIN kod xato</translation>
 <translation id="4467561276409486506">Ixcham rejim tugmasi</translation>
 <translation id="4469324811108161144">Eslatmalar <ph name="CHARACTER_LIMIT" /> ta belgidan oshmasin.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi fayllarni tahrirlay oladi</translation>

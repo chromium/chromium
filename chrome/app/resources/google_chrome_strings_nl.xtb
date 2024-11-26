@@ -372,6 +372,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5602351063754773347">Chrome raadt je aan deze extensie te verwijderen. <ph name="BEGIN_LINK" />Meer informatie over ondersteunde extensies<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome doet meer om je online te beschermen</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
+<translation id="566568153320186256">Chrome spaart de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie over Energiebesparing<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren.}=1{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vraagt je Chrome opnieuw te starten om deze update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="5686916850681061684">Pas Google Chrome aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -520,6 +521,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7477130805345743099">Chrome waarschuwt je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="7481213027396403996">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="749228101751499733">Als je bent ingelogd, kun je onder andere de wachtwoorden uit je Google-account gebruiken in Chrome. <ph name="SHORTCUT" /> kan de instellingen van je Google-services wijzigen.</translation>
+<translation id="7496017508659652909">Chrome laadt pagina's vooraf, zodat je sneller kunt browsen en zoeken. <ph name="BEGIN_LINK" />Meer informatie over hoe je pagina's vooraf laadt<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome kan meer typen informatie begrijpen en formulieren sneller automatisch invullen. Meer informatie over <ph name="BEGIN_LINK" />Automatisch invullen in Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater-service</translation>
 <translation id="7515191208480168435">Je kunt Google Lens vastzetten voor snelle toegang</translation>
@@ -636,6 +638,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8712767363896337380">Bijna klaar met updaten. Start Chrome opnieuw om de update af te ronden.</translation>
 <translation id="8718062187489036808">Uitloggen bij Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan de standaardbrowser niet bepalen of instellen</translation>
+<translation id="8748735421235723888">Chrome maakt geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer computerbronnen en blijft Chrome snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert. <ph name="BEGIN_LINK" />Meer informatie over Geheugenbesparing<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Als je in de adresbalk of het zoekvak typt, stuurt Chrome wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="8781673607513845160">Geef Chrome toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je camera te gebruiken</translation>
 <translation id="878572486461146056">Installatiefout: Je netwerkbeheerder heeft een groepsbeleid toegepast waardoor er niet kan worden geïnstalleerd: <ph name="INSTALL_ERROR" /></translation>

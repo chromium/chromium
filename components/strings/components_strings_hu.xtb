@@ -866,6 +866,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2521736961081452453">Űrlap létrehozása</translation>
 <translation id="2523886232349826891">Csak erre az eszközre mentve</translation>
 <translation id="2524461107774643265">További adatok hozzáadása</translation>
+<translation id="2526062290525841862">Az alkalmazás futtatásához engedélyezze újra az izolált internetes alkalmazások fejlesztői módját</translation>
 <translation id="2526280916094749336">A mentett címeket használhatja a Google-termékekben. Ezt a címet az Ön Google-fiókjába (<ph name="ACCOUNT" />) menti a rendszer.</translation>
 <translation id="2527451058878391043">A CVC-kód a kártyája elején található. Ez egy négyjegyű kód a kártyaszám jobb felső sarkában.</translation>
 <translation id="2529899080962247600">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A további bejegyzéseket figyelmen kívül hagyja a rendszer.</translation>
@@ -1751,7 +1752,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4123572138124678573">Három lyuk alul</translation>
 <translation id="412601465078863288">Időtúllépés történt a feltöltés során</translation>
 <translation id="4127317221386336246">Ruházati kiegészítők</translation>
-<translation id="4127575959421463246">A ChromeOS-jelzőket keresi? Keresse fel a következő oldalt:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
 <translation id="4129992181550680635">Oktatási anyagok</translation>
 <translation id="4130226655945681476">A hálózati kábelek, a modem és a router ellenőrzése</translation>
@@ -4315,7 +4315,6 @@ További részletek:
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">A(z) <ph name="ENROLLMENT_DOMAIN" /> bekapcsolta a Chrome Enterprise Connectors integrációs eszközöket az Ön böngészőjében. Az eszközök hozzáférnek bizonyos adatokhoz.</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
-<translation id="8798739476508189189">Böngészőjelzőket keres? Keresse fel a következő oldalt:</translation>
 <translation id="8800034312320686233">Nem működik a webhely?</translation>
 <translation id="8805819170075074995">„<ph name="LANGUAGE_ID" />” listabejegyzés: A bejegyzést figyelmen kívül hagyja a rendszer, mert szerepel a SpellcheckLanguage házirendben is.</translation>
 <translation id="8806062468703310719">Telefonos szolgáltatók</translation>

@@ -184,6 +184,7 @@
 <translation id="1122198203221319518">ເຄື່ອງ​ມື​:</translation>
 <translation id="1122242684574577509">ການ​ຮັບ​ຮອງ​ບໍ່​ສຳ​ເລັດ. ຄ​ລິກ​ເພື່ອ​ເຂົ້າ​ເບິ່ງ​ໜ້າ​ເຂົ້າລະບົບ​ສຳ​ລັບ​ເຄືອ​ຂ່າຍ Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້ (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">ພາບພື້ນຫຼັງຮູບແບບທີ່ບໍ່ຊໍ້າກັນ</translation>
+<translation id="1122656823581975100">{NUM_SITES,plural, =1{ພົບລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ພົບລະຫັດຜ່ານທີ່ຖືກລະເມີດ {NUM_SITES} ລາຍການ}}</translation>
 <translation id="1122913801042512795">ລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ. ກະລຸນາອອກຈາກລະບົບແລ້ວເຂົ້າສູ່ລະບົບອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="1122960773616686544">ຊື່ບຸກມາກສ໌</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
@@ -3471,6 +3472,7 @@
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ໝາຍເຫດ<ph name="END_BOLD" />: ສຽງທີ່ຄ້າຍຄືກັນ ຫຼື ບັນທຶກສຽງອາດຈະສາມາດເຂົ້າເຖິງຜົນການຊອກຫາສ່ວນຕົວຂອງທ່ານ ຫຼື ຜູ້ຊ່ວຍຂອງທ່ານໄດ້.</translation>
 <translation id="3421835120203732951">ເພີ່ມໂປຣໄຟລ໌ໃໝ່</translation>
+<translation id="3422989558057853751">ລາຍການທີ່ເລືອກຫຼ້າສຸດ, ການບໍ່ເລືອກມັນຈະອອກຈາກໂໝດການເລືອກ</translation>
 <translation id="3423111258700187173">ພົບຜົນການຊອກຫາໃນ <ph name="FOLDER_TITLE" /> ແລ້ວ</translation>
 <translation id="3423226218833787854">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດ AI ນີ້</translation>
 <translation id="3423275441470187644">ເຊື່ອຖື</translation>
@@ -4967,6 +4969,7 @@
 <translation id="4461483878391246134">ເພີ່ມພາສາເພື່ອບໍ່ໃຫ້ມີຂໍ້ສະເໜີໃນການແປອີກ</translation>
 <translation id="4462159676511157176">ເຊີບເວີຊື່ກໍານົດເອງ</translation>
 <translation id="4465236939126352372">ຕັ້ງຄ່າຂີດຈຳກັດເວລາ <ph name="TIME" /> ສຳລັບ <ph name="APP_NAME" /> ແລ້ວ</translation>
+<translation id="4467373268340082204">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4467561276409486506">ເປີດ/ປິດໂໝດກະທັດຮັດ</translation>
 <translation id="4469324811108161144">ບັນທຶກສາມາດຈັດເກັບໄດ້ສູງສຸດ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ໄດ້</translation>
@@ -7004,6 +7007,7 @@
 <translation id="5943127421590245687">ການຢັ້ງຢືນຂອງທ່ານສຳເລັດແລ້ວ. ເພື່ອ​ປົດ​ລັອກ ແລະ ​ກູ້​ຄື​ນ​ຂໍ້​ມູນ​ໃນ​ເຄື່ອງ​ຂອງ​ທ່ານ, ກະ​ລຸ​ນາ​ປ້ອນ​ລະ​ຫັດ​ຜ່ານ <ph name="DEVICE_TYPE" /> ເກົ່າ​ຂອງ​ທ່ານ.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> ກຳລັງຈັດການໜ້າແຖບໃໝ່ຂອງທ່ານ</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ອາດເປັນອັນຕະລາຍ. ສົ່ງໄປໃຫ້ Google Safe Browsing ສະແກນບໍ?</translation>
+<translation id="5945192511027649793">ປິດການນຳໃຊ້ແຜ່ນສຳຜັດ</translation>
 <translation id="5945363896952315544">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ສາມາດຈັດເກັບລາຍນິ້ວມືເພີ່ມເຕີມໄດ້ແລ້ວ. ເພື່ອເພີ່ມລາຍນິ້ວມືໃໝ່, ໃຫ້ລຶບລາຍນິ້ວມືທີ່ມີຢູ່ກ່ອນແລ້ວອອກກ່ອນ.</translation>
 <translation id="5946591249682680882">ID ບົດລາຍງານ <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">ຄລິກເມົ້າສອງເທື່ອ</translation>
@@ -8504,6 +8508,7 @@
 <translation id="7025190659207909717">ການຈັດການເລື່ອງການບໍລິການຂໍ້ມູນມືຖື</translation>
 <translation id="7025895441903756761">ຄວາມປອດໄພ ແລະ ຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}=1{ເປີດໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
+<translation id="7027432471322992835">ປິດການນຳໃຊ້ແທຣັກແຜດ</translation>
 <translation id="7029307918966275733">ບໍ່ໄດ້ຕິດຕັ້ງ Crostini ກະລຸນາຕິດຕັ້ງ Crostini ເພື່ອເບິ່ງເຄຣດິດ.</translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="7030304022046916278">ສົ່ງ URL ໄປໃຫ້ Safe Browsing ກວດເບິ່ງພວກມັນ</translation>
@@ -10035,6 +10040,7 @@
 <translation id="8119438628456698432">ກຳລັງສ້າງໄຟລ໌ບັນທຶກ...</translation>
 <translation id="811994229154425014">ແຕະປຸ່ມຍະຫວ່າງສອງຄັ້ງເພື່ອພິມໝາຍຈຸດ</translation>
 <translation id="8120505434908124087">ຕິດຕັ້ງໂປຣໄຟລ໌ eSIM</translation>
+<translation id="8121537075864592453">ປິດການນຳໃຊ້ໂໝດເຕັມຈໍແລ້ວ</translation>
 <translation id="8121750884985440809">ປັດຈຸບັນທ່ານກຳລັງສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">ດອກໄມ້ສີເຫຼືອງ ແລະ ສີຂາວ</translation>
@@ -10256,6 +10262,7 @@
 <translation id="8276560076771292512">ແຄຊ໌ຫວ່າງເປົ່າ ແລະໂຫຼດໃໝ່ຍາກ</translation>
 <translation id="8276850948802942358">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການໃຫ້ສິດການອະນຸຍາດຊົ່ວຄາວແກ່ເວັບໄຊເພື່ອໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="8277907305629781277">ທ່ານສ້າງກະແຈຜ່ານນີ້ເມື່ອວັນທີ <ph name="DATE" /></translation>
+<translation id="827966378414194229">ໃຊ້ການເຄື່ອນໄຫວຂອງຫົວ ແລະ ການສະແດງອອກທາງໃບໜ້າເພື່ອຄວບຄຸມ Chromebook ຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">ເວັບໄຊໃນພາສາຂອງທ່ານ</translation>
 <translation id="8280848878018088610">ຄື້ນຊັດໃນທະເລ, ໂດຍມີພາບເມືອງ ແລະ ຜາສາດທີ່ໜ້າອັດສະຈັນໃນພື້ນຫຼັງ, ໃນຮູບແບບອາລົມໝົ່ນໆ.</translation>
 <translation id="828180235270931531">ເຄື່ອງພິມອື່ນໆທີ່ມີຢູ່</translation>

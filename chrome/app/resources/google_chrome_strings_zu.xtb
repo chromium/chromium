@@ -374,6 +374,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5602351063754773347">IChrome incoma ukuthi uyisuse. <ph name="BEGIN_LINK" />Funda kabanzi mayelana nezandiso ezisekelwayo<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">I-Chrome yenza okuningi ukukugcina uphephile ku-inthanethi</translation>
 <translation id="565744775970812598">I-<ph name="FILE_NAME" /> kungenzeka ibe ingozi, ngakho-ke i-Chrome iyivimbile.</translation>
+<translation id="566568153320186256">IChrome igcina amandla ebhethri ngokukhawulela umsebenzi ongemuva nemiphumela yokubuka, njengokuskrola okubushelelezi namazinga ohlaka lwevidiyo. <ph name="BEGIN_LINK" />Funda kabanzi mayelana Nesongi Samandla<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Umlawuli wakho ucela ukuthi uqalise kabusha i-Chrome ukuze kusetshenziswe lesi sibuyekezo}=1{Umlawuli wakho ucela ukuthi uqalise kabusha i-Chrome ukuze kusetshenziswe lesi sibuyekezo. Iwindi lakho le-Incognito ngeke liphinde livuleke.}one{Umlawuli wakho ucela ukuthi uqalise kabusha i-Chrome ukuze kusetshenziswe lesi sibuyekezo. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}other{Umlawuli wakho ucela ukuthi uqalise kabusha i-Chrome ukuze kusetshenziswe lesi sibuyekezo. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}}</translation>
 <translation id="5686916850681061684">Yenza ngokwezifiso futhi lawula i-Google Chrome. Okuthile kudinga ukuthi ukunake - chofoza ngemininingwane.</translation>
 <translation id="5690427481109656848">I-Google LLC</translation>
@@ -522,6 +523,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="7477130805345743099">I-Chrome izokuxwayisa ngaphambi kokulayisha noma iyiphi isayithi isebenzisa uxhumo olungavikelekile</translation>
 <translation id="7481213027396403996">Thola isivikelo esinamandla kakhulu se-Chrome</translation>
 <translation id="749228101751499733">Ngenkathi ungene ngemvume, ungasebenzisa amaphasiwedi akho nokuningi ukusuka kuGoogle Account yakho kuChrome. I-<ph name="SHORTCUT" /> ingashintsha amasethingi wakho wamasevisi eGoogle.</translation>
+<translation id="7496017508659652909">IChrome ilayisha ngaphambilini amakhasi okwenza ukubhrawuza nokusesha kusheshe. <ph name="BEGIN_LINK" />Funda kabanzi mayelana namakhasi okulayisha kuqala<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">IChrome ingaqonda izinhlobo ezengeziwe zemininingwane futhi igcwalise ngokuzenzekelayo amafomu akho ngokushesha. Funda kabanzi <ph name="BEGIN_LINK" />ngokuGcwalisa Okuzenzekelayo kweChrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Isevisi Yesibuyekezi SeGoogle</translation>
 <translation id="7515191208480168435">Ungaphina iGoogle Lens ukuze uyifinyelele kalula</translation>
@@ -638,6 +640,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="8712767363896337380">Cishe isisesikhathini! Qalisa kabusha i-Chrome ukuqedela ukubuyekeza.</translation>
 <translation id="8718062187489036808">Phuma ngemvume ku-Chrome</translation>
 <translation id="873133009373065397">I-Google Chrome ayikwazi ukunquma noma isethe isiphequluli esizenzakalelayo</translation>
+<translation id="8748735421235723888">IChrome ikhulula inkumbulo kumathebhu angasebenzi. Lokhu kunikeza amathebhu asebenzayo namanye ama-app izinsiza zekhompyutha ezengeziwe futhi kugcina iChrome ishesha. Amathebhu akho angasebenzi aphinde asebenze ngokuzenzekela uma ubuyela kuwo. <ph name="BEGIN_LINK" />Funda kabanzi mayelana Nesilondolozi Senkumbulo<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Uma uthayipha ibha yekheli noma ibhokisi losesho, i-Chrome ithumela lokho okuthayiphayo kunjini yakho yosesho yokuzenzakalelayo ukuze uthole iziphakamiso ezingcono. Lokhu kuvaliwe ku-Incognito.</translation>
 <translation id="8781673607513845160">Ukuze usebenzise ikhamera yakho, nikeza iChrome ukufinyelela <ph name="BEGIN_LINK" />amasethingi ohlelo<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Iphutha lokufaka: Umlawuli wenethiwekhi yakho usebenzise Inqubomgomo Yeqembu evimbela ukufakwa: <ph name="INSTALL_ERROR" /></translation>

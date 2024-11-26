@@ -366,6 +366,7 @@
 <translation id="5602351063754773347">Chrome empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome bietet umfassenden Schutz online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chrome blockiert.</translation>
+<translation id="566568153320186256">In Chrome wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen}=1{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="5686916850681061684">Du kannst Google Chrome anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -514,6 +515,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7477130805345743099">Chrome warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="749228101751499733">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Mithilfe des Shortcuts <ph name="SHORTCUT" /> kannst du die Einstellungen für Google‑Dienste jederzeit ändern.</translation>
+<translation id="7496017508659652909">In Chrome werden Seiten vorab geladen, um das Surfen und die Suche zu beschleunigen. <ph name="BEGIN_LINK" />Weitere Informationen zum Vorabladen von Seiten<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome kann mehr Arten von Informationen verstehen und deine Formulare schneller automatisch ausfüllen. <ph name="BEGIN_LINK" />Weitere Informationen zu Chrome Autofill<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen</translation>
@@ -630,6 +632,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8712767363896337380">Fast geschafft! Starte Chrome zum Abschluss der Aktualisierung neu.</translation>
 <translation id="8718062187489036808">Von Chrome abmelden</translation>
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
+<translation id="8748735421235723888">In Chrome wird von inaktiven Tabs belegter Arbeitsspeicher freigegeben. Dadurch können aktive Tabs und andere Apps auf mehr Ressourcen zugreifen und Chrome bleibt schnell. Deine inaktiven Tabs werden automatisch wieder aktiviert, sobald du sie aufrufst. <ph name="BEGIN_LINK" />Weitere Informationen zum Arbeitsspeicher-Sparmodus<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8781673607513845160">Wenn du deine Kamera verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="878572486461146056">Installationsfehler: Dein Netzwerkadministrator hat eine Gruppenrichtlinie angewendet, die die Installation verhindert: <ph name="INSTALL_ERROR" />.</translation>
