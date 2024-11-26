@@ -341,12 +341,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       base::apple::ObjCCastStrict<NSNumber>(itemIdentifier).integerValue);
   NSString* label = nil;
   NSString* accessibilityIdentifier = nil;
+  NSString* accessibilityLabel = nil;
   switch (rowIdentifier) {
     case RowIdentifierErrorExplanation: {
       SettingsImageDetailTextCell* cell =
           DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
+      cell.accessibilityElementsHidden = YES;
       cell.detailTextLabel.text =
           l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       cell.image =
@@ -358,6 +360,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     case RowIdentifierErrorButton:
       label = l10n_util::GetNSString(
           self.dataSource.accountErrorUIInfo.buttonLabelID);
+      accessibilityLabel =
+          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
       accessibilityIdentifier = kAccountMenuErrorActionButtonId;
       break;
     case RowIdentifierAddAccount:
@@ -379,7 +383,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.accessibilityTraits = UIAccessibilityTraitButton;
   cell.isAccessibilityElement = YES;
   cell.textLabel.text = label;
-  cell.accessibilityLabel = label;
+  cell.accessibilityLabel = accessibilityLabel ? accessibilityLabel : label;
   cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
   cell.userInteractionEnabled = YES;
