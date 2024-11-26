@@ -358,16 +358,12 @@ void WebNNGraphImplBackendTest::SetUp() {
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
        {"BuildOneInputAndOneConstantOperand", DML_FEATURE_LEVEL_4_0},
-       // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
-       // DML_FEATURE_LEVEL_4_0.
-       {"BuildOneGraphToComputeMultipleTimes", DML_FEATURE_LEVEL_4_0},
        // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC support for 1~8
        // dimension
        // counts was introduced in DML_FEATURE_LEVEL_3_1.
        {"BuildSingleOperatorLayerNormalization", DML_FEATURE_LEVEL_3_1},
        // DML_GEMM_OPERATOR_DESC support for 2~4 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
-       {"BuildAndComputeSingleOperatorMatmul", DML_FEATURE_LEVEL_4_0},
        {"FuseStandaloneOperationsIntoMatmul", DML_FEATURE_LEVEL_4_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
