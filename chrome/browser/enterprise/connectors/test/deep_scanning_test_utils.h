@@ -39,7 +39,7 @@ namespace enterprise_connectors::test {
 // The optional ones are not present on every Deep Scanning event. The mimetype
 // field is handled by a pointer to a set since different builds/platforms can
 // return different mimetype strings for the same file.
-class EventReportValidator {
+class EventReportValidator : public EventReportValidatorBase {
  public:
   explicit EventReportValidator(policy::MockCloudPolicyClient* client);
   ~EventReportValidator();
@@ -211,13 +211,6 @@ class EventReportValidator {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
-  void ExpectURLFilteringInterstitialEvent(
-      const std::string& expected_url,
-      const std::string& expected_event_result,
-      const std::string& expected_profile_username,
-      const std::string& expected_profile_identifier,
-      safe_browsing::RTLookupResponse expected_rt_lookup_response);
-
   void ExpectNoReport();
 
   // Closure to run once all expected events are validated.
@@ -233,29 +226,11 @@ class EventReportValidator {
   void ValidateDlpRule(
       const base::Value::Dict* value,
       const ContentAnalysisResponse::Result::TriggeredRule& expected_rule);
-  void ValidateRTLookupResponse(const base::Value::Dict* value);
-  void ValidateThreatInfo(
-      const base::Value::Dict* value,
-      const safe_browsing::RTLookupResponse::ThreatInfo& expected_threat_info);
   void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
-  void ValidateField(const base::Value::Dict* value,
-                     const std::string& field_key,
-                     const std::optional<std::string>& expected_value);
-  void ValidateField(const base::Value::Dict* value,
-                     const std::string& field_key,
-                     const std::optional<std::u16string>& expected_value);
-  void ValidateField(const base::Value::Dict* value,
-                     const std::string& field_key,
-                     const std::optional<int>& expected_value);
-  void ValidateField(const base::Value::Dict* value,
-                     const std::string& field_key,
-                     const std::optional<bool>& expected_value);
   void ValidateDataControlsAttributes(const base::Value::Dict* event);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void ValidateDataMaskingAttributes(const base::Value::Dict* event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  raw_ptr<policy::MockCloudPolicyClient> client_;
 
   std::string event_key_;
   std::optional<std::string> url_;
@@ -276,9 +251,6 @@ class EventReportValidator {
   std::optional<std::u16string> login_user_name_ = std::nullopt;
   std::optional<std::vector<std::pair<std::string, std::u16string>>>
       password_breach_identities_ = std::nullopt;
-  std::optional<std::string> url_filtering_event_result_ = std::nullopt;
-  std::optional<safe_browsing::RTLookupResponse> rt_lookup_response_ =
-      std::nullopt;
   std::optional<std::string> data_controls_result_ = std::nullopt;
   data_controls::Verdict::TriggeredRules data_controls_triggered_rules_;
 
@@ -298,8 +270,6 @@ class EventReportValidator {
   base::flat_map<std::string, std::string> results_;
   base::flat_map<std::string, std::string> filenames_and_hashes_;
   base::flat_map<std::string, std::string> scan_ids_;
-
-  base::RepeatingClosure done_closure_;
 };
 
 // Helper class to set up tests to use `EventReportValidator`.

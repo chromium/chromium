@@ -39,32 +39,11 @@ using ::testing::_;
 
 namespace enterprise_connectors::test {
 
-namespace {
-
-std::string ActionFromVerdictType(
-    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type) {
-  switch (verdict_type) {
-    case safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS:
-      return "BLOCK";
-    case safe_browsing::RTLookupResponse::ThreatInfo::WARN:
-      return "WARN";
-    case safe_browsing::RTLookupResponse::ThreatInfo::SAFE:
-      return "REPORT_ONLY";
-    case safe_browsing::RTLookupResponse::ThreatInfo::SUSPICIOUS:
-    case safe_browsing::RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED:
-      return "ACTION_UNKNOWN";
-  }
-}
-
-}  // namespace
-
 EventReportValidator::EventReportValidator(
     policy::MockCloudPolicyClient* client)
-    : client_(client) {}
+    : EventReportValidatorBase(client) {}
 
-EventReportValidator::~EventReportValidator() {
-  testing::Mock::VerifyAndClearExpectations(client_);
-}
+EventReportValidator::~EventReportValidator() = default;
 
 void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_url,
@@ -531,30 +510,6 @@ void EventReportValidator::ExpectPasswordBreachEvent(
           });
 }
 
-void EventReportValidator::ExpectURLFilteringInterstitialEvent(
-    const std::string& expected_url,
-    const std::string& expected_event_result,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier,
-    safe_browsing::RTLookupResponse expected_rt_lookup_response) {
-  event_key_ = enterprise_connectors::kKeyUrlFilteringInterstitialEvent;
-  url_ = expected_url;
-  url_filtering_event_result_ = expected_event_result;
-  username_ = expected_profile_username;
-  profile_identifier_ = expected_profile_identifier;
-  rt_lookup_response_ = expected_rt_lookup_response;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) {
-            ValidateReport(&report);
-            if (!done_closure_.is_null()) {
-              done_closure_.Run();
-            }
-          });
-}
-
 void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   DCHECK(report);
 
@@ -603,21 +558,10 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateFederatedOrigin(event);
   ValidateIdentities(event);
   ValidateMimeType(event);
-  ValidateRTLookupResponse(event);
   ValidateDataControlsAttributes(event);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ValidateDataMaskingAttributes(event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  // This field is checked using other members for non URLF events, so
-  // `url_filtering_event_result_` is always expected to be empty in other
-  // cases and shouldn't be used to validate `kKeyEventResult`.
-  if (rt_lookup_response_) {
-    ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  url_filtering_event_result_);
-  } else {
-    EXPECT_FALSE(url_filtering_event_result_);
-  }
 }
 
 void EventReportValidator::ValidateFederatedOrigin(
@@ -701,42 +645,6 @@ void EventReportValidator::ValidateDlpRule(
                 expected_rule.rule_id());
 }
 
-void EventReportValidator::ValidateRTLookupResponse(
-    const base::Value::Dict* value) {
-  if (rt_lookup_response_) {
-    const base::Value::List* triggered_rules =
-        value->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
-    ASSERT_TRUE(triggered_rules);
-    ASSERT_EQ(
-        base::checked_cast<size_t>(rt_lookup_response_->threat_info_size()),
-        triggered_rules->size());
-    for (size_t i = 0; i < triggered_rules->size(); ++i) {
-      const base::Value::Dict& rule = (*triggered_rules)[i].GetDict();
-      ValidateThreatInfo(&rule, rt_lookup_response_->threat_info(i));
-    }
-  }
-}
-
-void EventReportValidator::ValidateThreatInfo(
-    const base::Value::Dict* value,
-    const safe_browsing::RTLookupResponse::ThreatInfo& expected_threat_info) {
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-                expected_threat_info.matched_url_navigation_rule().rule_name());
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                expected_threat_info.matched_url_navigation_rule().rule_id());
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
-                expected_threat_info.matched_url_navigation_rule()
-                    .matched_url_category());
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyAction,
-                ActionFromVerdictType(expected_threat_info.verdict_type()));
-
-  if (expected_threat_info.matched_url_navigation_rule()
-          .has_watermark_message()) {
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
-                  std::optional<bool>(true));
-  }
-}
-
 void EventReportValidator::ValidateFilenameMappedAttributes(
     const base::Value::Dict* value) {
   if (filenames_and_hashes_.empty()) {
@@ -786,60 +694,6 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
       ValidateDlpVerdict(value, dlp_verdicts_[filename]);
     }
   }
-}
-
-void EventReportValidator::ValidateField(
-    const base::Value::Dict* value,
-    const std::string& field_key,
-    const std::optional<std::string>& expected_value) {
-  if (expected_value.has_value()) {
-    ASSERT_EQ(*value->FindString(field_key), expected_value.value())
-        << "Mismatch in field " << field_key
-        << "\nActual value: " << value->FindString(field_key)
-        << "\nExpected value: " << expected_value.value();
-  } else {
-    ASSERT_EQ(nullptr, value->FindString(field_key))
-        << "Field " << field_key << " should not be populated. It has value "
-        << *value->FindString(field_key);
-  }
-}
-
-void EventReportValidator::ValidateField(
-    const base::Value::Dict* value,
-    const std::string& field_key,
-    const std::optional<std::u16string>& expected_value) {
-  const std::string* s = value->FindString(field_key);
-  if (expected_value.has_value()) {
-    const std::u16string actual_string_value = base::UTF8ToUTF16(*s);
-    ASSERT_EQ(actual_string_value, expected_value.value())
-        << "Mismatch in field " << field_key
-        << "\nActual value: " << actual_string_value
-        << "\nExpected value: " << expected_value.value();
-  } else {
-    ASSERT_EQ(nullptr, s) << "Field " << field_key
-                          << " should not be populated. It has value "
-                          << *value->FindString(field_key);
-  }
-}
-
-void EventReportValidator::ValidateField(
-    const base::Value::Dict* value,
-    const std::string& field_key,
-    const std::optional<int>& expected_value) {
-  ASSERT_EQ(value->FindInt(field_key), expected_value)
-      << "Mismatch in field " << field_key
-      << "\nActual value: " << value->FindInt(field_key).value()
-      << "\nExpected value: " << expected_value.value();
-}
-
-void EventReportValidator::ValidateField(
-    const base::Value::Dict* value,
-    const std::string& field_key,
-    const std::optional<bool>& expected_value) {
-  ASSERT_EQ(value->FindBool(field_key), expected_value)
-      << "Mismatch in field " << field_key
-      << "\nActual value: " << value->FindBool(field_key).value()
-      << "\nExpected value: " << expected_value.value();
 }
 
 void EventReportValidator::ValidateDataControlsAttributes(

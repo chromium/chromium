@@ -9294,6 +9294,7 @@ test("unit_tests") {
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/analysis:features",
+      "//components/enterprise/common/proto:browser_events_proto",
       "//components/enterprise/connectors/core",
     ]
   }

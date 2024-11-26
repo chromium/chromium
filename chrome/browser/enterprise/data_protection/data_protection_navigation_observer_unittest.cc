@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
@@ -50,6 +51,19 @@ const char* kSkippedUrls[] = {
 
 content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
   return web_contents->GetPrimaryMainFrame()->GetPage();
+}
+
+chrome::cros::reporting::proto::TriggeredRuleInfo MakeTriggeredRuleInfo(
+    bool has_watermark) {
+  chrome::cros::reporting::proto::TriggeredRuleInfo info;
+  info.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY);
+  info.set_rule_id(123);
+  info.set_rule_name("watermark rule");
+  if (has_watermark) {
+    info.set_has_watermarking(true);
+  }
+  return info;
 }
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
@@ -84,14 +98,6 @@ safe_browsing::RTLookupResponse CreateRTLookupResponse(
       response.add_threat_info();
   *new_threat_info = GetTestThreatInfo(std::move(watermark_text), 1709181364,
                                        has_matched_rule);
-  return response;
-}
-
-safe_browsing::RTLookupResponse CreateAuditRuleResponse() {
-  safe_browsing::RTLookupResponse response;
-  safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
-      response.add_threat_info();
-  *new_threat_info = GetTestThreatInfo(std::nullopt, 1709181364, true);
   return response;
 }
 
@@ -241,13 +247,17 @@ class DataProtectionNavigationObserverTest
 }  // namespace
 
 TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+  expected_event.set_url("https://test/");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  *expected_event.add_triggered_rule_info() =
+      MakeTriggeredRuleInfo(/*has_watermark=*/true);
+
   enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(
-      /*url*/ "https://test/",
-      /*event_result*/ "EVENT_RESULT_ALLOWED",
-      /*profile_user_name*/ "test-user@chromium.org",
-      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*rt_lookup_response*/ CreateRTLookupResponse("custom_message", true));
+  validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://test"), web_contents()->GetPrimaryMainFrame());
@@ -297,13 +307,17 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
 }
 
 TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+  expected_event.set_url("https://example.com/");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  *expected_event.add_triggered_rule_info() =
+      MakeTriggeredRuleInfo(/*has_watermark=*/false);
+
   enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(
-      /*url*/ "https://example.com/",
-      /*event_result*/ "EVENT_RESULT_ALLOWED",
-      /*profile_user_name*/ "test-user@chromium.org",
-      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*rt_lookup_response*/ CreateAuditRuleResponse());
+  validator.ExpectURLFilteringInterstitialEvent(expected_event);
 
   lookup_service_.SetShouldHaveMatchedRule(true);
   lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
