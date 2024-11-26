@@ -224,19 +224,19 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   }
 
  protected:
-  AccountSelectionViewBase* CreateAccountSelectionView(
+  void CreateAccountSelectionView(
       const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       bool has_modal_support) override {
-    auto* view = new TestAccountSelectionView(this);
+    account_selection_view_ = new TestAccountSelectionView(this);
     ++num_dialogs_;
     rp_context_ = rp_context;
     if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
       dialog_type_ = FedCmAccountSelectionView::DialogType::MODAL;
     }
-    return view;
+    CreateDialogWidget();
   }
 
   FedCmAccountSelectionView::DialogType GetDialogType() override {
@@ -245,7 +245,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
 
   bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
   void UpdateDialogPosition() override { dialog_position_updated_ = true; }
-  void InitDialogWidget() override;
+  void CreateDialogWidget();
 
  private:
   blink::mojom::RpContext rp_context_;
@@ -538,10 +538,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
 namespace {
 
-void TestFedCmAccountSelectionView::InitDialogWidget() {
-  if (dialog_widget_) {
-    return;
-  }
+void TestFedCmAccountSelectionView::CreateDialogWidget() {
+  CHECK(!dialog_widget_);
   views::Widget::InitParams params =
       test_->CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                           views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
