@@ -11,8 +11,6 @@
 :host {
   background: white;
   color: var(--primary-color);
-  display: flex;
-  flex-direction: column;
   height: 100%;
 
   --primary-color: var(--google-grey-900);

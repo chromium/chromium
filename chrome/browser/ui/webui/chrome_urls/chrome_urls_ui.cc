@@ -33,8 +33,10 @@ void CreateAndAddChromeUrlsUIHtmlSource(Profile* profile) {
 namespace chrome_urls {
 
 ChromeUrlsUI::ChromeUrlsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui), page_factory_receiver_(this) {
-  CreateAndAddChromeUrlsUIHtmlSource(Profile::FromWebUI(web_ui));
+    : ui::MojoWebUIController(web_ui),
+      page_factory_receiver_(this),
+      profile_(Profile::FromWebUI(web_ui)) {
+  CreateAndAddChromeUrlsUIHtmlSource(profile_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ChromeUrlsUI)
@@ -49,8 +51,8 @@ void ChromeUrlsUI::CreatePageHandler(
     mojo::PendingRemote<chrome_urls::mojom::Page> page,
     mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver) {
   DCHECK(page);
-  page_handler_ =
-      std::make_unique<ChromeUrlsHandler>(std::move(receiver), std::move(page));
+  page_handler_ = std::make_unique<ChromeUrlsHandler>(
+      std::move(receiver), std::move(page), profile_);
 }
 
 ChromeUrlsUI::~ChromeUrlsUI() = default;

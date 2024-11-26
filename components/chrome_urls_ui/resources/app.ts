@@ -37,8 +37,15 @@ export class ChromeUrlsAppElement extends CrLitElement {
     super.connectedCallback();
 
     BrowserProxyImpl.getInstance().handler.getUrls().then(({urlsData}) => {
-      this.webuiUrlInfos_ = urlsData.webuiUrls;
-      this.commandUrls_ = urlsData.commandUrls;
+      // Since we use GURL on the C++ side, we need to remove the trailing
+      // '/' here for nicer display.
+      function getPrettyUrl(url: Url): Url {
+        return {url: url.url.replace(/\/$/, '')};
+      }
+      this.webuiUrlInfos_ = urlsData.webuiUrls.map(info => {
+        return {enabled: info.enabled, url: getPrettyUrl(info.url)};
+      });
+      this.commandUrls_ = urlsData.commandUrls.map(url => getPrettyUrl(url));
     });
   }
 }

@@ -12,6 +12,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace chrome_urls {
 
 // Page handler for chrome://chrome-urls
@@ -19,7 +23,8 @@ class ChromeUrlsHandler : public chrome_urls::mojom::PageHandler {
  public:
   ChromeUrlsHandler(
       mojo::PendingReceiver<chrome_urls::mojom::PageHandler> receiver,
-      mojo::PendingRemote<chrome_urls::mojom::Page> page);
+      mojo::PendingRemote<chrome_urls::mojom::Page> page,
+      content::BrowserContext* browser_context);
   ~ChromeUrlsHandler() override;
   ChromeUrlsHandler(const ChromeUrlsHandler&) = delete;
   ChromeUrlsHandler& operator=(const ChromeUrlsHandler&) = delete;
@@ -33,6 +38,7 @@ class ChromeUrlsHandler : public chrome_urls::mojom::PageHandler {
   // WebUI page is disconnected before other members are destroyed.
   mojo::Receiver<chrome_urls::mojom::PageHandler> receiver_;
   mojo::Remote<chrome_urls::mojom::Page> page_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace chrome_urls

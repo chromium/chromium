@@ -7,18 +7,52 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/chrome_urls_ui/mojom/chrome_urls.mojom.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/file_manager/url_constants.h"
+#include "ash/webui/sanitize_ui/url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;
 
 namespace chrome_urls {
 
 namespace {
+
+// Test config class, to add to the WebUIConfigMap for testing.
+class TestWebUIConfig : public content::WebUIConfig {
+ public:
+  TestWebUIConfig(const std::string& scheme,
+                  const std::string& host,
+                  bool enabled)
+      : content::WebUIConfig(scheme, host), enabled_(enabled) {}
+
+  ~TestWebUIConfig() override = default;
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
+    return enabled_;
+  }
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override {
+    return nullptr;
+  }
+
+ private:
+  bool enabled_;
+};
 
 class MockPage : public chrome_urls::mojom::Page {
  public:
@@ -39,10 +73,12 @@ class MockPage : public chrome_urls::mojom::Page {
 
 class ChromeUrlsHandlerTest : public testing::Test {
  public:
+  ChromeUrlsHandlerTest() : profile_(std::make_unique<TestingProfile>()) {}
+
   void SetUp() override {
     handler_ = std::make_unique<chrome_urls::ChromeUrlsHandler>(
         mojo::PendingReceiver<chrome_urls::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote());
+        mock_page_.BindAndGetRemote(), profile_.get());
     mock_page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
   }
@@ -50,11 +86,37 @@ class ChromeUrlsHandlerTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_{features::kInternalOnlyUisPref};
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockPage> mock_page_;
   std::unique_ptr<chrome_urls::ChromeUrlsHandler> handler_;
 };
 
 TEST_F(ChromeUrlsHandlerTest, GetUrls) {
+  // Register some test configs.
+  content::ScopedWebUIConfigRegistration config(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIScheme, "foo", true));
+  content::ScopedWebUIConfigRegistration config_untrusted(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
+                                        "bar", true));
+  content::ScopedWebUIConfigRegistration config_disabled(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIScheme, "cats",
+                                        false));
+  content::ScopedWebUIConfigRegistration config_untrusted_disabled(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
+                                        "dogs", false));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Redirect the files, and sanitize config because they assume an Ash Shell
+  // exists in IsWebUIEnabled(), and the shell does not exist in unit tests.
+  content::ScopedWebUIConfigRegistration replace_files_app(
+      std::make_unique<TestWebUIConfig>(
+          content::kChromeUIScheme, ash::file_manager::kChromeUIFileManagerHost,
+          true));
+  content::ScopedWebUIConfigRegistration replace_sanitize_app(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIScheme,
+                                        ash::kChromeUISanitizeAppHost, true));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   base::MockCallback<chrome_urls::ChromeUrlsHandler::GetUrlsCallback> callback;
   chrome_urls::mojom::ChromeUrlsDataPtr url_data;
   EXPECT_CALL(callback, Run(testing::_))
@@ -66,19 +128,41 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
   handler_->GetUrls(callback.Get());
 
   // Validate WebUI URL data.
-  EXPECT_EQ(3u, url_data->webui_urls.size());
-  EXPECT_EQ("chrome://settings/", url_data->webui_urls[0]->url.spec());
-  EXPECT_TRUE(url_data->webui_urls[0]->enabled);
-  EXPECT_EQ("chrome://bookmarks/", url_data->webui_urls[1]->url.spec());
-  EXPECT_TRUE(url_data->webui_urls[1]->enabled);
-  EXPECT_EQ("chrome://downloads/", url_data->webui_urls[2]->url.spec());
-  EXPECT_TRUE(url_data->webui_urls[2]->enabled);
+  bool found_foo = false;
+  bool found_bar = false;
+  bool found_cats = false;
+  bool found_dogs = false;
+  for (const auto& info : url_data->webui_urls) {
+    // Check that the 4 configs added are returned, and are in the expected
+    // order.
+    if (info->url.spec() == "chrome://cats/") {
+      found_cats = true;
+      EXPECT_FALSE(info->enabled);
+      EXPECT_FALSE(found_bar || found_dogs || found_foo);
+    } else if (info->url.spec() == "chrome://foo/") {
+      EXPECT_TRUE(found_cats);
+      found_foo = true;
+      EXPECT_TRUE(info->enabled);
+      EXPECT_FALSE(found_bar || found_dogs);
+    } else if (info->url.spec() == "chrome-untrusted://bar/") {
+      EXPECT_TRUE(found_cats && found_foo);
+      found_bar = true;
+      EXPECT_TRUE(info->enabled);
+      EXPECT_FALSE(found_dogs);
+    } else if (info->url.spec() == "chrome-untrusted://dogs/") {
+      EXPECT_TRUE(found_cats && found_foo && found_bar);
+      found_dogs = true;
+      EXPECT_FALSE(info->enabled);
+    }
+  }
+  EXPECT_TRUE(found_cats && found_foo && found_bar && found_dogs);
 
   // Validate command URL data.
-  EXPECT_EQ(3u, url_data->command_urls.size());
-  EXPECT_EQ("chrome://crash/", url_data->command_urls[0].spec());
-  EXPECT_EQ("chrome://kill/", url_data->command_urls[1].spec());
-  EXPECT_EQ("chrome://hang/", url_data->command_urls[2].spec());
+  base::span<const base::cstring_view> expected_urls =
+      chrome::ChromeDebugURLs();
+  for (const GURL& url : url_data->command_urls) {
+    EXPECT_TRUE(base::Contains(expected_urls, url));
+  }
 }
 
 }  // namespace chrome_urls

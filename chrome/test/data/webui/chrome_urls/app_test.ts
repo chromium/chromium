@@ -15,11 +15,12 @@ import {TestChromeUrlsBrowserProxy} from './test_chrome_urls_browser_proxy.js';
 
 suite('ChromeUrlsAppTest', function() {
   const webuiUrls: WebuiUrlInfo[] = [
-    {url: {url: 'chrome://settings'}, enabled: true},
-    {url: {url: 'chrome://bookmarks'}, enabled: false},
+    {url: {url: 'chrome://settings/'}, enabled: true},
+    {url: {url: 'chrome://bookmarks/'}, enabled: false},
   ];
 
-  const commandUrls: Url[] = [{url: 'chrome://kill'}, {url: 'chrome://crash'}];
+  const commandUrls: Url[] =
+      [{url: 'chrome://kill/'}, {url: 'chrome://crash/'}];
 
   let app: ChromeUrlsAppElement;
   let browserProxy: TestChromeUrlsBrowserProxy;
@@ -59,11 +60,11 @@ suite('ChromeUrlsAppTest', function() {
     for (let i = 0; i < commandItems.length; i++) {
       const item = commandItems[i]!;
       assertFalse(!!item.querySelector('a'));
-      assertEquals(commandUrls[i]!.url, item.textContent);
+      assertEquals(commandUrls[i]!.url, item.textContent + '/');
     }
 
     // Validate headings
-    const headings = app.shadowRoot!.querySelectorAll('h1');
+    const headings = app.shadowRoot!.querySelectorAll('h2');
     assertEquals(2, headings.length);
     assertEquals('List of Chrome URLs', headings[0]!.textContent);
     assertEquals('For Debug', headings[1]!.textContent);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROME_URLS_CHROME_URLS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROME_URLS_CHROME_URLS_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/chrome_urls_ui/mojom/chrome_urls.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -14,6 +15,8 @@
 namespace content {
 class WebUI;
 }
+
+class Profile;
 
 namespace chrome_urls {
 
@@ -45,8 +48,7 @@ class ChromeUrlsUI : public ui::MojoWebUIController,
   mojo::Receiver<chrome_urls::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
 
-  // Time the page started loading. Used for logging performance metrics.
-  base::Time navigation_start_time_;
+  raw_ptr<Profile> profile_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

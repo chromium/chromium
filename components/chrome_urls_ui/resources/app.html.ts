@@ -9,7 +9,7 @@ import type {ChromeUrlsAppElement} from './app.js';
 export function getHtml(this: ChromeUrlsAppElement) {
   // clang-format off
   return html`
-<h1>List of Chrome URLs</h1>
+<h2>List of Chrome URLs</h2>
 <ul>
   ${this.webuiUrlInfos_.map(info => html`
     ${info.enabled ?
@@ -17,7 +17,7 @@ export function getHtml(this: ChromeUrlsAppElement) {
       html`<li>${info.url.url}</li>`
     }`)}
 </ul>
-<h1>For Debug</h1>
+<h2>For Debug</h2>
 <p>
 The following pages are for debugging purposes only. Because they crash or hang
 the renderer, they're not linked directly; you can type them into the address

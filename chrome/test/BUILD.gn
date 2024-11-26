@@ -3235,6 +3235,7 @@ if (!is_android) {
       "../browser/ui/webui/browser_command/browser_command_handler_browsertest.cc",
       "../browser/ui/webui/chrome_content_browser_client_webui_part_browsertest.cc",
       "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
+      "../browser/ui/webui/chrome_urls/chrome_urls_ui_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",
       "../browser/ui/webui/chrome_webui_navigation_browsertest.cc",
       "../browser/ui/webui/commerce/product_specifications_disclosure_dialog_browsertest.cc",
