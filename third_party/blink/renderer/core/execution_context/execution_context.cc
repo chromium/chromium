@@ -233,10 +233,9 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  // On desktop, enable transfer for the reverse Origin Trial, or if the
-  // Finch "kill switch" is on, or if enabled by Enterprise Policy.
+  // On desktop, enable transfer for the reverse Origin Trial, or if enabled by
+  // Enterprise Policy.
   return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this) ||
-         RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled() ||
          RuntimeEnabledFeatures::
              SharedArrayBufferUnrestrictedAccessAllowedEnabled();
 #endif

@@ -1037,12 +1037,6 @@ BASE_FEATURE(kServiceWorkerPaymentApps,
 BASE_FEATURE(kSharedArrayBuffer,
              "SharedArrayBuffer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// If enabled, SharedArrayBuffer is present and can be transferred on desktop
-// platforms. This flag is used only as a "kill switch" as we migrate towards
-// requiring 'crossOriginIsolated'.
-BASE_FEATURE(kSharedArrayBufferOnDesktop,
-             "SharedArrayBufferOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for creating first-party StorageKeys in
 // RenderFrameHostImpl::CalculateStorageKey for frames with extension URLs.

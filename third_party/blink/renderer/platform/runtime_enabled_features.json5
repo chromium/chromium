@@ -3892,11 +3892,6 @@
       public: true,
     },
     {
-      name: "SharedArrayBufferOnDesktop",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "SharedArrayBufferUnrestrictedAccessAllowed",
       base_feature: "none",
       public: true,

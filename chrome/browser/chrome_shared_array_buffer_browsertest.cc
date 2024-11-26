@@ -34,7 +34,6 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
         // Disabled:
         {
             features::kSharedArrayBuffer,
-            features::kSharedArrayBufferOnDesktop,
         });
   }
 
@@ -81,8 +80,6 @@ class ChromeSharedArrayBufferBrowserTest : public PolicyTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ASSERT_FALSE(base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
-    ASSERT_FALSE(
-        base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) final {
