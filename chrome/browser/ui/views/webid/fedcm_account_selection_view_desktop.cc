@@ -212,8 +212,8 @@ bool FedCmAccountSelectionView::Show(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateAccountSelectionView(rp_for_display_, idp_title, rp_context, rp_mode,
-                               has_modal_support);
+    account_selection_view_ = CreateAccountSelectionView(
+        rp_for_display_, idp_title, rp_context, rp_mode, has_modal_support);
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
@@ -270,6 +270,7 @@ bool FedCmAccountSelectionView::Show(
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(*new_accounts_[0],
                                                              new_idp_data);
+        InitDialogWidget();
       } else {
         // Normally we'd show the request permission dialog but without the
         // disclosure text, there is no material difference between the account
@@ -288,6 +289,7 @@ bool FedCmAccountSelectionView::Show(
             *new_accounts_[0],
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
                 supports_add_account);
+        InitDialogWidget();
       } else {
         ShowMultiAccountPicker(
             new_accounts_, {new_accounts_[0]->identity_provider},
@@ -311,6 +313,7 @@ bool FedCmAccountSelectionView::Show(
       account_selection_view_->ShowSingleAccountConfirmDialog(
           *accounts_[0],
           /*show_back_button=*/false);
+      InitDialogWidget();
     }
   } else if (idp_list_.size() > 1u && returning_accounts_size == 1u) {
     // For now we only highlight the single returning account in the multi IDP
@@ -320,12 +323,17 @@ bool FedCmAccountSelectionView::Show(
     started_as_single_returning_account_ = true;
     account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
                                                               idp_list_);
+    InitDialogWidget();
   } else {
     ShowMultiAccountPicker(accounts_, idp_list_,
                            /*show_back_button=*/false,
                            /*is_choose_an_account=*/false);
   }
-  UpdateDialogPositionIfModal();
+
+  if (!GetDialogWidget()) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return false;
+  }
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -406,14 +414,14 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   bool create_view = !account_selection_view_;
   rp_for_display_ = base::UTF8ToUTF16(rp_for_display);
   if (create_view) {
-    CreateAccountSelectionView(rp_for_display_,
-                               base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                               rp_mode, has_modal_support);
+    account_selection_view_ = CreateAccountSelectionView(
+        rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+        rp_mode, has_modal_support);
   }
 
   account_selection_view_->ShowFailureDialog(
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
-  UpdateDialogPositionIfModal();
+  InitDialogWidget();
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -462,14 +470,14 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateAccountSelectionView(rp_for_display_,
-                               base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                               rp_mode, has_modal_support);
+    account_selection_view_ = CreateAccountSelectionView(
+        rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+        rp_mode, has_modal_support);
   }
 
   account_selection_view_->ShowErrorDialog(
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
-  UpdateDialogPositionIfModal();
+  InitDialogWidget();
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -504,14 +512,14 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    CreateAccountSelectionView(base::UTF8ToUTF16(rp_for_display),
-                               base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
-                               rp_mode,
-                               /*has_modal_support=*/true);
+    account_selection_view_ = CreateAccountSelectionView(
+        base::UTF8ToUTF16(rp_for_display), base::UTF8ToUTF16(idp_etld_plus_one),
+        rp_context, rp_mode,
+        /*has_modal_support=*/true);
   }
 
   account_selection_view_->ShowLoadingDialog();
-  UpdateDialogPositionIfModal();
+  InitDialogWidget();
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -571,7 +579,7 @@ void FedCmAccountSelectionView::SetIdpSigninPopupWindowForTesting(
   popup_window_ = std::move(idp_signin_popup_window);
 }
 
-void FedCmAccountSelectionView::CreateAccountSelectionView(
+AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
     const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
@@ -581,16 +589,15 @@ void FedCmAccountSelectionView::CreateAccountSelectionView(
 
   if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
     dialog_type_ = DialogType::MODAL;
-    account_selection_view_ = new AccountSelectionModalView(
-        rp_for_display, idp_title, rp_context, web_contents,
-        GetURLLoaderFactory(), this);
-  } else {
-    dialog_type_ = DialogType::BUBBLE;
-    account_selection_view_ = new AccountSelectionBubbleView(
-        rp_for_display, idp_title, rp_context, web_contents, GetAnchorView(),
-        GetURLLoaderFactory(), this);
+    return new AccountSelectionModalView(rp_for_display, idp_title, rp_context,
+                                         web_contents, GetURLLoaderFactory(),
+                                         this);
   }
-  CreateDialogWidget();
+
+  dialog_type_ = DialogType::BUBBLE;
+  return new AccountSelectionBubbleView(rp_for_display, idp_title, rp_context,
+                                        web_contents, GetAnchorView(),
+                                        GetURLLoaderFactory(), this);
 }
 
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
@@ -637,7 +644,6 @@ void FedCmAccountSelectionView::OnAccountSelected(
       return;
     }
     ShowVerifyingSheet(account);
-    UpdateDialogPositionIfModal();
     return;
   }
 
@@ -646,7 +652,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   if (GetDialogType() == DialogType::MODAL) {
     state_ = State::REQUEST_PERMISSION;
     account_selection_view_->ShowRequestPermissionDialog(account, idp_data);
-    UpdateDialogPositionIfModal();
+    InitDialogWidget();
     return;
   }
 
@@ -656,7 +662,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       account, /*show_back_button=*/true);
-  UpdateDialogPositionIfModal();
+  InitDialogWidget();
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -679,7 +685,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
         *accounts_[0], /*show_back_button=*/false);
-    UpdateDialogPositionIfModal();
+    InitDialogWidget();
     return;
   }
   // If the back button was clicked while on the multi account picker, go back
@@ -688,14 +694,13 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
                                                               idp_list_);
-    UpdateDialogPositionIfModal();
+    InitDialogWidget();
     return;
   }
   ShowMultiAccountPicker(
       accounts_, idp_list_,
       /*show_back_button=*/started_as_single_returning_account_,
       /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
-  UpdateDialogPositionIfModal();
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -865,7 +870,6 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
   ShowMultiAccountPicker(accounts_, idp_list_,
                          /*show_back_button=*/true,
                          /*is_choose_an_account=*/true);
-  UpdateDialogPositionIfModal();
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
 }
@@ -906,12 +910,6 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
     if (accessibility_state_utils::IsScreenReaderEnabled()) {
       modal->GetInitiallyFocusedView()->RequestFocus();
     }
-  }
-}
-
-void FedCmAccountSelectionView::UpdateDialogPositionIfModal() {
-  if (dialog_type_ == DialogType::MODAL) {
-    UpdateDialogPosition();
   }
 }
 
@@ -982,6 +980,7 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(const Account& account) {
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
           : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
   account_selection_view_->ShowVerifyingSheet(account, title);
+  InitDialogWidget();
 }
 
 SheetType FedCmAccountSelectionView::GetSheetType() {
@@ -1064,15 +1063,26 @@ views::Widget* FedCmAccountSelectionView::GetDialogWidget() {
   return account_selection_view_ ? dialog_widget_.get() : nullptr;
 }
 
-void FedCmAccountSelectionView::CreateDialogWidget() {
-  CHECK(!dialog_widget_);
-  CHECK(tab_);
+void FedCmAccountSelectionView::InitDialogWidget() {
+  if (!tab_) {
+    return;
+  }
+
   views::Widget* widget = nullptr;
   if (dialog_type_ == DialogType::BUBBLE) {
+    // If a widget already exists reuse it without any changes.
+    if (dialog_widget_) {
+      return;
+    }
     auto* bubble =
         static_cast<AccountSelectionBubbleView*>(account_selection_view_);
     widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   } else {
+    if (GetDialogWidget()) {
+      UpdateDialogPosition();
+      return;
+    }
+
     // Create and show the dialog widget. This is functionally a tab-modal
     // dialog.
     auto* modal =
@@ -1233,6 +1243,7 @@ void FedCmAccountSelectionView::ShowMultiAccountPicker(
   last_multi_account_is_choose_an_account_ = is_choose_an_account;
   account_selection_view_->ShowMultiAccountPicker(
       accounts, idp_list, show_back_button, is_choose_an_account);
+  InitDialogWidget();
 }
 
 void FedCmAccountSelectionView::OnOcclusionStateChanged(bool occluded) {

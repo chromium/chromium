@@ -182,17 +182,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Virtual for testing.
   virtual void UpdateDialogPosition();
 
-  // Same as above, but does nothing if a bubble dialog is showing.
-  void UpdateDialogPositionIfModal();
-
   // Gets the dialog widget from the account selection view, if available.
   // Otherwise, return a nullptr.
   views::Widget* GetDialogWidget();
 
   // Creates and sets the appropriate dialog widget, depending on whether the
   // dialog is bubble or modal.
-  // Public for testing.
-  void CreateDialogWidget();
+  // Virtual for testing.
+  virtual void InitDialogWidget();
 
   // Called when the tab will be removed from the window.
   // Public for testing.
@@ -202,9 +199,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
-  // Creates and sets account_selection_view_ (different subclasses for
-  // bubble/modal) and the corresponding widget. Virtual for testing purposes.
-  virtual void CreateAccountSelectionView(
+  // Returns an AccountSelectionViewBase to render bubble dialogs for
+  // widget flows, otherwise returns an AccountSelectionViewBase to render
+  // modal dialogs for button flows. Registers any observers. May fail and
+  // return nullptr if there is no browser or tab strip model. Virtual for
+  // testing purposes.
+  virtual AccountSelectionViewBase* CreateAccountSelectionView(
       const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
@@ -224,11 +224,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // TODO(https://crbug.com/377803489): Make private again.
   // Protected for testing.
   base::WeakPtr<views::Widget> dialog_widget_;
-
-  // This view controls the contents of the dialog_widget_. Conceptually there
-  // should be a view if and only if there is a widget.
-  // Protected for testing.
-  raw_ptr<AccountSelectionViewBase> account_selection_view_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -486,6 +481,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // The current state of the modal account chooser, if initiated by user. This
   // is nullopt when no modal account chooser has been opened.
   std::optional<AccountChooserResult> modal_account_chooser_state_;
+
+  // An AccountSelectionViewBase to render bubble dialogs for widget flows,
+  // otherwise returns an AccountSelectionViewBase to render modal dialogs
+  // for button flows.
+  raw_ptr<AccountSelectionViewBase> account_selection_view_;
 
   // Whether the widget is occluded by PIP (and therefore we should ignore
   // inputs).
