@@ -954,8 +954,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         r'/(\babsl::Span\b|#include <span>|\bstd::span\b)',
         (
-            'absl::Span and std::span are not allowed ',
-            '(https://crbug.com/1414652). Use base::span instead.',
+            'absl::Span and std::span are banned. Use base::span instead.',
         ),
         True,
         [
