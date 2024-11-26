@@ -3670,9 +3670,9 @@
       status: "stable",
     },
     {
-      // See crbug.com/41321247 and crbug.com/376370642
+      // See crbug.com/41321247
       name: "ScheduleSelectionChangeOnBackspace",
-      status: {"Android": "", "default": "stable"},
+      status: "stable",
     },
     {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries

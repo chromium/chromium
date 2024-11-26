@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
 namespace blink {
 
@@ -159,9 +160,18 @@ void SelectionEditor::DidFinishTextChange(const Position& new_anchor,
   selection_.anchor_ = new_anchor;
   selection_.focus_ = new_focus;
   selection_.ResetDirectionCache();
+
+  // See: https://w3c.github.io/selection-api/#selectionchange-event
   if (RuntimeEnabledFeatures::ScheduleSelectionChangeOnBackspaceEnabled()) {
-    GetDocument().ScheduleSelectionchangeEvent();
+    TextControlElement* text_control =
+        EnclosingTextControl(GetSelectionInDOMTree().Anchor());
+    if (text_control && !text_control->IsInShadowTree()) {
+      text_control->ScheduleSelectionchangeEvent();
+    } else {
+      GetDocument().ScheduleSelectionchangeEvent();
+    }
   }
+
   MarkCacheDirty();
   DidFinishDOMMutation();
 }
