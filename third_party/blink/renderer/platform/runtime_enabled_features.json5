@@ -1493,18 +1493,6 @@
       browser_process_read_write_access: true,
     },
     {
-      // Dispatch beforeinput event for number input according to the spec:
-      // https://w3c.github.io/uievents/#event-type-beforeinput
-      //
-      // This is landing in M127, and can be removed in M129.
-      //
-      // When disabled, beforeinput event will not be fired when spin button
-      // interactions like ArrowUp, ArrowDown and mouse click on spin button
-      // are made on number input.
-      name: "DispatchBeforeInputForSpinButtonInteractions",
-      status: "stable",
-    },
-    {
       // `kHidden` and `kHiddenButPainting` visibility states are treated as
       // hidden in the sense of `document.visibilityState`.  However, they are
       // handled differently internally.  For example, video playback should

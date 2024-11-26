@@ -1103,9 +1103,7 @@ void InputType::ApplyStep(const Decimal& current,
   // a number to a string, as defined for the input element's type attribute's
   // current state, on value.
   // 12. Set the value of the element to value as string.
-  if (RuntimeEnabledFeatures::
-          DispatchBeforeInputForSpinButtonInteractionsEnabled() &&
-      event_behavior == TextFieldEventBehavior::kDispatchChangeEvent &&
+  if (event_behavior == TextFieldEventBehavior::kDispatchChangeEvent &&
       DispatchBeforeInputInsertText(
           EventTargetNodeForDocument(&GetElement().GetDocument()),
           new_value.ToString()) != DispatchEventResult::kNotCanceled) {
