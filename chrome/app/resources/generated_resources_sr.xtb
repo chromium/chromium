@@ -2779,7 +2779,6 @@
 <translation id="2904210161403910217">Лозинка је промењена од последњег пријављивања</translation>
 <translation id="2904506722835398619">Пријављивање и синхронизација су обавезни</translation>
 <translation id="2904845070985032877">Паузирај анимације</translation>
-<translation id="2905556994482999199">Користите покрете главе и изразе лица да бисте контролисали Chromebook</translation>
 <translation id="2907619724991574506">URL-ови за покретање</translation>
 <translation id="2907798539022650680">Повезивање са „<ph name="NAME" />“ није успело: <ph name="DETAILS" />
     Порука сервера: <ph name="SERVER_MSG" /></translation>
@@ -4957,6 +4956,7 @@
 <translation id="4461483878391246134">Додајте језике за које се превод никада неће нудити</translation>
 <translation id="4462159676511157176">Прилагођени сервери назива</translation>
 <translation id="4465236939126352372">Временско ограничење од <ph name="TIME" /> је подешено за апликацију <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Погрешан PIN</translation>
 <translation id="4467561276409486506">&amp;Укључи/искључи компактни режим</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да мења датотеке у директоријуму <ph name="FOLDERNAME" /></translation>
@@ -10257,6 +10257,7 @@
 <translation id="8276560076771292512">Испразни кеш и поново учитај са сервера</translation>
 <translation id="8276850948802942358">Сазнајте више о давању привремене дозволе да сајт користи колачиће треће стране</translation>
 <translation id="8277907305629781277">Направили сте овај приступни кључ <ph name="DATE" /></translation>
+<translation id="827966378414194229">Користите покрете главе и изразе лица да бисте контролисали Chromebook. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Веб-сајтови на вашим језицима</translation>
 <translation id="8280848878018088610">Морски таласи ударају о обалу, са фантастичним градом и замком у позадини, у тамном амбијенту.</translation>
 <translation id="828180235270931531">Други доступни штампачи</translation>

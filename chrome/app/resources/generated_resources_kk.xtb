@@ -2778,7 +2778,6 @@
 <translation id="2904210161403910217">Құпия сөзіңіз аккаунтқа соңғы рет кіргеніңізден бері өзгерді</translation>
 <translation id="2904506722835398619">Аккаунтқа кіру және синхрондау қажет</translation>
 <translation id="2904845070985032877">Анимацияларды кідірту</translation>
-<translation id="2905556994482999199">Chromebook-ты басқару үшін басыңызды қозғалтып, мимика қолданыңыз.</translation>
 <translation id="2907619724991574506">Бастау URL сілтемелері</translation>
 <translation id="2907798539022650680">"<ph name="NAME" />" қызметіне қосылмады: <ph name="DETAILS" />
     Сервер хабары: <ph name="SERVER_MSG" /></translation>
@@ -10243,6 +10242,7 @@
 <translation id="8276560076771292512">Кэшті тазалау және аппаратты қайта жүктеу</translation>
 <translation id="8276850948802942358">Сайтқа үшінші тарап cookie файлдарын пайдалануға уақытша рұқсат беру туралы толық ақпарат</translation>
 <translation id="8277907305629781277">Бұл кіру кілтін <ph name="DATE" /> күні жасадыңыз.</translation>
+<translation id="827966378414194229">Chromebook-ты басқару үшін басыңызды қозғалтып, мимика қолданыңыз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Тіліңіздегі веб-сайттар</translation>
 <translation id="8280848878018088610">Алыстан керемет қала мен қамал көрінетін теңіздегі дүлей толқынның қошқыл реңкті көрінісі.</translation>
 <translation id="828180235270931531">Басқа қолжетімді принтерлер</translation>

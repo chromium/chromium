@@ -2793,7 +2793,6 @@
 <translation id="2904210161403910217">密碼已在您上次登入後變更</translation>
 <translation id="2904506722835398619">需要登入和同步</translation>
 <translation id="2904845070985032877">暫停動畫</translation>
-<translation id="2905556994482999199">透過頭部動作和面部表情控制 Chromebook</translation>
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
@@ -10253,6 +10252,7 @@
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
 <translation id="8276850948802942358">進一步了解點樣暫時批准網站用第三方 Cookie</translation>
 <translation id="8277907305629781277">你已在 <ph name="DATE" />建立此密鑰</translation>
+<translation id="827966378414194229">透過頭部動作和面部表情控制 Chromebook。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">網站語言版本</translation>
 <translation id="8280848878018088610">巨浪翻滾，背景是奇幻的城市和城堡，色調偏暗。</translation>
 <translation id="828180235270931531">其他可用的打印機</translation>

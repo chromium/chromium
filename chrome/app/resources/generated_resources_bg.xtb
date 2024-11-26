@@ -2790,7 +2790,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2904210161403910217">Паролата ви е променена от последния път, когато сте влезли в профила си</translation>
 <translation id="2904506722835398619">Необходимо е влизане в профила и синхронизиране</translation>
 <translation id="2904845070985032877">Поставяне на анимациите на пауза</translation>
-<translation id="2905556994482999199">Контролирайте своя Chromebook с движения на главата и мимики</translation>
 <translation id="2907619724991574506">URL адреси при стартиране</translation>
 <translation id="2907798539022650680">Свързването с/ъс „<ph name="NAME" />“ не бе успешно: <ph name="DETAILS" />
 Съобщение от сървъра: <ph name="SERVER_MSG" /></translation>
@@ -10267,6 +10266,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8276560076771292512">Изпразване на кеша и твърдо презареждане</translation>
 <translation id="8276850948802942358">Научете повече за предоставянето на временно разрешение на даден сайт да използва „бисквитки“ на трети страни</translation>
 <translation id="8277907305629781277">Създадохте този ключ за достъп на <ph name="DATE" /></translation>
+<translation id="827966378414194229">Контролирайте своя Chromebook с движения на главата и мимики. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Уебсайтове на езиците ви</translation>
 <translation id="8280848878018088610">Мрачна картина на разбиващи се в морето вълни на фона на фантастичен град и замък.</translation>
 <translation id="828180235270931531">Други налични принтери</translation>

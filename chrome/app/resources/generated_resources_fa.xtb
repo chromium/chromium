@@ -2791,7 +2791,6 @@
 <translation id="2904210161403910217">گذرواژه‌تان از آخرین باری که به سیستم وارد شده‌اید تغییر کرده است</translation>
 <translation id="2904506722835398619">ورود به سیستم و همگام‌سازی لازم است</translation>
 <translation id="2904845070985032877">موقتاً متوقف کردن پویانمایی‌ها</translation>
-<translation id="2905556994482999199">‏از حرکت‌های سر و حالت‌های چهره برای کنترل کردن Chromebook خود استفاده کنید</translation>
 <translation id="2907619724991574506">نشانی‌های وب راه‌اندازی</translation>
 <translation id="2907798539022650680">اتصال به «<ph name="NAME" />» ناموفق بود: <ph name="DETAILS" />
     پیام سرور: <ph name="SERVER_MSG" /></translation>
@@ -10267,6 +10266,7 @@
 <translation id="8276560076771292512">خالی کردن حافظه پنهان و بار کردن مجدد سخت</translation>
 <translation id="8276850948802942358">درباره دادن اجازه موقت به سایت برای استفاده از کوکی شخص ثالث بیشتر بدانید</translation>
 <translation id="8277907305629781277">این گذرکلید را در <ph name="DATE" /> ایجاد کردید</translation>
+<translation id="827966378414194229">‏از حرکت‌های سر و حالت‌های چهره برای کنترل کردن Chromebook خود استفاده کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">نمایش وب‌سایت‌ها به زبان شما</translation>
 <translation id="8280848878018088610">موج‌های خروشان در دریا و پس‌زمینه‌ای از شهر و قلعه‌ای خارق‌العاده با حال‌وهوای تاریک.</translation>
 <translation id="828180235270931531">دیگر چاپگرهای موجود</translation>

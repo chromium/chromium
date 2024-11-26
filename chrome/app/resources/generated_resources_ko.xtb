@@ -2796,7 +2796,6 @@
 <translation id="2904210161403910217">마지막 로그인 이후 비밀번호가 변경됨</translation>
 <translation id="2904506722835398619">로그인 및 동기화 필요</translation>
 <translation id="2904845070985032877">애니메이션 일시중지</translation>
-<translation id="2905556994482999199">머리 움직임과 표정을 사용하여 Chromebook 제어</translation>
 <translation id="2907619724991574506">시작 URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />'에 연결하지 못함: <ph name="DETAILS" />
     서버 메시지: <ph name="SERVER_MSG" /></translation>
@@ -10270,6 +10269,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8276560076771292512">캐시 비우기 및 강력 새로고침</translation>
 <translation id="8276850948802942358">사이트에 서드 파티 쿠키를 사용할 수 있는 임시 권한 부여에 대해 자세히 알아보기</translation>
 <translation id="8277907305629781277"><ph name="DATE" />에 이 패스키를 생성했습니다</translation>
+<translation id="827966378414194229">머리 움직임과 표정을 사용하여 Chromebook을 제어합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">내 언어로 된 웹사이트</translation>
 <translation id="8280848878018088610">어두운 분위기의 바다에 파도가 치고, 그뒤로 환상적인 도시와 성이 보입니다.</translation>
 <translation id="828180235270931531">사용 가능한 다른 프린터</translation>

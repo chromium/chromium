@@ -2781,7 +2781,6 @@
 <translation id="2904210161403910217">มีการเปลี่ยนแปลงรหัสผ่านในการลงชื่อเข้าใช้ครั้งล่าสุด</translation>
 <translation id="2904506722835398619">ต้องลงชื่อเข้าใช้และซิงค์</translation>
 <translation id="2904845070985032877">หยุดภาพเคลื่อนไหวชั่วคราว</translation>
-<translation id="2905556994482999199">ใช้การเคลื่อนไหวของศีรษะและการแสดงสีหน้าเพื่อควบคุม Chromebook</translation>
 <translation id="2907619724991574506">URL เริ่มต้นทำงาน</translation>
 <translation id="2907798539022650680">การเชื่อมต่อกับ "<ph name="NAME" />" ล้มเหลว: <ph name="DETAILS" />
     ข้อความเซิร์ฟเวอร์: <ph name="SERVER_MSG" /></translation>
@@ -4957,6 +4956,7 @@
 <translation id="4461483878391246134">เพิ่มภาษาที่ไม่ต้องเสนอการแปล</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465236939126352372">จำกัดเวลาการใช้ <ph name="APP_NAME" /> ไว้ที่ <ph name="TIME" /></translation>
+<translation id="4467373268340082204">PIN ไม่ถูกต้อง</translation>
 <translation id="4467561276409486506">เปิด/ปิดโหมดกะทัดรัด</translation>
 <translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> แก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
@@ -10248,6 +10248,7 @@
 <translation id="8276560076771292512">ล้างแคชและโหลดซ้ำแบบดึงข้อมูลใหม่ทั้งหมด</translation>
 <translation id="8276850948802942358">ดูข้อมูลเพิ่มเติมเกี่ยวกับการให้สิทธิ์เว็บไซต์ชั่วคราวเพื่อใช้คุกกี้ของบุคคลที่สาม</translation>
 <translation id="8277907305629781277">คุณสร้างพาสคีย์นี้เมื่อ <ph name="DATE" /></translation>
+<translation id="827966378414194229">ใช้การเคลื่อนไหวของศีรษะและการแสดงสีหน้าเพื่อควบคุม Chromebook <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">เว็บไซต์ในภาษาของคุณ</translation>
 <translation id="8280848878018088610">คลื่นกระทบฝั่งในทะเลโดยมีฉากหลังเป็นเมืองแฟนตาซีและปราสาทในบรรยากาศที่มืดมิด</translation>
 <translation id="828180235270931531">เครื่องพิมพ์อื่นๆ ที่ใช้ได้</translation>

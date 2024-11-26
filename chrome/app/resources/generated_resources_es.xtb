@@ -2782,7 +2782,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2904210161403910217">Tu contraseña ha cambiado desde la última vez que iniciaste sesión</translation>
 <translation id="2904506722835398619">Inicio de sesión y sincronización necesarios</translation>
 <translation id="2904845070985032877">Pausar animaciones</translation>
-<translation id="2905556994482999199">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook</translation>
 <translation id="2907619724991574506">URLs de inicio</translation>
 <translation id="2907798539022650680">No se ha podido establecer conexión con <ph name="NAME" />: <ph name="DETAILS" />
     Mensaje del servidor: <ph name="SERVER_MSG" /></translation>
@@ -10254,6 +10253,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8276560076771292512">Vaciar la caché y volver a cargar de manera forzada</translation>
 <translation id="8276850948802942358">Más información sobre cómo dar permiso temporal a un sitio para que use cookies de terceros</translation>
 <translation id="8277907305629781277">Creaste esta llave de acceso el <ph name="DATE" /></translation>
+<translation id="827966378414194229">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Sitios web en tus idiomas</translation>
 <translation id="8280848878018088610">Olas rompiendo en el mar con una ciudad fantástica y un castillo de fondo en un ambiente oscuro.</translation>
 <translation id="828180235270931531">Otras impresoras disponibles</translation>

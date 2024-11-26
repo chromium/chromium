@@ -2797,7 +2797,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2904210161403910217">Nuo paskutinio karto, kai buvote prisijungę, pasikeitė slaptažodis</translation>
 <translation id="2904506722835398619">Reikia prisijungti ir sinchronizuoti</translation>
 <translation id="2904845070985032877">Pristabdyti animacijas</translation>
-<translation id="2905556994482999199">Naudoti galvos judesius ir veido išraiškas „Chromebook“ įrenginiui valdyti</translation>
 <translation id="2907619724991574506">Paleidimo URL</translation>
 <translation id="2907798539022650680">Nepavyko prisijungti prie „<ph name="NAME" />“: <ph name="DETAILS" />
     Serverio pranešimas: <ph name="SERVER_MSG" /></translation>
@@ -10279,6 +10278,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8276560076771292512">Tuščia talpykla ir priverstinis įkėlimas iš naujo</translation>
 <translation id="8276850948802942358">Sužinokite daugiau apie laikino leidimo naudoti trečiųjų šalių slapukus suteikimą svetainei</translation>
 <translation id="8277907305629781277">Šį prieigos raktą sukūrėte <ph name="DATE" /></translation>
+<translation id="827966378414194229">Naudoti galvos judesius ir veido išraiškas „Chromebook“ įrenginiui valdyti. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Svetainės jūsų kalbomis</translation>
 <translation id="8280848878018088610">Jūroje dūžtančios bangos su fantastiniu miestu ir pilimi fone, niūrios nuotaikos.</translation>
 <translation id="828180235270931531">Kiti pasiekiami spausdintuvai</translation>

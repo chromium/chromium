@@ -2773,7 +2773,6 @@
 <translation id="2904210161403910217">自您上次登录以来，您的密码发生了更改</translation>
 <translation id="2904506722835398619">需要登录并同步</translation>
 <translation id="2904845070985032877">暂停动画</translation>
-<translation id="2905556994482999199">使用头部动作和面部表情控制 Chromebook</translation>
 <translation id="2907619724991574506">启动网址</translation>
 <translation id="2907798539022650680">无法连接到“<ph name="NAME" />”：<ph name="DETAILS" />
 服务器消息：<ph name="SERVER_MSG" /></translation>
@@ -10240,6 +10239,7 @@
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
 <translation id="8276850948802942358">详细了解如何向网站授予对第三方 Cookie 的临时使用权限</translation>
 <translation id="8277907305629781277">您在 <ph name="DATE" />创建了此通行密钥</translation>
+<translation id="827966378414194229">使用头部动作和面部表情控制 Chromebook。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">网站使用的语言</translation>
 <translation id="8280848878018088610">图片描绘了一种黑暗氛围，海中巨浪翻滚，背景中有一座奇幻的城市和城堡。</translation>
 <translation id="828180235270931531">其他可用打印机</translation>

@@ -2781,7 +2781,6 @@
 <translation id="2904210161403910217">თქვენი პაროლი შეიცვალა სისტემაში თქვენი ბოლო შესვლის შემდეგ</translation>
 <translation id="2904506722835398619">საჭიროა შესვლა და სინქრონიზაცია</translation>
 <translation id="2904845070985032877">ანიმაციის დაპაუზება</translation>
-<translation id="2905556994482999199">გამოიყენეთ თავის მოძრაობები და სახის გამომეტყველებები Chromebook-ის სამართავად</translation>
 <translation id="2907619724991574506">გაშვების URL-ები</translation>
 <translation id="2907798539022650680">„<ph name="NAME" />“-თან დაკავშირება ვერ მოხერხდა: <ph name="DETAILS" />
     სერვერის შეტყობინება: <ph name="SERVER_MSG" /></translation>
@@ -4959,6 +4958,7 @@
 <translation id="4461483878391246134">დაამატეთ ენები, რომელთა თარგმნაც არასოდეს შემოგთავაზოთ</translation>
 <translation id="4462159676511157176">ინდივიდუალური სახელთა სერვერები</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-ისთვის დაყენებული დროის ლიმიტია <ph name="TIME" /></translation>
+<translation id="4467373268340082204">PIN-კოდი არასწორია</translation>
 <translation id="4467561276409486506">&amp;კომპაქტური რეჟიმის გადართვა</translation>
 <translation id="4469324811108161144">შესაძლებელია მაქსიმუმ <ph name="CHARACTER_LIMIT" /> სიმბოლოს ჩანიშვნა.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FOLDERNAME" />“-ში ფაილების რედაქტირება</translation>
@@ -10253,6 +10253,7 @@
 <translation id="8276560076771292512">ცარიელი ქეში და მძიმე გადატვირთვა</translation>
 <translation id="8276850948802942358">შეიტყვეთ მეტი საიტისთვის მესამე მხარის ქუქი-ჩანაწერების გამოყენების დროებითი ნებართვის მინიჭების შესახებ</translation>
 <translation id="8277907305629781277">წვდომის გასაღების შექმნის თარიღი: <ph name="DATE" /></translation>
+<translation id="827966378414194229">გამოიყენეთ თავის მოძრაობები და სახის გამომეტყველებები Chromebook-ის სამართავად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">ვებსაიტები თქვენს ენებზე</translation>
 <translation id="8280848878018088610">ზღვის მღელვარე ტალღები, ფონზე ფანტასტიკური ქალაქი და ციხესიმაგრე, მუქ ფერებში.</translation>
 <translation id="828180235270931531">სხვა ხელმისაწვდომი პრინტერები</translation>

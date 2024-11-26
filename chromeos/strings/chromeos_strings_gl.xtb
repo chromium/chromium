@@ -415,7 +415,7 @@
 <translation id="2940811910881150316">Non se puido realizar a proba do dispositivo. Abre a tapa de novo para realizala.</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2956070106555335453">Resumo</translation>
-<translation id="299385721391037602">rosas e amarelas</translation>
+<translation id="299385721391037602">rosa e amarela</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017079585324758401">Fondo</translation>
@@ -730,7 +730,7 @@
 <translation id="4548483925627140043">Non se atopou o sinal</translation>
 <translation id="4556753742174065117">Todo o firmware está actualizado</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
-<translation id="456077979087158257">paisaxe urbana</translation>
+<translation id="456077979087158257">urbana</translation>
 <translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sen servizo</translation>
 <translation id="4570558255126759859">Queres descargar o modelo de Gemini para resumir as gravacións?</translation>
@@ -815,7 +815,7 @@
 <translation id="4965703485264574128">Para obter un resultado aproximado, multiplica o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Dividida</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
-<translation id="4981003703840817201">azuis e rosas</translation>
+<translation id="4981003703840817201">azul e rosa</translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4982627662315910959">O atallo non está dispoñible. Preme un novo atallo usando Maiúsculas e outra tecla modificadora (Control, Alt ou <ph name="META_KEY" />).</translation>
 <translation id="4983216687482551672">Audio de Chromebook</translation>
@@ -935,7 +935,7 @@
 <translation id="5554741914132564590">O fabricante do dispositivo externo forneceu esta actualización, pero Google non a verificou.</translation>
 <translation id="5559898619118303662">Cambiar automaticamente ao tema escuro á hora do solpor</translation>
 <translation id="556042886152191864">Botón</translation>
-<translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tonalidades <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tonalidades de cor <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5572169899491758844">Escanear</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver buscar</translation>
@@ -1061,7 +1061,7 @@
 <translation id="6146993107019042706">Para finalizar, introduce o teu novo contrasinal</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Non se pode establecer conexión con Internet</translation>
-<translation id="6156030503438652198">granates e rosas</translation>
+<translation id="6156030503438652198">granate e rosa</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Creado o <ph name="DATE" /></translation>
@@ -1082,7 +1082,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281936070694347328">Definir "<ph name="QUERY" />"</translation>
-<translation id="6283581480003247988">azuis e violetas</translation>
+<translation id="6283581480003247988">azul e violeta</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
 <translation id="6285260286443238386">Exportar gravación</translation>
 <translation id="628726841779494414">Xestiona as túas impresoras na configuración de impresoras</translation>

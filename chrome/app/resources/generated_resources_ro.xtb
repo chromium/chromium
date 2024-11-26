@@ -2782,7 +2782,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2904210161403910217">Parola s-a schimbat de la ultima conectare</translation>
 <translation id="2904506722835398619">Trebuie să te conectezi și să sincronizezi</translation>
 <translation id="2904845070985032877">Întrerupe animațiile</translation>
-<translation id="2905556994482999199">Folosește mișcările capului și expresiile faciale pentru a-ți controla Chromebookul</translation>
 <translation id="2907619724991574506">Adrese URL de pornire</translation>
 <translation id="2907798539022650680">Nu s-a putut stabili conexiunea la „<ph name="NAME" />”: <ph name="DETAILS" />
 Mesaj de la server: <ph name="SERVER_MSG" /></translation>
@@ -10256,6 +10255,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8276560076771292512">Goliți memoria cache și reîncărcați forțat</translation>
 <translation id="8276850948802942358">Află mai multe despre acordarea permisiunii temporare unui site de a folosi cookie-uri terță parte</translation>
 <translation id="8277907305629781277">Ai creat această cheie de acces pe <ph name="DATE" /></translation>
+<translation id="827966378414194229">Folosește mișcările capului și expresiile faciale pentru a-ți controla Chromebookul. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Site-uri în limbile tale</translation>
 <translation id="8280848878018088610">Valuri care se sparg în mare, cu un oraș și un castel fantastic în fundal, într-o atmosferă întunecată.</translation>
 <translation id="828180235270931531">Alte imprimante disponibile</translation>

@@ -2794,7 +2794,6 @@
 <translation id="2904210161403910217">ពាក្យសម្ងាត់​របស់​អ្នក​បានផ្លាស់ប្ដូរ​តាំងពី​ពេល​ដែល​អ្នកបានចូល​គណនី​ចុងក្រោយ</translation>
 <translation id="2904506722835398619">តម្រូវឱ្យ​ចូលគណនី និង​ធ្វើសមកាលកម្ម</translation>
 <translation id="2904845070985032877">ផ្អាក​រូបមានចលនា</translation>
-<translation id="2905556994482999199">ប្រើ​ចលនាក្បាល និង​ទឹកមុខ ដើម្បី​គ្រប់គ្រង Chromebook របស់អ្នក</translation>
 <translation id="2907619724991574506">URLs ចាប់ផ្តើមដំណើរការ</translation>
 <translation id="2907798539022650680">បានបរាជ័យក្នុងការភ្ជាប់ទៅ '<ph name="NAME" />'៖ <ph name="DETAILS" />
     សារពីម៉ាស៊ីនមេ៖ <ph name="SERVER_MSG" /></translation>
@@ -4970,6 +4969,7 @@
 <translation id="4461483878391246134">បញ្ចូល​ភាសាទៅក្នុងបញ្ជីភាសាមិនផ្ដល់​ជូន​ការ​បកប្រែ</translation>
 <translation id="4462159676511157176">ម៉ាស៊ីនមេឈ្មោះផ្ទាល់ខ្លូន</translation>
 <translation id="4465236939126352372">បានកំណត់រយៈពេលកំណត់ <ph name="TIME" /> សម្រាប់ <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">កូដ PIN មិន​ត្រឹមត្រូវទេ</translation>
 <translation id="4467561276409486506">&amp;បិទ/បើកមុខងារចង្អៀតខ្លាំង</translation>
 <translation id="4469324811108161144">កំណត់ចំណាំ​អាចមាន​រហូតដល់ <ph name="CHARACTER_LIMIT" /> តួអក្សរ។</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> អាចកែ​ឯកសារ​នៅក្នុង <ph name="FOLDERNAME" /></translation>
@@ -10264,6 +10264,7 @@
 <translation id="8276560076771292512">សម្អាតឃ្លាំងសម្ងាត់ និងដំណើរការឡើងវិញ</translation>
 <translation id="8276850948802942358">ស្វែងយល់​បន្ថែម​អំពី​ការផ្ដល់ការអនុញ្ញាត​ជាបណ្ដោះអាសន្ន​ឱ្យគេហទំព័រ​ប្រើ​ខូគី​ភាគីទីបី</translation>
 <translation id="8277907305629781277">អ្នក​បានបង្កើត​កូដសម្ងាត់​នេះ​នៅថ្ងៃទី <ph name="DATE" /></translation>
+<translation id="827966378414194229">ប្រើ​ចលនាក្បាល និង​ទឹកមុខ ដើម្បី​គ្រប់គ្រង Chromebook របស់អ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">គេហទំព័រ​ជាភាសា​របស់អ្នក</translation>
 <translation id="8280848878018088610">ក្នុងបរិយាកាសដ៏អាប់អួ រលក​បោកបក់​ក្នុង​សមុទ្រ ដោយ​មាន​ប្រាសាទ និង​ទីក្រុង​ដ៏អស្ចារ្យនៅផ្ទៃខាងក្រោយ។</translation>
 <translation id="828180235270931531">ម៉ាស៊ីន​បោះពុម្ព​ដែលអាចប្រើបាន​ផ្សេងទៀត</translation>

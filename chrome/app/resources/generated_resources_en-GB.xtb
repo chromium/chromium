@@ -2794,7 +2794,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2904210161403910217">Your password has changed since the last time you signed in</translation>
 <translation id="2904506722835398619">Sign in and sync needed</translation>
 <translation id="2904845070985032877">Pause animations</translation>
-<translation id="2905556994482999199">Use head movements and facial expressions to control your Chromebook</translation>
 <translation id="2907619724991574506">Startup URLs</translation>
 <translation id="2907798539022650680">Failed to connect to '<ph name="NAME" />': <ph name="DETAILS" />
     Server message: <ph name="SERVER_MSG" /></translation>
@@ -10269,6 +10268,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
 <translation id="8276850948802942358">Learn more about giving a site temporary permission to use third-party cookies</translation>
 <translation id="8277907305629781277">You created this passkey on <ph name="DATE" /></translation>
+<translation id="827966378414194229">Use head movements and facial expressions to control your Chromebook. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Websites in your languages</translation>
 <translation id="8280848878018088610">Crashing waves in the sea, with a fantastical city and castle in the background, in a dark mood.</translation>
 <translation id="828180235270931531">Other available printers</translation>
