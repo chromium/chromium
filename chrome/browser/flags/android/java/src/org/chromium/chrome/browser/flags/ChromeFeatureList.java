@@ -292,6 +292,8 @@ public abstract class ChromeFeatureList {
             "ContextMenuSysUiMatchesActivity";
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
             "ContextMenuTranslateWithGoogleLens";
+    public static final String CONTROLS_VISIBILITY_FROM_NAVIGATIONS =
+            "ControlsVisibilityFromNavigations";
     public static final String CORMORANT = "Cormorant";
     public static final String CROSS_DEVICE_TAB_PANE_ANDROID = "CrossDeviceTabPaneAndroid";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
@@ -886,6 +888,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
+    public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =
+            newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
     public static final MutableFlagWithSafeDefault sDynamicSafeAreaInsets =
             newMutableFlagWithSafeDefault(DYNAMIC_SAFE_AREA_INSETS, false);
     public static final MutableFlagWithSafeDefault sForceBrowserControlsUponExitingFullscreen =

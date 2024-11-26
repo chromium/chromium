@@ -244,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextMenuSysUiMatchesActivity,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
+    &kControlsVisibilityFromNavigations,
     &kCrossDeviceTabPaneAndroid,
     &kDelayTempStripRemoval,
     &kDeviceAuthenticatorAndroidx,
@@ -694,6 +695,10 @@ BASE_FEATURE(kContextualSearchDisableOnlineDetection,
 BASE_FEATURE(kContextualSearchSuppressShortView,
              "ContextualSearchSuppressShortView",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kControlsVisibilityFromNavigations,
+             "ControlsVisibilityFromNavigations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrossDeviceTabPaneAndroid,
              "CrossDeviceTabPaneAndroid",

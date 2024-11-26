@@ -6285,6 +6285,21 @@
             ]
         }
     ],
+    "ControlsVisibilityFromNavigations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ControlsVisibilityFromNavigations"
+                    ]
+                }
+            ]
+        }
+    ],
     "CookieDeprecationFacilitatedTestingCookieDeprecation": [
         {
             "platforms": [

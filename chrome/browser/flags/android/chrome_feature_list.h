@@ -85,6 +85,7 @@ BASE_DECLARE_FEATURE(kContextMenuSysUiMatchesActivity);
 BASE_DECLARE_FEATURE(kContextMenuTranslateWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
+BASE_DECLARE_FEATURE(kControlsVisibilityFromNavigations);
 BASE_DECLARE_FEATURE(kCrossDeviceTabPaneAndroid);
 BASE_DECLARE_FEATURE(kDelayTempStripRemoval);
 BASE_DECLARE_FEATURE(kDeviceAuthenticatorAndroidx);
