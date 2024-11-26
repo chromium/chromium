@@ -48,8 +48,8 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
 
 template <typename T>
 base::span<const uint8_t> GetArrayData(v8::Local<T> array) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(array->Data()),
-                         array->ByteLength());
+  return base::span(reinterpret_cast<const uint8_t*>(array->Data()),
+                    array->ByteLength());
 }
 
 CORE_EXPORT base::span<const uint8_t> GetViewData(
@@ -69,8 +69,8 @@ class SpanWithInlineStorage {
   operator base::span<const T>() const&& = delete;
   const base::span<const T> as_span() const {
     const base::span<const uint8_t> bytes = bytes_.as_span();
-    return base::make_span(reinterpret_cast<const T*>(bytes.data()),
-                           bytes.size() / sizeof(T));
+    return base::span(reinterpret_cast<const T*>(bytes.data()),
+                      bytes.size() / sizeof(T));
   }
 
   void Assign(base::span<const uint8_t> span) { bytes_.Assign(span); }
@@ -97,9 +97,8 @@ class SpanOrVector {
   void Assign(base::span<const uint8_t> span) { span_.Assign(span); }
   void Assign(Vector<T> vec) {
     vector_ = std::move(vec);
-    span_.Assign(
-        base::make_span(reinterpret_cast<const uint8_t*>(vector_.data()),
-                        vector_.size() * sizeof(T)));
+    span_.Assign(base::span(reinterpret_cast<const uint8_t*>(vector_.data()),
+                            vector_.size() * sizeof(T)));
   }
   v8::MemorySpan<uint8_t> GetInlineStorage() {
     return span_.GetInlineStorage();

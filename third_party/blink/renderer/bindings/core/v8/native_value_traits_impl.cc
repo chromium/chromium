@@ -105,7 +105,7 @@ ByteSpanWithInlineStorage& ByteSpanWithInlineStorage::operator=(
     const ByteSpanWithInlineStorage& r) {
   if (r.span_.data() == r.inline_storage_) {
     memcpy(inline_storage_, r.inline_storage_, sizeof inline_storage_);
-    span_ = base::make_span(inline_storage_, r.span_.size());
+    span_ = base::span(inline_storage_, r.span_.size());
   } else {
     span_ = r.span_;
   }

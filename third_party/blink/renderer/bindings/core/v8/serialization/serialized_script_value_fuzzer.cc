@@ -68,7 +68,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
 
   // Truncate the input.
   auto data_span =
-      base::make_span(data, base::saturated_cast<wtf_size_t>(data_size));
+      base::span(data, base::saturated_cast<wtf_size_t>(data_size));
 
   // Used to control what kind of extra data is provided to the deserializer.
   unsigned hash = StringHasher::HashMemory(data_span);

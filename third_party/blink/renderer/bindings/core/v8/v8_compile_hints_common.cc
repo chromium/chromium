@@ -38,7 +38,7 @@ uint32_t ScriptNameHash(const KURL& url) {
 
 uint32_t CombineHash(uint32_t script_name_hash, int position) {
   const uint32_t data[2] = {script_name_hash, static_cast<uint32_t>(position)};
-  return base::PersistentHash(base::as_bytes(base::make_span(data)));
+  return base::PersistentHash(base::as_byte_span(data));
 }
 
 }  // namespace blink::v8_compile_hints

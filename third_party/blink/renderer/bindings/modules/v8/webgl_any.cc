@@ -23,7 +23,7 @@ ScriptValue WebGLAny(ScriptState* script_state, bool value) {
 ScriptValue WebGLAny(ScriptState* script_state,
                      const bool* value,
                      uint32_t size) {
-  auto span = base::make_span(value, size);
+  auto span = base::span(value, size);
   return ScriptValue(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLBoolean>>::ToV8(script_state, span));
