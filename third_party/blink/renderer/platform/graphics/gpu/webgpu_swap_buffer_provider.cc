@@ -307,7 +307,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       current_swap_buffer_->GetSharedImage()->usage().Has(
           gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
-  out_resource->color_space = PredefinedColorSpaceToGfxColorSpace(color_space_);
+  out_resource->color_space =
+      current_swap_buffer_->GetSharedImage()->color_space();
   out_resource->hdr_metadata = hdr_metadata_;
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
