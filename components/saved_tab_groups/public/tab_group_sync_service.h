@@ -263,6 +263,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // The list of shared tab groups is stored on startup before any local changes
   // have been applied, which enables the messaging system to safely calculate
   // deltas for changes to groups without keeping its own persistence layer.
+  // For now there is only a single user of this, so we give away ownership.
+  // If there are more users in the future, we should keep the data around in
+  // this service.
   virtual std::unique_ptr<std::vector<SavedTabGroup>>
   TakeSharedTabGroupsAvailableAtStartupForMessaging() = 0;
 
