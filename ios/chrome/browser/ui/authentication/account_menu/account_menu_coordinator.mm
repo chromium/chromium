@@ -110,7 +110,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_mediator);
+  DCHECK(!_mediator);
 }
 
 - (void)start {
