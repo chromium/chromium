@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/util.h"
 
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "crypto/hmac.h"
@@ -34,14 +35,9 @@ const char kMainFrameHostStoragePrefix[] = "TopicsV1_MainFrameHostStorage|";
 uint64_t HmacHash(ReadOnlyHmacKey hmac_key,
                   const std::string& use_case_prefix,
                   const std::string& data) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(hmac_key));
-
-  uint64_t result;
-  CHECK(hmac.Sign(use_case_prefix + data,
-                  reinterpret_cast<unsigned char*>(&result), sizeof(result)));
-
-  return result;
+  auto hash = crypto::hmac::SignSha256(
+      hmac_key, base::as_byte_span(use_case_prefix + data));
+  return base::U64FromNativeEndian(base::span(hash).first<8u>());
 }
 
 bool g_hmac_key_overridden = false;
