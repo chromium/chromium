@@ -11,15 +11,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace {
-
-struct SupportedPrefixesStruct {
-  const char* prefix;
-  network::mojom::blink::CSPHashAlgorithm type;
-};
-
-}  // namespace
-
 namespace blink {
 
 namespace {

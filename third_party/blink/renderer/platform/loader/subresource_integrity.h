@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_SUBRESOURCE_INTEGRITY_H_
 
 #include "base/gtest_prod_util.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -49,6 +50,10 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   };
 
   // Determine which SRI features to support when parsing integrity attributes.
+  //
+  // TODO(mkwst): Remove this; it should have been dropped when we pulled out
+  // the initial implementation of signature-based SRI, and the new
+  // implementation will likely rely on the RuntimeEnabledFeature instead.
   enum class IntegrityFeatures {
     kDefault,    // Default: All sha* hash codes.
     kSignatures  // Also support the ed25519 signature scheme.

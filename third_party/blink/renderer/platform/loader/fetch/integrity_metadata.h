@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_INTEGRITY_METADATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_INTEGRITY_METADATA_H_
 
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -15,8 +16,8 @@
 namespace blink {
 
 class IntegrityMetadata;
-enum class IntegrityAlgorithm : uint8_t;
 
+using IntegrityAlgorithm = network::mojom::blink::IntegrityAlgorithm;
 using IntegrityMetadataPair = std::pair<String, IntegrityAlgorithm>;
 using IntegrityMetadataSet = WTF::HashSet<IntegrityMetadataPair>;
 
@@ -49,8 +50,6 @@ enum class ResourceIntegrityDisposition : uint8_t {
   kFailedIntegrityMetadata,
   kPassed
 };
-
-enum class IntegrityAlgorithm : uint8_t { kSha256, kSha384, kSha512 };
 
 }  // namespace blink
 

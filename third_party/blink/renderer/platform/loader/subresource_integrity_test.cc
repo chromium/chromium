@@ -13,6 +13,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"

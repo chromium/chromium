@@ -487,6 +487,7 @@ mojom("url_loader_base") {
     "fetch_api.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",
+    "integrity_algorithm.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",
     "link_header.mojom",

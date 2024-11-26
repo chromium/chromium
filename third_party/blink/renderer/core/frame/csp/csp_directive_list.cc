@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -59,20 +60,6 @@ String GetSha256String(const String& content) {
   }
 
   return "sha256-" + Base64Encode(digest);
-}
-
-network::mojom::blink::CSPHashAlgorithm ConvertHashAlgorithmToCSPHashAlgorithm(
-    IntegrityAlgorithm algorithm) {
-  // TODO(antoniosartori): Consider merging these two enums.
-  switch (algorithm) {
-    case IntegrityAlgorithm::kSha256:
-      return network::mojom::blink::CSPHashAlgorithm::SHA256;
-    case IntegrityAlgorithm::kSha384:
-      return network::mojom::blink::CSPHashAlgorithm::SHA384;
-    case IntegrityAlgorithm::kSha512:
-      return network::mojom::blink::CSPHashAlgorithm::SHA512;
-  }
-  NOTREACHED();
 }
 
 // IntegrityMetadata (from SRI) has base64-encoded digest values, but CSP uses
@@ -332,11 +319,11 @@ bool AreAllMatchingHashesPresent(
     const IntegrityMetadataSet& hashes) {
   if (!directive || hashes.empty())
     return false;
-  for (const std::pair<String, IntegrityAlgorithm>& hash : hashes) {
+  for (const IntegrityMetadataPair& hash : hashes) {
     // Convert the hash from integrity metadata format to CSP format.
     network::mojom::blink::CSPHashSourcePtr csp_hash =
         network::mojom::blink::CSPHashSource::New();
-    csp_hash->algorithm = ConvertHashAlgorithmToCSPHashAlgorithm(hash.second);
+    csp_hash->algorithm = hash.second;
     if (!ParseBase64Digest(hash.first, csp_hash->value))
       return false;
     // All integrity hashes must be listed in the CSP.

@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/integrity_algorithm.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
@@ -550,18 +551,18 @@ bool ParseNonce(std::string_view expression, std::string* nonce) {
 struct SupportedPrefixesStruct {
   const char* prefix;
   int prefix_length;
-  mojom::CSPHashAlgorithm type;
+  mojom::IntegrityAlgorithm type;
 };
 
 // Parse a hash-source, return false on error.
 bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
   static const SupportedPrefixesStruct SupportedPrefixes[] = {
-      {"'sha256-", 8, mojom::CSPHashAlgorithm::SHA256},
-      {"'sha384-", 8, mojom::CSPHashAlgorithm::SHA384},
-      {"'sha512-", 8, mojom::CSPHashAlgorithm::SHA512},
-      {"'sha-256-", 9, mojom::CSPHashAlgorithm::SHA256},
-      {"'sha-384-", 9, mojom::CSPHashAlgorithm::SHA384},
-      {"'sha-512-", 9, mojom::CSPHashAlgorithm::SHA512}};
+      {"'sha256-", 8, mojom::IntegrityAlgorithm::kSha256},
+      {"'sha384-", 8, mojom::IntegrityAlgorithm::kSha384},
+      {"'sha512-", 8, mojom::IntegrityAlgorithm::kSha512},
+      {"'sha-256-", 9, mojom::IntegrityAlgorithm::kSha256},
+      {"'sha-384-", 9, mojom::IntegrityAlgorithm::kSha384},
+      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512}};
 
   for (auto item : SupportedPrefixes) {
     if (base::StartsWith(expression, item.prefix,
