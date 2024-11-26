@@ -1474,7 +1474,7 @@
           'xcode_16_main',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_ios_device_gtests',
+           'isolated_scripts': 'optimization_guide_ios_device_gtests',
         },
         'os_type': 'ios',
       },
@@ -1488,7 +1488,7 @@
           'xcode_16_main',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_ios_sim_gtests',
+           'isolated_scripts': 'optimization_guide_ios_sim_gtests',
         },
         'os_type': 'ios',
       },
