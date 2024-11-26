@@ -23,8 +23,6 @@ class CORE_EXPORT SubresourceIntegrityHelper final {
 
   static void GetConsoleMessages(const SubresourceIntegrity::ReportInfo&,
                                  HeapVector<Member<ConsoleMessage>>*);
-
-  static SubresourceIntegrity::IntegrityFeatures GetFeatures(ExecutionContext*);
 };
 
 }  // namespace blink

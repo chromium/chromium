@@ -731,12 +731,9 @@ PendingScript* ScriptLoader::PrepareScript(
   String integrity_attr = element_->IntegrityAttributeValue();
   IntegrityMetadataSet integrity_metadata;
   if (!integrity_attr.empty()) {
-    SubresourceIntegrity::IntegrityFeatures integrity_features =
-        SubresourceIntegrityHelper::GetFeatures(
-            element_->GetExecutionContext());
     SubresourceIntegrity::ReportInfo report_info;
     SubresourceIntegrity::ParseIntegrityAttribute(
-        integrity_attr, integrity_features, integrity_metadata, &report_info);
+        integrity_attr, integrity_metadata, &report_info);
     SubresourceIntegrityHelper::DoReport(*element_->GetExecutionContext(),
                                          report_info);
   }

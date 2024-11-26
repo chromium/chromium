@@ -84,7 +84,6 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const String& integrity_metadata,
-    IntegrityFeatures features,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     ReportInfo& report_info) {
@@ -92,8 +91,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     return true;
 
   IntegrityMetadataSet metadata_set;
-  ParseIntegrityAttribute(integrity_metadata, features, metadata_set,
-                          &report_info);
+  ParseIntegrityAttribute(integrity_metadata, metadata_set, &report_info);
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
                                        report_info);
 }
@@ -209,7 +207,6 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
 SubresourceIntegrity::AlgorithmParseResult
 SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
                                               const UChar* end,
-                                              IntegrityFeatures features,
                                               IntegrityAlgorithm& algorithm) {
   static const AlgorithmPrefixPair kPrefixes[] = {
       {"sha256", IntegrityAlgorithm::kSha256},
@@ -219,36 +216,19 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
       {"sha512", IntegrityAlgorithm::kSha512},
       {"sha-512", IntegrityAlgorithm::kSha512}};
 
-  // The last algorithm prefix is the ed25519 signature algorithm, which should
-  // only be enabled if kSignatures is requested. We'll implement this by
-  // adjusting the last_prefix index into the array.
-  size_t last_prefix = std::size(kPrefixes);
-  if (features != IntegrityFeatures::kSignatures)
-    last_prefix--;
-
-  return ParseAlgorithmPrefix(begin, end, kPrefixes, last_prefix, algorithm);
-}
-
-SubresourceIntegrity::AlgorithmParseResult
-SubresourceIntegrity::ParseAlgorithmPrefix(
-    const UChar*& string_position,
-    const UChar* string_end,
-    const AlgorithmPrefixPair* prefix_table,
-    size_t prefix_table_size,
-    IntegrityAlgorithm& algorithm) {
-  for (size_t i = 0; i < prefix_table_size; i++) {
-    const UChar* pos = string_position;
-    if (SkipToken<UChar>(pos, string_end, prefix_table[i].first) &&
-        SkipExactly<UChar>(pos, string_end, '-')) {
-      string_position = pos;
-      algorithm = prefix_table[i].second;
+  for (size_t i = 0; i < std::size(kPrefixes); i++) {
+    const UChar* pos = begin;
+    if (SkipToken<UChar>(pos, end, kPrefixes[i].first) &&
+        SkipExactly<UChar>(pos, end, '-')) {
+      begin = pos;
+      algorithm = kPrefixes[i].second;
       return kAlgorithmValid;
     }
   }
 
-  const UChar* dash_position = string_position;
-  SkipUntil<UChar>(dash_position, string_end, '-');
-  return dash_position < string_end ? kAlgorithmUnknown : kAlgorithmUnparsable;
+  const UChar* dash_position = begin;
+  SkipUntil<UChar>(dash_position, end, '-');
+  return dash_position < end ? kAlgorithmUnknown : kAlgorithmUnparsable;
 }
 
 // Before:
@@ -281,14 +261,12 @@ bool SubresourceIntegrity::ParseDigest(const UChar*& position,
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
-    IntegrityFeatures features,
     IntegrityMetadataSet& metadata_set) {
-  return ParseIntegrityAttribute(attribute, features, metadata_set, nullptr);
+  return ParseIntegrityAttribute(attribute, metadata_set, nullptr);
 }
 
 void SubresourceIntegrity::ParseIntegrityAttribute(
     const WTF::String& attribute,
-    IntegrityFeatures features,
     IntegrityMetadataSet& metadata_set,
     ReportInfo* report_info) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
@@ -317,8 +295,8 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     // still be loaded) because strong hash algorithms should be used
     // without fear of breaking older user agents that don't support
     // them.
-    AlgorithmParseResult parse_result = ParseAttributeAlgorithm(
-        position, current_integrity_end, features, algorithm);
+    AlgorithmParseResult parse_result =
+        ParseAttributeAlgorithm(position, current_integrity_end, algorithm);
     if (parse_result == kAlgorithmUnknown) {
       // Unknown hash algorithms are treated as if they're not present,
       // and thus are not marked as an error, they're just skipped.

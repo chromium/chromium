@@ -28,12 +28,6 @@ WebFeature GetWebFeature(
     case SubresourceIntegrity::ReportInfo::UseCounterFeature::
         kSRIElementWithUnparsableIntegrityAttribute:
       return WebFeature::kSRIElementWithUnparsableIntegrityAttribute;
-    case SubresourceIntegrity::ReportInfo::UseCounterFeature::
-        kSRISignatureCheck:
-      return WebFeature::kSRISignatureCheck;
-    case SubresourceIntegrity::ReportInfo::UseCounterFeature::
-        kSRISignatureSuccess:
-      return WebFeature::kSRISignatureSuccess;
   }
   NOTREACHED();
 }
@@ -60,15 +54,6 @@ void SubresourceIntegrityHelper::GetConsoleMessages(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError, message));
   }
-}
-
-SubresourceIntegrity::IntegrityFeatures SubresourceIntegrityHelper::GetFeatures(
-    ExecutionContext* execution_context) {
-  bool allow_signatures =
-      RuntimeEnabledFeatures::SignatureBasedIntegrityEnabledByRuntimeFlag() ||
-      RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(execution_context);
-  return allow_signatures ? SubresourceIntegrity::IntegrityFeatures::kSignatures
-                          : SubresourceIntegrity::IntegrityFeatures::kDefault;
 }
 
 }  // namespace blink

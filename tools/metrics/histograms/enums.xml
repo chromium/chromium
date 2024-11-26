@@ -7820,8 +7820,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2349" label="V8HTMLElement_Autocapitalize_AttributeGetter"/>
   <int value="2350" label="V8HTMLElement_Autocapitalize_AttributeSetter"/>
   <int value="2351" label="CSSLegacyAlignment"/>
-  <int value="2352" label="SRISignatureCheck"/>
-  <int value="2353" label="SRISignatureSuccess"/>
+  <int value="2352" label="OBSOLETE_SRISignatureCheck"/>
+  <int value="2353" label="OBSOLETE_SRISignatureSuccess"/>
   <int value="2354" label="CSSBasicShape"/>
   <int value="2355" label="CSSGradient"/>
   <int value="2356" label="CSSPaintFunction"/>

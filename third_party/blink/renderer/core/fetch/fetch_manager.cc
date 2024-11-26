@@ -562,10 +562,7 @@ class FetchManager::Loader final
         }
         if (check_result) {
           check_result = SubresourceIntegrity::CheckSubresourceIntegrity(
-              integrity_metadata_,
-              SubresourceIntegrityHelper::GetFeatures(
-                  loader_->GetExecutionContext()),
-              &buffer_, url_, report_info);
+              integrity_metadata_, &buffer_, url_, report_info);
         }
         SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
                                              report_info);

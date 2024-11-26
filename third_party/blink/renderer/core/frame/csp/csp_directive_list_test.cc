@@ -412,9 +412,8 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
     const KURL resource(test.url);
 
     IntegrityMetadataSet integrity_metadata;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        test.integrity, SubresourceIntegrity::IntegrityFeatures::kDefault,
-        integrity_metadata);
+    SubresourceIntegrity::ParseIntegrityAttribute(test.integrity,
+                                                  integrity_metadata);
 
     // Report-only 'script-src'
     network::mojom::blink::ContentSecurityPolicyPtr directive_list = CreateList(

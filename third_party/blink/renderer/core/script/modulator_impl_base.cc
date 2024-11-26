@@ -232,9 +232,8 @@ IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
   IntegrityMetadataSet integrity_metadata;
   if (!value.IsNull()) {
     SubresourceIntegrity::ReportInfo report_info;
-    SubresourceIntegrity::ParseIntegrityAttribute(
-        value, SubresourceIntegrity::IntegrityFeatures::kDefault,
-        integrity_metadata, &report_info);
+    SubresourceIntegrity::ParseIntegrityAttribute(value, integrity_metadata,
+                                                  &report_info);
     SubresourceIntegrityHelper::DoReport(*GetExecutionContext(), report_info);
   }
   return integrity_metadata;

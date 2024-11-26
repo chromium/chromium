@@ -31,8 +31,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
       kSRIElementWithNonMatchingIntegrityAttribute,
       kSRIElementIntegrityAttributeButIneligible,
       kSRIElementWithUnparsableIntegrityAttribute,
-      kSRISignatureCheck,
-      kSRISignatureSuccess,
     };
 
     void AddUseCount(UseCounterFeature);
@@ -49,16 +47,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
     Vector<String> console_error_messages_;
   };
 
-  // Determine which SRI features to support when parsing integrity attributes.
-  //
-  // TODO(mkwst): Remove this; it should have been dropped when we pulled out
-  // the initial implementation of signature-based SRI, and the new
-  // implementation will likely rely on the RuntimeEnabledFeature instead.
-  enum class IntegrityFeatures {
-    kDefault,    // Default: All sha* hash codes.
-    kSignatures  // Also support the ed25519 signature scheme.
-  };
-
   // The version with the IntegrityMetadataSet passed as the first argument
   // assumes that the integrity attribute has already been parsed, and the
   // IntegrityMetadataSet represents the result of that parsing.
@@ -70,7 +58,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                         const Resource&,
                                         ReportInfo&);
   static bool CheckSubresourceIntegrity(const String&,
-                                        IntegrityFeatures,
                                         const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
                                         ReportInfo&);
@@ -78,10 +65,8 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   // The IntegrityMetadataSet arguments are out parameters which contain the
   // set of all valid, parsed metadata from |attribute|.
   static void ParseIntegrityAttribute(const WTF::String& attribute,
-                                      IntegrityFeatures,
                                       IntegrityMetadataSet&);
   static void ParseIntegrityAttribute(const WTF::String& attribute,
-                                      IntegrityFeatures,
                                       IntegrityMetadataSet&,
                                       ReportInfo*);
 
@@ -113,21 +98,11 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
 
   static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
                                               const SegmentedBuffer* buffer);
-  static bool CheckSubresourceIntegritySignature(const IntegrityMetadata&,
-                                                 const char*,
-                                                 size_t);
 
   static AlgorithmParseResult ParseAttributeAlgorithm(const UChar*& begin,
                                                       const UChar* end,
-                                                      IntegrityFeatures,
                                                       IntegrityAlgorithm&);
   typedef std::pair<const char*, IntegrityAlgorithm> AlgorithmPrefixPair;
-  static AlgorithmParseResult ParseAlgorithmPrefix(
-      const UChar*& string_position,
-      const UChar* string_end,
-      const AlgorithmPrefixPair* prefix_table,
-      size_t prefix_table_size,
-      IntegrityAlgorithm&);
   static bool ParseDigest(const UChar*& begin,
                           const UChar* end,
                           String& digest);
