@@ -1731,6 +1731,11 @@ void FeatureInfo::InitializeFeatures() {
       feature_flags_.angle_blob_cache = true;
     }
   }
+
+  if (is_passthrough_cmd_decoder_ &&
+      gfx::HasExtension(extensions, "GL_OES_required_internalformat")) {
+    AddExtensionString("GL_OES_required_internalformat");
+  }
 }
 
 void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
