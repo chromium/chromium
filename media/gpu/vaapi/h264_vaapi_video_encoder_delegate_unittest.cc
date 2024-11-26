@@ -259,6 +259,7 @@ class H264VaapiVideoEncoderDelegateTest
                             uint32_t framerate,
                             uint8_t num_temporal_layers,
                             uint8_t expected_temporal_layer_id);
+  bool IsSWBitrateControllerSupported();
 
  protected:
   std::unique_ptr<H264VaapiVideoEncoderDelegate> encoder_;
@@ -477,6 +478,12 @@ void H264VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
               expected_temporal_layer_id);
 }
 
+bool H264VaapiVideoEncoderDelegateTest::IsSWBitrateControllerSupported() {
+  return VaapiWrapper::GetImplementationType() ==
+             VAImplementation::kIntelI965 ||
+         VaapiWrapper::GetImplementationType() == VAImplementation::kIntelIHD;
+}
+
 TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
   auto vea_config = DefaultVEAConfig();
   const auto vea_delegate_config = kDefaultVEADelegateConfig;
@@ -520,6 +527,11 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrateInitialize) {
 constexpr size_t kSupportedNumTemporalLayersByController = 2u;
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, InitializeWithSWBitrateController) {
+  if (!IsSWBitrateControllerSupported()) {
+    GTEST_SKIP()
+        << "Software bitrate controller is supported on only Intel backend.";
+  }
+
   base::test::ScopedFeatureList scoped_feature_list(
       media::kVaapiH264SWBitrateController);
   const uint8_t num_temporal_layers = GetParam();
@@ -532,6 +544,11 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, InitializeWithSWBitrateController) {
 }
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeWithSWBitrateController) {
+  if (!IsSWBitrateControllerSupported()) {
+    GTEST_SKIP()
+        << "Software bitrate controller is supported on only Intel backend.";
+  }
+
   base::test::ScopedFeatureList scoped_feature_list(
       media::kVaapiH264SWBitrateController);
   const uint8_t num_temporal_layers = GetParam();
@@ -564,6 +581,11 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeWithSWBitrateController) {
 }
 
 TEST_P(H264VaapiVideoEncoderDelegateTest, UpdateRatesWithSWBitrateController) {
+  if (!IsSWBitrateControllerSupported()) {
+    GTEST_SKIP()
+        << "Software bitrate controller is supported on only Intel backend.";
+  }
+
   base::test::ScopedFeatureList scoped_feature_list(
       media::kVaapiH264SWBitrateController);
   const uint8_t num_temporal_layers = GetParam();
