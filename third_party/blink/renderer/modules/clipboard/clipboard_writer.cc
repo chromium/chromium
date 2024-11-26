@@ -247,9 +247,7 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
       promise_->RejectFromReadOrDecodeFailure();
       return;
     }
-    mojo_base::BigBuffer buffer(
-        base::make_span(static_cast<uint8_t*>(custom_format_data->Data()),
-                        custom_format_data->ByteLength()));
+    mojo_base::BigBuffer buffer(custom_format_data->ByteSpan());
     system_clipboard()->WriteUnsanitizedCustomFormat(mime_type_,
                                                      std::move(buffer));
     promise_->CompleteWriteRepresentation();

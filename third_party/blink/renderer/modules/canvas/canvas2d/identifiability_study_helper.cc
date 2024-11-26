@@ -41,10 +41,7 @@ void IdentifiabilityStudyHelper::AddTokens(
 
 uint64_t IdentifiabilityStudyHelper::DigestPartialData() const {
   return base::legacy::CityHash64WithSeed(
-      base::make_span(
-          reinterpret_cast<const uint8_t*>(partial_.data()),
-          reinterpret_cast<const uint8_t*>(partial_.data() + position_)),
-      chaining_value_);
+      base::as_bytes(base::span(partial_).first(position_)), chaining_value_);
 }
 
 }  // namespace blink

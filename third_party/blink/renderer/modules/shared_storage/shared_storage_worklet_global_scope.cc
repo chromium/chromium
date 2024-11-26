@@ -944,7 +944,7 @@ SharedStorageWorkletGlobalScope::interestGroups(
               if (mojom_group->interest_group->additional_bid_key) {
                 Vector<char> original_additional_bid_key;
                 WTF::Base64Encode(
-                    base::make_span(
+                    base::span(
                         *mojom_group->interest_group->additional_bid_key),
                     original_additional_bid_key);
 

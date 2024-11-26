@@ -1249,7 +1249,7 @@ void BaseRenderingContext2D::setLineDash(const Vector<double>& dash) {
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineDash,
-                                                base::make_span(dash));
+                                                base::span(dash));
   }
   GetState().SetLineDash(dash);
 }

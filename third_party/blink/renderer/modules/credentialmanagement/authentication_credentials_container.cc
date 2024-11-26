@@ -956,11 +956,11 @@ const char* validateGetPublicKeyCredentialPRFExtension(
     DOMArrayPiece piece(cred->id());
     cred_ids.emplace_back(piece.Bytes(), piece.ByteLength());
   }
-  const auto compare = [](const base::span<const uint8_t>& a,
-                          const base::span<const uint8_t>& b) -> bool {
-    return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+  const auto compare = [](base::span<const uint8_t> a,
+                          base::span<const uint8_t> b) {
+    return std::ranges::lexicographical_compare(a, b);
   };
-  std::sort(cred_ids.begin(), cred_ids.end(), compare);
+  std::ranges::sort(cred_ids, compare);
 
   if (prf.hasEval()) {
     const char* error = validatePRFInputs(*prf.eval());
@@ -981,9 +981,8 @@ const char* validateGetPublicKeyCredentialPRFExtension(
         return "'prf' extension contains an empty credential ID in "
                "'evalByCredential'";
       }
-      if (!std::binary_search(cred_ids.begin(), cred_ids.end(),
-                              base::as_bytes(base::make_span(cred_id)),
-                              compare)) {
+      if (!std::ranges::binary_search(cred_ids, base::as_byte_span(cred_id),
+                                      compare)) {
         return "'prf' extension contains 'evalByCredential' key that doesn't "
                "match any in allowedCredentials";
       }

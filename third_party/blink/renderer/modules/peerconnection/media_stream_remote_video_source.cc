@@ -57,7 +57,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
   }
 
   base::span<const uint8_t> Data() const override {
-    return base::make_span(buffer_->data(), buffer_->size());
+    return base::span(buffer_->data(), buffer_->size());
   }
 
   media::VideoCodec Codec() const override { return codec_; }

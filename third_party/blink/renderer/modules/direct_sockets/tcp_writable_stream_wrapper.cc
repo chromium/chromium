@@ -154,9 +154,8 @@ void TCPWritableStreamWrapper::WriteDataAsynchronously() {
     FinalizeWrite();
     return;
   }
-  auto data = base::make_span(array_piece.Bytes(), array_piece.ByteLength())
-                  .subspan(offset_);
-  size_t written = WriteDataSynchronously(data);
+  size_t written =
+      WriteDataSynchronously(array_piece.ByteSpan().subspan(offset_));
 
   DCHECK_LE(offset_ + written, array_piece.ByteLength());
   if (offset_ + written == array_piece.ByteLength()) {

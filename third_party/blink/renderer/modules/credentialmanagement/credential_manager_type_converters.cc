@@ -136,7 +136,7 @@ bool SortPRFValuesByCredentialId(const PRFValuesPtr& a, const PRFValuesPtr& b) {
 Vector<uint8_t> Base64UnpaddedURLDecodeOrCheck(const String& encoded) {
   Vector<char> decoded;
   CHECK(WTF::Base64UnpaddedURLDecode(encoded, decoded));
-  return Vector<uint8_t>(base::as_bytes(base::make_span(decoded)));
+  return Vector<uint8_t>(base::as_byte_span(decoded));
 }
 
 }  // namespace
