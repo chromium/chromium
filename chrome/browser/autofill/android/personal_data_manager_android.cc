@@ -438,11 +438,10 @@ void PersonalDataManagerAndroid::RecordAndLogProfileUse(
 void PersonalDataManagerAndroid::RecordAndLogCreditCardUse(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  const CreditCard* card =
-      personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
-          ConvertJavaStringToUTF8(env, jguid));
-  if (card) {
-    personal_data_manager_->payments_data_manager().RecordUseOfCard(card);
+  if (const CreditCard* card =
+          personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
+              ConvertJavaStringToUTF8(env, jguid))) {
+    personal_data_manager_->payments_data_manager().RecordUseOfCard(*card);
   }
 }
 

@@ -2341,7 +2341,7 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
         safe_field_ids, metrics_->signin_state_for_metrics, trigger_source);
 
     client().GetPersonalDataManager().payments_data_manager().RecordUseOfCard(
-        &card);
+        card);
   }
 }
 

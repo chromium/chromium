@@ -1603,8 +1603,11 @@ void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
   }
 }
 
-void PaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
-  CreditCard* credit_card = GetCreditCardByGUID(card->guid());
+void PaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
+  CreditCard* credit_card = GetCreditCardByGUID(card.guid());
+  // This early return is necessary because this is called at filling time,
+  // where a credit card might be filled even though it is not in the CC
+  // storage. An example would be filling a scanned credit card.
   if (!credit_card) {
     return;
   }
