@@ -257,7 +257,6 @@ source_set("browser_sources") {
     "error_map.h",
     "event_listener_map.cc",
     "event_listener_map.h",
-    "event_page_tracker.h",
     "event_router.cc",
     "event_router.h",
     "event_router_factory.cc",

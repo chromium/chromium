@@ -385,10 +385,6 @@ ExtensionHost* ProcessManager::GetBackgroundHostForRenderFrameHost(
   return nullptr;
 }
 
-bool ProcessManager::IsEventPageSuspended(const ExtensionId& extension_id) {
-  return GetBackgroundHostForExtension(extension_id) == nullptr;
-}
-
 bool ProcessManager::WakeEventPage(const ExtensionId& extension_id,
                                    base::OnceCallback<void(bool)> callback) {
   if (GetBackgroundHostForExtension(extension_id)) {

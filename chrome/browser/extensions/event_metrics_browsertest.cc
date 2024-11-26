@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
   ProcessManager* process_manager = ProcessManager::Get(profile());
-  ASSERT_FALSE(process_manager->IsEventPageSuspended(extension->id()));
+  ASSERT_TRUE(process_manager->GetBackgroundHostForExtension(extension->id()));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   ExtensionBackgroundPageWaiter(profile(), *extension)
       .WaitForBackgroundClosed();
   ProcessManager* process_manager = ProcessManager::Get(profile());
-  ASSERT_TRUE(process_manager->IsEventPageSuspended(extension->id()));
+  ASSERT_FALSE(process_manager->GetBackgroundHostForExtension(extension->id()));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");

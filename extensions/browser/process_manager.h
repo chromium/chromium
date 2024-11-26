@@ -26,7 +26,6 @@
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "extensions/browser/activity.h"
-#include "extensions/browser/event_page_tracker.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -55,7 +54,6 @@ class ProcessManagerObserver;
 // track of split-mode extensions only.
 class ProcessManager : public KeyedService,
                        public ExtensionRegistryObserver,
-                       public EventPageTracker,
                        public content::DevToolsAgentHostObserver,
                        public content::RenderProcessHostObserver,
                        public ExtensionHostObserver {
@@ -234,10 +232,17 @@ class ProcessManager : public KeyedService,
   // Called on shutdown to close our extension hosts.
   void CloseBackgroundHosts();
 
-  // EventPageTracker implementation.
-  bool IsEventPageSuspended(const ExtensionId& extension_id) override;
+  // Wakes an extension's event page from a suspended state and calls
+  // `callback` after it is reactivated.
+  //
+  // `callback` will be passed true if the extension was reactivated
+  // successfully, or false if an error occurred.
+  //
+  // Returns true if a wake operation was scheduled successfully,
+  // or false if the event page was already awake.
+  // Callback will be run asynchronously if true, and never run if false.
   bool WakeEventPage(const ExtensionId& extension_id,
-                     base::OnceCallback<void(bool)> callback) override;
+                     base::OnceCallback<void(bool)> callback);
 
   // Sets the time in milliseconds that an extension event page can
   // be idle before it is shut down; must be > 0.
