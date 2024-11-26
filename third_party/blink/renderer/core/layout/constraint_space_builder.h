@@ -548,9 +548,6 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetShouldForceTextBoxTrimEnd() { space_.SetShouldForceTextBoxTrimEnd(); }
-  void SetEffectiveTextBoxEdge(TextBoxEdge value) {
-    space_.SetEffectiveTextBoxEdge(value);
-  }
 
   void SetDecorationPercentageResolutionType(
       DecorationPercentageResolutionType type) {

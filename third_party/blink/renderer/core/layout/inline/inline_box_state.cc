@@ -164,7 +164,7 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   include_used_fonts = styleref.LineHeight().IsAuto();
 }
 
-void InlineBoxState::AdjustEdges(const TextBoxEdge text_box_edge,
+void InlineBoxState::AdjustEdges(const ComputedStyle& style,
                                  const Font& font,
                                  FontBaseline baseline_type,
                                  bool should_apply_over,
@@ -176,6 +176,7 @@ void InlineBoxState::AdjustEdges(const TextBoxEdge text_box_edge,
     return;
   }
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
+  const TextBoxEdge text_box_edge = style.GetTextBoxEdge();
   if (should_apply_over) {
     switch (text_box_edge.Over()) {
       case TextBoxEdge::Type::kAuto:
