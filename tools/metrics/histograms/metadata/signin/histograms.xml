@@ -2290,7 +2290,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninAbortedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2025-01-05">
+    expires_after="2025-11-26">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
