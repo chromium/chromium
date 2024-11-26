@@ -10,7 +10,7 @@
 
 @implementation BrowserEditMenuHandler
 
-- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder {
   [self.linkToTextDelegate buildMenuWithBuilder:builder];
   [self.searchWithDelegate buildMenuWithBuilder:builder];
   [self.partialTranslateDelegate buildMenuWithBuilder:builder];

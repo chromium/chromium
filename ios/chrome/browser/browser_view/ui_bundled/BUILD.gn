@@ -64,6 +64,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/autofill/ui_bundled/progress_dialog",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/browser_container/ui_bundled",
     "//ios/chrome/browser/browser_container/ui_bundled:ui",
     "//ios/chrome/browser/bubble/ui_bundled",

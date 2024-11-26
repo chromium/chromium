@@ -62,6 +62,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/browser_container/model",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/commerce/model:shopping_service",

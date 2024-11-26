@@ -17,7 +17,7 @@ WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state) {
   WKWebViewConfigurationProvider& config_provider =
       WKWebViewConfigurationProvider::FromBrowserState(browser_state);
   return BuildWKWebView(frame, config_provider.GetWebViewConfiguration(),
-                        browser_state, UserAgentType::MOBILE, nil);
+                        browser_state, UserAgentType::MOBILE, nil, nil);
 }
 
 WKWebView* BuildWKWebViewForQueries(BrowserState* browser_state) {

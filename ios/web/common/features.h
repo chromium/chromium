@@ -100,6 +100,9 @@ BASE_DECLARE_FEATURE(kLogJavaScriptErrors);
 // be used as a kill switch.
 BASE_DECLARE_FEATURE(kWebKitHandlesMarketplaceKitLinks);
 
+// Feature flag to restore the WKWebView edit menu customization.
+BASE_DECLARE_FEATURE(kRestoreWKWebViewEditMenuHandler);
+
 }  // namespace features
 }  // namespace web
 
