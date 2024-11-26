@@ -47,6 +47,10 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
                const url::Origin& origin,
                const base::Value request,
                DigitalIdentityCallback callback) override;
+  void Create(content::WebContents* web_contents,
+              const url::Origin& origin,
+              base::ValueView request,
+              DigitalIdentityCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject>

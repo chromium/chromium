@@ -13531,7 +13531,7 @@ void RenderFrameHostImpl::BindWebOTPServiceReceiver(
 
 void RenderFrameHostImpl::BindDigitalIdentityRequestReceiver(
     mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver) {
-  DigitalIdentityRequestImpl::Create(*this, std::move(receiver));
+  DigitalIdentityRequestImpl::CreateInstance(*this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(

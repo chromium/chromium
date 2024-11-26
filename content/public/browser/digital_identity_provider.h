@@ -20,9 +20,9 @@ namespace content {
 class WebContents;
 
 // Coordinates between the web and native apps such that the latter can share
-// vcs with the web API caller. The functions are platform agnostic and
-// implementations are expected to be different across platforms like desktop
-// and mobile.
+// vcs with the web API caller, or the website issues vcs to native apps. The
+// functions are platform agnostic and implementations are expected to be
+// different across platforms like desktop and mobile.
 class CONTENT_EXPORT DigitalIdentityProvider {
  public:
   // Do not reorder or change the values because the enum values are being
@@ -38,7 +38,8 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     kErrorAborted = 4,
     kErrorNoProviders = 5,
     kErrorNoTransientUserActivation = 6,
-    kMaxValue = kErrorNoTransientUserActivation,
+    kErrorInvalidJson = 7,
+    kMaxValue = kErrorInvalidJson,
   };
 
   virtual ~DigitalIdentityProvider();
@@ -69,10 +70,20 @@ class CONTENT_EXPORT DigitalIdentityProvider {
 
   using DigitalIdentityCallback = base::OnceCallback<void(
       const base::expected<std::string, RequestStatusForMetrics>&)>;
+
+  // Coordinates the call to present a digital credential between the web and
+  // native apps.
   virtual void Request(WebContents* web_contents,
                        const url::Origin& origin,
                        base::Value request,
                        DigitalIdentityCallback callback) = 0;
+
+  // Coordinates the call to issue a digital credential between the web and
+  // native apps.
+  virtual void Create(WebContents* web_contents,
+                      const url::Origin& origin,
+                      base::ValueView request,
+                      DigitalIdentityCallback callback) = 0;
 
  protected:
   DigitalIdentityProvider();

@@ -98,6 +98,13 @@ void DigitalIdentityProviderAndroid::Request(content::WebContents* web_contents,
       j_request);
 }
 
+void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
+                                            const url::Origin& origin,
+                                            const base::ValueView request,
+                                            DigitalIdentityCallback callback) {
+  // TODO(crbug.com/378330032): implement this method.
+}
+
 void DigitalIdentityProviderAndroid::OnReceive(JNIEnv* env,
                                                jstring j_digital_identity,
                                                jint j_status_for_metrics) {

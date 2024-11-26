@@ -30,6 +30,7 @@ enum RequestDigitalIdentityStatus {
   kErrorCanceled,
   kErrorNoProviders,
   kErrorNoTransientUserActivation,
+  kErrorInvalidJson,
 };
 
 // Create a digital identity request using the specified provider.

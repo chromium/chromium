@@ -37,6 +37,10 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
                const url::Origin& rp_origin,
                base::Value request,
                DigitalIdentityCallback callback) override;
+  void Create(content::WebContents* web_contents,
+              const url::Origin& rp_origin,
+              base::ValueView request,
+              DigitalIdentityCallback callback) override;
 
  private:
   // Called whenever some significant event occurs during the transaction.

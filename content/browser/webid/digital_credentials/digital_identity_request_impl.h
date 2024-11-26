@@ -35,7 +35,8 @@ class RenderFrameHost;
 class CONTENT_EXPORT DigitalIdentityRequestImpl
     : public DocumentService<blink::mojom::DigitalIdentityRequest> {
  public:
-  static void Create(
+  // The return value is only intended to be used in tests.
+  static base::WeakPtr<DigitalIdentityRequestImpl> CreateInstance(
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
@@ -68,8 +69,14 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
-  // Called when the request JSON has been parsed.
-  void OnRequestJsonParsed(
+  // Called when the get request JSON has been parsed.
+  void OnGetRequestJsonParsed(
+      std::optional<std::string> protocol,
+      base::Value request_to_send,
+      data_decoder::DataDecoder::ValueOrError parsed_result);
+
+  // Called when the create request JSON has been parsed.
+  void OnCreateRequestJsonParsed(
       std::optional<std::string> protocol,
       base::Value request_to_send,
       data_decoder::DataDecoder::ValueOrError parsed_result);
@@ -82,7 +89,7 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
           response);
 
   // Called when the user has fulfilled the interstitial requirement. Will be
-  // called immediately after OnRequestJsonParsed() if no interstitial is
+  // called immediately after OnGetRequestJsonParsed() if no interstitial is
   // needed.
   void OnInterstitialDone(std::optional<std::string> protocol,
                           base::Value request_to_send,

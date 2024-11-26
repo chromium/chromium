@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -118,6 +119,10 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     case RequestDigitalIdentityStatus::kErrorNoProviders:
       resolver->RejectWithTypeError(
           "Digital identity API needs at least one provider.");
+      return;
+    case RequestDigitalIdentityStatus::kErrorInvalidJson:
+      resolver->RejectWithTypeError(
+          "Digital identity API requires valid JSON in the request.");
       return;
 
     case RequestDigitalIdentityStatus::kErrorNoTransientUserActivation:

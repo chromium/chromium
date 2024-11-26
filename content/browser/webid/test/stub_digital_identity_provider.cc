@@ -33,4 +33,9 @@ void StubDigitalIdentityProvider::Request(WebContents*,
                                           base::Value request,
                                           DigitalIdentityCallback) {}
 
+void StubDigitalIdentityProvider::Create(WebContents*,
+                                         const url::Origin& origin,
+                                         base::ValueView request,
+                                         DigitalIdentityCallback) {}
+
 }  // namespace content
