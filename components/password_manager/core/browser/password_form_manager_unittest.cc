@@ -236,6 +236,21 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 #endif
 };
 
+class MockPasswordFormManagerObserver : public PasswordFormManagerObserver {
+ public:
+  MOCK_METHOD(void,
+              OnPasswordFormParsed,
+              (PasswordFormManager * form_manager),
+              (override));
+
+  base::WeakPtr<MockPasswordFormManagerObserver> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPasswordFormManagerObserver> weak_ptr_factory_{this};
+};
+
 void CheckPendingCredentials(const PasswordForm& expected,
                              const PasswordForm& actual) {
   EXPECT_EQ(expected.signon_realm, actual.signon_realm);
@@ -4788,6 +4803,31 @@ TEST_P(PasswordFormManagerTest, SetCreditCardFieldsAsBanned) {
 }
 
 #endif
+
+TEST_P(PasswordFormManagerTest, NotifiesObserver) {
+  MockPasswordFormManagerObserver observer;
+
+  CreateFormManager(observed_form_);
+  form_manager_->SetObserver(observer.GetWeakPtr());
+
+  EXPECT_CALL(observer, OnPasswordFormParsed(form_manager_.get()));
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_P(PasswordFormManagerTest, DoesNotNotifyAfterObserverRemoved) {
+  MockPasswordFormManagerObserver observer;
+
+  CreateFormManager(observed_form_);
+  form_manager_->SetObserver(observer.GetWeakPtr());
+  form_manager_->ResetObserver();
+
+  EXPECT_CALL(observer, OnPasswordFormParsed).Times(0);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
 
 INSTANTIATE_TEST_SUITE_P(All, PasswordFormManagerTest, testing::Bool());
 

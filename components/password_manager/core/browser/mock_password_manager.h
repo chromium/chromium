@@ -26,10 +26,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
 
   // PasswordManagerInterface:
   MOCK_METHOD(void, DropFormManagers, (), (override));
-  MOCK_METHOD((const PasswordFormCache*),
-              GetPasswordFormCache,
-              (),
-              (const override));
+  MOCK_METHOD((PasswordFormCache*), GetPasswordFormCache, (), (override));
   MOCK_METHOD(bool, IsPasswordFieldDetectedOnPage, (), (const override));
 #if BUILDFLAG(USE_BLINK)
   MOCK_METHOD(void,

@@ -42,7 +42,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
 
   // Returns form cache containing information about parsed password forms on
   // the web page.
-  virtual const PasswordFormCache* GetPasswordFormCache() const = 0;
+  virtual PasswordFormCache* GetPasswordFormCache() = 0;
 
   // Returns true if password element is detected on the current page.
   virtual bool IsPasswordFieldDetectedOnPage() const = 0;

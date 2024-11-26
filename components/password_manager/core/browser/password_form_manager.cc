@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_generation_manager.h"
@@ -1182,6 +1183,9 @@ void PasswordFormManager::FillNow() {
   if (!parsed_observed_form_) {
     return;
   }
+  if (form_parsed_observer_) {
+    form_parsed_observer_->OnPasswordFormParsed(this);
+  }
   metrics_recorder_->CacheParsingResultInFillingMode(
       *parsed_observed_form_.get());
 
@@ -1840,6 +1844,15 @@ base::flat_set<std::u16string> PasswordFormManager::GetStoredUsernames() const {
     stored_usernames.erase(u"");
   }
   return stored_usernames;
+}
+
+void PasswordFormManager::SetObserver(
+    base::WeakPtr<PasswordFormManagerObserver> observer) {
+  form_parsed_observer_ = observer;
+}
+
+void PasswordFormManager::ResetObserver() {
+  form_parsed_observer_.reset();
 }
 
 }  // namespace password_manager

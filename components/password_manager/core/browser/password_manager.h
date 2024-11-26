@@ -194,7 +194,7 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns form cache containing information about parsed password forms on
   // the web page.
-  const PasswordFormCache* GetPasswordFormCache() const override;
+  PasswordFormCache* GetPasswordFormCache() override;
 
   // Returns the observed parsed password form to which the field with the
   // renderer id `field_id` belongs.

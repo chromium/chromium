@@ -4,10 +4,29 @@
 
 #include "chrome/browser/password_manager/password_change_controller.h"
 
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+namespace {
+
+password_manager::PasswordFormCache& GetFormCache(
+    content::WebContents* web_contents) {
+  auto* client = static_cast<password_manager::PasswordManagerClient*>(
+      ChromePasswordManagerClient::FromWebContents(web_contents));
+  CHECK(client);
+  CHECK(client->GetPasswordManager());
+
+  auto* cache = client->GetPasswordManager()->GetPasswordFormCache();
+  CHECK(cache);
+  return *cache;
+}
+
+}  // namespace
 
 PasswordChangeController::PasswordChangeController(
     GURL change_password_url,
@@ -26,7 +45,11 @@ PasswordChangeController::PasswordChangeController(
       base::DoNothing());
   if (new_tab) {
     executor_ = new_tab->GetWeakPtr();
+    GetFormCache(new_tab).SetObserver(weak_ptr_factory_.GetWeakPtr());
   }
 }
 
 PasswordChangeController::~PasswordChangeController() = default;
+
+void PasswordChangeController::OnPasswordFormParsed(
+    password_manager::PasswordFormManager* form_manager) {}

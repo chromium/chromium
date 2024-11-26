@@ -1575,7 +1575,7 @@ std::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() const {
   return std::nullopt;
 }
 
-const PasswordFormCache* PasswordManager::GetPasswordFormCache() const {
+PasswordFormCache* PasswordManager::GetPasswordFormCache() {
   return &password_form_cache_;
 }
 
