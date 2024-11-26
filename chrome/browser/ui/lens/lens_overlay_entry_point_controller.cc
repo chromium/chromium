@@ -67,9 +67,7 @@ bool LensOverlayEntryPointController::IsEnabled() {
 
   const PrefService* pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
-  // Lens Overlay is disabled via the deprecated enterprise policy. Even though
-  // the policy is deprecated, the feature should still be disabled for
-  // enterprise user who have disabled it via the old policy.
+  // Lens Overlay is disabled via the legacy enterprise policy.
   lens::prefs::LensOverlaySettingsPolicyValue old_policy_value =
       static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
           pref_service->GetInteger(lens::prefs::kLensOverlaySettings));
@@ -78,6 +76,7 @@ bool LensOverlayEntryPointController::IsEnabled() {
     return false;
   }
 
+  // Lens Overlay is disabled via the GenAI enterprise policy.
   lens::prefs::GenAiLensOverlaySettingsPolicyValue policy_value =
       static_cast<lens::prefs::GenAiLensOverlaySettingsPolicyValue>(
           pref_service->GetInteger(lens::prefs::kGenAiLensOverlaySettings));
