@@ -2782,7 +2782,7 @@
   {
     "name": "enable-cros-system-japanese-physical-typing",
     "owners": [ "jhtin@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 136
   },
   {
     "name": "enable-cros-touch-text-editing-redesign",
