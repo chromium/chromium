@@ -4976,7 +4976,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Idle.RegularTabGridPage" enum="Boolean"
-    expires_after="2025-01-03">
+    expires_after="2026-01-03">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
