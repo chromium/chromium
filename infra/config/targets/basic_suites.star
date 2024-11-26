@@ -1826,6 +1826,9 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
             ],
+            args = [
+                "--out_dir=.",
+            ],
             linux_args = [
                 "--no-xvfb",
             ],
@@ -1839,6 +1842,9 @@ targets.legacy_basic_suite(
         "ondevice_stability_tests": targets.legacy_test_config(
             mixins = [
                 "has_native_resultdb_integration",
+            ],
+            args = [
+                "--out_dir=.",
             ],
             linux_args = [
                 "--chromedriver",
