@@ -181,7 +181,6 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
      */
     public void updateContainerHierarchy(boolean toFront) {
         if (toFront) {
-            mDialogView.announceForAccessibility(getContentDescription(getDialogModel()));
             mDialogView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
             mDialogView.requestFocus();
             if (mFocusDialog) {
