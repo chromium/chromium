@@ -246,7 +246,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         ui::EF_MIDDLE_MOUSE_BUTTON);
 #endif
 
-    if (features::IsTabstripComboButtonEnabled()) {
+    if (features::IsTabstripComboButtonEnabled() && tab_search_container) {
       tab_search_container_ = AddChildView(std::move(tab_search_container));
       tab_search_container_->SetProperty(
           views::kMarginsKey,
