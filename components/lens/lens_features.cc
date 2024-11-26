@@ -63,6 +63,10 @@ BASE_FEATURE(kLensOverlayLatencyOptimizations,
              "LensOverlayLatencyOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayRoutingInfo,
+             "LensOverlayRoutingInfo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlaySurvey,
              "LensOverlaySurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -773,6 +777,10 @@ bool ShowContextualSearchboxSearchSuggest() {
 
 int GetLensOverlayTranslateRecentLanguagesAmount() {
   return kRecentLanguagesAmount.Get();
+}
+
+bool IsLensOverlayRoutingInfoEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayRoutingInfo);
 }
 
 }  // namespace lens::features

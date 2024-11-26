@@ -58,6 +58,10 @@ BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayLatencyOptimizations);
 
+// Enables the Lens overlay routing info optimizations.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayRoutingInfo);
+
 // Enables the Lens overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySurvey);
@@ -598,6 +602,9 @@ extern bool ShowContextualSearchboxSearchSuggest();
 // The amount of recent languages to show in the language pickers.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayTranslateRecentLanguagesAmount();
+
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayRoutingInfoEnabled();
 
 }  // namespace lens::features
 

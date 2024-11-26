@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_REQUEST_ID_GENERATOR_H_
 
+#include "third_party/lens_server_proto/lens_overlay_routing_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
@@ -46,6 +47,11 @@ class LensOverlayRequestIdGenerator {
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();
 
+  // Sets the routing info to be included in the request id.
+  void SetRoutingInfo(lens::LensOverlayRoutingInfo routing_info);
+
+  bool HasRoutingInfo() { return routing_info_.has_value(); }
+
  private:
   // The current uuid. Valid for the duration of a Lens overlay session.
   uint64_t uuid_;
@@ -59,6 +65,10 @@ class LensOverlayRequestIdGenerator {
 
   // The current image sequence id.
   int image_sequence_id_;
+
+  // The current routing info. Not guaranteed to exist if not returned from the
+  // server.
+  std::optional<lens::LensOverlayRoutingInfo> routing_info_;
 };
 
 }  // namespace lens

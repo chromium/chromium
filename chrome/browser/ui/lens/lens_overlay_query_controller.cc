@@ -620,6 +620,14 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
 
+  // If routing info is enabled, store the routing info to be included in
+  // followup requests.
+  if (lens::features::IsLensOverlayRoutingInfoEnabled() &&
+      server_response.has_routing_info() &&
+      !request_id_generator_->HasRoutingInfo()) {
+    request_id_generator_->SetRoutingInfo(server_response.routing_info());
+  }
+
   // Clear the cluster info after its lifetime expires.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -870,6 +878,14 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
             weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(
             lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
+
+    // If routing info is enabled, store the routing info to be included in
+    // followup requests.
+    if (lens::features::IsLensOverlayRoutingInfoEnabled() &&
+        cluster_info_->has_routing_info() &&
+        !request_id_generator_->HasRoutingInfo()) {
+      request_id_generator_->SetRoutingInfo(cluster_info_->routing_info());
+    }
   }
 
   // Image signals and vsint are only valid after an interaction request.
