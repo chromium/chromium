@@ -36,19 +36,16 @@ function getAveragePoint(points: DataPoint[]): DataPoint {
 }
 
 /**
- * The helper class to collect data points, to record title and color and to get
- * the required values for displaying on the line chart.
+ * The helper class to collect data points, record title and get required point
+ * values for displaying on the line chart.
  */
 export class DataSeries {
-  constructor(title: string, color: string) {
+  constructor(title: string) {
     this.displayedTitle = title;
-    this.displayedColor = color;
   }
 
   // The name of this data series.
   private readonly displayedTitle: string;
-  // The color of this data series.
-  private readonly displayedColor: string;
 
   // All the data points of the data series. Sorted by time.
   private dataPoints: DataPoint[] = [];
@@ -98,10 +95,6 @@ export class DataSeries {
 
   getTitle(): string {
     return this.displayedTitle;
-  }
-
-  getColor(): string {
-    return this.displayedColor;
   }
 
   getPoints(): DataPoint[] {

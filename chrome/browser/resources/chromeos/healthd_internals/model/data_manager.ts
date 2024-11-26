@@ -7,7 +7,6 @@ import {sendWithPromise} from '//resources/js/cr.js';
 
 import type {SystemTrendController} from '../controller/system_trend_controller.js';
 import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from '../utils/externs.js';
-import {LINE_CHART_COLOR_SET} from '../utils/line_chart_configs.js';
 import type {HealthdInternalsTelemetryElement} from '../view/pages/telemetry.js';
 
 import {CpuUsageHelper} from './cpu_usage_helper.js';
@@ -39,10 +38,6 @@ const LINE_CHART_ZRAM_HEADERS: string[] = [
   'Compressed Size',
 ];
 
-function getLineChartColor(index: number) {
-  const colorIdx: number = index % LINE_CHART_COLOR_SET.length;
-  return LINE_CHART_COLOR_SET[colorIdx];
-}
 
 function sortThermals(
     first: HealthdApiThermalResult, second: HealthdApiThermalResult): number {
@@ -292,61 +287,53 @@ export class DataManager {
   }
 
   private initBatteryDataSeries() {
-    for (const [index, header] of LINE_CHART_BATTERY_HEADERS.entries()) {
-      this.batteryDataSeries.push(
-          new DataSeries(header, getLineChartColor(index)));
+    for (const header of LINE_CHART_BATTERY_HEADERS) {
+      this.batteryDataSeries.push(new DataSeries(header));
     }
     this.systemTrendController.setBatteryData(this.batteryDataSeries);
   }
 
   private initCpuFrequencyDataSeries(cpu: HealthdApiCpuResult) {
-    let count: number = 0;
     for (const [physicalCpuId, physicalCpu] of cpu.physicalCpus.entries()) {
       for (let logicalCpuId: number = 0;
            logicalCpuId < physicalCpu.logicalCpus.length; ++logicalCpuId) {
-        this.cpuFrequencyDataSeries.push(new DataSeries(
-            `CPU #${physicalCpuId}-${logicalCpuId}`, getLineChartColor(count)));
-        count += 1;
+        this.cpuFrequencyDataSeries.push(
+            new DataSeries(`CPU #${physicalCpuId}-${logicalCpuId}`));
       }
     }
     this.systemTrendController.setCpuFrequencyData(this.cpuFrequencyDataSeries);
   }
 
   private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
-    this.cpuUsageDataSeries.push(
-        new DataSeries('Overall', getLineChartColor(0)));
-    let count: number = 1;
+    this.cpuUsageDataSeries.push(new DataSeries('Overall'));
     for (const [physicalCpuId, logicalCpuUsage] of physcialCpuUsage.entries()) {
       for (let logicalCpuId: number = 0; logicalCpuId < logicalCpuUsage.length;
            ++logicalCpuId) {
-        this.cpuUsageDataSeries.push(new DataSeries(
-            `CPU #${physicalCpuId}-${logicalCpuId}`, getLineChartColor(count)));
-        count += 1;
+        this.cpuUsageDataSeries.push(
+            new DataSeries(`CPU #${physicalCpuId}-${logicalCpuId}`));
       }
     }
     this.systemTrendController.setCpuUsageData(this.cpuUsageDataSeries);
   }
 
   private initMemoryDataSeries() {
-    for (const [index, header] of LINE_CHART_MEMORY_HEADERS.entries()) {
-      this.memoryDataSeries.push(
-          new DataSeries(header, getLineChartColor(index)));
+    for (const header of LINE_CHART_MEMORY_HEADERS) {
+      this.memoryDataSeries.push(new DataSeries(header));
     }
     this.systemTrendController.setMemoryData(this.memoryDataSeries);
   }
 
   private initThermalDataSeries(thermals: HealthdApiThermalResult[]) {
-    for (const [index, thermal] of thermals.entries()) {
-      this.thermalDataSeries.push(new DataSeries(
-          `${thermal.name} (${thermal.source})`, getLineChartColor(index)));
+    for (const thermal of thermals) {
+      this.thermalDataSeries.push(
+          new DataSeries(`${thermal.name} (${thermal.source})`));
     }
     this.systemTrendController.setThermalData(this.thermalDataSeries);
   }
 
   private initZramDataSeries() {
-    for (const [index, header] of LINE_CHART_ZRAM_HEADERS.entries()) {
-      this.zramDataSeries.push(
-          new DataSeries(header, getLineChartColor(index)));
+    for (const header of LINE_CHART_ZRAM_HEADERS) {
+      this.zramDataSeries.push(new DataSeries(header));
     }
     this.systemTrendController.setZramData(this.zramDataSeries);
   }

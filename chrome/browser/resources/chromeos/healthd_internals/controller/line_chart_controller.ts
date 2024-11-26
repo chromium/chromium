@@ -5,13 +5,18 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {DataPoint, DataSeries} from '../model/data_series.js';
-import {MIN_TIME_SCALE, SAMPLE_RATE} from '../utils/line_chart_configs.js';
+import {LINE_CHART_COLOR_SET, MIN_TIME_SCALE, SAMPLE_RATE} from '../utils/line_chart_configs.js';
 import type {HealthdInternalsLineChartElement} from '../view/line_chart/line_chart.js'
 
 import {CanvasDrawer} from './canvas_drawer.js';
 import type {DataSeriesList} from './system_trend_controller.js';
 import {CategoryTypeEnum} from './system_trend_controller.js';
 import {UnitLabel} from './unit_label.js';
+
+export function getLineChartColor(index: number) {
+  const colorIdx: number = index % LINE_CHART_COLOR_SET.length;
+  return LINE_CHART_COLOR_SET[colorIdx];
+}
 
 /**
  * Get the step size based on the current time scale. We will only display one
@@ -134,7 +139,7 @@ export class LineChartController {
     unitLabel.setLayout(this.canvasDrawer.getUnitLabelHeight(), 2);
     this.canvasDrawer.renderUnitLabel(context, unitLabel.getLabels());
 
-    for (const dataSeries of dataSeriesList) {
+    for (const [index, dataSeries] of dataSeriesList.entries()) {
       // Query the the values of data points from the data series.
       const dataPoints: DataPoint[] = dataSeries.getDisplayedPoints(
           visibleStartTime, visibleEndTime, stepSize);
@@ -142,7 +147,7 @@ export class LineChartController {
         continue;
       }
       this.canvasDrawer.renderLine(
-          context, dataPoints, dataSeries.getColor(), visibleStartTime,
+          context, dataPoints, getLineChartColor(index), visibleStartTime,
           timeScale, unitLabel.getValueScale());
     }
 

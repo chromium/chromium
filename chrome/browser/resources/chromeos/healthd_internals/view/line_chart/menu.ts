@@ -6,6 +6,7 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getLineChartColor} from '../../controller/line_chart_controller.js';
 import {DataSeries} from '../../model/data_series.js';
 import {MENU_TEXT_COLOR_DARK, MENU_TEXT_COLOR_LIGHT} from '../../utils/line_chart_configs.js';
 
@@ -30,6 +31,8 @@ export interface HealthdInternalsLineChartMenuElement {
 interface ButtonState {
   // Used to get the button visible state and color.
   data: DataSeries;
+  // The color for the button.
+  color: string;
   // The element for menu button.
   element: HTMLElement;
 }
@@ -64,10 +67,11 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
     }
     this.buttons = [];
 
-    for (const dataSeries of dataSeriesList) {
-      const button = this.createButton(dataSeries);
+    for (const [index, dataSeries] of dataSeriesList.entries()) {
+      const color = getLineChartColor(index)
+      const button = this.createButton(dataSeries, color);
       buttonContainer.appendChild(button);
-      this.buttons.push({data: dataSeries, element: button});
+      this.buttons.push({data: dataSeries, color: color, element: button});
     }
   }
 
@@ -79,15 +83,15 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   /**
    * Create a button to control the data series.
    */
-  private createButton(dataSeries: DataSeries): HTMLElement {
+  private createButton(dataSeries: DataSeries, color: string): HTMLElement {
     const buttonInner: HTMLElement =
         createElementWithClassName('span', 'line-chart-menu-button-inner-span');
     buttonInner.innerText = dataSeries.getTitle();
     const button: HTMLElement =
         createElementWithClassName('div', 'line-chart-menu-button');
     button.appendChild(buttonInner);
-    this.setupButtonOnClickHandler(button, dataSeries);
-    this.updateButtonStyle(button, dataSeries);
+    this.setupButtonOnClickHandler(button, dataSeries, color);
+    this.updateButtonStyle(button, dataSeries, color);
     return button;
   }
 
@@ -95,10 +99,10 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
    * Add a onclick handler to the button.
    */
   private setupButtonOnClickHandler(
-      button: HTMLElement, dataSeries: DataSeries) {
+      button: HTMLElement, dataSeries: DataSeries, color: string) {
     button.addEventListener('click', () => {
       dataSeries.setVisible(!dataSeries.getVisible());
-      this.updateButtonStyle(button, dataSeries);
+      this.updateButtonStyle(button, dataSeries, color);
       this.fireMenuButtonsUpdatedEvent();
     });
   }
@@ -106,9 +110,10 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   /**
    * Update the button style with the visibility and color from data series.
    */
-  private updateButtonStyle(button: HTMLElement, dataSeries: DataSeries) {
+  private updateButtonStyle(
+      button: HTMLElement, dataSeries: DataSeries, color: string) {
     if (dataSeries.getVisible()) {
-      button.style.backgroundColor = dataSeries.getColor();
+      button.style.backgroundColor = color;
       button.style.color = MENU_TEXT_COLOR_LIGHT;
     } else {
       button.style.backgroundColor = MENU_TEXT_COLOR_LIGHT;
@@ -119,7 +124,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   private onEnableAllButtonClick() {
     for (const button of this.buttons) {
       button.data.setVisible(true);
-      this.updateButtonStyle(button.element, button.data);
+      this.updateButtonStyle(button.element, button.data, button.color);
     }
     this.fireMenuButtonsUpdatedEvent();
   }
@@ -127,7 +132,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   private onDisableAllButtonClicked() {
     for (const button of this.buttons) {
       button.data.setVisible(false);
-      this.updateButtonStyle(button.element, button.data);
+      this.updateButtonStyle(button.element, button.data, button.color);
     }
     this.fireMenuButtonsUpdatedEvent();
   }

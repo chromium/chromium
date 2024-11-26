@@ -5,6 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getLineChartColor} from '../../controller/line_chart_controller.js';
 import {DataSeries} from '../../model/data_series.js';
 import type {DataPointsStatistics} from '../../model/data_series.js';
 import {toFixedFloat} from '../../utils/number_utils.js';
@@ -88,9 +89,9 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
   setupDataSeriesList(dataSeriesList: DataSeries[]) {
     this.dataSeriesList = dataSeriesList;
     this.displayedData = [];
-    for (const dataSeries of this.dataSeriesList) {
+    for (const [index, dataSeries] of dataSeriesList.entries()) {
       this.displayedData.push({
-        legendColor: dataSeries.getColor(),
+        legendColor: getLineChartColor(index),
         name: dataSeries.getTitle(),
         isVisible: false,
         latestValue: 0,
