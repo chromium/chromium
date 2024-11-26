@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.AffiliationRequest.ResponseTime" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>jkeitel@google.com</owner>
   <owner>vizcay@google.com</owner>
   <summary>

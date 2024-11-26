@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentNotifications.Notification.Action"
-    enum="ContentNotificationActionType" expires_after="2025-03-23">
+    enum="ContentNotificationActionType" expires_after="2025-05-25">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>

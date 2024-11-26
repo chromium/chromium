@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
@@ -3242,7 +3242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PreconnectPredictionCount" units="count"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>alexnj@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3992,7 +3992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.PreloadRequestWaitTime" units="ms"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <owner>chrome-loading@google.com</owner>

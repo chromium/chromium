@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.LegacyResourceTypeFilterItemSelected"
     enum="DevToolsLegacyResourceTypeFilterItemSelected"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.LegacyResourceTypeFilterNumberOfSelectedChanged"
     enum="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>

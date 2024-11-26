@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.V2.Consent" units="impressions"
-    expires_after="2025-02-01">
+    expires_after="2025-05-25">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>

@@ -2975,7 +2975,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion.Password"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-03-23">
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-05-25">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3648,7 +3648,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.ClassifiedAsTargetFilling.Password"
-    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+    enum="BooleanSelectManualFallback" expires_after="2025-05-25">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3662,7 +3662,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Password"
-    enum="BooleanSelectManualFallback" expires_after="2025-03-23">
+    enum="BooleanSelectManualFallback" expires_after="2025-05-25">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5273,7 +5273,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.Settings.AutofillOptionsReferrerAndroid"
-    enum="AutofillOptionsReferrer" expires_after="2025-03-23">
+    enum="AutofillOptionsReferrer" expires_after="2025-05-25">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
