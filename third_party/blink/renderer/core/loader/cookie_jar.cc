@@ -102,7 +102,9 @@ String CookieJar::Cookies() {
   // to get the string. Will get updated once more by GetCookiesString() if an
   // ipc is required.
   uint64_t new_version = last_version_;
-  if (IPCNeeded()) {
+  const bool ipc_needed = IPCNeeded();
+  base::UmaHistogramBoolean("Blink.Experimental.Cookies.IpcNeeded", ipc_needed);
+  if (ipc_needed) {
     bool is_ad_tagged =
         document_->GetFrame() ? document_->GetFrame()->IsAdFrame() : false;
 

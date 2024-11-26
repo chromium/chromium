@@ -1123,6 +1123,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Experimental.Cookies.IpcNeeded" enum="BooleanYesNo"
+    expires_after="2025-04-13">
+  <owner>lizeb@google.com</owner>
+  <owner>clank-performance-team@google</owner>
+  <summary>
+    When reading document.cookie, whether an IPC to the network service was
+    required. Recorded at each cookie read access.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.AccountChosenPosition.Desktop" units="count"
     expires_after="2025-07-04">
   <owner>npm@chromium.org</owner>
