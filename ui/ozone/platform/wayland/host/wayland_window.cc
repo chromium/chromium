@@ -1096,7 +1096,7 @@ bool WaylandWindow::CommitOverlays(
     return true;
   }
 
-  // Lacros submits from front to back. A simple reverse can avoid a full sort.
+  // Wayland submits from front to back. A simple reverse can avoid a full sort.
   std::reverse(overlays.begin(), overlays.end());
   if (!std::is_sorted(overlays.begin(), overlays.end(),
                       OverlayStackOrderCompare)) {

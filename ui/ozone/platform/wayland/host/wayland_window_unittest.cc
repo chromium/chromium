@@ -745,8 +745,11 @@ TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
   VerifyAndClearExpectations();
 }
 
-// This test is specifically to guard against origin being set to (0, 0)
-// thus lacros can be restored to correct display (crbug.com/1423690)
+// This test used to specifically to guard against origin being set to (0, 0)
+// thus lacros could be restored to correct display (crbug.com/1423690).
+// TODO(crbug.com/374244479) Given lacros has been deprecated, update this test
+// to ignore the origin and only verify the size as origin is not known in
+// Wayland world.
 TEST_P(WaylandWindowTest, RestoredBoundsSetWithCorrectOrigin) {
   constexpr gfx::Rect kNormalBounds{1376, 10, 500, 300};
   constexpr gfx::Rect kMaximizedBounds{1366, 0, 800, 600};

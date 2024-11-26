@@ -178,7 +178,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // True if it's maximized before requesting the window state change from the
   // client.
-  // TODO(b/328109805): Move this logic to server side on Lacros.
   bool previously_maximized_ = false;
 
   // The display ID to switch to in case the state is `kFullscreen`.
@@ -205,10 +204,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // integration with the desktop shell.
   std::unique_ptr<GtkSurface1> gtk_surface1_;
 
-  // When use_native_frame is false, client-side decoration is set,
-  // e.g. lacros-browser.
-  // When use_native_frame is true, server-side decoration is set,
-  // e.g. lacros-taskmanager.
+  // When use_native_frame is false, client-side decoration is set.
+  // When use_native_frame is true, server-side decoration is set.
   bool use_native_frame_ = false;
 
   std::optional<std::vector<gfx::Rect>> opaque_region_px_;
