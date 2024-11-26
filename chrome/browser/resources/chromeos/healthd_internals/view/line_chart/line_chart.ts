@@ -87,6 +87,11 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   // Whether the line chart is visible. If not, we don't need to render canvas.
   private isVisible: boolean = false;
 
+  // The start and end time of the visible part of line chart. Used to share
+  // with parnet element.
+  private visibleStartTime: number = 0;
+  private visibleEndTime: number = 0;
+
   getController(): LineChartController {
     return this.controller;
   }
@@ -105,7 +110,6 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
       category: CategoryTypeEnum, dataSeriesList: DataSeriesList) {
     this.controller.setupDataSeriesList(category, dataSeriesList);
     this.$.chartMenu.setupDataSeriesList(dataSeriesList.dataList);
-    this.$.summaryTable.setupDataSeriesList(dataSeriesList.dataList);
     this.resizeCanvas();
     this.update();
   }
@@ -122,6 +126,17 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   renderChartSummaryTable(isVisible: boolean) {
     this.$.chartContainer.style.setProperty(
         '--summary-table-height', isVisible ? '200px' : '0px');
+  }
+
+  sendTimeRange(visibleStartTime: number, visibleEndTime: number) {
+    this.visibleStartTime = visibleStartTime;
+    this.visibleEndTime = visibleEndTime;
+    this.dispatchEvent(
+        new CustomEvent('time-range-changed', {bubbles: true, composed: true}));
+  }
+
+  getVisibleTimeSpan(): [number, number] {
+    return [this.visibleStartTime, this.visibleEndTime];
   }
 
   // Handle the wheeling, mouse dragging and touching events.

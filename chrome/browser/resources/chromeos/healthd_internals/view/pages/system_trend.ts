@@ -15,6 +15,22 @@ import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js
 
 import {getTemplate} from './system_trend.html.js';
 
+function toReadableDuration(timeMilliseconds: number): string {
+  if (timeMilliseconds < 0) {
+    console.warn('Failed to get positive duration.')
+    return 'N/A';
+  }
+
+  const seconds = timeMilliseconds / 1000;
+  const minutes = seconds / 60;
+  const hours = minutes / 60;
+  const formatTimeNumber = (input: number) => {
+    return Math.round(input).toString().padStart(2, '0');
+  };
+  return `${formatTimeNumber(hours)}:${formatTimeNumber(minutes % 60)}:${
+      formatTimeNumber(seconds % 60)}`;
+}
+
 export interface HealthdInternalsSystemTrendElement {
   $: {
     categorySelector: HTMLSelectElement,
@@ -41,6 +57,9 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
       isSummaryTableDisplayed: {type: Boolean},
       displayedCategories: {type: Array},
       selectedCategory: {type: String},
+      displayedStartTime: {type: String},
+      displayedEndTime: {type: String},
+      displayedDuration: {type: String},
     };
   }
 
@@ -49,6 +68,10 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
 
     this.updateHelper = new UiUpdateHelper(() => {
       this.$.lineChart.update();
+    });
+
+    this.$.lineChart.addEventListener('time-range-changed', () => {
+      this.updateDisplayedTimeInfo();
     });
   }
 
@@ -73,6 +96,13 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
 
   private selectedCategory: CategoryTypeEnum = this.displayedCategories[0];
 
+  // The start and end time in the visible part of line chart.
+  private displayedStartTime: string = '';
+  private displayedEndTime: string = '';
+
+  // The time duration for lines in the chart summary table.
+  private displayedDuration: string = '';
+
   getController(): SystemTrendController {
     return this.controller;
   }
@@ -89,6 +119,13 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
   setupDataSeriesList() {
     this.$.lineChart.setupDataSeriesList(
         this.selectedCategory, this.controller.getData(this.selectedCategory));
+  }
+
+  private updateDisplayedTimeInfo() {
+    const [startTime, endTime] = this.$.lineChart.getVisibleTimeSpan();
+    this.displayedStartTime = new Date(startTime).toLocaleTimeString();
+    this.displayedEndTime = new Date(endTime).toLocaleTimeString();
+    this.displayedDuration = toReadableDuration(endTime - startTime);
   }
 
   private toggleChartSummaryTable() {

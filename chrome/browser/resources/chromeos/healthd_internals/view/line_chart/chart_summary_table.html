@@ -55,8 +55,6 @@
         <th>Min.</th>
         <th>Max.</th>
         <th>Avg.</th>
-        <th>Duration</th>
-        <th>Displayed Time Span</th>
       </tr>
     </thead>
     <tbody>
@@ -69,12 +67,10 @@
             </div>
           </td>
           <td>[[item.name]]</td>
-          <td>[[item.latestValue]] [[displayedUnit]]</td>
-          <td>[[item.minValue]] [[displayedUnit]]</td>
-          <td>[[item.maxValue]] [[displayedUnit]]</td>
-          <td>[[item.averageValue]] [[displayedUnit]]</td>
-          <td>[[displayedDuration]]</td>
-          <td>[[displayedStartTime]] ~ [[displayedEndTime]]</td>
+          <td>[[item.latestValue]] [[item.displayedUnit]]</td>
+          <td>[[item.minValue]] [[item.displayedUnit]]</td>
+          <td>[[item.maxValue]] [[item.displayedUnit]]</td>
+          <td>[[item.averageValue]] [[item.displayedUnit]]</td>
         </tr>
       </template>
     </tbody>

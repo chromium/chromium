@@ -6,6 +6,7 @@ import {assert} from '//resources/js/assert.js';
 
 import type {DataPoint, DataSeries} from '../model/data_series.js';
 import {LINE_CHART_COLOR_SET, MIN_TIME_SCALE, SAMPLE_RATE} from '../utils/line_chart_configs.js';
+import type {DisplayedLineInfo} from '../view/line_chart/chart_summary_table.js'
 import type {HealthdInternalsLineChartElement} from '../view/line_chart/line_chart.js'
 
 import {CanvasDrawer} from './canvas_drawer.js';
@@ -136,7 +137,7 @@ export class LineChartController {
     const maxValue = this.getVisibleMaxValue(
         dataSeriesList, visibleStartTime, visibleEndTime, stepSize);
     unitLabel.setMaxValue(maxValue);
-    unitLabel.setLayout(this.canvasDrawer.getUnitLabelHeight(), 2);
+    unitLabel.setLayout(this.canvasDrawer.getUnitLabelHeight());
     this.canvasDrawer.renderUnitLabel(context, unitLabel.getLabels());
 
     for (const [index, dataSeries] of dataSeriesList.entries()) {
@@ -150,10 +151,8 @@ export class LineChartController {
           context, dataPoints, getLineChartColor(index), visibleStartTime,
           timeScale, unitLabel.getValueScale());
     }
-
-    this.element.getSummaryTable().updateDisplayedInfo(
-        visibleStartTime, visibleEndTime, unitLabel.getCurrentUnitString(),
-        unitLabel.getCurrentUnitScale());
+    this.updateSummaryTable(
+        visibleStartTime, visibleEndTime, unitLabel, dataSeriesList);
   }
 
   private updateDataTime(dataSeriesList: DataSeries[]) {
@@ -182,5 +181,30 @@ export class LineChartController {
             item.getDisplayedMaxValue(
                 visibleStartTime, visibleEndTime, stepSize)),
         0);
+  }
+
+  // Get the required info for summary table.
+  private updateSummaryTable(
+      visibleStartTime: number, visibleEndTime: number, unitLabel: UnitLabel,
+      dataSeriesList: DataSeries[]) {
+    const output: DisplayedLineInfo[] = [];
+    const unitScale = unitLabel.getUnitScale();
+    const unitString = unitLabel.getUnitString();
+    for (const [colorIndex, dataSeries] of dataSeriesList.entries()) {
+      const statistics =
+          dataSeries.getLatestStatistics(visibleStartTime, visibleEndTime);
+      output.push({
+        legendColor: getLineChartColor(colorIndex),
+        name: dataSeries.getTitle(),
+        isVisible: dataSeries.getVisible(),
+        displayedUnit: unitString,
+        latestValue: statistics.latest / unitScale,
+        minValue: statistics.min / unitScale,
+        maxValue: statistics.max / unitScale,
+        averageValue: statistics.average / unitScale,
+      })
+    }
+    this.element.getSummaryTable().updateSummaryInfo(output);
+    this.element.sendTimeRange(visibleStartTime, visibleEndTime);
   }
 }
