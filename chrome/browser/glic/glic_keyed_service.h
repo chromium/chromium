@@ -11,6 +11,7 @@
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 class GlicWindowController;
@@ -40,6 +41,7 @@ class GlicKeyedService : public KeyedService {
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
  private:
+  content::WebContents* GetWebContentsForContext();
   raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<GlicWindowController> window_controller_;

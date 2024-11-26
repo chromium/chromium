@@ -80,8 +80,8 @@ export declare interface GlicBrowserHost {
   // the promise will be rejected. If a tab is navigated or closed during
   // context gathering, the promise will be rejected.
   getContextFromFocusedTab?
-      (options: {innerText?: boolean, viewportScreenshot?: boolean},
-       responseTransfer: Transferable[]): Promise<TabContextResult>;
+      (options: {innerText?: boolean, viewportScreenshot?: boolean}):
+          Promise<TabContextResult>;
 
   // Creates a tab and navigates to a url. It is made the active tab by default
   // but that can be changed using the openInBackground option.

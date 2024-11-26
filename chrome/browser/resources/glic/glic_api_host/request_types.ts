@@ -63,6 +63,7 @@ export interface HostRequestTypes {
       },
     },
     response: {
+      // Undefined on failure.
       tabContextResult?: TabContextResult,
     },
   };
