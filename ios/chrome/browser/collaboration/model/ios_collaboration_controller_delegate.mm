@@ -27,15 +27,18 @@ IOSCollaborationControllerDelegate::~IOSCollaborationControllerDelegate() {}
 
 // CollaborationControllerDelegate.
 void IOSCollaborationControllerDelegate::PrepareFlowUI(ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::ShowError(ResultCallback result,
                                                    const ErrorInfo& error) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }
 
