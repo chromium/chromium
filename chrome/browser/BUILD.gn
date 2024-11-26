@@ -1799,17 +1799,9 @@ static_library("browser") {
     "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/browser/prefs:impl",
     "//chrome/browser/prefs:util_impl",
-  ]
 
-  if (!is_chromeos_lacros) {
-    # Any circular includes must depend on the target
-    # "browser_public_dependencies".
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/bluetooth_internals" ]
-  } else {
-    # Circular dependency due to `EmbeddedA11yManagerLacros`.
-    allow_circular_includes_from += [ "//chrome/browser/accessibility:utils" ]
-  }
+    "//chrome/browser/ui/webui/bluetooth_internals",
+  ]
 
   public_deps = [
     # WARNING WARNING WARNING
@@ -5854,8 +5846,6 @@ static_library("browser") {
       "lacros/drivefs_native_message_host_bridge_lacros.h",
       "lacros/drivefs_native_message_host_lacros.cc",
       "lacros/drivefs_native_message_host_lacros.h",
-      "lacros/embedded_a11y_manager_lacros.cc",
-      "lacros/embedded_a11y_manager_lacros.h",
       "lacros/external_protocol_dialog.cc",
       "lacros/feedback_util.cc",
       "lacros/feedback_util.h",
