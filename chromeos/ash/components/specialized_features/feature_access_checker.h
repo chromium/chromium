@@ -16,16 +16,20 @@ namespace specialized_features {
 
 // FeatureAccessFailures are the types of failures returned by a
 // FeatureAccessChecker. They indicate which configured checks failed.
-enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
-    FeatureAccessFailure {
-      kMinValue = 0,
-      kConsentNotAccepted = kMinValue,  // User consent not given
-      kDisabledInSettings,              // Settings toggle is off
-      kFeatureFlagDisabled,             // The feature flag disabled.
-      kFeatureManagementCheckFailed,  // FeatureManagement flag was not enabled.
-      kSecretKeyCheckFailed,          // Secret key required and was not valid.
-      kMaxValue = kSecretKeyCheckFailed,
-    };
+enum class COMPONENT_EXPORT(
+    CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES) FeatureAccessFailure {
+  kMinValue = 0,
+  kConsentNotAccepted = kMinValue,  // User consent not given
+  kDisabledInSettings,              // Settings toggle is off
+  kFeatureFlagDisabled,             // The feature flag disabled.
+  kFeatureManagementCheckFailed,    // FeatureManagement flag was not enabled.
+  kSecretKeyCheckFailed,            // Secret key required and was not valid.
+  kMantaAccountCapabilitiesCheckFailed,  // Does not have account capabilities
+                                         // for manta, which is a proxy to check
+                                         // user requirements such as the user
+                                         // inferred not to be a minor.
+  kMaxValue = kMantaAccountCapabilitiesCheckFailed,
+};
 
 // EnumSet containing FeatureAccessFailures.
 using FeatureAccessFailureSet = base::EnumSet<FeatureAccessFailure,
@@ -70,6 +74,13 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   std::optional<SecretKey> secret_key;
   // Allow googlers to override the secret_key check.
   bool allow_google_accounts_skip_secret_key;
+  // If set to true, will check if the account has manta account capabilities.
+  // This is used as a proxy to check user capability requirements such as
+  // whether the user is NOT inferred to be a minor.
+  // FeatureAccessChecker::Check() will return
+  // kMantaAccountCapabilitiesCheckFailed if this value is set and the secret
+  // key check fails.
+  bool requires_manta_account_capabilities;
 };
 
 // Creates a class to check different dependencies for specialized features.

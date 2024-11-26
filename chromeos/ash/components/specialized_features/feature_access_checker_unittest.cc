@@ -14,8 +14,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -196,6 +199,48 @@ TEST_F(
       base::ToVector(
           FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
       IsEmpty());
+}
+
+TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckPass) {
+  AccountInfo account = identity_test_environment_.MakePrimaryAccountAvailable(
+      "someone@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_can_use_manta_service(true);
+  signin::UpdateAccountInfoForAccount(
+      identity_test_environment_.identity_manager(), account);
+  FeatureAccessConfig config = DefaultConfig();
+  config.requires_manta_account_capabilities = true;
+
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      IsEmpty());
+}
+
+TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
+  AccountInfo account = identity_test_environment_.MakePrimaryAccountAvailable(
+      "someone@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_can_use_manta_service(false);
+  FeatureAccessConfig config = DefaultConfig();
+  config.requires_manta_account_capabilities = true;
+
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kMantaAccountCapabilitiesCheckFailed));
+}
+
+TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "someone@gmail.com", signin::ConsentLevel::kSignin);
+  FeatureAccessConfig config = DefaultConfig();
+  config.requires_manta_account_capabilities = true;
+
+  EXPECT_THAT(
+      base::ToVector(
+          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      ElementsAre(kMantaAccountCapabilitiesCheckFailed));
 }
 
 }  // namespace

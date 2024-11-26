@@ -54,6 +54,15 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
     }
   }
 
+  if (config_.requires_manta_account_capabilities) {
+    const auto account_id =
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    if (identity_manager_->FindExtendedAccountInfoByAccountId(account_id)
+            .capabilities.can_use_manta_service() != signin::Tribool::kTrue) {
+      failures.Put(kMantaAccountCapabilitiesCheckFailed);
+    }
+  }
+
   return failures;
 }
 
