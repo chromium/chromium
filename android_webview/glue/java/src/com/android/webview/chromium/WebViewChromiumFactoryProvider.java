@@ -513,6 +513,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 deleteContentsOnPackageDowngrade(packageInfo);
             }
 
+            // TODO(crbug.com/380890146): Change the default for partitioned cookies to enabled by
+            // default for apps targeting Android B or above. This will need to use the proper
+            // Android B version code once it is released.
             if (!androidXConfig.getPartitionedCookiesEnabled()) {
                 cl.appendSwitch("disable-partitioned-cookies");
             }
