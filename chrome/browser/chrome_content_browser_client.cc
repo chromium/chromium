@@ -4034,8 +4034,10 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
     if (ThemeService* theme_service =
             ThemeServiceFactory::GetForProfile(profile)) {
-      using_different_colored_frame = !theme_service->UsingDefaultTheme() ||
-                                      theme_service->GetUserColor().has_value();
+      using_different_colored_frame =
+          !theme_service->UsingDefaultTheme() ||
+          theme_service->GetUserColor().has_value() ||
+          theme_service->UsingDeviceTheme();
     }
   }
 
