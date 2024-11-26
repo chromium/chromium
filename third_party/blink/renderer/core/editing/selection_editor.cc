@@ -140,11 +140,17 @@ void SelectionEditor::SetSelectionAndEndTyping(
   selection_ = new_selection;
 }
 
-void SelectionEditor::DidChangeChildren(const ContainerNode&,
-                                        const ContainerNode::ChildrenChange&) {
+void SelectionEditor::DidChangeChildren(
+    const ContainerNode&,
+    const ContainerNode::ChildrenChange& change) {
   if (GetDocument().StatePreservingAtomicMoveInProgress() &&
       RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled()) {
     return;
+  }
+  if (RuntimeEnabledFeatures::UpdateSelectionOnNodeInsertionEnabled() &&
+      (change.type == ContainerNode::ChildrenChangeType::kElementInserted ||
+       change.type == ContainerNode::ChildrenChangeType::kNonElementInserted)) {
+    DidInsertNode(*change.sibling_changed);
   }
   selection_.ResetDirectionCache();
   MarkCacheDirty();
@@ -178,6 +184,42 @@ void SelectionEditor::DidFinishTextChange(const Position& new_anchor,
 
 void SelectionEditor::DidFinishDOMMutation() {
   AssertSelectionValid();
+}
+
+static Position ComputePositionForNodeInsertion(const Position& position,
+                                                const Node& node) {
+  if (position.IsNull()) {
+    return position;
+  }
+
+  if (position.IsOffsetInAnchor()) {
+    Node* container_node = position.ComputeContainerNode();
+    // Increase the offset value when new node is inserted before the current
+    // position.
+    if (container_node == node.parentNode() &&
+        static_cast<unsigned>(position.OffsetInContainerNode()) >
+            node.NodeIndex()) {
+      return Position(container_node, position.OffsetInContainerNode() + 1);
+    }
+  }
+  return position;
+}
+
+void SelectionEditor::DidInsertNode(const Node& node) {
+  if (selection_.IsNone()) {
+    return;
+  }
+  const Position old_anchor = selection_.anchor_;
+  const Position old_focus = selection_.focus_;
+  const Position& new_anchor =
+      ComputePositionForNodeInsertion(old_anchor, node);
+  const Position& new_focus = ComputePositionForNodeInsertion(old_focus, node);
+  if (new_anchor == old_anchor && new_focus == old_focus) {
+    return;
+  }
+  selection_ = SelectionInDOMTree::Builder()
+                   .SetBaseAndExtent(new_anchor, new_focus)
+                   .Build();
 }
 
 void SelectionEditor::DidAttachDocument(Document* document) {

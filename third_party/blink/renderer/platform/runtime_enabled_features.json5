@@ -4417,6 +4417,11 @@
       status: "stable",
       depends_on: ["WebUSB"],
     },
+    // Fix for https://crbug.com/41329214.
+    {
+      name: "UpdateSelectionOnNodeInsertion",
+      status: "stable"
+    },
     {
       name: "URLPatternCompareComponent",
       status: "experimental",
