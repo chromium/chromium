@@ -42,8 +42,8 @@ const int kVlogSetCookies = 7;
 const int kVlogGarbageCollection = 5;
 
 // This enum must match the numbering for StorageAccessResult in
-// histograms/enums.xml. Do not reorder or remove items, only add new items
-// at the end.
+// histograms/metadata/storage/enums.xml. Do not reorder or remove items, only
+// add new items at the end.
 enum class StorageAccessResult {
   ACCESS_BLOCKED = 0,
   ACCESS_ALLOWED = 1,

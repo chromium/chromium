@@ -611,8 +611,10 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Storage access allowed by 3PCD metadata grants content settings"/>
   <int value="7" label="Temporary storage access allowed by 3PCD heuristics"/>
-  <int value="8" label="Storage access allowed due to CORS opt in"/>
+  <int value="8"
+      label="Storage access allowed due to CORS opt in (deprecated)"/>
   <int value="9" label="Storage access allowed by top-level 3PCD setting"/>
+  <int value="10" label="Storage access allowed by first-party URL scheme"/>
 </enum>
 
 <!-- LINT.IfChange(StorageAccessStatusOutcome) -->
