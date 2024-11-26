@@ -53,8 +53,9 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::ClosePanel() {
-  // TODO(crbug.com/380313321)
-  LOG(ERROR) << "Ignoring unimplemented ClosePanel()";
+  if (window_controller_) {
+    window_controller_->Close();
+  }
 }
 
 std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
