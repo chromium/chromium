@@ -211,13 +211,27 @@ for patch in patches:
         with open(scratch_dir + "/evaluation.csv", "a") as f:
             f.write(f"{index}, fail, {error_msg}\n")
 
-        appendRow(spreadsheet, [today, index, "fail", error_msg, diff])
+        appendRow(spreadsheet, [
+            today,
+            index,
+            len(patches),
+            "fail",
+            error_msg,
+            diff,
+        ])
 
         shutil.copy(scratch_dir + f"/patch_{index}.out",
                     scratch_dir + f"/patch_{index}.fail")
     else:
         with open(scratch_dir + "/evaluation.csv", "a") as f:
             f.write(f"{index}, pass, \"\"\n")
-        appendRow(spreadsheet, [today, index, "pass", "", diff])
+        appendRow(spreadsheet, [
+            today,
+            index,
+            len(patches),
+            "pass",
+            "",
+            diff,
+        ])
         shutil.copy(scratch_dir + f"/patch_{index}.out",
                     scratch_dir + f"/patch_{index}.pass")
