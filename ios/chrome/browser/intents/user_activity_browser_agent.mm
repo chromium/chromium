@@ -709,32 +709,18 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
   if (application_is_active && IsProfileStateReady(browser_)) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URL immediately.
-    ApplicationModeForTabOpening target_mode =
-        [[connection_information_ startupParameters] applicationMode];
-    UrlLoadParams params = UrlLoadParams::InNewTab(webpage_GURL);
-
-    if (connection_information_.startupParameters.textQuery) {
-      NSString* query = connection_information_.startupParameters.textQuery;
-
-      GURL result = GenerateResultGURLFromSearchQuery(query);
-      params.web_params.url = result;
+    if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+      base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+          base::BindOnce(&UserActivityBrowserAgent::HandleUrlOpening,
+                         weak_ptr_factory_.GetWeakPtr(), webpage_GURL);
+      [connection_information_.startupParameters
+          requestApplicationModeWithBlock:base::CallbackToBlock(
+                                              std::move(completion))];
+    } else {
+      HandleUrlOpening(
+          webpage_GURL,
+          [connection_information_.startupParameters applicationMode]);
     }
-
-    if ([[connection_information_ startupParameters] applicationMode] !=
-            ApplicationModeForTabOpening::INCOGNITO &&
-        [tab_opener_ URLIsOpenedInRegularMode:webpage_GURL]) {
-      // Record metric.
-    }
-
-    base::OnceClosure closure =
-        base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
-                       weak_ptr_factory_.GetWeakPtr());
-    [tab_opener_
-        dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
-                                 withUrlLoadParams:params
-                                    dismissOmnibox:YES
-                                        completion:base::CallbackToBlock(
-                                                       std::move(closure))];
     return YES;
   }
 
@@ -883,6 +869,34 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
                                                      startupParameters]
                                                      postOpeningAction] !=
                                                  FOCUS_OMNIBOX
+                                      completion:base::CallbackToBlock(
+                                                     std::move(closure))];
+}
+
+void UserActivityBrowserAgent::HandleUrlOpening(
+    const GURL& webpage_url,
+    ApplicationModeForTabOpening target_mode) {
+  UrlLoadParams params = UrlLoadParams::InNewTab(webpage_url);
+
+  if (connection_information_.startupParameters.textQuery) {
+    NSString* query = connection_information_.startupParameters.textQuery;
+
+    GURL result = GenerateResultGURLFromSearchQuery(query);
+    params.web_params.url = result;
+  }
+
+  if (target_mode != ApplicationModeForTabOpening::INCOGNITO &&
+      [tab_opener_ URLIsOpenedInRegularMode:webpage_url]) {
+    // Record metric.
+  }
+
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
+  [tab_opener_
+      dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
+                               withUrlLoadParams:params
+                                  dismissOmnibox:YES
                                       completion:base::CallbackToBlock(
                                                      std::move(closure))];
 }

@@ -92,6 +92,11 @@ class UserActivityBrowserAgent
   // `ApplicationModeForTabOpening`.
   void HandleRouteToCorrectTab(ApplicationModeForTabOpening target_mode);
 
+  // Handles the opening of a given URL in a tab on a given
+  // `ApplicationModeForTabOpening`.
+  void HandleUrlOpening(const GURL& webpage_url,
+                        ApplicationModeForTabOpening target_mode);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The browser associated with this agent.
