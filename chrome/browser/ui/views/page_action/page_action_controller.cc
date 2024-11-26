@@ -5,11 +5,19 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
+#include "ui/actions/action_id.h"
 
 namespace page_actions {
 
 PageActionController::PageActionController() = default;
 PageActionController::~PageActionController() = default;
+
+void PageActionController::Initialize(
+    const std::vector<actions::ActionId>& action_ids) {
+  for (const actions::ActionId& id : action_ids) {
+    Register(id);
+  }
+}
 
 void PageActionController::Register(actions::ActionId action_id) {
   page_actions_.emplace(action_id, std::make_unique<PageActionModel>());

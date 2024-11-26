@@ -88,8 +88,8 @@ TEST_F(PageActionControllerTest, ShowAndHidePageActionUpdatesCorrectModel) {
   auto observer_a = PageActionTestObserver();
   auto observer_b = PageActionTestObserver();
   PageActionController* controller = page_action_controller();
-  controller->Register(0);
-  controller->Register(1);
+
+  controller->Initialize({0, 1});
   controller->AddObserver(0, &observer_a);
   controller->AddObserver(1, &observer_b);
 

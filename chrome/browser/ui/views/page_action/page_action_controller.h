@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "ui/actions/action_id.h"
 
@@ -25,6 +26,7 @@ class PageActionController {
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController();
 
+  void Initialize(const std::vector<actions::ActionId>& action_ids);
   void Register(actions::ActionId action_id);
 
   void Show(actions::ActionId action_id);
