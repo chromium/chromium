@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/metrics/quick_insert_session_metrics.h"
 #include "ash/quick_insert/mock_quick_insert_asset_fetcher.h"
 #include "ash/quick_insert/model/quick_insert_action_type.h"
@@ -22,6 +23,8 @@
 #include "ash/quick_insert/views/quick_insert_contents_view.h"
 #include "ash/quick_insert/views/quick_insert_emoji_bar_view.h"
 #include "ash/quick_insert/views/quick_insert_emoji_item_view.h"
+#include "ash/quick_insert/views/quick_insert_gif_view.h"
+#include "ash/quick_insert/views/quick_insert_image_item_view.h"
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "ash/quick_insert/views/quick_insert_list_item_view.h"
 #include "ash/quick_insert/views/quick_insert_preview_bubble.h"
@@ -49,6 +52,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -3225,6 +3229,135 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
   EXPECT_FALSE(view->search_field_view_for_testing()
                    .clear_button_for_testing()
                    .GetVisible());
+}
+
+TEST_F(QuickInsertViewTest, CheckingGifButtonWithQueryShowsGifSearchResults) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  base::test::TestFuture<std::u16string_view,
+                         QuickInsertViewDelegate::SearchResultsCallback>
+      future;
+  FakeQuickInsertViewDelegate delegate({
+      .available_categories = {QuickInsertCategory::kEmojisGifs,
+                               QuickInsertCategory::kGifs},
+      .search_function = future.GetRepeatingCallback(),
+  });
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  future.Clear();
+
+  QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
+  views::Button* gifs_button = quick_insert_view->emoji_bar_view_for_testing()
+                                   ->gifs_button_for_testing();
+  ViewDrawnWaiter().Wait(gifs_button);
+  LeftClickOn(gifs_button);
+  auto [query, search_callback] = future.Take();
+  std::move(search_callback)
+      .Run({
+          QuickInsertSearchResultsSection(
+              QuickInsertSectionType::kNone,
+              {{QuickInsertGifResult(
+                  GURL("http://foo.com/fake_preview.gif"),
+                  GURL("http://foo.com/fake_preview_image.png"), gfx::Size(),
+                  GURL("http://foo.com/fake.gif"), gfx::Size(),
+                  /*content_description=*/u"")}},
+              /*has_more_results=*/false),
+      });
+
+  EXPECT_TRUE(
+      quick_insert_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(
+      quick_insert_view->search_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "item views", &QuickInsertSectionView::item_views_for_testing,
+          ElementsAre(AsView<QuickInsertImageItemView>(Property(
+              "image view", &QuickInsertImageItemView::image_view_for_testing,
+              Truly(&views::IsViewClass<QuickInsertGifView>))))))));
+}
+
+TEST_F(QuickInsertViewTest,
+       TypingQueryWithGifToggleCheckedShowsGifSearchResults) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  base::test::TestFuture<std::u16string_view,
+                         QuickInsertViewDelegate::SearchResultsCallback>
+      future;
+  FakeQuickInsertViewDelegate delegate({
+      .available_categories = {QuickInsertCategory::kEmojisGifs,
+                               QuickInsertCategory::kGifs},
+      .search_function = future.GetRepeatingCallback(),
+  });
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
+  views::Button* gifs_button = quick_insert_view->emoji_bar_view_for_testing()
+                                   ->gifs_button_for_testing();
+  ViewDrawnWaiter().Wait(gifs_button);
+  LeftClickOn(gifs_button);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  auto [query, search_callback] = future.Take();
+  std::move(search_callback)
+      .Run({
+          QuickInsertSearchResultsSection(
+              QuickInsertSectionType::kNone,
+              {{QuickInsertGifResult(
+                  GURL("http://foo.com/fake_preview.gif"),
+                  GURL("http://foo.com/fake_preview_image.png"), gfx::Size(),
+                  GURL("http://foo.com/fake.gif"), gfx::Size(),
+                  /*content_description=*/u"")}},
+              /*has_more_results=*/false),
+      });
+
+  EXPECT_TRUE(
+      quick_insert_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(
+      quick_insert_view->search_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "item views", &QuickInsertSectionView::item_views_for_testing,
+          ElementsAre(AsView<QuickInsertImageItemView>(Property(
+              "image view", &QuickInsertImageItemView::image_view_for_testing,
+              Truly(&views::IsViewClass<QuickInsertGifView>))))))));
+}
+
+TEST_F(QuickInsertViewTest, UncheckingGifButtonSearchesNormally) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  base::test::TestFuture<std::u16string_view,
+                         QuickInsertViewDelegate::SearchResultsCallback>
+      future;
+  FakeQuickInsertViewDelegate delegate({
+      .available_categories = {QuickInsertCategory::kEmojisGifs,
+                               QuickInsertCategory::kGifs},
+      .search_function = future.GetRepeatingCallback(),
+  });
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
+  views::Button* gifs_button = quick_insert_view->emoji_bar_view_for_testing()
+                                   ->gifs_button_for_testing();
+  ViewDrawnWaiter().Wait(gifs_button);
+  LeftClickOn(gifs_button);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  LeftClickOn(gifs_button);
+  auto [query, search_callback] = future.Take();
+  std::move(search_callback)
+      .Run({
+          QuickInsertSearchResultsSection(QuickInsertSectionType::kClipboard,
+                                          {{QuickInsertTextResult(u"result")}},
+                                          /*has_more_results=*/false),
+      });
+
+  EXPECT_TRUE(
+      quick_insert_view->search_results_view_for_testing().GetVisible());
+  EXPECT_THAT(
+      quick_insert_view->search_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "item views", &QuickInsertSectionView::item_views_for_testing,
+          ElementsAre(Truly(&views::IsViewClass<QuickInsertListItemView>))))));
 }
 
 }  // namespace

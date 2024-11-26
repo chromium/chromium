@@ -454,7 +454,13 @@ void QuickInsertView::SelectMoreResults(QuickInsertSectionType type) {
 
 void QuickInsertView::ToggleGifs(bool is_checked) {
   if (base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
-    // TODO: b/368442959 - Search and display GIF results.
+    is_gif_toggle_checked_ = is_checked;
+    if (is_gif_toggle_checked_) {
+      SelectCategoryWithQuery(QuickInsertCategory::kGifs,
+                              search_field_view_->GetQueryText());
+    } else {
+      OnSearchBackButtonPressed();
+    }
   } else {
     ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
   }
@@ -611,11 +617,13 @@ void QuickInsertView::UpdateActivePage() {
   std::u16string_view query =
       base::TrimWhitespace(search_field_view_->GetQueryText(), base::TRIM_ALL);
 
-  if (query == last_query_ && selected_category_ == last_selected_category_) {
+  if (query == last_query_ && selected_category_ == last_selected_category_ &&
+      is_gif_toggle_checked_ == last_is_gif_toggle_checked_) {
     return;
   }
   last_query_ = std::u16string(query);
   last_selected_category_ = selected_category_;
+  last_is_gif_toggle_checked_ = is_gif_toggle_checked_;
 
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
 

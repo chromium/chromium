@@ -238,6 +238,10 @@ class ASH_EXPORT QuickInsertView
   // Should only be set to a value through `SelectCategory` and
   // `SelectCategoryWithQuery`.
   std::optional<QuickInsertCategory> selected_category_;
+
+  // Whether the GIF toggle is checked (i.e. should only show GIF results).
+  bool is_gif_toggle_checked_ = false;
+
   // The category which `category_results_view_` has results for.
   // Used for caching results if the user did not change their selected
   // category.
@@ -252,9 +256,10 @@ class ASH_EXPORT QuickInsertView
   // The whitespace-trimmed query and category when `UpdateActivePage()` was
   // last called.
   // Used for avoid unnecessary searches if `UpdateActivePage()` is called again
-  // with the same {query, selected_category}.
+  // with the same {query, selected_category, is_gif_toggle_checked}.
   std::u16string last_query_;
   std::optional<QuickInsertCategory> last_selected_category_;
+  bool last_is_gif_toggle_checked_ = false;
 
   QuickInsertKeyEventHandler key_event_handler_;
   QuickInsertSubmenuController submenu_controller_;

@@ -33,6 +33,8 @@ class ASH_EXPORT QuickInsertImageItemView : public QuickInsertItemView {
 
   void SetAction(QuickInsertActionType action);
 
+  views::ImageView* image_view_for_testing() const { return image_view_; }
+
  private:
   raw_ptr<views::ImageView> image_view_ = nullptr;
   std::u16string accessible_name_;
