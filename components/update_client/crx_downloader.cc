@@ -193,7 +193,6 @@ void CrxDownloader::HandleDownloadError(
 
   // Try downloading using the next downloader.
   if (successor_ && !urls_.empty()) {
-    metrics::RecordCRXDownloaderFallback();
     successor_->StartDownload(urls_, expected_hash_,
                               std::move(download_callback_));
     return;

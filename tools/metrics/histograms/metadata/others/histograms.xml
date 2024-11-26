@@ -2999,7 +2999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.Calls" enum="ComponentUpdaterCalls"
-    expires_after="2025-05-11">
+    expires_after="2025-11-20">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
@@ -3022,21 +3022,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteError"
-    enum="UpdateClientErrors" expires_after="2025-03-30">
+    enum="UpdateClientErrors" expires_after="2025-11-20">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteResult" enum="BooleanError"
-    expires_after="2025-03-30">
+    expires_after="2025-11-20">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteTime" units="ms"
-    expires_after="2025-05-11">
+    expires_after="2025-11-20">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
@@ -9817,75 +9817,8 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram
-    name="UpdateClient.BackgroundDownloaderMac.DownloadResultRequestorKnown"
-    enum="Boolean" expires_after="2025-03-09">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    Whether the requestor of a background download was known. Recorded each time
-    a download completes.
-  </summary>
-</histogram>
-
-<histogram name="UpdateClient.BackgroundDownloaderMac.StartDownloadOutcome"
-    enum="UpdateClientBackgroundDownloaderMacStartDownloadOutcome"
-    expires_after="2025-01-05">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    The outcome of a download start request. Recorded once each time a download
-    is requested.
-  </summary>
-</histogram>
-
-<histogram name="UpdateClient.BackgroundDownloaderWin.ExistingJobUsed"
-    enum="Boolean" expires_after="2025-03-09">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    Whether an existing BITS task was reused or created when a download was
-    requested.
-  </summary>
-</histogram>
-
-<histogram name="UpdateClient.BackgroundDownloaderWin.StaleDownloadAge"
-    units="hours" expires_after="2025-01-05">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    The age of unclaimed downloads when they were removed from the cache.
-  </summary>
-</histogram>
-
-<histogram name="UpdateClient.BackgroundDownloaderWin.StaleJobsCleaned"
-    units="count" expires_after="2025-01-05">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    Counts the number of stale jobs that were cleaned each time a new download
-    starts.
-  </summary>
-</histogram>
-
-<histogram name="UpdateClient.Component.CanUpdateResult"
-    enum="UpdateClientCanUpdateResult" expires_after="2025-05-11">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    The result of a CanUpdate check when a component update is offered. Recorded
-    once per check per component.
-  </summary>
-</histogram>
-
 <histogram name="UpdateClient.Component.UpdateCheckResult"
-    enum="UpdateClientUpdateCheckResult" expires_after="2025-05-11">
+    enum="UpdateClientUpdateCheckResult" expires_after="2025-11-20">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9896,7 +9829,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpdateClient.Component.Updated" enum="Boolean"
-    expires_after="2025-05-11">
+    expires_after="2025-11-20">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9904,24 +9837,13 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpdateClient.CrxDownloader.DownloadCompleteSuccess"
-    enum="Boolean" expires_after="2025-01-05">
+    enum="Boolean" expires_after="2025-11-20">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
   <summary>
     Whether a download completed with an error or not. Recorded once for every
     completed download.
-  </summary>
-</histogram>
-
-<histogram name="UpdateClient.CrxDownloader.Fallback" enum="Boolean"
-    expires_after="2025-05-11">
-  <owner>noahrose@google.com</owner>
-  <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
-  <summary>
-    Records when the CRX Downloader falls back to a different downloader
-    implementation due to errors.
   </summary>
 </histogram>
 
