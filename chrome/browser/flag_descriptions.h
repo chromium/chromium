@@ -3287,12 +3287,30 @@ extern const char kUseSCContentSharingPickerDescription[];
 extern const char kLocationProviderManagerName[];
 extern const char kLocationProviderManagerDescription[];
 
-extern const char kUseAngleName[];
-
-extern const char kUseAngleDefault[];
 extern const char kUseAngleGL[];
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+//  Android  --------------------------------------------------
+
+#if BUILDFLAG(IS_ANDROID)
+
+extern const char kUseAngleDescriptionAndroid[];
+
+extern const char kUseAngleGLES[];
+extern const char kUseAngleVulkan[];
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Windows, Mac and Android  --------------------------------------------------
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+
+extern const char kUseAngleName[];
+
+extern const char kUseAngleDefault[];
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 
 // ChromeOS -------------------------------------------------------------------
 

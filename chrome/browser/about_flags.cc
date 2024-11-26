@@ -483,6 +483,13 @@ const FeatureEntry::Choice kUseAngleChoicesMac[] = {
      gl::kANGLEImplementationOpenGLName},
     {flag_descriptions::kUseAngleMetal, switches::kUseANGLE,
      gl::kANGLEImplementationMetalName}};
+#elif BUILDFLAG(IS_ANDROID)
+const FeatureEntry::Choice kUseAngleChoicesAndroid[] = {
+    {flag_descriptions::kUseAngleDefault, "", ""},
+    {flag_descriptions::kUseAngleGLES, switches::kUseANGLE,
+     gl::kANGLEImplementationOpenGLESName},
+    {flag_descriptions::kUseAngleVulkan, switches::kUseANGLE,
+     gl::kANGLEImplementationVulkanName}};
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -7700,6 +7707,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-angle", flag_descriptions::kUseAngleName,
      flag_descriptions::kUseAngleDescriptionMac, kOsMac,
      MULTI_VALUE_TYPE(kUseAngleChoicesMac)},
+#elif BUILDFLAG(IS_ANDROID)
+        {"use-angle", flag_descriptions::kUseAngleName,
+         flag_descriptions::kUseAngleDescriptionAndroid, kOsAndroid,
+         MULTI_VALUE_TYPE(kUseAngleChoicesAndroid)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

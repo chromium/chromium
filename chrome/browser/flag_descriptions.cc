@@ -5542,10 +5542,8 @@ const char kRawAudioCaptureDescription[] =
 
 const char kUseAngleDescriptionWindows[] =
     "Choose the graphics backend for ANGLE. D3D11 is used on most Windows "
-    "computers by default. Using the OpenGL driver as the graphics backend may "
-    "result in higher performance in some graphics-heavy applications, "
-    "particularly on NVIDIA GPUs. It can increase battery and memory usage of "
-    "video playback.";
+    "computers by default. Using the OpenGL backend is not supported and will "
+    "likely exhibit rendering artifacts.";
 
 const char kUseAngleD3D11[] = "D3D11";
 const char kUseAngleD3D9[] = "D3D9";
@@ -5672,11 +5670,9 @@ const char kSonomaAccessibilityActivationRefinementsDescription[] =
     "Sonoma.";
 
 const char kUseAngleDescriptionMac[] =
-    "Choose the graphics backend for ANGLE. The OpenGL backend is soon to be "
-    "deprecated on Mac, and may contain driver bugs that are not planned to be "
-    "fixed. The Metal backend is still experimental, and may contain bugs that "
-    "are still being worked on. The Metal backend should be more performant, "
-    "but may still be behind the OpenGL backend until fully released.";
+    "Choose the graphics backend for ANGLE. Metal is the default on all Macs "
+    "which can support it. The OpenGL backend is soon to be "
+    "deprecated and may contain driver bugs that are not planned to be fixed.";
 
 const char kUseAngleMetal[] = "Metal";
 
@@ -5706,11 +5702,33 @@ const char kLocationProviderManagerDescription[] =
     "the operating system's location API or the network-based provider "
     "as the data source for Geolocation API.";
 
-const char kUseAngleName[] = "Choose ANGLE graphics backend";
-const char kUseAngleDefault[] = "Default";
 const char kUseAngleGL[] = "OpenGL";
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+//  Android  --------------------------------------------------
+
+#if BUILDFLAG(IS_ANDROID)
+
+const char kUseAngleDescriptionAndroid[] =
+    "Choose the graphics backend for ANGLE. The Vulkan backend is still "
+    "experimental, and may contain bugs that "
+    "are still being worked on.";
+
+const char kUseAngleGLES[] = "OpenGL ES";
+const char kUseAngleVulkan[] = "Vulkan";
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Windows, Mac and Android  --------------------------------------------------
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+
+const char kUseAngleName[] = "Choose ANGLE graphics backend";
+
+const char kUseAngleDefault[] = "Default";
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 
 // ChromeOS -------------------------------------------------------------------
 
