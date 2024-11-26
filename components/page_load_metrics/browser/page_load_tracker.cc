@@ -1363,6 +1363,10 @@ bool PageLoadTracker::IsTerminalVisit() const {
   return is_terminal_visit_;
 }
 
+bool PageLoadTracker::ShouldObserveScheme(std::string_view scheme) const {
+  return embedder_interface_->ShouldObserveScheme(scheme);
+}
+
 int64_t PageLoadTracker::GetNavigationId() const {
   return navigation_id_;
 }

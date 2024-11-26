@@ -46,6 +46,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/common/url_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
@@ -114,6 +115,7 @@ class PageLoadMetricsEmbedder
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
   bool IsNonTabWebUI(const GURL& url) override;
+  bool ShouldObserveScheme(std::string_view scheme) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -275,6 +277,10 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 
 bool PageLoadMetricsEmbedder::IsNonTabWebUI(const GURL& url) {
   return ::IsNonTabWebUI(web_contents()->GetBrowserContext(), url);
+}
+
+bool PageLoadMetricsEmbedder::ShouldObserveScheme(std::string_view scheme) {
+  return scheme == chrome::kIsolatedAppScheme;
 }
 
 page_load_metrics::PageLoadMetricsMemoryTracker*

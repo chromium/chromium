@@ -224,6 +224,11 @@ bool FakePageLoadMetricsObserverDelegate::IsTerminalVisit() const {
   return false;
 }
 
+bool FakePageLoadMetricsObserverDelegate::ShouldObserveScheme(
+    std::string_view scheme) const {
+  return false;
+}
+
 int64_t FakePageLoadMetricsObserverDelegate::GetNavigationId() const {
   return navigation_id_;
 }

@@ -77,6 +77,8 @@ class TestPageLoadMetricsEmbedderInterface
     return test_->is_non_tab_webui();
   }
 
+  bool ShouldObserveScheme(std::string_view scheme) override { return false; }
+
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override {
