@@ -148,8 +148,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.ActivateEvent.Time" units="ms"
-    expires_after="2025-01-05">
+<histogram name="ServiceWorker.ActivateEvent.Time2" units="ms"
+    expires_after="2025-07-05">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
