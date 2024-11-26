@@ -157,6 +157,17 @@ SelectChallengeOptionRequestDetails::SelectChallengeOptionRequestDetails(
 SelectChallengeOptionRequestDetails::~SelectChallengeOptionRequestDetails() =
     default;
 
+UpdateVirtualCardEnrollmentRequestDetails::
+    UpdateVirtualCardEnrollmentRequestDetails() = default;
+UpdateVirtualCardEnrollmentRequestDetails::
+    UpdateVirtualCardEnrollmentRequestDetails(
+        const UpdateVirtualCardEnrollmentRequestDetails&) = default;
+UpdateVirtualCardEnrollmentRequestDetails&
+UpdateVirtualCardEnrollmentRequestDetails::operator=(
+    const UpdateVirtualCardEnrollmentRequestDetails&) = default;
+UpdateVirtualCardEnrollmentRequestDetails::
+    ~UpdateVirtualCardEnrollmentRequestDetails() = default;
+
 GetDetailsForEnrollmentRequestDetails::GetDetailsForEnrollmentRequestDetails() =
     default;
 GetDetailsForEnrollmentRequestDetails::GetDetailsForEnrollmentRequestDetails(
@@ -182,15 +193,23 @@ UploadCardResponseDetails& UploadCardResponseDetails::operator=(
     UploadCardResponseDetails&&) = default;
 UploadCardResponseDetails::~UploadCardResponseDetails() = default;
 
-UpdateVirtualCardEnrollmentRequestDetails::
-    UpdateVirtualCardEnrollmentRequestDetails() = default;
-UpdateVirtualCardEnrollmentRequestDetails::
-    UpdateVirtualCardEnrollmentRequestDetails(
-        const UpdateVirtualCardEnrollmentRequestDetails&) = default;
-UpdateVirtualCardEnrollmentRequestDetails&
-UpdateVirtualCardEnrollmentRequestDetails::operator=(
-    const UpdateVirtualCardEnrollmentRequestDetails&) = default;
-UpdateVirtualCardEnrollmentRequestDetails::
-    ~UpdateVirtualCardEnrollmentRequestDetails() = default;
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
+    GetDetailsForCreateBnplPaymentInstrumentRequestDetails() = default;
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
+    GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
+        const GetDetailsForCreateBnplPaymentInstrumentRequestDetails&) =
+        default;
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails&
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails::operator=(
+    const GetDetailsForCreateBnplPaymentInstrumentRequestDetails& other) =
+    default;
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
+    GetDetailsForCreateBnplPaymentInstrumentRequestDetails(
+        GetDetailsForCreateBnplPaymentInstrumentRequestDetails&&) = default;
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails&
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails::operator=(
+    GetDetailsForCreateBnplPaymentInstrumentRequestDetails&&) = default;
+GetDetailsForCreateBnplPaymentInstrumentRequestDetails::
+    ~GetDetailsForCreateBnplPaymentInstrumentRequestDetails() = default;
 
 }  // namespace autofill::payments

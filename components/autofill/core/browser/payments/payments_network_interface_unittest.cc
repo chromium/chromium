@@ -217,6 +217,15 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     result_ = result;
   }
 
+  void OnDidGetDetailsForCreateBnplPaymentInstrument(
+      PaymentsRpcResult result,
+      std::u16string context_token,
+      std::unique_ptr<base::Value::Dict> legal_message) {
+    result_ = result;
+    context_token_ = base::UTF16ToUTF8(context_token);
+    legal_message_ = std::move(legal_message);
+  }
+
  protected:
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
@@ -1768,6 +1777,78 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
       NOTREACHED();
   }
   EXPECT_EQ(result, result_);
+}
+
+class GetDetailsForCreateBnplPaymentInstrumentTest
+    : public PaymentsNetworkInterfaceTest,
+      public ::testing::WithParamInterface<PaymentsRpcResult> {
+ public:
+  GetDetailsForCreateBnplPaymentInstrumentTest() = default;
+  ~GetDetailsForCreateBnplPaymentInstrumentTest() override = default;
+};
+
+// Initializes the parameterized test suite with all possible combinations of
+// PaymentsRpcResult.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetDetailsForCreateBnplPaymentInstrumentTest,
+    testing::Values(PaymentsRpcResult::kSuccess,
+                    PaymentsRpcResult::kTryAgainFailure,
+                    PaymentsRpcResult::kPermanentFailure,
+                    PaymentsRpcResult::kNetworkError,
+                    PaymentsRpcResult::kClientSideTimeout));
+
+// Parameterized test that tests all combinations of server PaymentsRpcResult.
+TEST_P(GetDetailsForCreateBnplPaymentInstrumentTest,
+       GetDetailsForCreateBnplPaymentInstrumentTest_TestAllFlows) {
+  GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
+  request_details.app_locale = "en-US";
+  request_details.billing_customer_number = 555666777888;
+  request_details.issuer_id = "Affirm";
+  std::string context_token = "some_token";
+
+  payments_network_interface_->GetDetailsForCreateBnplPaymentInstrument(
+      request_details,
+      base::BindOnce(&PaymentsNetworkInterfaceTest::
+                         OnDidGetDetailsForCreateBnplPaymentInstrument,
+                     GetWeakPtr()));
+  IssueOAuthToken();
+
+  // Ensures the PaymentsRpcResult is set correctly.
+  PaymentsRpcResult result = GetParam();
+  switch (result) {
+    case PaymentsRpcResult::kSuccess:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"legal_message\": {}, "
+                     "\"context_token\": \"" +
+                         context_token + "\" }");
+      break;
+    case PaymentsRpcResult::kTryAgainFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"INTERNAL\", "
+                     "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+      break;
+    case PaymentsRpcResult::kPermanentFailure:
+      ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                     "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+      break;
+    case PaymentsRpcResult::kNetworkError:
+      ReturnResponse(payments_network_interface_.get(),
+                     net::HTTP_REQUEST_TIMEOUT, "");
+      break;
+    case PaymentsRpcResult::kClientSideTimeout:
+      ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+      break;
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+  EXPECT_EQ(result, result_);
+  if (result == PaymentsRpcResult::kSuccess) {
+    EXPECT_EQ(context_token, context_token_);
+    EXPECT_NE(nullptr, legal_message_.get());
+  }
 }
 
 }  // namespace
