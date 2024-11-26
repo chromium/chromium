@@ -1734,7 +1734,8 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
   }
 
   const auto input_element = element.DynamicTo<WebInputElement>();
-  if (input_element && !element.Value().IsEmpty() &&
+  if (input_element && input_element.IsTextField() &&
+      !element.Value().IsEmpty() &&
       (input_element.FormControlTypeForAutofill() ==
            blink::mojom::FormControlType::kInputPassword ||
        password_autofill_agent_->IsUsernameInputField(input_element))) {
