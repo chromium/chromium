@@ -26,6 +26,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -75,7 +76,8 @@ class ASH_EXPORT CaptureModeSession
       public aura::WindowObserver,
       public display::DisplayObserver,
       public FolderSelectionDialogController::Delegate,
-      public ui::ColorProviderSourceObserver {
+      public ui::ColorProviderSourceObserver,
+      public gfx::AnimationDelegate {
  public:
   // Centralized place to control the events, observe windows and create the
   // capture mode needed widgets including `capture_mode_bar_widget_`,
@@ -239,6 +241,9 @@ class ASH_EXPORT CaptureModeSession
 
   // ui::ColorProviderSourceObserver:
   void OnColorProviderChanged() override;
+
+  // gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
   friend class CaptureModeSettingsTestApi;

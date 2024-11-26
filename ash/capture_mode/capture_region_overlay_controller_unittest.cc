@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/animation/test_animation_delegate.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -91,6 +93,32 @@ TEST_F(CaptureRegionOverlayControllerTest, PaintsDetectedTextRegions) {
   EXPECT_NE(canvas.GetBitmap().getColor(kTextRegionCenter.x() + 10,
                                         kTextRegionCenter.y() + 10),
             SK_ColorGREEN);
+}
+
+TEST_F(CaptureRegionOverlayControllerTest, PaintsGlowAroundCaptureRegion) {
+  // Initialize an entirely green 200 x 200 canvas.
+  gfx::Canvas canvas(gfx::Size(200, 200), /*image_scale=*/1.0f,
+                     /*is_opaque=*/false);
+  canvas.DrawColor(SK_ColorGREEN);
+
+  // Start a glow animation and paint it around the capture region.
+  gfx::TestAnimationDelegate animation_delegate;
+  constexpr gfx::Rect kCaptureRegion(20, 20, 10, 10);
+  ui::ColorProvider color_provider;
+  CaptureRegionOverlayController capture_region_overlay_controller;
+  capture_region_overlay_controller.StartGlowAnimation(&animation_delegate);
+  capture_region_overlay_controller.PaintCurrentGlowState(
+      canvas, kCaptureRegion, &color_provider);
+
+  // Check that various points around the capture region have been painted.
+  SkBitmap bitmap = canvas.GetBitmap();
+  EXPECT_NE(bitmap.getColor(kCaptureRegion.x() - 5, kCaptureRegion.y() - 5),
+            SK_ColorGREEN);
+  EXPECT_NE(
+      bitmap.getColor(kCaptureRegion.right() + 5, kCaptureRegion.bottom() + 5),
+      SK_ColorGREEN);
+  // Check that a point far from the capture region remains green.
+  EXPECT_EQ(bitmap.getColor(190, 190), SK_ColorGREEN);
 }
 
 }  // namespace

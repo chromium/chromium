@@ -1895,6 +1895,14 @@ void CaptureModeSession::OnColorProviderChanged() {
   }
 }
 
+void CaptureModeSession::AnimationProgressed(const gfx::Animation* animation) {
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    CaptureRegionOverlayController::SchedulePaintForGlow(
+        layer(), controller_->user_capture_region());
+  }
+}
+
 void CaptureModeSession::A11yAlertCaptureType() {
   capture_mode_util::TriggerAccessibilityAlert(
       CaptureModeController::Get()->type() == CaptureModeType::kImage
@@ -2114,6 +2122,15 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     canvas->FillRect(region,
                      color_provider->GetColor(kColorAshCaptureRegionColor));
     return;
+  }
+
+  if (capture_region_overlay_controller_ &&
+      active_behavior_->CanPaintRegionOverlay()) {
+    // Draw a glow effect around the capture region if needed. Note that this
+    // needs to be drawn before the transparent region and region border are
+    // drawn, since the glow should not cover those parts of the UI.
+    capture_region_overlay_controller_->PaintCurrentGlowState(*canvas, region,
+                                                              color_provider);
   }
 
   region.Inset(-capture_mode::kCaptureRegionBorderStrokePx);
