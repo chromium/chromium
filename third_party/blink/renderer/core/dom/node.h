@@ -35,13 +35,11 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -580,13 +578,7 @@ class CORE_EXPORT Node : public EventTarget {
     if (ShouldSkipMarkingStyleDirty())
       return;
     if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
-      DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
-          TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-          "StyleRecalcInvalidationTracking",
-          inspector_style_recalc_invalidation_tracking_event::Data, this,
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(
-              style_change_reason::kNodeInserted));
+      MaybeAddNodeInsertedTraceEvent();
     }
     if (!NeedsStyleRecalc())
       SetStyleChange(kLocalStyleChange);
@@ -1244,6 +1236,8 @@ class CORE_EXPORT Node : public EventTarget {
 
   // Used exclusively by |EnsureRareData|.
   NodeRareData& CreateRareData();
+
+  void MaybeAddNodeInsertedTraceEvent();
 
   const HeapVector<Member<MutationObserverRegistration>>*
   MutationObserverRegistry();

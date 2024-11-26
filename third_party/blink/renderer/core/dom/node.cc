@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -118,6 +119,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -359,6 +361,15 @@ NodeRareData& Node::CreateRareData() {
     data_ = MakeGarbageCollected<NodeRareData>();
   }
   return *data_;
+}
+
+void Node::MaybeAddNodeInsertedTraceEvent() {
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+      "StyleRecalcInvalidationTracking",
+      inspector_style_recalc_invalidation_tracking_event::Data, this,
+      kLocalStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kNodeInserted));
 }
 
 Node* Node::ToNode() {
