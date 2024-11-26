@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -237,7 +238,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       kMagicStackModuleDisabledHistogram,
       ContentSuggestionsModuleType::kCompactedSetUpList);
   [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_setUpListMediator.setUpListConfigs[0]];
+                          didRemoveItem:_setUpListMediator.setUpListConfigs[0]
+                         withCompletion:nil];
 }
 
 - (void)replaceSetUpListWithAllSet:(SetUpListConfig*)allSetConfig {
@@ -256,7 +258,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
                                 ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_safetyCheckMediator.safetyCheckState];
+                          didRemoveItem:_safetyCheckMediator.safetyCheckState
+                         withCompletion:nil];
 }
 
 #pragma mark - SendTabPromoMediatorDelegate
@@ -276,12 +279,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kSendTabPromo);
   [self.delegate
       magicStackRankingModel:self
-               didRemoveItem:_sendTabPromoMediator.sendTabPromoItemToShow];
+               didRemoveItem:_sendTabPromoMediator.sendTabPromoItemToShow
+              withCompletion:nil];
 }
 
 #pragma mark - TipsMagicStackMediatorDelegate
 
-- (void)removeTipsModule {
+- (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion {
   if (![self isMagicStackOrderReady]) {
     return;
   }
@@ -289,7 +293,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
                                 ContentSuggestionsModuleType::kTips);
 
-  [self.delegate magicStackRankingModel:self didRemoveItem:_tipsMediator.state];
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_tipsMediator.state
+                         withCompletion:completion];
 }
 
 #pragma mark - TabResumptionHelperDelegate
@@ -315,7 +321,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 - (void)removeTabResumptionModule {
   [self.delegate magicStackRankingModel:self
-                          didRemoveItem:_tabResumptionMediator.itemConfig];
+                          didRemoveItem:_tabResumptionMediator.itemConfig
+                         withCompletion:nil];
 }
 
 #pragma mark - ParcelTrackingMediatorDelegate
@@ -335,7 +342,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                 ContentSuggestionsModuleType::kParcelTracking);
   [self.delegate
       magicStackRankingModel:self
-               didRemoveItem:_parcelTrackingMediator.parcelTrackingItemToShow];
+               didRemoveItem:_parcelTrackingMediator.parcelTrackingItemToShow
+              withCompletion:nil];
 }
 
 - (NSUInteger)indexForMagicStackModule:
@@ -370,7 +378,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   [self.delegate
       magicStackRankingModel:self
-               didRemoveItem:_mostVisitedTilesMediator.mostVisitedConfig];
+               didRemoveItem:_mostVisitedTilesMediator.mostVisitedConfig
+              withCompletion:nil];
 }
 
 #pragma mark - Private
@@ -602,7 +611,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 - (void)removePriceTrackingPromo {
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_priceTrackingPromoMediator
-                                            .priceTrackingPromoItemToShow];
+                                            .priceTrackingPromoItemToShow
+                         withCompletion:nil];
 }
 
 // Starts a fetch of the Segmentation module ranking.

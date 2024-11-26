@@ -9,6 +9,8 @@
 
 #import <memory>
 
+#import "base/ios/block_types.h"
+
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @class TipsModuleState;
@@ -29,7 +31,8 @@ enum class TipIdentifier;
 @protocol TipsMagicStackMediatorDelegate
 
 // Indicates to receiver that the Tips module should be removed.
-- (void)removeTipsModule;
+// The `completion` is called after the removal is finished.
+- (void)removeTipsModuleWithCompletion:(ProceduralBlock)completion;
 
 @end
 
@@ -71,7 +74,8 @@ enum class TipIdentifier;
 // Removes the module from the Magic Stack on the current homepage without
 // disabling the underlying feature. This prevents the module from being shown
 // on the current homepage but does not affect its functionality elsewhere.
-- (void)removeModule;
+// The `completion` is called after the removal is finished.
+- (void)removeModuleWithCompletion:(ProceduralBlock)completion;
 
 @end
 

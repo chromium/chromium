@@ -83,12 +83,14 @@ TEST_F(TipsMagicStackMediatorTest, ReconfiguresStateForNewTip) {
 TEST_F(TipsMagicStackMediatorTest, CallsRemoveModuleOnDelegate) {
   id delegate =
       OCMStrictProtocolMock(@protocol(TipsMagicStackMediatorDelegate));
-
   mediator_.delegate = delegate;
 
-  OCMExpect([delegate removeTipsModule]);
+  // Set up the expectation for the delegate method call, using the
+  // completionBlock.
+  OCMExpect([delegate removeTipsModuleWithCompletion:[OCMArg any]]);
 
   [mediator_ disableModule];
 
+  // Verify that the delegate method was called.
   EXPECT_OCMOCK_VERIFY(delegate);
 }

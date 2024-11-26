@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -202,7 +203,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }
 
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
-                 didRemoveItem:(MagicStackModule*)item {
+                 didRemoveItem:(MagicStackModule*)item
+                withCompletion:(ProceduralBlock)completion {
 }
 
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
@@ -631,7 +633,8 @@ TEST_F(MagicStackRankingModelTest, TestMostVisitedTilesMediatorDelegate) {
                                          atIndex:1]);
   [_magicStackRankingModel didReceiveInitialMostVistedTiles];
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]]);
+                                   didRemoveItem:[OCMArg any]
+                                  withCompletion:[OCMArg any]]);
   [_magicStackRankingModel removeMostVisitedTilesModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
@@ -659,7 +662,8 @@ TEST_F(MagicStackRankingModelTest,
 
   _magicStackRankingModel.delegate = mockDelegate;
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]]);
+                                   didRemoveItem:[OCMArg any]
+                                  withCompletion:[OCMArg any]]);
   [_magicStackRankingModel removeSafetyCheckModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
@@ -671,7 +675,7 @@ TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
   id mockDelegate =
       OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
   _magicStackRankingModel.delegate = mockDelegate;
-  [_magicStackRankingModel removeTipsModule];
+  [_magicStackRankingModel removeTipsModuleWithCompletion:nil];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 
   FakeMagicStackRankingModelDelegate* fakeDelegate =
@@ -686,8 +690,9 @@ TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
 
   _magicStackRankingModel.delegate = mockDelegate;
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
-                                   didRemoveItem:[OCMArg any]]);
-  [_magicStackRankingModel removeTipsModule];
+                                   didRemoveItem:[OCMArg any]
+                                  withCompletion:[OCMArg any]]);
+  [_magicStackRankingModel removeTipsModuleWithCompletion:nil];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
