@@ -316,6 +316,20 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSSharedTabGroupForeground.name == feature->name) {
+    // Should show this promo only once if promo specific and group conditions
+    // are met.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("shared_tab_group_foreground_used",
+                               Comparator(ANY, 0), 365, 365);
+    config->trigger = EventConfig("shared_tab_group_foreground_trigger",
+                                  Comparator(EQUAL, 0), 365, 365);
+    return config;
+  }
+
   return std::nullopt;
 }
 }  // namespace

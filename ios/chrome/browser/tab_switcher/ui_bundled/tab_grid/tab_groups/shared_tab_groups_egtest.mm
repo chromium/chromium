@@ -5,19 +5,25 @@
 #import <Foundation/Foundation.h>
 
 #import "base/feature_list.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::ManageGroupButton;
@@ -25,9 +31,15 @@ using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
 using chrome_test_util::OpenTabGroupAtIndex;
 using chrome_test_util::ShareGroupButton;
+using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
+using chrome_test_util::TabGroupBackButton;
 
 namespace {
+
+NSString* const kTab1Title = @"Tab1";
+NSString* const kTab2Title = @"Tab2";
 
 // Put the number at the beginning to avoid issues with sentence case, as the
 // keyboard default can differ iPhone vs iPad, simulator vs device.
@@ -102,6 +114,8 @@ void ShareGroupAtIndex(int index) {
 
 - (void)setUp {
   [super setUp];
+  RegisterQueryTitleHandler(self.testServer);
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
   [ChromeEarlGrey
       setUserDefaultsObject:@YES
                      forKey:kSharedTabGroupUserEducationShownOnceKey];
@@ -132,7 +146,7 @@ void ShareGroupAtIndex(int index) {
                      kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:educationScreen];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
       performAction:grey_tap()];
   OpenTabGroupAtIndex(0);
 
@@ -300,6 +314,47 @@ void ShareGroupAtIndex(int index) {
   // Verify that it closed the Join flow.
   [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Checks that the IPH is presented when the user foreground the app with a
+// shared tab group active.
+- (void)testForegroundIPH {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Not available on iPad.
+    return;
+  }
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.iph_feature_enabled = "IPH_iOSSharedTabGroupForeground";
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(1, kGroup1Name);
+  [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Foreground the app. The group is not shared so no IPH.
+  AppLaunchManager* manager = [AppLaunchManager sharedManager];
+  [manager backgroundAndForegroundApp];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_SHARED_GROUP_USER_EDUCATION_IPH_FOREGROUND))]
+      assertWithMatcher:grey_nil()];
+
+  // Share the group then foreground the app. The IPH should be visible.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+      performAction:grey_tap()];
+  ShareGroupAtIndex(1);
+  [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
+      performAction:grey_tap()];
+  [manager backgroundAndForegroundApp];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_SHARED_GROUP_USER_EDUCATION_IPH_FOREGROUND))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

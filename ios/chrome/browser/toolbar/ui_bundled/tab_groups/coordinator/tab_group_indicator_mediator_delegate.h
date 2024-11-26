@@ -30,6 +30,10 @@ enum class TabGroupActionType;
 // Displays a snackbar after closing a tab group locally.
 - (void)showTabGroupIndicatorSnackbarAfterClosingGroup;
 
+// Displays the IPH when the user foreground the app while a shared tab group is
+// active.
+- (void)showIPHForSharedTabGroupForegrounded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_DELEGATE_H_

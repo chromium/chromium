@@ -7,7 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_mutator.h"
+
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -21,7 +26,8 @@ class UrlLoadingBrowserAgent;
 class WebStateList;
 
 // Mediator used to propagate tab group updates to the TabGroupIndicatorView.
-@interface TabGroupIndicatorMediator : NSObject <TabGroupIndicatorMutator>
+@interface TabGroupIndicatorMediator
+    : NSObject <SceneStateObserver, TabGroupIndicatorMutator>
 
 // Delegate for actions happening in the mediator.
 @property(nonatomic, weak) id<TabGroupIndicatorMediatorDelegate> delegate;
@@ -33,14 +39,15 @@ class WebStateList;
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 // Creates an instance of the mediator.
-- (instancetype)initWithTabGroupSyncService:
-                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                            shareKitService:(ShareKitService*)shareKitService
-                                   consumer:
-                                       (id<TabGroupIndicatorConsumer>)consumer
-                               webStateList:(WebStateList*)webStateList
-                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                                  incognito:(BOOL)incognito;
+- (instancetype)
+    initWithTabGroupSyncService:
+        (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                shareKitService:(ShareKitService*)shareKitService
+                       consumer:(id<TabGroupIndicatorConsumer>)consumer
+                   webStateList:(WebStateList*)webStateList
+                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                 featureTracker:(feature_engagement::Tracker*)tracker
+                      incognito:(BOOL)incognito;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -157,6 +157,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSContextualPanelPriceInsightsFeature,
     &kIPHHomeCustomizationMenuFeature,
     &kIPHiOSLensOverlayEntrypointTipFeature,
+    &kIPHiOSSharedTabGroupForeground,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)

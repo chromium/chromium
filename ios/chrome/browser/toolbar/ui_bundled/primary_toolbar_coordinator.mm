@@ -72,7 +72,7 @@
     // The `_tabGroupIndicatorCoordinator` should be configured after the
     // `AdaptiveToolbarCoordinator` to gain access to the `PrimaryToolbarView`.
     _tabGroupIndicatorCoordinator = [[TabGroupIndicatorCoordinator alloc]
-        initWithBaseViewController:self.viewController
+        initWithBaseViewController:self.baseViewController
                            browser:self.browser];
     _tabGroupIndicatorCoordinator.toolbarHeightDelegate =
         self.toolbarHeightDelegate;

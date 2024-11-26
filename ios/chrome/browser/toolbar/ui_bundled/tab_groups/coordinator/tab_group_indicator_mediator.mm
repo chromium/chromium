@@ -6,6 +6,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -17,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_consumer.h"
@@ -24,12 +28,21 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
-@interface TabGroupIndicatorMediator () <WebStateListObserving>
+using ScopedTabGroupSyncObservation =
+    base::ScopedObservation<tab_groups::TabGroupSyncService,
+                            tab_groups::TabGroupSyncService::Observer>;
+
+@interface TabGroupIndicatorMediator () <TabGroupSyncServiceObserverDelegate,
+                                         WebStateListObserving>
 @end
 
 @implementation TabGroupIndicatorMediator {
   raw_ptr<ShareKitService> _shareKitService;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  raw_ptr<feature_engagement::Tracker> _tracker;
+  // The bridge between the service C++ observer and this Objective-C class.
+  std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
+  std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
   // URL loader to open tabs when needed.
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   __weak id<TabGroupIndicatorConsumer> _consumer;
@@ -38,23 +51,34 @@
   BOOL _incognito;
 }
 
-- (instancetype)initWithTabGroupSyncService:
-                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                            shareKitService:(ShareKitService*)shareKitService
-                                   consumer:
-                                       (id<TabGroupIndicatorConsumer>)consumer
-                               webStateList:(WebStateList*)webStateList
-                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                                  incognito:(BOOL)incognito {
+- (instancetype)
+    initWithTabGroupSyncService:
+        (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                shareKitService:(ShareKitService*)shareKitService
+                       consumer:(id<TabGroupIndicatorConsumer>)consumer
+                   webStateList:(WebStateList*)webStateList
+                      URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                 featureTracker:(feature_engagement::Tracker*)tracker
+                      incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     CHECK(consumer);
     CHECK(webStateList);
+    CHECK(tracker);
     CHECK(IsTabGroupIndicatorEnabled());
     _URLLoader = URLLoader;
     _shareKitService = shareKitService;
     _tabGroupSyncService = tabGroupSyncService;
+    if (tabGroupSyncService) {
+      _syncServiceObserver =
+          std::make_unique<TabGroupSyncServiceObserverBridge>(self);
+      _scopedSyncServiceObservation =
+          std::make_unique<ScopedTabGroupSyncObservation>(
+              _syncServiceObserver.get());
+      _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
+    }
     _consumer = consumer;
+    _tracker = tracker;
     _incognito = incognito;
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -71,6 +95,8 @@
     _webStateList = nullptr;
   }
   _webStateListObserver.reset();
+  _scopedSyncServiceObservation.reset();
+  _syncServiceObserver.reset();
 }
 
 #pragma mark - WebStateListObserving
@@ -200,7 +226,40 @@
   [self closeTabGroup:tabGroup andDeleteGroup:YES];
 }
 
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (!_tabGroupSyncService) {
+    return;
+  }
+  if (level < SceneActivationLevelForegroundActive) {
+    return;
+  }
+  [self presentForegroundIPHIfNeeded];
+}
+
+#pragma mark TabGroupSyncServiceObserverDelegate
+
+- (void)tabGroupSyncServiceInitialized {
+  [self presentForegroundIPHIfNeeded];
+}
+
 #pragma mark - Private
+
+// Tries to present the IPH to be presented when the app is foregrounded with a
+// shared tab group visible.
+- (void)presentForegroundIPHIfNeeded {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup ||
+      !tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService)) {
+    return;
+  }
+  if (_tracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHiOSSharedTabGroupForeground)) {
+    [self.delegate showIPHForSharedTabGroupForegrounded];
+  }
+}
 
 // Closes all tabs in `tabGroup`. If `deleteGroup` is false, the group is closed
 // locally.
@@ -220,8 +279,9 @@
 
 // Returns the current tab group.
 - (const TabGroup*)currentTabGroup {
-  if (!_webStateList) {
-    return nil;
+  if (!_webStateList ||
+      _webStateList->active_index() == WebStateList::kInvalidIndex) {
+    return nullptr;
   }
   return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
 }

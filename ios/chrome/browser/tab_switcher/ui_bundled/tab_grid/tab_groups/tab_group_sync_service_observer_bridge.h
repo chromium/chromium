@@ -14,7 +14,8 @@ class TabGroupSyncService;
 // Objective-C protocol equivalent of the
 // tab_groups::TabGroupSyncService::Observer C++ class. Those methods are called
 // through the bridge. The method names are similar to the C++ ones.
-@protocol TabGroupSyncServiceObserverDelegate
+@protocol TabGroupSyncServiceObserverDelegate <NSObject>
+@optional
 - (void)tabGroupSyncServiceInitialized;
 - (void)tabGroupSyncServiceTabGroupAdded:(const tab_groups::SavedTabGroup&)group
                               fromSource:(tab_groups::TriggerSource)source;
