@@ -341,6 +341,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaCaption() {
+        performAriaTest("aria-caption.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaCell() {
         performAriaTest("aria-cell.html");
     }
@@ -636,6 +642,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaLink() {
+        performAriaTest("aria-link.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaListboxAriaSelected() {
         performAriaTest("aria-listbox-aria-selected.html");
     }
@@ -839,6 +851,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaParagraph() {
+        performAriaTest("aria-paragraph.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaPresentation() {
         performAriaTest("aria-presentation.html");
     }
@@ -973,6 +991,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaSortHtmlTable() {
         performAriaTest("aria-sort-html-table.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSpinbutton() {
+        performAriaTest("aria-spinbutton.html");
     }
 
     @Test
@@ -1117,6 +1141,18 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaTreeitemNestedInLists() {
         performAriaTest("aria-treeitem-nested-in-lists.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaValuemax() {
+        performAriaTest("aria-valuemax.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaValuemin() {
+        performAriaTest("aria-valuemin.html");
     }
 
     @Test

@@ -390,7 +390,6 @@ data/accessibility/aria/aria-actions-reference-target.html
 data/accessibility/aria/aria-actions-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-actions-target-id-change.html
 data/accessibility/aria/aria-actions.html
-data/accessibility/aria/aria-activedescendant-element-target-moving.html
 data/accessibility/aria/aria-activedescendant-expected-auralinux.txt
 data/accessibility/aria/aria-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-expected-mac.txt
@@ -500,6 +499,7 @@ data/accessibility/aria/aria-button-expected-mac.txt
 data/accessibility/aria/aria-button-expected-uia-win.txt
 data/accessibility/aria/aria-button-expected-win.txt
 data/accessibility/aria/aria-button.html
+data/accessibility/aria/aria-caption-expected-android-external.txt
 data/accessibility/aria/aria-caption-expected-android.txt
 data/accessibility/aria/aria-caption-expected-auralinux.txt
 data/accessibility/aria/aria-caption-expected-mac.txt
@@ -802,7 +802,6 @@ data/accessibility/aria/aria-flowto-target-id-change.html
 data/accessibility/aria/aria-flowto.html
 data/accessibility/aria/aria-focusable-subwidget-not-editable-expected-win.txt
 data/accessibility/aria/aria-focusable-subwidget-not-editable.html
-data/accessibility/aria/aria-focusable-subwidget-not-goog-editable.html
 data/accessibility/aria/aria-form-expected-android-assist-data.txt
 data/accessibility/aria/aria-form-expected-android-external.txt
 data/accessibility/aria/aria-form-expected-android.txt
@@ -913,7 +912,6 @@ data/accessibility/aria/aria-hidden-focused-button-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-focused-button-expected-win.txt
 data/accessibility/aria/aria-hidden-focused-button-owned-expected-blink.txt
 data/accessibility/aria/aria-hidden-focused-button-owned.html
-data/accessibility/aria/aria-hidden-focused-button-uia-win.txt
 data/accessibility/aria/aria-hidden-focused-button.html
 data/accessibility/aria/aria-hidden-focused-input-expected-android.txt
 data/accessibility/aria/aria-hidden-focused-input-expected-auralinux.txt
@@ -1033,6 +1031,7 @@ data/accessibility/aria/aria-level-expected-mac.txt
 data/accessibility/aria/aria-level-expected-uia-win.txt
 data/accessibility/aria/aria-level-expected-win.txt
 data/accessibility/aria/aria-level.html
+data/accessibility/aria/aria-link-expected-android-external.txt
 data/accessibility/aria/aria-link-expected-android.txt
 data/accessibility/aria/aria-link-expected-auralinux.txt
 data/accessibility/aria/aria-link-expected-mac.txt
@@ -1317,6 +1316,7 @@ data/accessibility/aria/aria-owns-with-role-change-expected-blink.txt
 data/accessibility/aria/aria-owns-with-role-change-expected-uia-win.txt
 data/accessibility/aria/aria-owns-with-role-change.html
 data/accessibility/aria/aria-owns.html
+data/accessibility/aria/aria-paragraph-expected-android-external.txt
 data/accessibility/aria/aria-paragraph-expected-android.txt
 data/accessibility/aria/aria-paragraph-expected-auralinux.txt
 data/accessibility/aria/aria-paragraph-expected-mac.txt
@@ -1469,11 +1469,6 @@ data/accessibility/aria/aria-scrollbar-expected-auralinux.txt
 data/accessibility/aria/aria-scrollbar-expected-blink.txt
 data/accessibility/aria/aria-scrollbar-expected-mac.txt
 data/accessibility/aria/aria-scrollbar-expected-win.txt
-data/accessibility/aria/aria-scrollbar-node-expected-android.txt
-data/accessibility/aria/aria-scrollbar-node-expected-auralinux.txt
-data/accessibility/aria/aria-scrollbar-node-expected-blink.txt
-data/accessibility/aria/aria-scrollbar-node-expected-mac.txt
-data/accessibility/aria/aria-scrollbar-node-expected-win.txt
 data/accessibility/aria/aria-scrollbar.html
 data/accessibility/aria/aria-search-expected-android-assist-data.txt
 data/accessibility/aria/aria-search-expected-android-external.txt
@@ -1550,6 +1545,7 @@ data/accessibility/aria/aria-sort-html-table-expected-blink.txt
 data/accessibility/aria/aria-sort-html-table-expected-mac.txt
 data/accessibility/aria/aria-sort-html-table-expected-win.txt
 data/accessibility/aria/aria-sort-html-table.html
+data/accessibility/aria/aria-spinbutton-expected-android-external.txt
 data/accessibility/aria/aria-spinbutton-expected-android.txt
 data/accessibility/aria/aria-spinbutton-expected-auralinux.txt
 data/accessibility/aria/aria-spinbutton-expected-mac.txt
@@ -1775,11 +1771,13 @@ data/accessibility/aria/aria-undefined-expected-blink.txt
 data/accessibility/aria/aria-undefined-literal-expected-blink.txt
 data/accessibility/aria/aria-undefined-literal.html
 data/accessibility/aria/aria-undefined.html
+data/accessibility/aria/aria-valuemax-expected-android-external.txt
 data/accessibility/aria/aria-valuemax-expected-android.txt
 data/accessibility/aria/aria-valuemax-expected-auralinux.txt
 data/accessibility/aria/aria-valuemax-expected-mac.txt
 data/accessibility/aria/aria-valuemax-expected-win.txt
 data/accessibility/aria/aria-valuemax.html
+data/accessibility/aria/aria-valuemin-expected-android-external.txt
 data/accessibility/aria/aria-valuemin-expected-android.txt
 data/accessibility/aria/aria-valuemin-expected-auralinux.txt
 data/accessibility/aria/aria-valuemin-expected-mac.txt
@@ -2180,7 +2178,6 @@ data/accessibility/display-locking/viewport-activation-expected-blink.txt
 data/accessibility/display-locking/viewport-activation-expected-mac.txt
 data/accessibility/display-locking/viewport-activation-expected-win.txt
 data/accessibility/display-locking/viewport-activation.html
-data/accessibility/event/activedescendant-element-added-later.html
 data/accessibility/event/add-alert-content-expected-android.txt
 data/accessibility/event/add-alert-content-expected-auralinux.txt
 data/accessibility/event/add-alert-content-expected-mac.txt
@@ -4343,8 +4340,6 @@ data/accessibility/html/isInteresting-expected-android-external.txt
 data/accessibility/html/isInteresting-expected-android.txt
 data/accessibility/html/isInteresting-expected-fuchsia.txt
 data/accessibility/html/isInteresting.html
-data/accessibility/html/keygen-expected-android.txt
-data/accessibility/html/keygen-expected-mac.txt
 data/accessibility/html/label-expected-android-assist-data.txt
 data/accessibility/html/label-expected-android-external.txt
 data/accessibility/html/label-expected-android.txt
@@ -5242,11 +5237,6 @@ data/accessibility/html/table-th-colheader-expected-fuchsia.txt
 data/accessibility/html/table-th-colheader-expected-mac.txt
 data/accessibility/html/table-th-colheader-expected-uia-win.txt
 data/accessibility/html/table-th-colheader-expected-win.txt
-data/accessibility/html/table-th-colheader-node-expected-android.txt
-data/accessibility/html/table-th-colheader-node-expected-auralinux.txt
-data/accessibility/html/table-th-colheader-node-expected-blink.txt
-data/accessibility/html/table-th-colheader-node-expected-mac.txt
-data/accessibility/html/table-th-colheader-node-expected-win.txt
 data/accessibility/html/table-th-colheader.html
 data/accessibility/html/table-th-rowheader-expected-android-assist-data.txt
 data/accessibility/html/table-th-rowheader-expected-android-external.txt

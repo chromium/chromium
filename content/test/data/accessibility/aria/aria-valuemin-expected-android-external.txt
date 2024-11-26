@@ -1,0 +1,5 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++ProgressBar text:"51" RangeInfo:[current=51.0, min=1.0, max=101.0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="progressIndicator", roleDescription="progress indicator"]
+++View text:"52" clickable RangeInfo:[current=52.0, min=2.0, max=102.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="scrollBar", roleDescription="scroll bar"]
+++SeekBar text:"53" clickable RangeInfo:[current=53.0, min=3.0, max=103.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
+++EditText text:"54" clickable RangeInfo:[current=54.0, min=4.0, max=104.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="spinButton", roleDescription="spin button"]
