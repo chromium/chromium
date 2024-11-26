@@ -44,14 +44,6 @@ FormInteractionsUkmLogger::FormInteractionsUkmLogger(
     AutofillClient* autofill_client)
     : autofill_client_(CHECK_DEREF(autofill_client)) {}
 
-void FormInteractionsUkmLogger::Record(
-    ukm::SourceId ukm_source_id,
-    ukm::builders::Autofill_CreditCardFill&& builder) {
-  if (CanLog(ukm_source_id)) {
-    builder.Record(autofill_client_->GetUkmRecorder());
-  }
-}
-
 void FormInteractionsUkmLogger::LogInteractedWithForm(
     ukm::SourceId ukm_source_id,
     bool is_for_credit_card,

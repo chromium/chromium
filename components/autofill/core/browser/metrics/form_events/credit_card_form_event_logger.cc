@@ -286,20 +286,18 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     const AutofillTriggerSource trigger_source) {
   CreditCard::RecordType record_type = credit_card.record_type();
   signin_state_for_metrics_ = signin_state_for_metrics;
-  ukm::builders::Autofill_CreditCardFill builder(
-      owner_->driver().GetPageUkmSourceId());
-  builder.SetFormSignature(HashFormSignature(form.form_signature()));
 
   client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
       driver().GetPageUkmSourceId(), form, field, record_type);
 
   AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
-      {.event_logger = raw_ref(*this),
-       .form = raw_ref(form),
-       .field = raw_ref(field),
-       .newly_filled_fields = raw_ref(newly_filled_fields),
-       .safe_fields = raw_ref(safe_filled_fields),
-       .builder = raw_ref(builder)});
+      {.ukm_recorder = client().GetUkmRecorder(),
+       .source_id = driver().GetPageUkmSourceId(),
+       .event_logger = *this,
+       .form = form,
+       .field = field,
+       .newly_filled_fields = newly_filled_fields,
+       .safe_fields = safe_filled_fields});
 
   latest_filled_card_was_masked_server_card_ = false;
   switch (record_type) {
@@ -429,9 +427,6 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
 
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
-
-  client().GetFormInteractionsUkmLogger().Record(
-      owner_->driver().GetPageUkmSourceId(), std::move(builder));
 
   if (trigger_source != AutofillTriggerSource::kFastCheckout) {
     ++form_interaction_counts_.autofill_fills;

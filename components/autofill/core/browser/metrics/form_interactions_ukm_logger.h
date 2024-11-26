@@ -19,10 +19,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace ukm::builders {
-class Autofill_CreditCardFill;
-}
-
 namespace autofill::autofill_metrics {
 
 // To reduce traffic, only a random sample of browser sessions upload UKM data.
@@ -96,9 +92,6 @@ class FormInteractionsUkmLogger {
                             base::PassKey<UkmTimestampPin> pass_key) {
     pinned_timestamp_ = t;
   }
-
-  void Record(ukm::SourceId ukm_source_id,
-              ukm::builders::Autofill_CreditCardFill&& builder);
 
   void LogInteractedWithForm(ukm::SourceId ukm_source_id,
                              bool is_for_credit_card,
