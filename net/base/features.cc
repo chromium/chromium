@@ -637,4 +637,20 @@ BASE_FEATURE(kIgnoreHSTSForLocalhost,
              "IgnoreHSTSForLocalhost",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSimpleCachePrioritizedCaching,
+             "SimpleCachePrioritizedCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int>
+    kSimpleCachePrioritizedCachingPrioritizationFactor{
+        &kSimpleCachePrioritizedCaching,
+        /*name=*/"SimpleCachePrioritizedCachingPrioritizationFactor",
+        /*default_value=*/10};
+
+const base::FeatureParam<base::TimeDelta>
+    kSimpleCachePrioritizedCachingPrioritizationPeriod{
+        &kSimpleCachePrioritizedCaching,
+        /*name=*/"SimpleCachePrioritizedCachingPrioritizationPeriod",
+        /*default_value=*/base::Days(1)};
+
 }  // namespace net::features

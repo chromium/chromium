@@ -49,6 +49,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/memory_entry_data_hints.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_request_headers.h"
@@ -14103,6 +14104,29 @@ TEST_F(HttpCacheTest, SecurityHeadersAreCopiedToConditionalizedResponse) {
       "cross-origin");
 
   EXPECT_EQ(304, response.headers->response_code());
+}
+
+// This test verifies that the PrioritizeCaching flag is not set by default.
+TEST_F(HttpCacheTest, PrioritizeCachingFlagNotSetByDefault) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
+                                nullptr);
+  EXPECT_EQ(cache.backend()->GetEntryInMemoryData(request.CacheKey()), 0);
+}
+
+// This test verifies that the PrioritizeCaching flag is set for main frame
+// navigation requests.
+TEST_F(HttpCacheTest, PrioritizeCachingFlagSetForMainFrameNavigationRequest) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  MockHttpRequest request(transaction);
+  request.is_main_frame_navigation = true;
+  RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
+                                nullptr);
+  EXPECT_EQ(cache.backend()->GetEntryInMemoryData(request.CacheKey()),
+            HINT_HIGH_PRIORITY);
 }
 
 }  // namespace net

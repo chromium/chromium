@@ -304,6 +304,11 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
   // index on next startup.
   bool app_on_background_ = false;
 
+  // Flag and params for SimpleCachePrioritizedCaching feature.
+  const bool prioritized_caching_enabled_;
+  const int caching_prioritization_factor_;
+  const uint64_t caching_prioritization_period_in_seconds_;
+
   base::WeakPtrFactory<SimpleIndex> weak_ptr_factory_{this};
 };
 

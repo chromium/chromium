@@ -662,6 +662,19 @@ NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreHSTSForLocalhost);
 
+// If enabled, main frame navigation resources will be prioritized in Simple
+// Cache. So they will be less likely to be evicted.
+NET_EXPORT BASE_DECLARE_FEATURE(kSimpleCachePrioritizedCaching);
+// This is a factor by which we divide the size of an entry that has the
+// HINT_HIGH_PRIORITY flag set to prioritize it for eviction to be less likely
+// evicted.
+NET_EXPORT extern const base::FeatureParam<int>
+    kSimpleCachePrioritizedCachingPrioritizationFactor;
+// The period of time that the entry with HINT_HIGH_PRIORITY flag is considered
+// prioritized.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSimpleCachePrioritizedCachingPrioritizationPeriod;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

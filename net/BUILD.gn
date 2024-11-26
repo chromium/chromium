@@ -479,6 +479,7 @@ component("net") {
     "disk_cache/memory/mem_backend_impl.h",
     "disk_cache/memory/mem_entry_impl.cc",
     "disk_cache/memory/mem_entry_impl.h",
+    "disk_cache/memory_entry_data_hints.h",
     "disk_cache/net_log_parameters.cc",
     "disk_cache/net_log_parameters.h",
     "disk_cache/simple/post_operation_waiter.cc",
