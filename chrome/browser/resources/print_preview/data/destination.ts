@@ -12,8 +12,8 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 // </if>
 
 import type {Cdd, ColorCapability, ColorOption, CopiesCapability} from './cdd.js';
-
 // <if expr="is_chromeos">
+import type {ManagedPrintOptions} from './managed_print_options_cros.ts';
 import type {PrinterStatus} from './printer_status_cros.js';
 import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 // </if>
@@ -127,6 +127,7 @@ export interface DestinationOptionalParams {
   isEnterprisePrinter?: boolean;
   // <if expr="is_chromeos">
   provisionalType?: DestinationProvisionalType;
+  managedPrintOptions?: ManagedPrintOptions;
   // </if>
   extensionId?: string;
   extensionName?: string;
@@ -236,6 +237,12 @@ export class Destination {
    * The length of time to wait before retrying a printer status request.
    */
   private printerStatusRetryTimerMs_: number = 3000;
+
+  /**
+   * Default/allowed values of print options for the given printer set by
+   * policy.
+   */
+  private managedPrintOptions_: ManagedPrintOptions|null = null;
   // </if>
 
   private type_: PrinterType;
@@ -260,7 +267,9 @@ export class Destination {
         this.provisionalType_ !==
                 DestinationProvisionalType.NEEDS_USB_PERMISSION ||
             this.isExtension,
-        'Provisional USB destination only supprted with extension origin.');
+        'Provisional USB destination only supported with extension origin.');
+
+    this.managedPrintOptions_ = (params && params.managedPrintOptions) || null;
     // </if>
   }
 

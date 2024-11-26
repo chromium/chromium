@@ -96,6 +96,7 @@ build_webui("build") {
 
   if (is_chromeos) {
     non_web_component_files += [
+      "data/managed_print_options_cros.ts",
       "data/print_server_store.ts",
       "data/printer_status_cros.ts",
       "native_layer_cros.ts",
