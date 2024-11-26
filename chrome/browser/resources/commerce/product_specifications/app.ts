@@ -43,7 +43,7 @@ import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import type {TableElement} from './table.js';
-import type {UrlListEntry} from './utils.js';
+import {isValidLowercaseUuid, type UrlListEntry} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 interface AggregatedProductData {
@@ -331,7 +331,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     const router = Router.getInstance();
     const params = new URLSearchParams(router.getCurrentQuery());
     const idParam = params.get('id');
-    if (idParam) {
+    if (idParam && isValidLowercaseUuid(idParam)) {
       this.id_ = {value: idParam};
       const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
           {value: idParam});
