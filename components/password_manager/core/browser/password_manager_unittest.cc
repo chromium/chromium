@@ -5983,6 +5983,22 @@ TEST_P(PasswordManagerTest, ParsingDifferenceFillingAndSavingUKM) {
       PasswordFormMetricsRecorder::ParsingDifference::kNone);
 }
 
+// Check that cached model predictions are cleared after a navigation.
+TEST_P(PasswordManagerTest, ModelPredictions_ClearedTimely) {
+  FormData form_data(MakeSimpleFormData());
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {form_data});
+
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form_data,
+      {{form_data.fields()[0].global_id(), FieldType::USERNAME},
+       {form_data.fields()[1].global_id(), FieldType::PASSWORD}});
+  EXPECT_EQ(manager()->GetClassifierModelPredictionsForTesting().size(), 1u);
+
+  manager()->DidNavigateMainFrame(/*form_may_be_submitted=*/false);
+  EXPECT_TRUE(manager()->GetClassifierModelPredictionsForTesting().empty());
+}
+
 // Checks that a password form can be parsed using model predictions.
 TEST_P(PasswordManagerTest, ProcessingModelPredictions) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));

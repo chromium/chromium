@@ -578,12 +578,8 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
       owned_submitted_form_manager_ = std::move(submitted_manager);
     }
   }
-  password_form_cache_.Clear();
 
-  // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
-  // `TryToFindPredictionsToPossibleUsernames`.
-  TryToFindPredictionsToPossibleUsernames();
-  server_predictions_.clear();
+  ResetFormsAndPredictionsCache();
   store_password_called_ = false;
 }
 
@@ -621,13 +617,9 @@ void PasswordManager::UpdateFormManagers() {
 }
 
 void PasswordManager::DropFormManagers() {
-  password_form_cache_.Clear();
+  ResetFormsAndPredictionsCache();
   owned_submitted_form_manager_.reset();
   visible_forms_data_.clear();
-  // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
-  // `TryToFindPredictionsToPossibleUsernames`.
-  TryToFindPredictionsToPossibleUsernames();
-  server_predictions_.clear();
 }
 
 base::span<const PasswordForm> PasswordManager::GetBestMatches(
@@ -1714,6 +1706,15 @@ bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
   return base::ranges::any_of(form_data, [driver, this](const FormData& form) {
     return !GetMatchedManagerForForm(driver, form.renderer_id());
   });
+}
+
+void PasswordManager::ResetFormsAndPredictionsCache() {
+  password_form_cache_.Clear();
+  // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
+  // `TryToFindPredictionsToPossibleUsernames`.
+  TryToFindPredictionsToPossibleUsernames();
+  server_predictions_.clear();
+  classifier_model_predictions_.clear();
 }
 
 bool PasswordManager::IsFormManagerPendingPasswordUpdate() const {

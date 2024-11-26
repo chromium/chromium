@@ -379,6 +379,10 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
 
+  // Cleans the `password_form_cache_`, and the cached server and model
+  // predictions.
+  void ResetFormsAndPredictionsCache();
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Triggers a user survey to rate Password Manager, if the user actively
   // engaged with Password Manager (filled a form manually).
@@ -451,7 +455,6 @@ class PasswordManager : public PasswordManagerInterface {
   // Classification model predictions for the forms on the page, keyed by
   // the combination of the driver and the renderer id of the form, that allow
   // to uniquely identify forms on the page.
-  // TODO(crbug.com/371933424): Clear cached predictions when needed.
   std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
            base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
       classifier_model_predictions_;
