@@ -89,8 +89,10 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/debug/crash_logging.h"
 #include "base/native_library.h"
 #include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -177,11 +179,12 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
         base::UmaHistogramSparse(
             "Process.Sandbox.PreloadLibraryFailed.ErrorCode", lib_error.code);
         // The browser should not request libraries that do not exist, so crash
-        // on failure.
-        wchar_t dll_name[MAX_PATH];
-        base::wcslcpy(dll_name, library_path.value().c_str(), MAX_PATH);
-        base::debug::Alias(dll_name);
+        // on failure. Record info to distinguish crash signatures.
         base::debug::Alias(&lib_error);
+        std::string dll_name_str = base::WideToUTF8(library_path.value());
+        DEBUG_ALIAS_FOR_CSTR(dll_name, dll_name_str.c_str(), 256);
+        SCOPED_CRASH_KEY_STRING256("PreSandboxHook", "ModuleName", dll_name);
+
         NOTREACHED();
       }
     }
