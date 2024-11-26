@@ -503,19 +503,16 @@ TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
 // These test are not compatible with RemoteTestServer because RemoteTestServer
 // doesn't support TYPE_BASIC_AUTH_PROXY.
 // TODO(ricea): Make these tests work. See crbug.com/441711.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_HttpsProxyUnauthedFails DISABLED_HttpsProxyUnauthedFails
-#define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
-#define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
-#else
-#define MAYBE_HttpsProxyUnauthedFails HttpsProxyUnauthedFails
-#define MAYBE_HttpsWssProxyUnauthedFails HttpsWssProxyUnauthedFails
-#define MAYBE_HttpsProxyUsed HttpsProxyUsed
-#endif
+constexpr bool kHasBasicAuthProxy =
+    !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA));
 
 // Test for issue crbug.com/433695 "Unencrypted WebSocket connection via
 // authenticated proxy times out".
-TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUnauthedFails) {
+TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
+  if (!kHasBasicAuthProxy) {
+    GTEST_SKIP() << "Test not supported on this platform";
+  }
+
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
                                  base::FilePath());
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
@@ -542,7 +539,11 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUnauthedFails) {
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
 
-TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
+TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
+  if (!kHasBasicAuthProxy) {
+    GTEST_SKIP() << "Test not supported on this platform";
+  }
+
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
                                  base::FilePath());
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
@@ -570,7 +571,11 @@ TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
 
 // Regression test for crbug.com/426736 "WebSocket connections not using
 // configured system HTTPS Proxy".
-TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUsed) {
+TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
+  if (!kHasBasicAuthProxy) {
+    GTEST_SKIP() << "Test not supported on this platform";
+  }
+
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_PROXY,
                                  base::FilePath());
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
@@ -627,14 +632,11 @@ std::unique_ptr<HttpResponse> ProxyPacHandler(const HttpRequest& request) {
 // and Windows.
 // TODO(ricea): Remove this test if --winhttp-proxy-resolver flag is removed.
 // See crbug.com/644030.
+TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
+  if constexpr (!BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)) {
+    GTEST_SKIP() << "Test not supported on this platform";
+  }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-#define MAYBE_ProxyPacUsed ProxyPacUsed
-#else
-#define MAYBE_ProxyPacUsed DISABLED_ProxyPacUsed
-#endif
-
-TEST_F(WebSocketEndToEndTest, MAYBE_ProxyPacUsed) {
   EmbeddedTestServer proxy_pac_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_PROXY,
                                  base::FilePath());
