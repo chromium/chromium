@@ -297,6 +297,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_prefs.h"
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -2291,6 +2292,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   side_panel_prefs::RegisterProfilePrefs(registry);
 
   tabs::RegisterProfilePrefs(registry);
+
+  CertificateManagerPageHandler::RegisterProfilePrefs(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(webauthn::pref_names::kAllowWithBrokenCerts,

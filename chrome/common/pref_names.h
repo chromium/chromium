@@ -3855,6 +3855,7 @@ inline constexpr char kSignedHTTPExchangeEnabled[] =
 // Controlled by ClientCertificateManagementAllowed policy.
 inline constexpr char kClientCertificateManagementAllowed[] =
     "client_certificate_management_allowed";
+#endif
 
 // Enum that specifies CA certificate management permissions for user. It
 // can have one of the following values.
@@ -3864,7 +3865,6 @@ inline constexpr char kClientCertificateManagementAllowed[] =
 // Controlled by CACertificateManagementAllowed policy.
 inline constexpr char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
-#endif
 
 // Dictionary that contains all of the Hats Survey Metadata for desktop surveys.
 inline constexpr char kHatsSurveyMetadata[] = "hats.survey_metadata";

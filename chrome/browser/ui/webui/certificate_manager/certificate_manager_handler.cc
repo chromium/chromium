@@ -257,6 +257,13 @@ void CertificateManagerPageHandler::SetIncludeSystemTrustStore(bool include) {
 }
 #endif
 
+void CertificateManagerPageHandler::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kCACertificateManagementAllowed,
+      static_cast<int>(CACertificateManagementPermission::kAll));
+}
+
 void CertificateManagerPageHandler::CertSource::ImportCertificate(
     base::WeakPtr<content::WebContents> web_contents,
     CertificateManagerPageHandler::ImportCertificateCallback callback) {
