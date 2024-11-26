@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "collaboration_group_id_notifier.h",
+    "collaboration_group_id_notifier.mm",
     "share_kit_avatar_configuration.h",
     "share_kit_avatar_configuration.mm",
     "share_kit_avatar_primitive.h",
@@ -31,6 +33,7 @@ source_set("model") {
   deps = [
     "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
+    "//components/saved_tab_groups/public",
     "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
     "//url",

@@ -8,9 +8,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
-#import "components/saved_tab_groups/public/tab_group_sync_service.h"
-#import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
@@ -91,10 +91,21 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)start {
   [self setUpViewController];
-
+  ProfileIOS* profile = self.browser->GetProfile();
   Browser* browser = self.browser;
+
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
+       tabGroupSyncService:tabGroupSyncService
+           shareKitService:shareKitService
+      collaborationService:collaborationService
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController
@@ -400,45 +411,17 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 // Sets up the `_viewController`.
 - (void)setUpViewController {
-  ProfileIOS* profile = self.browser->GetProfile();
-
   // Get the command handler for TabGroupsCommands.
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
-
-  // Determine if the tab group is shared and get the collaboration ID.
-  tab_groups::TabGroupSyncService* syncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  NSString* savedCollabID =
-      tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
-  BOOL isShared = savedCollabID != nil;
 
   // Initialize the `_viewController`.
   _viewController = [[TabGroupViewController alloc]
       initWithHandler:handler
             incognito:self.browser->GetProfile()->IsOffTheRecord()
-               shared:isShared
              tabGroup:_tabGroup];
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
-
-  // Prevent the face pile from being set up for tab groups that are not shared
-  // and cannot be shared.
-  if (!isShared && !IsSharedTabGroupsCreateEnabled(profile)) {
-    return;
-  }
-
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(profile);
-  if (!shareKitService) {
-    return;
-  }
-
-  // Configure the face pile.
-  ShareKitFacePileConfiguration* config =
-      [[ShareKitFacePileConfiguration alloc] init];
-  config.collabID = savedCollabID;
-  _viewController.facePile = shareKitService->FacePile(config);
 }
 
 // Called when the tab group is presented, to show the user education

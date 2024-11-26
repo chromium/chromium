@@ -9,10 +9,15 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -35,7 +40,20 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
+using ScopedTabGroupSyncObservation =
+    base::ScopedObservation<tab_groups::TabGroupSyncService,
+                            tab_groups::TabGroupSyncService::Observer>;
+
 @implementation TabGroupMediator {
+  // The service to observe.
+  raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  // The share kit service.
+  raw_ptr<ShareKitService> _shareKitService;
+  // The collaboration service.
+  raw_ptr<collaboration::CollaborationService> _collaborationService;
+  // The notifier for the collaboration id observer.
+  std::unique_ptr<CollaborationGroupIDNotifier> _collaborationIDNotifier;
+  std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
   // Tab group consumer.
   __weak id<TabGroupConsumer> _groupConsumer;
   // Current group.
@@ -43,6 +61,11 @@
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                 tabGroupSyncService:
+                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                     shareKitService:(ShareKitService*)shareKitService
+                collaborationService:
+                    (collaboration::CollaborationService*)collaborationService
                             tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)groupConsumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer
@@ -54,6 +77,20 @@
   CHECK(groupConsumer);
   CHECK(tabGroup);
   if ((self = [super initWithModeHolder:modeHolder])) {
+    _tabGroupSyncService = tabGroupSyncService;
+    _shareKitService = shareKitService;
+    _collaborationService = collaborationService;
+    _collaborationIDNotifier =
+        std::make_unique<CollaborationGroupIDNotifier>(self);
+
+    // The `_tabGroupSyncService` is nil in incognito.
+    if (_tabGroupSyncService) {
+      _scopedSyncServiceObservation =
+          std::make_unique<ScopedTabGroupSyncObservation>(
+              _collaborationIDNotifier.get());
+      _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
+    }
+
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;
@@ -63,6 +100,7 @@
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
+    [self updateFacePileUI];
     [self populateConsumerItems];
   }
   return self;
@@ -115,6 +153,15 @@
 }
 
 #pragma mark - Parent's functions
+
+- (void)disconnect {
+  _scopedSyncServiceObservation.reset();
+  _collaborationIDNotifier.reset();
+  _tabGroupSyncService = nullptr;
+  _collaborationService = nullptr;
+  _shareKitService = nullptr;
+  [super disconnect];
+}
 
 - (void)configureToolbarsButtons {
   // No-op
@@ -445,7 +492,43 @@
   }
 }
 
+#pragma mark - CollaborationGroupIDNotifierObserver
+
+- (void)collaborationIDChangedForGroup:
+    (const tab_groups::SavedTabGroup&)newGroup {
+  if (newGroup.local_group_id() != _tabGroup->tab_group_id()) {
+    return;
+  }
+  [self updateFacePileUI];
+}
+
 #pragma mark - Private
+
+// Updates the facePile UI and the share state of the consumer.
+- (void)updateFacePileUI {
+  if (!_shareKitService || !_shareKitService->IsSupported() ||
+      !_collaborationService || !_tabGroupSyncService) {
+    return;
+  }
+
+  NSString* savedCollabID = tab_groups::utils::GetTabGroupCollabID(
+      _tabGroup.get(), _tabGroupSyncService);
+  BOOL isShared = savedCollabID != nil;
+  [_groupConsumer setGroupShared:isShared];
+
+  // Prevent the face pile from being set up for tab groups that are not shared
+  // and cannot be shared.
+  if (!isShared &&
+      !_collaborationService->GetServiceStatus().IsAllowedToCreate()) {
+    return;
+  }
+
+  // Configure the face pile.
+  ShareKitFacePileConfiguration* config =
+      [[ShareKitFacePileConfiguration alloc] init];
+  config.collabID = savedCollabID;
+  [_groupConsumer setFacePileViewController:_shareKitService->FacePile(config)];
+}
 
 // Inserts an item representing `webState` in the consumer at `index`.
 - (void)insertInConsumerWebState:(web::WebState*)webState atIndex:(int)index {

@@ -20,15 +20,6 @@
   // The cell registration for the summary card of the recent activity in a
   // shared tab group.
   UICollectionViewCellRegistration* _activitySummaryCellRegistration;
-  // Whether this tab group is shared with other users.
-  BOOL _shared;
-}
-
-- (instancetype)initWithShared:(BOOL)shared {
-  if ((self = [super initWithNibName:nil bundle:nil])) {
-    _shared = shared;
-  }
-  return self;
 }
 
 - (void)setGroupColor:(UIColor*)groupColor {
@@ -44,6 +35,14 @@
     return;
   }
   _groupTitle = groupTitle;
+  [self updateTabGroupHeader];
+}
+
+- (void)setShared:(BOOL)shared {
+  if (_shared == shared) {
+    return;
+  }
+  _shared = shared;
   [self updateTabGroupHeader];
 }
 

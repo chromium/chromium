@@ -48,6 +48,11 @@ id<GREYMatcher> FakeJoinFlowView() {
   return grey_accessibilityID(kFakeJoinFlowIdentifier);
 }
 
+// Matcher for the face pile button.
+id<GREYMatcher> FacePileButton() {
+  return grey_accessibilityID(kTabGroupFacePileButtonIdentifier);
+}
+
 // Returns the completely configured AppLaunchConfiguration (i.e. setting all
 // the underlying feature dependencies), with the Shared Tab Groups flavor as a
 // parameter.
@@ -177,8 +182,54 @@ void ShareGroupAtIndex(int index) {
 }
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
-// checks opening the Manage flow.
-- (void)testShareGroupAndManageGroup {
+// checks opening the Manage flow. Using the face pile.
+- (void)testShareGroupAndManageGroupUsingFacePile {
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Open the tab group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Tap on the face pile to share the group.
+  [[EarlGrey selectElementWithMatcher:FacePileButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Tap on the face pile to manage the group.
+  [[EarlGrey selectElementWithMatcher:FacePileButton()]
+      performAction:grey_tap()];
+
+  // Verify that it opened the Manage flow.
+  [[EarlGrey selectElementWithMatcher:FakeManageFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the Manage flow.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Manage flow.
+  [[EarlGrey selectElementWithMatcher:FakeManageFlowView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Checks opening the Share flow from the Tab Grid and actually sharing. Then
+// checks opening the Manage flow. Using context menus.
+- (void)testShareGroupAndManageGroupUsingContextMenus {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 

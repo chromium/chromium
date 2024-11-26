@@ -165,60 +165,27 @@ class TabGroupCoordinatorWithSharedTabGroupsTest
 };
 
 // Checks that the coordinator and its view controller are created upon start.
-// The face pile is nil because Shared Tab Groups is not enabled.
 TEST_F(TabGroupCoordinatorTest, Started) {
   [coordinator_ start];
 
   EXPECT_NE(coordinator_, nil);
   EXPECT_NE(coordinator_.viewController, nil);
-  EXPECT_EQ(coordinator_.viewController.facePile, nil);
 }
 
 // Checks that the coordinator and its view controller are created upon start.
-// The face pile is nil because the user can't share, just join.
 TEST_F(TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest, Started) {
   [coordinator_ start];
 
   EXPECT_NE(coordinator_, nil);
   EXPECT_NE(coordinator_.viewController, nil);
-  EXPECT_EQ(coordinator_.viewController.facePile, nil);
 }
 
 // Checks that the coordinator and its view controller are created upon start.
-// The face pile is not nil because the user can start sharing.
 TEST_F(TabGroupCoordinatorWithSharedTabGroupsTest, Started) {
   [coordinator_ start];
 
   EXPECT_NE(coordinator_, nil);
   EXPECT_NE(coordinator_.viewController, nil);
-  EXPECT_NE(coordinator_.viewController.facePile, nil);
-}
-
-// Checks that the face pile is not nil because the group is shared.
-TEST_F(TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest,
-       Started_GroupIsShared) {
-  // Share the group.
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  tab_groups::LocalTabGroupID tab_group_id =
-      web_state_list->GetGroupOfWebStateAt(0)->tab_group_id();
-  tab_group_sync_service_->MakeTabGroupShared(tab_group_id, "foo");
-
-  [coordinator_ start];
-
-  EXPECT_NE(coordinator_.viewController.facePile, nil);
-}
-
-// Checks that the face pile is not nil because the group is shared.
-TEST_F(TabGroupCoordinatorWithSharedTabGroupsTest, Started_GroupIsShared) {
-  // Share the group.
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  tab_groups::LocalTabGroupID tab_group_id =
-      web_state_list->GetGroupOfWebStateAt(0)->tab_group_id();
-  tab_group_sync_service_->MakeTabGroupShared(tab_group_id, "foo");
-
-  [coordinator_ start];
-
-  EXPECT_NE(coordinator_.viewController.facePile, nil);
 }
 
 }  // namespace

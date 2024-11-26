@@ -7,11 +7,18 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/collaboration/test_support/mock_collaboration_service.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -31,6 +38,32 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+using tab_groups::SavedTabGroup;
+using tab_groups::SavedTabGroupTab;
+
+using ::testing::Return;
+
+namespace {
+
+// Creates a vector of `saved_tabs` based on the given `range`.
+std::vector<SavedTabGroupTab> SavedTabGroupTabsFromTabs(
+    std::vector<int> indexes,
+    WebStateList* web_state_list,
+    base::Uuid saved_tab_group_id) {
+  std::vector<SavedTabGroupTab> saved_tabs;
+  for (int index : indexes) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    SavedTabGroupTab saved_tab(web_state->GetVisibleURL(),
+                               web_state->GetTitle(), saved_tab_group_id,
+                               std::make_optional(index), std::nullopt,
+                               web_state->GetUniqueIdentifier().identifier());
+    saved_tabs.push_back(saved_tab);
+  }
+  return saved_tabs;
+}
+
+}  // namespace
+
 class TabGroupMediatorTest : public GridMediatorTestClass {
  public:
   void SetUp() override {
@@ -46,13 +79,31 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
         "| f [ 1 a* b c ] d e ", browser_->GetProfile()));
 
     mode_holder_ = [[TabGridModeHolder alloc] init];
-
     tab_group_ = web_state_list->GetGroupOfWebStateAt(1);
-
     tab_group_consumer_ = OCMProtocolMock(@protocol(TabGroupConsumer));
+    tab_group_sync_service_ =
+        std::make_unique<tab_groups::FakeTabGroupSyncService>();
+    share_kit_service_ =
+        std::make_unique<TestShareKitService>(nullptr, nullptr);
+    collaboration_service_ =
+        std::make_unique<collaboration::MockCollaborationService>();
+
+    base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+    std::vector<SavedTabGroupTab> saved_tabs = SavedTabGroupTabsFromTabs(
+        {1, 2, 3}, web_state_list, saved_tab_group_id);
+    SavedTabGroup saved_group(
+        base::SysNSStringToUTF16(tab_group_->GetRawTitle()),
+        tab_group_->visual_data().color(), saved_tabs, std::nullopt,
+        saved_tab_group_id, tab_group_->tab_group_id());
+    tab_group_sync_service_->AddGroup(saved_group);
+
+    EXPECT_CALL(*collaboration_service_, GetServiceStatus()).Times(1);
 
     mediator_ = [[TabGroupMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()
+         tabGroupSyncService:tab_group_sync_service_.get()
+             shareKitService:share_kit_service_.get()
+        collaborationService:collaboration_service_.get()
                     tabGroup:tab_group_->GetWeakPtr()
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
@@ -61,10 +112,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   }
 
   void TearDown() override {
-    // Forces the mediator to removes its Observer from WebStateList before the
-    // Browser is destroyed.
-    mediator_.browser = nullptr;
-    mediator_ = nil;
+    [mediator_ disconnect];
     GridMediatorTestClass::TearDown();
   }
 
@@ -80,6 +128,10 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   id<TabGroupConsumer> tab_group_consumer_;
   raw_ptr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
+  std::unique_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
+  std::unique_ptr<ShareKitService> share_kit_service_;
+  std::unique_ptr<collaboration::MockCollaborationService>
+      collaboration_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TabGridModeHolder* mode_holder_;
@@ -257,4 +309,54 @@ TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
   web_state_list->CloseWebStateAt(4, WebStateList::CLOSE_USER_ACTION);
   web_state_list->CloseWebStateAt(4, WebStateList::CLOSE_USER_ACTION);
   EXPECT_EQ("| f [ 1 a* b c ]", builder_->GetWebStateListDescription());
+}
+
+// Tests that CollaborationIDChangedForGroup does not update facePile UI when
+// the group id does not match.
+TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
+  OCMReject([tab_group_consumer_ setGroupShared:OCMOCK_ANY]);
+  OCMReject([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
+
+  SavedTabGroup saved_group(std::u16string(u"title"),
+                            tab_groups::TabGroupColorId::kGrey, {});
+  [mediator_ collaborationIDChangedForGroup:saved_group];
+
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that CollaborationIDChangedForGroup correctly updates the facePile UI
+// when the group is not shared.
+TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupNotShared) {
+  // Simulate user successfully completes authentication. This is needed because
+  // the group is not shared.
+  collaboration::ServiceStatus status;
+  status.collaboration_status =
+      collaboration::CollaborationStatus::kEnabledCreateAndJoin;
+  status.sync_status = collaboration::SyncStatus::kSyncEnabled;
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillOnce(Return(status));
+
+  OCMExpect([tab_group_consumer_ setGroupShared:NO]);
+  OCMExpect([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
+
+  const SavedTabGroup saved_group =
+      tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
+  [mediator_ collaborationIDChangedForGroup:saved_group];
+
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
+}
+
+// Tests that CollaborationIDChangedForGroup correctly updates the facePile UI
+// when the group is shared.
+TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
+  OCMExpect([tab_group_consumer_ setGroupShared:YES]);
+  OCMExpect([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
+
+  const SavedTabGroup saved_group =
+      tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
+  tab_group_sync_service_->MakeTabGroupShared(
+      saved_group.local_group_id().value(), "collaboration");
+  [mediator_ collaborationIDChangedForGroup:saved_group];
+
+  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }

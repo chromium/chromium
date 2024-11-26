@@ -14,21 +14,15 @@
 
 // Group's title.
 @property(nonatomic, copy) NSString* groupTitle;
+
 // Group's color.
 @property(nonatomic, copy) UIColor* groupColor;
 
+// Whether this tab group is shared with other users.
+@property(nonatomic, assign) BOOL shared;
+
 // View delegate is informed of user interactions in the grid UI.
 @property(nonatomic, weak) id<GridViewDelegate> viewDelegate;
-
-// Designated initializer.
-// `shared` is true when the tab group displayed by this view controller is
-// shared with others.
-- (instancetype)initWithShared:(BOOL)shared NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 @end
 

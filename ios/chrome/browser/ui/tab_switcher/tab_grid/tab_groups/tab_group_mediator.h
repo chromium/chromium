@@ -8,9 +8,19 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/share_kit/model/collaboration_group_id_notifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_mutator.h"
 
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
+
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
+class ShareKitService;
 class TabGroup;
 @protocol TabCollectionConsumer;
 @class TabGridModeHolder;
@@ -19,9 +29,15 @@ class TabGroup;
 class WebStateList;
 
 // Tab group mediator in charge to handle model update for one group.
-@interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
+@interface TabGroupMediator
+    : BaseGridMediator <CollaborationGroupIDNotifierObserver, TabGroupMutator>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                 tabGroupSyncService:
+                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                     shareKitService:(ShareKitService*)shareKitService
+                collaborationService:
+                    (collaboration::CollaborationService*)collaborationService
                             tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)consumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer

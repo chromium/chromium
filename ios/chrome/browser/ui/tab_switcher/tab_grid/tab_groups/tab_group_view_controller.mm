@@ -80,17 +80,17 @@ constexpr CGFloat kFacePileHeight = 44;
   UIView* _coloredDotView;
   // Whether this is an incognito group.
   BOOL _incognito;
-  // Whether this is shared with other users.
-  BOOL _shared;
   // The bottom toolbar.
   TabGridBottomToolbar* _bottomToolbar;
+  // The face pile view controller that displays the share button or
+  // the face pile.
+  UIViewController* _facePileViewController;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                       incognito:(BOOL)incognito
-                         shared:(BOOL)shared
                        tabGroup:(const TabGroup*)tabGroup {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group view controller outside "
@@ -99,10 +99,8 @@ constexpr CGFloat kFacePileHeight = 44;
   if ((self = [super init])) {
     _handler = handler;
     _incognito = incognito;
-    _shared = shared;
     _tabGroup = tabGroup;
-    _gridViewController =
-        [[TabGroupGridViewController alloc] initWithShared:shared];
+    _gridViewController = [[TabGroupGridViewController alloc] init];
     if (!incognito) {
       _gridViewController.theme = GridThemeLight;
     } else {
@@ -291,6 +289,32 @@ constexpr CGFloat kFacePileHeight = 44;
   [_coloredDotView setBackgroundColor:_groupColor];
 }
 
+- (void)setGroupShared:(BOOL)shared {
+  if (_gridViewController.shared == shared) {
+    return;
+  }
+  _gridViewController.shared = shared;
+  [self configureNavigationBarItems];
+}
+
+- (void)setFacePileViewController:(UIViewController*)facePileViewController {
+  if (_facePileViewController == facePileViewController) {
+    return;
+  }
+  if (_facePileViewController) {
+    [_facePileViewController willMoveToParentViewController:nil];
+    [_facePileViewController.view removeFromSuperview];
+    [_facePileViewController removeFromParentViewController];
+  }
+  _facePileViewController = facePileViewController;
+  if (_facePileViewController) {
+    [self addChildViewController:_facePileViewController];
+    [self.view addSubview:_facePileViewController.view];
+    [_facePileViewController didMoveToParentViewController:self];
+  }
+  [self configureNavigationBarItems];
+}
+
 #pragma mark - Private
 
 // The plus button has been tapped.
@@ -327,18 +351,17 @@ constexpr CGFloat kFacePileHeight = 44;
       IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
   UIBarButtonItem* facePileBarButton;
-  UIViewController* facePile = self.facePile;
-  if (facePile) {
-    [self addChildViewController:facePile];
-    facePile.view.userInteractionEnabled = NO;
+
+  if (_facePileViewController) {
+    _facePileViewController.view.userInteractionEnabled = NO;
 
     UIButton* facePileButton =
-        [[UIButton alloc] initWithFrame:facePile.view.bounds];
+        [[UIButton alloc] initWithFrame:_facePileViewController.view.bounds];
     [facePileButton addTarget:self
                        action:@selector(didTapFacePileButton)
              forControlEvents:UIControlEventTouchUpInside];
-    [facePileButton addSubview:facePile.view];
-
+    [facePileButton addSubview:_facePileViewController.view];
+    facePileButton.accessibilityIdentifier = kTabGroupFacePileButtonIdentifier;
     [NSLayoutConstraint activateConstraints:@[
       [facePileButton.widthAnchor constraintEqualToConstant:kFacePileWidth],
       [facePileButton.heightAnchor constraintEqualToConstant:kFacePileHeight],
@@ -346,7 +369,6 @@ constexpr CGFloat kFacePileHeight = 44;
 
     facePileBarButton =
         [[UIBarButtonItem alloc] initWithCustomView:facePileButton];
-    [facePile didMoveToParentViewController:self];
   }
 
   if (IsTabGroupIndicatorEnabled()) {
@@ -433,8 +455,7 @@ constexpr CGFloat kFacePileHeight = 44;
 - (void)configureNavigationBar {
   _navigationBar = [[UINavigationBar alloc] init];
   _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
-  _navigationBar.items =
-      @[ [self configuredBackButton], [self configuredGroupItem] ];
+  [self configureNavigationBarItems];
 
   // Make the navigation bar transparent so it completly match the view.
   [_navigationBar setBackgroundImage:[[UIImage alloc] init]
@@ -454,6 +475,15 @@ constexpr CGFloat kFacePileHeight = 44;
     [_navigationBar.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
   ]];
+}
+
+// Configures the navigation bar items.
+- (void)configureNavigationBarItems {
+  if (!_navigationBar) {
+    return;
+  }
+  _navigationBar.items =
+      @[ [self configuredBackButton], [self configuredGroupItem] ];
 }
 
 // Adds the bottom toolbar containing the "plus" button.
@@ -503,7 +533,7 @@ constexpr CGFloat kFacePileHeight = 44;
   __weak TabGroupViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  if (_shared) {
+  if (_gridViewController.shared) {
     CHECK(IsTabGroupSyncEnabled());
     [menuElements addObject:[actionFactory actionToManageTabGroupWithBlock:^{
                     [weakSelf manageGroup];
@@ -522,7 +552,7 @@ constexpr CGFloat kFacePileHeight = 44;
                   [weakSelf openNewTab];
                 }]];
 
-  if (!_shared) {
+  if (!_gridViewController.shared) {
     [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                     [weakSelf ungroup];
                   }]];
@@ -620,7 +650,7 @@ constexpr CGFloat kFacePileHeight = 44;
 
 // Starts managing the shared group.
 - (void)manageGroup {
-  CHECK(_shared);
+  CHECK(_gridViewController.shared);
   [_handler showManageForGroup:_tabGroup->GetWeakPtr()];
 }
 
@@ -649,7 +679,7 @@ constexpr CGFloat kFacePileHeight = 44;
 }
 
 - (void)showRecentActivity {
-  CHECK(_shared);
+  CHECK(_gridViewController.shared);
   [_handler showRecentActivityForGroup:_tabGroup->GetWeakPtr()];
 }
 
