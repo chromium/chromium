@@ -54,7 +54,13 @@ def __rust_link_handler(ctx, cmd):
     inputs = []
     use_android_toolchain = None
     target = None
-    for i, arg in enumerate(cmd.args):
+    args = cmd.args
+
+    # there is a case that command line sets environment variable
+    # like `TOOL_VERSION=xxxx "python3" ..`
+    if args[0] == "/bin/sh":
+        args = args[2].split(" ")
+    for i, arg in enumerate(args):
         if arg.startswith("--sysroot=../../third_party/fuchsia-sdk/sdk"):
             sysroot = ctx.fs.canonpath(arg.removeprefix("--sysroot="))
             libpath = path.join(path.dir(sysroot), "lib")
@@ -64,8 +70,20 @@ def __rust_link_handler(ctx, cmd):
             ])
         elif arg.startswith("--sysroot=../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot"):
             use_android_toolchain = True
+        if arg == "-isysroot":
+            sysroot = ctx.fs.canonpath(args[i + 1])
+            inputs.extend([
+                sysroot + ":link",
+            ])
         if arg.startswith("--target="):
             target = arg.removeprefix("--target=")
+        if arg.startswith("-Clinker="):
+            linker = arg.removeprefix("-Clinker=")
+            if linker.startswith("\""):
+                linker = linker[1:len(linker) - 1]
+
+            # TODO(crbug.com/380798907): expand input_deps, instead of using label?
+            inputs.append(ctx.fs.canonpath(linker) + ":link")
     if use_android_toolchain and target:
         # e.g. target=aarch64-linux-android26
         android_ver = ""
@@ -76,7 +94,6 @@ def __rust_link_handler(ctx, cmd):
             android_arch = target.removesuffix(android_ver)
             filegroup = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%s:link" % (android_arch, android_ver)
             inputs.append(filegroup)
-
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 def __rust_build_handler(ctx, cmd):
