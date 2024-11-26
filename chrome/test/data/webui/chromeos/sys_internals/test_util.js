@@ -37,5 +37,8 @@ export function getTestData(cpuData) {
       numWrites: 1234,
       origDataSize: 200 * GB,
     },
+    npu: {
+      busy: 0,
+    },
   };
 }

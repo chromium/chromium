@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,6 +31,10 @@ struct CpuInfo {
   int user;
   int idle;
   int total;
+};
+
+struct NpuInfo {
+  int64_t busy_time_us = 0;
 };
 
 // When counter overflow, it will restart from zero. base::Value do not
@@ -172,6 +177,58 @@ void SetZramValue(const base::SwapInfo& info, base::Value::Dict* result) {
   result->Set("zram", std::move(zram_result));
 }
 
+// TODO: b/380808338 - Resolve this dynamically from driver or udev instead of
+// hard-coding it statically.
+static constexpr char kIntelNpuBusyTimePath[] =
+    "/sys/devices/pci0000:00/0000:00:0b.0/npu_busy_time_us";
+
+bool IsNpuInfoAvailable() {
+  static bool avail = [] {
+    if (!base::PathIsReadable(base::FilePath(kIntelNpuBusyTimePath))) {
+      VLOG(1) << "NPU info is not available";
+      return false;
+    }
+    return true;
+  }();
+  return avail;
+}
+
+// TODO: b/380808338 - Support MediaTek NPU as well.
+std::optional<NpuInfo> GetNpuInfo() {
+  if (!IsNpuInfoAvailable()) {
+    // Perform a quick IsAvailable() check for optional metrics that may not be
+    // supported on all devices. This avoids unnecessary attempts to read values
+    // and reduces the excessive DLOG warnings.
+    return std::nullopt;
+  }
+
+  std::string content;
+  if (!base::ReadFileToStringNonBlocking(base::FilePath(kIntelNpuBusyTimePath),
+                                         &content)) {
+    DLOG(WARNING) << "Failed to read Intel NPU busy time";
+    return std::nullopt;
+  }
+
+  NpuInfo info;
+  if (base::StringToInt64(content, &info.busy_time_us)) {
+    DLOG(WARNING) << "Failed to parse busy time as int64";
+    return std::nullopt;
+  }
+
+  return info;
+}
+
+void SetNpuValue(const std::optional<NpuInfo>& info,
+                 base::Value::Dict* result) {
+  if (!info.has_value()) {
+    result->Set("npu", base::Value(base::Value::Type::NONE));
+    return;
+  }
+
+  int busy = ToCounter(base::Microseconds(info->busy_time_us).InMilliseconds());
+  result->Set("npu", base::Value::Dict().Set("busy", busy));
+}
+
 base::Value::Dict GetSysInfo() {
   std::vector<CpuInfo> cpu_infos(base::SysInfo::NumberOfProcessors());
   if (!GetCpuInfo(&cpu_infos)) {
@@ -190,12 +247,14 @@ base::Value::Dict GetSysInfo() {
   if (!GetSwapInfo(&swap_info)) {
     DLOG(WARNING) << "Failed to get system zram info.";
   }
+  std::optional<NpuInfo> npu_info = GetNpuInfo();
 
   base::Value::Dict result;
   SetConstValue(&result);
   SetCpusValue(cpu_infos, &result);
   SetMemValue(mem_info, vmstat_info, &result);
   SetZramValue(swap_info, &result);
+  SetNpuValue(npu_info, &result);
 
   return result;
 }

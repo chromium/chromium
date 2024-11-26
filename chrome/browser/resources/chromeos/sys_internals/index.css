@@ -147,6 +147,10 @@ body {
   padding: 30px 30px 30px 60px;
 }
 
+.infopage-panel.hidden {
+  display: none;
+}
+
 .infopage-panel .title {
   color: #888;
   font-size: 16px;

@@ -44,12 +44,21 @@ let SysInfoApiMemoryResult;
 let SysInfoApiZramResult;
 
 /**
+ * |getSysInfo| npu result.
+ * @typedef {{
+ *   busy: number,
+ * }}
+ */
+let SysInfoApiNpuResult;
+
+/**
  * |getSysInfo| api result.
  * @typedef {{
  *   const: {counterMax: number},
  *   cpus: !Array<!SysInfoApiCpuResult>,
  *   memory: !SysInfoApiMemoryResult,
  *   zram: !SysInfoApiZramResult,
+ *   npu: ?SysInfoApiNpuResult,
  * }}
  */
 let SysInfoApiResult;

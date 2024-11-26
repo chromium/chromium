@@ -43,10 +43,19 @@ export let GeneralMemoryType;
 export let GeneralZramType;
 
 /**
+ * For info page.
  * @typedef {{
- *   cpu: GeneralCpuType,
- *   memory: GeneralMemoryType,
- *   zram: GeneralZramType,
+ *   usage: number,
+ * }}
+ */
+export let GeneralNpuType;
+
+/**
+ * @typedef {{
+ *   cpu: !GeneralCpuType,
+ *   memory: !GeneralMemoryType,
+ *   zram: !GeneralZramType,
+ *   npu: ?GeneralNpuType,
  * }}
  */
 export let GeneralInfoType;
