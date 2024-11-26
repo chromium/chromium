@@ -17,7 +17,6 @@
 #include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom-forward.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom-forward.h"
@@ -98,7 +97,6 @@ class InputMethodsAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
-class LacrosShelfItemTracker;
 class LocalPrinterAsh;
 class LoginAsh;
 class LoginScreenStorageAsh;
@@ -269,8 +267,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
-  void BindLacrosShelfItemTracker(
-      mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
@@ -656,7 +652,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
-  std::unique_ptr<LacrosShelfItemTracker> lacros_shelf_item_tracker_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;

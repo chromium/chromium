@@ -60,7 +60,6 @@ import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/input_methods.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
-import "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -457,11 +456,7 @@ interface Crosapi {
   // Added in M87.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
 
-  // Binds the LacrosShelfItemTracker interface for integrating ephemeral Lacros
-  // Windows with Ash Shelf.
-  [MinVersion=126]
-  BindLacrosShelfItemTracker@128(
-      pending_receiver<LacrosShelfItemTracker> receiver);
+  // BindLacrosShelfItemTracker@128 was removed.
 
   // BindLacrosAppPublisher@119 was removed.
 

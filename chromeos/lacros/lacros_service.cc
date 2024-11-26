@@ -75,7 +75,6 @@
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
-#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
@@ -450,10 +449,6 @@ LacrosService::LacrosService()
                   &Crosapi::BindDeviceLocalAccountExtensionService,
                   Crosapi::MethodMinVersions::
                       kBindDeviceLocalAccountExtensionServiceMinVersion>();
-  ConstructRemote<
-      crosapi::mojom::LacrosShelfItemTracker,
-      &crosapi::mojom::Crosapi::BindLacrosShelfItemTracker,
-      Crosapi::MethodMinVersions::kBindLacrosShelfItemTrackerMinVersion>();
   ConstructRemote<crosapi::mojom::LocalPrinter,
                   &crosapi::mojom::Crosapi::BindLocalPrinter,
                   Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();

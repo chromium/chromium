@@ -65,7 +65,6 @@ mojom("mojom") {
     "keystore_error.mojom",
     "keystore_service.mojom",
     "kiosk_session_service.mojom",
-    "lacros_shelf_item_tracker.mojom",
     "launcher_search.mojom",
     "local_printer.mojom",
     "login.mojom",
