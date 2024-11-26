@@ -613,6 +613,7 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @DisabledTest(message = "https://crbug.com/380957937")
     public void testRenderOnIdentityErrorForSignedInUsers_withReplaceSyncPromos()
             throws IOException {
         FakeSyncServiceImpl fakeSyncService =
