@@ -24,6 +24,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
+import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -43,6 +45,8 @@ public class RecentActivityListCoordinatorUnitTest {
 
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private FaviconProvider mFaviconProvider;
+    @Mock private AvatarProvider mAvatarProvider;
     private Activity mActivity;
     private RecentActivityListCoordinator mCoordinator;
 
@@ -52,7 +56,11 @@ public class RecentActivityListCoordinatorUnitTest {
         doNothing().when(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mCoordinator =
                 new RecentActivityListCoordinator(
-                        mActivity, mBottomSheetController, mMessagingBackendService);
+                        mActivity,
+                        mBottomSheetController,
+                        mMessagingBackendService,
+                        mFaviconProvider,
+                        mAvatarProvider);
         verify(mBottomSheetController).addObserver(any());
     }
 

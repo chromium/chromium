@@ -26,6 +26,7 @@ found in the LICENSE file.
 
     <!-- Dimens for recent activity screen -->
     <dimen name="recent_activity_avatar_container_size">44dp</dimen>
+    <dimen name="recent_activity_avatar_size">40dp</dimen>
     <dimen name="recent_activity_padding_top_bottom">2dp</dimen>
     <dimen name="recent_activity_avatar_margin_end">12dp</dimen>
     <dimen name="recent_activity_title_top_margin">14dp</dimen>

@@ -6,15 +6,21 @@ package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
 import android.content.Context;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
+import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.ActivityLogQueryParams;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -26,6 +32,8 @@ class RecentActivityListMediator {
     private final Context mContext;
     private final ModelList mModelList;
     private final MessagingBackendService mMessagingBackendService;
+    private final FaviconProvider mFaviconProvider;
+    private final AvatarProvider mAvatarProvider;
     private final Runnable mCloseBottomSheetCallback;
 
     /**
@@ -34,15 +42,21 @@ class RecentActivityListMediator {
      * @param context The activity context.
      * @param modelList The {@link ModelList} that will be filled with the list items to be shown.
      * @param messagingBackendService The backed to query for the list of recent activities.
+     * @param faviconProvider The backend for providing favicon for URLs.
+     * @param avatarProvider The backend for providing avatars for users.
      */
     public RecentActivityListMediator(
             @NonNull Context context,
             @NonNull ModelList modelList,
             MessagingBackendService messagingBackendService,
+            FaviconProvider faviconProvider,
+            AvatarProvider avatarProvider,
             Runnable closeBottomSheetCallback) {
         mContext = context;
         mModelList = modelList;
         mMessagingBackendService = messagingBackendService;
+        mFaviconProvider = faviconProvider;
+        mAvatarProvider = avatarProvider;
         mCloseBottomSheetCallback = closeBottomSheetCallback;
         assert mContext != null;
         assert mMessagingBackendService != null;
@@ -86,6 +100,26 @@ class RecentActivityListMediator {
             propertyModel.set(
                     RecentActivityListProperties.ON_CLICK_LISTENER,
                     createActivityLogItemOnClickListener(logItem));
+
+            // Set favicon provider.
+            assert logItem.activityMetadata != null : "ActivityMetadata is null";
+            assert logItem.activityMetadata.tabMetadata != null : "TabMetadata is null";
+            assert logItem.activityMetadata.tabMetadata.lastKnownUrl != null
+                    : "Last known URL is null";
+            GURL tabUrl = new GURL(logItem.activityMetadata.tabMetadata.lastKnownUrl);
+            Callback<ImageView> faviconCallback =
+                    faviconView -> {
+                        mFaviconProvider.fetchFavicon(tabUrl, faviconView::setImageDrawable);
+                    };
+            propertyModel.set(RecentActivityListProperties.FAVICON_PROVIDER, faviconCallback);
+
+            // Set avatar provider.
+            GroupMember groupMember = logItem.activityMetadata.triggeringUser;
+            Callback<ImageView> avatarCallback =
+                    avatarView -> {
+                        mAvatarProvider.getAvatarBitmap(groupMember, avatarView::setImageDrawable);
+                    };
+            propertyModel.set(RecentActivityListProperties.AVATAR_PROVIDER, avatarCallback);
 
             // Add the item to the list.
             mModelList.add(new ListItem(0, propertyModel));

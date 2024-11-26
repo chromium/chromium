@@ -70,6 +70,8 @@ if (is_android) {
     ]
 
     deps = [
+      ":avatar_java",
+      ":favicon_java",
       ":java_resources",
       ":recent_activity_java",
       "//base:base_java",
@@ -123,6 +125,36 @@ if (is_android) {
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
       "//ui/android:ui_full_java",
       "//url:url_java",
+    ]
+  }
+
+  android_library("favicon_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProvider.java" ]
+
+    deps = [
+      "//base:callback_java",
+      "//base:supplier_java",
+      "//chrome/browser/data_sharing:recent_activity_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/android/favicon:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/browser_ui/widget/android:java_resources",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("avatar_java") {
+    resources_package = "org.chromium.chrome.browser.data_sharing"
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingAvatarProvider.java" ]
+
+    deps = [
+      ":java_resources",
+      "//base:callback_java",
+      "//chrome/browser/data_sharing:recent_activity_java",
+      "//components/data_sharing/public:public_java",
     ]
   }
 
@@ -288,6 +320,7 @@ if (is_android) {
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/notifications/android:java",
       "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
       "//components/saved_tab_groups/public:java",
       "//content/public/android:content_full_java",
       "//third_party/android_deps:robolectric_all_java",

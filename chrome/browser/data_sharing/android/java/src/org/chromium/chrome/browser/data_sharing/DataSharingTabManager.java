@@ -810,9 +810,15 @@ public class DataSharingTabManager {
         assert mProfile != null;
         assert mMessagingBackendService != null;
 
+        DataSharingAvatarProvider avatarProvider =
+                new DataSharingAvatarProvider(activity, mDataSharingService.getUiDelegate());
         RecentActivityListCoordinator recentActivityListCoordinator =
                 new RecentActivityListCoordinator(
-                        activity, mBottomSheetControllerSupplier.get(), mMessagingBackendService);
+                        activity,
+                        mBottomSheetControllerSupplier.get(),
+                        mMessagingBackendService,
+                        new DataSharingFaviconProvider(activity, mProfile),
+                        avatarProvider);
         recentActivityListCoordinator.requestShowUI(collaborationId);
     }
 
