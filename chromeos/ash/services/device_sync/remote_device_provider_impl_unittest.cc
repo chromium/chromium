@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
-#include "chromeos/ash/services/device_sync/fake_cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_remote_device_v2_loader.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
@@ -220,7 +219,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
       const DeviceSyncRemoteDeviceProviderImplTest&) = delete;
 
   void SetUp() override {
-    fake_device_manager_ = std::make_unique<FakeCryptAuthDeviceManager>();
     fake_v2_device_manager_ = std::make_unique<FakeCryptAuthV2DeviceManager>();
 
     fake_secure_message_delegate_factory_ =
@@ -362,7 +360,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   size_t expected_v2_loader_count_ = 0;
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
-  std::unique_ptr<FakeCryptAuthDeviceManager> fake_device_manager_;
   std::unique_ptr<FakeCryptAuthV2DeviceManager> fake_v2_device_manager_;
   std::unique_ptr<FakeRemoteDeviceV2LoaderFactory>
       fake_remote_device_v2_loader_factory_;

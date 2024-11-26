@@ -37,7 +37,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 #include "chromeos/ash/services/device_sync/device_sync_impl.h"
-#include "chromeos/ash/services/device_sync/fake_cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_device_notifier.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_enrollment_manager.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_feature_status_setter.h"
