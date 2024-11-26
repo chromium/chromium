@@ -7,11 +7,13 @@
 #include <sddl.h>
 #include <wrl/module.h>
 
+#include <atomic>
 #include <string_view>
 #include <type_traits>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
@@ -25,7 +27,7 @@
 
 namespace {
 
-Service* g_instance = nullptr;
+std::atomic<Service*> g_instance(nullptr);
 
 // Command line switch "--console" runs the service interactively for debugging
 // purposes.
@@ -39,11 +41,15 @@ constexpr wchar_t kWindowsServiceName[] = L"";
 }  // namespace
 
 Service::Service(ServiceDelegate& delegate) : delegate_(delegate) {
-  CHECK_EQ(std::exchange(g_instance, this), nullptr);
+  Service* expected = nullptr;
+  CHECK(g_instance.compare_exchange_strong(expected, this,
+                                           std::memory_order_relaxed));
 }
 
 Service::~Service() {
-  CHECK_EQ(std::exchange(g_instance, nullptr), this);
+  Service* expected = this;
+  CHECK(g_instance.compare_exchange_strong(expected, nullptr,
+                                           std::memory_order_relaxed));
 }
 
 bool Service::InitWithCommandLine(const base::CommandLine* command_line) {
@@ -141,7 +147,7 @@ void Service::UnregisterClassObjects(base::HeapArray<DWORD>& cookies) {
 }
 
 Service& Service::GetInstance() {
-  return CHECK_DEREF(g_instance);
+  return CHECK_DEREF(g_instance.load(std::memory_order_relaxed));
 }
 
 int Service::RunAsService() {
