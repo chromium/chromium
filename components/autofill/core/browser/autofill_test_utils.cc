@@ -1073,13 +1073,13 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
 }
 
 BnplIssuer GetTestBnplIssuer() {
-  PaymentInstrument payment_instrument = PaymentInstrument(
-      /*instrument_id=*/12345, /*nickname=*/std::u16string(), GURL::EmptyGURL(),
-      DenseSet<PaymentInstrument::PaymentRail>(
-          {PaymentInstrument::PaymentRail::kCardNumber}));
-  return BnplIssuer(/*issuer_id=*/"test_issuer_id", payment_instrument,
-                    /*price_lower_bound=*/50,
-                    /*price_upper_bound=*/200);
+  std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+  // Currency: USD, price lower bound: $50, price upper bound: $200.
+  eligible_price_ranges.emplace_back(/*currency=*/"USD",
+                                     /*price_lower_bound=*/50000000,
+                                     /*price_upper_bound=*/200000000);
+  return BnplIssuer(12345, /*issuer_id=*/"test_issuer_id",
+                    std::move(eligible_price_ranges));
 }
 
 }  // namespace test

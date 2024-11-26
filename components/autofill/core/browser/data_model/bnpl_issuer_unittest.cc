@@ -37,82 +37,30 @@ TEST(BnplIssuerTest, SetAndGetPaymentInstrument) {
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
   BnplIssuer issuer = test::GetTestBnplIssuer();
-  ASSERT_NE(issuer.price_lower_bound(), 20);
-  issuer.set_price_lower_bound(20);
-  EXPECT_EQ(issuer.price_lower_bound(), 20);
+  uint64_t price_lower_bound = 20000000;
+  ASSERT_NE(issuer.eligible_price_ranges()[0].price_lower_bound,
+            price_lower_bound);
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", price_lower_bound,
+      issuer.eligible_price_ranges()[0].price_upper_bound);
+  issuer.set_eligible_price_ranges({price_range});
+  EXPECT_EQ(issuer.eligible_price_ranges()[0].price_lower_bound,
+            price_lower_bound);
 }
 
 // Test for getting and setting the price upper bound for the BNPL issuer data
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceUpperBound) {
   BnplIssuer issuer = test::GetTestBnplIssuer();
-  ASSERT_NE(issuer.price_upper_bound(), 300);
-  issuer.set_price_upper_bound(300);
-  EXPECT_EQ(issuer.price_upper_bound(), 300);
-}
-
-// Test for the strong ordering with the issuer id for the BNPL issuer data
-// model.
-TEST(BnplIssuerTest, StrongOrdering_IssuerId) {
-  BnplIssuer issuer1 = test::GetTestBnplIssuer();
-  BnplIssuer issuer2 = test::GetTestBnplIssuer();
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::equal);
-
-  issuer2.set_issuer_id("zzz");
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::less);
-
-  issuer2.set_issuer_id("aaa");
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::greater);
-}
-
-// Test for the strong ordering of the payment instrument for the BNPL issuer
-// data model.
-TEST(BnplIssuerTest, StrongOrdering_PaymentInstrument) {
-  BnplIssuer issuer1 = test::GetTestBnplIssuer();
-  BnplIssuer issuer2 = test::GetTestBnplIssuer();
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::equal);
-
-  PaymentInstrument new_payment_instrument =
-      PaymentInstrument(123456789, /*nickname=*/u"", GURL::EmptyGURL(),
-                        DenseSet<PaymentInstrument::PaymentRail>(
-                            {PaymentInstrument::PaymentRail::kCardNumber}));
-  issuer2.set_payment_instrument(new_payment_instrument);
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::less);
-
-  new_payment_instrument = PaymentInstrument(
-      /*instrument_id=*/0000, /*nickname=*/u"", GURL::EmptyGURL(),
-      DenseSet<PaymentInstrument::PaymentRail>(
-          {PaymentInstrument::PaymentRail::kCardNumber}));
-  issuer2.set_payment_instrument(new_payment_instrument);
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::greater);
-}
-
-// Test for the strong ordering of the price lower bound for the BNPL issuer
-// data model.
-TEST(BnplIssuerTest, StrongOrdering_PriceLowerBound) {
-  BnplIssuer issuer1 = test::GetTestBnplIssuer();
-  BnplIssuer issuer2 = test::GetTestBnplIssuer();
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::equal);
-
-  issuer2.set_price_lower_bound(10000000);
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::less);
-
-  issuer2.set_price_lower_bound(0);
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::greater);
-}
-
-// Test for the strong ordering of the price upper bound for the BNPL issuer
-// data model.
-TEST(BnplIssuerTest, StrongOrdering_PriceUpperBound) {
-  BnplIssuer issuer1 = test::GetTestBnplIssuer();
-  BnplIssuer issuer2 = test::GetTestBnplIssuer();
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::equal);
-
-  issuer2.set_price_upper_bound(10000000);
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::less);
-
-  issuer2.set_price_upper_bound(0);
-  EXPECT_EQ(issuer1 <=> issuer2, std::strong_ordering::greater);
+  uint64_t price_upper_bound = 300000000;
+  ASSERT_NE(issuer.eligible_price_ranges()[0].price_upper_bound,
+            price_upper_bound);
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", issuer.eligible_price_ranges()[0].price_lower_bound,
+      price_upper_bound);
+  issuer.set_eligible_price_ranges({price_range});
+  EXPECT_EQ(issuer.eligible_price_ranges()[0].price_upper_bound,
+            price_upper_bound);
 }
 
 // Test for the equality operator for the BNPL issuer data model.
@@ -127,17 +75,26 @@ TEST(BnplIssuerTest, EqualityOperator) {
 
   issuer2 = test::GetTestBnplIssuer();
   issuer2.set_payment_instrument(PaymentInstrument(
-      123456789, /*nickname=*/u"new payment instrument", GURL::EmptyGURL(),
+      /*instrument_id=*/123456789, /*nickname=*/u"new payment instrument",
+      /*display_icon_url=*/GURL::EmptyGURL(),
+      /*supported_rails=*/
       DenseSet<PaymentInstrument::PaymentRail>(
           {PaymentInstrument::PaymentRail::kCardNumber})));
   EXPECT_FALSE(issuer1 == issuer2);
 
   issuer2 = test::GetTestBnplIssuer();
-  issuer2.set_price_lower_bound(1000);
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/100000000,
+      /*price_upper_bound=*/
+      issuer2.eligible_price_ranges()[0].price_upper_bound);
+  issuer2.set_eligible_price_ranges({price_range});
   EXPECT_FALSE(issuer1 == issuer2);
 
   issuer2 = test::GetTestBnplIssuer();
-  issuer2.set_price_upper_bound(10000);
+  price_range.price_lower_bound =
+      issuer2.eligible_price_ranges()[0].price_lower_bound;
+  price_range.price_upper_bound = 10000000000;
+  issuer2.set_eligible_price_ranges({price_range});
   EXPECT_FALSE(issuer1 == issuer2);
 }
 

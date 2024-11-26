@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_BNPL_ISSUER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_BNPL_ISSUER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "components/autofill/core/browser/data_model/payment_instrument.h"
 
@@ -16,16 +18,51 @@ namespace autofill {
 // eligible to use on certain merchant webpages.
 class BnplIssuer {
  public:
-  BnplIssuer(std::string issuer_id,
-             std::optional<PaymentInstrument> payment_instrument,
-             int price_lower_bound,
-             int price_upper_bound);
+  // Struct that links currency to the eligible price range in that currency for
+  // a BNPL issuer.
+  struct EligiblePriceRange {
+    EligiblePriceRange(std::string currency,
+                       uint64_t price_lower_bound,
+                       uint64_t price_upper_bound)
+        : currency(std::move(currency)),
+          price_lower_bound(price_lower_bound),
+          price_upper_bound(price_upper_bound) {}
+    EligiblePriceRange(const EligiblePriceRange&);
+    EligiblePriceRange& operator=(const EligiblePriceRange&);
+    EligiblePriceRange(EligiblePriceRange&&);
+    EligiblePriceRange& operator=(EligiblePriceRange&&);
+    ~EligiblePriceRange();
+    bool operator==(const EligiblePriceRange&) const;
+
+    // Currency of the price range. This field contains a three-letter currency
+    // code. e.g. "USD".
+    std::string currency;
+
+    // Lower bound for the US dollar price range that this BNPL provider
+    // accepts, in micros of currency. A micro of currency is one millionths of
+    // the base unit (dollars, not cents for example). e.g. $1.05 == 1050000.
+    // Bound is inclusive.
+    uint64_t price_lower_bound;
+
+    // Upper bound for the US dollar price range that this BNPL provider
+    // accepts, in micros of currency. A micro of currency is one millionths of
+    // the base unit (dollars, not cents for example). e.g. $1.05 == 1050000.
+    // Bound is inclusive.
+    uint64_t price_upper_bound;
+  };
+
+  // `instrument_id` is present for linked issuers, and nullopt for unlinked
+  // issuers. `issuer_id` is the unique identifier of this specfiic issuer.
+  // `eligible_price_ranges` is a list of currencies mapped to their price
+  // ranges, in micros.
+  BnplIssuer(std::optional<int64_t> instrument_id,
+             std::string issuer_id,
+             std::vector<EligiblePriceRange> eligible_price_ranges);
   BnplIssuer(const BnplIssuer&);
   BnplIssuer& operator=(const BnplIssuer&);
   BnplIssuer(BnplIssuer&&);
   BnplIssuer& operator=(BnplIssuer&&);
   ~BnplIssuer();
-  friend std::strong_ordering operator<=>(const BnplIssuer&, const BnplIssuer&);
   friend bool operator==(const BnplIssuer&, const BnplIssuer&);
 
   const std::string& issuer_id() const { return issuer_id_; }
@@ -41,14 +78,12 @@ class BnplIssuer {
     payment_instrument_ = payment_instrument;
   }
 
-  int price_lower_bound() const { return price_lower_bound_; }
-  void set_price_lower_bound(int price_lower_bound) {
-    price_lower_bound_ = price_lower_bound;
+  base::span<const EligiblePriceRange> eligible_price_ranges() {
+    return eligible_price_ranges_;
   }
-
-  int price_upper_bound() const { return price_upper_bound_; }
-  void set_price_upper_bound(int price_upper_bound) {
-    price_upper_bound_ = price_upper_bound;
+  void set_eligible_price_ranges(
+      std::vector<EligiblePriceRange> eligible_price_ranges) {
+    eligible_price_ranges_ = std::move(eligible_price_ranges);
   }
 
  private:
@@ -60,13 +95,9 @@ class BnplIssuer {
   // empty.
   std::optional<PaymentInstrument> payment_instrument_;
 
-  // Lower bound for the US dollar price range that this BNPL provider accepts.
-  // Bound is inclusive.
-  int price_lower_bound_;
-
-  // Upper bound for the US dollar price range that this BNPL provider accepts.
-  // Bound is inclusive.
-  int price_upper_bound_;
+  // Vector of eligible price ranges for this BnplIssuer. Contains per-currency
+  // eligible price ranges for BNPL, for all supported currencies.
+  std::vector<EligiblePriceRange> eligible_price_ranges_;
 };
 
 }  // namespace autofill
