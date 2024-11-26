@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Implemented internally.
@@ -105,6 +106,15 @@ public interface HybridListRenderer {
 
     /** Returns helper to manager the list layout. @{@link ListLayoutHelper} instance. */
     default ListLayoutHelper getListLayoutHelper() {
+        return null;
+    }
+
+    /**
+     * Returns the adapter that will be used with the RecyclerView. Unlike calling getAdapter() on
+     * RecyclerView, which may be null before attach and after detach, this is guaranteed to be
+     * valid between the call to bind() and unbind().
+     */
+    default RecyclerView.Adapter<?> getAdapter() {
         return null;
     }
 }
