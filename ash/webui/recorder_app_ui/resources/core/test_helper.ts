@@ -86,6 +86,8 @@ export class TestHelper {
       }
       if (config.transcriptionForceEnabled) {
         s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
+        // TODO: b/380800050 - Support testing different languages.
+        s.transcriptionLanguage = LanguageCode.EN_US;
       }
     });
   }
@@ -107,6 +109,7 @@ export class TestHelper {
         durationMs: durationMs,
         recordedAt: Date.now(),
         powers: powers,
+        // TODO: b/380800050 - Support testing different languages.
         transcription: tokens !== undefined ?
           new Transcription(tokens, LanguageCode.EN_US) :
           null,
@@ -119,7 +122,7 @@ export class TestHelper {
    * Installs the model used for transcription.
    */
   static installTranscriptionModel(): void {
-    // TODO(hsuanling): Support testing different languages
+    // TODO: b/380800050 - Support testing different languages.
     void usePlatformHandler().installSoda(LanguageCode.EN_US);
   }
 
@@ -129,7 +132,7 @@ export class TestHelper {
    * @return Boolean indicating if the transcription model is installed.
    */
   static isTranscriptionModelInstalled(): boolean {
-    // TODO(hsuanling): Support testing different languages
+    // TODO: b/380800050 - Support testing different languages.
     const state = usePlatformHandler().getSodaState(LanguageCode.EN_US).value;
     return state.kind === 'installed';
   }
