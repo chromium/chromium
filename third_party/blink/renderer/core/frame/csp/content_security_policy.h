@@ -169,7 +169,7 @@ class CORE_EXPORT ContentSecurityPolicy final
     kDisallowedDuplicateName
   };
 
-  static const size_t kMaxSampleLength = 40;
+  static constexpr size_t kMaxSampleLength = 40;
 
   ContentSecurityPolicy();
   ~ContentSecurityPolicy();
