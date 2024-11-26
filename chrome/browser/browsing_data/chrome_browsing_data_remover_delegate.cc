@@ -358,10 +358,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     BrowsingDataFilterBuilder* filter_builder,
     uint64_t origin_type_mask,
     base::OnceCallback<void(uint64_t)> callback) {
-  DCHECK(((remove_mask &
-           ~content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS &
-           ~constants::FILTERABLE_DATA_TYPES) == 0) ||
-         filter_builder->MatchesAllOriginsAndDomains());
+  CHECK(((remove_mask &
+          ~content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS &
+          ~constants::FILTERABLE_DATA_TYPES) == 0) ||
+        filter_builder->MatchesAllOriginsAndDomains());
 #if !BUILDFLAG(IS_ANDROID)
   DCHECK(!should_clear_sync_account_settings_);
 #endif
@@ -924,6 +924,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   //////////////////////////////////////////////////////////////////////////////
   // Password manager
   if (remove_mask & constants::DATA_TYPE_PASSWORDS) {
+    CHECK(nullable_filter.is_null());
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Passwords"));
     auto password_store = ProfilePasswordStoreFactory::GetForProfile(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -933,9 +934,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // login token is persisted and can be used after cookie deletion.
       // TODO:(crbug.com/1167715) - Test that associated compromised credentials
       // are removed.
-      password_store->RemoveLoginsByURLAndTime(
-          FROM_HERE, filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kPasswords));
+      password_store->RemoveLoginsCreatedBetween(
+          FROM_HERE, delete_begin_, delete_end_,
+          CreateTaskCompletionCallback(
+              TracingDataType::kPasswords,
+              /* data_type_mask= */ constants::DATA_TYPE_PASSWORDS));
     }
 
     profile_->GetDefaultStoragePartition()
@@ -990,6 +993,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   if (remove_mask & constants::DATA_TYPE_ACCOUNT_PASSWORDS) {
+    CHECK(nullable_filter.is_null());
     auto account_store = AccountPasswordStoreFactory::GetForProfile(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
@@ -1006,9 +1010,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
                                        constants::DATA_TYPE_ACCOUNT_PASSWORDS);
 #endif
-      account_store->RemoveLoginsByURLAndTime(
-          FROM_HERE, filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
+      account_store->RemoveLoginsCreatedBetween(
+          FROM_HERE, delete_begin_, delete_end_,
+          CreateTaskCompletionCallback(TracingDataType::kAccountPasswords,
+                                       constants::DATA_TYPE_ACCOUNT_PASSWORDS),
           std::move(sync_completion));
     }
 

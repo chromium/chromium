@@ -41,15 +41,6 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               (const base::Location&, const PasswordForm&),
               (override));
   MOCK_METHOD(void,
-              RemoveLoginsByURLAndTime,
-              (const base::Location&,
-               const base::RepeatingCallback<bool(const GURL&)>&,
-               base::Time,
-               base::Time,
-               base::OnceClosure,
-               base::OnceCallback<void(bool)>),
-              (override));
-  MOCK_METHOD(void,
               RemoveLoginsCreatedBetween,
               (const base::Location&,
                base::Time,
