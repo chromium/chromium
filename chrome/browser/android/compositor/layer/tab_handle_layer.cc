@@ -16,7 +16,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "chrome/browser/android/compositor/decoration_title.h"
+#include "chrome/browser/android/compositor/decoration_tab_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
@@ -97,7 +97,7 @@ void TabHandleLayer::SetProperties(
 
   layer_->SetPosition(gfx::PointF(x, y));
 
-  DecorationTitle* title_layer = nullptr;
+  DecorationTabTitle* title_layer = nullptr;
   // Only pull if tab id is valid.
   if (layer_title_cache_ && id != -1) {
     title_layer = layer_title_cache_->GetTitleLayer(id);

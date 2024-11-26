@@ -26,7 +26,8 @@ class ResourceManager;
 
 namespace android {
 
-class DecorationTitle;
+class DecorationTabTitle;
+class DecorationIconTitle;
 
 // A native component of the Java LayerTitleCache class.  This class
 // will build and maintain layers that represent the cached titles in
@@ -39,8 +40,8 @@ class LayerTitleCache {
   LayerTitleCache(JNIEnv* env,
                   const jni_zero::JavaRef<jobject>& obj,
                   jint fade_width,
-                  jint favicon_start_padding,
-                  jint favicon_end_padding,
+                  jint icon_start_padding,
+                  jint icon_end_padding,
                   jint spinner_resource_id,
                   jint spinner_incognito_resource_id,
                   ui::ResourceManager* resource_manager);
@@ -56,7 +57,7 @@ class LayerTitleCache {
                    const base::android::JavaParamRef<jobject>& obj,
                    jint tab_id,
                    jint title_resource_id,
-                   jint favicon_resource_id,
+                   jint icon_resource_id,
                    bool is_incognito,
                    bool is_rtl);
 
@@ -66,14 +67,15 @@ class LayerTitleCache {
                         const base::android::JavaParamRef<jobject>& obj,
                         jint group_root_id,
                         jint title_resource_id,
+                        jint avatar_resource_id,
                         bool is_incognito,
                         bool is_rtl);
 
-  // Called from Java, updates favicon.
-  void UpdateFavicon(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj,
-                     jint tab_id,
-                     jint favicon_resource_id);
+  // Called from Java, updates icon.
+  void UpdateIcon(JNIEnv* env,
+                  const base::android::JavaParamRef<jobject>& obj,
+                  jint tab_id,
+                  jint icon_resource_id);
 
   void ClearExcept(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
@@ -81,25 +83,24 @@ class LayerTitleCache {
 
   // Returns the layer that represents the title of tab of tab_id.
   // Returns NULL if no layer can be found.
-  DecorationTitle* GetTitleLayer(int tab_id);
+  DecorationTabTitle* GetTitleLayer(int tab_id);
 
   // Returns the layer that represents the title of group of group_root_id.
   // Returns NULL if no layer can be found.
-  DecorationTitle* GetGroupTitleLayer(int group_root_id, bool incognito);
+  DecorationIconTitle* GetGroupTitleLayer(int group_root_id, bool incognito);
 
  private:
-  const int kInvalidResourceId = -1;
   const int kEmptyWidth = 0;
 
   virtual ~LayerTitleCache();
 
-  base::IDMap<std::unique_ptr<DecorationTitle>> layer_cache_;
-  base::IDMap<std::unique_ptr<DecorationTitle>> group_layer_cache_;
+  base::IDMap<std::unique_ptr<DecorationTabTitle>> layer_cache_;
+  base::IDMap<std::unique_ptr<DecorationIconTitle>> group_layer_cache_;
 
   JavaObjectWeakGlobalRef weak_java_title_cache_;
   int fade_width_;
-  int favicon_start_padding_;
-  int favicon_end_padding_;
+  int icon_start_padding_;
+  int icon_end_padding_;
 
   int spinner_resource_id_;
   int spinner_incognito_resource_id_;

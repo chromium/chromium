@@ -29,12 +29,13 @@ import org.chromium.ui.resources.dynamics.BitmapDynamicResource;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * A version of the {@link LayerTitleCache} that builds native cc::Layer objects
- * that represent the cached title textures.
+ * A version of the {@link LayerTitleCache} that builds native cc::Layer objects that represent the
+ * cached title textures.
  */
 @JNINamespace("android")
 public class LayerTitleCache {
     private static int sNextResourceId = 1;
+    private static final int INVALID_RESOURCE_ID = -1;
 
     private final Context mContext;
     private TabModelSelector mTabModelSelector;
@@ -208,6 +209,7 @@ public class LayerTitleCache {
                             LayerTitleCache.this,
                             rootId,
                             title.getTitleResId(),
+                            INVALID_RESOURCE_ID,
                             incognito,
                             isRtl);
         }
@@ -263,8 +265,9 @@ public class LayerTitleCache {
 
     /**
      * Comes up with a valid title to return for a tab.
+     *
      * @param tab The {@link Tab} to build a title for.
-     * @return    The title to use.
+     * @return The title to use.
      */
     private String getTitleForTab(Tab tab, String defaultTitle) {
         String title = tab.getTitle();
@@ -290,7 +293,7 @@ public class LayerTitleCache {
 
         if (mNativeLayerTitleCache != 0) {
             LayerTitleCacheJni.get()
-                    .updateFavicon(
+                    .updateIcon(
                             mNativeLayerTitleCache,
                             LayerTitleCache.this,
                             tabId,
@@ -317,7 +320,7 @@ public class LayerTitleCache {
         if (mNativeLayerTitleCache == 0) return;
         LayerTitleCacheJni.get()
                 .updateGroupLayer(
-                        mNativeLayerTitleCache, LayerTitleCache.this, rootId, -1, false, false);
+                        mNativeLayerTitleCache, LayerTitleCache.this, rootId, -1, -1, false, false);
     }
 
     private class Title {
@@ -418,10 +421,11 @@ public class LayerTitleCache {
                 LayerTitleCache caller,
                 int groupRootId,
                 int titleResId,
+                int avatarResId,
                 boolean isIncognito,
                 boolean isRtl);
 
-        void updateFavicon(
+        void updateIcon(
                 long nativeLayerTitleCache, LayerTitleCache caller, int tabId, int faviconResId);
     }
 }
