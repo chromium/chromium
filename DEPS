@@ -4350,7 +4350,7 @@ deps = {
 
   'src/components/autofill/core/browser/form_parsing/internal_resources': {
       'url': Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
-        'fdd210672a8abf40678baa7927a7878daaa0343c',
+        '09fb4c501c63ef2f6fbf0630d39e036dd159a2d4',
       'condition': 'checkout_src_internal',
   },
 
