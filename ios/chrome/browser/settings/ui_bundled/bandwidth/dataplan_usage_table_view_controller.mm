@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller+Testing.h"
+#import "ios/chrome/browser/settings/ui_bundled/bandwidth/dataplan_usage_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
+#import "ios/chrome/browser/settings/ui_bundled/bandwidth/dataplan_usage_table_view_controller+Testing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -154,8 +154,9 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 
 + (NSString*)currentLabelForPreference:(PrefService*)prefs
                            settingPref:(const char*)settingPreference {
-  if (!prefs)
+  if (!prefs) {
     return nil;
+  }
 
   NetworkPredictionSetting setting = static_cast<NetworkPredictionSetting>(
       prefs->GetInteger(settingPreference));
