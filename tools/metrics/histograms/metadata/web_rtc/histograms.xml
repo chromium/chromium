@@ -828,6 +828,79 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Call.AbsCapture.Delta" units="microseconds"
+    expires_after="2025-05-25">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Difference between the local clock and the timestamp carried in the
+    abs-capture-time RTP header extension. This is instrumenting an NTP format
+    timestamp, which has a precision in excess of microseconds. Recorded on
+    arrival of each RTP packet that carries the abs-capture-time extension.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Call.AbsCapture.DeltaDeviation" units="microseconds"
+    expires_after="2025-05-25">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Change from sample to sample of the difference between the local clock and
+    the timestamp carried in the abs-capture-time RTP header extension. This is
+    instrumenting an NTP format timestamp, which has a precision in excess of
+    microseconds. Recorded on arrival of each RTP packet that carries the
+    abs-capture-time extension.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Call.AbsCapture.ExtensionWait" units="ms"
+    expires_after="2025-05-25">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Amount of time between the first RTP packet on a connection and the first
+    RTP packet carrying the abs-capture-time RTP header extension. Recorded on
+    arrival of the first RTP packet with the abs-capture-time extension.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Call.AbsCapture.Offset" units="microseconds"
+    expires_after="2025-05-25">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Value of the &quot;offset&quot; field carried in the abs-capture-time RTP
+    header extension. This is instrumenting an NTP format timestamp, which has a
+    precision in excess of microseconds. Recorded on arrival of each RTP packet
+    that carries an abs-capture-time extension with an offset field.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Call.AbsCapture.OffsetDeviation" units="microseconds"
+    expires_after="2025-05-25">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Change from sample to sample of the &quot;offset&quot; field carried in the
+    abs-capture-time RTP header extension. Recorded on arrival of each RTP
+    packet that carries an abs-capture-time extension with an offset field.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Call.AbsCapture.OffsetWait" units="ms"
+    expires_after="2025-05-25">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Amount of time between the first RTP packet on a connection and the first
+    RTP packet carrying the abs-capture-time RTP header extension with the
+    &quot;offset&quot; value filled in. This is instrumenting an NTP format
+    timestamp, which has a precision in excess of microseconds. Recorded on
+    arrival of the first RTP packet that carries an abs-capture-time extension
+    with an offset field.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Call.AudioBitrateReceivedInKbps" units="kbps"
     expires_after="2025-03-30">
   <owner>holmer@chromium.org</owner>
