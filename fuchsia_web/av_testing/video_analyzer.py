@@ -24,8 +24,9 @@ def from_original_video(recorded: str, original: str) -> object:
     output_dir = os.path.join(LOG_DIR, filename)
     os.mkdir(output_dir)
     subprocess.run([
-        binary, '--gid=', '--uid=', f'--ref_video_file={original}',
-        f'--test_video_file={recorded}', f'--output_folder={output_dir}'
+        binary, '--gid=', '--uid=', '--loas_pwd_fallback_in_corp',
+        f'--ref_video_file={original}', f'--test_video_file={recorded}',
+        f'--output_folder={output_dir}'
     ],
                    check=True)
     try:
