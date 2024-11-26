@@ -11078,12 +11078,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Error details:
         </message>
       </if>
-      <if expr="is_win or chromeos_ash">
+      <if expr="is_win or is_macosx or chromeos_ash">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY" desc="Status label: Upgrades disabled by policy">
           Updates are disabled by your administrator.
         </message>
       </if>
-      <if expr="is_win">
+      <if expr="is_win or is_macosx">
         <message name="IDS_UPGRADE_DISABLED_BY_POLICY_MANUAL" desc="Status label: Manual upgrades disabled by policy, automatic upgrades ok">
           Automatic updates are enabled. Manual updates are disabled by your administrator.
         </message>
