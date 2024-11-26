@@ -38,6 +38,8 @@ ERRORPRONE_CHECKS_TO_APPLY = []
 TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Too much effort to enable.
     'UnusedVariable',
+    # These are allowed in tests.
+    'NoStreams',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -148,6 +150,7 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'UnnecessaryStaticImport',
     'UseBinds',
     'WildcardImport',
+    'NoStreams',
 ]
 
 
@@ -354,6 +357,7 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
           stamp_file=options.jar_path,
           force=options.use_build_server,
           experimental=options.experimental_build_server)):
+    logging.info('Using build server')
     return
 
   if options.enable_kythe_annotations:
