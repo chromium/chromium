@@ -2262,9 +2262,10 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::BooleanPolicyProto& container(
         policy.deviceloginscreentouchvirtualkeyboardenabled());
     if (container.has_value()) {
-      policies->Set(key::kTouchVirtualKeyboardEnabled, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.value()), nullptr);
+      policies->Set(key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
     }
   }
 
