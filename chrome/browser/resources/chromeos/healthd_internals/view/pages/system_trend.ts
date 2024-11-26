@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
 import '../line_chart/line_chart.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {DataSeries} from '../../model/data_series.js';
+import {CategoryTypeEnum, SystemTrendController} from '../../controller/system_trend_controller.js';
 import {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js';
@@ -16,10 +17,15 @@ import {getTemplate} from './system_trend.html.js';
 
 export interface HealthdInternalsSystemTrendElement {
   $: {
+    categorySelector: HTMLSelectElement,
     lineChart: HealthdInternalsLineChartElement,
   };
 }
 
+/**
+ * The system trend page to provide historical data. Also handles user
+ * interactions and configuration.
+ */
 export class HealthdInternalsSystemTrendElement extends PolymerElement
     implements HealthdInternalsPage {
   static get is() {
@@ -32,8 +38,9 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
 
   static get properties() {
     return {
-      chartHeader: {type: String},
       isSummaryTableDisplayed: {type: Boolean},
+      displayedCategories: {type: Array},
+      selectedCategory: {type: String},
     };
   }
 
@@ -45,8 +52,8 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     });
   }
 
-  // Header of the line chart.
-  private chartHeader: string = '';
+  // Controller for this UI element.
+  private controller: SystemTrendController = new SystemTrendController(this);
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
   private updateHelper: UiUpdateHelper;
@@ -54,20 +61,20 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
   // Whether the chart summary table is displayed.
   private isSummaryTableDisplayed: boolean = true;
 
-  setupChartHeader(header: string) {
-    this.chartHeader = header;
-  }
+  // The available sources for system trend page.
+  private readonly displayedCategories: CategoryTypeEnum[] = [
+    CategoryTypeEnum.CPU_USAGE,
+    CategoryTypeEnum.CPU_FREQUENCY,
+    CategoryTypeEnum.MEMORY,
+    CategoryTypeEnum.ZRAM,
+    CategoryTypeEnum.BATTERY,
+    CategoryTypeEnum.THERMAL,
+  ];
 
-  initCanvasDrawer(units: string[], unitBase: number) {
-    this.$.lineChart.getController().initUnitLabel(units, unitBase);
-  }
+  private selectedCategory: CategoryTypeEnum = this.displayedCategories[0];
 
-  setChartMaxValue(maxValue: number) {
-    this.$.lineChart.getController().setChartMaxValue(maxValue);
-  }
-
-  setupDataSeriesList(dataSeriesList: DataSeries[]) {
-    this.$.lineChart.setupDataSeriesList(dataSeriesList);
+  getController(): SystemTrendController {
+    return this.controller;
   }
 
   updateVisibility(isVisible: boolean) {
@@ -79,9 +86,20 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 
+  setupDataSeriesList() {
+    this.$.lineChart.setupDataSeriesList(
+        this.selectedCategory, this.controller.getData(this.selectedCategory));
+  }
+
   private toggleChartSummaryTable() {
     this.isSummaryTableDisplayed = !this.isSummaryTableDisplayed;
     this.$.lineChart.renderChartSummaryTable(this.isSummaryTableDisplayed);
+  }
+
+  private onCategoryChanged() {
+    this.selectedCategory = this.$.categorySelector.value as CategoryTypeEnum;
+    this.setupDataSeriesList();
+    this.$.lineChart.update()
   }
 }
 

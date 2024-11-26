@@ -5,9 +5,9 @@
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 
+import type {SystemTrendController} from '../controller/system_trend_controller.js';
 import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from '../utils/externs.js';
 import {LINE_CHART_COLOR_SET} from '../utils/line_chart_configs.js';
-import type {HealthdInternalsSystemTrendElement} from '../view/pages/system_trend.js';
 import type {HealthdInternalsTelemetryElement} from '../view/pages/telemetry.js';
 
 import {CpuUsageHelper} from './cpu_usage_helper.js';
@@ -52,15 +52,6 @@ function sortThermals(
   return first.source.localeCompare(second.source);
 }
 
-export interface LineChartPages {
-  battery: HealthdInternalsSystemTrendElement;
-  cpuFrequency: HealthdInternalsSystemTrendElement;
-  cpuUsage: HealthdInternalsSystemTrendElement;
-  memory: HealthdInternalsSystemTrendElement;
-  thermal: HealthdInternalsSystemTrendElement;
-  zram: HealthdInternalsSystemTrendElement;
-}
-
 /**
  * Helper class to collect and maintain the displayed data.
  */
@@ -68,11 +59,11 @@ export class DataManager {
   constructor(
       dataRetentionDuration: number,
       telemetryPage: HealthdInternalsTelemetryElement,
-      chartPages: LineChartPages) {
+      systemTrendController: SystemTrendController) {
     this.dataRetentionDuration = dataRetentionDuration;
 
     this.telemetryPage = telemetryPage;
-    this.chartPages = chartPages;
+    this.systemTrendController = systemTrendController;
 
     this.initBatteryDataSeries();
     this.initMemoryDataSeries();
@@ -99,7 +90,7 @@ export class DataManager {
 
   // Set in constructor.
   private readonly telemetryPage: HealthdInternalsTelemetryElement;
-  private readonly chartPages: LineChartPages;
+  private readonly systemTrendController: SystemTrendController;
 
   // The helper class for calculating CPU usage.
   private readonly cpuUsageHelper: CpuUsageHelper = new CpuUsageHelper();
@@ -305,7 +296,7 @@ export class DataManager {
       this.batteryDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.chartPages.battery.setupDataSeriesList(this.batteryDataSeries);
+    this.systemTrendController.setBatteryData(this.batteryDataSeries);
   }
 
   private initCpuFrequencyDataSeries(cpu: HealthdApiCpuResult) {
@@ -318,8 +309,7 @@ export class DataManager {
         count += 1;
       }
     }
-    this.chartPages.cpuFrequency.setupDataSeriesList(
-        this.cpuFrequencyDataSeries);
+    this.systemTrendController.setCpuFrequencyData(this.cpuFrequencyDataSeries);
   }
 
   private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
@@ -334,7 +324,7 @@ export class DataManager {
         count += 1;
       }
     }
-    this.chartPages.cpuUsage.setupDataSeriesList(this.cpuUsageDataSeries);
+    this.systemTrendController.setCpuUsageData(this.cpuUsageDataSeries);
   }
 
   private initMemoryDataSeries() {
@@ -342,7 +332,7 @@ export class DataManager {
       this.memoryDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.chartPages.memory.setupDataSeriesList(this.memoryDataSeries);
+    this.systemTrendController.setMemoryData(this.memoryDataSeries);
   }
 
   private initThermalDataSeries(thermals: HealthdApiThermalResult[]) {
@@ -350,7 +340,7 @@ export class DataManager {
       this.thermalDataSeries.push(new DataSeries(
           `${thermal.name} (${thermal.source})`, getLineChartColor(index)));
     }
-    this.chartPages.thermal.setupDataSeriesList(this.thermalDataSeries);
+    this.systemTrendController.setThermalData(this.thermalDataSeries);
   }
 
   private initZramDataSeries() {
@@ -358,6 +348,6 @@ export class DataManager {
       this.zramDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.chartPages.zram.setupDataSeriesList(this.zramDataSeries);
+    this.systemTrendController.setZramData(this.zramDataSeries);
   }
 }

@@ -9,6 +9,8 @@ import {MIN_TIME_SCALE, SAMPLE_RATE} from '../utils/line_chart_configs.js';
 import type {HealthdInternalsLineChartElement} from '../view/line_chart/line_chart.js'
 
 import {CanvasDrawer} from './canvas_drawer.js';
+import type {DataSeriesList} from './system_trend_controller.js';
+import {CategoryTypeEnum} from './system_trend_controller.js';
 import {UnitLabel} from './unit_label.js';
 
 /**
@@ -48,29 +50,31 @@ export class LineChartController {
   private startTime: number = Date.now();
   private endTime: number = this.startTime;
 
+  // The current displayed category.
+  private displayedCategory: CategoryTypeEnum;
+
   // The list of data series displayed in the line chart.
-  private displayeDataSeriesList: DataSeries[] = [];
+  private displayeDataSeriesList?: DataSeriesList;
 
   // The fixed maximum value in line chart. If this value is null, the maximum
   // value of unit label will be set from the real maximum value of data series.
   private fixedMaxValue: number|null = null;
 
-  // Helper class for displaying unit labels.
-  private unitLabel: UnitLabel|null = null;
-
-  // Initialize the unit label.
-  initUnitLabel(units: string[], unitBase: number) {
-    this.unitLabel = new UnitLabel(units, unitBase);
-  }
-
-  // Overwrite the maximum value of the chart.
-  setChartMaxValue(maxValue: number|null) {
-    this.fixedMaxValue = maxValue;
-  }
-
   // Set up the list of data series.
-  setupDataSeriesList(dataSeriesList: DataSeries[]) {
+  setupDataSeriesList(
+      category: CategoryTypeEnum, dataSeriesList: DataSeriesList) {
+    if (category === this.displayedCategory) {
+      return;
+    }
+
+    this.displayedCategory = category;
     this.displayeDataSeriesList = dataSeriesList;
+
+    if (this.displayedCategory === CategoryTypeEnum.CPU_USAGE) {
+      this.fixedMaxValue = 100;
+    } else {
+      this.fixedMaxValue = null;
+    }
   }
 
   // Get the scrollbale range for the scrollbar.
@@ -85,14 +89,15 @@ export class LineChartController {
       context: CanvasRenderingContext2D, canvasWidth: number,
       canvasHeight: number, timeScale: number, scrollbarPosition: number) {
     clearTimeout(this.chartUpdateTimer);
-    if (this.displayeDataSeriesList.length === 0 || this.unitLabel === null) {
+    if (this.displayeDataSeriesList === undefined ||
+        this.displayeDataSeriesList.dataList.length === 0) {
       return;
     }
-    const unitLabel = this.unitLabel;
+    const data = this.displayeDataSeriesList;
     this.chartUpdateTimer = setTimeout(
         () => this.renderCanvas(
             context, canvasWidth, canvasHeight, timeScale, scrollbarPosition,
-            unitLabel, this.displayeDataSeriesList));
+            data.unitLabel, data.dataList));
   }
 
   // Get the whole line chart width, in pixel.

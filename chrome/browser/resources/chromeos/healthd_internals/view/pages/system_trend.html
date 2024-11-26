@@ -1,4 +1,4 @@
-<style include="healthd-internals-shared">
+<style include="healthd-internals-shared cr-shared-style md-select">
   #pageHeader {
     height: 60px;
     display: flex;
@@ -13,15 +13,31 @@
     align-items: center;
   }
 
+  #settingsContainer {
+    display: flex;
+    height: 50px;
+    width: 90%;
+    overflow-x: auto;
+    gap: 48px;
+    margin: 0 32px;
+    align-items: center;
+  }
+
+  .setting-with-label-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   #lineChart {
     display: flex;
-    height: calc(100% - 60px);
+    height: calc(100% - 60px - 50px);
     width: 100%;
   }
 </style>
 <div class="full-page">
   <div id="pageHeader">
-    <h1>[[chartHeader]]</h1>
+    <h1>System Trend</h1>
     <div id="headerEndContainer">
       <template is="dom-if" if="[[!isSummaryTableDisplayed]]">
         <cr-button class="action-button" on-click="toggleChartSummaryTable">
@@ -33,6 +49,17 @@
           Hide Details
         </cr-button>
       </template>
+    </div>
+  </div>
+  <div id="settingsContainer">
+    <div class="setting-with-label-container">
+      <label>Category</label>
+      <select id="categorySelector" class="md-select"
+          on-change="onCategoryChanged" value="[[selectedCategory]]">
+        <template is="dom-repeat" items="[[displayedCategories]]">
+          <option value="[[item]]">[[item]]</option>
+        </template>
+      </select>
     </div>
   </div>
   <healthd-internals-line-chart id="lineChart">

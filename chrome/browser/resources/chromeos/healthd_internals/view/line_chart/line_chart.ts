@@ -9,7 +9,7 @@ import './chart_summary_table.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LineChartController} from '../../controller/line_chart_controller.js'
-import type {DataSeries} from '../../model/data_series.js';
+import type {CategoryTypeEnum, DataSeriesList} from '../../controller/system_trend_controller.js';
 import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from '../../utils/line_chart_configs.js';
 
 import type {HealthdInternalsChartSummaryTableElement} from './chart_summary_table.js';
@@ -101,10 +101,12 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.updateCanvas();
   }
 
-  setupDataSeriesList(dataSeriesList: DataSeries[]) {
-    this.controller.setupDataSeriesList(dataSeriesList);
-    this.$.chartMenu.setupDataSeriesList(dataSeriesList);
-    this.$.summaryTable.setupDataSeriesList(dataSeriesList);
+  setupDataSeriesList(
+      category: CategoryTypeEnum, dataSeriesList: DataSeriesList) {
+    this.controller.setupDataSeriesList(category, dataSeriesList);
+    this.$.chartMenu.setupDataSeriesList(dataSeriesList.dataList);
+    this.$.summaryTable.setupDataSeriesList(dataSeriesList.dataList);
+    this.resizeCanvas();
     this.update();
   }
 

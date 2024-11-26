@@ -36,12 +36,7 @@ export enum PagePath {
   NONE = '/',
   TELEMETRY = '/telemetry',
   PROCESS = '/process',
-  BATTERY = '/battery',
-  CPU_FREQUENCY = '/cpu_frequency',
-  CPU_USAGE = '/cpu_usage',
-  MEMORY = '/memory',
-  THERMAL = '/thermal',
-  ZRAM = '/zram',
+  SYSTEM_TREND = '/system_trend'
 }
 
 // Interface of pages in chrome://healthd-internals.
@@ -55,12 +50,7 @@ export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
     processPage: HealthdInternalsProcessElement,
-    batteryChart: HealthdInternalsSystemTrendElement,
-    cpuFrequencyChart: HealthdInternalsSystemTrendElement,
-    cpuUsageChart: HealthdInternalsSystemTrendElement,
-    memoryChart: HealthdInternalsSystemTrendElement,
-    thermalChart: HealthdInternalsSystemTrendElement,
-    zramChart: HealthdInternalsSystemTrendElement,
+    systemTrendPage: HealthdInternalsSystemTrendElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
     appContainer: HTMLElement,
     sidebar: HTMLElement,
@@ -94,17 +84,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.initLineChartPages();
     this.dataManager = new DataManager(
         this.$.settingsDialog.getDataRetentionDuration(), this.$.telemetryPage,
-        {
-          battery: this.$.batteryChart,
-          cpuFrequency: this.$.cpuFrequencyChart,
-          cpuUsage: this.$.cpuUsageChart,
-          memory: this.$.memoryChart,
-          thermal: this.$.thermalChart,
-          zram: this.$.zramChart
-        });
+        this.$.systemTrendPage.getController());
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
       this.updateUiUpdateInterval();
@@ -137,34 +119,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
               obj: this.$.processPage,
             },
             {
-              name: 'Battery Chart',
-              path: PagePath.BATTERY,
-              obj: this.$.batteryChart,
-            },
-            {
-              name: 'CPU Frequency Chart',
-              path: PagePath.CPU_FREQUENCY,
-              obj: this.$.cpuFrequencyChart,
-            },
-            {
-              name: 'CPU Usage Chart',
-              path: PagePath.CPU_USAGE,
-              obj: this.$.cpuUsageChart,
-            },
-            {
-              name: 'Memory Chart',
-              path: PagePath.MEMORY,
-              obj: this.$.memoryChart,
-            },
-            {
-              name: 'Thermal Chart',
-              path: PagePath.THERMAL,
-              obj: this.$.thermalChart,
-            },
-            {
-              name: 'Zram Chart',
-              path: PagePath.ZRAM,
-              obj: this.$.zramChart,
+              name: 'System Trend',
+              path: PagePath.SYSTEM_TREND,
+              obj: this.$.systemTrendPage,
             },
           ];
 
@@ -194,28 +151,6 @@ export class HealthdInternalsAppElement extends PolymerElement {
   // Return true if the menu tabs are not displayed.
   private areTabsHidden(): boolean {
     return !this.pageList.length;
-  }
-
-  // Init all line chart pages.
-  private initLineChartPages() {
-    this.$.batteryChart.setupChartHeader('Battery');
-    this.$.batteryChart.initCanvasDrawer([''], 1);
-
-    this.$.cpuFrequencyChart.setupChartHeader('CPU Frequency');
-    this.$.cpuFrequencyChart.initCanvasDrawer(['kHz', 'mHz', 'GHz'], 1000);
-
-    this.$.cpuUsageChart.setupChartHeader('CPU Usage');
-    this.$.cpuUsageChart.initCanvasDrawer(['%'], 1);
-    this.$.cpuUsageChart.setChartMaxValue(100);
-
-    this.$.memoryChart.setupChartHeader('Memory');
-    this.$.memoryChart.initCanvasDrawer(['KiB', 'MiB', 'GiB'], 1024);
-
-    this.$.thermalChart.setupChartHeader('Thermal');
-    this.$.thermalChart.initCanvasDrawer(['°C'], 1);
-
-    this.$.zramChart.setupChartHeader('Zram');
-    this.$.zramChart.initCanvasDrawer(['B', 'KiB', 'MiB', 'GiB'], 1024);
   }
 
   // Handle path changes caused by popstate events (back/forward navigation).

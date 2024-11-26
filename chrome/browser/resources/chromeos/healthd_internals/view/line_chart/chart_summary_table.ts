@@ -87,7 +87,8 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
   // Set up the list of data series.
   setupDataSeriesList(dataSeriesList: DataSeries[]) {
     this.dataSeriesList = dataSeriesList;
-    for (const dataSeries of dataSeriesList) {
+    this.displayedData = [];
+    for (const dataSeries of this.dataSeriesList) {
       this.displayedData.push({
         legendColor: dataSeries.getColor(),
         name: dataSeries.getTitle(),
