@@ -290,6 +290,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         submitted_frames_.back()->submitted_buffers.clear();
       }
 
+      frame->swap_result_recreate_buffers = true;
       DiscardFrame(std::move(frame));
       return;
     }
@@ -379,7 +380,6 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 void WaylandFrameManager::DiscardFrame(std::unique_ptr<WaylandFrame> frame) {
   DVLOG(2) << "discarding frame id=" << frame->frame_id;
   frame->feedback = gfx::PresentationFeedback::Failure();
-  frame->swap_result_recreate_buffers = true;
   submitted_frames_.push_back(std::move(frame));
   VerifyNumberOfSubmittedFrames();
   MaybeProcessSubmittedFrames();
