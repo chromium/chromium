@@ -201,6 +201,7 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
     case history_embeddings::ComputeAnswerStatus::kUnanswerable:
     case history_embeddings::ComputeAnswerStatus::kFiltered:
     case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
       return std::nullopt;
 
     case history_embeddings::ComputeAnswerStatus::kLoading: {
@@ -232,13 +233,6 @@ std::optional<AutocompleteMatch> HistoryEmbeddingsProvider::CreateAnswerMatch(
       answer_match.contents_class = {{0, ACMatchClassification::DIM}};
       return answer_match;
     }
-
-    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
-      return CreateAnswerMatchHelper(
-          score,
-          l10n_util::GetStringUTF16(IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING),
-          l10n_util::GetStringUTF16(
-              IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE));
 
     case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
       return CreateAnswerMatchHelper(

@@ -552,15 +552,13 @@ TEST_F(HistoryEmbeddingsProviderTest,
                       u"url2.com  •  Visited Mar 23, 2025"))));
 
   // Test error cases.
-  std::u16string model_error =
-      u"Preparing AI-powered summary...check back in a few minutes.";
   std::u16string execution_error =
       u"Something went wrong. Please try again later.";
   std::u16string non_temporary_error = u"Sorry, I can't help you with that.";
   for (const auto& [status, expected_answer_text] : std::vector<
            std::pair<history_embeddings::ComputeAnswerStatus, std::u16string>>{
            {kUnanswerable, u""},
-           {kModelUnavailable, model_error},
+           {kModelUnavailable, u""},
            {kExecutionFailure, execution_error},
            {kExecutionCancelled, u""},
            {kFiltered, u""}}) {
