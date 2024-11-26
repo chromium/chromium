@@ -235,14 +235,6 @@ def __step_config(ctx, step_config):
             "build/linux/debian_bullseye_armhf-sysroot/usr/lib/arm-linux-gnueabihf:libs",
             "third_party/llvm-build/Release+Asserts/bin:llddeps",
         ],
-        "build/toolchain/gcc_solink_wrapper.py": [
-            "build/toolchain/whole_archive.py",
-            "build/toolchain/wrapper_utils.py",
-        ],
-        "build/toolchain/gcc_link_wrapper.py": [
-            "build/toolchain/whole_archive.py",
-            "build/toolchain/wrapper_utils.py",
-        ],
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
