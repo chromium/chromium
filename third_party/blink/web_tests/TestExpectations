@@ -2683,8 +2683,6 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 
 # Expressions are attempted resolved during parsing, where lengths are not available
-crbug.com/40946458 external/wpt/css/css-animations/parsing/animation-duration-computed.html [ Crash Failure Pass Timeout ]
-crbug.com/40946458 external/wpt/css/css-animations/parsing/animation-iteration-count-computed.html [ Crash Failure Pass Timeout ]
 crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-color-function.html [ Crash Failure Pass ]
 crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Crash Failure Pass Timeout ]
 crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Crash Failure Pass ]

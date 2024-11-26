@@ -363,7 +363,8 @@ std::optional<double> CSSToStyleMap::MapAnimationDuration(
       identifier && identifier->GetValueID() == CSSValueID::kAuto) {
     return std::nullopt;
   }
-  return To<CSSPrimitiveValue>(value).ComputeSeconds();
+  return To<CSSPrimitiveValue>(value).ComputeSeconds(
+      state.CssToLengthConversionData());
 }
 
 Timing::FillMode CSSToStyleMap::MapAnimationFillMode(StyleResolverState& state,
@@ -389,7 +390,8 @@ double CSSToStyleMap::MapAnimationIterationCount(StyleResolverState& state,
       identifier_value->GetValueID() == CSSValueID::kInfinite) {
     return std::numeric_limits<double>::infinity();
   }
-  return To<CSSPrimitiveValue>(value).GetFloatValue();
+  return To<CSSPrimitiveValue>(value).ComputeNumber(
+      state.CssToLengthConversionData());
 }
 
 AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
