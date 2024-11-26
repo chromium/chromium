@@ -666,6 +666,10 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "unoDesktopEnabled",
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+
+  html_source->AddBoolean("isImprovedSettingsUIOnDesktopEnabled",
+                          switches::IsImprovedSettingsUIOnDesktopEnabled());
+
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "isClearPrimaryAccountAllowed",

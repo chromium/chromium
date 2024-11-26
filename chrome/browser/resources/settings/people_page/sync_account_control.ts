@@ -20,7 +20,7 @@ import '../settings_shared.css.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -353,10 +353,27 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldAllowAccountSwitch_(): boolean {
-    return !this.hideButtons && !this.isSyncing_() &&
-        this.syncStatus.signedInState !== SignedInState.SIGNED_IN_PAUSED &&
-        (!loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') ||
-         !this.syncStatus.domain);
+    if (this.hideButtons) {
+      return false;
+    }
+
+    if (loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') &&
+        this.syncStatus.domain) {
+      return false;
+    }
+
+    switch (this.syncStatus.signedInState) {
+      case SignedInState.SIGNED_OUT:
+      case SignedInState.WEB_ONLY_SIGNED_IN:
+        return true;
+      case SignedInState.SYNCING:
+      case SignedInState.SIGNED_IN_PAUSED:
+        return false;
+      case SignedInState.SIGNED_IN:
+        return !loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled');
+    }
+
+    assertNotReached('Invalid SignedInState');
   }
 
   private handleStoredAccounts_(accounts: StoredAccount[]) {

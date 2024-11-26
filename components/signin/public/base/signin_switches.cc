@@ -146,6 +146,15 @@ bool IsImprovedSigninUIOnDesktopEnabled() {
          base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
 }
 
+BASE_FEATURE(kImprovedSettingsUIOnDesktop,
+             "ImprovedSettingsUIOnDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsImprovedSettingsUIOnDesktopEnabled() {
+  return IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+         base::FeatureList::IsEnabled(kImprovedSettingsUIOnDesktop);
+}
+
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableClearCut,
              "EnableClearcut",

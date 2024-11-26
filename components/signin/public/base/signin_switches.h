@@ -118,6 +118,12 @@ BASE_DECLARE_FEATURE(kImprovedSigninUIOnDesktop);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsImprovedSigninUIOnDesktopEnabled();
 
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kImprovedSettingsUIOnDesktop);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsImprovedSettingsUIOnDesktopEnabled();
+
 #if BUILDFLAG(IS_IOS)
 // The feature that authorizes clear-cut to send log when UMA is enabled.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

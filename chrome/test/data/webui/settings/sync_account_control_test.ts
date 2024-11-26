@@ -233,6 +233,40 @@ suite('SyncAccountControl', function() {
     await browserProxy.whenCalled('startSignIn');
   });
 
+  test(
+      'account selection dropdown hidden when sync off kImprovedSettingsUIOnDesktop enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+        testElement.syncStatus = {
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+
+        flush();
+
+        assertTrue(isChildVisible(testElement, '#sync-button'));
+        assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+      });
+
+
+  test(
+      'account selection dropdown shown when sync off kImprovedSettingsUIOnDesktop disabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: false});
+        testElement.syncStatus = {
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+
+        flush();
+
+        assertTrue(isChildVisible(testElement, '#sync-button'));
+        assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+      });
+
+
   test('managedUser, Sync off, turn sync off disabled', function() {
     loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: false});
 
