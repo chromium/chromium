@@ -1678,6 +1678,7 @@ public class ToolbarManager
                 new BottomUiThemeColorProvider(
                         mTopUiThemeColorProvider,
                         mBrowserControlsSizer,
+                        mBottomControlsStacker,
                         mIncognitoStateProvider,
                         mActivity);
         mTabGroupUiOneshotSupplier =
