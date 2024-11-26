@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -145,7 +146,7 @@ class NET_EXPORT StreamSocket : public Socket {
   // retagged with a different tag. Sockets wrapping multiplexed sockets
   // (e.g. sockets who proxy through a QUIC or Spdy stream) cannot be tagged as
   // the tag would inadvertently affect other streams; calling ApplySocketTag()
-  // in this case will result in CHECK(false).
+  // in this case will result in NOTREACHED().
   virtual void ApplySocketTag(const SocketTag& tag) = 0;
 };
 

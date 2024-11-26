@@ -342,7 +342,7 @@ class Log : public ParserHandler {
   void HandleBinary(span<uint8_t> bytes) override {
     // JSON doesn't have native support for arbitrary bytes, so our parser will
     // never call this.
-    CHECK(false);
+    NOTREACHED();
   }
 
   void HandleDouble(double value) override {

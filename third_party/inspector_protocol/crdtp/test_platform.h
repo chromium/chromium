@@ -17,7 +17,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
 #include "base/check_op.h"  // Provides CHECK and CHECK_EQ, etc.
+#include "base/notreached.h"
 #include "span.h"
 #include "testing/gmock/include/gmock/gmock.h"  // Provides Gunit
 #include "testing/gtest/include/gtest/gtest.h"  // Provides Gmock

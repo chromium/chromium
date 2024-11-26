@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_common.h"
@@ -29,7 +30,6 @@
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/buildflags.h"
-
 
 namespace ui {
 
@@ -432,8 +432,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       CHECK(!ax_tree()->error().empty())
           << "A failed serialization didn't supply the error via "
              "AXTree::RecordError().";
-      if (!delegate_)
-        CHECK(false) << ax_tree()->error();
+      CHECK(delegate_) << ax_tree()->error();
       return false;
     }
 

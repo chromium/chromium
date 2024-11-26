@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -538,15 +539,15 @@ void AXRelationCache::MarkNewRelationTargetDirty(Node* target) {
 
 // ContainsCycle() should:
 // * Return true when a cycle is an authoring error, but not an error in Blink.
-// * CHECK(false) when Blink should have caught this error earlier ... we should
-// have never gotten into this state.
+// * CHECK failure when Blink should have caught this error earlier ... we
+//   should have never gotten into this state.
 //
 // For example, if a web page specifies that grandchild owns it's grandparent,
 // what should happen is the ContainsCycle will start at the grandchild and go
 // up, finding that it's grandparent is already in the ancestor chain, and
 // return false, thus disallowing the relation. However, if on the way to the
 // root, it discovers that any other two objects are repeated in the ancestor
-// chain, this is unexpected, and results in the CHECK(false) condition.
+// chain, this is unexpected, and results in the CHECK() failure.
 static bool ContainsCycle(AXObject* owner, Node& child_node) {
   if (FlatTreeTraversal::IsDescendantOf(*owner->GetNode(), child_node)) {
     // A DOM descendant cannot own its ancestor.
