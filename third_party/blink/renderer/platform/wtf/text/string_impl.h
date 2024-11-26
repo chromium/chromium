@@ -677,23 +677,6 @@ ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
   return ComputeASCIIFlags() & kIsLowerAscii;
 }
 
-// Callers must ensure the region [a, a+b.size()) is safe to access.
-template <typename CharType>
-ALWAYS_INLINE bool Equal(const CharType* a, base::span<const CharType> b) {
-  return std::equal(a, a + b.size(), b.data());
-}
-
-// Callers must ensure the region [a, a+b.size()) is safe to access.
-ALWAYS_INLINE bool Equal(const LChar* a, base::span<const UChar> b) {
-  // Passing pointers instead of iterators for performance.
-  return std::equal(a, a + b.size(), b.data());
-}
-
-// Callers must ensure the region [a, a+b.size()) is safe to access.
-ALWAYS_INLINE bool Equal(const UChar* a, base::span<const LChar> b) {
-  return Equal(b.data(), base::span(a, b.size()));
-}
-
 // Unicode aware case insensitive string matching. Non-ASCII characters might
 // match to ASCII characters. These functions are rarely used to implement web
 // platform features.

@@ -1539,17 +1539,9 @@ static inline bool StringImplContentEqual(const StringImpl* a,
   if (!a_length)
     return true;
 
-  if (a->Is8Bit()) {
-    if (b->Is8Bit())
-      return Equal(a->Characters8(), b->Span8());
-
-    return Equal(a->Characters8(), b->Span16());
-  }
-
-  if (b->Is8Bit())
-    return Equal(a->Characters16(), b->Span8());
-
-  return Equal(a->Characters16(), b->Span16());
+  return VisitCharacters(*a, [b](auto chars) {
+    return b->Is8Bit() ? chars == b->Span8() : chars == b->Span16();
+  });
 }
 
 bool Equal(const StringImpl* a, const StringImpl* b) {
@@ -1574,9 +1566,7 @@ inline bool EqualInternal(const StringImpl* a, base::span<const CharType> b) {
   if (a->length() != b.size()) {
     return false;
   }
-  if (a->Is8Bit())
-    return Equal(a->Characters8(), b);
-  return Equal(a->Characters16(), b);
+  return a->Is8Bit() ? a->Span8() == b : a->Span16() == b;
 }
 
 bool Equal(const StringImpl* a, base::span<const LChar> b) {
