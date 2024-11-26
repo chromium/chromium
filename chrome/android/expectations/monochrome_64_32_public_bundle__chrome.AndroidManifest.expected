@@ -385,11 +385,11 @@
         android:exported="false"
         android:theme="@style/Theme.Material3.DayNight">
     </activity>  # DIFF-ANCHOR: 45a98fa4
-    <activity  # DIFF-ANCHOR: ed66979d
-        android:name="org.chromium.chrome.browser.task_manager.TaskManagerActivity"
+    <activity  # DIFF-ANCHOR: 6e34d703
+        android:name="org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Activity">
-    </activity>  # DIFF-ANCHOR: ed66979d
+    </activity>  # DIFF-ANCHOR: 6e34d703
     <activity  # DIFF-ANCHOR: 43bfa5de
         android:name="org.chromium.chrome.browser.test_dummy.TestDummyActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

@@ -12,11 +12,9 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:background="@macro/default_bg_color">
 
-    <!-- Feel free to remove the following text view on implementing the real task manager UI. -->
-    <TextView
-        android:id="@+id/five"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tasks_view"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:autoSizeTextType="uniform" />
+        android:layout_width="match_parent" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

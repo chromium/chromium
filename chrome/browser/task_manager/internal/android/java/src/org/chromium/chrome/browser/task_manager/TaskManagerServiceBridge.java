@@ -11,7 +11,7 @@ import org.jni_zero.NativeMethods;
  * receiving updates and fetching specific task information (e.g., memory usage) from the C++ task
  * manager logic.
  */
-class TaskManagerServiceBridge {
+public class TaskManagerServiceBridge {
     /**
      * Adds the observer.
      *
@@ -21,7 +21,7 @@ class TaskManagerServiceBridge {
      *     RefreshType in task_manager_observer.h for details.
      * @return The handle of the observer, which should be used on calling removeObserver.
      */
-    ObserverHandle addObserver(
+    public ObserverHandle addObserver(
             TaskManagerObserver observer, int refreshTimeMillis, @RefreshType int refreshType) {
         long pointer =
                 TaskManagerServiceBridgeJni.get()
@@ -30,30 +30,30 @@ class TaskManagerServiceBridge {
     }
 
     /** Removes the observer. */
-    void removeObserver(ObserverHandle handle) {
+    public void removeObserver(ObserverHandle handle) {
         TaskManagerServiceBridgeJni.get().removeObserver(handle.getPointer());
     }
 
     // Following methods for fetching task information mirror the functions in
     // task_manager_interface.h. See the file for details.
 
-    String getTitle(long taskId) {
+    public String getTitle(long taskId) {
         return TaskManagerServiceBridgeJni.get().getTitle(taskId);
     }
 
-    long getMemoryFootprintUsage(long taskId) {
+    public long getMemoryFootprintUsage(long taskId) {
         return TaskManagerServiceBridgeJni.get().getMemoryFootprintUsage(taskId);
     }
 
-    double getPlatformIndependentCpuUsage(long taskId) {
+    public double getPlatformIndependentCpuUsage(long taskId) {
         return TaskManagerServiceBridgeJni.get().getPlatformIndependentCpuUsage(taskId);
     }
 
-    long getProcessId(long taskId) {
+    public long getProcessId(long taskId) {
         return TaskManagerServiceBridgeJni.get().getProcessId(taskId);
     }
 
-    static class ObserverHandle {
+    public static class ObserverHandle {
         private long mPointer;
 
         ObserverHandle(long pointer) {
@@ -66,7 +66,7 @@ class TaskManagerServiceBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long addObserver(
                 TaskManagerObserver observer, int refreshTimeMillis, @RefreshType int refreshType);
 
