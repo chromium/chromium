@@ -5749,6 +5749,20 @@ void WebContentsImpl::ResizeDueToAutoResize(
     const gfx::Size& new_size) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ResizeDueToAutoResize",
                         "render_widget_host", render_widget_host);
+
+  // If we are a guest frame tree and the RenderWidgetHost is the same as the
+  // guest's main frame widget, then send the guest a notification about the
+  // resize.
+  if (render_widget_host->frame_tree()->is_guest() &&
+      render_widget_host->frame_tree()->GetMainFrame()->GetRenderWidgetHost() ==
+          render_widget_host) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+            *render_widget_host->frame_tree()->GetMainFrame())) {
+      guest->delegate()->GuestResizeDueToAutoResize(new_size);
+    }
+    return;
+  }
+
   if (render_widget_host != GetRenderViewHost()->GetWidget()) {
     return;
   }

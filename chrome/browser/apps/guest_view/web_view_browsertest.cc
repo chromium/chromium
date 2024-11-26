@@ -1292,8 +1292,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AddRemoveWebView_AddRemoveWebView) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, AutoSize) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/autosize",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -1333,8 +1331,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ExecuteCode) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestAutosizeAfterNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAutosizeAfterNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -1349,8 +1345,6 @@ IN_PROC_BROWSER_TEST_P(WebViewDPITest, Shim_TestAutosizeHeight) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestAutosizeHeight) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAutosizeHeight", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -1361,8 +1355,6 @@ IN_PROC_BROWSER_TEST_P(WebViewDPITest, Shim_TestAutosizeBeforeNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestAutosizeBeforeNavigation) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAutosizeBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -1373,16 +1365,12 @@ IN_PROC_BROWSER_TEST_P(WebViewDPITest, Shim_TestAutosizeRemoveAttributes) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestAutosizeRemoveAttributes) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAutosizeRemoveAttributes", "web_view/shim", NO_TEST_SERVER);
 }
 
 // This test is disabled due to being flaky. http://crbug.com/282116
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest,
                        DISABLED_Shim_TestAutosizeWithPartialAttributes) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAutosizeWithPartialAttributes",
              "web_view/shim",
              NO_TEST_SERVER);
@@ -2264,16 +2252,12 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestNavigationToExternalProtocol) {
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest,
                        Shim_TestResizeWebviewWithDisplayNoneResizesContent) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testResizeWebviewWithDisplayNoneResizesContent",
              "web_view/shim",
              NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestResizeWebviewResizesContent) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testResizeWebviewResizesContent",
              "web_view/shim",
              NO_TEST_SERVER);
@@ -4469,8 +4453,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDataAPINotRelativeToAnotherExtension) {
 
 // This test verifies that the resize and contentResize events work correctly.
 IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestResizeEvents) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testResizeEvents", "web_view/shim", NO_TEST_SERVER);
 }
 

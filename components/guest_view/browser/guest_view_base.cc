@@ -678,6 +678,10 @@ void GuestViewBase::GuestMainFrameProcessGone(base::TerminationStatus status) {
   GuestViewMainFrameProcessGone(status);
 }
 
+void GuestViewBase::GuestResizeDueToAutoResize(const gfx::Size& new_size) {
+  UpdateGuestSize(new_size, auto_size_enabled_);
+}
+
 void GuestViewBase::LoadProgressChanged(double progress) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // The load state of the embedder does not affect the load state of the

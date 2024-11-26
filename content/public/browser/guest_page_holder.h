@@ -65,6 +65,9 @@ class GuestPageHolder : public base::SupportsUserData {
     // The main frame's process is gone.
     virtual void GuestMainFrameProcessGone(base::TerminationStatus status) = 0;
 
+    // The guest was resized.
+    virtual void GuestResizeDueToAutoResize(const gfx::Size& new_size) = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.

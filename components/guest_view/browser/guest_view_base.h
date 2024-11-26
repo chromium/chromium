@@ -449,6 +449,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void GuestDocumentOnLoadCompleted() final;
   void GuestDidChangeLoadProgress(double progress) final;
   void GuestMainFrameProcessGone(base::TerminationStatus status) final;
+  void GuestResizeDueToAutoResize(const gfx::Size& new_size) final;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;
