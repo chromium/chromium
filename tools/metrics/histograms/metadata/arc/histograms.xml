@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2025-03-23">
+<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2025-05-25">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1695,7 +1695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode.SecondaryAccount"
-    enum="ArcOptInSilentAuthCode" expires_after="2025-03-23">
+    enum="ArcOptInSilentAuthCode" expires_after="2025-05-25">
   <owner>mhasank@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
@@ -2095,7 +2095,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>khmel@google.com</owner>
   <owner>alanding@google.com</owner>
   <summary>

@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2025-03-23">
+    units="microseconds" expires_after="2025-05-25">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>

@@ -2871,7 +2871,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.NTP.Click" enum="IOSHomeActionType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -4747,7 +4747,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Start.Click" enum="IOSHomeActionType"
-    expires_after="2025-03-23">
+    expires_after="2025-05-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -4765,7 +4765,7 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2025-03-23">
+<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2025-05-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <summary>
