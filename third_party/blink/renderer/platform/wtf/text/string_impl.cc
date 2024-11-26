@@ -1110,8 +1110,8 @@ wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
 
 wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) const {
   if (Is8Bit())
-    return WTF::ReverseFind(Characters8(), length_, c, index);
-  return WTF::ReverseFind(Characters16(), length_, c, index);
+    return WTF::ReverseFind(Span8(), c, index);
+  return WTF::ReverseFind(Span16(), c, index);
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
@@ -1168,9 +1168,8 @@ wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
   // Optimization 1: fast case for strings of length 1.
   if (match_length == 1) {
     if (Is8Bit())
-      return WTF::ReverseFind(Characters8(), our_length, match_string[0],
-                              index);
-    return WTF::ReverseFind(Characters16(), our_length, match_string[0], index);
+      return WTF::ReverseFind(Span8(), match_string[0], index);
+    return WTF::ReverseFind(Span16(), match_string[0], index);
   }
 
   // Check index & matchLength are in range.

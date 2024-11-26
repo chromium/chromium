@@ -766,38 +766,42 @@ inline wtf_size_t Find(base::span<const CharType> characters,
   return it == end ? kNotFound : std::distance(begin, it);
 }
 
+// Search the `characters` span for `match_character` from the end of the span,
+// and returns the found index or WTF::kNotFound.
+//
+// If the optional `index` parameter is specified, this function searches from
+// characters[min(index, characters.size()-1)] to characters[0].
 template <typename CharacterType>
-inline wtf_size_t ReverseFind(const CharacterType* characters,
-                              wtf_size_t length,
+inline wtf_size_t ReverseFind(base::span<const CharacterType> characters,
                               CharacterType match_character,
                               wtf_size_t index = UINT_MAX) {
+  const size_t length = characters.size();
   if (!length)
     return kNotFound;
   if (index >= length)
     index = length - 1;
-  while (characters[index] != match_character) {
+  const CharacterType* data = characters.data();
+  // We don't use characters[index] for better performance.
+  // SAFETY: The above code ensures `index` is less than characters.size().
+  while (UNSAFE_BUFFERS(data[index]) != match_character) {
     if (!index--)
       return kNotFound;
   }
   return index;
 }
 
-ALWAYS_INLINE wtf_size_t ReverseFind(const UChar* characters,
-                                     wtf_size_t length,
+ALWAYS_INLINE wtf_size_t ReverseFind(base::span<const UChar> characters,
                                      LChar match_character,
                                      wtf_size_t index = UINT_MAX) {
-  return ReverseFind(characters, length, static_cast<UChar>(match_character),
-                     index);
+  return ReverseFind(characters, static_cast<UChar>(match_character), index);
 }
 
-inline wtf_size_t ReverseFind(const LChar* characters,
-                              wtf_size_t length,
+inline wtf_size_t ReverseFind(base::span<const LChar> characters,
                               UChar match_character,
                               wtf_size_t index = UINT_MAX) {
   if (match_character & ~0xFF)
     return kNotFound;
-  return ReverseFind(characters, length, static_cast<LChar>(match_character),
-                     index);
+  return ReverseFind(characters, static_cast<LChar>(match_character), index);
 }
 
 inline wtf_size_t StringImpl::Find(LChar character, wtf_size_t start) const {
