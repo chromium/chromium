@@ -828,7 +828,7 @@ export class NetworkRequest {
 
     const authChallenges = this.#authChallenges;
 
-    return {
+    const response: Network.ResponseData = {
       url: this.url,
       protocol: this.#response.info?.protocol ?? '',
       status: this.#statusCode ?? -1, // TODO: Throw an exception or use some other status code?
@@ -851,15 +851,18 @@ export class NetworkRequest {
         size: 0,
       },
       ...(authChallenges ? {authChallenges} : {}),
-      // @ts-expect-error this is a CDP-specific extension.
-      'goog:securityDetails': this.#response.info?.securityDetails,
     };
+
+    return {
+      ...response,
+      'goog:securityDetails': this.#response.info?.securityDetails,
+    } as Network.ResponseData;
   }
 
   #getRequestData(): Network.RequestData {
     const headers = this.#requestHeaders;
 
-    return {
+    const request: Network.RequestData = {
       request: this.#id,
       url: this.url,
       method: this.#method ?? NetworkRequest.unknownParameter,
@@ -867,12 +870,19 @@ export class NetworkRequest {
       cookies: this.#cookies,
       headersSize: computeHeadersSize(headers),
       bodySize: this.#bodySize,
+      // TODO: populate
+      destination: '',
+      // TODO: populate
+      initiatorType: null,
       timings: this.#timings,
-      // @ts-expect-error CDP-specific attribute.
+    };
+
+    return {
+      ...request,
       'goog:postData': this.#request.info?.request?.postData,
       'goog:hasPostData': this.#request.info?.request?.hasPostData,
       'goog:resourceType': this.#request.info?.type,
-    };
+    } as Network.RequestData;
   }
 
   #getBeforeRequestEvent(): Network.BeforeRequestSent {
