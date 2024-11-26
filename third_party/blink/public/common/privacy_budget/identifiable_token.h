@@ -71,8 +71,8 @@ namespace blink {
 //   1. Use an existing byte span representation.
 //
 //      E.g.: Assuming |v| is a WTF::Vector
-//          IdentifiabilityMetricBuilder(...).Set(...,
-//              base::as_bytes(base::make_span(v.Data(), v.Size())));
+//          IdentifiabilityMetricBuilder(...).Set(
+//              ..., base::as_byte_span(v.Data(), v.Size()));
 //
 //      Note again that serializing to a stream of bytes may not be sufficient
 //      if the underlying types don't have a unique representation.
@@ -148,11 +148,10 @@ class IdentifiableToken {
   // there's not privacy expectation in the resulting token value. If the string
   // used as an input is privacy sensitive, it should not be passed in as-is.
   explicit IdentifiableToken(std::string_view s)
-      : IdentifiableToken(base::as_bytes(base::make_span(s))) {
+      : IdentifiableToken(base::as_byte_span(s)) {
     // The cart is before the horse, but it's a static_assert<>.
     static_assert(
-        std::is_same<ByteSpan,
-                     decltype(base::as_bytes(base::make_span(s)))>::value,
+        std::is_same<ByteSpan, decltype(base::as_byte_span(s))>::value,
         "base::as_bytes() doesn't return ByteSpan");
   }
 
@@ -180,8 +179,7 @@ class IdentifiableToken {
       TokenType digests[2];
       digests[0] = cur_digest;
       digests[1] = IdentifiableToken(element).value_;
-      cur_digest = IdentifiabilityDigestOfBytes(
-          base::as_bytes(base::make_span(digests)));
+      cur_digest = IdentifiabilityDigestOfBytes(base::as_byte_span(digests));
     }
     value_ = cur_digest;
   }
@@ -193,7 +191,7 @@ class IdentifiableToken {
     TokenType samples[] = {IdentifiableToken(first).value_,
                            IdentifiableToken(second).value_,
                            (IdentifiableToken(rest).value_)...};
-    value_ = IdentifiableToken(base::make_span(samples)).value_;
+    value_ = IdentifiableToken(base::span(samples)).value_;
   }
 
   constexpr bool operator<(const IdentifiableToken& that) const {
