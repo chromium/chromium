@@ -1157,36 +1157,38 @@ deps = {
       ],
   },
 
+  # version:2@132.0.6833.0
   'src/third_party/updater/chrome_win_arm64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_arm64',
-          'version': 'lVDOE8L-CQNHAhRQpy3gM0lNESM1J_U7BSo9bA5pynkC',
+          'version': 'OoGMyCUHah7D_AOVm4RpVoPOdkGqjFHuSMcoKTZ0rlsC',
         },
       ],
   },
 
-  # version:2@131.0.6776.0
+  # version:2@132.0.6833.0
   'src/third_party/updater/chrome_win_x86/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86',
-          'version': 'ZunaL0ySQ0b5WQqOPpKgTt3D0dAq2gE58WYhUeFllwMC',
+          'version': 'gqhcrVQFtXAKUu7yEISTlbrBpPaBUnQZ6FdOo5E4HLQC',
         },
       ],
   },
 
+  # version:2@132.0.6833.0
   'src/third_party/updater/chrome_win_x86_64/cipd': {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86_64',
-          'version': '4R5OznuthRryKbHdx7HjPG8NaJTt59TDBrk0_JUvBfsC',
+          'version': 'koo1i4cAVdOK2-re2VGbx-crCcbTz9h0qumUk1hyEt0C',
         },
       ],
   },
