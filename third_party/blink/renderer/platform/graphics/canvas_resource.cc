@@ -202,13 +202,9 @@ bool CanvasResource::PrepareTransferableResource(
     return false;
   }
 
-  // For software compositing, the display compositor assumes an N32 format for
-  // the resource type and completely ignores the format set on the
-  // TransferableResource. Clients are expected to render in N32 format but use
-  // RGBA as the tagged format on resources.
   *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
       client_shared_image, GetSyncToken(), client_shared_image->size(),
-      viz::SinglePlaneFormat::kBGRA_8888,
+      client_shared_image->format(),
       viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = client_shared_image->color_space();
