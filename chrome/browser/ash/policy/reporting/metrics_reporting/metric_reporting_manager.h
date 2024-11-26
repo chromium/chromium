@@ -41,7 +41,6 @@ class Sampler;
 class FatalCrashEventsObserver;
 class ChromeFatalCrashEventsObserver;
 
-BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableChromeFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableRuntimeCountersTelemetry);

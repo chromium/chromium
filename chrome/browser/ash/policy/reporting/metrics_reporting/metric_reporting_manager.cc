@@ -99,9 +99,6 @@ constexpr char kWebsiteTelemetry[] = "website_telemetry";
 }  // namespace
 
 // static
-BASE_FEATURE(kEnableAppEventsObserver,
-             "EnableAppEventsObserver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableFatalCrashEventsObserver,
              "EnableFatalCrashEventsObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -605,16 +602,14 @@ void MetricReportingManager::InitAppCollectors(Profile* profile) {
   CHECK(user_reporting_settings_);
   CHECK(user_telemetry_report_queue_);
   // App events.
-  if (base::FeatureList::IsEnabled(kEnableAppEventsObserver)) {
-    auto app_events_observer = AppEventsObserver::CreateForProfile(
-        profile, user_reporting_settings_.get());
-    InitEventObserverManager(
-        std::move(app_events_observer), app_event_report_queue_.get(),
-        user_reporting_settings_.get(),
-        /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
-        metrics::kReportAppInventoryEnabledDefaultValue,
-        /*init_delay=*/base::TimeDelta());
-  }
+  auto app_events_observer = AppEventsObserver::CreateForProfile(
+      profile, user_reporting_settings_.get());
+  InitEventObserverManager(
+      std::move(app_events_observer), app_event_report_queue_.get(),
+      user_reporting_settings_.get(),
+      /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
+      metrics::kReportAppInventoryEnabledDefaultValue,
+      /*init_delay=*/base::TimeDelta());
 
   // App telemetry.
   app_usage_observer_ =
