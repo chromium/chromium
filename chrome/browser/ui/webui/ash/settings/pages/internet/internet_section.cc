@@ -1406,27 +1406,29 @@ std::string InternetSection::ModifySearchResultUrl(
   std::string modified_url =
       OsSettingsSection::ModifySearchResultUrl(type, id, url_to_modify);
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kEthernetDetails) &&
+      connected_ethernet_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_ethernet_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kWifiDetails) &&
+      connected_wifi_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_wifi_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails)) {
+  if ((IsPartOfDetailsSubpage(type, id, mojom::Subpage::kCellularDetails) ||
+       IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) &&
+      active_cellular_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kApn)) {
-    return GetDetailsSubpageUrl(modified_url, *active_cellular_guid_);
-  }
-
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kTetherDetails) &&
+      connected_tether_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_tether_guid_);
   }
 
-  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails)) {
+  if (IsPartOfDetailsSubpage(type, id, mojom::Subpage::kVpnDetails) &&
+      connected_vpn_guid_.has_value()) {
     return GetDetailsSubpageUrl(modified_url, *connected_vpn_guid_);
   }
 
