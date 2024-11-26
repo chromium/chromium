@@ -116,6 +116,8 @@ message EncryptedPageLoadEvents {
     message EncryptedDeidentifiedWebAnalyticsEvent {
       optional bytes encrypted_event = 1;
       optional fixed64 field_trials_hash = 2;
+      // Same as DeidentifiedWebAnalyticsEvent.event_hash.
+      optional fixed64 event_hash = 3;
     }
     repeated EncryptedDeidentifiedWebAnalyticsEvent
         encrypted_deidentified_web_analytics_events = 1;
