@@ -9,7 +9,6 @@ import '/strings.m.js';
 import '../tab_search_item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -265,11 +264,12 @@ export class DeclutterPageElement extends CrLitElement {
     this.duplicateTabDatas_ = [];
     for (const url in tabs) {
       const urlTabs = tabs[url]!;
-      assert(urlTabs.length > 0);
-      const tabData: TabData = this.tabDataFromTab_(urlTabs[0]!);
-      tabData.tab.title = url;
-      tabData.tab.lastActiveElapsedText = urlTabs.length.toString();
-      this.duplicateTabDatas_.push(tabData);
+      if (urlTabs.length > 0) {
+        const tabData: TabData = this.tabDataFromTab_(urlTabs[0]!);
+        tabData.tab.title = url;
+        tabData.tab.lastActiveElapsedText = urlTabs.length.toString();
+        this.duplicateTabDatas_.push(tabData);
+      }
     }
   }
 
