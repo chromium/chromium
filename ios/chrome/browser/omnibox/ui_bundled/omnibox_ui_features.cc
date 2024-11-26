@@ -8,10 +8,6 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ui/base/device_form_factor.h"
 
-BASE_FEATURE(kOmniboxLockIconEnabled,
-             "OmniboxLockIconEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxActionsInSuggest,
              "OmniboxIOSActionsInSuggest",
              base::FEATURE_ENABLED_BY_DEFAULT);
