@@ -24,6 +24,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -34,6 +35,7 @@
 #include "components/component_updater/android/components_info_holder.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/metrics/component_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
@@ -183,7 +185,11 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestValidManifest) {
                                       ComponentLoadResult::kComponentLoaded, 1);
   histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
   EXPECT_EQ("ORIGIN_TRIALS-123.456.789",
-            crash_reporter::GetCrashKeyValue("crx-components"));
+            crash_reporter::GetCrashKeyValue(kComponentsCrashKeyName));
+  EXPECT_EQ("ORIGIN_TRIALS-" +
+                base::NumberToString(
+                    metrics::ComponentMetricsProvider::HashCohortId(kCohortId)),
+            crash_reporter::GetCrashKeyValue(kCohortHashCrashKeyName));
 
   std::vector<ComponentInfo> components =
       ComponentsInfoHolder::GetInstance()->GetComponents();

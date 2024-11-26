@@ -48,6 +48,10 @@ inline constexpr char kMetadataFileName[] = "aw_extra_component_metadata.json";
 
 inline constexpr char kMetadataFileCohortIdKey[] = "cohortId";
 
+inline constexpr char kComponentsCrashKeyName[] = "crx-components";
+inline constexpr char kCohortHashCrashKeyName[] =
+    "crx-components-cohort-hashes";
+
 // Components should use `AndroidComponentLoaderPolicy` by defining a class that
 // implements the members of `ComponentLoaderPolicy`, and then registering a
 // `AndroidComponentLoaderPolicy` that has been constructed with an instance of

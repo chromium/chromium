@@ -25,6 +25,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -96,27 +97,36 @@ void RecordComponentLoadStatusHistogram(const std::string& suffix,
       status);
 }
 
-std::string ComponentToString(const ComponentInfo& component) {
-  const auto id =
-      metrics::ComponentMetricsProvider::CrxIdToComponentId(component.id);
+std::string CreateCrashKey(std::string key, std::string value) {
+  const auto id = metrics::ComponentMetricsProvider::CrxIdToComponentId(key);
   if (id == metrics::SystemProfileProto_ComponentId_UNKNOWN) {
     return std::string();
   }
-  return base::StringPrintf("%s-%s",
-                            SystemProfileProto_ComponentId_Name(id).c_str(),
-                            component.version.GetString().c_str());
+  return base::StringPrintf(
+      "%s-%s", SystemProfileProto_ComponentId_Name(id).c_str(), value.c_str());
 }
 
 void UpdateCrashKeys() {
   std::vector<std::string> components_crash_key_values;
+  std::vector<std::string> cohort_hash_crash_key_values;
   for (const ComponentInfo& component :
        ComponentsInfoHolder::GetInstance()->GetComponents()) {
-    components_crash_key_values.push_back(ComponentToString(component));
+    components_crash_key_values.push_back(
+        CreateCrashKey(component.id, component.version.GetString()));
+    cohort_hash_crash_key_values.push_back(CreateCrashKey(
+        component.id,
+        base::NumberToString(metrics::ComponentMetricsProvider::HashCohortId(
+            component.cohort_id))));
   }
 
   static ::crash_reporter::CrashKeyString<kComponentsKeySize>
-      components_crash_key("crx-components");
+      components_crash_key(kComponentsCrashKeyName);
   components_crash_key.Set(base::JoinString(components_crash_key_values, ","));
+
+  static ::crash_reporter::CrashKeyString<kComponentsKeySize>
+      cohort_hash_crash_key(kCohortHashCrashKeyName);
+  cohort_hash_crash_key.Set(
+      base::JoinString(cohort_hash_crash_key_values, ","));
 }
 
 }  // namespace
