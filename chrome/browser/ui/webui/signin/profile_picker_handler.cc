@@ -199,7 +199,7 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
   } else if (base::FeatureList::IsEnabled(
                  supervised_user::kShowKiteForSupervisedUsers) &&
              entry->IsSupervised()) {
-    profile_entry.Set("avatarBadge", "cr20:kite");
+    profile_entry.Set("avatarBadge", "cr:kite");
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else {
     profile_entry.Set("avatarBadge", "");
