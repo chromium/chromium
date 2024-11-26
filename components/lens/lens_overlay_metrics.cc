@@ -58,7 +58,7 @@ std::string MimeTypeToMetricString(lens::MimeType mime_type) {
     case lens::MimeType::kPlainText:
       return "PlainText";
     default:
-      return "None";
+      return "Unknown";
   }
 }
 
@@ -131,6 +131,7 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 }
 
 void RecordContextualSearchboxSessionEndMetrics(
+    ukm::SourceId source_id,
     bool contextual_searchbox_focused_in_session,
     bool contextual_zps_shown_in_session,
     lens::MimeType page_content_type) {
@@ -153,6 +154,49 @@ void RecordContextualSearchboxSessionEndMetrics(
       MimeTypeToMetricString(page_content_type) + ".ShownInSession";
   base::UmaHistogramBoolean(sliced_contextual_zps_histogram_name,
                             contextual_zps_shown_in_session);
+
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  // UKM contextual searchbox focused in session.
+  ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession(source_id)
+      .SetAllPageContentTypes(contextual_searchbox_focused_in_session)
+      .Record(ukm::UkmRecorder::Get());
+
+  // UKM contextual zps shown in session.
+  ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession(source_id)
+      .SetAllPageContentTypes(contextual_zps_shown_in_session)
+      .Record(ukm::UkmRecorder::Get());
+
+  // UKM contextual searchbox focused in session and contextual suggest shown
+  // in session sliced by document type.
+  ukm::builders::Lens_Overlay_ContextualSearchbox_FocusedInSession
+      focused_in_session_event(source_id);
+  ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession
+      zps_shown_in_session_event(source_id);
+  switch (page_content_type) {
+    case lens::MimeType::kPdf:
+      focused_in_session_event.SetPdf(contextual_searchbox_focused_in_session);
+      zps_shown_in_session_event.SetPdf(contextual_zps_shown_in_session);
+      break;
+    case lens::MimeType::kHtml:
+      focused_in_session_event.SetHtml(contextual_searchbox_focused_in_session);
+      zps_shown_in_session_event.SetHtml(contextual_zps_shown_in_session);
+      break;
+    case lens::MimeType::kPlainText:
+      focused_in_session_event.SetPlainText(
+          contextual_searchbox_focused_in_session);
+      zps_shown_in_session_event.SetPlainText(contextual_zps_shown_in_session);
+      break;
+    case lens::MimeType::kUnknown:
+      focused_in_session_event.SetUnknown(
+          contextual_searchbox_focused_in_session);
+      zps_shown_in_session_event.SetUnknown(contextual_zps_shown_in_session);
+      break;
+  }
+  focused_in_session_event.Record(ukm::UkmRecorder::Get());
+  zps_shown_in_session_event.Record(ukm::UkmRecorder::Get());
 }
 
 void RecordSessionForegroundDuration(

@@ -2762,14 +2762,6 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
   lens::RecordSessionDuration(invocation_source_, session_duration);
 
-  // UMA contextual searchbox focused in session and contextual zero suggest
-  // shown in session.
-  if (contextual_searchbox_focused_in_session_.has_value()) {
-    lens::RecordContextualSearchboxSessionEndMetrics(
-        contextual_searchbox_focused_in_session_.value(),
-        contextual_zps_shown_in_session_, initial_page_content_type_);
-  }
-
   // UKM session end metrics. Includes invocation source, whether the
   // session resulted in a search, and session duration.
   ukm::SourceId source_id =
@@ -2777,6 +2769,14 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   lens::RecordUKMSessionEndMetrics(source_id, invocation_source_,
                                    search_performed_in_session_,
                                    session_duration);
+
+  // UMA contextual searchbox focused in session and contextual zero suggest
+  // shown in session.
+  if (contextual_searchbox_focused_in_session_.has_value()) {
+    lens::RecordContextualSearchboxSessionEndMetrics(
+        source_id, contextual_searchbox_focused_in_session_.value(),
+        contextual_zps_shown_in_session_, initial_page_content_type_);
+  }
 }
 
 void LensOverlayController::RecordDocumentMetrics(

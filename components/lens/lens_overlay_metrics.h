@@ -56,6 +56,7 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 // Records the end of sessions metrics for the contextual searchbox in sessions
 // in which it was shown.
 void RecordContextualSearchboxSessionEndMetrics(
+    ukm::SourceId source_id,
     bool contextual_searchbox_focused_in_session,
     bool contextual_zps_shown_in_session,
     lens::MimeType page_content_type);
