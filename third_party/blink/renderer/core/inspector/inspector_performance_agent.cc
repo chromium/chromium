@@ -81,7 +81,7 @@ void InspectorPerformanceAgent::InnerEnable() {
 }
 
 protocol::Response InspectorPerformanceAgent::enable(
-    Maybe<String> optional_time_domain) {
+    std::optional<String> optional_time_domain) {
   String time_domain = optional_time_domain.value_or(TimeDomain::TimeTicks);
   if (enabled_.Get()) {
     if (!HasTimeDomain(time_domain)) {

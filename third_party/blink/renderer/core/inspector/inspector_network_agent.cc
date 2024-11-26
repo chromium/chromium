@@ -434,11 +434,11 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
   NOTREACHED();
 }
 
-Maybe<String> BuildBlockedReason(const ResourceError& error) {
+std::optional<String> BuildBlockedReason(const ResourceError& error) {
   int error_code = error.ErrorCode();
   if (error_code != net::ERR_BLOCKED_BY_CLIENT &&
       error_code != net::ERR_BLOCKED_BY_RESPONSE) {
-    return Maybe<String>();
+    return std::nullopt;
   }
 
   std::optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
@@ -1308,7 +1308,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   String documentURL = loader
                            ? UrlWithoutFragment(loader->Url()).GetString()
                            : UrlWithoutFragment(fetch_context_url).GetString();
-  Maybe<String> maybe_frame_id;
+  std::optional<String> maybe_frame_id;
   if (!frame_id.empty())
     maybe_frame_id = frame_id;
   if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
@@ -1537,7 +1537,7 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
   if (IsNavigation(loader, identifier))
     return;
   if (resource_response && !resource_is_empty) {
-    Maybe<String> maybe_frame_id;
+    std::optional<String> maybe_frame_id;
     if (!frame_id.empty())
       maybe_frame_id = frame_id;
     GetFrontend()->responseReceived(
@@ -1591,7 +1591,7 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
                                            DocumentLoader* loader,
                                            base::SpanOrSize<const char> data) {
   String request_id = RequestId(loader, identifier);
-  Maybe<protocol::Binary> binary_data;
+  std::optional<protocol::Binary> binary_data;
 
   if (auto data_span = data.span(); data_span) {
     NetworkResourcesData::ResourceData const* resource_data =
@@ -1704,9 +1704,9 @@ void InspectorNetworkAgent::DidFailLoading(
 
   bool canceled = error.IsCancellation();
 
-  protocol::Maybe<String> blocked_reason = BuildBlockedReason(error);
+  std::optional<String> blocked_reason = BuildBlockedReason(error);
   auto cors_error_status = error.CorsErrorStatus();
-  protocol::Maybe<protocol::Network::CorsErrorStatus>
+  std::unique_ptr<protocol::Network::CorsErrorStatus>
       protocol_cors_error_status;
   if (cors_error_status) {
     protocol_cors_error_status = BuildCorsErrorStatus(*cors_error_status);
@@ -2068,9 +2068,9 @@ void InspectorNetworkAgent::WebTransportClosed(uint64_t transport_id) {
 }
 
 protocol::Response InspectorNetworkAgent::enable(
-    Maybe<int> total_buffer_size,
-    Maybe<int> resource_buffer_size,
-    Maybe<int> max_post_data_size) {
+    std::optional<int> total_buffer_size,
+    std::optional<int> resource_buffer_size,
+    std::optional<int> max_post_data_size) {
   total_buffer_size_.Set(total_buffer_size.value_or(kDefaultTotalBufferSize));
   resource_buffer_size_.Set(
       resource_buffer_size.value_or(kDefaultResourceBufferSize));
@@ -2262,10 +2262,10 @@ protocol::Response InspectorNetworkAgent::emulateNetworkConditions(
     double latency,
     double download_throughput,
     double upload_throughput,
-    Maybe<String> connection_type,
-    Maybe<double> packet_loss,
-    Maybe<int> packet_queue_length,
-    Maybe<bool> packet_reordering) {
+    std::optional<String> connection_type,
+    std::optional<double> packet_loss,
+    std::optional<int> packet_queue_length,
+    std::optional<bool> packet_reordering) {
   WebConnectionType type = kWebConnectionTypeUnknown;
   if (connection_type.has_value()) {
     type = ToWebConnectionType(connection_type.value());
@@ -2401,8 +2401,8 @@ protocol::Response InspectorNetworkAgent::GetResponseBody(
 protocol::Response InspectorNetworkAgent::searchInResponseBody(
     const String& request_id,
     const String& query,
-    Maybe<bool> case_sensitive,
-    Maybe<bool> is_regex,
+    std::optional<bool> case_sensitive,
+    std::optional<bool> is_regex,
     std::unique_ptr<
         protocol::Array<v8_inspector::protocol::Debugger::API::SearchMatch>>*
         matches) {

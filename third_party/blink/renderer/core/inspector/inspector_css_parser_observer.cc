@@ -303,9 +303,8 @@ void InspectorCSSParserObserver::ObserveProperty(unsigned start_offset,
   // Any property with is_parsed=false becomes a replaceable property.
   // A replaceable property can be replaced by a (valid) style rule
   // at the same offset.
-  replaceable_property_offset_ = is_parsed
-                                     ? std::optional<unsigned>()
-                                     : std::optional<unsigned>(start_offset);
+  replaceable_property_offset_ =
+      is_parsed ? std::nullopt : std::optional<unsigned>(start_offset);
 }
 
 void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,

@@ -84,10 +84,9 @@ void InspectorEmulationAgent::Restore() {
   // directly.
   std::vector<uint8_t> save_serialized_ua_metadata_override =
       serialized_ua_metadata_override_.Get();
-  setUserAgentOverride(
-      user_agent_override_.Get(), accept_language_override_.Get(),
-      navigator_platform_override_.Get(),
-      protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
+  setUserAgentOverride(user_agent_override_.Get(),
+                       accept_language_override_.Get(),
+                       navigator_platform_override_.Get(), nullptr);
   ua_metadata_override_ = blink::UserAgentMetadata::Demarshal(std::string(
       reinterpret_cast<char*>(save_serialized_ua_metadata_override.data()),
       save_serialized_ua_metadata_override.size()));
@@ -143,8 +142,8 @@ void InspectorEmulationAgent::Restore() {
   if (virtual_time_policy_.Get() ==
       protocol::Emulation::VirtualTimePolicyEnum::Pause) {
     setVirtualTimePolicy(
-        protocol::Emulation::VirtualTimePolicyEnum::Pause, Maybe<double>(),
-        Maybe<int>(), initial_virtual_time_.Get(), &virtual_time_ticks_base_ms);
+        protocol::Emulation::VirtualTimePolicyEnum::Pause, std::nullopt,
+        std::nullopt, initial_virtual_time_.Get(), &virtual_time_ticks_base_ms);
     return;
   }
 
@@ -165,9 +164,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   }
 
   hardware_concurrency_override_.Clear();
-  setUserAgentOverride(
-      String(), protocol::Maybe<String>(), protocol::Maybe<String>(),
-      protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
+  setUserAgentOverride(String(), std::nullopt, std::nullopt, nullptr);
   if (!locale_override_.Get().empty())
     setLocaleOverride(String());
   if (!web_local_frame_)
@@ -175,7 +172,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   setScriptExecutionDisabled(false);
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
-  setTouchEmulationEnabled(false, Maybe<int>());
+  setTouchEmulationEnabled(false, std::nullopt);
   setAutomationOverride(false);
   // Clear emulated media features. Note that the current approach
   // doesn't work well in cases where two clients have the same set of
@@ -190,10 +187,10 @@ protocol::Response InspectorEmulationAgent::disable() {
   setCPUThrottlingRate(1);
   setFocusEmulationEnabled(false);
   if (emulate_auto_dark_mode_.Get()) {
-    setAutoDarkModeOverride(Maybe<bool>());
+    setAutoDarkModeOverride(std::nullopt);
   }
   timezone_override_.reset();
-  setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
+  setDefaultBackgroundColorOverride(nullptr);
   disabled_image_types_.Clear();
   return protocol::Response::Success();
 }
@@ -252,7 +249,7 @@ protocol::Response InspectorEmulationAgent::setDocumentCookieDisabled(
 
 protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
     bool enabled,
-    protocol::Maybe<int> max_touch_points) {
+    std::optional<int> max_touch_points) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -271,8 +268,9 @@ protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
 }
 
 protocol::Response InspectorEmulationAgent::setEmulatedMedia(
-    Maybe<String> media,
-    Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features) {
+    std::optional<String> media,
+    std::unique_ptr<protocol::Array<protocol::Emulation::MediaFeature>>
+        features) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -408,7 +406,7 @@ protocol::Response InspectorEmulationAgent::setFocusEmulationEnabled(
 }
 
 protocol::Response InspectorEmulationAgent::setAutoDarkModeOverride(
-    Maybe<bool> enabled) {
+    std::optional<bool> enabled) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -426,9 +424,9 @@ protocol::Response InspectorEmulationAgent::setAutoDarkModeOverride(
 
 protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
     const String& policy,
-    Maybe<double> virtual_time_budget_ms,
-    protocol::Maybe<int> max_virtual_time_task_starvation_count,
-    protocol::Maybe<double> initial_virtual_time,
+    std::optional<double> virtual_time_budget_ms,
+    std::optional<int> max_virtual_time_task_starvation_count,
+    std::optional<double> initial_virtual_time,
     double* virtual_time_ticks_base_ms) {
   VirtualTimeController::VirtualTimePolicy scheduler_policy =
       VirtualTimeController::VirtualTimePolicy::kPause;
@@ -569,7 +567,7 @@ void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
 }
 
 protocol::Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
-    Maybe<protocol::DOM::RGBA> color) {
+    std::unique_ptr<protocol::DOM::RGBA> color) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -594,16 +592,16 @@ protocol::Response InspectorEmulationAgent::setDeviceMetricsOverride(
     int height,
     double device_scale_factor,
     bool mobile,
-    Maybe<double> scale,
-    Maybe<int> screen_width,
-    Maybe<int> screen_height,
-    Maybe<int> position_x,
-    Maybe<int> position_y,
-    Maybe<bool> dont_set_visible_size,
-    Maybe<protocol::Emulation::ScreenOrientation>,
-    Maybe<protocol::Page::Viewport>,
-    Maybe<protocol::Emulation::DisplayFeature>,
-    Maybe<protocol::Emulation::DevicePosture>) {
+    std::optional<double> scale,
+    std::optional<int> screen_width,
+    std::optional<int> screen_height,
+    std::optional<int> position_x,
+    std::optional<int> position_y,
+    std::optional<bool> dont_set_visible_size,
+    std::unique_ptr<protocol::Emulation::ScreenOrientation>,
+    std::unique_ptr<protocol::Page::Viewport>,
+    std::unique_ptr<protocol::Emulation::DisplayFeature>,
+    std::unique_ptr<protocol::Emulation::DevicePosture>) {
   // We don't have to do anything other than reply to the client, as the
   // emulation parameters should have already been updated by the handling of
   // blink::mojom::FrameWidget::EnableDeviceEmulation.
@@ -631,9 +629,9 @@ protocol::Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
 
 protocol::Response InspectorEmulationAgent::setUserAgentOverride(
     const String& user_agent,
-    protocol::Maybe<String> accept_language,
-    protocol::Maybe<String> platform,
-    protocol::Maybe<protocol::Emulation::UserAgentMetadata>
+    std::optional<String> accept_language,
+    std::optional<String> platform,
+    std::unique_ptr<protocol::Emulation::UserAgentMetadata>
         ua_metadata_override) {
   if (!user_agent.empty() || accept_language.has_value() ||
       platform.has_value()) {
@@ -725,7 +723,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
 }
 
 protocol::Response InspectorEmulationAgent::setLocaleOverride(
-    protocol::Maybe<String> maybe_locale) {
+    std::optional<String> maybe_locale) {
   // Only allow resetting overrides set by the same agent.
   if (locale_override_.Get().empty() &&
       LocaleController::instance().has_locale_override()) {

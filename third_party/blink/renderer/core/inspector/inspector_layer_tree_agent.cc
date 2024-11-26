@@ -460,9 +460,9 @@ protocol::Response InspectorLayerTreeAgent::GetSnapshotById(
 
 protocol::Response InspectorLayerTreeAgent::replaySnapshot(
     const String& snapshot_id,
-    Maybe<int> from_step,
-    Maybe<int> to_step,
-    Maybe<double> scale,
+    std::optional<int> from_step,
+    std::optional<int> to_step,
+    std::optional<double> scale,
     String* data_url) {
   const PictureSnapshot* snapshot = nullptr;
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);
@@ -483,9 +483,9 @@ static void ParseRect(protocol::DOM::Rect& object, gfx::RectF* rect) {
 
 protocol::Response InspectorLayerTreeAgent::profileSnapshot(
     const String& snapshot_id,
-    Maybe<int> min_repeat_count,
-    Maybe<double> min_duration,
-    Maybe<protocol::DOM::Rect> clip_rect,
+    std::optional<int> min_repeat_count,
+    std::optional<double> min_duration,
+    std::unique_ptr<protocol::DOM::Rect> clip_rect,
     std::unique_ptr<protocol::Array<protocol::Array<double>>>* out_timings) {
   const PictureSnapshot* snapshot = nullptr;
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);

@@ -254,9 +254,9 @@ protocol::Response InspectorDOMSnapshotAgent::disable() {
 
 protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
     std::unique_ptr<protocol::Array<String>> style_filter,
-    protocol::Maybe<bool> include_event_listeners,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_user_agent_shadow_tree,
+    std::optional<bool> include_event_listeners,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_user_agent_shadow_tree,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>>* dom_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::LayoutTreeNode>>*
         layout_tree_nodes,
@@ -275,10 +275,10 @@ protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
 
 protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     std::unique_ptr<protocol::Array<String>> computed_styles,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_dom_rects,
-    protocol::Maybe<bool> include_blended_background_colors,
-    protocol::Maybe<bool> include_text_color_opacities,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_dom_rects,
+    std::optional<bool> include_blended_background_colors,
+    std::optional<bool> include_text_color_opacities,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DocumentSnapshot>>*
         documents,
     std::unique_ptr<protocol::Array<String>>* strings) {

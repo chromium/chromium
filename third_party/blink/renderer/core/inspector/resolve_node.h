@@ -22,7 +22,7 @@ std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject> ResolveNode(
     v8_inspector::V8InspectorSession*,
     Node*,
     const String& object_group,
-    protocol::Maybe<int> v8_execution_context_id);
+    std::optional<int> v8_execution_context_id);
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
 NullRemoteObject(v8_inspector::V8InspectorSession* v8_session,

@@ -42,7 +42,7 @@ class CORE_EXPORT InspectorPerformanceAgent final
   void Restore() override;
 
   // Performance protocol domain implementation.
-  protocol::Response enable(Maybe<String> time_domain) override;
+  protocol::Response enable(std::optional<String> time_domain) override;
   protocol::Response disable() override;
   protocol::Response setTimeDomain(const String& time_domain) override;
   protocol::Response getMetrics(
