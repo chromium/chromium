@@ -1460,9 +1460,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kRegisterJSSourceLocationBlockingBFCache);
-
 // Kill-switch for removing Authorization header upon cross origin redirects.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRemoveAuthroizationOnCrossOriginRedirect);

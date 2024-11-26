@@ -2813,26 +2813,6 @@
             ]
         }
     ],
-    "BackForwardCacheCaptureBlockingDetails": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RegisterJSSourceLocationBlockingBFCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheForPageWithCacheControlNotStoredHeader": [
         {
             "platforms": [

@@ -2086,8 +2086,6 @@ class BackForwardCacheBrowserTestWithJavaScriptDetails
     : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(
-        blink::features::kRegisterJSSourceLocationBlockingBFCache, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

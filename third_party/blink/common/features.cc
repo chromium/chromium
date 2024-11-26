@@ -2263,12 +2263,6 @@ BASE_FEATURE_PARAM(bool,
                    "all_except_legacy_windows_platform",
                    true);
 
-// When enabled, Source Location blocking BFCache is captured
-// to send it to the browser.
-BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
-             "RegisterJSSourceLocationBlockingBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRemoveAuthroizationOnCrossOriginRedirect,
              "RemoveAutorizationOnCrossOriginRedirect",
              base::FEATURE_ENABLED_BY_DEFAULT);
