@@ -3045,6 +3045,11 @@ const char kPermissionQuietChipDescription[] =
     "right-hand side address bar icon for quiet permission prompts. Requires "
     "chrome://flags/#quiet-notification-prompts to be enabled.";
 
+const char kPermissionSiteSettingsRadioButtonName[] =
+    "Permission radio buttons in Site Settings";
+const char kPermissionSiteSettingsRadioButtonDescription[] =
+    "Enables radio buttons for permissions in SiteSettings";
+
 const char kShowRelatedWebsiteSetsPermissionGrantsName[] =
     "Show permission grants from Related Website Sets";
 const char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =

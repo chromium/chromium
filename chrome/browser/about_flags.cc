@@ -9684,6 +9684,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPlusAddressFullFormFillDescription, kOsAll,
      FEATURE_VALUE_TYPE(plus_addresses::features::kPlusAddressFullFormFill)},
 
+    {"permission-site-settings-radio-button",
+     flag_descriptions::kPermissionSiteSettingsRadioButtonName,
+     flag_descriptions::kPermissionSiteSettingsRadioButtonDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         permissions::features::kPermissionSiteSettingsRadioButton)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"record-permissions-expiration-timestamp",
      flag_descriptions::kRecordPermissionExpirationTimestampsName,

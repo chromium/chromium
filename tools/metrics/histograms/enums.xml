@@ -22011,13 +22011,12 @@ from previous Chrome versions.
   <int value="689489984" label="disable-zero-suggest"/>
   <int value="689577480" label="vr-shell-experimental-rendering"/>
   <int value="689903349" label="TreatBootstrapAsDefault:disabled"/>
+  <int value="689984419" label="PermissionSiteSettingsRadioButton:enabled"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
-  <int value="693545401"
-      label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
   <int value="693894532" label="LauncherOmniboxPublishLogicLog:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>
   <int value="694165544" label="NtpComprehensiveTheming:disabled"/>
@@ -22922,6 +22921,7 @@ from previous Chrome versions.
   <int value="1060780557" label="DynamicColorGamut:disabled"/>
   <int value="1061351122" label="LinkLayerPrivacy:disabled"/>
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
+  <int value="1062127311" label="PermissionSiteSettingsRadioButton:disabled"/>
   <int value="1062273847" label="face-retouch-override"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
   <int value="1062563622" label="GateNV12GMBVideoFramesOnHWSupport:enabled"/>

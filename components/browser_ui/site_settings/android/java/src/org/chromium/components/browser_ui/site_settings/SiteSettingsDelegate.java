@@ -70,6 +70,11 @@ public interface SiteSettingsDelegate {
     boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
 
     /**
+     * @return true if the PermissionSiteSettingsRadioButtonFeatureEnabled Feature is enabled.
+     */
+    boolean isPermissionSiteSettingsRadioButtonFeatureEnabled();
+
+    /**
      * @return true if the PrivacySandboxFirstPartySetsUi Feature is enabled.
      */
     boolean isPrivacySandboxFirstPartySetsUiFeatureEnabled();
