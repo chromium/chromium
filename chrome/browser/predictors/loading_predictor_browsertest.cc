@@ -35,6 +35,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
@@ -1141,6 +1142,40 @@ IN_PROC_BROWSER_TEST_F(LCPPPrefetchSubresourceTest, Base) {
   EXPECT_EQ(std::set<GURL>({GetURL("/predictors/style.css"),
                             GetURL("/predictors/script.js")}),
             result_urls);
+}
+
+IN_PROC_BROWSER_TEST_F(LCPPPrefetchSubresourceTest, UMA) {
+  NavigateAndWaitForLcpElement(GetURL("/predictors/preload.html"));
+
+  base::HistogramTester histogram_tester;
+  NavigateAndWaitForLcpElement(GetURL("/predictors/preload2.html"));
+  // predicted subresources:
+  //   style.css
+  //   script.js
+  //   font.ttf
+  //   red_rectangle.png
+  // actual subresources:
+  //   style.css
+  //   script.js
+  //   red_rectangle.png
+  //   red_rectangle2.png
+  //   red_rectangle3.png
+  // hit = 3
+  // precision = 3/4 = 75%
+  // recall    = 3/5 = 60%
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          ::internal::kHistogramLCPPSubresourceCountType),
+      base::BucketsAre(
+          base::Bucket(network::mojom::RequestDestination::kImage, 3),
+          base::Bucket(network::mojom::RequestDestination::kStyle, 1),
+          base::Bucket(network::mojom::RequestDestination::kScript, 1)));
+  histogram_tester.ExpectUniqueSample(
+      ::internal::kHistogramLCPPSubresourceCountPrecision, 75, 1);
+  histogram_tester.ExpectUniqueSample(
+      ::internal::kHistogramLCPPSubresourceCountRecall, 60, 1);
+  histogram_tester.ExpectUniqueSample(
+      ::internal::kHistogramLCPPSubresourceCountSameSiteRatio, 100, 1);
 }
 
 class SuppressesLoadingPredictorOnSlowNetworkBrowserTest

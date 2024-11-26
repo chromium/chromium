@@ -30,7 +30,14 @@ const char kHistogramLCPPPredictHitIndex[] =
     HISTOGRAM_PREFIX "PaintTiming.PredictHitIndex";
 const char kHistogramLCPPActualLCPIndex[] =
     HISTOGRAM_PREFIX "PaintTiming.ActualLCPIndex";
-
+const char kHistogramLCPPSubresourceCountPrecision[] =
+    HISTOGRAM_PREFIX "Subresource.Count.Precision";
+const char kHistogramLCPPSubresourceCountRecall[] =
+    HISTOGRAM_PREFIX "Subresource.Count.Recall";
+const char kHistogramLCPPSubresourceCountSameSiteRatio[] =
+    HISTOGRAM_PREFIX "Subresource.Count.SameSiteRatio";
+const char kHistogramLCPPSubresourceCountType[] =
+    HISTOGRAM_PREFIX "Subresource.Count.Type";
 }  // namespace internal
 
 namespace {
@@ -56,6 +63,52 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+void ReportSubresourceUMA(
+    const GURL& commit_url,
+    const std::optional<predictors::LcppStat>& lcpp_stat_prelearn,
+    const predictors::LcppDataInputs& lcpp_data_inputs) {
+  std::set<GURL> predicted_subresource_urls;
+  if (lcpp_stat_prelearn) {
+    for (const GURL& url : PredictFetchedSubresourceUrls(*lcpp_stat_prelearn)) {
+      predicted_subresource_urls.insert(url);
+    }
+  }
+
+  int predict_hit_count = 0;
+  int same_site_count = 0;
+  for (const auto& it : lcpp_data_inputs.subresource_urls) {
+    const GURL& actual_subresource_url = it.first;
+    if (predicted_subresource_urls.contains(actual_subresource_url)) {
+      predict_hit_count++;
+    }
+    if (IsSameSite(commit_url, actual_subresource_url)) {
+      same_site_count++;
+    }
+    base::UmaHistogramEnumeration(internal::kHistogramLCPPSubresourceCountType,
+                                  it.second.second);
+  }
+
+  if (!predicted_subresource_urls.empty()) {
+    const int precision = base::saturated_cast<int>(
+        predict_hit_count * 100 / predicted_subresource_urls.size());
+    base::UmaHistogramPercentage(
+        internal::kHistogramLCPPSubresourceCountPrecision, precision);
+  }
+
+  if (!lcpp_data_inputs.subresource_urls.empty()) {
+    const size_t actual_url_count = lcpp_data_inputs.subresource_urls.size();
+    const int recall =
+        base::saturated_cast<int>(predict_hit_count * 100 / actual_url_count);
+    base::UmaHistogramPercentage(internal::kHistogramLCPPSubresourceCountRecall,
+                                 recall);
+
+    const int same_site_ratio =
+        base::saturated_cast<int>(same_site_count * 100 / actual_url_count);
+    base::UmaHistogramPercentage(
+        internal::kHistogramLCPPSubresourceCountSameSiteRatio, same_site_ratio);
+  }
 }
 
 }  // namespace
@@ -180,6 +233,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
     RemoveFetchedSubresourceUrlsAfterLCP(
         lcpp_data_inputs_->subresource_urls,
         largest_contentful_paint.Time().value());
+    ReportSubresourceUMA(*commit_url_, lcpp_stat_prelearn, *lcpp_data_inputs_);
     predictor->LearnLcpp(initiator_origin_, *commit_url_, *lcpp_data_inputs_);
   }
 

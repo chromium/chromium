@@ -30410,6 +30410,8 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="RequestDestination">
+<!-- Defined in services/network/public/mojom/fetch_api.mojom -->
+
   <int value="0" label="EMPTY"/>
   <int value="1" label="AUDIO"/>
   <int value="2" label="AUDIO_WORKLET"/>
@@ -30437,6 +30439,7 @@ Called by update_net_error_codes.py.-->
   <int value="24" label="DICTIONARY"/>
   <int value="25" label="SPECULATION_RULES"/>
   <int value="26" label="JSON"/>
+  <int value="27" label="SHAREDSTORAGEWORKLET"/>
 </enum>
 
 <enum name="ResourcePrefetchPredictorRedirectStatus">

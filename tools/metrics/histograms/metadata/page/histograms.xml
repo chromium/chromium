@@ -1571,6 +1571,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.Precision" units="%"
+    expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource prediction precision of LCP critical path predictor
+    (LCPP). For example, If LCPP predicts subresource type A, B, C and D for a
+    page and the page actually loads A and E before LCP, then precision = [A] /
+    [A, B, C, D] = 25%, and recall = [A] / [A, E] = 50%.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.Recall" units="%"
+    expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource prediction recall of LCP critical path predictor
+    (LCPP). For example, If LCPP predicts subresource type A, B, C and D for a
+    page and the page actually loads A and E before LCP, then precision = [A] /
+    [A, B, C, D] = 25%, and recall = [A] / [A, E] = 50%.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.SameSiteRatio"
+    units="%" expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource's same site ratio of LCP critical path predictor
+    (LCPP).
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.LCPP.Subresource.Count.Type"
+    enum="RequestDestination" expires_after="2025-05-14">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records the subresource type distribution of LCP critical path predictor
+    (LCPP).
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only once when the user navigates away from
+    the page.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
     expires_after="2025-03-23">
   <owner>toyoshim@chromium.org</owner>

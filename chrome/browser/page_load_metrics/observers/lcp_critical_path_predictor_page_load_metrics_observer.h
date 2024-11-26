@@ -21,6 +21,10 @@ extern const char kHistogramLCPPLargestContentfulPaint[];
 extern const char kHistogramLCPPPredictResult[];
 extern const char kHistogramLCPPPredictHitIndex[];
 extern const char kHistogramLCPPActualLCPIndex[];
+extern const char kHistogramLCPPSubresourceCountPrecision[];
+extern const char kHistogramLCPPSubresourceCountRecall[];
+extern const char kHistogramLCPPSubresourceCountSameSiteRatio[];
+extern const char kHistogramLCPPSubresourceCountType[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
