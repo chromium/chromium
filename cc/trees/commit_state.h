@@ -5,6 +5,7 @@
 #ifndef CC_TREES_COMMIT_STATE_H_
 #define CC_TREES_COMMIT_STATE_H_
 
+#include <array>
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -84,9 +85,8 @@ struct CC_EXPORT CommitState {
   bool may_throttle_if_undrawn_frames = true;
   bool prefers_reduced_motion = false;
   BrowserControlsParams browser_controls_params;
-  EventListenerProperties
-      event_listener_properties[static_cast<size_t>(EventListenerClass::kLast) +
-                                1] = {EventListenerProperties::kNone};
+  std::array<EventListenerProperties, kEventListenerClassCount>
+      event_listener_properties = {EventListenerProperties::kNone};
   float bottom_controls_shown_ratio = 0.f;
   float device_scale_factor = 1.f;
   float external_page_scale_factor = 1.f;

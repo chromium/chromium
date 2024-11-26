@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_EVENT_LISTENER_PROPERTIES_H_
 #define CC_INPUT_EVENT_LISTENER_PROPERTIES_H_
 
+#include <cstddef>
+
 namespace cc {
 
 enum class EventListenerClass {
@@ -19,6 +21,9 @@ enum class EventListenerClass {
 
   kLast = kTouchEndOrCancel
 };
+
+inline constexpr size_t kEventListenerClassCount =
+    static_cast<size_t>(EventListenerClass::kLast) + 1;
 
 enum class EventListenerProperties {
   kNone,

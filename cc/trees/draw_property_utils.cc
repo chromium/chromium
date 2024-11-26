@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/draw_property_utils.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <utility>
 #include <vector>
@@ -1247,7 +1243,7 @@ void RecordRenderSurfaceReasonsForTracing(
 
   // kTest is the last value which is not included for tracing.
   constexpr auto kNumReasons = static_cast<size_t>(RenderSurfaceReason::kTest);
-  int reason_counts[kNumReasons] = {0};
+  std::array<int, kNumReasons> reason_counts = {0};
   for (const RenderSurfaceImpl* render_surface : *render_surface_list) {
     const auto* effect_node =
         property_trees->effect_tree().Node(render_surface->EffectTreeIndex());

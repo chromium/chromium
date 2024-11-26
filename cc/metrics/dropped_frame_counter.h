@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_METRICS_DROPPED_FRAME_COUNTER_H_
 #define CC_METRICS_DROPPED_FRAME_COUNTER_H_
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <optional>
 #include <queue>
@@ -61,8 +57,8 @@ class CC_EXPORT DroppedFrameCounter {
     uint32_t total_count() const { return total_count_; }
 
    private:
-    uint32_t histogram_bins_[101] = {0};
-    uint32_t smoothness_buckets_[7] = {0};
+    std::array<uint32_t, 101> histogram_bins_ = {0};
+    std::array<uint32_t, 7> smoothness_buckets_ = {0};
     uint32_t total_count_ = 0;
   };
 
@@ -183,11 +179,11 @@ class CC_EXPORT DroppedFrameCounter {
   void UpdateDroppedFrameCountInWindow(const FrameInfo& frame_info, int count);
 
   std::queue<std::pair<const viz::BeginFrameArgs, FrameInfo>> sliding_window_;
-  uint32_t dropped_frame_count_in_window_[SmoothnessStrategy::kStrategyCount] =
-      {0};
+  std::array<uint32_t, SmoothnessStrategy::kStrategyCount>
+      dropped_frame_count_in_window_ = {0};
   double total_frames_in_window_ = 60.0;
-  SlidingWindowHistogram
-      sliding_window_histogram_[SmoothnessStrategy::kStrategyCount];
+  std::array<SlidingWindowHistogram, SmoothnessStrategy::kStrategyCount>
+      sliding_window_histogram_;
 
   base::TimeTicks latest_sliding_window_start_;
   base::TimeDelta latest_sliding_window_interval_;

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/dropped_frame_counter.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 
@@ -31,7 +27,7 @@ const base::TimeDelta kDefaultSlidingWindowInterval = base::Seconds(1);
 
 // The start ranges of each bucket, up to but not including the start of the
 // next bucket. The last bucket contains the remaining values.
-constexpr double kBucketBounds[7] = {0, 3, 6, 12, 25, 50, 75};
+constexpr std::array<double, 7> kBucketBounds = {0, 3, 6, 12, 25, 50, 75};
 
 // Search backwards using the bucket bounds defined above.
 size_t DecideSmoothnessBucket(double pdf) {
@@ -214,8 +210,7 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
     }
   }
 
-  std::fill_n(dropped_frame_count_in_window_,
-              SmoothnessStrategy::kStrategyCount, 0);
+  dropped_frame_count_in_window_.fill(0);
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
   latest_sliding_window_interval_ = {};
@@ -393,8 +388,7 @@ void DroppedFrameCounter::Reset() {
   sliding_window_max_percent_dropped_After_1_sec_.reset();
   sliding_window_max_percent_dropped_After_2_sec_.reset();
   sliding_window_max_percent_dropped_After_5_sec_.reset();
-  std::fill_n(dropped_frame_count_in_window_,
-              SmoothnessStrategy::kStrategyCount, 0);
+  dropped_frame_count_in_window_.fill(0);
   first_contentful_paint_received_ = false;
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
