@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -33,7 +34,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"

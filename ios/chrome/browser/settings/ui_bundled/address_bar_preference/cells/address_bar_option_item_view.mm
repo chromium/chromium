@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_option_item_view.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

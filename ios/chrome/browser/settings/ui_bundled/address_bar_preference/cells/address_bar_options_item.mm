@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
 
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_preference_service_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_option_item_view.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_preference_service_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"

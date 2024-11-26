@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_coordinator.h"
 
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_mediator.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_view_controller.h"
 
 @interface AddressBarPreferenceCoordinator ()
 // View controller for the Address bar setting.

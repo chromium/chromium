@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_mediator.h"
 
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/address_bar_preference_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
-#import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_consumer.h"
 
 @interface AddressBarPreferenceMediator () <BooleanObserver> {
   PrefBackedBoolean* _bottomOmniboxEnabled;
