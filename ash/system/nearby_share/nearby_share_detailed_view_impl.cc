@@ -4,6 +4,8 @@
 
 #include "ash/system/nearby_share/nearby_share_detailed_view_impl.h"
 
+#include <string>
+
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -72,6 +74,7 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
   DCHECK(!is_enabled_container_);
   DCHECK(scroll_content());
   DCHECK(!toggle_row_);
+  DCHECK(nearby_share_delegate_);
 
   is_enabled_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
@@ -81,9 +84,9 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   toggle_row_->SetFocusBehavior(FocusBehavior::NEVER);
 
-  // TODO(brandosocarras, b/360150790): Create and use a 'Who can share with
-  // you' string.
-  toggle_row_->AddLabelRow(u"Who can share with you", /*start_inset=*/0);
+  // TODO(brandosocarras, b/360150790): Create and use 'On'/'Off' strings.
+  const bool is_qs_enabled = nearby_share_delegate_->IsEnabled();
+  toggle_row_->AddLabelRow(is_qs_enabled ? u"On" : u"Off", /*start_inset=*/0);
   toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *toggle_row_->text_label());
@@ -92,6 +95,7 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
       &NearbyShareDetailedViewImpl::OnQuickShareToggleClicked,
       weak_factory_.GetWeakPtr()));
   toggle_switch_ = toggle_switch.get();
+  toggle_switch->SetIsOn(is_qs_enabled);
   toggle_row_->AddRightView(toggle_switch.release());
 
   // Allow the row to be taller than a typical tray menu item.
@@ -165,13 +169,16 @@ void NearbyShareDetailedViewImpl::OnSettingsButtonClicked() {
   Shell::Get()->system_tray_model()->client()->ShowNearbyShareSettings();
 }
 
-// TODO(brandosocarras, b/360150790): Implement this when this class is able to
-// set the device's QSv2 quick share visibility. This occurs when 1) this class
-// can set the device's nearby share visibility and 2) when, while QSv2 is
-// enabled, the device can remember previously set visibility and high
-// visibility settings in the event QS is switched off.
-void NearbyShareDetailedViewImpl::OnQuickShareToggleClicked() {}
+void NearbyShareDetailedViewImpl::OnQuickShareToggleClicked() {
+  CHECK(nearby_share_delegate_);
+  const bool new_enabled_state = !nearby_share_delegate_->IsEnabled();
+  // TODO(brandosocarras, b/360150790): Create and use 'On'/'Off' strings.
+  toggle_row_->text_label()->SetText(new_enabled_state ? u"On" : u"Off");
+  nearby_share_delegate_->SetEnabled(new_enabled_state);
+}
 
+// TODO(brandosocarras, b/360150790): Put device in Your devies, contacts
+// visibility on selected in quick settings.
 void NearbyShareDetailedViewImpl::OnYourDevicesSelected() {}
 
 void NearbyShareDetailedViewImpl::OnContactsSelected() {}
