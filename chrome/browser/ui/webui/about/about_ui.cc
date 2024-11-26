@@ -71,8 +71,6 @@
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/borealis/borealis_credits.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
@@ -405,52 +403,6 @@ void AppendHeader(std::string* output, const std::string& unescaped_title) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// This function returns true if Lacros is the primary browser - or if the
-// calling browser is Lacros.
-bool isLacrosPrimaryOrCurrentBrowser() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::browser_util::IsLacrosEnabled();
-#else
-  return true;
-#endif
-}
-
-void AppendBody(std::string* output) {
-  if (isLacrosPrimaryOrCurrentBrowser()) {
-    output->append(
-        "<link rel='stylesheet' href='chrome://resources/css/os_header.css'>\n"
-
-        "</head>\n<body>\n"
-
-        "<div class='os-link-container-container' id='os-link-container'>\n"
-        "<div class='os-link-container'>\n"
-        "<span class='os-link-icon'></span>\n"
-        "<span aria-hidden='true' id='os-link-desc'>" +
-        l10n_util::GetStringUTF8(IDS_ABOUT_OS_TEXT1_LABEL) +
-        "</span>\n"
-        "<a href='#' id='os-link-href' aria-describedby='os-link-desc'>" +
-        l10n_util::GetStringUTF8(IDS_ABOUT_OS_LINK) +
-        "</a>\n<span aria-hidden='true'>" +
-        l10n_util::GetStringUTF8(IDS_ABOUT_OS_TEXT2_LABEL) +
-        "</span>\n</div>\n</div>\n");
-  } else {
-    output->append("</head>\n<body>\n");
-  }
-}
-
-void AppendFooter(std::string* output) {
-  if (isLacrosPrimaryOrCurrentBrowser()) {
-    output->append(
-        "<script type='module' src='chrome://resources/js/os_about.js'>"
-        "</script>\n");
-  }
-
-  output->append("</body>\n</html>\n");
-}
-
-#else  // BUILDFLAG(IS_CHROMEOS)
-
 void AppendBody(std::string *output) {
   output->append("</head>\n<body>\n");
 }
@@ -458,8 +410,6 @@ void AppendBody(std::string *output) {
 void AppendFooter(std::string *output) {
   output->append("</body>\n</html>\n");
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace about_ui
 
@@ -512,29 +462,7 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   // Sort the URLs.
   std::sort(infos.begin(), infos.end(), &CompareConfigInfos);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool is_lacros_primary = about_ui::isLacrosPrimaryOrCurrentBrowser();
-  // If Lacros is active, the user can navigate by hand to os:// URL's but
-  // internally we will still navigate to chrome:// URL's. Note also that
-  // only a subset of URLs might be available in this mode - so we have to
-  // make sure that only allowed URLs are being presented.
-  if (is_lacros_primary) {
-    auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
-    for (base::cstring_view host : hosts) {
-      // TODO(crbug.com/40805730): The refactor should make sure that the
-      // provided list can be shown as is without filtering.
-      std::string chrome_url = base::StrCat({"chrome://", host});
-      std::string os_url = base::StrCat({"os://", host});
-      if (WebUiControllerFactory->CanHandleUrl(GURL(os_url)) ||
-          WebUiControllerFactory->CanHandleUrl(GURL(chrome_url))) {
-        html += base::StrCat(
-            {"<li><a href='", chrome_url, "/'>", os_url, "</a></li>\n"});
-      }
-    }
-  } else {
-#else
   {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     for (const content::WebUIConfigInfo& info : infos) {
       std::string host = info.origin.host();
       std::string scheme = info.origin.scheme();
@@ -565,26 +493,7 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
       "<p>The following pages are for debugging purposes only. Because they "
       "crash or hang the renderer, they're not linked directly; you can type "
       "them into the address bar if you need them.</p>\n<ul>";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If Lacros is active, the user can navigate by hand to os:// URL's but
-  // internally we will still navigate to chrome:// URL's. Note also that
-  // only a subset of URLs might be available in this mode - so we have to
-  // make sure that only allowed URLs are being presented.
-  if (is_lacros_primary) {
-    auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
-    for (base::cstring_view url : chrome::ChromeDebugURLs()) {
-      // TODO(crbug.com/40805730): The refactor should make sure that the
-      // provided list can be shown as is without filtering.
-      const std::string host = GURL(url).host();
-      if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
-          WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
-        html += base::StrCat({"<li>os://", host, "</li>\n"});
-      }
-    }
-  } else {
-#else
   {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     for (base::cstring_view url : chrome::ChromeDebugURLs()) {
       html += base::StrCat({"<li>", url, "</li>\n"});
     }
@@ -782,22 +691,3 @@ AboutUI::AboutUI(content::WebUI* web_ui, const GURL& url)
   content::URLDataSource::Add(
       profile, std::make_unique<AboutUIHTMLSource>(url.host(), profile));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-
-bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
-                                         const std::string& message,
-                                         const base::Value::List& args) {
-  if (message != "crosUrlAboutRedirect")
-    return false;
-
-  // Note: This will only be called by the UI when Lacros is available.
-  DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->SwitchToTab(
-      GURL(chrome::kChromeUIAboutURL),
-      /*path_behavior=*/NavigateParams::RESPECT);
-
-  return true;
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)

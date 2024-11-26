@@ -133,12 +133,6 @@ class AboutUI : public content::WebUIController {
   AboutUI& operator=(const AboutUI&) = delete;
 
   ~AboutUI() override = default;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool OverrideHandleWebUIMessage(const GURL& source_url,
-                                  const std::string& message,
-                                  const base::Value::List& args) override;
-#endif
 };
 
 namespace about_ui {
