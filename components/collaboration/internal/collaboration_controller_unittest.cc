@@ -127,12 +127,14 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
 
   // Simulate that the user is not already in the tab group.
   data_sharing::GroupId group_id(kGroupId);
+  const GroupToken& token =
+      GroupToken(data_sharing::GroupId(kGroupId), kAccessToken);
   base::OnceCallback<void(
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
       group_data_callback;
   EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
       .WillOnce(Return(data_sharing::MemberRole::kUnknown));
-  EXPECT_CALL(*data_sharing_service_, ReadGroup(group_id, IsNotNullCallback()))
+  EXPECT_CALL(*data_sharing_service_, ReadNewGroup(token, IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&group_data_callback));
 
   // 3. Authenticating -> CheckingFlowRequirements state.

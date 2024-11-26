@@ -117,7 +117,7 @@ class CollaborationController {
   StateId GetStateForTesting();
 
  private:
-  static constexpr std::array<std::pair<StateId, StateId>, 17>
+  static constexpr std::array<std::pair<StateId, StateId>, 18>
       kValidTransitions = {{
           // kPending transitions to:
           //
@@ -148,10 +148,13 @@ class CollaborationController {
           //   but tab group not found in sync.
           //   kOpeningLocalTabGroup: When user is in current people group, and
           //   tab group found in sync.
+          //   kError: An error occurred while checking requirements. This could
+          //   be due to version mismatch.
           {StateId::kCheckingFlowRequirements, StateId::kAddingUserToGroup},
           {StateId::kCheckingFlowRequirements,
            StateId::kWaitingForSyncAndDataSharingGroup},
           {StateId::kCheckingFlowRequirements, StateId::kOpeningLocalTabGroup},
+          {StateId::kCheckingFlowRequirements, StateId::kError},
 
           // kAddingUserToGroup transition to:
           //

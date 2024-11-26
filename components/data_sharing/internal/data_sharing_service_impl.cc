@@ -228,6 +228,13 @@ void DataSharingServiceImpl::ReadGroup(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void DataSharingServiceImpl::ReadNewGroup(
+    const GroupToken& token,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
+  // TODO(crbug.com/377780190): Implement this.
+  return std::move(callback).Run(GroupData());
+}
+
 void DataSharingServiceImpl::CreateGroup(
     const std::string& group_name,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {

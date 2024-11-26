@@ -58,6 +58,10 @@ void EmptyDataSharingService::ReadGroup(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
+void EmptyDataSharingService::ReadNewGroup(
+    const GroupToken& token,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
+
 void EmptyDataSharingService::CreateGroup(
     const std::string& group_name,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}

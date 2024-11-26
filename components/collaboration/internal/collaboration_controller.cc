@@ -180,10 +180,8 @@ class CheckingFlowRequirementsState : public ControllerState {
 
         // If user is not part of the group, do a readgroup to ensure version
         // match.
-        // TODO(crbug.com/380113830): Add preview API call here to fetch preview
-        // data.
-        controller->data_sharing_service()->ReadGroup(
-            controller->token().group_id,
+        controller->data_sharing_service()->ReadNewGroup(
+            controller->token(),
             base::BindOnce(&CheckingFlowRequirementsState::
                                ProcessGroupDataOrFailureOutcome,
                            local_weak_ptr_factory_.GetWeakPtr()));
