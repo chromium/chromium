@@ -8,7 +8,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -238,14 +237,7 @@ AccountProfileMapper::Assigner::Assigner(
   profile_to_gaia_ids_ = GetMappingFromProfileAttributes(
       system_identity_manager_, GetProfileAttributesStorage());
   // Ensure the mapping is populated and up-to-date.
-  // TODO(crbug.com/377724747): Doing this synchronously, during the
-  // initialization of the initial profile, causes a crash in some cases. Figure
-  // out why and fix it. (Maybe resolving crbug.com/377724748, i.e. making
-  // profile creation lazy, will fix this?)
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AccountProfileMapper::Assigner::OnIdentityListChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnIdentityListChanged();
 }
 
 AccountProfileMapper::Assigner::~Assigner() = default;
