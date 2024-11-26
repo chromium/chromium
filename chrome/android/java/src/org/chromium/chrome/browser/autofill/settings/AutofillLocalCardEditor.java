@@ -450,7 +450,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         }
 
         if (expirationMonth != 0) {
-            mCard.setMonth(String.valueOf(expirationMonth));
+            // Zero pad the month to 2 digits
+            mCard.setMonth(String.format(Locale.getDefault(), "%02d", expirationMonth));
         }
 
         if (expirationYear != 0) {

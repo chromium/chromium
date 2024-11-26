@@ -1193,6 +1193,8 @@ public class AutofillLocalCardEditorTest {
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
                 (AutofillLocalCardEditor) activity.getMainFragment();
         CreditCard card = SAMPLE_LOCAL_CARD;
+        // Explicitly set the month to single digit to test padding.
+        card.setMonth("5");
 
         assertTrue(autofillLocalCardEditorFragment.mNameText.getText().toString().isEmpty());
         assertTrue(autofillLocalCardEditorFragment.mNumberText.getText().toString().isEmpty());
@@ -1220,6 +1222,36 @@ public class AutofillLocalCardEditorTest {
                                 .toString()
                                 .replaceAll(" ", ""))
                 .isEqualTo(card.getNumber());
+        assertThat(autofillLocalCardEditorFragment.mExpirationDate.getText().toString())
+                .isEqualTo(String.format("0%s/%s", card.getMonth(), card.getYear().substring(2)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void paymentSettingsOnScanCompleted_twoDigitMonth() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        CreditCard card = SAMPLE_LOCAL_CARD;
+        // Ensure a two-digit month is formatted as-is.
+        card.setMonth("10");
+
+        assertTrue(autofillLocalCardEditorFragment.mExpirationDate.getText().toString().isEmpty());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.onScanCompleted(
+                                card.getName(),
+                                card.getNumber(),
+                                Integer.parseInt(card.getMonth()),
+                                Integer.parseInt(card.getYear()));
+                    } catch (Exception e) {
+                        throw new AssertionError("Failed to run on scan completed", e);
+                    }
+                });
+
         assertThat(autofillLocalCardEditorFragment.mExpirationDate.getText().toString())
                 .isEqualTo(String.format("%s/%s", card.getMonth(), card.getYear().substring(2)));
     }
