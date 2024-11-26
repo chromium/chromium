@@ -448,8 +448,31 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
         break;
       // Images, fonts, etc. do not support integrity checks, so we can skip
       // them here.
-      default:
+      case CSPDirectiveName::BaseURI:
+      case CSPDirectiveName::BlockAllMixedContent:
+      case CSPDirectiveName::ChildSrc:
+      case CSPDirectiveName::ConnectSrc:
+      case CSPDirectiveName::FencedFrameSrc:
+      case CSPDirectiveName::FontSrc:
+      case CSPDirectiveName::FormAction:
+      case CSPDirectiveName::FrameAncestors:
+      case CSPDirectiveName::FrameSrc:
+      case CSPDirectiveName::ImgSrc:
+      case CSPDirectiveName::ManifestSrc:
+      case CSPDirectiveName::MediaSrc:
+      case CSPDirectiveName::ObjectSrc:
+      case CSPDirectiveName::ReportTo:
+      case CSPDirectiveName::ReportURI:
+      case CSPDirectiveName::RequireTrustedTypesFor:
+      case CSPDirectiveName::Sandbox:
+      case CSPDirectiveName::TreatAsPublicAddress:
+      case CSPDirectiveName::TrustedTypes:
+      case CSPDirectiveName::UpgradeInsecureRequests:
+      case CSPDirectiveName::WorkerSrc:
         break;
+
+      case CSPDirectiveName::Unknown:
+        NOTREACHED();
     }
   }
 }
