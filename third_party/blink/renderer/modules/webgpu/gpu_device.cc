@@ -566,8 +566,9 @@ GPUBindGroupLayout* GPUDevice::createBindGroupLayout(
 }
 
 GPUPipelineLayout* GPUDevice::createPipelineLayout(
+    ScriptState* script_state,
     const GPUPipelineLayoutDescriptor* descriptor) {
-  return GPUPipelineLayout::Create(this, descriptor);
+  return GPUPipelineLayout::Create(script_state, this, descriptor);
 }
 
 GPUShaderModule* GPUDevice::createShaderModule(

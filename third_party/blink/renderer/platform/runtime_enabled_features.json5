@@ -4773,6 +4773,14 @@
       public: true,
     },
     {
+      // Launch feature flag to allow null bind group layouts in
+      // GPUPipelineLayoutDescriptor.
+      name: "WebGPUAllowNullInPipelineLayoutEntries",
+      status: "experimental",
+      // Also enabled as part of all experimental WebGPU features.
+      implied_by: ["WebGPUExperimentalFeatures"],
+    },
+    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",
