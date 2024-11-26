@@ -101,8 +101,6 @@ crbug.com/626703 external/wpt/webnn/conformance_tests/pad.https.any.worker.html?
 crbug.com/626703 external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Crash Failure ]
 crbug.com/626703 external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Crash Failure ]
 crbug.com/626703 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position.html [ Failure ]
-crbug.com/626703 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure ]
-crbug.com/626703 virtual/threaded/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]

@@ -101,7 +101,6 @@ virtual/text-antialias/selection/shaping-selection-rect.html
 virtual/text-antialias/shaping/shaping-script-order.html
 virtual/text-antialias/small-caps-aat.html
 virtual/text-antialias/vertical-rl-rtl-linebreak.html
-virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-004.htm
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-005.htm
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-captures-clip-path.htm
