@@ -34,6 +34,7 @@ include_rules = [
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/start_surface/ui_bundled",

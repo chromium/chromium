@@ -72,6 +72,7 @@ include_rules = [
   "+ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h",
   "+ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h",
   "+ios/chrome/browser/settings/model/sync/utils/sync_presenter.h",
+  "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/side_swipe/ui_bundled",
   "+ios/chrome/browser/signin/model",

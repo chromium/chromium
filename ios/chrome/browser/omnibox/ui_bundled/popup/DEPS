@@ -5,5 +5,5 @@ include_rules = [
   "+ios/chrome/browser/toolbar/ui_bundled/buttons",
   "+ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h",
   "+third_party/omnibox_proto",
-  "+ios/chrome/browser/ui/settings/clear_browsing_data/features.h",
+  "+ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h",
 ]

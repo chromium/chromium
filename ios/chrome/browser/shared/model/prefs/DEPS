@@ -21,6 +21,7 @@ include_rules = [
   "+components/saved_tab_groups/public/pref_names.h",
   "+components/lens/lens_overlay_permission_utils.h",
   "+components/sharing_message/sharing_sync_preference.h",
+  "+ios/chrome/browser/settings/ui_bundled",
 ]
 
 specific_include_rules = {

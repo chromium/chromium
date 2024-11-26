@@ -140,9 +140,9 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:eg2_tests",
     "//ios/chrome/browser/ui/settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/autofill:eg2_tests",
-    "//ios/chrome/browser/ui/settings/clear_browsing_data:eg2_tests",
     "//ios/chrome/browser/ui/settings/content_settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services/manage_accounts:eg2_tests",
