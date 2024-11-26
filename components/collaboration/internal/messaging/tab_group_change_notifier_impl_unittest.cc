@@ -15,6 +15,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -170,26 +171,85 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAddedAndRemoved) {
 TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAvailableOnStartup) {
   tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
   tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_2_title_changed = tab_group_2;
+  tab_group_2_title_changed.SetTitle(tab_group_2.title() + u"_changed");
   tab_groups::SavedTabGroup tab_group_3 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_3_color_changed = tab_group_3;
+  // Original color is `kBlue`.
+  tab_group_3_color_changed.SetColor(tab_groups::TabGroupColorId::kOrange);
+  tab_groups::SavedTabGroup tab_group_4 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_4_title_and_color_changed = tab_group_4;
+  tab_group_4_title_and_color_changed.SetTitle(tab_group_4.title() +
+                                               u"_changed");
+  // Original color is `kBlue`.
+  tab_group_4_title_and_color_changed.SetColor(
+      tab_groups::TabGroupColorId::kOrange);
+  tab_groups::SavedTabGroup tab_group_5 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_6 = CreateTestSharedTabGroup();
 
-  // On startup, 2 tab groups are available.
+  // On startup, 5 tab groups are available.
   std::vector<tab_groups::SavedTabGroup> startup_tab_groups;
-  startup_tab_groups.emplace_back(tab_group_1);
-  startup_tab_groups.emplace_back(tab_group_2);
+  startup_tab_groups.emplace_back(tab_group_1);  // Will be removed.
+  startup_tab_groups.emplace_back(tab_group_2);  // Will have title change.
+  startup_tab_groups.emplace_back(tab_group_3);  // Will have color change.
+  startup_tab_groups.emplace_back(
+      tab_group_4);  // Will have title and color changes.
+  startup_tab_groups.emplace_back(tab_group_5);  // Will be unchanged.
 
-  // At initialization time, one of the initial tab groups has been removed, and
-  // a new one has been added.
+  // At initialization time, one of the initial tab groups has been removed, a
+  // new one has been added, one has a title change, one has a color change, one
+  // has both title and color changes, and one is unchanged.
   std::vector<tab_groups::SavedTabGroup> init_tab_groups;
-  init_tab_groups.emplace_back(tab_group_2);
-  init_tab_groups.emplace_back(tab_group_3);
+  init_tab_groups.emplace_back(tab_group_2_title_changed);
+  init_tab_groups.emplace_back(tab_group_3_color_changed);
+  init_tab_groups.emplace_back(tab_group_4_title_and_color_changed);
+  init_tab_groups.emplace_back(tab_group_5);  // Unchanged.
+  init_tab_groups.emplace_back(tab_group_6);  // New.
 
-  // Ensure the observer is informed of both changes.
+  // Ensure the observer is informed of all changes.
   EXPECT_CALL(*notifier_observer_,
               OnTabGroupRemoved(TabGroupGuidEq(tab_group_1)));
+  // Capture the updated tab groups so we can verify we received the updates.
+  // The created test groups will be overwritten from the SaveArg, but we don't
+  // have an empty constructor.
+  // `tab_group_2` has title change.
+  tab_groups::SavedTabGroup tab_group_2_received = CreateTestSharedTabGroup();
   EXPECT_CALL(*notifier_observer_,
-              OnTabGroupAdded(TabGroupGuidEq(tab_group_3)));
+              OnTabGroupNameUpdated(TabGroupGuidEq(tab_group_2_title_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_2_received));
+  // `tab_group_3` has color change.
+  tab_groups::SavedTabGroup tab_group_3_received = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupColorUpdated(TabGroupGuidEq(tab_group_3_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_3_received));
+  // `tab_group_4` has both title and color change.
+  tab_groups::SavedTabGroup tab_group_4_received_title =
+      CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_, OnTabGroupNameUpdated(TabGroupGuidEq(
+                                       tab_group_4_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_4_received_title));
+  tab_groups::SavedTabGroup tab_group_4_received_color =
+      CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_, OnTabGroupColorUpdated(TabGroupGuidEq(
+                                       tab_group_4_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_4_received_color));
+  // New group.
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupAdded(TabGroupGuidEq(tab_group_6)));
 
+  // Ensure we can capture all the arguments of the callbacks using
+  // RunUntilIdle. Since we are using a runloop, we will also be informed about
+  // initialization being finished.
   InitializeNotifier(startup_tab_groups, init_tab_groups);
+
+  // Verify that we received the updated titles and colors instead of the old
+  // one.
+  EXPECT_EQ(tab_group_2_title_changed.title(), tab_group_2_received.title());
+  EXPECT_EQ(tab_group_3_color_changed.color(), tab_group_3_received.color());
+  EXPECT_EQ(tab_group_4_title_and_color_changed.title(),
+            tab_group_4_received_title.title());
+  EXPECT_EQ(tab_group_4_title_and_color_changed.color(),
+            tab_group_4_received_color.color());
 }
 
 TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAddedLocally) {
@@ -204,8 +264,32 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupsAddedLocally) {
   tgss_observer_->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::LOCAL);
   EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(_)).Times(0);
 
-  // TODO(crbug.com/378421557): Handle updated groups and verify local adds
-  //                            are stored for later comparisons.
+  // Verify that even if a tab group was added locally, we get informed about
+  // remote title changes.
+  tab_groups::SavedTabGroup tab_group_received = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_title_changed = tab_group;
+  tab_group_title_changed.SetTitle(tab_group.title() + u"_changed");
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupNameUpdated(TabGroupGuidEq(tab_group_title_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group_title_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_received.title(), tab_group_title_changed.title());
+  EXPECT_EQ(tab_group_received.color(), tab_group_title_changed.color());
+
+  // After a remote update of title that should be stored, we should still not
+  // receive updates about a local color change.
+  tab_groups::SavedTabGroup tab_group_color_changed = tab_group_title_changed;
+  // Original color is `kBlue`.
+  tab_group_color_changed.SetColor(tab_groups::TabGroupColorId::kOrange);
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupNameUpdated(TabGroupGuidEq(tab_group_color_changed)))
+      .Times(0);
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupColorUpdated(TabGroupGuidEq(tab_group_color_changed)))
+      .Times(0);
+  tgss_observer_->OnTabGroupUpdated(tab_group_color_changed,
+                                    tab_groups::TriggerSource::LOCAL);
 
   // Local deletes of groups should not be published.
   tgss_observer_->OnTabGroupRemoved(tab_group.saved_guid(),
@@ -239,6 +323,27 @@ TEST_F(TabGroupChangeNotifierImplTest, TestIgnoreSavedTabGroups) {
   tgss_observer_->OnTabGroupAdded(saved_tab_group_2,
                                   tab_groups::TriggerSource::REMOTE);
 
+  // Verify title updates are not published.
+  tab_groups::SavedTabGroup saved_tab_group_1_title_changed = saved_tab_group_1;
+  saved_tab_group_1_title_changed.SetTitle(saved_tab_group_1.title() +
+                                           u"_changed");
+  tgss_observer_->OnTabGroupUpdated(saved_tab_group_1_title_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_CALL(
+      *notifier_observer_,
+      OnTabGroupNameUpdated(TabGroupGuidEq(saved_tab_group_1_title_changed)))
+      .Times(0);
+
+  // Verify color updates are not published.
+  tab_groups::SavedTabGroup saved_tab_group_2_color_changed = saved_tab_group_2;
+  // Original coltitle mr is `kBlue`.
+  saved_tab_group_2_color_changed.SetColor(
+      tab_groups::TabGroupColorId::kOrange);
+  EXPECT_CALL(
+      *notifier_observer_,
+      OnTabGroupColorUpdated(TabGroupGuidEq(saved_tab_group_2_color_changed)))
+      .Times(0);
+
   EXPECT_CALL(*notifier_observer_,
               OnTabGroupRemoved(TabGroupGuidEq(saved_tab_group_1)))
       .Times(0);
@@ -249,6 +354,167 @@ TEST_F(TabGroupChangeNotifierImplTest, TestIgnoreSavedTabGroups) {
                                     tab_groups::TriggerSource::REMOTE);
   tgss_observer_->OnTabGroupRemoved(saved_tab_group_2.saved_guid(),
                                     tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupUpdatedBecomesAdded) {
+  // Initialize the notifier with an empty set of tab groups available on
+  // startup and on init.
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  // Inform our listener that a tab was updated, but it is unknown to us, we
+  // should then inform our observers that it was added.
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(TabGroupGuidEq(tab_group)));
+  tgss_observer_->OnTabGroupUpdated(tab_group,
+                                    tab_groups::TriggerSource::REMOTE);
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupUpdated) {
+  tab_groups::SavedTabGroup tab_group_1 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_1_title_changed = tab_group_1;
+  tab_group_1_title_changed.SetTitle(tab_group_1.title() + u"_changed");
+  tab_groups::SavedTabGroup tab_group_2 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_2_color_changed = tab_group_2;
+  // Original color is `kBlue`.
+  tab_group_2_color_changed.SetColor(tab_groups::TabGroupColorId::kOrange);
+  tab_groups::SavedTabGroup tab_group_3 = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_3_title_and_color_changed = tab_group_3;
+  tab_group_3_title_and_color_changed.SetTitle(tab_group_3.title() +
+                                               u"_changed");
+  // Original color is `kBlue`.
+  tab_group_3_title_and_color_changed.SetColor(
+      tab_groups::TabGroupColorId::kOrange);
+
+  // We will initially get three calls to OnTabGroupAdded.
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(_)).Times(3);
+
+  // Initialize the notifier with an empty set of tab groups available on
+  // startup and one on init.
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(
+          {tab_group_1, tab_group_2, tab_group_3}));
+
+  // Verify title change.
+  // This will be overridden by SaveArg.
+  tab_groups::SavedTabGroup tab_group_1_received = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupNameUpdated(TabGroupGuidEq(tab_group_1_title_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_1_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group_1_title_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_1_title_changed.title(), tab_group_1_received.title());
+
+  // Verify color change.
+  // This will be overridden by SaveArg.
+  tab_groups::SavedTabGroup tab_group_2_received = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupColorUpdated(TabGroupGuidEq(tab_group_2_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_2_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group_2_color_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_2_color_changed.color(), tab_group_2_received.color());
+
+  // Verify title and color change.
+  // These will be overridden by SaveArg.
+  tab_groups::SavedTabGroup tab_group_3_received_name =
+      CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_3_received_color =
+      CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_, OnTabGroupNameUpdated(TabGroupGuidEq(
+                                       tab_group_3_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_3_received_name));
+  EXPECT_CALL(*notifier_observer_, OnTabGroupColorUpdated(TabGroupGuidEq(
+                                       tab_group_3_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_3_received_color));
+  tgss_observer_->OnTabGroupUpdated(tab_group_3_title_and_color_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_3_title_and_color_changed.title(),
+            tab_group_3_received_name.title());
+  EXPECT_EQ(tab_group_3_title_and_color_changed.color(),
+            tab_group_3_received_color.color());
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupAddedUpdatedRemoved) {
+  // Initialize the notifier with an empty set of tab groups available on
+  // startup and on init.
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  // Create a chained scenario of a tab group being added, then updating its
+  // title, then color, and then both, before it is removed.
+  // We want to verify that the newest version is always provided and used
+  // as delta for the next one.
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroup();
+  tab_groups::SavedTabGroup tab_group_title_changed = tab_group;
+  tab_group_title_changed.SetTitle(tab_group.title() + u"_changed");
+  tab_groups::SavedTabGroup tab_group_color_changed = tab_group_title_changed;
+  // Original color is `kBlue`.
+  tab_group_color_changed.SetColor(tab_groups::TabGroupColorId::kOrange);
+  tab_groups::SavedTabGroup tab_group_title_and_color_changed =
+      tab_group_color_changed;
+  tab_group_title_and_color_changed.SetTitle(tab_group_color_changed.title() +
+                                             u"_changed");
+  tab_group_title_and_color_changed.SetColor(
+      tab_groups::TabGroupColorId::kYellow);
+
+  // First add the group
+  tab_groups::SavedTabGroup tab_group_received = CreateTestSharedTabGroup();
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(TabGroupGuidEq(tab_group)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  tgss_observer_->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_received.title(), tab_group.title());
+  EXPECT_EQ(tab_group_received.color(), tab_group.color());
+
+  // Then update the title.
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupNameUpdated(TabGroupGuidEq(tab_group_title_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group_title_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_received.title(), tab_group_title_changed.title());
+  EXPECT_EQ(tab_group_received.color(), tab_group_title_changed.color());
+
+  // Then update the color.
+  EXPECT_CALL(*notifier_observer_,
+              OnTabGroupColorUpdated(TabGroupGuidEq(tab_group_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group_color_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_received.title(), tab_group_color_changed.title());
+  EXPECT_EQ(tab_group_received.color(), tab_group_color_changed.color());
+
+  // Then update both title and color.
+  EXPECT_CALL(
+      *notifier_observer_,
+      OnTabGroupNameUpdated(TabGroupGuidEq(tab_group_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  EXPECT_CALL(
+      *notifier_observer_,
+      OnTabGroupColorUpdated(TabGroupGuidEq(tab_group_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  tgss_observer_->OnTabGroupUpdated(tab_group_title_and_color_changed,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_received.title(),
+            tab_group_title_and_color_changed.title());
+  EXPECT_EQ(tab_group_received.color(),
+            tab_group_title_and_color_changed.color());
+
+  // Then remove the group.
+  EXPECT_CALL(
+      *notifier_observer_,
+      OnTabGroupRemoved(TabGroupGuidEq(tab_group_title_and_color_changed)))
+      .WillOnce(SaveArg<0>(&tab_group_received));
+  tgss_observer_->OnTabGroupRemoved(
+      tab_group_title_and_color_changed.saved_guid(),
+      tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab_group_received.title(),
+            tab_group_title_and_color_changed.title());
+  EXPECT_EQ(tab_group_received.color(),
+            tab_group_title_and_color_changed.color());
 }
 
 }  // namespace collaboration::messaging

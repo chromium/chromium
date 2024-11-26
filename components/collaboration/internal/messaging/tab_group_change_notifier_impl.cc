@@ -17,6 +17,18 @@
 
 namespace collaboration::messaging {
 
+namespace {
+bool HasEqualTitle(const tab_groups::SavedTabGroup& a,
+                   const tab_groups::SavedTabGroup& b) {
+  return a.title() == b.title();
+}
+
+bool HasEqualColor(const tab_groups::SavedTabGroup& a,
+                   const tab_groups::SavedTabGroup& b) {
+  return a.color() == b.color();
+}
+}  // namespace
+
 TabGroupChangeNotifierImpl::TabGroupChangeNotifierImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service)
     : tab_group_sync_service_(tab_group_sync_service) {}
@@ -99,7 +111,41 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
   if (!group.is_shared_tab_group()) {
     return;
   }
-  // TODO(crbug.com/378421557): Handle updated groups.
+  auto group_it = last_known_tab_groups_.find(group.saved_guid());
+  if (group_it == last_known_tab_groups_.end()) {
+    // We do not know what changed in the case where we got an update for
+    // something unknown, so store the new value and tell our observers it was
+    // added if this was not local.
+    last_known_tab_groups_.emplace(group.saved_guid(), group);
+    if (source == tab_groups::TriggerSource::LOCAL) {
+      return;
+    }
+    for (auto& observer : observers_) {
+      observer.OnTabGroupAdded(last_known_tab_groups_.at(group.saved_guid()));
+    }
+    return;
+  }
+
+  // Create a copy of the old group and store the new one.
+  tab_groups::SavedTabGroup last_known_group = group_it->second;
+  last_known_tab_groups_.insert_or_assign(group.saved_guid(), group);
+
+  if (source == tab_groups::TriggerSource::LOCAL) {
+    return;
+  }
+
+  if (!HasEqualTitle(last_known_group, group)) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupNameUpdated(group);
+    }
+  }
+  if (!HasEqualColor(last_known_group, group)) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupColorUpdated(group);
+    }
+  }
+
+  // TODO(crbug.com/378421557): Handle updated group tabs.
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
@@ -148,7 +194,23 @@ void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
     }
   }
 
-  // TODO(crbug.com/378421557): Handle updated groups.
+  // Find groups with updated titles and colors.
+  std::vector<tab_groups::SavedTabGroup> tab_groups_title_changed;
+  std::vector<tab_groups::SavedTabGroup> tab_groups_color_changed;
+  for (const auto& [guid, group] : last_known_tab_groups_) {
+    auto current_group_it = current_tab_groups.find(guid);
+    if (current_group_it == current_tab_groups.end()) {
+      continue;
+    }
+    if (!HasEqualTitle(group, current_tab_groups.at(guid))) {
+      tab_groups_title_changed.emplace_back(current_tab_groups.at(guid));
+    }
+    if (!HasEqualColor(group, current_tab_groups.at(guid))) {
+      tab_groups_color_changed.emplace_back(current_tab_groups.at(guid));
+    }
+  }
+
+  // TODO(crbug.com/378421557): Handle updated group tabs.
 
   last_known_tab_groups_ = current_tab_groups;
 
@@ -163,6 +225,20 @@ void TabGroupChangeNotifierImpl::ProcessChangesSinceStartup() {
   for (const auto& group : removed_tab_groups) {
     for (auto& observer : observers_) {
       observer.OnTabGroupRemoved(group);
+    }
+  }
+
+  // Publish groups with title changes.
+  for (const auto& group : tab_groups_title_changed) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupNameUpdated(group);
+    }
+  }
+
+  // Publish groups with color changes.
+  for (const auto& group : tab_groups_color_changed) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupColorUpdated(group);
     }
   }
 }
