@@ -631,10 +631,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isAuthPanelEnabled",
                           ash::features::IsUseAuthPanelInSessionEnabled());
 
-  html_source->AddBoolean(
-      "isPrivacyHubHatsEnabled",
-      base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingPrivacyHubPostLaunch));
   html_source->AddBoolean("showPrivacyHubLocationControl",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",

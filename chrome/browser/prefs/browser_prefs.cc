@@ -1167,6 +1167,14 @@ constexpr char kQuietNotificationPermissionShouldShowPromo[] =
     "profile.content_settings.quiet_permission_ui_promo.should_show."
     "notifications";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 11/2024
+inline constexpr char kHatsPrivacyHubPostLaunchIsSelected[] =
+    "hats_privacy_hub_postlaunch_is_selected";
+inline constexpr char kHatsPrivacyHubPostLaunchCycleEndTs[] =
+    "hats_privacy_hub_postlaunch_end_timestamp";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1655,6 +1663,11 @@ void RegisterProfilePrefsForMigration(
                                 true);
   registry->RegisterBooleanPref(kQuietNotificationPermissionShouldShowPromo,
                                 true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kHatsPrivacyHubPostLaunchIsSelected, false);
+  registry->RegisterInt64Pref(kHatsPrivacyHubPostLaunchCycleEndTs, 0);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -3017,6 +3030,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 11/2024
   profile_prefs->ClearPref(kQuietNotificationPermissionPromoWasShown);
   profile_prefs->ClearPref(kQuietNotificationPermissionShouldShowPromo);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 11/2024
+  profile_prefs->ClearPref(kHatsPrivacyHubPostLaunchIsSelected);
+  profile_prefs->ClearPref(kHatsPrivacyHubPostLaunchCycleEndTs);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -80,14 +80,6 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         value: true,
       },
 
-      isHatsSurveyEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('isPrivacyHubHatsEnabled');
-        },
-      },
-
       isMicListEmpty_: {
         type: Boolean,
         value: true,
@@ -175,7 +167,6 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private cameraRowSubtext_: string;
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
-  private isHatsSurveyEnabled_: boolean;
   private microphoneRowSubtext_: string;
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
@@ -221,13 +212,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.PRIVACY_HUB) {
-      if (this.isHatsSurveyEnabled_) {
-        this.browserProxy_.sendLeftOsPrivacyPage();
-      }
       return;
-    }
-    if (this.isHatsSurveyEnabled_) {
-      this.browserProxy_.sendOpenedOsPrivacyPage();
     }
     this.attemptDeepLink();
   }

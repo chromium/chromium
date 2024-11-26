@@ -209,14 +209,6 @@ export class OsSettingsPrivacyPageElement extends
         readOnly: true,
       },
 
-      isHatsSurveyEnabled_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('isPrivacyHubHatsEnabled');
-        },
-        readOnly: true,
-      },
-
       isAccountManagerEnabled_: {
         type: Boolean,
         value() {
