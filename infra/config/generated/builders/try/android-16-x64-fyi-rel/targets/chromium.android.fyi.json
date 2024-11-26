@@ -236,6 +236,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -964,6 +965,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1532,6 +1534,7 @@
           "--use-cmd-decoder=validating",
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1720,6 +1723,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2239,6 +2243,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2803,6 +2808,7 @@
         "args": [
           "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

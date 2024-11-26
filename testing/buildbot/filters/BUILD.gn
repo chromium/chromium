@@ -33,7 +33,7 @@ source_set("base_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator.base_unittests.filter",
-    "//testing/buildbot/filters/android.emulator_14.base_unittests.filter",
+    "//testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
     "//testing/buildbot/filters/android.pie_tot.base_unittests.filter",
     "//testing/buildbot/filters/android.mte.base_unittests.filter",
     "//testing/buildbot/filters/android.tangorpro.base_unittests.filter",
@@ -225,7 +225,7 @@ source_set("content_shell_test_apk_filters") {
     "//testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_12l.content_shell_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter",
-    "//testing/buildbot/filters/android.emulator_14_15.content_shell_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
   ]
 }
 
@@ -234,7 +234,7 @@ source_set("content_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator_14.content_unittests.filter",
-    "//testing/buildbot/filters/android.emulator_15.content_unittests.filter",
+    "//testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
     "//testing/buildbot/filters/android.device.content_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.content_unittests.filter",
     "//testing/buildbot/filters/webrtc.content_unittests.filter",
@@ -421,7 +421,7 @@ source_set("unit_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.asan.unit_tests.filter",
-    "//testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
+    "//testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
     "//testing/buildbot/filters/linux-lacros.unit_tests.filter",
     "//testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter",
     "//testing/buildbot/filters/android.device_14_tablet.unit_tests.filter",
@@ -459,7 +459,7 @@ source_set("gwp_asan_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/android.emulator_15.gwp_asan_unittests.filter",
+    "//testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
     "//testing/buildbot/filters/android.device.gwp_asan_unittests.filter",
   ]
 }
