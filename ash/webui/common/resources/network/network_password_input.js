@@ -14,96 +14,115 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
-import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
+import {NetworkConfigElementBehavior, NetworkConfigElementBehaviorInterface} from './network_config_element_behavior.js';
 import {getTemplate} from './network_password_input.html.js';
 import {FAKE_CREDENTIAL} from './onc_mojo.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-password-input',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ * @implements {NetworkConfigElementBehaviorInterface}
+ */
+const NetworkPasswordInputElementBase = mixinBehaviors(
+    [
+      I18nBehavior,
+      CrPolicyNetworkBehaviorMojo,
+      NetworkConfigElementBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    CrPolicyNetworkBehaviorMojo,
-    NetworkConfigElementBehavior,
-  ],
+/** @polymer */
+class NetworkPasswordInputElement extends NetworkPasswordInputElementBase {
+  static get is() {
+    return 'network-password-input';
+  }
 
-  properties: {
-    label: {
-      type: String,
-      reflectToAttribute: true,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    ariaLabel: {
-      type: String,
-    },
+  static get properties() {
+    return {
+      label: {
+        type: String,
+        reflectToAttribute: true,
+      },
 
-    showPassword: {
-      type: Boolean,
-      value: false,
-    },
+      ariaLabel: {
+        type: String,
+      },
 
-    invalid: {
-      type: Boolean,
-      value: false,
-    },
+      showPassword: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether an errorMessage can be shown beneath the input.
-     */
-    allowErrorMessage: {
-      type: Boolean,
-      value: false,
-    },
+      invalid: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Error message shown beneath input (only shown if allowErrorMessage is
-     * true).
-     */
-    errorMessage: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Whether an errorMessage can be shown beneath the input.
+       */
+      allowErrorMessage: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** {?ManagedProperties} */
-    managedProperties: {
-      type: Object,
-      value: null,
-    },
+      /**
+       * Error message shown beneath input (only shown if allowErrorMessage is
+       * true).
+       */
+      errorMessage: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    tooltipPosition_: {
-      type: String,
-      value: '',
-    },
+      /** {?ManagedProperties} */
+      managedProperties: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private */
-    showPolicyIndicator_: {
-      type: Boolean,
-      value: false,
-      computed: 'getDisabled_(disabled, property)',
-    },
-  },
+      /** @private */
+      tooltipPosition_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      showPolicyIndicator_: {
+        type: Boolean,
+        value: false,
+        computed: 'getDisabled_(disabled, property)',
+      },
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.tooltipPosition_ =
         window.getComputedStyle(this).direction === 'rtl' ? 'right' : 'left';
-  },
+  }
 
   /** @private */
   focus() {
-    this.$$('cr-input').focus();
+    this.shadowRoot.querySelector('cr-input').focus();
 
     // If the input has any contents, the should be selected when focus is
     // applied.
-    this.$$('cr-input').select();
-  },
+    this.shadowRoot.querySelector('cr-input').select();
+  }
 
   /**
    * @return {string}
@@ -111,7 +130,7 @@ Polymer({
    */
   getInputType_() {
     return this.showPassword ? 'text' : 'password';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -119,7 +138,7 @@ Polymer({
    */
   isShowingPlaceholder_() {
     return this.value === FAKE_CREDENTIAL;
-  },
+  }
 
   /**
    * @return {string}
@@ -127,7 +146,7 @@ Polymer({
    */
   getIconClass_() {
     return this.showPassword ? 'icon-visibility-off' : 'icon-visibility';
-  },
+  }
 
   /**
    * @return {string}
@@ -136,7 +155,7 @@ Polymer({
   getShowPasswordTitle_() {
     return this.showPassword ? this.i18n('hidePassword') :
                                this.i18n('showPassword');
-  },
+  }
 
   /**
    * TODO(b/328633844): Update this function to make the "show password" button
@@ -149,7 +168,7 @@ Polymer({
     return !this.showPolicyIndicator_ &&
         (!this.managedProperties ||
          this.managedProperties.source === OncSource.kNone);
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -170,7 +189,7 @@ Polymer({
 
     this.showPassword = !this.showPassword;
     event.stopPropagation();
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -179,7 +198,8 @@ Polymer({
   onKeydown_(event) {
     if (event.target.id === 'input' && event.key === 'Enter') {
       event.stopPropagation();
-      this.fire('enter');
+      this.dispatchEvent(
+          new CustomEvent('enter', {bubbles: true, composed: true}));
       return;
     }
 
@@ -198,7 +218,7 @@ Polymer({
     if (event.cancelable) {
       event.preventDefault();
     }
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -221,5 +241,8 @@ Polymer({
     if (event.cancelable) {
       event.preventDefault();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    NetworkPasswordInputElement.is, NetworkPasswordInputElement);

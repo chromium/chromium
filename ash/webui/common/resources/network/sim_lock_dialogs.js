@@ -16,10 +16,10 @@ import './network_password_input.js';
 import './network_shared.css.js';
 
 import {assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {CellularSimState, CrosNetworkConfigInterface, GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {OncMojo} from './onc_mojo.js';
@@ -39,164 +39,182 @@ const DIGITS_ONLY_REGEX = /^[0-9]+$/;
 const PIN_MIN_LENGTH = 4;
 const PUK_MIN_LENGTH = 8;
 
-Polymer({
-  _template: getTemplate(),
-  is: 'sim-lock-dialogs',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SimLockDialogsElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class SimLockDialogsElement extends SimLockDialogsElementBase {
+  static get is() {
+    return 'sim-lock-dialogs';
+  }
 
-  properties: {
-    /** @type {?OncMojo.DeviceStateProperties} */
-    deviceState: {
-      type: Object,
-      value: null,
-      observer: 'deviceStateChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @type {!GlobalPolicy|undefined} */
-    globalPolicy: Object,
+  static get properties() {
+    return {
+      /** @type {?OncMojo.DeviceStateProperties} */
+      deviceState: {
+        type: Object,
+        value: null,
+        observer: 'deviceStateChanged_',
+      },
 
-    /**
-     * Set to true when there is an open dialog.
-     * @type {boolean}
-     */
-    isDialogOpen: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+      /** @type {!GlobalPolicy|undefined} */
+      globalPolicy: Object,
 
-    /**
-     * Set to true if sim lockEnabled is changed.
-     * @type {boolean}
-     */
-    showChangePin: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Set to true when there is an open dialog.
+       * @type {boolean}
+       */
+      isDialogOpen: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
-    /**
-     * Set to true when a SIM operation is in progress. Used to disable buttons.
-     * @private
-     */
-    inProgress_: {
-      type: Boolean,
-      value: false,
-      observer: 'updateSubmitButtonEnabled_',
-    },
+      /**
+       * Set to true if sim lockEnabled is changed.
+       * @type {boolean}
+       */
+      showChangePin: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Set to an ErrorType value after an incorrect PIN or PUK entry.
-     * @private {ErrorType}
-     */
-    error_: {
-      type: Object,
-      value: ErrorType.NONE,
-      observer: 'updateSubmitButtonEnabled_',
-    },
+      /**
+       * Set to true when a SIM operation is in progress. Used to disable
+       * buttons.
+       * @private
+       */
+      inProgress_: {
+        type: Boolean,
+        value: false,
+        observer: 'updateSubmitButtonEnabled_',
+      },
 
-    /** @private */
-    hasErrorText_: {
-      type: Boolean,
-      computed: 'computeHasErrorText_(error_, deviceState)',
-      reflectToAttribute: true,
-    },
+      /**
+       * Set to an ErrorType value after an incorrect PIN or PUK entry.
+       * @private {ErrorType}
+       */
+      error_: {
+        type: Object,
+        value: ErrorType.NONE,
+        observer: 'updateSubmitButtonEnabled_',
+      },
 
-    /**
-     * Error, if defined, that error_ should be set as the next time deviceState
-     * updates.
-     * @private {ErrorType|undefined}
-     */
-    pendingError_: {
-      type: Object,
-    },
+      /** @private */
+      hasErrorText_: {
+        type: Boolean,
+        computed: 'computeHasErrorText_(error_, deviceState)',
+        reflectToAttribute: true,
+      },
 
-    /**
-     * Used to enable enter button in |enterPin| dialog.
-     * @private
-     */
-    enterPinEnabled_: Boolean,
+      /**
+       * Error, if defined, that error_ should be set as the next time
+       * deviceState updates.
+       * @private {ErrorType|undefined}
+       */
+      pendingError_: {
+        type: Object,
+      },
 
-    /**
-     * Used to enable change button in |changePinDialog| dialog.
-     * @private
-     */
-    changePinEnabled_: Boolean,
+      /**
+       * Used to enable enter button in |enterPin| dialog.
+       * @private
+       */
+      enterPinEnabled_: Boolean,
 
-    /**
-     * Used to enable unlock button in |unlockPukDialog| or |unlockPinDialog|
-     * dialog.
-     * @private
-     */
-    enterPukEnabled_: Boolean,
+      /**
+       * Used to enable change button in |changePinDialog| dialog.
+       * @private
+       */
+      changePinEnabled_: Boolean,
 
-    /**
-     * Current network pin.
-     * @private
-     */
-    pin_: {
-      type: String,
-      observer: 'pinOrPukChange_',
-    },
+      /**
+       * Used to enable unlock button in |unlockPukDialog| or |unlockPinDialog|
+       * dialog.
+       * @private
+       */
+      enterPukEnabled_: Boolean,
 
-    /**
-     * New network pin.Property reflecting a new pin when a new pin is
-     * created.
-     * @private
-     */
-    pin_new1_: {
-      type: String,
-      observer: 'pinOrPukChange_',
-    },
+      /**
+       * Current network pin.
+       * @private
+       */
+      pin_: {
+        type: String,
+        observer: 'pinOrPukChange_',
+      },
 
-    /**
-     * New network pin. Property used when reenter pin is required. This
-     * happens when a new pin is being created. When a user is choosing a new
-     * pin, the new pin needs to be entered twice to confirm it was entered
-     * correctly. |pin_new2_| is the second entry for confirmation, it is
-     * checked against |pin_new1_|, if they match the new pin is set.
-     * @private
-     */
-    pin_new2_: {
-      type: String,
-      observer: 'pinOrPukChange_',
-    },
+      /**
+       * New network pin.Property reflecting a new pin when a new pin is
+       * created.
+       * @private
+       */
+      pin_new1_: {
+        type: String,
+        observer: 'pinOrPukChange_',
+      },
 
-    /**
-     * Code provided by carrier, used when unlocking a locked cellular SIM or
-     * eSIM profile.
-     * @private
-     */
-    puk_: {
-      type: String,
-      observer: 'pinOrPukChange_',
-    },
+      /**
+       * New network pin. Property used when reenter pin is required. This
+       * happens when a new pin is being created. When a user is choosing a new
+       * pin, the new pin needs to be entered twice to confirm it was entered
+       * correctly. |pin_new2_| is the second entry for confirmation, it is
+       * checked against |pin_new1_|, if they match the new pin is set.
+       * @private
+       */
+      pin_new2_: {
+        type: String,
+        observer: 'pinOrPukChange_',
+      },
 
-    /** @private {boolean} */
-    isSimPinLockRestricted_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeIsSimPinLockRestricted_(globalPolicy, globalPolicy.*)',
-    },
-  },
+      /**
+       * Code provided by carrier, used when unlocking a locked cellular SIM or
+       * eSIM profile.
+       * @private
+       */
+      puk_: {
+        type: String,
+        observer: 'pinOrPukChange_',
+      },
 
-  /** @private {?CrosNetworkConfigInterface} */
-  networkConfig_: null,
+      /** @private {boolean} */
+      isSimPinLockRestricted_: {
+        type: Boolean,
+        value: false,
+        computed:
+            'computeIsSimPinLockRestricted_(globalPolicy, globalPolicy.*)',
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {?CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     if (!this.deviceState) {
       return;
     }
 
     this.updateDialogVisibility_();
-  },
+  }
 
   /**
    * @param {?OncMojo.DeviceStateProperties} newDeviceState
@@ -216,7 +234,7 @@ Polymer({
       this.pendingError_ = undefined;
     }
     this.updateDialogVisibility_();
-  },
+  }
 
   /** @private */
   updateDialogVisibility_() {
@@ -259,7 +277,7 @@ Polymer({
       this.showEnterPinDialog_();
     }
     this.isDialogOpen = true;
-  },
+  }
 
   /** @private */
   showEnterPinDialog_() {
@@ -272,7 +290,7 @@ Polymer({
     requestAnimationFrame(() => {
       this.focusDialogInput_();
     });
-  },
+  }
 
   /** @private */
   showChangePinDialog_() {
@@ -287,7 +305,7 @@ Polymer({
     requestAnimationFrame(() => {
       this.focusDialogInput_();
     });
-  },
+  }
 
   /** @private */
   showUnlockPukDialog_() {
@@ -303,7 +321,7 @@ Polymer({
     requestAnimationFrame(() => {
       this.$.unlockPuk.focus();
     });
-  },
+  }
 
   /** @private */
   showUnlockPinDialog_() {
@@ -317,7 +335,7 @@ Polymer({
     requestAnimationFrame(() => {
       this.$.unlockPin.focus();
     });
-  },
+  }
 
   /**
    * @return {boolean}
@@ -325,7 +343,7 @@ Polymer({
    */
   computeIsSimPinLockRestricted_() {
     return !!this.globalPolicy && !this.globalPolicy.allowCellularSimLock;
-  },
+  }
 
   /**
    * Clears error message on user interacion.
@@ -334,7 +352,7 @@ Polymer({
   pinOrPukChange_() {
     this.error_ = ErrorType.NONE;
     this.updateSubmitButtonEnabled_();
-  },
+  }
 
   /**
    * Sends the PIN value from the Enter PIN dialog.
@@ -361,7 +379,7 @@ Polymer({
     };
 
     this.setCellularSimState_(simState);
-  },
+  }
 
   /**
    * Sends the old and new PIN values from the Change PIN dialog.
@@ -380,7 +398,7 @@ Polymer({
       requirePin: true,
     };
     this.setCellularSimState_(simState);
-  },
+  }
 
   /**
    * Sends the PUK value and new PIN value from the Unblock PUK dialog.
@@ -404,7 +422,7 @@ Polymer({
       return;
     }
     this.unlockCellularSim_(pin, puk);
-  },
+  }
 
   /**
    * Sends the PIN value from the Unlock PIN dialog.
@@ -418,7 +436,7 @@ Polymer({
       return;
     }
     this.unlockCellularSim_(pin);
-  },
+  }
 
   /**
    * @param {!CellularSimState} cellularSimState
@@ -439,8 +457,9 @@ Polymer({
         this.closeDialogs_();
       }
     });
-    this.fire('user-action-setting-change');
-  },
+    this.dispatchEvent(new CustomEvent(
+        'user-action-setting-change', {bubbles: true, composed: true}));
+  }
 
   /**
    * Closes current dialog and sets the current state of dialogs
@@ -463,14 +482,14 @@ Polymer({
       this.$.unlockPukDialog.close();
     }
     this.isDialogOpen = skipIsDialogOpenUpdate ? skipIsDialogOpenUpdate : false;
-  },
+  }
 
   /**
    * Used by test to simulate dialog cancel click.
    */
   closeDialogsForTest() {
     this.closeDialogs_();
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -479,14 +498,14 @@ Polymer({
   onCancel_(event) {
     event.stopPropagation();
     this.closeDialogs_();
-  },
+  }
 
   /** @private */
   setInProgress_() {
     this.error_ = ErrorType.NONE;
     this.pendingError_ = ErrorType.NONE;
     this.inProgress_ = true;
-  },
+  }
 
   /** @private */
   updateSubmitButtonEnabled_() {
@@ -497,7 +516,7 @@ Polymer({
     this.enterPukEnabled_ = !this.inProgress_ && !!this.puk_ && !hasError &&
         (this.isSimPinLockRestricted_ ||
          (!!this.pin_new1_ && !!this.pin_new2_));
-  },
+  }
 
   /**
    * @param {string} pin
@@ -528,7 +547,7 @@ Polymer({
         this.closeDialogs_();
       }
     });
-  },
+  }
 
   /** @private */
   focusDialogInput_() {
@@ -545,7 +564,7 @@ Polymer({
     } else if (this.$.unlockPukDialog.open) {
       this.$.unlockPuk.focus();
     }
-  },
+  }
 
   /**
    * Checks whether |pin1| is of the proper length and contains only digits.
@@ -572,7 +591,7 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /**
    * Checks whether |puk| is of the proper length and contains only digits.
@@ -587,7 +606,7 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /**
    * @return {string}
@@ -597,7 +616,7 @@ Polymer({
     return this.isSimPinLockRestricted_ ?
         this.i18n('networkSimLockPolicyAdminSubtitle') :
         this.i18n('networkSimEnterPinDescription');
-  },
+  }
 
   /**
    * @return {string}
@@ -638,7 +657,7 @@ Polymer({
     }
 
     return this.i18n(errorStringId, retriesLeft);
-  },
+  }
 
   /**
    * @return {number}
@@ -650,7 +669,7 @@ Polymer({
     }
 
     return this.deviceState.simLockStatus.retriesLeft;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -658,7 +677,7 @@ Polymer({
    */
   computeHasErrorText_() {
     return !!this.getErrorMsg_();
-  },
+  }
 
   /**
    * @return {string}
@@ -671,7 +690,7 @@ Polymer({
     }
 
     return this.i18n('networkSimEnterPinSubtext');
-  },
+  }
 
   /**
    * @return {boolean}
@@ -680,7 +699,7 @@ Polymer({
   isOldPinInvalid_() {
     return this.error_ === ErrorType.INCORRECT_PIN ||
         this.error_ === ErrorType.INVALID_PIN;
-  },
+  }
 
   /**
    * @return {string}
@@ -692,7 +711,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -700,7 +719,7 @@ Polymer({
    */
   isSecondNewPinInvalid_() {
     return this.error_ === ErrorType.MISMATCHED_PIN;
-  },
+  }
 
   /**
    * @return {string}
@@ -712,7 +731,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @return {boolean}
@@ -721,7 +740,7 @@ Polymer({
   isPukInvalid_() {
     return this.error_ === ErrorType.INCORRECT_PUK ||
         this.error_ === ErrorType.INVALID_PUK;
-  },
+  }
 
   /**
    * @return {string}
@@ -733,7 +752,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @return {string}
@@ -743,7 +762,7 @@ Polymer({
     return this.isSimPinLockRestricted_ ?
         this.getPukWarningSimPinRestrictedMessage_() :
         this.getPukWarningSimPinUnrestrictedMessage_();
-  },
+  }
 
   /**
    * @return {string}
@@ -753,7 +772,7 @@ Polymer({
     return this.isSimPinLockRestricted_ ?
         this.i18n('networkSimPukDialogManagedSubtitle') :
         this.i18n('networkSimPukDialogSubtitle');
-  },
+  }
 
   /**
    * @return {string}
@@ -770,7 +789,7 @@ Polymer({
     }
 
     return this.i18n('networkSimPukDialogWarningNoFailures');
-  },
+  }
 
   /**
    * @return {string}
@@ -789,5 +808,7 @@ Polymer({
     }
 
     return this.i18n('networkSimPukDialogManagedWarningNoFailures');
-  },
-});
+  }
+}
+
+customElements.define(SimLockDialogsElement.is, SimLockDialogsElement);
