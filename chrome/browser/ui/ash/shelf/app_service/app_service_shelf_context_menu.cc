@@ -185,9 +185,6 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       if (app_type_ == apps::AppType::kCrostini ||
           app_type_ == apps::AppType::kBruschetta) {
         ShelfContextMenu::ExecuteCommand(ash::LAUNCH_NEW, event_flags);
-      } else if (app_type_ == apps::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(
-            /*incognito=*/false, /*should_trigger_session_restore=*/false);
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(
             /*incognito=*/false,
@@ -197,14 +194,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      if (app_type_ == apps::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(
-            /*incognito=*/true, /*should_trigger_session_restore=*/false);
-      } else {
-        ash::NewWindowDelegate::GetInstance()->NewWindow(
-            /*incognito=*/true,
-            /*should_trigger_session_restore=*/false);
-      }
+      ash::NewWindowDelegate::GetInstance()->NewWindow(
+          /*incognito=*/true,
+          /*should_trigger_session_restore=*/false);
       MaybeCloseFullRestoreServiceNotification(controller()->profile());
       break;
 

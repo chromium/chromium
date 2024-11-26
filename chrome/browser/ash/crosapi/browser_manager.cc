@@ -239,41 +239,6 @@ bool BrowserManager::IsRunning() const {
   return false;
 }
 
-void BrowserManager::NewWindow(bool incognito,
-                               bool should_trigger_session_restore) {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::NewWindow(
-      incognito, should_trigger_session_restore, target_display_id,
-      ash::desks_util::GetActiveDeskLacrosProfileId()));
-}
-
-void BrowserManager::NewGuestWindow() {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::NewGuestWindow(target_display_id));
-}
-
-void BrowserManager::Launch() {
-  int64_t target_display_id =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-  PerformOrEnqueue(BrowserAction::Launch(
-      target_display_id, ash::desks_util::GetActiveDeskLacrosProfileId()));
-}
-
-void BrowserManager::OpenUrl(
-    const GURL& url,
-    crosapi::mojom::OpenUrlFrom from,
-    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
-    NavigateParams::PathBehavior path_behavior) {
-  PerformOrEnqueue(
-      BrowserAction::OpenUrl(url, disposition, from, path_behavior));
-}
-
-void BrowserManager::OpenCaptivePortalSignin(const GURL& url) {
-  PerformOrEnqueue(BrowserAction::OpenCaptivePortalSignin(url));
-}
-
 void BrowserManager::SwitchToTab(const GURL& url,
                                  NavigateParams::PathBehavior path_behavior) {
   PerformOrEnqueue(BrowserAction::OpenUrl(
@@ -295,10 +260,6 @@ void BrowserManager::CreateBrowserWithRestoredData(
       urls, bounds, tab_group_infos, show_state, active_tab_index,
       first_non_pinned_tab_index, app_name, restore_window_id,
       lacros_profile_id));
-}
-
-void BrowserManager::OpenProfileManager() {
-  PerformOrEnqueue(BrowserAction::OpenProfileManager());
 }
 
 void BrowserManager::InitializeAndStartIfNeeded() {
@@ -365,15 +326,6 @@ BrowserManager::BrowserServiceInfo&
 BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
     default;
 BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
-
-void BrowserManager::PerformAction(std::unique_ptr<BrowserAction> action) {
-  BrowserAction* action_raw = action.get();  // We're `move`ing action below.
-  action_raw->Perform(
-      {browser_service_.value().service.get(),
-       browser_service_.value().interface_version},
-      base::BindOnce(&BrowserManager::OnActionPerformed,
-                     weak_factory_.GetWeakPtr(), std::move(action)));
-}
 
 void BrowserManager::ClearLacrosData() {
   // Check that Lacros is not running.

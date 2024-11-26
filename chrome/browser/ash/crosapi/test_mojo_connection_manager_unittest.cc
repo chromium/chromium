@@ -72,41 +72,15 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     NOTIMPLEMENTED();
   }
 
-  void NewWindow(bool incognito,
-                 bool should_trigger_session_restore,
-                 int64_t target_display_id,
-                 std::optional<uint64_t> profile_id,
-                 NewWindowCallback callback) override {}
-  void NewWindowForDetachingTab(
-      const std::u16string& tab_id,
-      const std::u16string& group_id,
-      NewWindowForDetachingTabCallback closure) override {}
-  void NewFullscreenWindow(const GURL& url,
-                           int64_t target_display_id,
-                           NewFullscreenWindowCallback callback) override {}
-  void NewGuestWindow(int64_t target_display_id,
-                      NewGuestWindowCallback callback) override {}
-  void NewTab(std::optional<uint64_t> profile_id,
-              NewTabCallback callback) override {}
-  void Launch(int64_t target_display_id,
-              std::optional<uint64_t> profile_id,
-              LaunchCallback callback) override {}
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,
                OpenUrlCallback callback) override {}
-  void RestoreTab(RestoreTabCallback callback) override {}
-  void HandleTabScrubbing(float x_offset, bool is_fling_scroll_event) override {
-  }
   void GetFeedbackData(GetFeedbackDataCallback callback) override {}
   void GetHistograms(GetHistogramsCallback callback) override {}
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
   void NotifyPolicyFetchAttempt() override {}
-  void OpenForFullRestore(bool skip_crash_restore) override {}
-  void OpenProfileManager() override {}
   void UpdateComponentPolicy(
       base::flat_map<policy::PolicyNamespace, base::Value> policy) override {}
-  void OpenCaptivePortalSignin(const GURL& url,
-                               OpenUrlCallback callback) override {}
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;

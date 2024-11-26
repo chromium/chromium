@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +52,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
 namespace {
@@ -506,14 +506,7 @@ void InlineLoginHandlerImpl::HandleSkipWelcomePage(
 
 void InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog(
     const base::Value::List& args) {
-  // Open the browser guest mode if available, else the device guest mode.
-  if (profiles::IsGuestModeEnabled()) {
-    crosapi::BrowserManager::Get()->NewGuestWindow();
-  } else {
-    GuestSessionConfirmationDialog::Show();
-  }
-
-  close_dialog_closure_.Run();
+  NOTREACHED();
 }
 
 void InlineLoginHandlerImpl::GetDeviceId(const base::Value::List& args) {

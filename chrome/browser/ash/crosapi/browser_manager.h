@@ -95,48 +95,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for testing.
   virtual bool IsRunning() const;
 
-  // Opens the browser window in lacros-chrome.
-  // If lacros-chrome is not yet launched, it triggers to launch.
-  // This needs to be called after loading.
-  // TODO(crbug.com/40703695): Notify callers the result of opening window
-  // request. Because of asynchronous operations crossing processes,
-  // there's no guarantee that the opening window request succeeds.
-  // Currently, its condition and result are completely hidden behind this
-  // class, so there's no way for callers to handle such error cases properly.
-  // This design often leads the flakiness behavior of the product and testing,
-  // so should be avoided.
-  // If `should_trigger_session_restore` is true, a new window opening should be
-  // treated like the start of a new session (with potential session restore,
-  // startup URLs, etc). Otherwise, don't restore the session and instead open a
-  // new window with the default blank tab.
-  void NewWindow(bool incognito, bool should_trigger_session_restore);
-
   // NOTE on callbacks:
   // An action's callback (e.g. the last parameter to NewWindowForDetachingTab
   // below) will never be invoked with a CreationResult value of
   // kBrowserShutdown. In the case of a Lacros shutdown (rather than system
   // shutdown), BrowserManager will try to perform the action again later.
-
-  // Opens a new window in lacros-chrome with the Guest profile if the Guest
-  // mode is enabled.
-  void NewGuestWindow();
-
-  // Similar to NewWindow and NewTab. If a suitable window exists, a new tab is
-  // added. Otherwise a new window is created with session restore (no new tab
-  // is added to that).
-  void Launch();
-
-  // Opens the specified URL in lacros-chrome. If it is not running,
-  // it launches lacros-chrome with the given URL.
-  // See crosapi::mojom::BrowserService::OpenUrl for more details.
-  void OpenUrl(
-      const GURL& url,
-      crosapi::mojom::OpenUrlFrom from,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
-      NavigateParams::PathBehavior path_behavior = NavigateParams::RESPECT);
-
-  // Opens the captive portal signin window in lacros-chrome.
-  void OpenCaptivePortalSignin(const GURL& url);
 
   // If there's already a tab opening the URL in lacros-chrome, in some window
   // of the primary profile, activate the tab. Otherwise, opens a tab for
@@ -162,9 +125,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
       const std::string& app_name,
       int32_t restore_window_id,
       uint64_t lacros_profile_id);
-
-  // Opens the profile manager window in lacros-chrome.
-  void OpenProfileManager();
 
   // Initialize resources and start Lacros.
   //
@@ -343,8 +303,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Sending the LaunchMode state at least once a day.
   // multiple events will get de-duped on the server side.
   void OnDailyLaunchModeTimer();
-
-  void PerformAction(std::unique_ptr<BrowserAction> action);
 
   // Start a sequence to clear Lacros related data. It posts a task to remove
   // Lacros user data directory and if that is successful, calls

@@ -225,14 +225,9 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW: {
       const bool is_incognito =
           command_id == ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW;
-      if (app_type_ == apps::AppType::kStandaloneBrowser) {
-        crosapi::BrowserManager::Get()->NewWindow(
-            is_incognito, /*should_trigger_session_restore=*/false);
-      } else {
-        // Create browser asynchronously to prevent this AppServiceContextMenu
-        // object to be deleted when the browser window is shown.
-        CreateNewWindow(is_incognito, /*post_task=*/true);
-      }
+      // Create browser asynchronously to prevent this AppServiceContextMenu
+      // object to be deleted when the browser window is shown.
+      CreateNewWindow(is_incognito, /*post_task=*/true);
       MaybeCloseFullRestoreServiceNotification(profile());
       break;
     }
