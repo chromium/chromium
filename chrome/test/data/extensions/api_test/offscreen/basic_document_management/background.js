@@ -26,7 +26,14 @@ self.addEventListener('fetch', (e) => {
 });
 
 chrome.test.runTests([
+  // TODO(crbug.com/378916068): Enable the test on desktop android.
   async function createDocumentAndEnsureItExistsAndThenClose() {
+    // Skip this test on Android, which does not yet support messaging.
+    if (/Android/.test(navigator.userAgent)) {
+        chrome.test.succeed();
+        return;
+    }
+
     chrome.test.assertFalse(await hasOffscreenDocument());
 
     await chrome.offscreen.createDocument(VALID_PARAMS);

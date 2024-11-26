@@ -7,12 +7,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -43,10 +39,20 @@
 #include "content/public/common/content_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 namespace extensions {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // A helper class to wait until a given WebContents is audible or inaudible.
 // TODO(devlin): Put this somewhere common? //content/public/test/?
 class AudioWaiter : public content::WebContentsObserver {
@@ -112,23 +118,30 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
       }).Then(run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-class OffscreenApiTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class OffscreenApiTest : public ExtensionApiTestBase {
  public:
   OffscreenApiTest() = default;
   ~OffscreenApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
   }
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -228,6 +241,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
       << message_;
 }
 
+// TODO(crbug.com/378916068): Enable more tests on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests creating, querying, and closing offscreen documents in an incognito
 // split mode extension.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
@@ -682,5 +697,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
