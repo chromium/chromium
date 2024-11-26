@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -251,10 +250,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         }
         if (fragment instanceof SafetyHubBaseFragment) {
             ((SafetyHubBaseFragment) fragment).setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-        }
-        if (fragment instanceof TabsSettings tabsSettings) {
-            tabsSettings.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
     }
 }

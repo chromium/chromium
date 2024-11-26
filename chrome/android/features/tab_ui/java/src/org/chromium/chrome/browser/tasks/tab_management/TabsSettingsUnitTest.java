@@ -8,14 +8,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
@@ -50,8 +51,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
-import org.chromium.chrome.browser.tasks.tab_management.TabsSettings.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -77,6 +78,7 @@ public class TabsSettingsUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
     @Before
     public void setUp() {
@@ -84,6 +86,7 @@ public class TabsSettingsUnitTest {
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfileMock);
+        doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
         mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mActivityScenario.onActivity(this::onActivity);
@@ -108,6 +111,7 @@ public class TabsSettingsUnitTest {
                                         TabsSettings.class.getClassLoader(),
                                         TabsSettings.class.getName());
         tabsSettings.setProfile(mProfileMock);
+        tabsSettings.setCustomTabLauncher(mCustomTabLauncher);
         fragmentManager.beginTransaction().replace(android.R.id.content, tabsSettings).commit();
         mActivityScenario.moveToState(State.STARTED);
 
@@ -302,16 +306,7 @@ public class TabsSettingsUnitTest {
         assertTrue(learnMoreTextMessagePreference.isVisible());
 
         View view = Mockito.mock(View.class);
-        CustomTabIntentHelper customTabsHelper = Mockito.mock(CustomTabIntentHelper.class);
-        Intent intent = new Intent();
-        when(customTabsHelper.createCustomTabActivityIntent(eq(mActivity), any(Intent.class)))
-                .thenReturn(intent);
-        verify(customTabsHelper, never())
-                .createCustomTabActivityIntent(eq(mActivity), any(Intent.class));
-
-        tabsSettings.setCustomTabIntentHelper(customTabsHelper);
         tabsSettings.onLearnMoreClicked(view);
-
-        verify(customTabsHelper).createCustomTabActivityIntent(eq(mActivity), any(Intent.class));
+        verify(mCustomTabLauncher).openUrlInCct(eq(mActivity), eq(TabsSettings.LEARN_MORE_URL));
     }
 }
