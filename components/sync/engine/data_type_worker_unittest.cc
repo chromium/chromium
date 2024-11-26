@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -27,6 +28,7 @@
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
@@ -3493,11 +3495,15 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
   SyncEntity entity_inactive = server()->UpdateFromServer(
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_2"),
-      specifics, "inactive_collaboration");
+      specifics,
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/"",
+                                            "inactive_collaboration"));
   SyncEntity entity_active = server()->UpdateFromServer(
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_1"),
-      specifics, "active_collaboration");
+      specifics,
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/"",
+                                            "active_collaboration"));
 
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -3518,9 +3524,14 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
   // collaboration.
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
   ASSERT_THAT(processor()->GetNthUpdateResponse(0), SizeIs(1));
-  EXPECT_EQ(
-      processor()->GetNthUpdateResponse(0).front()->entity.collaboration_id,
-      "active_collaboration");
+
+  const std::optional<CollaborationMetadata> collaboration_metadata =
+      processor()
+          ->GetNthUpdateResponse(0)
+          .front()
+          ->entity.collaboration_metadata;
+  ASSERT_TRUE(collaboration_metadata.has_value());
+  EXPECT_EQ(collaboration_metadata->collaboration_id(), "active_collaboration");
 
   // Verify also that the last GC directive is propagated to the processor.
   EXPECT_THAT(processor()
@@ -3528,6 +3539,46 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
                   .collaboration_gc()
                   .active_collaboration_ids(),
               ElementsAre("active_collaboration"));
+}
+
+TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
+  const std::string kCollaborationId = "collaboration";
+  const std::string kCreatorUserId = "creator_user_id";
+  const std::string kUpdaterUserId = "updater_user_id";
+
+  NormalInitialize();
+  server()->AddCollaboration(kCollaborationId);
+
+  sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata_proto;
+  collaboration_metadata_proto.set_collaboration_id(kCollaborationId);
+  collaboration_metadata_proto.mutable_creation_attribution()->set_obfuscated_gaia_id(
+      kCreatorUserId);
+  collaboration_metadata_proto.mutable_last_update_attribution()->set_obfuscated_gaia_id(
+      kUpdaterUserId);
+
+  EntitySpecifics specifics;
+  specifics.mutable_shared_tab_group_data()->set_guid("guid");
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10,
+      ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_2"),
+      specifics,
+      CollaborationMetadata::FromRemoteProto(collaboration_metadata_proto));
+
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
+  ASSERT_THAT(processor()->GetNthUpdateResponse(0), SizeIs(1));
+
+  const std::optional<CollaborationMetadata> collaboration_metadata =
+      processor()
+          ->GetNthUpdateResponse(0)
+          .front()
+          ->entity.collaboration_metadata;
+  ASSERT_TRUE(collaboration_metadata.has_value());
+  EXPECT_EQ(collaboration_metadata->created_by(), kCreatorUserId);
+  EXPECT_EQ(collaboration_metadata->last_updated_by(), kUpdaterUserId);
 }
 
 }  // namespace syncer

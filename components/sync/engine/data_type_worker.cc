@@ -511,7 +511,9 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
                                              .active_collaboration_ids());
       std::erase_if(pending_updates_, [&active_collaborations](
                                           const UpdateResponseData& update) {
-        return !active_collaborations.contains(update.entity.collaboration_id);
+        return !update.entity.collaboration_metadata.has_value() ||
+               !active_collaborations.contains(
+                   update.entity.collaboration_metadata->collaboration_id());
       });
       std::erase_if(entries_pending_decryption_,
                     [&active_collaborations](const auto& pending_decryption) {
@@ -684,7 +686,8 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
 
   // Populate shared type fields.
   if (SharedTypes().Has(data_type)) {
-    data.collaboration_id = update_entity.collaboration().collaboration_id();
+    data.collaboration_metadata =
+        CollaborationMetadata::FromRemoteProto(update_entity.collaboration());
   }
 
   // Populate `originator_cache_guid` and `originator_client_item_id`. This is

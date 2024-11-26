@@ -39,6 +39,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
@@ -219,8 +220,13 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = specifics.guid();
-  entity_data->specifics.mutable_shared_tab_group_data()->Swap(&specifics);
-  entity_data->collaboration_id = collaboration_id.value();
+  *entity_data->specifics.mutable_shared_tab_group_data() =
+      std::move(specifics);
+  // TODO(crbug.com/352214654): populate all fields in the collaboration
+  // metadata.
+  entity_data->collaboration_metadata =
+      syncer::CollaborationMetadata::ForLocalChange(
+          /*changed_by=*/"", collaboration_id.value());
   entity_data->creation_time = creation_time;
   return entity_data;
 }
@@ -554,10 +560,13 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
       }
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
+        CHECK(change->data().collaboration_metadata.has_value());
         if (change->data().specifics.shared_tab_group_data().has_tab_group()) {
           if (std::optional<syncer::ModelError> error = AddGroupToLocalStorage(
                   change->data().specifics.shared_tab_group_data(),
-                  CollaborationId(change->data().collaboration_id),
+                  CollaborationId(
+                      change->data()
+                          .collaboration_metadata->collaboration_id()),
                   change->data().creation_time, metadata_change_list.get(),
                   *ongoing_write_batch_)) {
             return error;
@@ -607,7 +616,8 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
             change->data().specifics.shared_tab_group_data(),
             metadata_change_list.get(), *ongoing_write_batch_,
             tab_ids_with_pending_model_update,
-            CollaborationId(change->data().collaboration_id),
+            CollaborationId(
+                change->data().collaboration_metadata->collaboration_id()),
             change->data().creation_time)) {
       return error;
     }
@@ -691,8 +701,9 @@ SharedTabGroupDataSyncBridge::GetAllDataForDebugging() {
 
 std::string SharedTabGroupDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
+  CHECK(entity_data.collaboration_metadata.has_value());
   return entity_data.specifics.shared_tab_group_data().guid() + "|" +
-         entity_data.collaboration_id;
+         entity_data.collaboration_metadata->collaboration_id();
 }
 
 std::string SharedTabGroupDataSyncBridge::GetStorageKey(
@@ -789,7 +800,8 @@ SharedTabGroupDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 bool SharedTabGroupDataSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (entity_data.collaboration_id.empty()) {
+  if (!entity_data.collaboration_metadata.has_value() ||
+      entity_data.collaboration_metadata->collaboration_id().empty()) {
     DVLOG(2) << "Remote Shared Tab Group is missing collaboration ID";
     return false;
   }

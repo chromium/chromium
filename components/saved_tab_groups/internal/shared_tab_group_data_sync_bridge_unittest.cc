@@ -36,6 +36,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -82,8 +83,11 @@ MATCHER_P(HasTabUrl, url, "") {
 MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
   const sync_pb::SharedTabGroup& arg_tab_group =
       arg.specifics.shared_tab_group_data().tab_group();
+  const std::optional<syncer::CollaborationMetadata>& collab_metadata =
+      arg.collaboration_metadata;
   return arg_tab_group.title() == title && arg_tab_group.color() == color &&
-         CollaborationId(arg.collaboration_id) ==
+         collab_metadata.has_value() &&
+         CollaborationId(collab_metadata->collaboration_id()) ==
              CollaborationId(collaboration_id);
 }
 
@@ -101,8 +105,11 @@ MATCHER_P(HasGroupEntityDataWithOriginatingGroup, originating_group_guid, "") {
 MATCHER_P3(HasTabEntityData, title, url, collaboration_id, "") {
   const sync_pb::SharedTab& arg_tab =
       arg.specifics.shared_tab_group_data().tab();
+  const std::optional<syncer::CollaborationMetadata>& collab_metadata =
+      arg.collaboration_metadata;
   return arg_tab.title() == title && arg_tab.url() == url &&
-         CollaborationId(arg.collaboration_id) ==
+         collab_metadata.has_value() &&
+         CollaborationId(collab_metadata->collaboration_id()) ==
              CollaborationId(collaboration_id);
 }
 
@@ -222,7 +229,9 @@ syncer::EntityData CreateEntityData(
     base::Time creation_time = base::Time::Now()) {
   syncer::EntityData entity_data;
   *entity_data.specifics.mutable_shared_tab_group_data() = specifics;
-  entity_data.collaboration_id = collaboration_id.value();
+  entity_data.collaboration_metadata =
+      syncer::CollaborationMetadata::ForLocalChange(/*changed_by=*/ "",
+                                                    collaboration_id.value());
   entity_data.name = specifics.guid();
   entity_data.creation_time = creation_time;
   return entity_data;
@@ -700,10 +709,10 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
       GURL("https://website.com"), u"Website Title",
       group_to_delete.saved_guid(), /*position=*/std::nullopt));
   model()->AddedLocally(group_to_delete);
-  model()->AddedLocally(SavedTabGroup(u"title 2",
-                                      tab_groups::TabGroupColorId::kGrey,
-                                      /*urls=*/{}, /*position=*/std::nullopt)
-                            .SetCollaborationId(CollaborationId("collaboration 2")));
+  model()->AddedLocally(
+      SavedTabGroup(u"title 2", tab_groups::TabGroupColorId::kGrey,
+                    /*urls=*/{}, /*position=*/std::nullopt)
+          .SetCollaborationId(CollaborationId("collaboration 2")));
   ASSERT_EQ(model()->Count(), 2);
 
   ApplySingleEntityChange(syncer::EntityChange::CreateDelete(

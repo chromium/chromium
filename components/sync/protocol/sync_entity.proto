@@ -4,16 +4,15 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
-
-option optimize_for = LITE_RUNTIME;
-
 package sync_pb;
 
 import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+option optimize_for = LITE_RUNTIME;
 
 message SyncEntity {
   // This item's identifier.  In a commit of a new item, this will be a
@@ -227,33 +226,19 @@ message SyncEntity {
   // types.
   // Introduced in M124.
   message CollaborationMetadata {
+    message Attribution {
+      // Obfuscated Gaia ID of the user.
+      optional string obfuscated_gaia_id = 1;
+    }
+
     // Collaboration ID which the current entity belongs to.
     optional string collaboration_id = 1;
 
-    // Stores information about the creation and modification of a shared data
-    // type.
-    message AttributionMetadata {
-      // Details about a single attribution event (creation or modification).
-      message Attribution {
-        // Information about who the change should be attributed to.
-        message AttributionUserInfo {
-          // The obfuscated GAIA ID of the user.
-          optional string gaia_id = 1;
-        }
+    // Information about when the specifics was created.
+    optional Attribution creation_attribution = 2;
 
-        // Information about the user.
-        optional AttributionUserInfo user_info = 1;
-      }
-
-      // Information about when the specifics was created.
-      optional Attribution created = 1;
-
-      // Information about when the specifics was last updated.
-      optional Attribution updated = 2;
-    }
-
-    // Stores information who created or updated the entity.
-    optional AttributionMetadata attribution_metadata = 2;
+    // Information about when the specifics was last updated.
+    optional Attribution last_update_attribution = 3;
   }
 
   optional CollaborationMetadata collaboration = 27;

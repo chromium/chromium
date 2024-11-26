@@ -16,6 +16,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;
@@ -64,7 +65,7 @@ class SingleTypeMockServer {
       int64_t version_offset,
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics,
-      const std::string& collaboration_id);
+      const CollaborationMetadata& collaboration_metadata);
 
   // Generates a SyncEntity representing a server-delivered update to delete
   // an item.
