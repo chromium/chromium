@@ -995,6 +995,10 @@
     "messages": [7280],
   },
 
+  "<(SHARED_INTERMEDIATE_DIR)/components/chrome_urls_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [7290],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [7300],

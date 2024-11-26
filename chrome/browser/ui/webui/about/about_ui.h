@@ -31,9 +31,14 @@ class AboutUIConfigBase : public content::DefaultWebUIConfig<AboutUI> {
 
 // chrome://chrome-urls. Note that HandleChromeAboutAndChromeSyncRewrite()
 // rewrites chrome://about -> chrome://chrome-urls.
-class ChromeURLsUIConfig : public AboutUIConfigBase {
+class ChromeURLsUIConfig : public content::WebUIConfig {
  public:
   ChromeURLsUIConfig();
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 // chrome://credits.

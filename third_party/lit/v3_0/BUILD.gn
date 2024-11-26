@@ -74,6 +74,7 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/signin:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
     "//chrome/test/data/webui/welcome:build_ts",
+    "//components/chrome_urls_ui/resources:build_ts",
     "//components/commerce/core/internals/resources:build_ts",
     "//components/download/resources/download_internals:build_ts",
     "//components/flags_ui/resources:build_ts",

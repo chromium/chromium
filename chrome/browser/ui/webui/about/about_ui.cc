@@ -16,6 +16,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -38,6 +39,8 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chrome_urls/chrome_urls_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -615,7 +618,16 @@ AboutUIConfigBase::AboutUIConfigBase(std::string_view host)
     : DefaultWebUIConfig(content::kChromeUIScheme, host) {}
 
 ChromeURLsUIConfig::ChromeURLsUIConfig()
-    : AboutUIConfigBase(chrome::kChromeUIChromeURLsHost) {}
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIChromeURLsHost) {}
+
+std::unique_ptr<content::WebUIController>
+ChromeURLsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                          const GURL& url) {
+  if (base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+    return std::make_unique<chrome_urls::ChromeUrlsUI>(web_ui);
+  }
+  return std::make_unique<AboutUI>(web_ui, url);
+}
 
 CreditsUIConfig::CreditsUIConfig()
     : AboutUIConfigBase(chrome::kChromeUICreditsHost) {}

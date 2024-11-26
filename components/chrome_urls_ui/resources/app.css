@@ -1,0 +1,26 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  background: white;
+  color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  --primary-color: var(--google-grey-900);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    background: var(--google-grey-900);
+    --primary-color: var(--google-grey-200);
+  }
+}
