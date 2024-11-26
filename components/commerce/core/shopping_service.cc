@@ -182,6 +182,7 @@ ShoppingService::ShoppingService(
     ProductSpecificationsService* product_specifications_service,
     SessionProtoStorage<discounts_db::DiscountsContentProto>*
         discounts_proto_db,
+    SessionProtoStorage<cart_db::ChromeCartContentProto>* cart_proto_db,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
     history::HistoryService* history_service,
@@ -316,6 +317,12 @@ ShoppingService::ShoppingService(
   if (product_specifications_service_) {
     product_specifications_observation_.Observe(
         product_specifications_service_);
+  }
+
+  // TODO(crbug.com/373426638): This is added in 11/2024 to deprecate
+  // ChromeCart. This part should be removed in 11/2025.
+  if (cart_proto_db) {
+    cart_proto_db->DeleteAllContent(base::DoNothing());
   }
 }
 

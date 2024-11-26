@@ -261,6 +261,7 @@ source_set("profiles_extra_parts_impl") {
     "//components/autofill/content/browser",
     "//components/breadcrumbs/core:status",
     "//components/captive_portal/core:buildflags",
+    "//components/commerce/core:cart_db_content_proto",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:persisted_state_db_content_proto",
@@ -311,7 +312,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login",
       "//chrome/browser/user_annotations",
-      "//components/commerce/core:cart_db_content_proto",
     ]
   }
 

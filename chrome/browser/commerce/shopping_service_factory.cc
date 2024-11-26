@@ -30,6 +30,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #endif
 
@@ -107,8 +108,10 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
 #if !BUILDFLAG(IS_ANDROID)
       SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance()
           ->GetForProfile(context),
+      SessionProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance()
+          ->GetForProfile(context),
 #else
-      nullptr,
+      nullptr, nullptr,
 #endif
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()

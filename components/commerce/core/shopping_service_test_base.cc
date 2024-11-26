@@ -483,7 +483,7 @@ void ShoppingServiceTestBase::SetUp() {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
       nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr, nullptr,
-      std::make_unique<testing::NiceMock<MockWebExtractor>>(),
+      nullptr, std::make_unique<testing::NiceMock<MockWebExtractor>>(),
       tab_restore_service_.get());
 }
 

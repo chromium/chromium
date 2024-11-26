@@ -29,6 +29,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_cache.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -219,6 +220,7 @@ class ShoppingService : public KeyedService,
       ProductSpecificationsService* product_specifications_service,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
           discounts_proto_db,
+      SessionProtoStorage<cart_db::ChromeCartContentProto>* cart_proto_db,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
           parcel_tracking_proto_db,
       history::HistoryService* history_service,
