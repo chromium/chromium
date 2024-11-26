@@ -13,6 +13,8 @@ namespace chrome_pdf {
 
 namespace {
 
+// LINT.IfChange(PenSizes)
+// LINT.IfChange(EraserSizes)
 // Pens and erasers share the same sizes.
 constexpr auto kPenAndEraserSizes =
     base::MakeFixedFlatMap<float, StrokeMetricBrushSize>({
@@ -22,7 +24,10 @@ constexpr auto kPenAndEraserSizes =
         {6.0f, StrokeMetricBrushSize::kThick},
         {8.0f, StrokeMetricBrushSize::kExtraThick},
     });
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:EraserSizes)
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:PenSizes)
 
+// LINT.IfChange(HighlighterSizes)
 constexpr auto kHighlighterSizes =
     base::MakeFixedFlatMap<float, StrokeMetricBrushSize>({
         {4.0f, StrokeMetricBrushSize::kExtraThin},
@@ -31,6 +36,7 @@ constexpr auto kHighlighterSizes =
         {12.0f, StrokeMetricBrushSize::kThick},
         {16.0f, StrokeMetricBrushSize::kExtraThick},
     });
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_size_selector.ts:HighlighterSizes)
 
 void ReportStrokeTypeAndSize(StrokeMetricBrushType type,
                              StrokeMetricBrushSize size) {

@@ -18,27 +18,33 @@ export interface SizeOption {
 
 // TODO(crbug.com/341282609): Choose production size values. Add labels.
 export const ERASER_SIZES: SizeOption[] = [
+  // LINT.IfChange(EraserSizes)
   {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
   {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
   {icon: 'eraser-size-3', name: 'sizeMedium', size: 3},
   {icon: 'eraser-size-4', name: 'sizeThick', size: 6},
   {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
+  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:EraserSizes)
 ];
 
 export const HIGHLIGHTER_SIZES: SizeOption[] = [
+  // LINT.IfChange(HighlighterSizes)
   {icon: 'highlighter-size-1', name: 'sizeExtraThin', size: 4},
   {icon: 'highlighter-size-2', name: 'sizeThin', size: 6},
   {icon: 'highlighter-size-3', name: 'sizeMedium', size: 8},
   {icon: 'highlighter-size-4', name: 'sizeThick', size: 12},
   {icon: 'highlighter-size-5', name: 'sizeExtraThick', size: 16},
+  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterSizes)
 ];
 
 export const PEN_SIZES: SizeOption[] = [
+  // LINT.IfChange(PenSizes)
   {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
   {icon: 'pen-size-2', name: 'sizeThin', size: 2},
   {icon: 'pen-size-3', name: 'sizeMedium', size: 3},
   {icon: 'pen-size-4', name: 'sizeThick', size: 6},
   {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
+  // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:PenSizes)
 ];
 
 export class InkSizeSelectorElement extends CrLitElement {
