@@ -14,6 +14,7 @@ import os
 import random
 import shutil
 import subprocess
+import re
 from datetime import datetime
 
 # To install the required dependencies to interact with the Google Sheets API:
@@ -111,10 +112,12 @@ try:
     print("Remote exec available. Enabling.")
     with open("out/linux/args.gn", "w") as f:
         f.write("use_remoteexec = true\n")
+        f.write("use_siso = true\n")
 except:
     print("Remote exec not available. Disabling.")
     with open("out/linux/args.gn", "w") as f:
         f.write("use_remoteexec = false\n")
+        f.write("use_siso = true\n")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
 run("./tools/clang/spanify/rewrite-multiple-platforms.sh", exit_on_error=False)
@@ -194,11 +197,15 @@ for patch in patches:
         f.write(result.stderr)
         f.write(result.stdout)
 
-    if "subcommand failed" in result.stdout.lower():
+    if "build failed" in result.stdout.lower():
         error_msg = ""
+        # Errors format:
+        # <file>:<line>:<column>: error: <error_msg>
+        error_regex = re.compile(r"^(.*):(\d+):(\d+): error: (.*)$")
         for line in result.stdout.split("\n") + result.stderr.split("\n"):
-            if "error:" in line:
-                error_msg = line[line.index("error:") + len("error:"):].strip()
+            match = error_regex.match(line)
+            if match:
+                error_msg = match.group(4)
                 break
 
         with open(scratch_dir + "/evaluation.csv", "a") as f:
