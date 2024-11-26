@@ -437,10 +437,8 @@ bool DrawingBuffer::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
-  bool force_gpu_result = false;
   bool result = PrepareTransferableResourceInternal(
-      /*client_si=*/nullptr, out_resource, out_release_callback,
-      force_gpu_result);
+      /*client_si=*/nullptr, out_resource, out_release_callback);
 
   bool flipped = true;
   if (opengl_flip_y_extension_ && IsUsingGpuCompositing()) {
@@ -491,14 +489,13 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
 bool DrawingBuffer::PrepareTransferableResourceInternal(
     scoped_refptr<gpu::ClientSharedImage>* client_si,
     viz::TransferableResource* out_resource,
-    viz::ReleaseCallback* out_release_callback,
-    bool force_gpu_result) {
+    viz::ReleaseCallback* out_release_callback) {
   if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
       kContentsResolvedIfNeeded) {
     return false;
   }
 
-  if (!IsUsingGpuCompositing() && !force_gpu_result) {
+  if (!IsUsingGpuCompositing()) {
     return FinishPrepareTransferableResourceSoftware(out_resource,
                                                      out_release_callback);
   }
@@ -759,10 +756,11 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   scoped_refptr<gpu::ClientSharedImage> client_si;
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
-  constexpr bool force_gpu_result = true;
-  if (!PrepareTransferableResourceInternal(&client_si, &transferable_resource,
-                                           &release_callback,
-                                           force_gpu_result)) {
+
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
+          kContentsResolvedIfNeeded ||
+      !FinishPrepareTransferableResourceGpu(&transferable_resource, &client_si,
+                                            &release_callback)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
@@ -864,19 +862,18 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   ScopedStateRestorer scoped_state_restorer(this);
   TRACE_EVENT0("blink", "DrawingBuffer::ExportCanvasResource");
 
-  // Using PrepareTransferableResourceInternal, with force_gpu_result as we
-  // will use this ExportCanvasResource only for gpu_composited content.
+  CHECK(IsUsingGpuCompositing());
   viz::TransferableResource out_resource;
   viz::ReleaseCallback out_release_callback;
-  const bool force_gpu_result = true;
   scoped_refptr<gpu::ClientSharedImage> client_si;
-  if (!PrepareTransferableResourceInternal(
-          &client_si, &out_resource, &out_release_callback, force_gpu_result)) {
+  if (!PrepareTransferableResourceInternal(&client_si, &out_resource,
+                                           &out_release_callback)) {
     return nullptr;
   }
+
   // If PrepareTransferableResourceInternal() succeeded, the ClientSI must be
   // valid:
-  // * We forced a GPU resource to be created, meaning that
+  // * This function only called when IsGpuCompositingEnabled() meaning that
   //   FinishPrepareTransferableResourceGpu() will have been invoked
   // * FinishPrepareTransferableResourceGpu() always populates `client_si` if it
   //   returns true

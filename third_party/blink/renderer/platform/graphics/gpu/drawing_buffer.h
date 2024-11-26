@@ -525,8 +525,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool PrepareTransferableResourceInternal(
       scoped_refptr<gpu::ClientSharedImage>* client_si,
       viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback,
-      bool force_gpu_result);
+      viz::ReleaseCallback* out_release_callback);
 
   // Helper functions to be called only by PrepareTransferableResourceInternal.
   bool FinishPrepareTransferableResourceGpu(
