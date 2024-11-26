@@ -16,11 +16,11 @@ import {ChromeVoxRange} from './chromevox_range.js';
 import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-const TreeChange = chrome.automation.TreeChange;
+type TreeChange = chrome.automation.TreeChange;
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 const TreeChangeType = chrome.automation.TreeChangeType;
 
@@ -29,49 +29,52 @@ const TreeChangeType = chrome.automation.TreeChangeType;
  * regions marked as likely to change and important to announce.
  */
 export class LiveRegions {
-  /** @private */
-  constructor() {
-    /** @private {!Date} */
-    this.lastDesktopLiveRegionChangedTime_ = new Date(0);
+  private lastDesktopLiveRegionChangedTime_ = new Date(0);
+  private lastDesktopLiveRegionChangedText_ = '';
+  /**
+   * Set of nodes that have been announced as part of a live region since
+   * |this.lastLiveRegionTime_|, to prevent duplicate announcements.
+   */
+  private liveRegionNodeSet_: WeakSet<AutomationNode> = new WeakSet();
+  /**
+   * The time the last live region event was output.
+   */
+  private lastLiveRegionTime_ = new Date(0);
+  /**
+   * A list of nodes that have changed as part of one atomic tree update.
+   */
+  private changedNodes_: AutomationNode[] = [];
 
-    /** @private {string} */
-    this.lastDesktopLiveRegionChangedText_ = '';
+  static instance: LiveRegions;
+  /**
+   * Live region events received in fewer than this many milliseconds will
+   * queue, otherwise they'll be output with a category flush.
+   */
+  static readonly LIVE_REGION_QUEUE_TIME_MS = 5000;
+  /**
+   * Live region events received on the same node in fewer than this many
+   * milliseconds will be dropped to avoid a stream of constant chatter.
+   */
+  static readonly LIVE_REGION_MIN_SAME_NODE_MS = 20;
+  /**
+   * Whether live regions from background tabs should be announced or not.
+   */
+  private static announceLiveRegionsFromBackgroundTabs_ = false;
 
-    /**
-     * The time the last live region event was output.
-     * @type {!Date}
-     * @private
-     */
-    this.lastLiveRegionTime_ = new Date(0);
-
-    /**
-     * Set of nodes that have been announced as part of a live region since
-     *     |this.lastLiveRegionTime_|, to prevent duplicate announcements.
-     * @type {!WeakSet<AutomationNode>}
-     * @private
-     */
-    this.liveRegionNodeSet_ = new WeakSet();
-
-    /**
-     * A list of nodes that have changed as part of one atomic tree update.
-     * @private {!Array}
-     */
-    this.changedNodes_ = [];
-
+  private constructor() {
     chrome.automation.addTreeChangeObserver(
         TreeChangeObserverFilter.LIVE_REGION_TREE_CHANGES,
-        treeChange => this.onTreeChange(treeChange));
+        (treeChange: TreeChange) => this.onTreeChange(treeChange));
   }
 
-  static init() {
+  static init(): void {
     if (LiveRegions.instance) {
       throw 'Error: Trying to create two instances of singleton LiveRegions';
     }
     LiveRegions.instance = new LiveRegions();
   }
 
-  /** @param {!AutomationNode} area */
-  static announceDesktopLiveRegionChanged(area) {
+  static announceDesktopLiveRegionChanged(area: AutomationNode): void {
     const desktopOrApplication =
         AutomationPredicate.roles([RoleType.DESKTOP, RoleType.APPLICATION]);
     if (!area.root || !desktopOrApplication(area.root)) {
@@ -88,12 +91,14 @@ export class LiveRegions {
     }
 
     const withinDelay =
-        (new Date() - LiveRegions.instance.lastDesktopLiveRegionChangedTime_) <
+        ((new Date()).getTime() -
+         LiveRegions.instance.lastDesktopLiveRegionChangedTime_.getTime()) <
         DESKTOP_CHANGE_DELAY_MS;
 
     output
         .withRichSpeechAndBraille(
-            CursorRange.fromNode(area), null, EventType.LIVE_REGION_CHANGED)
+            CursorRange.fromNode(area), undefined,
+            EventType.LIVE_REGION_CHANGED)
         .withSpeechCategory(TtsCategory.LIVE);
     if (withinDelay &&
         output.toString() ===
@@ -108,9 +113,8 @@ export class LiveRegions {
 
   /**
    * Called when the automation tree is changed.
-   * @param {TreeChange} treeChange
    */
-  onTreeChange(treeChange) {
+  onTreeChange(treeChange: TreeChange): void {
     const type = treeChange.type;
     const node = treeChange.target;
     if ((!node.containerLiveStatus || node.containerLiveStatus === 'off') &&
@@ -146,24 +150,17 @@ export class LiveRegions {
     }
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @private
-   */
-  queueLiveRegionChange_(node) {
+  private queueLiveRegionChange_(node: AutomationNode): void {
     this.changedNodes_.push(node);
   }
 
-  /**
-   * @private
-   */
-  processQueuedTreeChanges_() {
+  private processQueuedTreeChanges_(): void {
     // Schedule all live regions after all events in the native C++
     // EventBundle.
     this.liveRegionNodeSet_ = new WeakSet();
     for (let i = 0; i < this.changedNodes_.length; i++) {
       const node = this.changedNodes_[i];
-      this.outputLiveRegionChange_(node, null);
+      this.outputLiveRegionChange_(node, undefined);
     }
     this.changedNodes_ = [];
   }
@@ -172,12 +169,13 @@ export class LiveRegions {
    * Given a node that needs to be spoken as part of a live region
    * change and an additional optional format string, output the
    * live region description.
-   * @param {!AutomationNode} node The changed node.
-   * @param {?string=} opt_prependFormatStr If set, a format string for
+   * @param node The changed node.
+   * @param opt_prependFormatStr If set, a format string for
    *     Output to prepend to the output.
    * @private
    */
-  outputLiveRegionChange_(node, opt_prependFormatStr) {
+  private outputLiveRegionChange_(
+      node: AutomationNode, opt_prependFormatStr?: string): void {
     if (node.containerLiveBusy) {
       return;
     }
@@ -195,21 +193,22 @@ export class LiveRegions {
   }
 
   /**
-   * @param {!AutomationNode} node The changed node.
-   * @param {?string=} opt_prependFormatStr If set, a format string for
+   * @param node The changed node.
+   * @param opt_prependFormatStr If set, a format string for
    *     Output to prepend to the output.
-   * @private
    */
-  outputLiveRegionChangeForNode_(node, opt_prependFormatStr) {
+  private outputLiveRegionChangeForNode_(
+      node: AutomationNode, opt_prependFormatStr?: string): void {
     const range = CursorRange.fromNode(node);
     const output = new Output();
     output.withSpeechCategory(TtsCategory.LIVE);
 
     // Queue live regions coming from background tabs.
-    let hostView = AutomationUtil.getTopLevelRoot(node);
-    hostView = hostView ? hostView.parent : null;
+    let hostView: AutomationNode|null = AutomationUtil.getTopLevelRoot(node);
+    hostView = hostView && hostView.parent ? hostView.parent : null;
+
     const currentRange = ChromeVoxRange.current;
-    const forceQueue = !hostView || !hostView.state.focused ||
+    const forceQueue = !hostView || !hostView!.state!['focused'] ||
         (currentRange && currentRange.start.node.root !== node.root) ||
         node.containerLiveStatus === 'polite';
 
@@ -217,7 +216,7 @@ export class LiveRegions {
     // the same time, otherwise flush previous live region updates.
     const queueTime = LiveRegions.LIVE_REGION_QUEUE_TIME_MS;
     const currentTime = new Date();
-    const delta = currentTime - this.lastLiveRegionTime_;
+    const delta = currentTime.getTime() - this.lastLiveRegionTime_.getTime();
     if (delta > queueTime && !forceQueue) {
       output.withQueueMode(QueueMode.CATEGORY_FLUSH);
     } else {
@@ -246,23 +245,14 @@ export class LiveRegions {
     this.lastLiveRegionTime_ = currentTime;
   }
 
-  /**
-   * @param {AutomationNode} root
-   * @private
-   */
-  addNodeToNodeSetRecursive_(root) {
+  private addNodeToNodeSetRecursive_(root: AutomationNode): void {
     this.liveRegionNodeSet_.add(root);
     for (let child = root.firstChild; child; child = child.nextSibling) {
       this.addNodeToNodeSetRecursive_(child);
     }
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   * @private
-   */
-  shouldIgnoreLiveRegion_(node) {
+  private shouldIgnoreLiveRegion_(node: AutomationNode): boolean {
     if (LiveRegions.announceLiveRegionsFromBackgroundTabs_) {
       return false;
     }
@@ -272,18 +262,18 @@ export class LiveRegions {
       return false;
     }
 
-    let hostView = AutomationUtil.getTopLevelRoot(node);
-    hostView = hostView ? hostView.parent : null;
+    let hostView: AutomationNode|null = AutomationUtil.getTopLevelRoot(node);
+    hostView = hostView && hostView.parent ? hostView.parent : null;
     if (!hostView) {
       return true;
     }
 
     if (hostView.role === RoleType.WINDOW &&
-        !hostView.state[StateType.INVISIBLE]) {
+        !(hostView!.state![StateType.INVISIBLE])) {
       return false;
     }
 
-    if (hostView.state.focused) {
+    if (hostView!.state!['focused']) {
       return false;
     }
 
@@ -292,32 +282,8 @@ export class LiveRegions {
 }
 
 /**
- * Live region events received in fewer than this many milliseconds will
- * queue, otherwise they'll be output with a category flush.
- * @const {number}
- */
-LiveRegions.LIVE_REGION_QUEUE_TIME_MS = 5000;
-
-/**
- * Live region events received on the same node in fewer than this many
- * milliseconds will be dropped to avoid a stream of constant chatter.
- * @const {number}
- */
-LiveRegions.LIVE_REGION_MIN_SAME_NODE_MS = 20;
-
-/**
- * Whether live regions from background tabs should be announced or not.
- * @private {boolean}
- */
-LiveRegions.announceLiveRegionsFromBackgroundTabs_ = false;
-
-/** @type {LiveRegions} */
-LiveRegions.instance;
-
-/**
  * Time to wait until processing more live region change events on the same
  * text content.
- * @const {number}
  */
 const DESKTOP_CHANGE_DELAY_MS = 100;
 
