@@ -7424,6 +7424,45 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
   }
 }
 
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       MakeCredentialRkPreferredStorageFull_LargeBlob) {
+  device::VirtualCtap2Device::Config config;
+  config.ctap2_versions = {std::begin(device::kCtap2Versions2_1),
+                           std::end(device::kCtap2Versions2_1)};
+  config.internal_uv_support = true;
+  config.resident_key_support = true;
+  config.resident_credential_storage = 0;
+  config.large_blob_support = true;
+  config.pin_uv_auth_token_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        make_credential_options(device::ResidentKeyRequirement::kPreferred);
+    options->large_blob_enable = device::LargeBlobSupport::kRequired;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, result.status);
+  }
+  {
+    PublicKeyCredentialCreationOptionsPtr options =
+        make_credential_options(device::ResidentKeyRequirement::kPreferred);
+    options->large_blob_enable = device::LargeBlobSupport::kPreferred;
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+    EXPECT_TRUE(result.response->echo_large_blob);
+    EXPECT_FALSE(result.response->supports_large_blob);
+    EXPECT_EQ(1u,
+              virtual_device_factory_->mutable_state()->registrations.size());
+    const device::VirtualFidoDevice::RegistrationData& registration =
+        virtual_device_factory_->mutable_state()->registrations.begin()->second;
+    EXPECT_FALSE(registration.is_resident);
+    EXPECT_FALSE(registration.large_blob);
+    EXPECT_FALSE(registration.large_blob_key);
+  }
+}
+
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredSetsPIN) {
   device::VirtualCtap2Device::Config config;
   config.pin_support = true;
