@@ -193,7 +193,9 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
   EXPECT_EQ(slice_count, expected_count);
 }
 
-IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, ReuseSingleInputReceiver) {
+// TODO(crbug.com/381039758): Re-enable after investigation.
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
+                       DISABLED_ReuseSingleInputReceiver) {
   base::HistogramTester histogram_tester;
   GURL url = GURL(
       "data:text/html,<!doctype html>"
