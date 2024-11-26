@@ -81,16 +81,6 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
-  const bool target_visibility =
-      nearby_share_delegate_->IsPodButtonVisible() &&
-      session_controller->IsActiveUserSessionStarted() &&
-      session_controller->IsUserPrimary() &&
-      !session_controller->IsUserSessionBlocked() &&
-      nearby_share_delegate_->IsEnabled();
-  tile_->SetVisible(target_visibility);
-  if (target_visibility) {
-    TrackVisibilityUMA();
-  }
   const std::u16string feature_name =
       nearby_share_delegate_->GetPlaceholderFeatureName();
   tile_->SetLabel(
@@ -101,6 +91,15 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
                 IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH, feature_name));
 
   if (chromeos::features::IsQuickShareV2Enabled()) {
+    const bool target_visibility =
+        nearby_share_delegate_->IsPodButtonVisible() &&
+        session_controller->IsActiveUserSessionStarted() &&
+        session_controller->IsUserPrimary() &&
+        !session_controller->IsUserSessionBlocked();
+    tile_->SetVisible(target_visibility);
+    if (target_visibility) {
+      TrackVisibilityUMA();
+    }
     // TODO(brandosocarras, b/355325622):Indicate Quick Share visibility in
     // sublabel.
     tile_->SetSubLabel(
@@ -114,6 +113,16 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
     // Set tile appearance.
     UpdateQSv2Button();
   } else {
+    const bool target_visibility =
+        nearby_share_delegate_->IsPodButtonVisible() &&
+        session_controller->IsActiveUserSessionStarted() &&
+        session_controller->IsUserPrimary() &&
+        !session_controller->IsUserSessionBlocked() &&
+        nearby_share_delegate_->IsEnabled();
+    tile_->SetVisible(target_visibility);
+    if (target_visibility) {
+      TrackVisibilityUMA();
+    }
     tile_->SetTooltipText(
         feature_name.empty()
             ? l10n_util::GetStringUTF16(
@@ -133,7 +142,9 @@ QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
 
 void NearbyShareFeaturePodController::OnIconPressed() {
   if (chromeos::features::IsQuickShareV2Enabled()) {
-    // TODO(brandosocarras, b/358691432): Toggle Quick Share on icon press.
+    CHECK(nearby_share_delegate_);
+    nearby_share_delegate_->SetEnabled(!nearby_share_delegate_->IsEnabled());
+    UpdateQSv2Button();
     return;
   }
 
@@ -195,30 +206,9 @@ void NearbyShareFeaturePodController::UpdateQSv2Button() {
   if (!chromeos::features::IsQuickShareV2Enabled()) {
     return;
   }
+  CHECK(nearby_share_delegate_);
 
-  bool in_high_visibility = nearby_share_delegate_->IsHighVisibilityOn();
-
-  if (in_high_visibility) {
-    ToggleTileOn();
-    return;
-  }
-
-  ::nearby_share::mojom::Visibility visibility =
-      nearby_share_delegate_->GetVisibility();
-
-  switch (visibility) {
-    case ::nearby_share::mojom::Visibility::kAllContacts:
-      [[fallthrough]];
-    case ::nearby_share::mojom::Visibility::kYourDevices:
-      [[fallthrough]];
-    case ::nearby_share::mojom::Visibility::kSelectedContacts:
-      ToggleTileOn();
-      break;
-    case ::nearby_share::mojom::Visibility::kUnknown:
-      [[fallthrough]];
-    case ::nearby_share::mojom::Visibility::kNoOne:
-      ToggleTileOff();
-  }
+  nearby_share_delegate_->IsEnabled() ? ToggleTileOn() : ToggleTileOff();
 }
 
 void NearbyShareFeaturePodController::ToggleTileOn() {
