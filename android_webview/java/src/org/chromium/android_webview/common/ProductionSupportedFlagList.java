@@ -396,6 +396,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL,
                 "Enables reduce webview user-agent android version and device model."),
         Flag.baseFeature(
+                BlinkFeatures.REDUCE_USER_AGENT_MINOR_VERSION,
+                "Enables reduce webview user-agent minor version."),
+        Flag.baseFeature(
                 BlinkFeatures.VIEWPORT_HEIGHT_CLIENT_HINT_HEADER,
                 "Enables the use of sec-ch-viewport-height client hint."),
         Flag.baseFeature(

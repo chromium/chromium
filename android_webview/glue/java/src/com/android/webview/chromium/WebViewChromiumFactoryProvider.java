@@ -68,6 +68,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.version_info.VersionConstants;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
@@ -560,6 +561,18 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
             helper.applyFlagOverrides(
                     Map.of(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS, shouldEnableFileSystemAccess()));
+
+            // Apply user-agent reduction overrides for WebView. These features
+            // are intended to be enabled only for Android B+.
+            // 1) ReduceUserAgentMinorVersion: Enables reduction of the user-agent minor version.
+            // 2) WebViewReduceUAAndroidVersionDeviceModel: Enables reduction of the user-agent
+            //    Android version and device model.
+            helper.applyFlagOverrides(
+                    Map.of(
+                            AwFeatures.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL,
+                            shouldEnableUserAgentReduction(),
+                            BlinkFeatures.REDUCE_USER_AGENT_MINOR_VERSION,
+                            shouldEnableUserAgentReduction()));
 
             setSingleton(this);
         }
