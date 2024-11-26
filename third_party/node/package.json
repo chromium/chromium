@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
+    "@azure/msal-browser": "3.27.0",
     "@mediapipe/tasks-vision": "0.10.9",
     "@rollup/wasm-node": "4.21.0",
     "@stylistic/eslint-plugin": "2.8.0",

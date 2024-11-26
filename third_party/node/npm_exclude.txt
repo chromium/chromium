@@ -49,3 +49,14 @@ lit-html/*
 
 # Exclude unnecessary files from @typescript-eslint.
 @typescript-eslint/eslint-plugin/docs/*
+
+# Exclude unnecessary files from @azure.
+@azure/msal-browser/dist/*
+@azure/msal-browser/lib/*.cjs
+@azure/msal-browser/lib/*.js
+@azure/msal-browser/src/*
+@azure/msal-common/browser/*
+@azure/msal-common/dist/*
+@azure/msal-common/lib/*.cjs
+@azure/msal-common/lib/*.js
+@azure/msal-common/node/*
