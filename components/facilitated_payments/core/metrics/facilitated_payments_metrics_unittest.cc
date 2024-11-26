@@ -18,7 +18,7 @@ namespace payments::facilitated {
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
   base::HistogramTester histogram_tester;
 
-  LogPixCodeCopied();
+  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
                                       /*sample=*/true,
@@ -282,6 +282,16 @@ class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  protected:
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
+  LogPixCodeCopied(ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+}
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
   LogTransactionResult(TransactionResult::kSuccess, TriggerSource::kDOMSearch,

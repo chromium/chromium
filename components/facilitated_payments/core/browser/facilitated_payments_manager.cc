@@ -69,7 +69,7 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
     // The merchant is not part of the allowlist, ignore the copy event.
     return;
   }
-  LogPixCodeCopied();
+  LogPixCodeCopied(ukm_source_id_);
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
       render_frame_host_url.host();
   // Trigger Pix code validation.

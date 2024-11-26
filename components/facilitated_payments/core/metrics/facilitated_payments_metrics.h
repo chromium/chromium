@@ -84,7 +84,7 @@ enum class TriggerSource {
 
 // Log when a Pix code is copied to the clippboard on an allowlisted merchant
 // website.
-void LogPixCodeCopied();
+void LogPixCodeCopied(ukm::SourceId ukm_source_id);
 
 // Log when user selects a FOP to pay with.
 void LogFopSelected();

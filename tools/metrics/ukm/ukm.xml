@@ -8090,6 +8090,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.PixCodeCopied">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after a likely Pix code is copied to the clipboard
+    on an allowlisted website.
+  </summary>
+  <metric name="PixCodeCopied" enum="Boolean">
+    <summary>
+      Always set to true. So acts as a counter for the number of times a likely
+      Pix code is copied.
+    </summary>
+  </metric>
+</event>
+
 <event name="FacilitatedPayments.PixCodeDetectionResult">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>

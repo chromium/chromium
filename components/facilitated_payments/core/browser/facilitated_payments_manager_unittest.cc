@@ -35,6 +35,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,6 +133,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
   MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
 
  private:
   syncer::TestSyncService sync_service_;
@@ -369,6 +371,11 @@ TEST_F(FacilitatedPaymentsManagerTest,
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.PixCodeCopied",
                                       /*sample=*/true,
                                       /*expected_bucket_count=*/1);
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
+      {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
 }
 
 TEST_F(FacilitatedPaymentsManagerTest,

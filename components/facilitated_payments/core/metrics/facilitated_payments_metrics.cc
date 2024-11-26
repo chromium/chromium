@@ -13,9 +13,12 @@
 
 namespace payments::facilitated {
 
-void LogPixCodeCopied() {
+void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",
                             /*sample=*/true);
+  ukm::builders::FacilitatedPayments_PixCodeCopied(ukm_source_id)
+      .SetPixCodeCopied(true)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LogFopSelected() {
