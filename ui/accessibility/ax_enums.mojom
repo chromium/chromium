@@ -579,8 +579,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 8
-// Next value: 42
+// Next version: 9
+// Next value: 43
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -614,6 +614,7 @@ enum StringAttribute {
   kFontFamily = 13,
   [MinVersion=5] kHtmlId = 38,
   kHtmlTag = 14,
+  [MinVersion=8] kHtmlInputName = 42,
   // Stores an automatic image annotation if one is available. Only valid on
   // ax::mojom::Role::kImage. See kImageAnnotationStatus, too.
   kImageAnnotation = 15,

@@ -1540,6 +1540,12 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("id", id, attributes);
   }
 
+  std::string input_name;
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlInputName,
+                                    &input_name)) {
+    AddAttributeToList("html-input-name", input_name, attributes);
+  }
+
   std::string src;
   if (IsImage(GetRole()) &&
       GetStringAttribute(ax::mojom::StringAttribute::kUrl, &src)) {
