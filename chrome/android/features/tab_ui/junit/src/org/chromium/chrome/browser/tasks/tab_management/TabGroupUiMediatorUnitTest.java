@@ -147,6 +147,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private ObservableSupplierImpl<Integer> mBackgroundColorSupplier;
     @Mock private ColorStateList mTintList1;
     @Mock private ColorStateList mTintList2;
     @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
@@ -247,7 +248,8 @@ public class TabGroupUiMediatorUnitTest {
                         mDialogControllerSupplier,
                         mOmniboxFocusStateSupplier,
                         mSharedImageTilesCoordinator,
-                        mThemeColorProvider);
+                        mThemeColorProvider,
+                        mBackgroundColorSupplier);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -1169,9 +1171,11 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(Color.RED).when(mThemeColorProvider).getThemeColor();
         initAndAssertProperties(mTab2);
         assertEquals(Color.RED, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
+        verify(mBackgroundColorSupplier).set(Color.RED);
 
         mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, false);
         assertEquals(Color.BLUE, mModel.get(TabGroupUiProperties.BACKGROUND_COLOR));
+        verify(mBackgroundColorSupplier).set(Color.BLUE);
     }
 
     @Test

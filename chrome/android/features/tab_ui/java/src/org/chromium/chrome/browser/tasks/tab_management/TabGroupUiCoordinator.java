@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -80,6 +81,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final ModalDialogManager mModalDialogManager;
     private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
     private final ThemeColorProvider mThemeColorProvider;
+    private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier =
+            new ObservableSupplierImpl<>(Color.TRANSPARENT);
 
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -203,6 +206,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
+                            mBackgroundColorSupplier,
                             /* allowDragAndDrop= */ false);
             mTabStripCoordinator.initWithNative(mTabModelSelector.getModel(false).getProfile());
 
@@ -253,7 +257,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mTabGridDialogControllerSupplier,
                             mOmniboxFocusStateSupplier,
                             sharedImageTilesCoordinator,
-                            mThemeColorProvider);
+                            mThemeColorProvider,
+                            mBackgroundColorSupplier);
 
             Profile profile = mTabModelSelector.getModel(false).getProfile();
             CollaborationService collaborationService =
