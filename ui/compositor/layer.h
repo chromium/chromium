@@ -425,14 +425,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetName(const std::string& name);
 
   // Set new TransferableResource for this layer. This method only supports
-  // a gpu-backed |resource| which is assumed to have top-left origin. Clients
-  // should call SetTextureFlipped(true) for bottom-left origin resources.
+  // a gpu-backed |resource| which is assumed to have top-left origin.
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback,
                                gfx::Size texture_size_in_dip);
   void SetTextureSize(gfx::Size texture_size_in_dip);
-  void SetTextureFlipped(bool flipped);
-  bool TextureFlipped() const;
 
   // Begins showing content from a surface with a particular ID.
   // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on

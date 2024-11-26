@@ -1250,7 +1250,11 @@ bool DrawingBuffer::CopyToVideoFrame(
 
 cc::Layer* DrawingBuffer::CcLayer() {
   if (!layer_) {
-    layer_ = cc::TextureLayer::CreateForMailbox(this);
+    bool flipped = true;
+    if (opengl_flip_y_extension_ && IsUsingGpuCompositing()) {
+      flipped = false;
+    }
+    layer_ = cc::TextureLayer::CreateForMailbox(this, flipped);
 
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
@@ -1267,9 +1271,6 @@ cc::Layer* DrawingBuffer::CcLayer() {
                                     kUnpremul_SkAlphaType);
     }
     layer_->SetFilterQuality(filter_quality_);
-
-    if (opengl_flip_y_extension_ && IsUsingGpuCompositing())
-      layer_->SetFlipped(false);
   }
 
   return layer_.get();

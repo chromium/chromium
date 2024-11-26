@@ -1774,16 +1774,17 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
     bool opaque = false;
     if (want_3d_layer) {
       DCHECK(bound_graphics_3d_.get());
-      texture_layer_ = cc::TextureLayer::CreateForMailbox(nullptr);
+      texture_layer_ =
+          cc::TextureLayer::CreateForMailbox(nullptr, /*flipped=*/true);
       opaque = bound_graphics_3d_->IsOpaque();
 
       PassCommittedTextureToTextureLayer();
     } else {
       DCHECK(bound_graphics_2d_platform_);
-      texture_layer_ = cc::TextureLayer::CreateForMailbox(this);
+      texture_layer_ =
+          cc::TextureLayer::CreateForMailbox(this, /*flipped=*/false);
       bound_graphics_2d_platform_->AttachedToNewLayer();
       opaque = bound_graphics_2d_platform_->IsAlwaysOpaque();
-      texture_layer_->SetFlipped(false);
     }
 
     // Ignore transparency in fullscreen.

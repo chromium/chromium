@@ -24,13 +24,14 @@
 namespace cc {
 
 scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
-    TextureLayerClient* client) {
-  return scoped_refptr<TextureLayer>(new TextureLayer(client));
+    TextureLayerClient* client,
+    bool flipped) {
+  return scoped_refptr<TextureLayer>(new TextureLayer(client, flipped));
 }
 
-TextureLayer::TextureLayer(TextureLayerClient* client)
+TextureLayer::TextureLayer(TextureLayerClient* client, bool flipped)
     : client_(client),
-      flipped_(true),
+      flipped_(flipped),
       uv_bottom_right_(1.f, 1.f),
       premultiplied_alpha_(true),
       blend_background_color_(false),

@@ -84,7 +84,8 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
 
   // Used when mailbox names are specified instead of texture IDs.
   static scoped_refptr<TextureLayer> CreateForMailbox(
-      TextureLayerClient* client);
+      TextureLayerClient* client,
+      bool flipped);
 
   TextureLayer(const TextureLayer&) = delete;
   TextureLayer& operator=(const TextureLayer&) = delete;
@@ -153,7 +154,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   }
 
  protected:
-  explicit TextureLayer(TextureLayerClient* client);
+  explicit TextureLayer(TextureLayerClient* client, bool flipped);
   ~TextureLayer() override;
   bool HasDrawableContent() const override;
 

@@ -245,7 +245,7 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   if (!InitScene())
     return false;
 
-  layer_ = cc::TextureLayer::CreateForMailbox(this);
+  layer_ = cc::TextureLayer::CreateForMailbox(this, /*flipped=*/true);
   container_->SetCcLayer(layer_.get());
   if (re_request_touch_events_) {
     container_->RequestTouchEventType(

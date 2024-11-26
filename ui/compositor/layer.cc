@@ -1075,8 +1075,10 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
   DCHECK(release_callback);
   DCHECK(!resource.is_software);
   if (!texture_layer_.get()) {
+    // Incoming resource is assumed to have top-left origin which corresponds to
+    // TextureLayer flipped being false.
     scoped_refptr<cc::TextureLayer> new_layer =
-        cc::TextureLayer::CreateForMailbox(this);
+        cc::TextureLayer::CreateForMailbox(this, /*flipped=*/false);
     if (!SwitchToLayer(new_layer))
       return;
 
@@ -1090,10 +1092,6 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
   transfer_release_callback_ = std::move(release_callback);
   transfer_resource_ = resource;
   SetTextureSize(texture_size_in_dip);
-
-  // Incoming resource is assumed to have top-left origin which corresponds to
-  // TextureLayer::SetFlipped(false).
-  SetTextureFlipped(false);
 
   for (const auto& mirror : mirrors_) {
     // The release callbacks should be empty as only the source layer
@@ -1112,16 +1110,6 @@ void Layer::SetTextureSize(gfx::Size texture_size_in_dip) {
   frame_size_in_dip_ = texture_size_in_dip;
   RecomputeDrawsContentAndUVRect();
   texture_layer_->SetNeedsDisplay();
-}
-
-void Layer::SetTextureFlipped(bool flipped) {
-  DCHECK(texture_layer_.get());
-  texture_layer_->SetFlipped(flipped);
-}
-
-bool Layer::TextureFlipped() const {
-  DCHECK(texture_layer_.get());
-  return texture_layer_->flipped();
 }
 
 void Layer::SetShowSurface(const viz::SurfaceId& surface_id,

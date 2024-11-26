@@ -160,13 +160,12 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     return nullptr;
   }
   if (!cc_layer_) [[unlikely]] {
-    cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
+    cc_layer_ = cc::TextureLayer::CreateForMailbox(this, /*flipped=*/false);
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
     cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     cc_layer_->SetFilterQuality(FilterQuality());
-    cc_layer_->SetFlipped(false);
   }
   return cc_layer_.get();
 }

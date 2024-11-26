@@ -843,7 +843,7 @@ class LayerTreeHostContextTestDontUseLostResources
     root->AddChild(layer);
 
     scoped_refptr<TextureLayer> texture =
-        TextureLayer::CreateForMailbox(nullptr);
+        TextureLayer::CreateForMailbox(nullptr, /*flipped=*/false);
     texture->SetBounds(gfx::Size(10, 10));
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);
