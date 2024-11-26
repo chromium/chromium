@@ -58,6 +58,8 @@
       "third_party/angle/DEPS",
       "third_party/closure_compiler/.*(css|html|js)",
       "third_party/dawn/DEPS",
+      "third_party/dawn/generator/.*",
+      "third_party/dawn/src/dawn/.*json",
       "third_party/hunspell_dictionaries/.*",
       "third_party/jstemplate/.*(css|html|js)",
       "third_party/openscreen/src/DEPS",
