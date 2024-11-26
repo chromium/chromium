@@ -59,6 +59,11 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
     send_request_and_session_ids =
         lens_overlay_suggest_inputs
             ->send_gsession_vsrid_for_contextual_suggest();
+    if (lens_overlay_suggest_inputs->has_contextual_visual_input_type()) {
+      modified_url = net::AppendOrReplaceQueryParameter(
+          modified_url, "vit",
+          lens_overlay_suggest_inputs->contextual_visual_input_type());
+    }
   } else if (search_terms_args.page_classification ==
              metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
     send_request_and_session_ids =

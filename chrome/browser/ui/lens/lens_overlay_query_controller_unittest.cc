@@ -1101,6 +1101,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(latest_suggest_inputs_.has_encoded_image_signals());
   ASSERT_EQ(vsint.log_data().user_selection_data().selection_type(),
             lens::SELECT_TEXT_HIGHLIGHT);
+  ASSERT_FALSE(latest_suggest_inputs_.has_contextual_visual_input_type());
   ASSERT_EQ(actual_encoded_video_context, kTestEncodedVideoContext);
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent(), 0);
@@ -1226,6 +1227,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
+  ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "pdf");
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
 }
@@ -1350,6 +1352,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
+  ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "wp");
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
 }
@@ -1474,6 +1477,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
+  ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "wp");
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
 }
