@@ -55,26 +55,16 @@ mojo::PendingRemote<blink::mojom::ImageReleaseCallback> StructTraits<
   return callback;
 }
 
-bool StructTraits<blink::mojom::SharedImageUsageSet::DataView,
-                  gpu::SharedImageUsageSet>::
-    Read(blink::mojom::SharedImageUsageSet::DataView data,
-         gpu::SharedImageUsageSet* out) {
-  *out = gpu::SharedImageUsageSet(data.usage());
-  return true;
-}
-
 bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                   blink::AcceleratedImageInfo>::
     Read(blink::mojom::AcceleratedStaticBitmapImage::DataView data,
          blink::AcceleratedImageInfo* out) {
-  if (!data.ReadMailboxHolder(&out->mailbox_holder) ||
+  if (!data.ReadSharedImage(&out->shared_image) ||
+      !data.ReadSyncToken(&out->sync_token) ||
       !data.ReadImageInfo(&out->image_info)) {
     return false;
   }
 
-  if (!data.ReadUsage(&out->usage)) {
-    return false;
-  }
   out->is_origin_top_left = data.is_origin_top_left();
   out->supports_display_compositing = data.supports_display_compositing();
   out->is_overlay_candidate = data.is_overlay_candidate();

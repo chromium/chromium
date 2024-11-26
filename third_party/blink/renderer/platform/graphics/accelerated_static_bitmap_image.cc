@@ -84,9 +84,9 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
 
 // static
 scoped_refptr<AcceleratedStaticBitmapImage>
-AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
-    const gpu::MailboxHolder& mailbox_holder,
-    gpu::SharedImageUsageSet usage,
+AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
+    const gpu::ExportedSharedImage& exported_shared_image,
+    const gpu::SyncToken& sync_token,
     const SkImageInfo& sk_image_info,
     bool is_origin_top_left,
     bool supports_display_compositing,
@@ -100,23 +100,9 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
   if (!sii) {
     return nullptr;
   }
-  // TODO(crbug.com/1494911): Obtain metadata from the original
-  // ClientSharedImage instead once we add the code that allows
-  // ClientSharedImage data to be sent over Mojo.
-  gfx::ColorSpace color_space =
-      sk_image_info.colorSpace()
-          ? gfx::ColorSpace(*(sk_image_info.colorSpace()))
-          : gfx::ColorSpace::CreateSRGB();
+
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      sii->AddReferenceToSharedImage(
-          mailbox_holder.sync_token, mailbox_holder.mailbox,
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(
-              sk_image_info.colorType()),
-          gfx::SkISizeToSize(sk_image_info.dimensions()), color_space,
-          (is_origin_top_left) ? kTopLeft_GrSurfaceOrigin
-                               : kBottomLeft_GrSurfaceOrigin,
-          sk_image_info.alphaType(), gpu::SharedImageUsageSet(usage),
-          mailbox_holder.texture_target);
+      sii->ImportSharedImage(exported_shared_image);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
@@ -133,10 +119,11 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
       },
       shared_gpu_context, shared_image);
 
+  auto texture_target = shared_image->GetTextureTarget();
+
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), release_token, 0u, sk_image_info,
-      mailbox_holder.texture_target, is_origin_top_left,
-      supports_display_compositing, is_overlay_candidate,
+      std::move(shared_image), sync_token, 0u, sk_image_info, texture_target,
+      is_origin_top_left, supports_display_compositing, is_overlay_candidate,
       ImageOrientationEnum::kDefault, shared_gpu_context,
       base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

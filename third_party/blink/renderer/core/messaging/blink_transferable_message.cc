@@ -138,8 +138,8 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
 
 scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
-  return AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
-      image.mailbox_holder, image.usage, image.image_info,
+  return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
+      image.shared_image, image.sync_token, image.image_info,
       image.is_origin_top_left, image.supports_display_compositing,
       image.is_overlay_candidate, std::move(image.release_callback));
 }

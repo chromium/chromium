@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MESSAGING_ACCELERATED_IMAGE_INFO_H_
 
 #include "base/functional/callback.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,8 +20,8 @@ namespace blink {
 // See third_party/blink/public/mojom/messaging/static_bitmap_image.mojom
 // for details.
 struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
-  gpu::MailboxHolder mailbox_holder;
-  gpu::SharedImageUsageSet usage;
+  gpu::ExportedSharedImage shared_image;
+  gpu::SyncToken sync_token;
   SkImageInfo image_info;
   bool is_origin_top_left;
   bool supports_display_compositing;
