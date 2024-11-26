@@ -144,11 +144,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final Object sSingletonLock = new Object();
     private static WebViewChromiumFactoryProvider sSingleton;
 
-    private final WebViewChromiumRunQueue mRunQueue =
-            new WebViewChromiumRunQueue(
-                    () -> {
-                        return WebViewChromiumFactoryProvider.this.mAwInit.hasStarted();
-                    });
+    private final WebViewChromiumRunQueue mRunQueue = new WebViewChromiumRunQueue();
 
     /* package */ WebViewChromiumRunQueue getRunQueue() {
         return mRunQueue;

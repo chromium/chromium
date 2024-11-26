@@ -16,34 +16,22 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Queue used for running tasks, initiated through WebView APIs, on the UI thread.
- * The queue won't start running tasks until WebView has been initialized properly.
+ * Queue used for running tasks, initiated through WebView APIs, on the UI thread. The queue won't
+ * start running tasks until WebView has been initialized properly.
  */
 @Lifetime.Singleton
 public class WebViewChromiumRunQueue {
-    private final Queue<Runnable> mQueue;
-    private final ChromiumHasStartedCallable mChromiumHasStartedCallable;
+    private final Queue<Runnable> mQueue = new ConcurrentLinkedQueue<Runnable>();
+    private volatile boolean mChromiumStarted;
+
+    public WebViewChromiumRunQueue() {}
 
     /**
-     * Callable representing whether WebView has been initialized, and we should start running
-     * tasks.
-     */
-    public static interface ChromiumHasStartedCallable {
-        public boolean hasStarted();
-    }
-
-    public WebViewChromiumRunQueue(ChromiumHasStartedCallable chromiumHasStartedCallable) {
-        mQueue = new ConcurrentLinkedQueue<Runnable>();
-        mChromiumHasStartedCallable = chromiumHasStartedCallable;
-    }
-
-    /**
-     * Add a new task to the queue. If WebView has already been initialized the task will be run
-     * ASAP.
+     * Add a new task to the queue. If the queue has already been drained the task will be run ASAP.
      */
     public void addTask(Runnable task) {
         mQueue.add(task);
-        if (mChromiumHasStartedCallable.hasStarted()) {
+        if (mChromiumStarted) {
             PostTask.runOrPostTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
@@ -52,25 +40,16 @@ public class WebViewChromiumRunQueue {
         }
     }
 
-    /** Drain the queue, i.e. perform all the tasks in the queue. */
-    public void drainQueue() {
-        if (mQueue == null || mQueue.isEmpty()) {
-            return;
-        }
-
-        Runnable task = mQueue.poll();
-        while (task != null) {
-            task.run();
-            task = mQueue.poll();
-        }
-    }
-
-    public boolean chromiumHasStarted() {
-        return mChromiumHasStartedCallable.hasStarted();
+    /**
+     * Mark that Chromium has started and drain the queue, i.e. perform all the tasks in the queue.
+     */
+    public void notifyChromiumStarted() {
+        mChromiumStarted = true;
+        drainQueue();
     }
 
     public <T> T runBlockingFuture(FutureTask<T> task) {
-        if (!chromiumHasStarted()) throw new RuntimeException("Must be started before we block!");
+        if (!mChromiumStarted) throw new RuntimeException("Must be started before we block!");
         if (ThreadUtils.runningOnUiThread()) {
             throw new IllegalStateException("This method should only be called off the UI thread");
         }
@@ -97,5 +76,17 @@ public class WebViewChromiumRunQueue {
 
     public <T> T runOnUiThreadBlocking(Callable<T> c) {
         return runBlockingFuture(new FutureTask<T>(c));
+    }
+
+    private void drainQueue() {
+        if (mQueue == null || mQueue.isEmpty()) {
+            return;
+        }
+
+        Runnable task = mQueue.poll();
+        while (task != null) {
+            task.run();
+            task = mQueue.poll();
+        }
     }
 }

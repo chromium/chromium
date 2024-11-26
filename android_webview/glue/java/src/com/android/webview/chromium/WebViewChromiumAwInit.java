@@ -165,10 +165,7 @@ public class WebViewChromiumAwInit {
     private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
             new WebViewStartUpDiagnostics();
     private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
-            new WebViewChromiumRunQueue(
-                    () -> {
-                        return hasStarted();
-                    });
+            new WebViewChromiumRunQueue();
 
     // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
     // WebViewStartupCallSite in enums.xml.
@@ -380,7 +377,7 @@ public class WebViewChromiumAwInit {
 
             // This runs all the pending tasks queued for after Chromium init is finished,
             // so should be the last thing that happens in startChromiumLocked.
-            mFactory.getRunQueue().drainQueue();
+            mFactory.getRunQueue().notifyChromiumStarted();
 
             AwCrashyClassUtils.maybeCrashIfEnabled();
         }
@@ -389,7 +386,7 @@ public class WebViewChromiumAwInit {
         // Currently `startUpChromium` is not split into multiple tasks, therefore we consider
         // `startUpChromium` as a single task.
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(totalTimeTaken);
-        mWebViewStartUpCallbackRunQueue.drainQueue();
+        mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.Startup.CreationTime.InitReason", callSite, CallSite.COUNT);
         RecordHistogram.recordTimesHistogram(
