@@ -258,10 +258,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         setHasOptionsMenu(true);
 
-        mShouldReplaceSyncSettingsWithAccountSettings =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        && !mSyncService.hasSyncConsent();
+        mShouldReplaceSyncSettingsWithAccountSettings = !mSyncService.hasSyncConsent();
 
         if (mShouldReplaceSyncSettingsWithAccountSettings) {
             mPageTitle.set(getString(R.string.account_settings_title));
