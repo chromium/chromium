@@ -39,6 +39,7 @@ include_rules = [
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
+  "+ios/chrome/browser/main_content/ui_bundled",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h",
   "+ios/chrome/browser/ntp/model",

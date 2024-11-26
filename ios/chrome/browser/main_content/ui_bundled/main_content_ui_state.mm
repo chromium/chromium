@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
+#import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
 
 #import <ostream>
 
@@ -36,19 +36,22 @@
 @synthesize decelerating = _decelerating;
 
 - (void)setDragging:(BOOL)dragging {
-  if (_dragging == dragging)
+  if (_dragging == dragging) {
     return;
+  }
   _dragging = dragging;
   // When a scroll view is being dragged, its contents are tracking the pan
   // gesture, and previous deceleration is cancelled.
-  if (_dragging)
+  if (_dragging) {
     _decelerating = NO;
+  }
   [self updateIsScrolling];
 }
 
 - (void)setDecelerating:(BOOL)decelerating {
-  if (_decelerating == decelerating)
+  if (_decelerating == decelerating) {
     return;
+  }
   _decelerating = decelerating;
   [self updateIsScrolling];
 }
@@ -109,8 +112,9 @@
   // It's possible during the side-swipe gesture for a drag to end on the scroll
   // view without a corresponding begin dragging call.  Early return if there
   // is no pan gesture from the begin call.
-  if (!self.panGesture)
+  if (!self.panGesture) {
     return;
+  }
   DCHECK_EQ(panGesture, self.panGesture);
   // UIScrollView does not sent a `-scrollViewDidEndDecelerating:` signal after
   // pixel alignments, so the state should not be considered decelerating if the

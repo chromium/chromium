@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
+#import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
 
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/common/ui/util/ui_util.h"

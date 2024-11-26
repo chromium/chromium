@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main_content/web_scroll_view_main_content_ui_forwarder.h"
+#import "ios/chrome/browser/main_content/ui_bundled/web_scroll_view_main_content_ui_forwarder.h"
 
 #import <memory>
 
 #import "base/check.h"
+#import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -25,9 +25,9 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
   [updater scrollViewDidResetContentSize:proxy.contentSize];
   [updater scrollViewDidResetContentInset:proxy.contentInset];
 }
-}
+}  // namespace
 
-@interface WebScrollViewMainContentUIForwarder ()<
+@interface WebScrollViewMainContentUIForwarder () <
     CRWWebStateObserver,
     CRWWebViewScrollViewProxyObserver,
     WebStateListObserving> {
@@ -86,20 +86,24 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 #pragma mark Accessors
 
 - (void)setWebState:(web::WebState*)webState {
-  if (_webState == webState)
+  if (_webState == webState) {
     return;
-  if (_webState)
+  }
+  if (_webState) {
     _webState->RemoveObserver(_webStateBridge.get());
+  }
   _webState = webState;
-  if (_webState)
+  if (_webState) {
     _webState->AddObserver(_webStateBridge.get());
+  }
   self.proxy =
       _webState ? _webState->GetWebViewProxy().scrollViewProxy : nullptr;
 }
 
 - (void)setProxy:(CRWWebViewScrollViewProxy*)proxy {
-  if (_proxy == proxy)
+  if (_proxy == proxy) {
     return;
+  }
   [_proxy removeObserver:self];
   _proxy = proxy;
   [_proxy addObserver:self];
@@ -119,8 +123,9 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
-  if (!navigation->IsSameDocument())
+  if (!navigation->IsSameDocument()) {
     [self.updater scrollWasInterrupted];
+  }
 }
 
 #pragma mark CRWWebViewScrollViewObserver
@@ -190,8 +195,9 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 - (void)checkForContentInsetAdjustment {
   UIEdgeInsets inset = self.proxy.contentInset;
   inset = self.proxy.adjustedContentInset;
-  if (!UIEdgeInsetsEqualToEdgeInsets(inset, self.updater.state.contentInset))
+  if (!UIEdgeInsetsEqualToEdgeInsets(inset, self.updater.state.contentInset)) {
     [self.updater scrollViewDidResetContentInset:inset];
+  }
 }
 
 @end

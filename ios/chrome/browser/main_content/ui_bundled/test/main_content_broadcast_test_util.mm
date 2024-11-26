@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main_content/test/main_content_broadcast_test_util.h"
+#import "ios/chrome/browser/main_content/ui_bundled/test/main_content_broadcast_test_util.h"
 
-#import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_observer.h"
-#import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_state.h"
+#import "ios/chrome/browser/main_content/ui_bundled/test/test_main_content_ui_observer.h"
+#import "ios/chrome/browser/main_content/ui_bundled/test/test_main_content_ui_state.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
