@@ -1079,7 +1079,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-18">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
 
-  <owner>ortuno@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
@@ -1826,7 +1826,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
     expires_after="2025-01-05">
-  <owner>ortuno@chromium.org</owner>
+  <owner>mbujak@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records the time taken to perform a fresh install of all system web apps. It
@@ -1931,7 +1931,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
     enum="WebAppUrlLoaderResult" expires_after="2025-04-20">
-  <owner>ortuno@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>Records the result of WebAppUrlLoader::PrepareForLoad().</summary>
 </histogram>
