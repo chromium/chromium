@@ -168,6 +168,9 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"annotationSize16", IDS_PDF_ANNOTATION_SIZE16},
       {"annotationSize20", IDS_PDF_ANNOTATION_SIZE20},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_INK2)
+      {"ink2Draw", IDS_PDF_INK2_DRAW},
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   };
   for (const auto& resource : kPdfResources)
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));

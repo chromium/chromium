@@ -351,6 +351,12 @@
       </message>
     </if>
 
+    <if expr="enable_pdf_ink2">
+      <message name="IDS_PDF_INK2_DRAW" desc="The button label for entering 'annotation mode' in the PDF viewer, which allows for drawing and erasing strokes.">
+        Draw
+      </message>
+    </if>
+
     <message name="IDS_AX_ROLE_DESCRIPTION_PDF_HIGHLIGHT" desc="Accessibility role description for PDF highlight">
       Highlight
     </message>
