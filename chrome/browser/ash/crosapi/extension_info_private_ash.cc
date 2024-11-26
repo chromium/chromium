@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
+#include "build/config/cuttlefish/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -58,6 +59,9 @@ const char kPropertyDeviceRequisition[] = "deviceRequisition";
 
 // Key which corresponds to the isMeetDevice property in JS.
 const char kPropertyMeetDevice[] = "isMeetDevice";
+
+// Key which corresponds to the isCuttlefishDevice property in JS.
+const char kPropertyCuttlefishDevice[] = "isCuttlefishDevice";
 
 // Key which corresponds to the home provider property.
 const char kPropertyHomeProvider[] = "homeProvider";
@@ -284,6 +288,14 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
 
   if (property_name == kPropertyMeetDevice) {
 #if BUILDFLAG(PLATFORM_CFM)
+    return std::make_unique<base::Value>(true);
+#else
+    return std::make_unique<base::Value>(false);
+#endif
+  }
+
+  if (property_name == kPropertyCuttlefishDevice) {
+#if BUILDFLAG(PLATFORM_CUTTLEFISH)
     return std::make_unique<base::Value>(true);
 #else
     return std::make_unique<base::Value>(false);
