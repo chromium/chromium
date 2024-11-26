@@ -5022,10 +5022,21 @@ void CreateOperatorNodeForTranspose(const ContextProperties& context_properties,
   CHECK(context_properties.data_type_limits.transpose_input.Has(
       DmlDataTypeToOperand(input->GetTensorDesc().GetDataType())));
 
+  const OperandPtr& operand = id_to_operand_map.at(transpose->input_operand_id);
+
+  // When input is scalar, permutation should be empty. In this case pass
+  // permutation=[0] to `CreateTransposeNode`.
+  if (operand->descriptor.shape().empty()) {
+    CHECK_EQ(input->GetTensorDesc().GetDimensions().size(), 1u);
+    CHECK(transpose->permutation.empty());
+  }
+
   uint64_t output_id = transpose->output_operand_id;
 
-  const NodeOutput* output =
-      CreateTransposeNode(graph_builder, input, transpose->permutation);
+  const NodeOutput* output = CreateTransposeNode(
+      graph_builder, input,
+      operand->descriptor.shape().empty() ? std::vector<uint32_t>{0}
+                                          : transpose->permutation);
 
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);

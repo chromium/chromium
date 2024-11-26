@@ -337,6 +337,7 @@ class GraphBuilderTflite final {
   OperatorOffset SerializeTransposeOperation(
       int32_t input_tensor_index,
       int32_t output_tensor_index,
+      base::span<const int32_t> input_shape,
       base::span<const uint32_t> permutation);
 
   // This function is called by `SerializeScatterND` to serialize WebNN
@@ -575,6 +576,9 @@ class GraphBuilderTflite final {
       const mojom::HardSigmoid& hard_sigmoid);
   base::expected<OperatorOffset, std::string> SerializeHardSwish(
       const mojom::HardSwish& hard_swish);
+  OperatorOffset SerializeIdentityOperation(uint32_t input_tensor_index,
+                                            uint32_t output_tensor_index,
+                                            base::span<const int32_t> shape);
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
       const mojom::InstanceNormalization& instance_normalization);
   base::expected<OperatorOffset, std::string> SerializeLayerNormalization(

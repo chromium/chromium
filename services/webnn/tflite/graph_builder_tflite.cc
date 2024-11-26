@@ -19,6 +19,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -1376,7 +1377,13 @@ auto GraphBuilderTflite::SerializeSliceOperation(
 auto GraphBuilderTflite::SerializeTransposeOperation(
     int32_t input_tensor_index,
     int32_t output_tensor_index,
+    base::span<const int32_t> input_shape,
     base::span<const uint32_t> permutation) -> OperatorOffset {
+  if (input_shape.empty()) {
+    CHECK(permutation.empty());
+    return SerializeIdentityOperation(input_tensor_index, output_tensor_index,
+                                      input_shape);
+  }
   const std::array<int32_t, 1> permutation_shape = {
       base::checked_cast<int32_t>(permutation.size())};
   const int32_t permutation_tensor_index =
@@ -1506,8 +1513,9 @@ int32_t GraphBuilderTflite::InsertTransposeOperation(
   }
   const int32_t output_tensor_index =
       SerializeTemporaryTensor(output_shape, input_tensor_info.data_type);
-  operators_.emplace_back(SerializeTransposeOperation(
-      input_tensor_info.index, output_tensor_index, permutation));
+  operators_.emplace_back(
+      SerializeTransposeOperation(input_tensor_info.index, output_tensor_index,
+                                  input_tensor_info.dimensions, permutation));
 
   return output_tensor_index;
 }
@@ -2099,14 +2107,11 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kIdentity: {
-      CHECK(data_type_limits.identity_input.Has(input_data_type));
-      // Implement WebNN identity operation with TFLite reshape operator, the
-      // output shape is the same as input.
-      // TODO(crbug.com/336399247): Skip identity implementation with
-      // redirecting output tensor to input.
-      return SerializeReshapeOperation(input_tensor_info.index,
-                                       output_tensor_info.index,
-                                       output_tensor_info.dimensions);
+      CHECK(context_properties_.data_type_limits.identity_input.Has(
+          input_data_type));
+      return SerializeIdentityOperation(input_tensor_info.index,
+                                        output_tensor_info.index,
+                                        input_tensor_info.dimensions);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
       CHECK(data_type_limits.log_input.Has(input_data_type));
@@ -2676,7 +2681,8 @@ auto GraphBuilderTflite::SerializeSubGraphSliceTranspose(
   std::vector<uint32_t> permutation(slice_sizes.size());
   std::iota(permutation.rbegin(), permutation.rend(), 0);
   operators_.emplace_back(SerializeTransposeOperation(
-      output_tensor_index_of_slice, output_tensor_index, permutation));
+      output_tensor_index_of_slice, output_tensor_index, slice_sizes,
+      permutation));
 
   return output_tensor_index;
 }
@@ -3683,6 +3689,17 @@ int32_t GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
   return reshape_tensor_index;
 }
 
+auto GraphBuilderTflite::SerializeIdentityOperation(
+    uint32_t input_tensor_index,
+    uint32_t output_tensor_index,
+    base::span<const int32_t> shape) -> OperatorOffset {
+  // Implement WebNN identity operation with TFLite reshape operator, the
+  // output shape is the same as input.
+  // TODO(crbug.com/336399247): Skip identity implementation with
+  // redirecting output tensor to input.
+  return SerializeReshapeOperation(input_tensor_index, output_tensor_index,
+                                   shape);
+}
 auto GraphBuilderTflite::SerializeInstanceNormalization(
     const mojom::InstanceNormalization& instance_normalization)
     -> base::expected<OperatorOffset, std::string> {
@@ -4893,7 +4910,8 @@ auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
   const int32_t output_tensor_index_of_transpose = SerializeTemporaryTensor(
       transpose_dimensions, input_tensor_info.data_type);
   operators_.emplace_back(SerializeTransposeOperation(
-      input_tensor_info.index, output_tensor_index_of_transpose, permutation));
+      input_tensor_info.index, output_tensor_index_of_transpose,
+      input_tensor_info.dimensions, permutation));
 
   // Perform softmax.
   const int32_t output_tensor_index_of_softmax = SerializeTemporaryTensor(
@@ -4905,7 +4923,8 @@ auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
 
   // Transpose the last dimension back to the original axis.
   return SerializeTransposeOperation(output_tensor_index_of_softmax,
-                                     output_tensor_info.index, permutation);
+                                     output_tensor_info.index,
+                                     input_tensor_info.dimensions, permutation);
 }
 
 auto GraphBuilderTflite::SerializeSoftplus(const mojom::Softplus& softplus)
@@ -5172,15 +5191,17 @@ auto GraphBuilderTflite::SerializeTriangular(
 
 auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.transpose_input.Has(
-      GetOperand(transpose.input_operand_id).descriptor.data_type()));
+  const OperandDataType& data_type =
+      GetOperand(transpose.input_operand_id).descriptor.data_type();
+  CHECK(context_properties_.data_type_limits.transpose_input.Has(data_type));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(transpose.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(transpose.output_operand_id));
 
   return SerializeTransposeOperation(
-      input_tensor_info.index, output_tensor_info.index, transpose.permutation);
+      input_tensor_info.index, output_tensor_info.index,
+      input_tensor_info.dimensions, transpose.permutation);
 }
 
 auto GraphBuilderTflite::SerializeWhere(const mojom::Where& where)

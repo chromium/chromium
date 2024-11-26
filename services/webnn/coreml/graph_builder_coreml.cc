@@ -3635,6 +3635,12 @@ void GraphBuilderCoreml::AddOperationForTranspose(
   CHECK(context_properties_.data_type_limits.transpose_input.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
+  if (input_operand_info.dimensions.empty()) {
+    AddUnaryOperation(kOpIdentityTypeName, input_operand_id, output_operand_id,
+                      block);
+    return;
+  }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpTransposeTypeName);
   SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id);
