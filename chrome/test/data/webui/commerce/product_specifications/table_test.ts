@@ -342,6 +342,32 @@ suite('ProductSpecificationsTableTest', () => {
         testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
   });
 
+  test('opens tab when product image is clicked', async () => {
+    // Arrange
+    const testUrl = 'https://example.com';
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: testUrl,
+          imageUrl: 'https://example.com/image',
+        },
+        productDetails: [],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Act
+    const productImage = $$<HTMLElement>(tableElement, '.main-image');
+    assertTrue(!!productImage);
+    productImage!.click();
+
+    // Assert.
+    assertEquals(1, shoppingServiceApi.getCallCount('switchToOrOpenTab'));
+    assertEquals(
+        testUrl, shoppingServiceApi.getArgs('switchToOrOpenTab')[0].url);
+  });
+
   test('shows open tab button when hovered', async () => {
     // Arrange
     tableElement.columns = [
