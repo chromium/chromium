@@ -1241,6 +1241,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.StartupTabs.IsWelcomePageSkipped"
+    enum="BooleanSkipped" expires_after="2025-11-20">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Whether a chrome://welcome page requested from startup tabs has been
+    skipped. Logged on first runs where that page is included in the startup
+    tabs, usually provided by installers in the initial_preferences files. Only
+    the positive value is logged, the histogram's purpose is to verify the
+    reduction in usage of this configuration.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Temperature" enum="StartupTemperature"
     expires_after="2025-03-30">
 <!-- expires-after: Diagnosis metric for changes in StartupTemperature suffix.
