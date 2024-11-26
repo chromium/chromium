@@ -2588,16 +2588,6 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
                          nullptr);
   }
 
-  // We only support one bo containing all the planes. The fd should be owned by
-  // us: per va/va.h, "the exported handles are owned by the caller."
-  //
-  // TODO(crbug.com/40632250): support multiple buffer objects so that this can
-  // work in AMD.
-  CHECK_EQ(descriptor.num_objects, 1u)
-      << "Only surface descriptors with one bo are supported";
-  base::ScopedFD bo_fd(descriptor.objects[0].fd);
-  const uint64_t bo_modifier = descriptor.objects[0].drm_format_modifier;
-
   // Translate the pixel format to a gfx::BufferFormat.
   gfx::BufferFormat buffer_format;
   switch (descriptor.fourcc) {
@@ -2625,22 +2615,48 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
       return nullptr;
   }
 
-  gfx::NativePixmapHandle handle{};
-  handle.modifier = bo_modifier;
-  for (uint32_t layer = 0; layer < descriptor.num_layers; layer++) {
+  gfx::NativePixmapHandle handle;
+  CHECK_GE(descriptor.num_objects, 1u);
+  handle.modifier = descriptor.objects[0].drm_format_modifier;
+  std::vector<base::ScopedFD> fds;
+  for (size_t index = 0; index < descriptor.num_objects; ++index) {
+    const auto& object = descriptor.objects[index];
+    // The modifier should not change for different planes.
+    CHECK_EQ(handle.modifier, object.drm_format_modifier);
+
+    // The file descriptor (FD) should be owned by us: per va/va.h, "the
+    // exported handles are owned by the caller." |fds| will own the file
+    // descriptors. Any FD's that are referenced by a plane will be moved into
+    // |handle.planes| for that plane. If an FD is referenced by two or more
+    // planes, it will be duplicated the minimal number of times to build
+    // |handle.planes|. If an FD is not referenced by any plane, it will be
+    // closed when |fds| goes out of scope, which is fine.
+    fds.emplace_back(object.fd);
+  }
+
+  for (uint32_t index = 0; index < descriptor.num_layers; ++index) {
+    const auto& layer = descriptor.layers[index];
     // According to va/va_drmcommon.h, if VA_EXPORT_SURFACE_SEPARATE_LAYERS is
     // specified, each layer should contain one plane.
-    DCHECK_EQ(1u, descriptor.layers[layer].num_planes);
+    DCHECK_EQ(1u, layer.num_planes);
+    constexpr size_t kPlaneIdx = 0u;
 
-    auto plane_fd = base::ScopedFD(
-        layer == 0 ? bo_fd.release()
-                   : HANDLE_EINTR(dup(handle.planes[0].fd.get())));
+    // Ensure the layer does not index an out-of-bounds object.
+    const uint32_t object_index = layer.object_index[kPlaneIdx];
+    CHECK_LT(object_index, descriptor.num_objects);
+
+    // This moves the ScopedFD from |fds| on first use, or duplicates it from
+    // |descriptor.objects| for subsequent plane usage.
+    auto plane_fd = fds[object_index].is_valid()
+                        ? std::move(fds[object_index])
+                        : base::ScopedFD(HANDLE_EINTR(
+                              dup(descriptor.objects[object_index].fd)));
     PCHECK(plane_fd.is_valid());
+
     constexpr uint64_t kZeroSizeToPreventMapping = 0u;
-    handle.planes.emplace_back(
-        base::checked_cast<int>(descriptor.layers[layer].pitch[0]),
-        base::checked_cast<int>(descriptor.layers[layer].offset[0]),
-        kZeroSizeToPreventMapping, std::move(plane_fd));
+    handle.planes.emplace_back(base::checked_cast<int>(layer.pitch[kPlaneIdx]),
+                               base::checked_cast<int>(layer.offset[kPlaneIdx]),
+                               kZeroSizeToPreventMapping, std::move(plane_fd));
   }
 
   if (descriptor.fourcc == VA_FOURCC_IMC3) {
