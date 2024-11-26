@@ -47,10 +47,14 @@ using ChromeOSSystemExtensionInfoMap =
     base::flat_map<std::string, ChromeOSSystemExtensionInfo>;
 
 ChromeOSSystemExtensionInfoMap ConstructMap() {
+  const auto lenovo_iwa_id = web_package::SignedWebBundleId::Create(
+      "huhncggoe22ofjan6nylwijltmewmbevapiotudwgbyjbhrlphrqaaic");
+  CHECK(lenovo_iwa_id.has_value());
+
   ChromeOSSystemExtensionInfoMap map{
       {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
        {
-           /*manufacturers=*/{"HP", "ASUS", "Acer"},
+           /*manufacturers=*/{"HP", "ASUS", "Acer", "Lenovo"},
            /*pwa_origin=*/"*://googlechromelabs.github.io/*",
            /*iwa_id=*/std::nullopt,
        }},
@@ -72,13 +76,19 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
            /*pwa_origin=*/"https://acerpartners.com/acerbooster/*",
            /*iwa_id=*/std::nullopt,
        }},
+      {/*extension_id=*/"abpkjagfgndmbkendplbabnefkjkgdcf",
+       {
+           /*manufacturers=*/{"Lenovo"},
+           /*pwa_origin=*/"https://chromebookdiags.lenovo.com/*",
+           /*iwa_id=*/lenovo_iwa_id.value(),
+       }},
   };
 
   if (IsChromeOSSystemExtensionDevExtensionEnabled()) {
     map.try_emplace(
         kChromeOSSystemExtensionDevExtensionId,
         ChromeOSSystemExtensionInfo{
-            /*manufacturers=*/{"Google", "HP", "ASUS", "Acer"},
+            /*manufacturers=*/{"Google", "HP", "ASUS", "Acer", "Lenovo"},
             /*pwa_origin=*/"*://googlechromelabs.github.io/*",
             /*iwa_id=*/
             web_package::SignedWebBundleId::Create(
