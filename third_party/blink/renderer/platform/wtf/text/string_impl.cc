@@ -289,10 +289,7 @@ StringImpl* StringImpl::CreateStatic(const char* string, wtf_size_t length) {
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
-  CHECK_LE(length,
-           ((std::numeric_limits<wtf_size_t>::max() - sizeof(StringImpl)) /
-            sizeof(LChar)));
-  wtf_size_t size = sizeof(StringImpl) + length * sizeof(LChar);
+  const size_t size = AllocationSize<LChar>(length);
 
   WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE;
   StringImpl* impl = static_cast<StringImpl*>(
