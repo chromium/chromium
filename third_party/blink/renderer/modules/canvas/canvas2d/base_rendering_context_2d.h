@@ -463,17 +463,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   V8CanvasTextRendering textRendering() const;
   void setTextRendering(const V8CanvasTextRendering&);
 
-  String textRenderingAsString() const;
-  void setTextRenderingAsString(const String&);
-
   String fontKerning() const;
   void setFontKerning(const String&);
 
   V8CanvasFontStretch fontStretch() const;
   void setFontStretch(const V8CanvasFontStretch&);
-
-  String fontStretchAsString() const;
-  void setFontStretchAsString(const String&);
 
   String fontVariantCaps() const;
   void setFontVariantCaps(const String&);
@@ -663,15 +657,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   static const char kNormalKerningString[];
   static const char kNoneKerningString[];
   static const char kNormalVariantString[];
-  static const char kUltraCondensedString[];
-  static const char kExtraCondensedString[];
-  static const char kCondensedString[];
-  static const char kSemiCondensedString[];
-  static const char kNormalStretchString[];
-  static const char kSemiExpandedString[];
-  static const char kExpandedString[];
-  static const char kExtraExpandedString[];
-  static const char kUltraExpandedString[];
   static const char kSmallCapsVariantString[];
   static const char kAllSmallCapsVariantString[];
   static const char kPetiteVariantString[];

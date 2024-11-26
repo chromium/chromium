@@ -252,15 +252,6 @@ const char BaseRenderingContext2D::kLtrDirectionString[] = "ltr";
 const char BaseRenderingContext2D::kAutoKerningString[] = "auto";
 const char BaseRenderingContext2D::kNormalKerningString[] = "normal";
 const char BaseRenderingContext2D::kNoneKerningString[] = "none";
-const char BaseRenderingContext2D::kUltraCondensedString[] = "ultra-condensed";
-const char BaseRenderingContext2D::kExtraCondensedString[] = "extra-condensed";
-const char BaseRenderingContext2D::kCondensedString[] = "condensed";
-const char BaseRenderingContext2D::kSemiCondensedString[] = "semi-condensed";
-const char BaseRenderingContext2D::kNormalStretchString[] = "normal";
-const char BaseRenderingContext2D::kSemiExpandedString[] = "semi-expanded";
-const char BaseRenderingContext2D::kExpandedString[] = "expanded";
-const char BaseRenderingContext2D::kExtraExpandedString[] = "extra-expanded";
-const char BaseRenderingContext2D::kUltraExpandedString[] = "ultra-expanded";
 const char BaseRenderingContext2D::kNormalVariantString[] = "normal";
 const char BaseRenderingContext2D::kSmallCapsVariantString[] = "small-caps";
 const char BaseRenderingContext2D::kAllSmallCapsVariantString[] =
@@ -3183,10 +3174,6 @@ String BaseRenderingContext2D::wordSpacing() const {
   return GetState().GetWordSpacing();
 }
 
-String BaseRenderingContext2D::textRenderingAsString() const {
-  return GetState().GetTextRendering().AsString();
-}
-
 V8CanvasTextRendering BaseRenderingContext2D::textRendering() const {
   return GetState().GetTextRendering();
 }
@@ -3240,10 +3227,6 @@ String BaseRenderingContext2D::fontKerning() const {
 
 V8CanvasFontStretch BaseRenderingContext2D::fontStretch() const {
   return GetState().GetFontStretch();
-}
-
-String BaseRenderingContext2D::fontStretchAsString() const {
-  return GetState().GetFontStretch().AsString();
 }
 
 String BaseRenderingContext2D::fontVariantCaps() const {
@@ -3741,17 +3724,6 @@ void BaseRenderingContext2D::setWordSpacing(const String& word_spacing) {
   state.SetWordSpacing(word_spacing);
 }
 
-void BaseRenderingContext2D::setTextRenderingAsString(
-    const String& text_rendering_string) {
-  std::optional<blink::V8CanvasTextRendering> text_value =
-      V8CanvasTextRendering::Create(text_rendering_string);
-
-  if (!text_value.has_value()) {
-    return;
-  }
-  setTextRendering(text_value.value());
-}
-
 void BaseRenderingContext2D::setTextRendering(
     const V8CanvasTextRendering& text_rendering) {
   UseCounter::Count(GetTopExecutionContext(),
@@ -3794,17 +3766,6 @@ void BaseRenderingContext2D::setFontKerning(const String& font_kerning_string) {
   }
 
   state.SetFontKerning(kerning, GetFontSelector());
-}
-
-void BaseRenderingContext2D::setFontStretchAsString(
-    const String& font_stretch) {
-  std::optional<V8CanvasFontStretch> font_value =
-      V8CanvasFontStretch::Create(font_stretch);
-
-  if (!font_value.has_value()) {
-    return;
-  }
-  setFontStretch(font_value.value());
 }
 
 void BaseRenderingContext2D::setFontStretch(
