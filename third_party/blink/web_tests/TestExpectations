@@ -2472,9 +2472,9 @@ external/wpt/webdriver/tests/bidi/input/perform_actions/wheel.py [ Failure ]  # 
 external/wpt/webdriver/tests/bidi/network/add_intercept/invalid.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/phases.py [ Failure Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/network/response_started/response_started.py [ Failure Timeout ]
-external/wpt/webdriver/tests/bidi/network/response_started/response_started_cached.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/network/response_started/response_started_cached.py [ Timeout Failure ]
 crbug.com/1502331 external/wpt/webdriver/tests/classic/perform_actions/pointer_pen.py [ Failure Pass ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/add_intercept/phase_auth_required.py [ Timeout ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/add_intercept/phase_auth_required.py [ Timeout Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/auth_required/auth_required.py [ Failure Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/url_patterns.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame.py [ Failure ]  # Flaky output
@@ -2699,6 +2699,16 @@ crbug.com/40946458 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cra
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Linux ] external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
+crbug.com/380969341 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/SourceBuffer-appendWindowEnd-rounding.html [ Failure ]
+[ Linux ] external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent_cached.py [ Failure ]
+[ Linux ] external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
+[ Linux ] external/wpt/webdriver/tests/bidi/network/continue_request/headers.py [ Failure ]
+[ Linux ] external/wpt/webdriver/tests/bidi/network/response_completed/response_completed_cached.py [ Failure ]
+external/wpt/css/css-rhythm/content-based-height-rounds-up-to-step-unit.html [ Failure ]
+external/wpt/css/css-rhythm/definite-height-rounds-up-to-next-multiple-of-step-unit.html [ Failure ]
+external/wpt/css/css-rhythm/definite-height-rounds-up-to-step-unit.html [ Failure ]
+external/wpt/webdriver/tests/bidi/network/continue_request/method.py [ Failure Timeout ]
 crbug.com/380409684 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8 [ Crash ]
 crbug.com/380314142 [ Mac14 ] external/wpt/webrtc/RTCRtpTransceiver-stopping.https.html [ Timeout ]
 crbug.com/380327161 [ Mac13 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
@@ -2717,6 +2727,7 @@ crbug.com/380287138 [ Win11-arm64 ] external/wpt/webcodecs/videoFrame-constructi
 crbug.com/380287138 [ Mac13 ] external/wpt/webrtc-identity/RTCPeerConnection-peerIdentity.https.html [ Timeout ]
 crbug.com/380287138 [ Mac14 ] external/wpt/webrtc-identity/RTCPeerConnection-peerIdentity.https.html [ Timeout ]
 crbug.com/380314135 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
+crbug.com/380314135 [ Win10.20h2 ] virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
 crbug.com/380314135 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html [ Failure ]
 crbug.com/380287135 [ Mac13 ] external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html [ Crash ]
 crbug.com/380287135 [ Linux ] external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html [ Crash ]
@@ -3709,12 +3720,12 @@ crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/cre
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/request.py [ Timeout ]
 crbug.com/343338108 external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Timeout ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/request.py [ Timeout Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/action.py [ Timeout ]
-crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/invalid.py [ Timeout ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/invalid.py [ Timeout Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_send_keys/send_keys.py [ Failure ]
 
 # Some WebXR tests that have become flaky
@@ -5926,7 +5937,7 @@ crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics
 
 crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 
-crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Pass Failure ]
+crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure Pass ]
 
 
 ### Tests failing with CSSGapDecorations Enabled:
