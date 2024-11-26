@@ -91,6 +91,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/find_in_page/model:eg2_tests",
     "//ios/chrome/browser/https_upgrades/model:eg2_tests",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/integration_tests:eg2_tests",
     "//ios/chrome/browser/metrics/model:eg2_tests",
     "//ios/chrome/browser/net/model:eg2_tests",
     "//ios/chrome/browser/ntp_tiles/model:eg2_tests",
@@ -108,7 +109,6 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/tips_notifications/eg_test:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption:eg2_tests",
-    "//ios/chrome/browser/ui/integration_tests:eg2_tests",
     "//ios/chrome/browser/variations/model:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
