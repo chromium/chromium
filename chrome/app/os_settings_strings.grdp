@@ -1319,7 +1319,7 @@
     Face control
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements.">
-    Use head movements and facial expressions to control your Chromebook
+    Use head movements and facial expressions to control your Chromebook. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PREVIOUS" desc="Label for previous button.">
     Previous

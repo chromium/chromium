@@ -1486,6 +1486,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
+  html_source->AddString("faceGazeLearnMoreUrl", chrome::kFaceGazeLearnMoreURL);
+
   html_source->AddBoolean("isAccessibilityDisableTouchpadEnabled",
                           IsAccessibilityDisableTouchpadEnabled());
 

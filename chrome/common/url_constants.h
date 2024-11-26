@@ -926,6 +926,10 @@ inline constexpr char kYoutubeMusicPremiumURL[] =
 // The URL for the Chromebook Perks page for YouTube.
 inline constexpr char kChromebookPerksYouTubePage[] =
     "https://www.google.com/chromebook/perks/?id=youtube.2020";
+
+// The URL for the "Learn more" page for the Face control feature on Chrome OS.
+inline constexpr char kFaceGazeLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=face_control";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

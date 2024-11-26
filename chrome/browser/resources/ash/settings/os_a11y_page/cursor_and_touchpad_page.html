@@ -135,9 +135,13 @@
       class="hr"
       start-icon="os-settings:face-gaze"
       label="$i18n{accessibilityFaceGazeLabel}"
-      sub-label="$i18n{accessibilityFaceGazeDescription}"
       on-click="onFaceGazeSettingsClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
+    <localized-link id="faceGazeSubLabel"
+        slot="sub-label"
+        localized-string="$i18n{accessibilityFaceGazeDescription}"
+        link-url="$i18n{faceGazeLearnMoreUrl}">
+    </localized-link>
   </cr-link-row>
 </template>
 <settings-toggle-button
