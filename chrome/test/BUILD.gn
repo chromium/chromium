@@ -3207,6 +3207,7 @@ if (!is_android) {
       "../browser/ui/views/tabs/tab_search_button_browsertest.cc",
       "../browser/ui/views/tabs/tab_search_container_browsertest.cc",
       "../browser/ui/views/tabs/tab_strip_browsertest.cc",
+      "../browser/ui/views/tabs/tab_strip_combo_button_browsertest.cc",
       "../browser/ui/views/toolbar/app_menu_browsertest.cc",
       "../browser/ui/views/toolbar/chrome_labs/chrome_labs_browsertest.cc",
       "../browser/ui/views/toolbar/home_button_browsertest.cc",

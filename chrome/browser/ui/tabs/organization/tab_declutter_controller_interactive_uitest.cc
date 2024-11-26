@@ -125,7 +125,7 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
   TabSearchContainer* tab_search_container() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->tab_strip_region_view()
-        ->tab_search_container();
+        ->GetTabSearchContainer();
   }
 
  protected:
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   TabSearchContainer* tab_search_container =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->tab_strip_region_view()
-          ->tab_search_container();
+          ->GetTabSearchContainer();
   EXPECT_TRUE(tab_search_container->tab_declutter_button()->GetVisible());
   views::LabelButton* close_button =
       tab_search_container->tab_declutter_button()->close_button_for_testing();

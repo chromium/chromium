@@ -45,7 +45,7 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()->tab_strip_region_view()->tab_search_container();
+    return browser_view()->tab_strip_region_view()->GetTabSearchContainer();
   }
 
  private:
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   TabSearchContainer* const second_search_container =
       BrowserView::GetBrowserViewForBrowser(second_browser)
           ->tab_strip_region_view()
-          ->tab_search_container();
+          ->GetTabSearchContainer();
 
   ASSERT_FALSE(second_search_container->animation_session_for_testing());
 

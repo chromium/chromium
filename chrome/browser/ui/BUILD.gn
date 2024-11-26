@@ -4748,6 +4748,8 @@ static_library("ui") {
       "views/tabs/tab_slot_view.h",
       "views/tabs/tab_strip.cc",
       "views/tabs/tab_strip.h",
+      "views/tabs/tab_strip_combo_button.cc",
+      "views/tabs/tab_strip_combo_button.h",
       "views/tabs/tab_strip_control_button.cc",
       "views/tabs/tab_strip_control_button.h",
       "views/tabs/tab_strip_controller.h",
