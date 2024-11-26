@@ -8670,8 +8670,6 @@ crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
 
 # Gardener 2024-11-26
-crbug.com/380850765 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/protected-audience-filtering-id-sends-report.https.window.html [ Failure Pass ]
-crbug.com/380842171 [ Linux ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/revoke-private-aggregation.sub.https.html [ Failure Pass ]
 crbug.com/381085690 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Failure Pass ]
 crbug.com/381085690 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Failure Pass ]
 crbug.com/381085690 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?cpu [ Failure Pass ]
