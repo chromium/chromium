@@ -207,7 +207,7 @@ bool CanvasResource::PrepareTransferableResource(
   // TransferableResource. Clients are expected to render in N32 format but use
   // RGBA as the tagged format on resources.
   *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-      client_shared_image, GetSyncToken(), Size(),
+      client_shared_image, GetSyncToken(), client_shared_image->size(),
       viz::SinglePlaneFormat::kBGRA_8888,
       viz::TransferableResource::ResourceSource::kCanvas);
 
@@ -237,9 +237,9 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
   *out_resource = viz::TransferableResource::MakeGpu(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
-      GetSyncTokenWithOptionalVerification(needs_verified_synctoken), Size(),
-      client_shared_image->format(), IsOverlayCandidate(),
-      viz::TransferableResource::ResourceSource::kCanvas);
+      GetSyncTokenWithOptionalVerification(needs_verified_synctoken),
+      client_shared_image->size(), client_shared_image->format(),
+      IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
 
@@ -260,7 +260,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   return SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()),
+      SkISize::Make(size_.width(), size_.height()),
       viz::ToClosestSkColorType(/*gpu_compositing=*/true, format_), alpha_type_,
       color_space_.ToSkColorSpace());
 }
@@ -297,7 +297,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
   }
 
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {viz::SinglePlaneFormat::kBGRA_8888, Size(), gfx::ColorSpace(),
+      {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
        gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "CanvasResourceSharedBitmap"});
   shared_image_ = std::move(shared_image_mapping.shared_image);
   shared_mapping_ = std::move(shared_image_mapping.mapping);
@@ -521,13 +521,16 @@ void CanvasResourceSharedImage::EndWriteAccess() {
 }
 
 GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
+  scoped_refptr<gpu::ClientSharedImage> client_si = GetClientSharedImage();
+
   GrGLTextureInfo texture_info = {};
   texture_info.fID = GetTextureIdForWriteAccess();
   texture_info.fTarget = GetClientSharedImage()->GetTextureTarget();
   texture_info.fFormat =
       context_provider_wrapper_->ContextProvider().GetGrGLTextureFormat(
-          GetClientSharedImage()->format());
-  return GrBackendTextures::MakeGL(Size().width(), Size().height(),
+          client_si->format());
+  return GrBackendTextures::MakeGL(client_si->size().width(),
+                                   client_si->size().height(),
                                    skgpu::Mipmapped::kNo, texture_info);
 }
 
@@ -801,16 +804,19 @@ void CanvasResourceSharedImage::OnMemoryDump(
   if (!IsValid())
     return;
 
+  scoped_refptr<gpu::ClientSharedImage> client_si = GetClientSharedImage();
+
   std::string dump_name =
       base::StringPrintf("%s/CanvasResource_0x%" PRIXPTR, parent_path.c_str(),
                          reinterpret_cast<uintptr_t>(this));
   auto* dump = pmd->CreateAllocatorDump(dump_name);
-  size_t memory_size = Size().height() * Size().width() * bytes_per_pixel;
+  size_t memory_size =
+      client_si->size().height() * client_si->size().width() * bytes_per_pixel;
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   memory_size);
 
-  auto guid = GetClientSharedImage()->GetGUIDForTracing();
+  auto guid = client_si->GetGUIDForTracing();
   pmd->CreateSharedGlobalAllocatorDump(guid);
   pmd->AddOwnershipEdge(dump->guid(), guid,
                         static_cast<int>(gpu::TracingImportance::kClientOwner));
@@ -1086,7 +1092,9 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // Don't generate sync token after the copy so that it's not on critical path.
   raster_interface->CopySharedImage(front_buffer_shared_image_->mailbox(),
                                     back_buffer_shared_image_->mailbox(), 0, 0,
-                                    0, 0, Size().width(), Size().height());
+                                    0, 0,
+                                    back_buffer_shared_image_->size().width(),
+                                    back_buffer_shared_image_->size().height());
   // Restore shared image access after copy when using legacy GL raster.
   if (!use_oop_rasterization_) {
     raster_interface->BeginSharedImageAccessDirectCHROMIUM(
