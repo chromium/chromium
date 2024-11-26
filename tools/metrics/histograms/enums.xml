@@ -15097,6 +15097,7 @@ from previous Chrome versions.
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
   <int value="-2088263177" label="EnableMixedContentDownloadDialog:enabled"/>
+  <int value="-2088181079" label="EnterpriseRealTimeUrlCheckOnAndroid:enabled"/>
   <int value="-2087724986" label="ShelfPalmRejectionSwipeOffset:enabled"/>
   <int value="-2087444854" label="ThreadWrapperUsesMetronome:disabled"/>
   <int value="-2086690409"
@@ -21382,6 +21383,7 @@ from previous Chrome versions.
   <int value="420200188" label="JapaneseOSSettings:disabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
+  <int value="420733666" label="EnterpriseRealTimeUrlCheckOnAndroid:disabled"/>
   <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>

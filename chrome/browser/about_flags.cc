@@ -11850,6 +11850,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux, FEATURE_VALUE_TYPE(features::kGlic)},
 #endif // ENABLE_GLIC
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enterprise-real-time-url-check-on-android",
+     flag_descriptions::kEnterpriseRealTimeUrlCheckOnAndroidName,
+     flag_descriptions::kEnterpriseRealTimeUrlCheckOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"service-worker-auto-preload",
      flag_descriptions::kServiceWorkerAutoPreloadName,
      flag_descriptions::kServiceWorkerAutoPreloadDescription, kOsAll,

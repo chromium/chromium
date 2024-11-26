@@ -113,6 +113,10 @@ BASE_DECLARE_FEATURE(kEnhancedSafeBrowsingPromo);
 // Enables showing an updated Password Reuse UI for enterprise users.
 BASE_DECLARE_FEATURE(kEnterprisePasswordReuseUiRefresh);
 
+// When on, enterprise policy EnterpriseRealTimeUrlCheckMode on Android is
+// supported.
+BASE_DECLARE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid);
+
 // Enables string update on the enhanced protection description on
 // chrome://settings/security to mention the use of AI.
 BASE_DECLARE_FEATURE(kEsbAiStringUpdate);

@@ -688,6 +688,11 @@ extern const char kEnterpriseUpdatedProfileCreationScreenDescription[];
 extern const char kManagedProfileRequiredInterstitialName[];
 extern const char kManagedProfileRequiredInterstitialDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kEnterpriseRealTimeUrlCheckOnAndroidName[];
+extern const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 

@@ -1208,6 +1208,14 @@ const char kManagedProfileRequiredInterstitialDescription[] =
     "Enable the interstitial shown when a managed profile creation is "
     "required.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kEnterpriseRealTimeUrlCheckOnAndroidName[] =
+    "Allow the enterprise real-time URL check";
+const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[] =
+    "Enables enterprise real-time URL checks if the "
+    "EnterpriseRealTimeUrlCheckMode policy is set.";
+#endif
+
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 const char kEnableExperimentalCookieFeaturesDescription[] =

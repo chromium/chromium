@@ -130,6 +130,10 @@ BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
              "EnterprisePasswordReuseUiRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
+             "EnterpriseRealTimeUrlCheckOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEsbAiStringUpdate,
              "EsbAiStringUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -343,6 +347,7 @@ base::Value::List GetFeatureStatusList() {
       &kDownloadTailoredWarnings,
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,
+      &kEnterpriseRealTimeUrlCheckOnAndroid,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryDisableOffstoreExtensions,
       &kExtensionTelemetryForEnterprise,
