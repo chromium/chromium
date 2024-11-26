@@ -636,8 +636,6 @@ component("base") {
     "supports_user_data.h",
     "synchronization/atomic_flag.cc",
     "synchronization/atomic_flag.h",
-    "synchronization/cancelable_event.cc",
-    "synchronization/cancelable_event.h",
     "synchronization/condition_variable.h",
     "synchronization/lock.cc",
     "synchronization/lock.h",
@@ -1662,13 +1660,6 @@ component("base") {
     if (is_posix && !is_ios) {
       sources += [ "process/process_posix.cc" ]
     }
-    if (!is_win && !is_chromeos && !is_android && !is_linux) {
-      sources += [ "synchronization/cancelable_event_default.cc" ]
-    }
-
-    if (is_linux || is_chromeos || is_android) {
-      sources += [ "synchronization/cancelable_event_posix.cc" ]
-    }
 
     if (use_blink) {
       sources += [
@@ -1789,7 +1780,6 @@ component("base") {
       "strings/string_util_win.h",
       "strings/sys_string_conversions_win.cc",
       "sync_socket_win.cc",
-      "synchronization/cancelable_event_win.cc",
       "synchronization/condition_variable_win.cc",
       "synchronization/lock_impl_win.cc",
       "synchronization/waitable_event_watcher_win.cc",
@@ -3424,7 +3414,6 @@ test("base_unittests") {
     "supports_user_data_unittest.cc",
     "sync_socket_unittest.cc",
     "synchronization/atomic_flag_unittest.cc",
-    "synchronization/cancelable_event_unittest.cc",
     "synchronization/condition_variable_unittest.cc",
     "synchronization/lock_unittest.cc",
     "synchronization/waitable_event_unittest.cc",
