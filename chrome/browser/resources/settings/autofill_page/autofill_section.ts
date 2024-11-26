@@ -299,6 +299,8 @@ export class SettingsAutofillSectionElement extends
   }
 
   private onPlusAddressClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'Settings.ManageOptionOnSettingsSelected');
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('plusAddressManagementUrl'));
   }
