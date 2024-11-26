@@ -1327,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Usage.ElapsedTimeSinceLastUsage.{PermissionType}"
-    enum="Duration" expires_after="2025-03-09">
+    units="ms" expires_after="2025-03-09">
   <owner>lyf@chromium.org</owner>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1336,7 +1336,9 @@ chromium-metrics-reviews@google.com.
     buckets of time between two adjacent permission usages.
   </summary>
   <token key="PermissionType">
+    <variant name="AudioCapture"/>
     <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
   </token>
 </histogram>
 
