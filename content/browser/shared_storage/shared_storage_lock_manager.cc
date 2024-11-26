@@ -31,6 +31,8 @@ AccessType GetAccessType(
           return AccessType::kDocumentSet;
         case AccessScope::kSharedStorageWorklet:
           return AccessType::kWorkletSet;
+        case AccessScope::kProtectedAudienceWorklet:
+          return AccessType::kWorkletSet;
         case AccessScope::kHeader:
           return AccessType::kHeaderSet;
       }
@@ -41,6 +43,8 @@ AccessType GetAccessType(
         case AccessScope::kWindow:
           return AccessType::kDocumentAppend;
         case AccessScope::kSharedStorageWorklet:
+          return AccessType::kWorkletAppend;
+        case AccessScope::kProtectedAudienceWorklet:
           return AccessType::kWorkletAppend;
         case AccessScope::kHeader:
           return AccessType::kHeaderAppend;
@@ -53,6 +57,8 @@ AccessType GetAccessType(
           return AccessType::kDocumentDelete;
         case AccessScope::kSharedStorageWorklet:
           return AccessType::kWorkletDelete;
+        case AccessScope::kProtectedAudienceWorklet:
+          return AccessType::kWorkletDelete;
         case AccessScope::kHeader:
           return AccessType::kHeaderDelete;
       }
@@ -63,6 +69,8 @@ AccessType GetAccessType(
         case AccessScope::kWindow:
           return AccessType::kDocumentClear;
         case AccessScope::kSharedStorageWorklet:
+          return AccessType::kWorkletClear;
+        case AccessScope::kProtectedAudienceWorklet:
           return AccessType::kWorkletClear;
         case AccessScope::kHeader:
           return AccessType::kHeaderClear;

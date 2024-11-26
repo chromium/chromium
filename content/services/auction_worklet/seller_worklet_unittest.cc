@@ -31,6 +31,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "components/cbor/writer.h"
+#include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
@@ -72,6 +73,11 @@ namespace {
 using PrivateAggregationRequests = SellerWorklet::PrivateAggregationRequests;
 using RealTimeReportingContributions =
     SellerWorklet::RealTimeReportingContributions;
+
+using content::MojomAppendMethod;
+using content::MojomClearMethod;
+using content::MojomDeleteMethod;
+using content::MojomSetMethod;
 
 // Very short time used by some tests that want to wait until just before a
 // timer triggers.
@@ -5996,6 +6002,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
           sharedStorage.append('a', 'b');
           sharedStorage.delete('a');
           sharedStorage.clear();
+          sharedStorage.clear({withLock: 'lock1'});
         )"),
         5, /*expected_errors=*/
         {}, mojom::ComponentAuctionModifiedBidParamsPtr(),
@@ -6011,32 +6018,22 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
 
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(
-        test_shared_storage_host.observed_requests(),
-        testing::ElementsAre(
-            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        network::mojom::SharedStorageSetMethod::New(
-                            /*key=*/u"a", /*value=*/u"b",
-                            /*ignore_if_present=*/false)),
-                    mojom::AuctionWorkletFunction::kSellerScoreAd),
-            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        network::mojom::SharedStorageSetMethod::New(
-                            /*key=*/u"a", /*value=*/u"b",
-                            /*ignore_if_present=*/true)),
-                    mojom::AuctionWorkletFunction::kSellerScoreAd),
-            Request(
-                network::mojom::SharedStorageModifierMethod::NewAppendMethod(
-                    network::mojom::SharedStorageAppendMethod::New(
-                        /*key=*/u"a", /*value=*/u"b")),
-                mojom::AuctionWorkletFunction::kSellerScoreAd),
-            Request(
-                network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-                    network::mojom::SharedStorageDeleteMethod::New(
-                        /*key=*/u"a")),
-                mojom::AuctionWorkletFunction::kSellerScoreAd),
-            Request(network::mojom::SharedStorageModifierMethod::NewClearMethod(
-                        network::mojom::SharedStorageClearMethod::New()),
-                    mojom::AuctionWorkletFunction::kSellerScoreAd)));
+    EXPECT_THAT(test_shared_storage_host.observed_requests(),
+                testing::ElementsAre(
+                    Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                           /*ignore_if_present=*/false),
+                            mojom::AuctionWorkletFunction::kSellerScoreAd),
+                    Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                           /*ignore_if_present=*/true),
+                            mojom::AuctionWorkletFunction::kSellerScoreAd),
+                    Request(MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"),
+                            mojom::AuctionWorkletFunction::kSellerScoreAd),
+                    Request(MojomDeleteMethod(/*key=*/u"a"),
+                            mojom::AuctionWorkletFunction::kSellerScoreAd),
+                    Request(MojomClearMethod(),
+                            mojom::AuctionWorkletFunction::kSellerScoreAd),
+                    Request(MojomClearMethod(/*with_lock=*/"lock1"),
+                            mojom::AuctionWorkletFunction::kSellerScoreAd)));
   }
 
   {
@@ -6087,6 +6084,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
           sharedStorage.append('a', 'b');
           sharedStorage.delete('a');
           sharedStorage.clear();
+          sharedStorage.clear({withLock: 'lock1'});
         )",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
@@ -6102,28 +6100,19 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
     EXPECT_THAT(
         test_shared_storage_host.observed_requests(),
         testing::ElementsAre(
-            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        network::mojom::SharedStorageSetMethod::New(
-                            /*key=*/u"a", /*value=*/u"b",
-                            /*ignore_if_present=*/false)),
+            Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                   /*ignore_if_present=*/false),
                     mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(network::mojom::SharedStorageModifierMethod::NewSetMethod(
-                        network::mojom::SharedStorageSetMethod::New(
-                            /*key=*/u"a", /*value=*/u"b",
-                            /*ignore_if_present=*/true)),
+            Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                   /*ignore_if_present=*/true),
                     mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(
-                network::mojom::SharedStorageModifierMethod::NewAppendMethod(
-                    network::mojom::SharedStorageAppendMethod::New(
-                        /*key=*/u"a", /*value=*/u"b")),
-                mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(
-                network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
-                    network::mojom::SharedStorageDeleteMethod::New(
-                        /*key=*/u"a")),
-                mojom::AuctionWorkletFunction::kSellerReportResult),
-            Request(network::mojom::SharedStorageModifierMethod::NewClearMethod(
-                        network::mojom::SharedStorageClearMethod::New()),
+            Request(MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"),
+                    mojom::AuctionWorkletFunction::kSellerReportResult),
+            Request(MojomDeleteMethod(/*key=*/u"a"),
+                    mojom::AuctionWorkletFunction::kSellerReportResult),
+            Request(MojomClearMethod(),
+                    mojom::AuctionWorkletFunction::kSellerReportResult),
+            Request(MojomClearMethod(/*with_lock=*/"lock1"),
                     mojom::AuctionWorkletFunction::kSellerReportResult)));
   }
 
@@ -6848,12 +6837,10 @@ TEST_F(SellerWorkletTwoThreadsSharedStorageAPIEnabledTest,
   using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
   EXPECT_THAT(test_shared_storage_host0.observed_requests(),
-              testing::ElementsAre(Request(
-                  network::mojom::SharedStorageModifierMethod::NewSetMethod(
-                      network::mojom::SharedStorageSetMethod::New(
-                          /*key=*/u"a", /*value=*/u"b",
-                          /*ignore_if_present=*/false)),
-                  mojom::AuctionWorkletFunction::kSellerScoreAd)));
+              testing::ElementsAre(
+                  Request(MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                         /*ignore_if_present=*/false),
+                          mojom::AuctionWorkletFunction::kSellerScoreAd)));
 }
 
 class SellerWorkletRealTimeTest : public SellerWorkletTest {

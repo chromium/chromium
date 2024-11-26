@@ -82,7 +82,8 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
 class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
  public:
   struct Request {
-    Request(network::mojom::SharedStorageModifierMethodPtr method,
+    Request(network::mojom::SharedStorageModifierMethodWithOptionsPtr
+                method_with_options,
             mojom::AuctionWorkletFunction source_auction_worklet_function);
     ~Request();
 
@@ -91,7 +92,8 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
     Request(Request&& other);
     Request& operator=(Request&& other);
 
-    network::mojom::SharedStorageModifierMethodPtr method;
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr
+        method_with_options;
     mojom::AuctionWorkletFunction source_auction_worklet_function;
 
     bool operator==(const Request& rhs) const;
@@ -103,7 +105,8 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
 
   // mojom::AuctionSharedStorageHost:
   void SharedStorageUpdate(
-      network::mojom::SharedStorageModifierMethodPtr method,
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
       auction_worklet::mojom::AuctionWorkletFunction
           source_auction_worklet_function) override;
 

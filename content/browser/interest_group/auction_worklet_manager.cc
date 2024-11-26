@@ -933,8 +933,7 @@ AuctionWorkletManager::AuctionWorkletManager(
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     auction_shared_storage_host_ = std::make_unique<AuctionSharedStorageHost>(
         static_cast<StoragePartitionImpl*>(
-            delegate_->GetFrame()->GetProcess()->GetStoragePartition())
-            ->GetSharedStorageManager());
+            delegate_->GetFrame()->GetProcess()->GetStoragePartition()));
   }
 }
 

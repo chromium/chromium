@@ -28,6 +28,7 @@ class CONTENT_EXPORT SharedStorageLockManager
   enum AccessScope {
     kWindow,
     kSharedStorageWorklet,
+    kProtectedAudienceWorklet,
     kHeader,
   };
 

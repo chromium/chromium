@@ -39,6 +39,8 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
   class SharedStorageObserverInterface : public base::CheckedObserver {
    public:
+    // TODO(https://crbug.com/380291909): Introduce more granular types to
+    // distinguish PA worklet access from shared storage worklet access.
     enum AccessType {
       // The "Document" prefix indicates that the method is called from the
       // Window scope, and the "Worklet" prefix indicates that the method is

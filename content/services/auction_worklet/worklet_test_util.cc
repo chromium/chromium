@@ -139,21 +139,22 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper) {
 }
 
 TestAuctionSharedStorageHost::Request::Request(
-    network::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr
+        method_with_options,
     mojom::AuctionWorkletFunction source_auction_worklet_function)
-    : method(std::move(method)),
+    : method_with_options(std::move(method_with_options)),
       source_auction_worklet_function(source_auction_worklet_function) {}
 
 TestAuctionSharedStorageHost::Request::~Request() = default;
 
 TestAuctionSharedStorageHost::Request::Request(const Request& other)
-    : method(other.method->Clone()),
+    : method_with_options(other.method_with_options->Clone()),
       source_auction_worklet_function(other.source_auction_worklet_function) {}
 
 TestAuctionSharedStorageHost::Request&
 TestAuctionSharedStorageHost::Request::operator=(const Request& other) {
   if (this != &other) {
-    method = other.method->Clone();
+    method_with_options = other.method_with_options->Clone();
     source_auction_worklet_function = other.source_auction_worklet_function;
   }
   return *this;
@@ -164,21 +165,19 @@ TestAuctionSharedStorageHost::Request&
 TestAuctionSharedStorageHost::Request::operator=(Request&& other) = default;
 
 bool TestAuctionSharedStorageHost::Request::operator==(
-    const Request& rhs) const {
-  return method == rhs.method &&
-         source_auction_worklet_function == rhs.source_auction_worklet_function;
-}
+    const Request& rhs) const = default;
 
 TestAuctionSharedStorageHost::TestAuctionSharedStorageHost() = default;
 
 TestAuctionSharedStorageHost::~TestAuctionSharedStorageHost() = default;
 
 void TestAuctionSharedStorageHost::SharedStorageUpdate(
-    network::mojom::SharedStorageModifierMethodPtr method,
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr
+        method_with_options,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
   observed_requests_.emplace_back(
-      Request(std::move(method), source_auction_worklet_function));
+      Request(std::move(method_with_options), source_auction_worklet_function));
 }
 
 void TestAuctionSharedStorageHost::ClearObservedRequests() {
