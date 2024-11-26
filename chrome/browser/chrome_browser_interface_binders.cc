@@ -1627,20 +1627,18 @@ void PopulateChromeWebUIFrameBinders(
   // NearbyShareDialogUI will not be created for non-primary profiles, and 2)
   // rely on the BindInterface implementation of OSSettingsUI to ensure that no
   // Nearby Share receivers are bound.
-  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
-    RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::NearbyShareSettings, ash::settings::OSSettingsUI,
-        nearby_share::NearbyShareDialogUI>(map);
-    RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ContactManager,
-                                           ash::settings::OSSettingsUI,
-                                           nearby_share::NearbyShareDialogUI>(
-        map);
-    RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::DiscoveryManager,
-        nearby_share::NearbyShareDialogUI>(map);
-    RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ReceiveManager,
-                                           ash::settings::OSSettingsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      nearby_share::mojom::NearbyShareSettings, ash::settings::OSSettingsUI,
+      nearby_share::NearbyShareDialogUI>(map);
+  RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ContactManager,
+                                         ash::settings::OSSettingsUI,
+                                         nearby_share::NearbyShareDialogUI>(
+      map);
+  RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::DiscoveryManager,
+                                         nearby_share::NearbyShareDialogUI>(
+      map);
+  RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ReceiveManager,
+                                         ash::settings::OSSettingsUI>(map);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)

@@ -267,11 +267,7 @@ class OSSettingsDeviceTestAltAndSplitAndBacklightEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OSSettingsNearbyShareTestSharingEnabled : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kNearbySharing};
-};
+using OSSettingsNearbyShareTestSharingEnabled = OSSettingsMochaTest;
 
 class OSSettingsOsA11yTestMainNodeAnnotationsEnabled
     : public OSSettingsMochaTest {
