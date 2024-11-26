@@ -1712,6 +1712,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrument& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PaymentInstrumentCreationOption& proto) {
+  VISIT(id);
   VISIT(buy_now_pay_later_option);
 }
 

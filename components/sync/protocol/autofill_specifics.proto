@@ -598,8 +598,11 @@ message BnplIssuerDetails {
 // Details for payment instruments that the user is eligible to create an
 // instrument with.
 message PaymentInstrumentCreationOption {
+  // Identifier for the payment instrument creation option.
+  optional string id = 1;
+
   oneof creation_option {
-    BnplIssuerDetails buy_now_pay_later_option = 1;
+    BnplIssuerDetails buy_now_pay_later_option = 2;
   }
 }
 
