@@ -2834,6 +2834,611 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="Win32TpmErrorCodes">
+<!-- Source:
+     https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-6
+     with some amendments-->
+
+  <int value="-2144862208" label="TPM_E_ERROR_MASK">
+    This is an error mask to convert TPM hardware errors to win errors.
+  </int>
+  <int value="-2144862207" label="TPM_E_AUTHFAIL">Authentication failed.</int>
+  <int value="-2144862206" label="TPM_E_BADINDEX">
+    The index to a PCR, DIR or other register is incorrect.
+  </int>
+  <int value="-2144862205" label="TPM_E_BAD_PARAMETER">
+    One or more parameter is bad.
+  </int>
+  <int value="-2144862204" label="TPM_E_AUDITFAILURE">
+    An operation completed successfully but the auditing of that operation
+    failed.
+  </int>
+  <int value="-2144862203" label="TPM_E_CLEAR_DISABLED">
+    The clear disable flag is set and all clear operations now require physical
+    access.
+  </int>
+  <int value="-2144862202" label="TPM_E_DEACTIVATED">
+    Activate the Trusted Platform Module (TPM).
+  </int>
+  <int value="-2144862201" label="TPM_E_DISABLED">
+    Enable the Trusted Platform Module (TPM).
+  </int>
+  <int value="-2144862200" label="TPM_E_DISABLED_CMD">
+    The target command has been disabled.
+  </int>
+  <int value="-2144862199" label="TPM_E_FAIL">The operation failed.</int>
+  <int value="-2144862198" label="TPM_E_BAD_ORDINAL">
+    The ordinal was unknown or inconsistent.
+  </int>
+  <int value="-2144862197" label="TPM_E_INSTALL_DISABLED">
+    The ability to install an owner is disabled.
+  </int>
+  <int value="-2144862196" label="TPM_E_INVALID_KEYHANDLE">
+    The key handle cannot be interpreted.
+  </int>
+  <int value="-2144862195" label="TPM_E_KEYNOTFOUND">
+    The key handle points to an invalid key.
+  </int>
+  <int value="-2144862194" label="TPM_E_INAPPROPRIATE_ENC">
+    Unacceptable encryption scheme.
+  </int>
+  <int value="-2144862193" label="TPM_E_MIGRATEFAIL">
+    Migration authorization failed.
+  </int>
+  <int value="-2144862192" label="TPM_E_INVALID_PCR_INFO">
+    PCR information could not be interpreted.
+  </int>
+  <int value="-2144862191" label="TPM_E_NOSPACE">No room to load key.</int>
+  <int value="-2144862190" label="TPM_E_NOSRK">
+    There is no Storage Root Key (SRK) set.
+  </int>
+  <int value="-2144862189" label="TPM_E_NOTSEALED_BLOB">
+    An encrypted blob is invalid or was not created by this TPM.
+  </int>
+  <int value="-2144862188" label="TPM_E_OWNER_SET">
+    The Trusted Platform Module (TPM) already has an owner.
+  </int>
+  <int value="-2144862187" label="TPM_E_RESOURCES">
+    The TPM has insufficient internal resources to perform the requested action.
+  </int>
+  <int value="-2144862186" label="TPM_E_SHORTRANDOM">
+    A random string was too short.
+  </int>
+  <int value="-2144862185" label="TPM_E_SIZE">
+    The TPM does not have the space to perform the operation.
+  </int>
+  <int value="-2144862184" label="TPM_E_WRONGPCRVAL">
+    The named PCR value does not match the current PCR value.
+  </int>
+  <int value="-2144862183" label="TPM_E_BAD_PARAM_SIZE">
+    The paramSize argument to the command has the incorrect value .
+  </int>
+  <int value="-2144862182" label="TPM_E_SHA_THREAD">
+    There is no existing SHA-1 thread.
+  </int>
+  <int value="-2144862181" label="TPM_E_SHA_ERROR">
+    The calculation is unable to proceed because the existing SHA-1 thread has
+    already encountered an error.
+  </int>
+  <int value="-2144862180" label="TPM_E_FAILEDSELFTEST">
+    The TPM hardware device reported a failure during its internal self test.
+    Try restarting the computer to resolve the problem. If the problem
+    continues, you might need to replace your TPM hardware or motherboard.
+  </int>
+  <int value="-2144862179" label="TPM_E_AUTH2FAIL">
+    The authorization for the second key in a 2 key function failed
+    authorization.
+  </int>
+  <int value="-2144862178" label="TPM_E_BADTAG">
+    The tag value sent to for a command is invalid.
+  </int>
+  <int value="-2144862177" label="TPM_E_IOERROR">
+    An IO error occurred transmitting information to the TPM.
+  </int>
+  <int value="-2144862176" label="TPM_E_ENCRYPT_ERROR">
+    The encryption process had a problem.
+  </int>
+  <int value="-2144862175" label="TPM_E_DECRYPT_ERROR">
+    The decryption process did not complete.
+  </int>
+  <int value="-2144862174" label="TPM_E_INVALID_AUTHHANDLE">
+    An invalid handle was used.
+  </int>
+  <int value="-2144862173" label="TPM_E_NO_ENDORSEMENT">
+    The TPM does not have an Endorsement Key (EK) installed.
+  </int>
+  <int value="-2144862172" label="TPM_E_INVALID_KEYUSAGE">
+    The usage of a key is not allowed.
+  </int>
+  <int value="-2144862171" label="TPM_E_WRONG_ENTITYTYPE">
+    The submitted entity type is not allowed.
+  </int>
+  <int value="-2144862170" label="TPM_E_INVALID_POSTINIT">
+    The command was received in the wrong sequence relative to TPM_Init and a
+    subsequent TPM_Startup.
+  </int>
+  <int value="-2144862169" label="TPM_E_INAPPROPRIATE_SIG">
+    Signed data cannot include additional DER information.
+  </int>
+  <int value="-2144862168" label="TPM_E_BAD_KEY_PROPERTY">
+    The key properties in TPM_KEY_PARMs are not supported by this TPM.
+  </int>
+  <int value="-2144862167" label="TPM_E_BAD_MIGRATION">
+    The migration properties of this key are incorrect.
+  </int>
+  <int value="-2144862166" label="TPM_E_BAD_SCHEME">
+    The signature or encryption scheme for this key is incorrect or not
+    permitted in this situation.
+  </int>
+  <int value="-2144862165" label="TPM_E_BAD_DATASIZE">
+    The size of the data (or blob) parameter is bad or inconsistent with the
+    referenced key.
+  </int>
+  <int value="-2144862164" label="TPM_E_BAD_MODE">
+    A mode parameter is bad, such as capArea or subCapArea for
+    TPM_GetCapability, phsicalPresence parameter for TPM_PhysicalPresence, or
+    migrationType for TPM_CreateMigrationBlob.
+  </int>
+  <int value="-2144862163" label="TPM_E_BAD_PRESENCE">
+    Either the physicalPresence or physicalPresenceLock bits have the wrong
+    value.
+  </int>
+  <int value="-2144862162" label="TPM_E_BAD_VERSION">
+    The TPM cannot perform this version of the capability.
+  </int>
+  <int value="-2144862161" label="TPM_E_NO_WRAP_TRANSPORT">
+    The TPM does not allow for wrapped transport sessions.
+  </int>
+  <int value="-2144862160" label="TPM_E_AUDITFAIL_UNSUCCESSFUL">
+    TPM audit construction failed and the underlying command was returning a
+    failure code also.
+  </int>
+  <int value="-2144862159" label="TPM_E_AUDITFAIL_SUCCESSFUL">
+    TPM audit construction failed and the underlying command was returning
+    success.
+  </int>
+  <int value="-2144862158" label="TPM_E_NOTRESETABLE">
+    Attempt to reset a PCR register that does not have the resettable attribute.
+  </int>
+  <int value="-2144862157" label="TPM_E_NOTLOCAL">
+    Attempt to reset a PCR register that requires locality and locality modifier
+    not part of command transport.
+  </int>
+  <int value="-2144862156" label="TPM_E_BAD_TYPE">
+    Make identity blob not properly typed.
+  </int>
+  <int value="-2144862155" label="TPM_E_INVALID_RESOURCE">
+    When saving context identified resource type does not match actual resource.
+  </int>
+  <int value="-2144862154" label="TPM_E_NOTFIPS">
+    The TPM is attempting to execute a command only available when in FIPS mode.
+  </int>
+  <int value="-2144862153" label="TPM_E_INVALID_FAMILY">
+    The command is attempting to use an invalid family ID.
+  </int>
+  <int value="-2144862152" label="TPM_E_NO_NV_PERMISSION">
+    The permission to manipulate the NV storage is not available.
+  </int>
+  <int value="-2144862151" label="TPM_E_REQUIRES_SIGN">
+    The operation requires a signed command.
+  </int>
+  <int value="-2144862150" label="TPM_E_KEY_NOTSUPPORTED">
+    Wrong operation to load an NV key.
+  </int>
+  <int value="-2144862149" label="TPM_E_AUTH_CONFLICT">
+    NV_LoadKey blob requires both owner and blob authorization.
+  </int>
+  <int value="-2144862148" label="TPM_E_AREA_LOCKED">
+    The NV area is locked and not writtable.
+  </int>
+  <int value="-2144862147" label="TPM_E_BAD_LOCALITY">
+    The locality is incorrect for the attempted operation.
+  </int>
+  <int value="-2144862146" label="TPM_E_READ_ONLY">
+    The NV area is read only and can't be written to.
+  </int>
+  <int value="-2144862145" label="TPM_E_PER_NOWRITE">
+    There is no protection on the write to the NV area.
+  </int>
+  <int value="-2144862144" label="TPM_E_FAMILYCOUNT">
+    The family count value does not match.
+  </int>
+  <int value="-2144862143" label="TPM_E_WRITE_LOCKED">
+    The NV area has already been written to.
+  </int>
+  <int value="-2144862142" label="TPM_E_BAD_ATTRIBUTES">
+    The NV area attributes conflict.
+  </int>
+  <int value="-2144862141" label="TPM_E_INVALID_STRUCTURE">
+    The structure tag and version are invalid or inconsistent.
+  </int>
+  <int value="-2144862140" label="TPM_E_KEY_OWNER_CONTROL">
+    The key is under control of the TPM Owner and can only be evicted by the TPM
+    Owner.
+  </int>
+  <int value="-2144862139" label="TPM_E_BAD_COUNTER">
+    The counter handle is incorrect.
+  </int>
+  <int value="-2144862138" label="TPM_E_NOT_FULLWRITE">
+    The write is not a complete write of the area.
+  </int>
+  <int value="-2144862137" label="TPM_E_CONTEXT_GAP">
+    The gap between saved context counts is too large.
+  </int>
+  <int value="-2144862136" label="TPM_E_MAXNVWRITES">
+    The maximum number of NV writes without an owner has been exceeded.
+  </int>
+  <int value="-2144862135" label="TPM_E_NOOPERATOR">
+    No operator AuthData value is set.
+  </int>
+  <int value="-2144862134" label="TPM_E_RESOURCEMISSING">
+    The resource pointed to by context is not loaded.
+  </int>
+  <int value="-2144862133" label="TPM_E_DELEGATE_LOCK">
+    The delegate administration is locked.
+  </int>
+  <int value="-2144862132" label="TPM_E_DELEGATE_FAMILY">
+    Attempt to manage a family other than the delegated family.
+  </int>
+  <int value="-2144862131" label="TPM_E_DELEGATE_ADMIN">
+    Delegation table management not enabled.
+  </int>
+  <int value="-2144862130" label="TPM_E_TRANSPORT_NOTEXCLUSIVE">
+    There was a command executed outside of an exclusive transport session.
+  </int>
+  <int value="-2144862129" label="TPM_E_OWNER_CONTROL">
+    Attempt to context save a owner evict controlled key.
+  </int>
+  <int value="-2144862128" label="TPM_E_DAA_RESOURCES">
+    The DAA command has no resources availble to execute the command.
+  </int>
+  <int value="-2144862127" label="TPM_E_DAA_INPUT_DATA0">
+    The consistency check on DAA parameter inputData0 has failed.
+  </int>
+  <int value="-2144862126" label="TPM_E_DAA_INPUT_DATA1">
+    The consistency check on DAA parameter inputData1 has failed.
+  </int>
+  <int value="-2144862125" label="TPM_E_DAA_ISSUER_SETTINGS">
+    The consistency check on DAA_issuerSettings has failed.
+  </int>
+  <int value="-2144862124" label="TPM_E_DAA_TPM_SETTINGS">
+    The consistency check on DAA_tpmSpecific has failed.
+  </int>
+  <int value="-2144862123" label="TPM_E_DAA_STAGE">
+    The atomic process indicated by the submitted DAA command is not the
+    expected process.
+  </int>
+  <int value="-2144862122" label="TPM_E_DAA_ISSUER_VALIDITY">
+    The issuer's validity check has detected an inconsistency.
+  </int>
+  <int value="-2144862121" label="TPM_E_DAA_WRONG_W">
+    The consistency check on w has failed.
+  </int>
+  <int value="-2144862120" label="TPM_E_BAD_HANDLE">
+    The handle is incorrect.
+  </int>
+  <int value="-2144862119" label="TPM_E_BAD_DELEGATE">
+    Delegation is not correct.
+  </int>
+  <int value="-2144862118" label="TPM_E_BADCONTEXT">
+    The context blob is invalid.
+  </int>
+  <int value="-2144862117" label="TPM_E_TOOMANYCONTEXTS">
+    Too many contexts held by the TPM.
+  </int>
+  <int value="-2144862116" label="TPM_E_MA_TICKET_SIGNATURE">
+    Migration authority signature validation failure.
+  </int>
+  <int value="-2144862115" label="TPM_E_MA_DESTINATION">
+    Migration destination not authenticated.
+  </int>
+  <int value="-2144862114" label="TPM_E_MA_SOURCE">
+    Migration source incorrect.
+  </int>
+  <int value="-2144862113" label="TPM_E_MA_AUTHORITY">
+    Incorrect migration authority.
+  </int>
+  <int value="-2144862111" label="TPM_E_PERMANENTEK">
+    Attempt to revoke the EK and the EK is not revocable.
+  </int>
+  <int value="-2144862110" label="TPM_E_BAD_SIGNATURE">
+    Bad signature of CMK ticket.
+  </int>
+  <int value="-2144862109" label="TPM_E_NOCONTEXTSPACE">
+    There is no room in the context list for additional contexts.
+  </int>
+  <int value="-2144862078" label="TPM_20_E_ATTRIBUTES">
+    TPM 2.0: Inconsistent attributes.
+  </int>
+  <int value="-2144862077" label="TPM_20_E_HASH">
+    TPM 2.0: Hash algorithm not supported or not appropriate.
+  </int>
+  <int value="-2144862076" label="TPM_20_E_VALUE">
+    TPM 2.0: Value is out of range or is not correct for the context.
+  </int>
+  <int value="-2144862075" label="TPM_20_E_HIERARCHY">
+    TPM 2.0: Hierarchy is not enabled or is not correct for the use.
+  </int>
+  <int value="-2144862073" label="TPM_20_E_KEY_SIZE">
+    TPM 2.0: Key size is not supported.
+  </int>
+  <int value="-2144862072" label="TPM_20_E_MGF">
+    TPM 2.0: Mask generation function not supported.
+  </int>
+  <int value="-2144862071" label="TPM_20_E_MODE">
+    TPM 2.0: Mode of operation not supported.
+  </int>
+  <int value="-2144862070" label="TPM_20_E_TYPE">
+    TPM 2.0: The type of the value is not appropriate for the use.
+  </int>
+  <int value="-2144862069" label="TPM_20_E_HANDLE">
+    TPM 2.0: The Handle is not correct for the use.
+  </int>
+  <int value="-2144862068" label="TPM_20_E_KDF">
+    TPM 2.0: Unsupported key derivation function or function not appropriate for
+    use.
+  </int>
+  <int value="-2144862067" label="TPM_20_E_RANGE">
+    TPM 2.0: Value was out of allowed range.
+  </int>
+  <int value="-2144862066" label="TPM_20_E_AUTH_FAIL">
+    TPM 2.0: The authorization HMAC check failed and DA counter incremented.
+  </int>
+  <int value="-2144862065" label="TPM_20_E_NONCE">
+    TPM 2.0: Invalid nonce size.
+  </int>
+  <int value="-2144862062" label="TPM_20_E_SCHEME">
+    TPM 2.0: Unsupported or incompatible scheme.
+  </int>
+  <int value="-2144862059" label="TPM_20_E_SIZE">
+    TPM 2.0: Structure is wrong size..
+  </int>
+  <int value="-2144862058" label="TPM_20_E_SYMMETRIC">
+    TPM 2.0: Unsupported symmetric algorithm or key size, or not appropriate for
+    instance.
+  </int>
+  <int value="-2144862057" label="TPM_20_E_TAG">
+    TPM 2.0: Incorrect structure tag.
+  </int>
+  <int value="-2144862056" label="TPM_20_E_SELECTOR">
+    TPM 2.0: Union selector is incorrect.
+  </int>
+  <int value="-2144862054" label="&gt;TPM_20_E_INSUFFICIENT">
+    TPM 2.0: The TPM was unable to unmarshal a value because there were not
+    enough octets in the input buffer.
+  </int>
+  <int value="-2144862053" label="TPM_20_E_SIGNATURE">
+    TPM 2.0: The signature is not valid.
+  </int>
+  <int value="-2144862052" label="TPM_20_E_KEY">
+    TPM 2.0: Key fields are not compatible with the selected use.
+  </int>
+  <int value="-2144862051" label="TPM_20_E_POLICY_FAIL">
+    TPM 2.0: A policy check failed.
+  </int>
+  <int value="-2144862049" label="TPM_20_E_INTEGRITY">
+    TPM 2.0: Integrity check failed.
+  </int>
+  <int value="-2144862048" label="TPM_20_E_TICKET">
+    TPM 2.0: Invalid ticket.
+  </int>
+  <int value="-2144862047" label="TPM_20_E_RESERVED_BITS">
+    TPM 2.0: Reserved bits not set to zero as required.
+  </int>
+  <int value="-2144862046" label="TPM_20_E_BAD_AUTH">
+    TPM 2.0: Authorization failure without DA implications.
+  </int>
+  <int value="-2144862045" label="TPM_20_E_EXPIRED">
+    TPM 2.0: The policy has expired.
+  </int>
+  <int value="-2144862044" label="TPM_20_E_POLICY_CC">
+    TPM 2.0: The command code in the policy is not the command code of the
+    command or the command code in a policy command references a command that is
+    not implemented.
+  </int>
+  <int value="-2144862043" label="TPM_20_E_BINDING">
+    TPM 2.0: Public and sensitive portions of an object are not
+    cryptographically bound.
+  </int>
+  <int value="-2144862042" label="TPM_20_E_CURVE">
+    TPM 2.0: Curve not supported.
+  </int>
+  <int value="-2144862041" label="TPM_20_E_ECC_POINT">
+    TPM 2.0: Point is not on the required curve.
+  </int>
+  <int value="-2144861952" label="TPM_20_E_INITIALIZE">
+    TPM 2.0: TPM not initialized.
+  </int>
+  <int value="-2144861951" label="TPM_20_E_FAILURE">
+    TPM 2.0: Commands not being accepted because of a TPM failure.
+  </int>
+  <int value="-2144861949" label="TPM_20_E_SEQUENCE">
+    TPM 2.0: Improper use of a sequence handle.
+  </int>
+  <int value="-2144861941" label="TPM_20_E_PRIVATE">
+    TPM 2.0: TPM_RC_PRIVATE error.
+  </int>
+  <int value="-2144861927" label="TPM_20_E_HMAC">TPM 2.0: TPM_RC_HMAC.</int>
+  <int value="-2144861920" label="TPM_20_E_DISABLED">
+    TPM 2.0: TPM_RC_DISABLED.
+  </int>
+  <int value="-2144861919" label="TPM_20_E_EXCLUSIVE">
+    TPM 2.0: Command failed because audit sequence required exclusivity.
+  </int>
+  <int value="-2144861917" label="TPM_20_E_ECC_CURVE">
+    TPM 2.0: Unsupported ECC curve.
+  </int>
+  <int value="-2144861916" label="TPM_20_E_AUTH_TYPE">
+    TPM 2.0: Authorization handle is not correct for command.
+  </int>
+  <int value="-2144861915" label="TPM_20_E_AUTH_MISSING">
+    TPM 2.0: Command requires an authorization session for handle and is not
+    present.
+  </int>
+  <int value="-2144861914" label="TPM_20_E_POLICY">
+    TPM 2.0: Policy failure in Math Operation or an invalid authPolicy value.
+  </int>
+  <int value="-2144861913" label="TPM_20_E_PCR">TPM 2.0: PCR check fail.</int>
+  <int value="-2144861912" label="TPM_20_E_PCR_CHANGED">
+    TPM 2.0: PCR have changed since checked.
+  </int>
+  <int value="-2144861907" label="TPM_20_E_UPGRADE">
+    TPM 2.0: The TPM is not in the right mode for upgrade.
+  </int>
+  <int value="-2144861906" label="TPM_20_E_TOO_MANY_CONTEXTS">
+    TPM 2.0: Context ID counter is at maximum.
+  </int>
+  <int value="-2144861905" label="TPM_20_E_AUTH_UNAVAILABLE">
+    TPM 2.0: authValue or authPolicy is not available for selected entity.
+  </int>
+  <int value="-2144861904" label="TPM_20_E_REBOOT">
+    TPM 2.0: A _TPM_Init and Startup(CLEAR) is required before the TPM can
+    resume operation.
+  </int>
+  <int value="-2144861903" label="TPM_20_E_UNBALANCED">
+    TPM 2.0: The protection algorithms (hash and symmetric) are not reasonably
+    balanced. The digest size of the hash must be larger than the key size of
+    the symmetric algorithm.
+  </int>
+  <int value="-2144861886" label="TPM_20_E_COMMAND_SIZE">
+    TPM 2.0: The TPM command's commandSize value is inconsistent with contents
+    of the command buffer; either the size is not the same as the bytes loaded
+    by the hardware interface layer or the value is not large enough to hold a
+    command header.
+  </int>
+  <int value="-2144861885" label="TPM_20_E_COMMAND_CODE">
+    TPM 2.0: Command code not supported.
+  </int>
+  <int value="-2144861884" label="TPM_20_E_AUTHSIZE">
+    TPM 2.0: The value of authorizationSize is out of range or the number of
+    octets in the authorization Area is greater than required.
+  </int>
+  <int value="-2144861883" label="TPM_20_E_AUTH_CONTEXT">
+    TPM 2.0: Use of an authorization session with a context command or another
+    command that cannot have an authorization session.
+  </int>
+  <int value="-2144861882" label="TPM_20_E_NV_RANGE">
+    TPM 2.0: NV offset+size is out of range.
+  </int>
+  <int value="-2144861881" label="TPM_20_E_NV_SIZE">
+    TPM 2.0: Requested allocation size is larger than allowed.
+  </int>
+  <int value="-2144861880" label="TPM_20_E_NV_LOCKED">
+    TPM 2.0: NV access locked.
+  </int>
+  <int value="-2144861879" label="TPM_20_E_NV_AUTHORIZATION">
+    TPM 2.0: NV access authorization fails in command actions
+  </int>
+  <int value="-2144861878" label="TPM_20_E_NV_UNINITIALIZED">
+    TPM 2.0: An NV index is used before being initialized or the state saved by
+    TPM2_Shutdown(STATE) could not be restored.
+  </int>
+  <int value="-2144861877" label="TPM_20_E_NV_SPACE">
+    TPM 2.0: Insufficient space for NV allocation.
+  </int>
+  <int value="-2144861876" label="TPM_20_E_NV_DEFINED">
+    TPM 2.0: NV index or persistent object already defined.
+  </int>
+  <int value="-2144861872" label="TPM_20_E_BAD_CONTEXT">
+    TPM 2.0: Context in TPM2_ContextLoad() is not valid.
+  </int>
+  <int value="-2144861871" label="TPM_20_E_CPHASH">
+    TPM 2.0: chHash value already set or not correct for use.
+  </int>
+  <int value="-2144861870" label="TPM_20_E_PARENT">
+    TPM 2.0: Handle for parent is not a valid parent.
+  </int>
+  <int value="-2144861869" label="TPM_20_E_NEEDS_TEST">
+    TPM 2.0: Some function needs testing.
+  </int>
+  <int value="-2144861868" label="TPM_20_E_NO_RESULT">
+    TPM 2.0: returned when an internal function cannot process a request due to
+    an unspecified problem. This code is usually related to invalid parameters
+    that are not properly filtered by the input unmarshaling code.
+  </int>
+  <int value="-2144861867" label="TPM_20_E_SENSITIVE">
+    TPM 2.0: The sensitive area did not unmarshal correctly after decryption -
+    this code is used in lieu of the other unmarshaling errors so that an
+    attacker cannot determine where the unmarshaling error occurred.
+  </int>
+  <int value="-2144861184" label="TPM_E_COMMAND_BLOCKED">
+    The command was blocked.
+  </int>
+  <int value="-2144861183" label="TPM_E_INVALID_HANDLE">
+    The specified handle was not found.
+  </int>
+  <int value="-2144861182" label="TPM_E_DUPLICATE_VHANDLE">
+    The TPM returned a duplicate handle and the command needs to be resubmitted.
+  </int>
+  <int value="-2144861181" label="TPM_E_EMBEDDED_COMMAND_BLOCKED">
+    The command within the transport was blocked.
+  </int>
+  <int value="-2144861180" label="TPM_E_EMBEDDED_COMMAND_UNSUPPORTED">
+    The command within the transport is not supported.
+  </int>
+  <int value="-2144860160" label="TPM_E_RETRY">
+    The TPM is too busy to respond to the command immediately, but the command
+    could be resubmitted at a later time.
+  </int>
+  <int value="-2144860159" label="TPM_E_NEEDS_SELFTEST">
+    SelfTestFull has not been run.
+  </int>
+  <int value="-2144860158" label="TPM_E_DOING_SELFTEST">
+    The TPM is currently executing a full selftest.
+  </int>
+  <int value="-2144860157" label="TPM_E_DEFEND_LOCK_RUNNING">
+    The TPM is defending against dictionary attacks and is in a time-out period.
+  </int>
+  <int value="-2144859903" label="TPM_20_E_CONTEXT_GAP">
+    TPM 2.0: Gap for context ID is too large.
+  </int>
+  <int value="-2144859902" label="TPM_20_E_OBJECT_MEMORY">
+    TPM 2.0: Out of memory for object contexts.
+  </int>
+  <int value="-2144859901" label="TPM_20_E_SESSION_MEMORY">
+    TPM 2.0: Out of memory for session contexts.
+  </int>
+  <int value="-2144859900" label="TPM_20_E_MEMORY">
+    TPM 2.0: Out of shared object/session memory or need space for internal
+    operations.
+  </int>
+  <int value="-2144859899" label="TPM_20_E_SESSION_HANDLES">
+    TPM 2.0: Out of session handles - a session must be flushed before a new
+    session may be created.
+  </int>
+  <int value="-2144859898" label="TPM_20_E_OBJECT_HANDLES">
+    TPM 2.0: Out of object handles - the handle space for objects is depleted
+    and a reboot is required.
+  </int>
+  <int value="-2144859897" label="TPM_20_E_LOCALITY">
+    TPM 2.0: Bad locality.
+  </int>
+  <int value="-2144859896" label="TPM_20_E_YIELDED">
+    TPM 2.0: The TPM has suspended operation on the command; forward progress
+    was made and the command may be retried.
+  </int>
+  <int value="-2144859895" label="TPM_20_E_CANCELED">
+    TPM 2.0: The command was canceled.
+  </int>
+  <int value="-2144859894" label="TPM_20_E_TESTING">
+    TPM 2.0: TPM is performing self-tests.
+  </int>
+  <int value="-2144859872" label="TPM_20_E_NV_RATE">
+    TPM 2.0: The TPM is rate-limiting accesses to prevent wearout of NV.
+  </int>
+  <int value="-2144859871" label="TPM_20_E_LOCKOUT">
+    TPM 2.0: Authorization for objects subject to DA protection are not allowed
+    at this time because the TPM is in DA lockout mode.
+  </int>
+  <int value="-2144859870" label="TPM_20_E_RETRY">
+    TPM 2.0: The TPM was not able to start the command.
+  </int>
+  <int value="-2144859869" label="TPM_20_E_NV_UNAVAILABLE">
+    TPM 2.0: the command may require writing of NV and NV is not current
+    accessible..
+  </int>
+</enum>
+
 <enum name="ZeroRttState">
   <int value="0" label="Attempted and succeeded"/>
   <int value="1" label="Attempted and rejected"/>
