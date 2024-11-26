@@ -796,3 +796,8 @@
 # TODO(crbug.com/374094212): This test has been failing since
 # https://crrev.com/c/5773370.
 -RenderFrameHostImplWithTokensBrowserTest.ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData
+
+# TODO(crbug.com/380308803): This test has been failing since
+# https://crrev.com/c/6000136.
+-All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor1
+-All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor2
