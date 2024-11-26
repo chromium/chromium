@@ -218,16 +218,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsVariableRefreshRateAlwaysOn();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kBubbleMetricsApi);
 
-#if BUILDFLAG(IS_APPLE)
-// Font Smoothing, a CoreText technique, simulates optical sizes to enhance text
-// readability at smaller scales. In practice, it leads to an increased
-// perception of text weight, creating discrepancies between renderings in UX
-// design tools and actual macOS displays. This feature is only effective when
-// ChromeRefresh2023 is enabled.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kCr2023MacFontSmoothing);
-#endif  // BUILDFLAG(IS_APPLE)
-
 #if BUILDFLAG(IS_WIN)
 // Use font settings for contrast and gamma as specified in system settings.
 // If not set, these values fall back to the pre-defined Skia defaults.
