@@ -255,6 +255,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
                     @Override
                     public void onSheetOpened(@StateChangeReason int reason) {
+                        // The scrim may start visible, meaning we won't get an update. Manually
+                        // trigger an update to account for this possibility.
                         scrimVisibilityChanged(mScrimCoordinatorSupplier.get().isShowingScrim());
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && mBottomSheet

@@ -42,6 +42,7 @@ robolectric_library("junit_tests") {
   ]
   deps = [
     ":java",
+    "../:java",
     "//base:base_java",
     "//base:base_junit_test_support",
     "//components/browser_ui/desktop_windowing/android:java",
