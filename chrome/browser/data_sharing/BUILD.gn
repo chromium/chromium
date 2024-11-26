@@ -84,6 +84,7 @@ if (is_android) {
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/share/android:java",
       "//components/browser_ui/styles/android:java_resources",
+      "//components/collaboration/public:messaging_java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",
       "//components/embedder_support/android:util_java",

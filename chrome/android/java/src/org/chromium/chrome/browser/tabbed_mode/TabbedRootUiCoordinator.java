@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
@@ -1268,7 +1269,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!serviceStatus.isAllowedToJoin()) return;
 
         mDataSharingTabManager.initWithProfile(
-                profile, DataSharingServiceFactory.getForProfile(profile));
+                profile,
+                DataSharingServiceFactory.getForProfile(profile),
+                MessagingBackendServiceFactory.getForProfile(profile));
 
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
                 .runSyncOrOnAvailable(

@@ -225,7 +225,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 dataSharingTabManager.showManageSharing(activity, collaborationId);
                 recordUserAction("ManageSharing");
             } else if (menuId == R.id.recent_activity) {
-                dataSharingTabManager.showRecentActivity(collaborationId);
+                dataSharingTabManager.showRecentActivity(activity, collaborationId);
                 recordUserAction("RecentActivity");
             } else if (menuId == R.id.delete_shared_group) {
                 TabUiUtils.deleteSharedTabGroup(

@@ -1427,7 +1427,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB1_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.RecentActivity"));
-        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+        verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
     }
 
     @Test
@@ -1680,7 +1680,7 @@ public class TabGridDialogMediatorUnitTest {
                 .get(MESSAGE_SERVICE_ACTION_PROVIDER)
                 .review();
 
-        verify(mDataSharingTabManager, never()).showRecentActivity(any());
+        verify(mDataSharingTabManager, never()).showRecentActivity(any(), anyString());
         verify(mDialogController, atLeastOnce())
                 .removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
     }
@@ -1699,7 +1699,7 @@ public class TabGridDialogMediatorUnitTest {
                 .get(MESSAGE_SERVICE_ACTION_PROVIDER)
                 .review();
 
-        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+        verify(mDataSharingTabManager).showRecentActivity(mActivity, COLLABORATION_ID1);
     }
 
     @Test

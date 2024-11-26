@@ -953,7 +953,7 @@ public class TabGridDialogMediator
             mDataSharingTabManager.showManageSharing(mActivity, collaborationId);
         } else if (menuId == R.id.recent_activity) {
             RecordUserAction.record("TabGridDialogMenu.RecentActivity");
-            mDataSharingTabManager.showRecentActivity(collaborationId);
+            mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
         } else if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             boolean hideTabGroups = menuId == R.id.close_tab_group;
             if (hideTabGroups) {
@@ -1334,7 +1334,7 @@ public class TabGridDialogMediator
         @Nullable
         String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
         if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
-            mDataSharingTabManager.showRecentActivity(collaborationId);
+            mDataSharingTabManager.showRecentActivity(mActivity, collaborationId);
         } else {
             removeCollaborationActivityMessageCard();
         }

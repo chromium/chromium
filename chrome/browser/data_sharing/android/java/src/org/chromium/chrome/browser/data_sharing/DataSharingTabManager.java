@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
@@ -85,6 +86,7 @@ public class DataSharingTabManager {
     private FaviconHelper mFaviconHelper;
     private @Nullable Profile mProfile;
     private @Nullable DataSharingService mDataSharingService;
+    private @Nullable MessagingBackendService mMessagingBackendService;
 
     /** This class is responsible for observing sync tab activities. */
     private static class SyncObserver implements TabGroupSyncService.Observer {
@@ -151,10 +153,16 @@ public class DataSharingTabManager {
      *
      * @param profile The loaded profile.
      * @param dataSharingService Data sharing service associated with the profile.
+     * @param messagingBackendService The messaging backend used to show recent activity UI.
      */
-    public void initWithProfile(@NonNull Profile profile, DataSharingService dataSharingService) {
+    public void initWithProfile(
+            @NonNull Profile profile,
+            DataSharingService dataSharingService,
+            MessagingBackendService messagingBackendService) {
         mProfile = profile;
+        assert !mProfile.isOffTheRecord();
         mDataSharingService = dataSharingService;
+        mMessagingBackendService = messagingBackendService;
         while (!mTasksToRunOnProfileAvailable.isEmpty()) {
             Runnable task = mTasksToRunOnProfileAvailable.removeFirst();
             task.run();
@@ -746,6 +754,9 @@ public class DataSharingTabManager {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
             return;
         }
+
+        assert mProfile != null;
+
         DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
 
         DataSharingStringConfig stringConfig =
@@ -791,9 +802,15 @@ public class DataSharingTabManager {
     /**
      * Shows UI for recent activity.
      *
+     * @param activity The associated activity.
      * @param collaborationId The collaboration ID to show the UI for.
      */
-    public void showRecentActivity(String collaborationId) {}
+    public void showRecentActivity(Activity activity, String collaborationId) {
+        assert mProfile != null;
+        assert mMessagingBackendService != null;
+
+        // TODO(crbug.com/380962101): Finish implementation.
+    }
 
     protected BottomSheetContent showBottomSheet(
             Context context, Callback<Integer> onClosedCallback) {

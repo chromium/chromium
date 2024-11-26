@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.DataSharingService.ParseUrlResult;
@@ -132,6 +133,7 @@ public class DataSharingTabManagerUnitTest {
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
     @Mock private Profile mProfile;
@@ -175,7 +177,8 @@ public class DataSharingTabManagerUnitTest {
                         ApplicationProvider.getApplicationContext().getResources(),
                         mTabGroupUiActionHandlerSupplier);
 
-        mDataSharingTabManager.initWithProfile(mProfile, mDataSharingService);
+        mDataSharingTabManager.initWithProfile(
+                mProfile, mDataSharingService, mMessagingBackendService);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         mSavedTabGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);

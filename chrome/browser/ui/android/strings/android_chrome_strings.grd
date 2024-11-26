@@ -6907,6 +6907,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Changed
       </message>
 
+      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_TITLE" desc="The title of the bottom sheet that shows the list of recent activity in a collaboration.">
+        Recent Activity
+      </message>
+
       <!-- Interstitial shown prior to making digital identity request to wallet -->
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">
         Make sure you trust this site with your data
