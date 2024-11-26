@@ -16,7 +16,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
-#include "ui/views/widget/widget_observer.h"
 
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
@@ -46,8 +45,7 @@ class TabInterface;
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
-                                  public PictureInPictureOcclusionObserver,
-                                  public views::WidgetObserver {
+                                  public PictureInPictureOcclusionObserver {
  public:
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
@@ -199,6 +197,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
+  // Synchronously closes dialog_widget_.
+  // This method can result in synchronous destruction of `this`.
+  // Public for testing.
+  // TODO(https://crbug.com/377803489): Make private again.
+  void CloseWidget(views::Widget::ClosedReason reason);
+
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
@@ -223,10 +227,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Widget to control the dialog i.e. hide, show, add observer etc.
   // TODO(https://crbug.com/377803489): Make private again.
   // Protected for testing.
-  base::WeakPtr<views::Widget> dialog_widget_;
+  std::unique_ptr<views::Widget> dialog_widget_;
 
   // This view controls the contents of the dialog_widget_. Conceptually there
-  // should be a view if and only if there is a widget.
+  // is a view if and only if there is a widget. The two are constructed
+  // together and destroyed together. `dialog_widget_` owns
+  // `account_selection_view_`.
   // Protected for testing.
   raw_ptr<AccountSelectionViewBase> account_selection_view_;
 
@@ -352,9 +358,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kMaxValue = kTapScrim
   };
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
@@ -375,14 +378,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns the SheetType to be used for metrics reporting.
   AccountSelectionView::SheetType GetSheetType();
 
-  // Notify the delegate that the widget was closed with reason
-  // `dismiss_reason`.
-  void OnDismiss(
-      content::IdentityRequestDialogController::DismissReason dismiss_reason);
-
-  // Resets `account_selection_view_`. Typically, to recreate it later to show a
-  // different kind of dialog. Virtual for testing purposes.
-  virtual void MaybeResetAccountSelectionView();
+  // Closes widget if it exists and never notifies.
+  // Virtual for testing purposes.
+  virtual void CloseWidgetNoNotify();
 
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();

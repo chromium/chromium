@@ -151,6 +151,7 @@ AccountSelectionModalView::AccountSelectionModalView(
                                rp_for_display) {
   SetModalType(ui::mojom::ModalType::kChild);
   SetOwnedByWidget(true);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   set_fixed_width(kDialogWidth);
   SetShowTitle(false);
   SetShowCloseButton(false);

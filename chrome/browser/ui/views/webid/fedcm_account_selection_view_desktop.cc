@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
+#include "base/auto_reset.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -207,7 +208,7 @@ bool FedCmAccountSelectionView::Show(
   // and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    MaybeResetAccountSelectionView();
+    CloseWidgetNoNotify();
   }
 
   bool create_view = !account_selection_view_;
@@ -400,7 +401,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   // title and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    MaybeResetAccountSelectionView();
+    CloseWidgetNoNotify();
   }
 
   bool create_view = !account_selection_view_;
@@ -457,7 +458,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   // and other parts of the header.
   if ((rp_mode == blink::mojom::RpMode::kPassive && idp_list_.size() > 1) ||
       (rp_mode == blink::mojom::RpMode::kActive && !has_modal_support)) {
-    MaybeResetAccountSelectionView();
+    CloseWidgetNoNotify();
   }
 
   bool create_view = !account_selection_view_;
@@ -592,15 +593,6 @@ void FedCmAccountSelectionView::CreateAccountSelectionView(
   CreateDialogWidget();
 }
 
-void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
-  DismissReason dismiss_reason =
-      (GetDialogWidget()->closed_reason() ==
-       views::Widget::ClosedReason::kCloseButtonClicked)
-          ? DismissReason::kCloseButton
-          : DismissReason::kOther;
-  OnDismiss(dismiss_reason);
-}
-
 void FedCmAccountSelectionView::OnAccountsDisplayed() {
   delegate_->OnAccountsDisplayed();
 }
@@ -726,8 +718,7 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
   // pop-up. However if the user clicks cancel, we should dismiss so we should
   // set this back to true.
   notify_delegate_of_dismiss_ = true;
-  GetDialogWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+  CloseWidget(views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
@@ -1024,39 +1015,8 @@ void FedCmAccountSelectionView::Close() {
     return;
   }
 
-  pip_occlusion_observation_.reset();
-
-  // This prevents re-entrancy via OnWidgetDestroying().
-  GetDialogWidget()->RemoveObserver(this);
-
-  LogDialogDismissal(DismissReason::kOther);
-
-  // Implicitly owned by the dialog widget. Must clear to avoid UaF.
-  account_selection_view_ = nullptr;
-  scoped_ignore_input_events_.reset();
-  input_protector_.reset();
-
-  // This synchronously destroys the widget.
-  dialog_widget_->CloseNow();
-
-  if (notify_delegate_of_dismiss_) {
-    delegate_->OnDismiss(DismissReason::kOther);
-  }
-}
-
-// TODO(https://crbug.com/377803489): Delete this method.
-void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
-  if (!GetDialogWidget()) {
-    return;
-  }
-
-  LogDialogDismissal(dismiss_reason);
-  MaybeResetAccountSelectionView();
-  input_protector_.reset();
-
-  if (notify_delegate_of_dismiss_) {
-    delegate_->OnDismiss(dismiss_reason);
-  }
+  // The widget is synchronously destroyed.
+  CloseWidget(views::Widget::ClosedReason::kUnspecified);
 }
 
 views::Widget* FedCmAccountSelectionView::GetDialogWidget() {
@@ -1066,11 +1026,12 @@ views::Widget* FedCmAccountSelectionView::GetDialogWidget() {
 void FedCmAccountSelectionView::CreateDialogWidget() {
   CHECK(!dialog_widget_);
   CHECK(tab_);
-  views::Widget* widget = nullptr;
   if (dialog_type_ == DialogType::BUBBLE) {
     auto* bubble =
         static_cast<AccountSelectionBubbleView*>(account_selection_view_);
-    widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+    dialog_widget_ =
+        base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+            bubble, views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   } else {
     // Create and show the dialog widget. This is functionally a tab-modal
     // dialog.
@@ -1080,22 +1041,23 @@ void FedCmAccountSelectionView::CreateDialogWidget() {
         tab_->GetContents()->GetTopLevelNativeWindow();
     views::Widget* top_level_widget =
         views::Widget::GetWidgetForNativeWindow(top_level_native_window);
-    widget = views::DialogDelegate::CreateDialogWidget(
+    dialog_widget_ = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
         modal, /*context=*/nullptr,
-        /*parent=*/top_level_widget->GetNativeView());
+        /*parent=*/top_level_widget->GetNativeView()));
 
-    widget->Show();
+    dialog_widget_->Show();
     scoped_ignore_input_events_ =
         tab_->GetContents()->IgnoreInputEvents(std::nullopt);
   }
 
-  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
-  dialog_widget_ = widget->GetWeakPtr();
+  dialog_widget_->MakeCloseSynchronous(base::BindOnce(
+      &FedCmAccountSelectionView::CloseWidget, base::Unretained(this)));
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      dialog_widget_.get());
   UpdateDialogPosition();
-  widget->AddObserver(this);
   pip_occlusion_observation_ =
       std::make_unique<ScopedPictureInPictureOcclusionObservation>(this);
-  pip_occlusion_observation_->Observe(widget);
+  pip_occlusion_observation_->Observe(dialog_widget_.get());
 }
 
 FedCmAccountSelectionView::DialogType
@@ -1113,18 +1075,14 @@ views::View* FedCmAccountSelectionView::GetAnchorView() {
   return tab_->GetBrowserWindowInterface()->GetWebView();
 }
 
-void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
+void FedCmAccountSelectionView::CloseWidgetNoNotify() {
   if (!account_selection_view_) {
     return;
   }
-  if (GetDialogWidget()) {
-    GetDialogWidget()->RemoveObserver(this);
-    GetDialogWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kCancelButtonClicked);
-    scoped_ignore_input_events_.reset();
-    dialog_widget_.reset();
-  }
-  account_selection_view_ = nullptr;
+
+  // Never notify the delegate when this method is called.
+  base::AutoReset<bool> resetter(&notify_delegate_of_dismiss_, false);
+  CloseWidget(views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
@@ -1277,5 +1235,28 @@ void FedCmAccountSelectionView::LogDialogDismissal(
               static_cast<int>(*modal_account_chooser_state_))
           .Record(ukm::UkmRecorder::Get());
     }
+  }
+}
+
+void FedCmAccountSelectionView::CloseWidget(
+    views::Widget::ClosedReason reason) {
+  DismissReason dismiss_reason =
+      reason == views::Widget::ClosedReason::kCloseButtonClicked
+          ? DismissReason::kCloseButton
+          : DismissReason::kOther;
+  LogDialogDismissal(dismiss_reason);
+  input_protector_.reset();
+
+  pip_occlusion_observation_.reset();
+
+  // Implicitly owned by the dialog widget. Must clear to avoid UaF.
+  account_selection_view_ = nullptr;
+  scoped_ignore_input_events_.reset();
+  dialog_widget_.reset();
+
+  // This delegate call can result in synchronous destruction of `this`. Avoid
+  // referencing any members after this call.
+  if (notify_delegate_of_dismiss_) {
+    delegate_->OnDismiss(dismiss_reason);
   }
 }

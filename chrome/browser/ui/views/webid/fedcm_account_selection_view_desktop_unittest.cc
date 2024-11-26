@@ -210,7 +210,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   blink::mojom::RpContext GetRpContext() { return rp_context_; }
   size_t num_dialogs_{0u};
 
-  MOCK_METHOD(void, MaybeResetAccountSelectionView, (), (override));
+  MOCK_METHOD(void, CloseWidgetNoNotify, (), (override));
   bool can_fit_in_web_contents_{true};
   bool dialog_position_updated_{false};
   TestAccountSelectionView* GetTestView() {
@@ -535,12 +535,12 @@ namespace {
 void TestFedCmAccountSelectionView::CreateDialogWidget() {
   CHECK(!dialog_widget_);
   views::Widget::InitParams params =
-      test_->CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      test_->CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                           views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = GetTestView();
-  dialog_widget_ =
-      test_->CreateTestWidget(std::move(params)).release()->GetWeakPtr();
-  dialog_widget_->AddObserver(this);
+  dialog_widget_ = test_->CreateTestWidget(std::move(params));
+  dialog_widget_->MakeCloseSynchronous(base::BindOnce(
+      &FedCmAccountSelectionView::CloseWidget, base::Unretained(this)));
 }
 
 }  // namespace
@@ -799,7 +799,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking the close icon.
   controller->GetDialogWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
-  controller->OnWidgetDestroying(controller->GetDialogWidget());
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
@@ -820,7 +819,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user closing the mismatch dialog for an unspecified reason.
   controller->GetDialogWidget()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
-  controller->OnWidgetDestroying(controller->GetDialogWidget());
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
@@ -1503,7 +1501,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
 
   // Emulate the user clicking "cancel" button. This should close the widget.
   controller->OnCloseButtonClicked(CreateMouseEvent());
-  EXPECT_TRUE(controller->GetDialogWidget()->IsClosed());
+  EXPECT_FALSE(controller->GetDialogWidget());
 }
 
 // Tests that the error dialog can be shown.
@@ -1942,7 +1940,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowLoadingDialog();
 
-  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
+  EXPECT_CALL(*controller, CloseWidgetNoNotify).Times(0);
   accounts_ = {
       CreateAccount(idp_data_, LoginState::kSignIn, LoginState::kSignIn)};
   Show(*controller, accounts_, SignInMode::kAuto,
@@ -2228,7 +2226,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
 
-  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
+  EXPECT_CALL(*controller, CloseWidgetNoNotify).Times(0);
   controller->ShowErrorDialog(
       kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode::kActive, content::IdentityProviderMetadata(),
@@ -2243,7 +2241,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowLoadingDialog();
 
-  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
+  EXPECT_CALL(*controller, CloseWidgetNoNotify).Times(0);
   Show(*controller, accounts_, SignInMode::kExplicit,
        blink::mojom::RpMode::kActive);
 }
