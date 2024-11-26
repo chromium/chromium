@@ -300,16 +300,19 @@ class BottomSheet extends FrameLayout
      * @param alwaysFullWidth Whether bottom sheet is always full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of the bottom inset in DP when e2e is on.
      * @param appHeaderHeight The app header height, in px.
+     * @param bottomMargin The extra margin to add to the bottom of sheet container.
      */
     public void init(
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             boolean alwaysFullWidth,
             @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier,
-            int appHeaderHeight) {
+            int appHeaderHeight,
+            int bottomMargin) {
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mSheetContainer = (ViewGroup) getParent();
         onAppHeaderHeightChanged(appHeaderHeight);
+        setBottomMargin(bottomMargin);
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
@@ -541,11 +544,12 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMaxOffsetPx() {
-        return getFullRatio() * mContainerHeight;
+        return getFullRatio() * getMaxContentHeight();
     }
 
     /**
      * Show content in the bottom sheet's content area.
+     *
      * @param content The {@link BottomSheetContent} to show, or null if no content should be shown.
      */
     void showContent(@Nullable final BottomSheetContent content) {
@@ -876,7 +880,7 @@ class BottomSheet extends FrameLayout
 
         if (isFullHeightWrapContent()) {
             ensureContentDesiredHeightIsComputed();
-            return Math.min(getMaxContentHeight(), mContentDesiredHeight) / mContainerHeight;
+            return Math.min(getMaxContentHeight(), mContentDesiredHeight) / getMaxContentHeight();
         }
 
         return customFullRatio == HeightMode.DEFAULT ? 1 : customFullRatio;
@@ -1079,10 +1083,12 @@ class BottomSheet extends FrameLayout
             ensureContentDesiredHeightIsComputed();
         }
 
-        return getRatioForState(state) * mContainerHeight;
+        return getRatioForState(state) * getMaxContentHeight();
     }
 
-    /** @return The max possible height that the content can be. */
+    /**
+     * @return The max possible height that the content can be.
+     */
     private int getMaxContentHeight() {
         return mContainerHeight;
     }
@@ -1383,6 +1389,12 @@ class BottomSheet extends FrameLayout
             params.topMargin = appHeaderHeight;
             mSheetContainer.setLayoutParams(params);
         }
+    }
+
+    void setBottomMargin(int bottomMargin) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        layoutParams.bottomMargin = bottomMargin;
+        mSheetContainer.setLayoutParams(layoutParams);
     }
 
     private void ensureContentIsWrapped(boolean animate) {

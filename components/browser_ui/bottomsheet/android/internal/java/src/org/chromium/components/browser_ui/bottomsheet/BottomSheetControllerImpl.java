@@ -109,6 +109,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private int mAppHeaderHeight;
+    private int mBottomControlsHeight;
 
     /**
      * Build a new controller of the bottom sheet.
@@ -142,6 +143,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.addObserver(this);
         }
+
         mSheetInitializer =
                 () -> {
                     initializeSheet(initializedCallback, window, keyboardDelegate, root);
@@ -215,7 +217,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                 keyboardDelegate,
                 mAlwaysFullWidth,
                 mEdgeToEdgeBottomInsetSupplier,
-                mAppHeaderHeight);
+                mAppHeaderHeight,
+                mBottomControlsHeight);
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue =
@@ -252,6 +255,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
                     @Override
                     public void onSheetOpened(@StateChangeReason int reason) {
+                        scrimVisibilityChanged(mScrimCoordinatorSupplier.get().isShowingScrim());
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && mBottomSheet
                                         .getCurrentSheetContent()
@@ -334,6 +338,16 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     @Override
     public void setBrowserControlsHiddenRatio(float ratio) {
         if (mBottomSheet != null) mBottomSheet.setBrowserControlsHiddenRatio(ratio);
+    }
+
+    @Override
+    public void setBottomControlsHeight(int bottomControlsHeight) {
+        if (mBottomControlsHeight == bottomControlsHeight) return;
+        mBottomControlsHeight = bottomControlsHeight;
+        if (mScrimCoordinatorSupplier.hasValue()) {
+            // Set the appropriate offset for the current scrim state.
+            scrimVisibilityChanged(mScrimCoordinatorSupplier.get().isShowingScrim());
+        }
     }
 
     @Override
@@ -500,6 +514,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
     View getBottomSheetViewForTesting() {
         return mBottomSheet;
+    }
+
+    ViewGroup getBottomSheetContainerForTesting() {
+        return mBottomSheetContainer;
     }
 
     public void endAnimationsForTesting() {
@@ -676,12 +694,17 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     public void scrimVisibilityChanged(boolean scrimVisible) {
         if (mBottomSheet == null) return;
         if (scrimVisible && mBottomSheet.isSheetOpen()) {
-            // Scrimmed bottom sheet. Draw the bottom sheet container on top of all sibling views.
+            // Scrimmed bottom sheet. Draw the bottom sheet container on top of all sibling views,
+            // originating from the bottom of the screen.
             mBottomSheetContainer.setZ(1.0f);
+            mBottomSheet.setBottomMargin(0);
+
         } else {
             // Unscrimmed bottom sheet. Draw the bottom sheet container in its "natural" order; i.e.
-            // in the order specified in res_app/layout/main.xml.
+            // in the order specified in res_app/layout/main.xml. Draw originating from the top of
+            // the bottom controls.
             mBottomSheetContainer.setZ(0.0f);
+            mBottomSheet.setBottomMargin(mBottomControlsHeight);
         }
     }
 

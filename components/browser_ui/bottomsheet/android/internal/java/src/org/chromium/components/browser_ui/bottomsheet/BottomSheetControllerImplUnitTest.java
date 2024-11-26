@@ -91,7 +91,8 @@ public class BottomSheetControllerImplUnitTest {
                         mKeyboardVisibilityDelegate,
                         false,
                         mEdgeToEdgeBottomInsetSupplier,
-                        APP_HEADER_HEIGHT);
+                        APP_HEADER_HEIGHT,
+                        0);
     }
 
     @Test
@@ -134,5 +135,17 @@ public class BottomSheetControllerImplUnitTest {
 
         mController.scrimVisibilityChanged(false);
         verify(mRoot).setZ(0.0f);
+    }
+
+    @Test
+    public void testBottomControlsHeight() {
+        mController.runSheetInitializerForTesting();
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+        mController.setBottomControlsHeight(100);
+
+        verify(mBottomSheet).setBottomMargin(100);
+
+        mController.scrimVisibilityChanged(true);
+        verify(mBottomSheet).setBottomMargin(0);
     }
 }
