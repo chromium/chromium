@@ -26243,6 +26243,21 @@
             ]
         }
     ],
+    "WebViewEnableADPFGpuMain": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewEnableADPFGpuMain"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewFrameRateHints": [
         {
             "platforms": [
