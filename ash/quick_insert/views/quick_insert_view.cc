@@ -784,7 +784,8 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
 
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForQuickInsertCategory(category));
-  search_field_view_->SetBackButtonVisible(true);
+  search_field_view_->SetBackButtonVisible(category !=
+                                           QuickInsertCategory::kGifs);
   SetEmojiBarVisibleIfEnabled(false);
   UpdateSearchQueryAndActivePage(std::u16string(query));
 }
