@@ -261,18 +261,16 @@ Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
 
 ### Streams
 
-Using [Java streams] outside of tests is strongly discouraged. If you can write
-your code as an explicit loop, then do so. The primary reason for this guidance
-is because the lambdas (and method references) needed for streams almost always
-result in larger binary size than their loop equivalents (see
-[crbug.com/344943957] for examples).
+Most uses of [Java streams] are discouraged. If you can write your code as an
+explicit loop, then do so. The primary reason for this guidance is because the
+lambdas (and method references) needed for streams almost always result in
+larger binary size ([example](https://chromium-review.googlesource.com/c/chromium/src/+/4329952).
 
 The `parallel()` and `parallelStream()` APIs are simpler than their loop
-equivalents, but are banned due to a lack of a compelling use case in Chrome.
-If you find one, please discuss on `java@chromium.org`.
+equivalents, but are are currently banned due to a lack of a compelling use case
+in Chrome. If you find one, please discuss on `java@chromium.org`.
 
 [Java streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
-[crbug.com/344943957]: https://crbug.com/344943957
 
 ### AndroidX Annotations {#annotations}
 

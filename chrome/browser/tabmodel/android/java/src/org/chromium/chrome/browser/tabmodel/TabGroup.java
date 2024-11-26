@@ -105,7 +105,6 @@ class TabGroup {
     }
 
     /** Returns the ID of the last tab in the group. */
-    @SuppressWarnings("NoStreams") // No better way to do this while using LinkedHashSet.
     int getTabIdOfLastTab() {
         return mTabIds.stream().skip(mTabIds.size() - 1).findFirst().get();
     }
