@@ -808,10 +808,9 @@ void CanvasResourceSharedImage::OnMemoryDump(
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   memory_size);
 
-  auto guid = client_si->GetGUIDForTracing();
-  pmd->CreateSharedGlobalAllocatorDump(guid);
-  pmd->AddOwnershipEdge(dump->guid(), guid,
-                        static_cast<int>(gpu::TracingImportance::kClientOwner));
+  client_si->OnMemoryDump(
+      pmd, dump->guid(),
+      static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
 // ExternalCanvasResource
