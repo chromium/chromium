@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/chrome_app_window_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/debug_interface_registerer_ash.h"
@@ -200,8 +199,6 @@ CrosapiAsh::CrosapiAsh()
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
       chrome_app_kiosk_service_ash_(
           std::make_unique<ChromeAppKioskServiceAsh>()),
-      chrome_app_window_tracker_ash_(
-          std::make_unique<ChromeAppWindowTrackerAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       debug_interface_registerer_ash_(
@@ -414,11 +411,6 @@ void CrosapiAsh::BindChapsService(
 void CrosapiAsh::BindChromeAppKioskService(
     mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
   chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindChromeAppWindowTracker(
-    mojo::PendingReceiver<mojom::AppWindowTracker> receiver) {
-  chrome_app_window_tracker_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindClipboardHistory(

@@ -62,7 +62,6 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "chromeos/crosapi/mojom/audio_service.mojom.h"
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
@@ -433,7 +432,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::AppWindowTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserAppInstanceRegistry>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CecPrivate>(),

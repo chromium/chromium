@@ -10,7 +10,6 @@ import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/app_service.mojom";
-import "chromeos/crosapi/mojom/app_window_tracker.mojom";
 import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";
@@ -253,11 +252,7 @@ interface Crosapi {
 
   // BindChromeAppPublisher@43 was removed.
 
-  // Binds the window tracker for chrome apps. This allows Lacros to inform Ash
-  // of the relationship between AppService app_ids and exo/Wayland/aura
-  // windows.
-  [MinVersion=44]
-  BindChromeAppWindowTracker@49(pending_receiver<AppWindowTracker> receiver);
+  // BindChromeAppWindowTracker@49 was removed.
 
   // BindClipboard@15 was removed.
 
