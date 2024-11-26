@@ -444,6 +444,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.AnnotationStorage.IcaStatus"
+    enum="ImageAnnotationWorkerIcaStatus" expires_after="2025-01-31">
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Records status of launcher image search ICA processing. Logged at each stage
+    for debug purpose. The bucket proportion is not meaningful as it is a
+    recording of status through the ICA workflow. Instead, the bucket ratio can
+    be used to calculate the percentage of failures at each stage.
+  </summary>
+</histogram>
+
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.NumberOfRetries"
     units="count" expires_after="2025-03-02">
@@ -514,6 +526,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The type of errors that occur in the annotation worker. Logged once per
     error.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Timeout"
+    units="count" expires_after="2025-01-31">
+  <owner>chenjih@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Records the number of already indexed images before the timeout happens.
+    Logged once per Timeout.
   </summary>
 </histogram>
 

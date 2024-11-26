@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/file_search_result.h"
@@ -897,6 +898,11 @@ bool IsStopWord(const std::string& word) {
                                                });
 
   return kEnglishStopwords.contains(word);
+}
+
+void LogIcaUma(IcaStatus status) {
+  base::UmaHistogramEnumeration("Apps.AppList.AnnotationStorage.IcaStatus",
+                                status);
 }
 
 }  // namespace app_list
