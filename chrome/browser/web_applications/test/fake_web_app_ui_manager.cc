@@ -94,16 +94,6 @@ bool FakeWebAppUiManager::IsAppInQuickLaunchBar(
   return false;
 }
 
-bool FakeWebAppUiManager::IsInAppWindow(
-    content::WebContents* web_contents) const {
-  return false;
-}
-
-const webapps::AppId* FakeWebAppUiManager::GetAppIdForWindow(
-    const content::WebContents* web_contents) const {
-  return nullptr;
-}
-
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const webapps::AppId& app_id,
     bool shortcut_created) const {

@@ -35,8 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/permissions/permission_manager.h"
@@ -413,10 +412,9 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
         DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN);
   }
 
-  web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::GetForWebContents(web_contents());
-  if (web_app_provider &&
-      web_app_provider->ui_manager().IsInAppWindow(web_contents())) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents());
+  if (tab_helper && tab_helper->is_in_app_window()) {
     // Do not discard Desktop PWA windows. Preserve native-app experience.
     decision_details->AddReason(DecisionFailureReason::LIVE_WEB_APP);
   }

@@ -75,6 +75,7 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   }
 
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
 
   // This operation must be synchronous, so unfortunately we must use unsafe
   // access to the registrar.
@@ -93,6 +94,7 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   }
 
   // Don't capture if already inside the target app scope.
+  CHECK(web_contents);
   if (base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
                              &app_id)) {
     return std::nullopt;
@@ -102,8 +104,10 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   // previous early return didn't trigger, this means we are in an app window
   // but out of scope of the original app, and navigating will put us back in
   // scope.
-  if (base::ValuesEquivalent(
-          provider->ui_manager().GetAppIdForWindow(web_contents), &app_id)) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+  if (tab_helper->window_app_id() == possible_app_id) {
     return std::nullopt;
   }
   // Note: The launch can occur after this object is destroyed, so bind to a
