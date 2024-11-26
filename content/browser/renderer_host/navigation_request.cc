@@ -2119,9 +2119,15 @@ NavigationRequest::NavigationRequest(
       // the NotRestoredReasons API.
       commit_params_->not_restored_reasons =
           metrics->GetWebExposedNotRestoredReasons();
-      // Check that the reasons are not null since |this| is not served from
-      // back/forward cache.
-      CHECK(!commit_params_->not_restored_reasons.is_null());
+
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)) {
+        // Check that the reasons are not null since |this| is not served from
+        // back/forward cache.
+        // Session restored cases will be reported as null with the flag on and
+        // this check will no longer hold true.
+        CHECK(!commit_params_->not_restored_reasons.is_null());
+      }
     }
   }
   // Check that the reasons are null when |this| is served from back/forward

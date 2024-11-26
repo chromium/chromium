@@ -1837,6 +1837,13 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
     not_restored_reasons->same_origin_details->url = url_;
     // Populate the reasons for same-origin frames.
     for (auto& name : GetDocumentResult().GetStringReasons()) {
+      if (base::FeatureList::IsEnabled(
+              blink::features::kBackForwardCacheUpdateNotRestoredReasonsName) &&
+          name == "session-restored") {
+        // Session restore should return nullptr just like non-history
+        // navigations.
+        return nullptr;
+      }
       blink::mojom::BFCacheBlockingDetailedReasonPtr reason =
           blink::mojom::BFCacheBlockingDetailedReason::New();
       reason->name = name;

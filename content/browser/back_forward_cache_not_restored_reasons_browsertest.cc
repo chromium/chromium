@@ -518,6 +518,91 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 }
 
+class BackForwardCacheBrowserTestWithUpdatedNotRestoredReasons
+    : public BackForwardCacheBrowserTestWithNotRestoredReasons,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (UseUpdatedNames()) {
+      EnableFeatureAndSetParams(
+          blink::features::kBackForwardCacheUpdateNotRestoredReasonsName, "",
+          "");
+    } else {
+      DisableFeature(
+          blink::features::kBackForwardCacheUpdateNotRestoredReasonsName);
+    }
+
+    BackForwardCacheBrowserTestWithNotRestoredReasons::SetUpCommandLine(
+        command_line);
+  }
+  bool UseUpdatedNames() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheBrowserTestWithUpdatedNotRestoredReasons,
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithUpdatedNotRestoredReasons,
+                       CloneReportedAsNull) {
+  ukm::TestAutoSetUkmRecorder recorder;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+
+  // Clone the tab and load the page.
+  std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* new_tab_impl = static_cast<WebContentsImpl*>(new_tab.get());
+  WebContentsObserver::Observe(new_tab.get());
+  NavigationController& new_controller = new_tab_impl->GetController();
+  {
+    TestNavigationObserver clone_observer(new_tab.get());
+    new_controller.LoadIfNecessary();
+    clone_observer.Wait();
+  }
+
+  ASSERT_TRUE(HistoryGoBack(new_tab.get()));
+
+  std::string not_restored_reasons = "BackForwardCache.NotRestoredReasons";
+  std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
+      recorded_not_restored_reasons =
+          recorder.FilteredHumanReadableMetricForEntry("HistoryNavigation",
+                                                       not_restored_reasons);
+  ASSERT_EQ(recorded_not_restored_reasons.size(), 1u);
+  EXPECT_EQ(recorded_not_restored_reasons[0][not_restored_reasons],
+            1 << static_cast<int>(
+                BackForwardCacheMetrics::NotRestoredReason::kSessionRestored));
+  if (UseUpdatedNames()) {
+    EXPECT_EQ(
+        EvalJs(
+            new_tab_impl->GetPrimaryFrameTree().root()->current_frame_host(),
+            "performance.getEntriesByType('navigation')[0].notRestoredReasons"),
+        nullptr);
+    EXPECT_TRUE(new_tab_impl->GetPrimaryFrameTree()
+                    .root()
+                    ->current_frame_host()
+                    ->NotRestoredReasonsForTesting()
+                    .is_null());
+  } else {
+    // Expect that NotRestoredReasons are reported.
+    auto rfh_a_result = MatchesNotRestoredReasons(
+        /*id=*/"",
+        /*name=*/"", /*src=*/"", /*reasons=*/
+        {MatchesDetailedReason("session-restored", /*source=*/std::nullopt)},
+        MatchesSameOriginDetails(
+            /*url=*/url1, /*children=*/{}));
+
+    EXPECT_THAT(new_tab_impl->GetPrimaryFrameTree()
+                    .root()
+                    ->current_frame_host()
+                    ->NotRestoredReasonsForTesting(),
+                rfh_a_result);
+  }
+}
+
 class BackForwardCacheBrowserTestWithNotRestoredReasonsProactiveSwapOptOut
     : public BackForwardCacheBrowserTestWithNotRestoredReasons {
  public:
