@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORD_CROSS_DOMAIN_CONFIRMATION_POPUP_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORD_CROSS_DOMAIN_CONFIRMATION_POPUP_CONTROLLER_IMPL_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_interface.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -19,8 +22,7 @@ class PasswordCrossDomainConfirmationPopupView;
 
 // Implementation of the cross domain usage confirmation popup controller.
 class PasswordCrossDomainConfirmationPopupControllerImpl
-    : public password_manager::PasswordCrossDomainConfirmationPopupController,
-      public autofill::AutofillPopupViewDelegate,
+    : public PasswordCrossDomainConfirmationPopupControllerInterface,
       public content::WebContentsObserver {
  public:
   using ViewFactoryForTesting = base::RepeatingCallback<
@@ -61,6 +63,10 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   autofill::PopupAnchorType anchor_type() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
 
+  std::u16string GetBodyText() const override;
+
+  std::u16string GetTitleText() const override;
+
   // content::WebContentsObserver:
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
@@ -81,6 +87,11 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   gfx::RectF element_bounds_;
   base::i18n::TextDirection text_direction_;
   base::OnceClosure confirmation_callback_;
+  // The hostname (either website or Android app name) that the password
+  // associated with.
+  std::u16string password_hostname_;
+  // The current website where filling is being triggered on.
+  GURL domain_;
 
   base::WeakPtr<PasswordCrossDomainConfirmationPopupView> view_;
 

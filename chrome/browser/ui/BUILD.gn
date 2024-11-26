@@ -2950,6 +2950,7 @@ static_library("ui") {
       "incognito_clear_browsing_data_dialog_interface.h",
       "passwords/password_cross_domain_confirmation_popup_controller_impl.cc",
       "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
+      "passwords/password_cross_domain_confirmation_popup_controller_interface.h",
       "startup/web_app_startup_utils.cc",
       "startup/web_app_startup_utils.h",
       "views/autofill/payments/webauthn_dialog_view.cc",

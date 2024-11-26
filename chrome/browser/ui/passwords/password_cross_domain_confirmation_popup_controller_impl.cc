@@ -6,10 +6,13 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 
 PasswordCrossDomainConfirmationPopupControllerImpl::
     PasswordCrossDomainConfirmationPopupControllerImpl(
@@ -37,6 +40,8 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
 
   element_bounds_ = element_bounds;
   text_direction_ = text_direction;
+  domain_ = domain;
+  password_hostname_ = password_origin;
   confirmation_callback_ = std::move(confirmation_callback);
 
   auto on_view_confirm = base::BindOnce(
@@ -47,10 +52,10 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
       weak_ptr_factory_.GetWeakPtr());
   view_ = view_factory_for_testing_
               ? view_factory_for_testing_.Run(
-                    weak_ptr_factory_.GetWeakPtr(), domain, password_origin,
+                    weak_ptr_factory_.GetWeakPtr(), domain_, password_hostname_,
                     std::move(on_view_confirm), std::move(on_view_cancel))
               : PasswordCrossDomainConfirmationPopupView::Show(
-                    weak_ptr_factory_.GetWeakPtr(), domain, password_origin,
+                    weak_ptr_factory_.GetWeakPtr(), domain_, password_hostname_,
                     std::move(on_view_confirm), std::move(on_view_cancel));
 
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
@@ -103,6 +108,19 @@ base::i18n::TextDirection
 PasswordCrossDomainConfirmationPopupControllerImpl::GetElementTextDirection()
     const {
   return text_direction_;
+}
+
+std::u16string PasswordCrossDomainConfirmationPopupControllerImpl::GetBodyText()
+    const {
+  return l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_DESCRIPTION,
+      password_hostname_, base::UTF8ToUTF16(domain_.host()));
+}
+
+std::u16string
+PasswordCrossDomainConfirmationPopupControllerImpl::GetTitleText() const {
+  return l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_TITLE, password_hostname_);
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::DidGetUserInteraction(
