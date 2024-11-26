@@ -59,7 +59,6 @@ namespace blink {
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 
-class CanvasResourceDispatcher;
 class MemoryManagedPaintCanvas;
 class WebGraphicsContext3DProviderWrapper;
 class WebGraphicsSharedImageInterfaceProvider;
@@ -119,7 +118,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host = nullptr);
 

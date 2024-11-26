@@ -62,8 +62,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(
           resource_info, kFilterQuality, kShouldInitialize,
-          /*resource_dispatcher=*/nullptr,
-          /*shared_image_interface_provider=*/nullptr, this);
+          SharedGpuContext::SharedImageInterfaceProvider(), this);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(

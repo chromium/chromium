@@ -571,7 +571,6 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         resource_info, filter_quality,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
-        std::move(dispatcher_weakptr),
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
 

@@ -151,7 +151,6 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   CanvasResourceProviderBitmap(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kBitmap,
                                info,
@@ -194,12 +193,10 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
   CanvasResourceProviderSharedBitmap(
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host)
       : CanvasResourceProviderBitmap(info,
                                      filter_quality,
-                                     std::move(resource_dispatcher),
                                      resource_host),
         shared_image_interface_provider_(
             shared_image_interface_provider
@@ -1030,7 +1027,7 @@ CanvasResourceProvider::CreateBitmapProvider(
     ShouldInitialize should_initialize,
     CanvasResourceHost* resource_host) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      info, filter_quality, /*resource_dispatcher=*/nullptr, resource_host);
+      info, filter_quality, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1045,27 +1042,10 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
     const SkImageInfo& info,
     cc::PaintFlags::FilterQuality filter_quality,
     ShouldInitialize should_initialize,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceHost* resource_host) {
-  // SharedBitmapProvider has to have a valid resource_dispatecher to be able to
-  // be created.
-
-  // TODO:: Remove |resource_dispatcher| because it's not used by SharedImage.
-  // |resource_dispatcher| is nullptr in some tests. (e.g. PixelIntegrationTest
-  // Pixel_Canvas2DTabSwitch_SoftwareCompositing, and
-  // Pixel_CanvasUnacceleratedLowLatency2D, etc) Removing
-  // |resource_dispatcher| causes this function to continue with
-  // CanvasResourceProviderSharedBitmap here instead of CreateBitmapProvider()
-  // later. The final images are different. Some windows and Linux tests would
-  // crash.
-  if (!resource_dispatcher) {
-    return nullptr;
-  }
-
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
-      info, filter_quality, std::move(resource_dispatcher),
-      shared_image_interface_provider, resource_host);
+      info, filter_quality, shared_image_interface_provider, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

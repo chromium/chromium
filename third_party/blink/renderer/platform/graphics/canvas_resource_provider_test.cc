@@ -622,7 +622,6 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      resource_dispatcher.GetWeakPtr(),
       test_web_shared_image_interface_provider.get());
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -677,8 +676,7 @@ TEST_F(CanvasResourceProviderTest,
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      kInfo, cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /*resource_dispatcher */);
+      kInfo, cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -759,19 +757,19 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
       SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, /*resource_dispatcher=*/nullptr);
+      context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, /*resource_dispatcher=*/nullptr);
+      context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, /*resource_dispatcher=*/nullptr);
+      context_provider_wrapper_);
 
   // The CanvasResourceProvider for SwapChain should not be created or valid
   // if the texture size is greater than the maximum value
@@ -781,18 +779,15 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */);
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */);
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
-      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */);
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
   // The CanvasResourceProvider for PassThrough should not be created or valid
   // if the texture size is greater than the maximum value
   EXPECT_TRUE(!provider || !provider->IsValid());
@@ -805,7 +800,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      context_provider_wrapper_, /*resource_dispatcher=*/nullptr);
+      context_provider_wrapper_);
 
   ASSERT_TRUE(provider);
   EXPECT_EQ(provider->Size(), kSize);

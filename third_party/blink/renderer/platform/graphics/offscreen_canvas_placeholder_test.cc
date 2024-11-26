@@ -85,7 +85,6 @@ void OffscreenCanvasPlaceholderTest::SetUp() {
       SkImageInfo::MakeN32Premul(kWidth, kHeight),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
-      dispatcher_->GetWeakPtr(),
       test_web_shared_image_interface_provider_.get());
 }
 
