@@ -182,6 +182,13 @@ void It2MeHost::Connect(
   observer_ = std::move(observer);
   confirmation_dialog_factory_ = std::move(dialog_factory);
 
+  if (is_enterprise_session()) {
+    // Don't notify on local policy changes for Admin sessions as the policies
+    // can change as they log into different sessions and this should not cause
+    // them to be disconnected: See crbug.com/380421478.
+    local_session_policies_provider_.send_policy_change_notifications(false);
+  }
+
   OnPolicyUpdate(std::move(policies));
 
 #if BUILDFLAG(IS_LINUX)
@@ -325,7 +332,7 @@ void It2MeHost::ConnectOnNetworkThread(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  if (chrome_os_enterprise_params_.has_value()) {
+  if (is_enterprise_session()) {
     options.set_enable_user_interface(
         !chrome_os_enterprise_params_->suppress_user_dialogs);
     options.set_enable_notifications(
@@ -557,7 +564,7 @@ void It2MeHost::UpdateSessionPolicies(
   local_session_policies->allow_uri_forwarding = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  if (chrome_os_enterprise_params_.has_value()) {
+  if (is_enterprise_session()) {
     local_session_policies->curtain_required =
         chrome_os_enterprise_params_->curtain_local_user_session;
 

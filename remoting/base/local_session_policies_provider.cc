@@ -23,7 +23,9 @@ void LocalSessionPoliciesProvider::set_local_policies(
     return;
   }
   local_policies_ = policies;
-  local_policies_changed_callbacks_.Notify(local_policies_);
+  if (send_policy_change_notifications_) {
+    local_policies_changed_callbacks_.Notify(local_policies_);
+  }
 }
 
 }  // namespace remoting
