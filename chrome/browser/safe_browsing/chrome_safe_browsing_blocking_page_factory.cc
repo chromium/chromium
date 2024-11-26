@@ -131,7 +131,6 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       /*url_loader_for_testing=*/nullptr);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 security_interstitials::SecurityInterstitialPage*
 ChromeSafeBrowsingBlockingPageFactory::CreateEnterpriseWarnPage(
     BaseUIManager* ui_manager,
@@ -155,7 +154,6 @@ ChromeSafeBrowsingBlockingPageFactory::CreateEnterpriseBlockPage(
       std::make_unique<EnterpriseBlockControllerClient>(web_contents,
                                                         main_frame_url));
 }
-#endif
 
 ChromeSafeBrowsingBlockingPageFactory::ChromeSafeBrowsingBlockingPageFactory() =
     default;
