@@ -111,7 +111,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
     bool is_horizontally_positioned = true;
 
     // Radii of display's rounded corners masks in pixels.
-    uint8_t radii[kMaxRoundedDisplayMasksCount] = {0, 0};
+    std::array<uint8_t, kMaxRoundedDisplayMasksCount> radii = {0, 0};
   };
 
   // Encodes the radii(in pixels) and position of rounded-display mask textures

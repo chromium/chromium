@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
 #include <memory>
@@ -708,7 +703,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
 
     auto fulfill_array =
         base::HeapArray<FulfillForPlane>::WithSize(SkYUVAInfo::kMaxPlanes);
-    void* fulfill_ptrs[SkYUVAInfo::kMaxPlanes] = {};
+    std::array<void*, SkYUVAInfo::kMaxPlanes> fulfill_ptrs = {};
     std::vector<skgpu::graphite::TextureInfo> texture_infos;
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          plane_index++) {
@@ -725,13 +720,13 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     auto image = SkImages::PromiseTextureFromYUVA(
         graphite_recorder_, yuva_backend_info, image_context->color_space(),
         graphite_use_volatile_promise_images_, FulfillGraphite, CleanUpArray,
-        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs);
+        ReleaseGraphite, fulfill_array_ptr, fulfill_ptrs.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(texture_infos));
   } else {
     CHECK(gr_context_thread_safe_);
     std::vector<GrBackendFormat> formats;
-    void* fulfills[SkYUVAInfo::kMaxPlanes] = {};
+    std::array<void*, SkYUVAInfo::kMaxPlanes> fulfills = {};
     for (int plane_index = 0; plane_index < format.NumberOfPlanes();
          ++plane_index) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
@@ -748,7 +743,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
                                                kTopLeft_GrSurfaceOrigin);
     auto image = SkImages::PromiseTextureFromYUVA(
         gr_context_thread_safe_, yuva_backend_info,
-        image_context->color_space(), FulfillGanesh, CleanUp, fulfills);
+        image_context->color_space(), FulfillGanesh, CleanUp, fulfills.data());
     LOG_IF(ERROR, !image) << "Failed to create the yuv promise sk image";
     image_context->SetImage(std::move(image), std::move(formats));
   }

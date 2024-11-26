@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/overlay_processor_ozone.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -156,8 +152,7 @@ void ConvertToTiledOzoneOverlaySurface(
 }
 
 uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
-  return (mailbox.name[0] << 24) + (mailbox.name[1] << 16) +
-         (mailbox.name[2] << 8) + mailbox.name[3];
+  return base::U32FromBigEndian(base::as_byte_span(mailbox.name).first<4>());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
