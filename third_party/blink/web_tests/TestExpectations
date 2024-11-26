@@ -7920,7 +7920,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac15 ] fast/peerconnection/RTCPeerConnection-createDTMFSender.html [ Failure Timeout ]  # Flaky output
 [ Mac15 ] fast/peerconnection/RTCPeerConnection-datachannel.html [ Timeout ]
 [ Mac15 ] fast/peerconnection/RTCPeerConnection-lifetime.html [ Timeout ]
-[ Mac15 ] http/tests/websocket/invalid-subprotocol-characters.html [ Timeout ]
 [ Mac15 ] media/controls/doubletap-to-toggle-fullscreen.html [ Timeout ]
 [ Mac15 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 [ Mac15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
