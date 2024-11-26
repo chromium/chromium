@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
+
 #include <string>
 
-#include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/browser.h"
@@ -96,23 +96,22 @@ void EditAddressProfileDialogControllerImpl::OnDialogClosed(
     AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> profile_with_edits) {
   std::move(on_user_decision_callback_).Run(decision, profile_with_edits);
-  dialog_view_ = nullptr;
+  dialog_view_.reset();
 }
 
 void EditAddressProfileDialogControllerImpl::WebContentsDestroyed() {
   HideDialog();
 }
 
-void EditAddressProfileDialogControllerImpl::HideDialog() {
-  if (dialog_view_) {
-    dialog_view_->Hide();
-    dialog_view_ = nullptr;
-  }
-}
-
 void EditAddressProfileDialogControllerImpl::SetViewFactoryForTest(
     EditAddressProfileViewTestingFactory factory) {
   view_factory_for_test_ = std::move(factory);
+}
+
+void EditAddressProfileDialogControllerImpl::HideDialog() {
+  if (dialog_view_) {
+    dialog_view_->Hide();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(EditAddressProfileDialogControllerImpl);

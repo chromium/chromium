@@ -71,7 +71,7 @@ class ObserveHideTestAutofillBubble : public AutofillBubbleBase {
  public:
   explicit ObserveHideTestAutofillBubble(content::WebContents* web_contents)
       : web_contents_(web_contents->GetWeakPtr()) {}
-  virtual ~ObserveHideTestAutofillBubble() = default;
+  ~ObserveHideTestAutofillBubble() override = default;
 
   void Show() { is_visible_ = true; }
 

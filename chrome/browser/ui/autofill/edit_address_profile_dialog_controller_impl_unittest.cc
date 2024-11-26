@@ -48,10 +48,10 @@ class EditAddressProfileDialogControllerImplTest
   }
 
  protected:
-  AutofillBubbleBase* GetAutofillBubbleBase(
+  std::unique_ptr<AutofillBubbleBase> GetAutofillBubbleBase(
       content::WebContents* web_contents,
       EditAddressProfileDialogController* controller) {
-    return &autofill_bubble_;
+    return std::make_unique<TestAutofillBubble>();
   }
 
   content::WebContents* web_contents() {
@@ -64,7 +64,6 @@ class EditAddressProfileDialogControllerImplTest
   }
 
   AutofillProfile profile_ = test::GetFullProfile();
-  TestAutofillBubble autofill_bubble_;
   base::MockOnceCallback<void(AutofillClient::AddressPromptUserDecision,
                               profile_ref profile)>
       save_callback_;
