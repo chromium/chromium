@@ -12,10 +12,9 @@ import {Msgs} from '../common/msgs.js';
 export class Color {
   /**
    * Returns a string representation of a color.
-   * @param {number|undefined} color The argb value represented as an integer.
-   * @return {string}
+   * @param color The argb value represented as an integer.
    */
-  static getColorDescription(color) {
+  static getColorDescription(color: number|undefined): string {
     if (!color) {
       return '';
     }
@@ -23,9 +22,9 @@ export class Color {
     color = color >>> 0;
     // The following 24 bits represent the rgb value. Filter out first 8 bits.
     const rgb = color & 0x00ffffff;
-    const optSubs = [
+    const optSubs: string[] = [
       Color.findClosestMatchingColor(rgb),
-      Color.getOpacityPercentage(color),
+      Color.getOpacityPercentage(color).toString(),
     ];
     return Msgs.getMsg('color_description', optSubs);
   }
@@ -33,26 +32,24 @@ export class Color {
   /**
    * Extracts the opacity of the color, which is encoded within the first 8
    * bits.
-   * @param {number} color An integer representation of a color.
-   * @return {number}
+   * @param color An integer representation of a color.
    */
-  static getOpacityPercentage(color) {
+  static getOpacityPercentage(color: number): number {
     return Math.round(((color >>> 24) / 256) * 100);
   }
 
   /**
    * Finds the most similar stored color given an rgb value.
-   * @param {number} target The rgb value as an integer.
-   * @return {string}
+   * @param target The rgb value as an integer.
    */
-  static findClosestMatchingColor(target) {
+  static findClosestMatchingColor(target: number): string {
     const bestMatch = ColorObjectArray.reduce((closest, color) => {
       const distance = Color.findDistance(target, color.value);
       if (distance < closest.distance) {
         return {color, distance};
       }
       return closest;
-    }, {distance: Number.MAX_VALUE});
+    }, {distance: Number.MAX_VALUE, color: ColorObjectArray[0]});
 
     // Do not report color if most similar color is too inaccurate.
     if (bestMatch.distance > DISTANCE_THRESHOLD) {
@@ -68,11 +65,8 @@ export class Color {
    * simply filled by zeros. The x component is designated by the second
    * 8 bits. The y component is designated by the third 8 bits.
    * The z component is designated by the last 8 bits.
-   * @param {number} firstColor
-   * @param {number} secondColor
-   * @return {number}
    */
-  static findDistance(firstColor, secondColor) {
+  static findDistance(firstColor: number, secondColor: number): number {
     // Extract x, y, and z components.
     const firstColorX = (firstColor & 0xff0000) >> 16;
     const firstColorY = (firstColor & 0x00ff00) >> 8;
