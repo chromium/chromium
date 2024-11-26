@@ -13,6 +13,7 @@
 
 @class AccountMenuMediator;
 @class AuthenticationFlow;
+@protocol ChangeProfileObserving;
 @protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
@@ -40,7 +41,7 @@
 
 // Requests a switch to the profile with the given `profileName`.
 - (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
-                                completion:(void (^)(bool success))completion;
+                                  observer:(id<ChangeProfileObserving>)observer;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.

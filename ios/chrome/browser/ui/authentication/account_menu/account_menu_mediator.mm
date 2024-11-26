@@ -313,13 +313,12 @@
         *profileName != _accountManagerService->GetProfileName()) {
       // TODO(crbug.com/375604649): Unblock the UI (and show some error?) if
       // switching failed.
-      // TODO(crbug.com/375604649): Provide a `completion` to ensure that after
-      // a successful profile switch, the correct account is signed in in the
-      // new profile.
+      // TODO(crbug.com/375604649): Provide an observer to take care of the
+      // transition (animation, continuation, ...) and to unblock the UI if
+      // the switching failed.
       [self.delegate triggerProfileSwitchToProfileNamed:base::SysUTF8ToNSString(
                                                             *profileName)
-                                             completion:^(bool success){
-                                             }];
+                                               observer:nil];
       return;
     }
   }

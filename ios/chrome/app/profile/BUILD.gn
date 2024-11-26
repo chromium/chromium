@@ -20,7 +20,6 @@ source_set("profile") {
   deps = [
     "//base",
     "//ios/chrome/app",
-    "//ios/chrome/app/application_delegate:app_init_stage",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

@@ -262,11 +262,12 @@
 }
 
 - (void)triggerProfileSwitchToProfileNamed:(NSString*)profileName
-                                completion:(void (^)(bool success))completion {
+                                  observer:
+                                      (id<ChangeProfileObserving>)observer {
   SceneState* sceneState = self.browser->GetSceneState();
   [_changeProfileHandler changeProfile:profileName
                               forScene:sceneState.sceneSessionID
-                            completion:completion];
+                              observer:observer];
 }
 
 - (void)didTapAddAccountWithCompletion:
