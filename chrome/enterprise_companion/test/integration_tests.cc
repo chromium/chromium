@@ -509,6 +509,40 @@ TEST_F(IntegrationTests, UnknownDMTokenInvalidated) {
   EXPECT_FALSE(dm_storage->IsValidDMToken());
 }
 
+// The application should delete the stored DM token if the server requests so.
+TEST_F(IntegrationTests, InvalidDMTokenDeleted) {
+  SetDefaultPolicyFetchResponses();
+  // Configure the policy server to signal that DMToken deletion has been
+  // requested via the DMServer response.
+  dm_test_server_.policy_storage()->set_error_detail(
+      em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
+  ASSERT_NO_FATAL_FAILURE(StoreEnrollmentToken(kFakeEnrollmentToken));
+  ASSERT_NO_FATAL_FAILURE(StoreDMToken(policy::kFakeDeviceToken));
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  test_server_.ExpectOnce(
+      {CreateEventLogMatcher(
+          test_server_, {{proto::EnterpriseCompanionEvent::kPolicyFetchEvent,
+                          EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                              policy::DeviceManagementStatus::
+                                  DM_STATUS_SERVICE_DEVICE_NEEDS_RESET)}})},
+      CreateLogResponse());
+  EXPECT_TRUE(CreateAppFetchPolicies()->Run().EqualsDeviceManagementStatus(
+      policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET));
+
+  // Shut down the server before reading the token back, as the server may
+  // hold an exclusive lock on files opened by DMStorage.
+  WaitForTestServerExpectationsToBeMet();
+  ShutdownServerAndWaitForExit();
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_TRUE(dm_storage);
+  EXPECT_EQ(dm_storage->GetDmToken(), "");
+}
+
 // The application should reload the enrollment token from storage on every
 // registration attempt.
 TEST_F(IntegrationTests, ReloadsTokens) {
