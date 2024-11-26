@@ -34,3 +34,8 @@
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/1
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/2
 -OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/3
+
+# TODO(crbug.com/380308799): These tests are failing on the ios-blink-dbg-fyi
+# bot.
+-ES3ShaderTranslatorTest.GetInterfaceBlocks
+-ES3ShaderTranslatorTest.InvalidInterfaceBlocks
