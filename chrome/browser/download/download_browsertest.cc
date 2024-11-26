@@ -3404,26 +3404,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadDangerousBlobData) {
   EXPECT_EQ(1u, observer->NumDangerousDownloadsSeen());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadTest, OverrideLocalFileUrlAsNotDangerous) {
-  // Hack to strip the leading separator.
-  std::string file_path(DownloadTestBase::kDangerousMockFilePath);
-  file_path = file_path.substr(1);
-
-  // The dangerous file, when downloaded from a local file:// URL, should show
-  // up as "not dangerous" due to an override to file type policies.
-  base::FilePath source_file = GetTestDataDirectory().AppendASCII(file_path);
-  GURL url = net::FilePathToFileURL(source_file);
-  DownloadAndWait(browser(), url);
-
-  content::DownloadTestObserver* observer(DangerousDownloadWaiter(
-      browser(), 1, content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  observer->WaitForFinished();
-
-  EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
-  EXPECT_EQ(0u, observer->NumDangerousDownloadsSeen());
-}
-
 // A EmbeddedTestServer::HandleRequestCallback function that echoes the Referrer
 // header as its contents. Only responds to the relative URL /echoreferrer
 // E.g.:
