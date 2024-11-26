@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/hash/hash.h"
+#include "base/location.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -29,22 +32,33 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
+#include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
-#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/views/border.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
@@ -98,9 +112,9 @@ uint32_t GetHash(const ui::ImageModel& image) {
   if (!bitmap) {
     return 0;
   }
-
-  return base::FastHash(base::make_span(
-      static_cast<uint8_t*>(bitmap->getPixels()), bitmap->computeByteSize()));
+  SkPixmap map;
+  bitmap->peekPixels(&map);
+  return base::FastHash(gfx::SkPixmapToSpan(map));
 }
 
 WebContents* WebContentsFromId(GlobalRenderFrameHostId rfh_id) {
