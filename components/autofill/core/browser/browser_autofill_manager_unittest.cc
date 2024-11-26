@@ -44,6 +44,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
+#include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -86,7 +88,6 @@
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/browser/votes_uploader_test_api.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -4609,7 +4610,9 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
 
   // Simulate form submission.
   FormSubmitted(form);
-  EXPECT_EQ(signature, browser_autofill_manager_->GetSubmittedFormSignature());
+  EXPECT_EQ(
+      signature,
+      browser_autofill_manager_->votes_uploader().submitted_form_signature());
 }
 
 // Test that we do not save form data when submitted fields contain default
@@ -4778,7 +4781,8 @@ TEST_F(BrowserAutofillManagerTest,
     test_api(form).field(i).set_value(expected_values[i]);
   }
 
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
+  browser_autofill_manager_->votes_uploader()
+      .set_expected_submitted_field_types(expected_types);
   FormSubmitted(form);
 }
 
@@ -4826,8 +4830,10 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
 
   // We will expect these types in the upload and no observed submission (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
-  browser_autofill_manager_->SetExpectedObservedSubmission(false);
+  browser_autofill_manager_->votes_uploader()
+      .set_expected_submitted_field_types(expected_types);
+  browser_autofill_manager_->votes_uploader().set_expected_observed_submission(
+      false);
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
@@ -4876,8 +4882,10 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
-  browser_autofill_manager_->SetExpectedObservedSubmission(false);
+  browser_autofill_manager_->votes_uploader()
+      .set_expected_submitted_field_types(expected_types);
+  browser_autofill_manager_->votes_uploader().set_expected_observed_submission(
+      false);
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
@@ -4927,8 +4935,10 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
 
   // We will expect these types in the upload and no observed submission. (the
   // callback initiated by WaitForAsyncUploadProcess checks these expectations.)
-  browser_autofill_manager_->SetExpectedSubmittedFieldTypes(expected_types);
-  browser_autofill_manager_->SetExpectedObservedSubmission(false);
+  browser_autofill_manager_->votes_uploader()
+      .set_expected_submitted_field_types(expected_types);
+  browser_autofill_manager_->votes_uploader().set_expected_observed_submission(
+      false);
 
   // Form was autofilled with user data.
   test_api(form).field(0).set_value(u"Elvis");

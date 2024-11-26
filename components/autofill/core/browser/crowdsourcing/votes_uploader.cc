@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/votes_uploader.h"
+#include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 
 #include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"

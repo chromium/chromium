@@ -108,11 +108,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldDidChange);
 
-  void SetExpectedSubmittedFieldTypes(
-      const std::vector<FieldTypeSet>& expected_types);
-
-  void SetExpectedObservedSubmission(bool expected);
-
   TestVotesUploader& votes_uploader();
 
  private:

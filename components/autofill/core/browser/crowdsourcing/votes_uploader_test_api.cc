@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/votes_uploader_test_api.h"
+#include "components/autofill/core/browser/crowdsourcing/votes_uploader_test_api.h"
 
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"

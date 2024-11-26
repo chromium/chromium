@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_VOTES_UPLOADER_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_VOTES_UPLOADER_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_VOTES_UPLOADER_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_VOTES_UPLOADER_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/votes_uploader.h"
+#include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -33,4 +33,4 @@ inline VotesUploaderTestApi test_api(VotesUploader& votes_uploader) {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_VOTES_UPLOADER_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_VOTES_UPLOADER_TEST_API_H_

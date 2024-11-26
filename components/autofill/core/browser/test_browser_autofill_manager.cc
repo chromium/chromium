@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -23,37 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
-// TODO(crbug.com/374086145): Move to a separate file.
-class TestVotesUploader : public VotesUploader {
- public:
-  using VotesUploader::VotesUploader;
-
-  bool MaybeStartVoteUploadProcess(
-      std::unique_ptr<FormStructure> form_structure,
-      bool observed_submission,
-      LanguageCode current_page_language,
-      base::TimeTicks initial_interaction_timestamp,
-      ukm::SourceId ukm_source_id) override;
-
-  void StoreUploadVotesAndLogQualityCallback(
-      FormSignature form_signature,
-      base::OnceClosure callback) override;
-
-  void UploadVotesAndLogQuality(std::unique_ptr<FormStructure> submitted_form,
-                                base::TimeTicks interaction_time,
-                                base::TimeTicks submission_time,
-                                bool observed_submission,
-                                const ukm::SourceId source_id) override;
-
- private:
-  friend class TestBrowserAutofillManager;
-
-  std::unique_ptr<base::RunLoop> run_loop_;
-  std::string submitted_form_signature_;
-  std::optional<bool> expected_observed_submission_;
-  std::vector<FieldTypeSet> expected_submitted_field_types_;
-};
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : BrowserAutofillManager(driver) {
@@ -148,81 +118,9 @@ void TestBrowserAutofillManager::OnFormSubmitted(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestVotesUploader::UploadVotesAndLogQuality(
-    std::unique_ptr<FormStructure> submitted_form,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
-    bool observed_submission,
-    const ukm::SourceId source_id) {
-  submitted_form_signature_ = submitted_form->FormSignatureAsStr();
-
-  if (observed_submission) {
-    // In case no submission was observed, the run_loop is quit in
-    // StoreUploadVotesAndLogQualityCallback.
-    run_loop_->Quit();
-  }
-
-  if (expected_observed_submission_ != std::nullopt) {
-    EXPECT_EQ(expected_observed_submission_, observed_submission);
-  }
-
-  // If we have expected field types set, make sure they match.
-  if (!expected_submitted_field_types_.empty()) {
-    ASSERT_EQ(expected_submitted_field_types_.size(),
-              submitted_form->field_count());
-    for (size_t i = 0; i < expected_submitted_field_types_.size(); ++i) {
-      SCOPED_TRACE(base::StringPrintf(
-          "Field %d with value %s", static_cast<int>(i),
-          base::UTF16ToUTF8(
-              submitted_form->field(i)->value(ValueSemantics::kCurrent))
-              .c_str()));
-      const FieldTypeSet& possible_types =
-          submitted_form->field(i)->possible_types();
-      EXPECT_EQ(expected_submitted_field_types_[i].size(),
-                possible_types.size());
-      for (auto it : expected_submitted_field_types_[i]) {
-        EXPECT_TRUE(possible_types.count(it))
-            << "Expected type: " << FieldTypeToStringView(it);
-      }
-    }
-  }
-
-  VotesUploader::UploadVotesAndLogQuality(std::move(submitted_form),
-                                          interaction_time, submission_time,
-                                          observed_submission, source_id);
-}
-
-void TestVotesUploader::StoreUploadVotesAndLogQualityCallback(
-    FormSignature form_signature,
-    base::OnceClosure callback) {
-  VotesUploader::StoreUploadVotesAndLogQualityCallback(form_signature,
-                                                       std::move(callback));
-  run_loop_->Quit();
-}
-
 const gfx::Image& TestBrowserAutofillManager::GetCardImage(
     const CreditCard& credit_card) {
   return card_image_;
-}
-
-bool TestVotesUploader::MaybeStartVoteUploadProcess(
-    std::unique_ptr<FormStructure> form_structure,
-    bool observed_submission,
-    LanguageCode current_page_language,
-    base::TimeTicks initial_interaction_timestamp,
-    ukm::SourceId ukm_source_id) {
-  // The purpose of this runloop is to ensure that the field type determination
-  // finishes. If `observed_submission` is true, it's terminated in
-  // LogQualityAndUploadVotes. Otherwise, it is already terminated in
-  // StoreUploadVotesAndLogQualityCallback.
-  run_loop_ = std::make_unique<base::RunLoop>();
-  if (VotesUploader::MaybeStartVoteUploadProcess(
-          std::move(form_structure), observed_submission, current_page_language,
-          initial_interaction_timestamp, ukm_source_id)) {
-    run_loop_->Run();
-    return true;
-  }
-  return false;
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
@@ -263,10 +161,6 @@ void TestBrowserAutofillManager::ClearFormStructures() {
   mutable_form_structures()->clear();
 }
 
-const std::string& TestBrowserAutofillManager::GetSubmittedFormSignature() {
-  return votes_uploader().submitted_form_signature_;
-}
-
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
     const FieldGlobalId& field_id,
@@ -277,15 +171,6 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
   BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                                trigger_source);
   ASSERT_TRUE(waiter_.Wait(0));
-}
-
-void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
-    const std::vector<FieldTypeSet>& expected_types) {
-  votes_uploader().expected_submitted_field_types_ = expected_types;
-}
-
-void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
-  votes_uploader().expected_observed_submission_ = expected;
 }
 
 TestVotesUploader& TestBrowserAutofillManager::votes_uploader() {

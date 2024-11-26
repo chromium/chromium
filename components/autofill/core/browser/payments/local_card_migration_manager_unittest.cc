@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
@@ -102,7 +103,8 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
-    browser_autofill_manager_->SetExpectedObservedSubmission(true);
+    browser_autofill_manager_->votes_uploader()
+        .set_expected_observed_submission(true);
   }
 
   void TearDown() override {
