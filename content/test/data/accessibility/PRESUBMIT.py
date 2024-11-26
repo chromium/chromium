@@ -174,6 +174,7 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
         "-expected-android-assist-data.txt",
         "-expected-auralinux.txt",
         "-expected-auralinux-2.txt",
+        "-expected-auralinux-xenial.txt",
         "-expected-blink.txt",
         "-expected-blink-cros.txt",
         "-expected-fuchsia.txt",
@@ -278,7 +279,7 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
     # If any Android txt files were found, check for Java file changes
     for basename, html_path in android_txt_files.items():
         name, ext = input_api.os_path.splitext(basename)
-        name = name.split("-")[0]
+        name = name.split("-expected-android")[0]
         test_file = None
         readable_file_name = None
 
@@ -362,6 +363,8 @@ def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
         if f.Action() != 'A':
             continue
         path = f.LocalPath()
+        if "/html/frame/" in path or "/aria/frames/" in path:
+            continue
         basename = input_api.os_path.basename(path)
         name, ext = input_api.os_path.splitext(basename)
         if ext == ".html":
@@ -395,6 +398,50 @@ def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
                 "HTML accessibility test files must have a corresponding"
                 "\nexpectation file (and vice-versa). Note this may be a"
                 "\nfalse positive if the html file already existed."
+                "\nProblems found:\n",
+                problems,
+            )
+        ]
+    return []
+
+
+def CheckFrameHtmlFilesDontHaveExpectations(input_api, output_api):
+    """Checks that HTML accessibility test files that are frames to be
+    used in other tests do not have expectation files."""
+
+    def AriaFramesFileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file, files_to_check=[r"content/test/data/accessibility/aria/frames/.+\.(txt)"]
+        )
+
+    def HtmlFramesFileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file, files_to_check=[r"content/test/data/accessibility/html/frame/.+\.(txt)"]
+        )
+
+    problems = []
+
+    for f in input_api.AffectedFiles(file_filter=AriaFramesFileFilter):
+        path = f.LocalPath()
+        basename = input_api.os_path.basename(path)
+        name, ext = input_api.os_path.splitext(basename)
+        if ext == ".txt" and "-expected-" in basename:
+            problems.append(f"{basename}")
+
+    for f in input_api.AffectedFiles(file_filter=HtmlFramesFileFilter):
+        path = f.LocalPath()
+        basename = input_api.os_path.basename(path)
+        name, ext = input_api.os_path.splitext(basename)
+        if ext == ".txt" and "-expected-" in basename:
+            problems.append(f"{basename}")
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                "The /frame(s) sub-directories should only be used for html"
+                "\nfiles used in other tests (e.g. iframes) that are not"
+                "\ndirectly tested themselves. There should be no"
+                "\nexpectation files for these."
                 "\nProblems found:\n",
                 problems,
             )

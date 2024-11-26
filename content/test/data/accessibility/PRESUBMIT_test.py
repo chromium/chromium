@@ -577,19 +577,19 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
     def testMissingReferenceForEventWithAndroid(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
-            MockFile("content/test/data/accessibility/event/bar.html", [], action='A'),
-            MockFile("content/test/data/accessibility/event/bar-expected-android.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/event/bar-with-dashes.html", [], action='A'),
+            MockFile("content/test/data/accessibility/event/bar-with-dashes-expected-android.txt", [], action='A'),
             MockFile("content/browser/accessibility/dump_accessibility_events_browsertest.cc", []),
             MockFile("content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java", []),
         ]
         results = PRESUBMIT.CheckAccessibilityHtmlFileTest(mock_input_api, MockOutputApi())
         self.assertEqual(1, len(results))
         self.assertEqual(2, len(results[0].items))
-        self.assertIn("bar.html", results[0].items[0])
+        self.assertIn("bar-with-dashes.html", results[0].items[0])
         self.assertNotIn("dump_accessibility_events_browsertest.cc", results[0].items[0])
         self.assertIn("WebContentsAccessibilityEventsTest.java", results[0].items[0])
         self.assertEqual(2, len(results[0].items))
-        self.assertIn("bar.html", results[0].items[1])
+        self.assertIn("bar-with-dashes.html", results[0].items[1])
         self.assertIn("dump_accessibility_events_browsertest.cc", results[0].items[1])
         self.assertNotIn("WebContentsAccessibilityEventsTest.java", results[0].items[1])
 
@@ -690,6 +690,58 @@ class CheckAccessibilityHtmlExpectationsPairTest(unittest.TestCase):
             MockFile("foo/bar-expected-foo.txt", []),
         ]
         results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+     # Test no warnings for frames, which are referenced in other tests but
+     # are not tested directly themselves.
+    def testFrameFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/frames/foo.html", []),
+            MockFile("content/test/data/accessibility/aria/frames/some-expectation.txt", []),
+            MockFile("content/test/data/accessibility/html/frame/baz.html", []),
+            MockFile("content/test/data/accessibility/html/frame/same-expected-chromium.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
+
+class CheckFrameHtmlFilesDontHaveExpectations(unittest.TestCase):
+
+    # Test no warning if no text files exist
+    def testNoExpectationFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/frames/foo.html", []),
+            MockFile("content/test/data/accessibility/html/frame/bar.html", []),
+        ]
+        results = PRESUBMIT.CheckFrameHtmlFilesDontHaveExpectations(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test warnings raised if any expectation file exists
+    def testExpectationFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/frames/foo.html", []),
+            MockFile("content/test/data/accessibility/aria/frames/foo-expected-blink.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/html/frame/bar.html", []),
+            MockFile("content/test/data/accessibility/html/frame/bar-expected-android.txt", [], action='M'),
+        ]
+        results = PRESUBMIT.CheckFrameHtmlFilesDontHaveExpectations(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(2, len(results[0].items))
+        self.assertIn("foo-expected-blink.txt", results[0].items[0])
+        self.assertIn("bar-expected-android.txt", results[0].items[1])
+
+    # Test no warnings for unrelated files/directories
+    def testNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/aria/frames/foo-expected-blink.txt", [], action='A'),
+            MockFile("html/frame/foo/bar-expected-foo.txt", [], action='A'),
+        ]
+        results = PRESUBMIT.CheckFrameHtmlFilesDontHaveExpectations(mock_input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
 
