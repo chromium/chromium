@@ -5,9 +5,9 @@
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 
-import {LINE_CHART_COLOR_SET} from '../utils/constants.js';
 import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from '../utils/externs.js';
-import type {HealthdInternalsGenericChartElement} from '../view/pages/generic_chart.js';
+import {LINE_CHART_COLOR_SET} from '../utils/line_chart_configs.js';
+import type {HealthdInternalsSystemTrendElement} from '../view/pages/system_trend.js';
 import type {HealthdInternalsTelemetryElement} from '../view/pages/telemetry.js';
 
 import {CpuUsageHelper} from './cpu_usage_helper.js';
@@ -53,12 +53,12 @@ function sortThermals(
 }
 
 export interface LineChartPages {
-  battery: HealthdInternalsGenericChartElement;
-  cpuFrequency: HealthdInternalsGenericChartElement;
-  cpuUsage: HealthdInternalsGenericChartElement;
-  memory: HealthdInternalsGenericChartElement;
-  thermal: HealthdInternalsGenericChartElement;
-  zram: HealthdInternalsGenericChartElement;
+  battery: HealthdInternalsSystemTrendElement;
+  cpuFrequency: HealthdInternalsSystemTrendElement;
+  cpuUsage: HealthdInternalsSystemTrendElement;
+  memory: HealthdInternalsSystemTrendElement;
+  thermal: HealthdInternalsSystemTrendElement;
+  zram: HealthdInternalsSystemTrendElement;
 }
 
 /**

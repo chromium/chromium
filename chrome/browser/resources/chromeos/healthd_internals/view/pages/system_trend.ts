@@ -12,18 +12,18 @@ import {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js';
 
-import {getTemplate} from './generic_chart.html.js';
+import {getTemplate} from './system_trend.html.js';
 
-export interface HealthdInternalsGenericChartElement {
+export interface HealthdInternalsSystemTrendElement {
   $: {
     lineChart: HealthdInternalsLineChartElement,
   };
 }
 
-export class HealthdInternalsGenericChartElement extends PolymerElement
+export class HealthdInternalsSystemTrendElement extends PolymerElement
     implements HealthdInternalsPage {
   static get is() {
-    return 'healthd-internals-generic-chart';
+    return 'healthd-internals-system-trend';
   }
 
   static get template() {
@@ -87,10 +87,9 @@ export class HealthdInternalsGenericChartElement extends PolymerElement
 
 declare global {
   interface HTMLElementTagNameMap {
-    'healthd-internals-generic-chart': HealthdInternalsGenericChartElement;
+    'healthd-internals-system-trend': HealthdInternalsSystemTrendElement;
   }
 }
 
 customElements.define(
-    HealthdInternalsGenericChartElement.is,
-    HealthdInternalsGenericChartElement);
+    HealthdInternalsSystemTrendElement.is, HealthdInternalsSystemTrendElement);

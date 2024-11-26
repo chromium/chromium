@@ -119,3 +119,24 @@ export const TIME_STEP_UNITS: number[] = [
   1000 * 60 * 60 * 5,
   1000 * 60 * 60 * 10,
 ];
+
+/**
+ * The color set used for drawing line chart.
+ */
+export const LINE_CHART_COLOR_SET: string[] = [
+  '#402812',
+  '#892034',
+  '#00344d',
+  '#004236',
+  '#212930',
+  '#603618',
+  '#7a2257',
+  '#003066',
+  '#404616',
+  '#565f68',
+  '#956733',
+  '#6f256c',
+  '#00527e',
+  '#9f9b04',
+  '#83888d',
+];

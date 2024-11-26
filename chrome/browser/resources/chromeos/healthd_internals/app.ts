@@ -11,7 +11,7 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
-import './view/pages/generic_chart.js';
+import './view/pages/system_trend.js';
 import './view/pages/process.js';
 import './view/pages/telemetry.js';
 import './view/settings/settings_dialog.js';
@@ -21,13 +21,28 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {DataManager} from './model/data_manager.js';
-import {PagePath} from './utils/constants.js';
 import type {HealthdInternalsFeatureFlagResult} from './utils/externs.js';
 import {HealthdInternalsPage} from './utils/page_interface.js';
-import type {HealthdInternalsGenericChartElement} from './view/pages/generic_chart.js';
 import type {HealthdInternalsProcessElement} from './view/pages/process.js';
+import type {HealthdInternalsSystemTrendElement} from './view/pages/system_trend.js';
 import type {HealthdInternalsTelemetryElement} from './view/pages/telemetry.js';
 import type {HealthdInternalsSettingsDialogElement} from './view/settings/settings_dialog.js';
+
+/**
+ * The enum for displayed pages in chrome://healthd-internals.
+ */
+export enum PagePath {
+  // Only used when menu tabs are not displayed. No page should be displayed.
+  NONE = '/',
+  TELEMETRY = '/telemetry',
+  PROCESS = '/process',
+  BATTERY = '/battery',
+  CPU_FREQUENCY = '/cpu_frequency',
+  CPU_USAGE = '/cpu_usage',
+  MEMORY = '/memory',
+  THERMAL = '/thermal',
+  ZRAM = '/zram',
+}
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
@@ -40,12 +55,12 @@ export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
     processPage: HealthdInternalsProcessElement,
-    batteryChart: HealthdInternalsGenericChartElement,
-    cpuFrequencyChart: HealthdInternalsGenericChartElement,
-    cpuUsageChart: HealthdInternalsGenericChartElement,
-    memoryChart: HealthdInternalsGenericChartElement,
-    thermalChart: HealthdInternalsGenericChartElement,
-    zramChart: HealthdInternalsGenericChartElement,
+    batteryChart: HealthdInternalsSystemTrendElement,
+    cpuFrequencyChart: HealthdInternalsSystemTrendElement,
+    cpuUsageChart: HealthdInternalsSystemTrendElement,
+    memoryChart: HealthdInternalsSystemTrendElement,
+    thermalChart: HealthdInternalsSystemTrendElement,
+    zramChart: HealthdInternalsSystemTrendElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
     appContainer: HTMLElement,
     sidebar: HTMLElement,
