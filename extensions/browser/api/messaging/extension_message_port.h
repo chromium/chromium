@@ -98,7 +98,9 @@ class ExtensionMessagePort : public MessagePort {
                          const MessagingEndpoint& source_endpoint,
                          const std::string& target_extension_id,
                          const GURL& source_url,
-                         std::optional<url::Origin> source_origin) override;
+                         std::optional<url::Origin> source_origin,
+                         const std::set<base::UnguessableToken>&
+                             open_channel_tracking_ids) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
   void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
@@ -144,8 +146,8 @@ class ExtensionMessagePort : public MessagePort {
 
   bool ShouldSkipFrameForBFCache(content::RenderFrameHost* render_frame_host);
 
-  void OnConnectResponse(bool success);
-  void Prune();
+  void OnConnectResponse(const PortContext& port_context, bool success);
+  void Prune(const PortContext& port_context);
 
   ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
@@ -193,6 +195,13 @@ class ExtensionMessagePort : public MessagePort {
   // Used in IncrementLazyKeepaliveCount
   raw_ptr<ExtensionHost, DanglingUntriaged> background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
+
+  // The set of PortContexts for which we're waiting on a response to
+  // OnConnectResponse().
+  std::set<PortContext> pending_contexts_to_respond_;
+  // Tracking ID to every metric to emit once the result of the channel opening
+  // is determined.
+  std::set<base::UnguessableToken> pending_open_channel_tracking_ids_;
 
   base::WeakPtrFactory<ExtensionMessagePort> weak_ptr_factory_{this};
 };

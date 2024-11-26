@@ -3968,6 +3968,41 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
+    name="Extensions.MessagePipeline.OpenChannelWorkerDispatchStatus{ChannelType}"
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-04-25">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks that when a messaging channel is opened to a worker-based extension,
+    whether the extension was able to create a port (for any listener, not
+    necessarily the worker).
+
+    Emitted each time a messaging channel is opened which occurs once per
+    messaging communication (one-time or long-lived connections).
+
+    It is permuted by channel type (message type). {ChannelType}.
+  </summary>
+  <token key="ChannelType" variants="ChannelType"/>
+</histogram>
+
+<histogram
+    name="Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus{ChannelType}"
+    enum="OpenChannelMessagePipelineResult" expires_after="2025-04-25">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks whether a worker was successfully started in order to open a channel
+    to the worker-based extension.
+
+    Emitted each time a messaging channel is opened which occurs once per
+    messaging communication (one-time or long-lived connections).
+
+    It is permuted by channel type (message type). {ChannelType}.
+  </summary>
+  <token key="ChannelType" variants="ChannelType"/>
+</histogram>
+
+<histogram
     name="Extensions.Messaging.ExtensionPortsCreated{ExtensionMessagingPortCreationTime}"
     units="number of ports" expires_after="M85">
   <owner>rdevlin.cronin@chromium.org</owner>

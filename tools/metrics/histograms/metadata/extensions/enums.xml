@@ -3373,9 +3373,18 @@ Called by update_extension_permission.py.-->
 
 <enum name="OpenChannelMessagePipelineResult">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Opened"/>
-  <int value="2" label="Hung"/>
-  <int value="3" label="No Receivers"/>
+  <int value="1" label="Channel opened"/>
+  <int value="2" label="Channel not opened (hung)"/>
+  <int value="3" label="Channel not opened (no receivers)"/>
+  <int value="4" label="Channel not opened (no enabled extension)"/>
+  <int value="5" label="Channel not opened (not externally connectable)"/>
+  <int value="6" label="Worker started for channel open"/>
+  <int value="7"
+      label="Channel not opened (source channel invalid, opener port invaid,
+             no receiver port, or receiver port invalid)"/>
+  <int value="8" label="Channel not opened (receiver port isn't valid)"/>
+  <int value="9"
+      label="Channel not opened (dispatched connect, but no port created)"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">

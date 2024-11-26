@@ -4027,6 +4027,7 @@ if (!is_android) {
         "../browser/extensions/api/management/management_api_non_persistent_apitest.cc",
         "../browser/extensions/api/management/management_apitest.cc",
         "../browser/extensions/api/management/management_browsertest.cc",
+        "../browser/extensions/api/messaging/message_tracker_browsertest.cc",
         "../browser/extensions/api/messaging/messaging_apitest.cc",
         "../browser/extensions/api/messaging/native_messaging_apitest.cc",
         "../browser/extensions/api/messaging/service_worker_messaging_apitest.cc",

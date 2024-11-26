@@ -92,7 +92,8 @@ class MessagePort
       const MessagingEndpoint& source_endpoint,
       const std::string& target_extension_id,
       const GURL& source_url,
-      std::optional<url::Origin> source_origin);
+      std::optional<url::Origin> source_origin,
+      const std::set<base::UnguessableToken>& open_channel_tracking_ids);
 
   // Notifies the port that the channel has been closed. If |error_message| is
   // non-empty, it indicates an error occurred while opening the connection.
