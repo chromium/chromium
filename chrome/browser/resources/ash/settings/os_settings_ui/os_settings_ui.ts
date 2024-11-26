@@ -103,20 +103,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
        */
       prefs: Object,
 
-      advancedOpenedInMain_: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'onAdvancedOpenedInMainChanged_',
-      },
-
-      advancedOpenedInMenu_: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'onAdvancedOpenedInMenuChanged_',
-      },
-
       toolbarSpinnerActive_: {
         type: Boolean,
         value: false,
@@ -163,8 +149,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
   prefs: Object;
   isNarrow: boolean;
-  private advancedOpenedInMain_: boolean;
-  private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
   private pageAvailability_: OsPageAvailability;
   private showToolbar_: boolean;
@@ -478,20 +462,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     listenOnce(this.$.container, ['blur', 'pointerdown'], () => {
       this.$.container.removeAttribute('tabindex');
     });
-  }
-
-  private onAdvancedOpenedInMainChanged_(): void {
-    // Only sync value when opening, not closing.
-    if (this.advancedOpenedInMain_) {
-      this.advancedOpenedInMenu_ = true;
-    }
-  }
-
-  private onAdvancedOpenedInMenuChanged_(): void {
-    // Only sync value when opening, not closing.
-    if (this.advancedOpenedInMenu_) {
-      this.advancedOpenedInMain_ = true;
-    }
   }
 
   private onNarrowChanged_(): void {

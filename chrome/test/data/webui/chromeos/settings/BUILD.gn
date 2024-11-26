@@ -370,7 +370,6 @@ build_webui_tests("build") {
 
     "os_settings_subpage/os_settings_subpage_test.ts",
 
-    "os_settings_ui/os_settings_ui_about_page_test.ts",
     "os_settings_ui/os_settings_ui_hats_test.ts",
     "os_settings_ui/os_settings_ui_menu_test.ts",
     "os_settings_ui/os_settings_ui_page_availability_test.ts",

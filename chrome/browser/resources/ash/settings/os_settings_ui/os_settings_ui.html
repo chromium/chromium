@@ -133,8 +133,7 @@
         <os-settings-menu
             is-drawer-menu
             page-availability="[[pageAvailability_]]"
-            on-iron-activate="onMenuItemSelected_"
-            advanced-opened="{{advancedOpenedInMenu_}}">
+            on-iron-activate="onMenuItemSelected_">
         </os-settings-menu>
       </template>
     </div>
@@ -146,8 +145,7 @@
     <template is="dom-if" if="[[showNavMenu_]]">
       <os-settings-menu
           page-availability="[[pageAvailability_]]"
-          on-iron-activate="onMenuItemSelected_"
-          advanced-opened="{{advancedOpenedInMenu_}}">
+          on-iron-activate="onMenuItemSelected_">
       </os-settings-menu>
     </template>
   </div>
@@ -155,8 +153,7 @@
     <os-settings-main
         prefs="{{prefs}}"
         toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-        page-availability="[[pageAvailability_]]"
-        advanced-toggle-expanded="{{advancedOpenedInMain_}}">
+        page-availability="[[pageAvailability_]]">
     </os-settings-main>
   </div>
 </div>

@@ -19,9 +19,8 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import type {Section} from '../mojom-webui/routes.mojom-webui.js';
-import type {SettingsIdleLoadElement} from '../os_settings_page/settings_idle_load.js';
 import type {Route} from '../router.js';
-import {isAboutRoute, Router, routes} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import type {PageDisplayerElement} from './page_displayer.js';
 
@@ -92,7 +91,6 @@ const FIRST_PAGE_ROUTE: Route = routes.INTERNET;
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;
-  loadAdvancedPage(): Promise<Element>;
 }
 
 export const MainPageMixin = dedupingMixin(
@@ -119,12 +117,6 @@ export const MainPageMixin = dedupingMixin(
          */
         containsRoute(_route: Route|undefined): boolean {
           assertNotReached();
-        }
-
-        loadAdvancedPage(): Promise<Element> {
-          return this.shadowRoot!
-              .querySelector<SettingsIdleLoadElement>(
-                  '#advancedPageTemplate')!.get();
         }
 
         private async enterSubpage(route: Route): Promise<void> {
@@ -390,12 +382,7 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
-         * Finds the settings page corresponding to the given route. If the
-         * page is lazily loaded (ie. under the advanced section), then
-         * force-render it.
-         * Note: If the page resides within "advanced" settings, a
-         * 'hide-container' event is fired (necessary to avoid flashing).
-         * Callers are responsible for firing a 'show-container' event.
+         * Finds the settings page corresponding to the given route.
          */
         private ensurePageForRoute(route: Route):
             Promise<PageDisplayerElement> {
@@ -408,17 +395,9 @@ export const MainPageMixin = dedupingMixin(
           const waitFn = beforeNextRender.bind(null, this);
 
           return new Promise(resolve => {
-            if (isAboutRoute(route)) {
-              this.dispatchCustomEvent_('hide-container');
-              waitFn(async () => {
-                await this.loadAdvancedPage();
-                resolve(castExists(this.queryPage(route.section)));
-              });
-            } else {
-              waitFn(() => {
-                resolve(castExists(this.queryPage(route.section)));
-              });
-            }
+            waitFn(() => {
+              resolve(castExists(this.queryPage(route.section)));
+            });
           });
         }
 

@@ -336,16 +336,6 @@ export function isBasicRoute(route: Route|null): boolean {
 }
 
 /**
- * @returns true if this route exists under the About page
- */
-export function isAboutRoute(route: Route|null): boolean {
-  if (!route) {
-    return false;
-  }
-  return routes.ABOUT.contains(route);
-}
-
-/**
  * @returns true if |route| is able to be directly navigated to (ie. there
  * is a dedicated page or subpage that exists for the given route).
  */

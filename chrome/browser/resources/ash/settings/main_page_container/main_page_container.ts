@@ -4,13 +4,11 @@
 
 /**
  * @fileoverview
- * 'main-page-container' is the container hosting all the
- * main (top-level) pages, including advanced pages.
+ * 'main-page-container' is the container hosting all the top-level pages.
  */
 
 /**
- * All top-level basic pages should be imported below. Top-level advanced pages
- * should be imported in lazy_load.ts instead.
+ * All top-level basic pages should be imported below.
  */
 // clang-format off
 import '../device_page/device_page.js';
@@ -18,6 +16,7 @@ import '../internet_page/internet_page.js';
 import '../kerberos_page/kerberos_page.js';
 import '../multidevice_page/multidevice_page.js';
 import '../os_a11y_page/os_a11y_page.js';
+import '../os_about_page/os_about_page.js';
 import '../os_apps_page/os_apps_page.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 import '../os_people_page/os_people_page.js';
@@ -34,7 +33,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_about_page/eol_offer_section.js';
 import '../os_languages_page/languages.js';
 import '../os_settings_icons.html.js';
-import '../os_settings_page/settings_idle_load.js';
 import './page_displayer.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -50,7 +48,6 @@ import {AndroidAppsBrowserProxyImpl} from '../os_apps_page/android_apps_browser_
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import type {OsPageAvailability} from '../os_page_availability.js';
 import type {Route} from '../router.js';
-import {isAboutRoute, isBasicRoute, Router} from '../router.js';
 
 import {getTemplate} from './main_page_container.html.js';
 import {MainPageMixin} from './main_page_mixin.js';
@@ -133,16 +130,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         value: false,
       },
 
-      shouldShowBasicPageContainer_: {
-        type: Boolean,
-        computed: 'computeShouldShowBasicPageContainer_(currentRoute_)',
-      },
-
-      shouldShowAboutPageContainer_: {
-        type: Boolean,
-        computed: 'computeShouldShowAboutPageContainer_(currentRoute_)',
-      },
-
       /**
        * This is used to cache the set of languages from <settings-languages>
        * via bi-directional data-binding.
@@ -168,11 +155,8 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private isShowingSubpage_: boolean;
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
-  private currentRoute_: Route|null;
   private showEolIncentive_: boolean;
   private shouldShowOfferText_: boolean;
-  private shouldShowBasicPageContainer_: boolean;
-  private shouldShowAboutPageContainer_: boolean;
 
   override ready(): void {
     super.ready();
@@ -183,8 +167,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
 
   override connectedCallback(): void {
     super.connectedCallback();
-
-    this.currentRoute_ = Router.getInstance().currentRoute;
 
     this.addWebUiListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
@@ -198,8 +180,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
-    this.currentRoute_ = newRoute;
-
     if (oldRoute?.isSubpage()) {
       // If the new route isn't the same expanded section, reset
       // isShowingSubpage_ for the next transition.
@@ -253,14 +233,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
 
   private onShowingSubpage(): void {
     this.isShowingSubpage_ = true;
-  }
-
-  private computeShouldShowBasicPageContainer_(): boolean {
-    return isBasicRoute(this.currentRoute_);
-  }
-
-  private computeShouldShowAboutPageContainer_(): boolean {
-    return isAboutRoute(this.currentRoute_);
   }
 
   /**

@@ -58,11 +58,6 @@ suite('<main-page-container>', () => {
     suiteSetup(async () => {
       Router.getInstance().navigateTo(routes.BASIC);
       mainPageContainer = init();
-
-      const idleRender =
-          mainPageContainer.shadowRoot!.querySelector('settings-idle-load');
-      assertTrue(!!idleRender);
-      await idleRender.get();
     });
 
     suiteTeardown(() => {
