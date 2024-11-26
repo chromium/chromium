@@ -512,9 +512,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
-    expires_after="2025-01-05">
-  <owner>dalecurtis@chromium.org</owner>
+    expires_after="2025-11-25">
   <owner>evliu@google.com</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Records the autoplay source of audios.</summary>
 </histogram>
@@ -5801,9 +5801,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay" enum="AutoplaySource"
-    expires_after="2025-03-09">
-  <owner>dalecurtis@chromium.org</owner>
+    expires_after="2025-11-25">
   <owner>evliu@google.com</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the autoplay source of videos. This includes
@@ -5812,9 +5812,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.BecomesVisible"
-    enum="Boolean" expires_after="2025-01-05">
-  <owner>dalecurtis@chromium.org</owner>
+    enum="Boolean" expires_after="2025-11-25">
   <owner>evliu@google.com</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records muted video started playing with play() become visible at some
@@ -5826,9 +5826,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration"
-    units="ms" expires_after="2025-01-05">
-  <owner>dalecurtis@chromium.org</owner>
+    units="ms" expires_after="2025-11-25">
   <owner>evliu@google.com</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Records the offscreen playing duration of a muted video autoplaying from
@@ -5837,9 +5837,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.UnmuteAction" enum="BooleanSuccess"
-    expires_after="2025-05-11">
-  <owner>dalecurtis@chromium.org</owner>
+    expires_after="2025-11-25">
   <owner>evliu@google.com</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Status of the unmute action on a video that autoplayed because it was muted.
