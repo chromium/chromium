@@ -264,8 +264,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         && !mSyncService.hasSyncConsent();
 
         if (mShouldReplaceSyncSettingsWithAccountSettings) {
-            // Set title with an empty string to have no title on the top of the page.
-            mPageTitle.set("");
+            mPageTitle.set(getString(R.string.account_settings_title));
 
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);

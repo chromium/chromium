@@ -1177,6 +1177,17 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
+    @Feature({"Sync"})
+    public void testTitleOfAccountSyncSettingsPage() throws Exception {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        Assert.assertEquals(
+                fragment.getActivity().getTitle(),
+                fragment.getActivity().getString(R.string.account_settings_title));
+    }
+
+    @Test
+    @LargeTest
     @Feature({"Sync", "RenderTest"})
     public void testBottomOfAccountSyncSettingsPage() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
