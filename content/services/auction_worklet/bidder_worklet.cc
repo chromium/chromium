@@ -1490,9 +1490,10 @@ BidderWorklet::V8State::RunGenerateBidOnce(
               errors_out);
       ++non_premade_contexts_created;
     } else {
-      fresh_context_recycler = std::move(unused_context_recyclers_.back());
+      std::tie(fresh_context_recycler, script_timed_out, errors_out) =
+          std::move(unused_context_recyclers_.back());
       unused_context_recyclers_.pop_back();
-      if (should_deep_freeze) {
+      if (fresh_context_recycler && should_deep_freeze) {
         ContextRecyclerScope scope(*fresh_context_recycler);
         v8::Local<v8::Context> context = scope.GetContext();
         if (!DeepFreezeContext(context, errors_out)) {
@@ -1867,9 +1868,6 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
 void BidderWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  // This context is not yet associated with a particular interest group,
-  // so we don't have anywhere to put the errors. If this fails or
-  // times out (using the default time out) we simply ignore it.
   bool script_timed_out;
   std::vector<std::string> errors_out;
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
@@ -1880,9 +1878,8 @@ void BidderWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
       CreateContextRecyclerAndRunTopLevelForGenerateBid(
           trace_id, *total_timeout, /*should_deep_freeze=*/false,
           script_timed_out, errors_out);
-  if (context_recycler) {
-    unused_context_recyclers_.push_back(std::move(context_recycler));
-  }
+  unused_context_recyclers_.push_back(std::make_tuple(
+      std::move(context_recycler), script_timed_out, errors_out));
 }
 
 bool BidderWorklet::V8State::DeepFreezeContext(
