@@ -63,7 +63,6 @@ import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://r
 import {assertExists, castExists} from '../assert_extras.js';
 import type {DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {Constructor} from '../common/types.js';
@@ -338,13 +337,6 @@ export class SettingsInternetDetailPageElement extends
         notify: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       advancedExpanded_: Boolean,
 
       networkExpanded_: Boolean,
@@ -419,7 +411,6 @@ export class SettingsInternetDetailPageElement extends
   private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
   private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isTrafficCountersForWifiTestingEnabled_: boolean;
