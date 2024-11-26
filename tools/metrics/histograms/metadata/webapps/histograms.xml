@@ -1084,6 +1084,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.FirstPolicyProcessingDelay" units="seconds"
+    expires_after="2026-01-01">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>
+    Records the elapsed time between the first user sign-in and the beginning of
+    the initial processing of the IsolatedWebAppInstallForceList policy with a
+    lock.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.InstallError"
     enum="IsolatedWebAppInstallError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>

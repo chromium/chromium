@@ -11,6 +11,7 @@
 #include <utility>
 #include <variant>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
@@ -26,6 +27,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -126,6 +128,30 @@ struct AppActionInstall {
 
 using AppAction = std::variant<AppActionRemoveInstallSource, AppActionInstall>;
 using AppActions = base::flat_map<web_package::SignedWebBundleId, AppAction>;
+
+bool g_first_policy_processing_delay_recorded = false;
+
+// Records the elapsed time between the first user sign-in and the beginning
+// of the actual processing of the IsolatedWebAppInstallForceList policy with
+// a lock. Called once per the lifetime of the browser process (we don't need
+// to track this more often).
+void MaybeRecordFirstPolicyProcessingDelay(Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  if (g_first_policy_processing_delay_recorded ||
+      !prefs->HasPrefPath(ash::prefs::kAshLoginSessionStartedTime)) {
+    // `ash::prefs::kAshLoginSessionStartedTime` is not defined in tests or
+    // linux-chromeos builds.
+    return;
+  }
+  g_first_policy_processing_delay_recorded = true;
+
+  base::UmaHistogramCustomTimes(
+      "WebApp.Isolated.FirstPolicyProcessingDelay",
+      base::Time::Now() -
+          prefs->GetTime(ash::prefs::kAshLoginSessionStartedTime),
+      /*min=*/base::Milliseconds(100),
+      /*max=*/base::Seconds(20), /*buckets=*/50);
+}
 
 }  // namespace
 
@@ -275,6 +301,8 @@ void IsolatedWebAppPolicyManager::SetPendingInitCount(int pending_count) {
 void IsolatedWebAppPolicyManager::DoProcessPolicy(
     AllAppsLock& lock,
     base::Value::Dict& debug_info) {
+  MaybeRecordFirstPolicyProcessingDelay(profile_);
+
   CHECK(provider_);
   CHECK(install_tasks_.empty());
 
