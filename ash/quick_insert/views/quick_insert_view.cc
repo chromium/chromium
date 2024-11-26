@@ -189,6 +189,8 @@ QuickInsertCategory GetCategoryForMoreResults(QuickInsertSectionType type) {
     case QuickInsertSectionType::kNone:
     case QuickInsertSectionType::kContentEditor:
     case QuickInsertSectionType::kExamples:
+    case QuickInsertSectionType::kFeaturedGifs:
+    case QuickInsertSectionType::kSearchedGifs:
       NOTREACHED();
     case QuickInsertSectionType::kClipboard:
       return QuickInsertCategory::kClipboard;

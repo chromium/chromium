@@ -256,6 +256,19 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
   }
 }
 
+QuickInsertSectionType GetSectionTypeForCategorySuggestion(
+    QuickInsertCategory category) {
+  switch (category) {
+    case QuickInsertCategory::kUnitsMaths:
+    case QuickInsertCategory::kDatesTimes:
+      return QuickInsertSectionType::kExamples;
+    case QuickInsertCategory::kGifs:
+      return QuickInsertSectionType::kFeaturedGifs;
+    default:
+      return QuickInsertSectionType::kNone;
+  }
+}
+
 }  // namespace
 
 QuickInsertController::QuickInsertController()
@@ -336,16 +349,11 @@ void QuickInsertController::GetZeroStateSuggestedResults(
 void QuickInsertController::GetResultsForCategory(
     QuickInsertCategory category,
     SearchResultsCallback callback) {
-  const QuickInsertSectionType section_type =
-      (category == QuickInsertCategory::kUnitsMaths ||
-       category == QuickInsertCategory::kDatesTimes)
-          ? QuickInsertSectionType::kExamples
-          : QuickInsertSectionType::kNone;
-
   CHECK(client_);
   suggestions_controller_.GetSuggestionsForCategory(
       *client_, category,
-      base::BindRepeating(CreateSingleSectionForCategoryResults, section_type)
+      base::BindRepeating(CreateSingleSectionForCategoryResults,
+                          GetSectionTypeForCategorySuggestion(category))
           .Then(std::move(callback)));
 }
 

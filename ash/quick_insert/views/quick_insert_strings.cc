@@ -156,6 +156,11 @@ std::u16string GetSectionTitleForQuickInsertSectionType(
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
     case QuickInsertSectionType::kDriveFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
+    case QuickInsertSectionType::kFeaturedGifs:
+      return l10n_util::GetStringUTF16(
+          IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE);
+    case QuickInsertSectionType::kSearchedGifs:
+      return u"";
   }
 }
 

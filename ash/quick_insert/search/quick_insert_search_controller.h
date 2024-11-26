@@ -27,12 +27,7 @@
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class EndpointFetcher;
 class PrefService;
-
-namespace network {
-class SharedURLLoaderFactory;
-}
 
 namespace ash {
 
@@ -72,13 +67,6 @@ class ASH_EXPORT QuickInsertSearchController {
       std::u16string_view query,
       QuickInsertViewDelegate::EmojiSearchResultsCallback callback);
 
-  void StartGifSearch(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::u16string_view query,
-      SearchGifsCallback callback);
-
-  void StopGifSearch();
-
   // Gets the emoji name for the given emoji / emoticon / symbol.
   // Used for getting emoji tooltips for zero state emoji.
   // TODO: b/358492493 - Refactor this out of `QuickInsertSearchController`, as
@@ -102,9 +90,6 @@ class ASH_EXPORT QuickInsertSearchController {
   // destructed first.
   std::unique_ptr<QuickInsertSearchAggregator> aggregator_;
   std::unique_ptr<QuickInsertSearchRequest> search_request_;
-
-  std::optional<std::u16string> current_gif_search_query_;
-  std::unique_ptr<EndpointFetcher> current_gif_fetcher_;
 
   base::WeakPtrFactory<QuickInsertSearchController> weak_ptr_factory_{this};
 };

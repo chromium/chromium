@@ -22,7 +22,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -31,9 +30,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
-#include "chromeos/ash/components/emoji/tenor_types.mojom.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -46,8 +42,6 @@ namespace {
 constexpr int kMaxEmojiResults = 3;
 constexpr int kMaxSymbolResults = 2;
 constexpr int kMaxEmoticonResults = 2;
-
-constexpr int kMaxGifsToSearch = 4;
 
 // These are taken from manifest files in:
 // https://source.chromium.org/chromium/chromium/src/+/2be4329930cac782779c5083389b83e09a8bcb47:chrome/browser/resources/chromeos/input_method/
@@ -244,53 +238,6 @@ void QuickInsertSearchController::StartEmojiSearch(
   }
 
   std::move(callback).Run(std::move(emoji_results));
-}
-
-void QuickInsertSearchController::StartGifSearch(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::u16string_view query,
-    SearchGifsCallback callback) {
-  // This will cancel the previous in-flight request if there is one.
-  current_gif_fetcher_ = GifTenorApiFetcher::FetchGifSearchCancellable(
-      std::move(url_loader_factory), base::UTF16ToUTF8(query), std::nullopt,
-      kMaxGifsToSearch,
-      base::BindOnce(&QuickInsertSearchController::OnGifSearchResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::u16string(query)));
-  current_gif_search_query_ = query;
-}
-
-void QuickInsertSearchController::StopGifSearch() {
-  current_gif_fetcher_.reset();
-  current_gif_search_query_.reset();
-}
-
-void QuickInsertSearchController::OnGifSearchResponse(
-    QuickInsertSearchController::SearchGifsCallback callback,
-    std::u16string gif_search_query,
-    base::expected<tenor::mojom::PaginatedGifResponsesPtr,
-                   GifTenorApiFetcher::Error> response) {
-  if (gif_search_query != current_gif_search_query_) {
-    // Do not call the callback at all if this is an old request.
-    return;
-  }
-  if (!response.has_value()) {
-    // TODO: b/325368650 - Add better handling of errors.
-    std::move(callback).Run({});
-    return;
-  }
-
-  std::vector<ash::QuickInsertGifResult> gif_results;
-  std::move(callback).Run(base::ToVector(
-      (*response)->results, [](const tenor::mojom::GifResponsePtr& result) {
-        CHECK(result);
-        const tenor::mojom::GifUrlsPtr& urls = result->url;
-        CHECK(urls);
-        return ash::QuickInsertGifResult(
-            urls->preview, urls->preview_image, result->preview_size,
-            urls->full, result->full_size,
-            base::UTF8ToUTF16(result->content_description));
-      }));
 }
 
 std::string QuickInsertSearchController::GetEmojiName(std::string_view emoji) {
