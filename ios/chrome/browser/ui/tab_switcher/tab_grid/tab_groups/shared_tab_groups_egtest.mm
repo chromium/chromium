@@ -62,6 +62,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kTabGroupSync);
+  config.features_enabled.push_back(kTabGroupIndicator);
   config.features_enabled.push_back(shared_tab_group_flavor);
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(
