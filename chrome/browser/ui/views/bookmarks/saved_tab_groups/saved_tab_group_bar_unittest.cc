@@ -23,6 +23,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -836,6 +837,9 @@ TEST_P(SavedTabGroupBarWithMigratedServiceTest, TabGroupMigratedWhenShared) {
           local_group_id));
 
   ASSERT_THAT(GetButtonGUIDs(), ElementsAre(saved_guid));
+  service()
+      ->GetCollaborationFinderForTesting()
+      ->SetCollaborationAvailableForTesting("collaboration");
   service()->MakeTabGroupShared(local_group_id, "collaboration");
 
   ASSERT_TRUE(base::test::RunUntil([this, &saved_guid]() {

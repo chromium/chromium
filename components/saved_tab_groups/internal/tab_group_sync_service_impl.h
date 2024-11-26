@@ -252,6 +252,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const GURL& previous_tab_url,
       const std::optional<proto::UrlRestriction>& url_restriction);
 
+  // Updates the list of saved tab groups which were transitioned to shared
+  // groups.
+  void UpdateTransitionedSavedTabGroupsList();
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
@@ -279,6 +283,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
+
+  // Groups which were transitioned to shared.
+  std::set<base::Uuid> transitioned_saved_tab_groups_;
 
   // Keeps track of shared tab groups that are waiting for their respective
   // people groups to be available in DataSharingService backend. UI can't
