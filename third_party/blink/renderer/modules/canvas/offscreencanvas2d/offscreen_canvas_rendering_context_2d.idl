@@ -63,7 +63,7 @@
     [HighEntropy, NoAllocDirectCall] void beginPath();
     [HighEntropy] void fill(optional CanvasFillRule winding);
     [HighEntropy] void fill(Path2D path, optional CanvasFillRule winding);
-    [HighEntropy] void stroke();
+    [HighEntropy, NoAllocDirectCall] void stroke();
     [HighEntropy] void stroke(Path2D path);
     [HighEntropy] void clip(optional CanvasFillRule winding);
     [HighEntropy] void clip(Path2D path, optional CanvasFillRule winding);

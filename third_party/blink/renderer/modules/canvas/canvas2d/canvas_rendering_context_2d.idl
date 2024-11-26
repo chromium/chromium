@@ -116,8 +116,8 @@ interface CanvasRenderingContext2D {
     void drawFocusIfNeeded(Element element);
     void drawFocusIfNeeded(Path2D path, Element element);
 
-    void clip(optional CanvasFillRule winding);
-    void clip(Path2D path, optional CanvasFillRule winding);
+    [HighEntropy] void clip(optional CanvasFillRule winding);
+    [HighEntropy] void clip(Path2D path, optional CanvasFillRule winding);
     [HighEntropy] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
     [HighEntropy] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
     [HighEntropy] boolean isPointInStroke(unrestricted double x, unrestricted double y);
