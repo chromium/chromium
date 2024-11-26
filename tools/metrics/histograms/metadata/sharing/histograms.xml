@@ -476,17 +476,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SharingHubAndroid.TimeToShare" units="ms"
-    expires_after="2024-12-08">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>sophey@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records the amount of time taken for the user to select a share target after
-    initiating a share.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
     expires_after="2025-02-23">
   <owner>wenyufu@chromium.org</owner>
