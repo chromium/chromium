@@ -54,6 +54,8 @@ constexpr CGFloat kMessageInsetLeading = 20;
 constexpr CGFloat kMessageInsetBottom = 6;
 constexpr CGFloat kMessageInsetTrailing = 20;
 
+constexpr CGFloat kLottieImageAspectRatio = 105.0f / 270.0f;
+
 constexpr CGFloat kButtonInsetTop = 13;
 constexpr CGFloat kButtonInsetLeading = 20;
 constexpr CGFloat kButtonInsetBottom = 13;
@@ -385,6 +387,15 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     [stackView addSubview:self.animationViewWrapperDarkMode.animationView];
     AddSameConstraints(self.animationViewWrapperDarkMode.animationView,
                        self.animationViewWrapper.animationView);
+    // Ensure the image can expand to fill space for larger font sizes.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.animationViewWrapper.animationView.heightAnchor
+          constraintEqualToAnchor:self.animationViewWrapper.animationView
+                                      .widthAnchor
+                       multiplier:kLottieImageAspectRatio],
+      [self.animationViewWrapper.animationView.widthAnchor
+          constraintEqualToAnchor:self.contentView.widthAnchor]
+    ]];
 
     [self selectImageForCurrentStyle];
   }
