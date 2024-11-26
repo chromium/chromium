@@ -778,7 +778,7 @@
               "wpt_internal/css/css-pseudo/spelling-error-007-crash.html"],
     "exclusive_tests": ["external/wpt/forced-colors-mode"],
     "args": ["--force-high-contrast",
-             "--enable-blink-features=ForcedColors,ForcedColorsPreserveParentColor"],
+             "--enable-blink-features=ForcedColors"],
     "expires": "Jul 1, 2025"
   },
   "This never expires because it tests rendering of form controls when the",

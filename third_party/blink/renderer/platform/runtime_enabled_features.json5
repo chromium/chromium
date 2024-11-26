@@ -2131,10 +2131,6 @@
       base_feature: "none",
     },
     {
-      name: "ForcedColorsPreserveParentColor",
-      status: "stable",
-    },
-    {
       // This is used in tests to perform memory measurement without
       // waiting for GC.
       name:"ForceEagerMeasureMemory",
