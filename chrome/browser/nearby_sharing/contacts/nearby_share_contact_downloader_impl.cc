@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "components/cross_device/logging/logging.h"
 
 namespace {
@@ -190,19 +189,6 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
   RecordContactDownloadResultMetrics(/*success=*/true, current_page_number_,
                                      start_timestamp_);
   RecordContactDistributionMetrics(contacts_);
-
-  // Remove device contacts if the feature flag is disabled.
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingDeviceContacts)) {
-    size_t initial_num_contacts = contacts_.size();
-    std::erase_if(
-        contacts_, [](const nearby::sharing::proto::ContactRecord& contact) {
-          return contact.type() ==
-                 nearby::sharing::proto::ContactRecord::DEVICE_CONTACT;
-        });
-    CD_LOG(VERBOSE, Feature::NS)
-        << __func__ << ": Removed " << initial_num_contacts - contacts_.size()
-        << " device contacts.";
-  }
 
   // Remove unreachable contacts.
   size_t initial_num_contacts = contacts_.size();
