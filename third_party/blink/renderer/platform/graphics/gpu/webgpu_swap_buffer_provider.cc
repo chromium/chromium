@@ -230,7 +230,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   if (!layer_) {
     // Create a layer that will be used by the canvas and will ask for a
     // SharedImage each frame.
-    layer_ = cc::TextureLayer::CreateForMailbox(this, /*flipped=*/false);
+    layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetFilterQuality(filter_quality_);
 

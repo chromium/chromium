@@ -1078,7 +1078,7 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
     // Incoming resource is assumed to have top-left origin which corresponds to
     // TextureLayer flipped being false.
     scoped_refptr<cc::TextureLayer> new_layer =
-        cc::TextureLayer::CreateForMailbox(this, /*flipped=*/false);
+        cc::TextureLayer::CreateForMailbox(this);
     if (!SwitchToLayer(new_layer))
       return;
 

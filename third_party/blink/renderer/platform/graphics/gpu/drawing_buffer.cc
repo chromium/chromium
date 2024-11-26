@@ -438,9 +438,20 @@ bool DrawingBuffer::PrepareTransferableResource(
     viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
   bool force_gpu_result = false;
-  return PrepareTransferableResourceInternal(
+  bool result = PrepareTransferableResourceInternal(
       /*client_si=*/nullptr, out_resource, out_release_callback,
       force_gpu_result);
+
+  bool flipped = true;
+  if (opengl_flip_y_extension_ && IsUsingGpuCompositing()) {
+    flipped = false;
+  }
+
+  // TODO(crbug.com/378688985): Move this inside
+  // PrepareTransferableResourceInternal.
+  out_resource->origin =
+      flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+  return result;
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -1250,11 +1261,7 @@ bool DrawingBuffer::CopyToVideoFrame(
 
 cc::Layer* DrawingBuffer::CcLayer() {
   if (!layer_) {
-    bool flipped = true;
-    if (opengl_flip_y_extension_ && IsUsingGpuCompositing()) {
-      flipped = false;
-    }
-    layer_ = cc::TextureLayer::CreateForMailbox(this, flipped);
+    layer_ = cc::TextureLayer::CreateForMailbox(this);
 
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);

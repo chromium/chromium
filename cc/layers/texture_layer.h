@@ -84,8 +84,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
 
   // Used when mailbox names are specified instead of texture IDs.
   static scoped_refptr<TextureLayer> CreateForMailbox(
-      TextureLayerClient* client,
-      bool flipped);
+      TextureLayerClient* client);
 
   TextureLayer(const TextureLayer&) = delete;
   TextureLayer& operator=(const TextureLayer&) = delete;
@@ -98,11 +97,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
-
-  // Sets whether this texture should be Y-flipped at draw time. Defaults to
-  // true.
-  void SetFlipped(bool flipped);
-  bool flipped() const { return flipped_.Read(*this); }
 
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
@@ -154,7 +148,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   }
 
  protected:
-  explicit TextureLayer(TextureLayerClient* client, bool flipped);
+  explicit TextureLayer(TextureLayerClient* client);
   ~TextureLayer() override;
   bool HasDrawableContent() const override;
 
@@ -175,7 +169,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   ProtectedSequenceForbidden<raw_ptr<TextureLayerClient, DanglingUntriaged>>
       client_;
 
-  ProtectedSequenceReadable<bool> flipped_;
   ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
   ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
   // [bottom left, top left, top right, bottom right]

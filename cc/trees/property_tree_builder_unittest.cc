@@ -442,7 +442,7 @@ TEST_F(PropertyTreeBuilderTest, VisibleRectWithScalingClippingAndFilters) {
 TEST_F(PropertyTreeBuilderTest, TextureLayerSnapping) {
   auto root = Layer::Create();
   host()->SetRootLayer(root);
-  auto child = TextureLayer::CreateForMailbox(nullptr, /*flipped=*/false);
+  auto child = TextureLayer::CreateForMailbox(nullptr);
   root->AddChild(child);
 
   root->SetBounds(gfx::Size(100, 100));

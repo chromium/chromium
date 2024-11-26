@@ -245,7 +245,7 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   if (!InitScene())
     return false;
 
-  layer_ = cc::TextureLayer::CreateForMailbox(this, /*flipped=*/true);
+  layer_ = cc::TextureLayer::CreateForMailbox(this);
   container_->SetCcLayer(layer_.get());
   if (re_request_touch_events_) {
     container_->RequestTouchEventType(
@@ -395,6 +395,7 @@ bool TestPlugin::PrepareTransferableResource(
                                        std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
   }
+  resource->origin = kBottomLeft_GrSurfaceOrigin;
   resource->size = size;
   content_changed_ = false;
   return true;

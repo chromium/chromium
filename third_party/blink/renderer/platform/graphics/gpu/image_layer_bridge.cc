@@ -79,7 +79,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 
 ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
     : opacity_mode_(opacity_mode) {
-  layer_ = cc::TextureLayer::CreateForMailbox(this, /*flipped=*/true);
+  layer_ = cc::TextureLayer::CreateForMailbox(this);
   layer_->SetIsDrawable(true);
   layer_->SetHitTestable(true);
   if (opacity_mode_ == kOpaque) {
@@ -179,8 +179,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
     }
   }
 
-  layer_->SetFlipped(!image_->IsOriginTopLeft());
-
   if (gpu_compositing) {
     scoped_refptr<StaticBitmapImage> image_for_compositor =
         MakeAccelerated(image_, SharedGpuContext::ContextProviderWrapper());
@@ -197,8 +195,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
     }
 
-    layer_->SetFlipped(!image_for_compositor->IsOriginTopLeft());
-
     const gfx::Size size(image_for_compositor->width(),
                          image_for_compositor->height());
 
@@ -213,6 +209,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
         viz::SkColorTypeToSinglePlaneSharedImageFormat(color_type),
         is_overlay_candidate,
         viz::TransferableResource::ResourceSource::kImageLayerBridge);
+    out_resource->origin = image_for_compositor->IsOriginTopLeft()
+                               ? kTopLeft_GrSurfaceOrigin
+                               : kBottomLeft_GrSurfaceOrigin;
 
     auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
                               WrapWeakPersistent(this),
@@ -260,6 +259,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
           registered.bitmap->id(), gpu::SyncToken(), size, format,
           viz::TransferableResource::ResourceSource::kImageLayerBridge);
     }
+    out_resource->origin = image_->IsOriginTopLeft()
+                               ? kTopLeft_GrSurfaceOrigin
+                               : kBottomLeft_GrSurfaceOrigin;
     out_resource->color_space = sk_image->colorSpace()
                                     ? gfx::ColorSpace(*sk_image->colorSpace())
                                     : gfx::ColorSpace::CreateSRGB();

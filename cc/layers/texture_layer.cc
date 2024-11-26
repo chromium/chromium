@@ -24,14 +24,12 @@
 namespace cc {
 
 scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
-    TextureLayerClient* client,
-    bool flipped) {
-  return scoped_refptr<TextureLayer>(new TextureLayer(client, flipped));
+    TextureLayerClient* client) {
+  return scoped_refptr<TextureLayer>(new TextureLayer(client));
 }
 
-TextureLayer::TextureLayer(TextureLayerClient* client, bool flipped)
+TextureLayer::TextureLayer(TextureLayerClient* client)
     : client_(client),
-      flipped_(flipped),
       uv_bottom_right_(1.f, 1.f),
       premultiplied_alpha_(true),
       blend_background_color_(false),
@@ -53,13 +51,6 @@ void TextureLayer::ClearTexture() {
 std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return TextureLayerImpl::Create(tree_impl, id());
-}
-
-void TextureLayer::SetFlipped(bool flipped) {
-  if (flipped_.Read(*this) == flipped)
-    return;
-  flipped_.Write(*this) = flipped;
-  SetNeedsCommit();
 }
 
 void TextureLayer::SetUV(const gfx::PointF& top_left,
@@ -122,14 +113,8 @@ void TextureLayer::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
   bool requires_commit = true;
-
-  // TODO(crbug.com/378688985): Move this further to the caller side.
-  auto adjusted_resource = resource;
-  adjusted_resource.origin = flipped_.Read(*this) ? kBottomLeft_GrSurfaceOrigin
-                                                  : kTopLeft_GrSurfaceOrigin;
-
-  SetTransferableResourceInternal(adjusted_resource,
-                                  std::move(release_callback), requires_commit);
+  SetTransferableResourceInternal(resource, std::move(release_callback),
+                                  requires_commit);
 }
 
 void TextureLayer::SetNeedsSetTransferableResource() {
@@ -196,10 +181,6 @@ bool TextureLayer::Update() {
                                                           &release_callback)) {
       // Already within a commit, no need to do another one immediately.
       bool requires_commit = false;
-
-      // TODO(crbug.com/378688985): Move this further to the caller side.
-      resource.origin = flipped_.Read(*this) ? kBottomLeft_GrSurfaceOrigin
-                                             : kTopLeft_GrSurfaceOrigin;
       SetTransferableResourceInternal(resource, std::move(release_callback),
                                       requires_commit);
       updated = true;
