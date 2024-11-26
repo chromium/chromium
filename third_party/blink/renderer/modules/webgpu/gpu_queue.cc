@@ -409,12 +409,8 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
           DOMExceptionCode::kOperationError,
           "Instance dropped in onSubmittedWorkDone");
       break;
-    case wgpu::QueueWorkDoneStatus::DeviceLost:
-      resolver->RejectWithDOMException(
-          DOMExceptionCode::kOperationError,
-          "Device lost during onSubmittedWorkDone (do not use this error for "
-          "recovery - it is NOT guaranteed to happen on device loss)");
-      break;
+    default:
+      DCHECK(false);
   }
 }
 
