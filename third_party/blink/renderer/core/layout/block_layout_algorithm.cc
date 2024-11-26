@@ -3399,10 +3399,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
     // Propagate `text-box-edge` if this box has non-initial `text-box-trim`.
     const ComputedStyle& style = Node().Style();
-    builder.SetEffectiveTextBoxEdge(
-        style.TextBoxTrim() != ETextBoxTrim::kNone
-            ? style.GetTextBoxEdge()
-            : constraint_space.EffectiveTextBoxEdge());
+    builder.SetEffectiveTextBoxEdge(style.GetTextBoxEdge());
   }
 
   if (constraint_space.HasBlockFragmentation()) {

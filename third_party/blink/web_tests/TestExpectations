@@ -2875,8 +2875,6 @@ crbug.com/375262152 external/wpt/html/semantics/embedded-content/the-img-element
 crbug.com/375262151 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?npu [ Failure Timeout ]
 crbug.com/374812621 external/wpt/encrypted-media/media-element-event-handler-attributes.html [ Timeout ]
 crbug.com/375204273 [ Mac13 ] external/wpt/fs/FileSystemObserver.https.tentative.any.worker.html [ Failure Timeout ]
-crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-accumulation-001.html [ Failure ]
-crbug.com/374787320 external/wpt/css/css-inline/text-box-trim/text-box-trim-not-ignore-nested-text-box-edge.html [ Failure ]
 crbug.com/372287206 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Crash ]
 crbug.com/372103377 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Crash ]
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-fragment-nosw.https.html [ Skip Timeout ]
