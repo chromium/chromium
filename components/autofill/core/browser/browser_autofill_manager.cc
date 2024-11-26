@@ -1664,7 +1664,6 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
                              &autofill_field)) {
     return;
   }
-  metrics_->last_selected_card = credit_card;
   metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
       credit_card, *form_structure, metrics_->signin_state_for_metrics);
   // If no authentication is needed, directly forward filling to FormFiller.
@@ -2230,8 +2229,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     LogAndRecordCreditCardFill(
         form_structure, trigger_autofill_field, safe_filled_fields,
         safe_filled_autofill_fields, filled_field_ids, safe_field_ids,
-        absl::get<const CreditCard*>(profile_or_credit_card), trigger_source,
-        is_refill);
+        CHECK_DEREF(absl::get<const CreditCard*>(profile_or_credit_card)),
+        trigger_source, is_refill);
     return;
   }
 
@@ -2321,7 +2320,7 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
     base::span<const AutofillField*> safe_filled_autofill_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
-    const CreditCard* card,
+    const CreditCard& card,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
   if (is_refill) {
@@ -2329,18 +2328,20 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
         metrics_->signin_state_for_metrics);
     metrics_->credit_card_form_event_logger.OnDidRefill(form_structure);
   } else {
-    // The originally selected masked card is `metrics_->last_selected_card`.
-    // So we must log `metrics_->last_selected_card` as opposed to
-    // `absl::get<const CreditCard*>(profile_or_credit_card)` to correctly
-    // indicate whether the user filled the form using a masked card
-    // suggestion.
+    CreditCard card_copy = card;
+    if (card.record_type() == CreditCard::RecordType::kFullServerCard) {
+      // Create a masked version of the card since the metrics function is
+      // interested in the CC suggestion that was accepted, and this card was
+      // not a kFullServerCard one.
+      card_copy.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+      card_copy.SetNumber(card_copy.LastFourDigits());
+    }
     metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
-        metrics_->last_selected_card, form_structure, trigger_autofill_field,
-        filled_field_ids, safe_field_ids, metrics_->signin_state_for_metrics,
-        trigger_source);
+        card_copy, form_structure, trigger_autofill_field, filled_field_ids,
+        safe_field_ids, metrics_->signin_state_for_metrics, trigger_source);
 
     client().GetPersonalDataManager().payments_data_manager().RecordUseOfCard(
-        card);
+        &card);
   }
 }
 

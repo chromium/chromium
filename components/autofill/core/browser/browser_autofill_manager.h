@@ -356,9 +356,6 @@ class BrowserAutofillManager : public AutofillManager {
     autofill_metrics::AddressFormEventLogger address_form_event_logger;
     autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
 
-    // The (masked) CreditCard last selected by the user.
-    CreditCard last_selected_card;
-
     // Have we logged whether Autofill is enabled for this page load?
     bool has_logged_autofill_enabled = false;
     // Has the user manually edited at least one form field among the
@@ -638,7 +635,7 @@ class BrowserAutofillManager : public AutofillManager {
       base::span<const AutofillField*> safe_filled_autofill_fields,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
-      const CreditCard* card,
+      const CreditCard& card,
       AutofillTriggerSource trigger_source,
       bool is_refill);
 

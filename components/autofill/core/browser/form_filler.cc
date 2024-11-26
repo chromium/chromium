@@ -996,13 +996,15 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
           ? std::make_pair(it->second, autofill_field.Type().GetStorableType())
       : absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)
           ? GetFillingValueAndTypeForProfile(
-                *absl::get<const AutofillProfile*>(profile_or_credit_card),
+                CHECK_DEREF(
+                    absl::get<const AutofillProfile*>(profile_or_credit_card)),
                 manager_->client().GetAppLocale(), autofill_field.Type(),
                 field_data, manager_->client().GetAddressNormalizer(),
                 failure_to_fill)
           : std::make_pair(
                 GetFillingValueForCreditCard(
-                    *absl::get<const CreditCard*>(profile_or_credit_card),
+                    CHECK_DEREF(
+                        absl::get<const CreditCard*>(profile_or_credit_card)),
                     manager_->client().GetAppLocale(), action_persistence,
                     autofill_field, failure_to_fill),
                 autofill_field.Type().GetStorableType());
