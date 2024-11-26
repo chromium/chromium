@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -327,10 +326,8 @@ ChromeShelfController::~ChromeShelfController() {
 
 void ChromeShelfController::Init() {
   TRACE_EVENT0("ui", "ChromeShelfController::Init");
-  if (!crosapi::browser_util::IsLacrosEnabled()) {
-    CreateBrowserShortcutItem(/*pinned=*/true);
-    UpdateBrowserItemState();
-  }
+  CreateBrowserShortcutItem(/*pinned=*/true);
+  UpdateBrowserItemState();
 
   // Tag all open browser windows with the appropriate shelf id property. This
   // associates each window with the shelf item for the active web contents.
