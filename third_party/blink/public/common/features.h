@@ -1292,9 +1292,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kPreloadingModelTimerStartDelay);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kPreloadingModelTimerInterval);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kPreloadingModelOneExecutionPerHover);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                                kPreloadingModelMaxHoverTime);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,

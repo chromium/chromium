@@ -111,10 +111,6 @@ base::TimeDelta MLModelExecutionTimerInterval() {
       blink::features::kPreloadingModelTimerInterval.Get());
 }
 
-bool MLModelOneExecutionPerHover() {
-  return blink::features::kPreloadingModelOneExecutionPerHover.Get();
-}
-
 base::TimeDelta MLModelMaxHoverTime() {
   return blink::features::kPreloadingModelMaxHoverTime.Get();
 }
@@ -487,14 +483,7 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
       base::BindOnce(&NavigationPredictor::OnPreloadingHeuristicsModelDone,
                      weak_ptr_factory_.GetWeakPtr(), anchor.target_url));
 
-  // TODO(crbug.com/40278151): In its current form, the model does not seem to
-  // ever increase in confidence when dwelling on an anchor, which makes
-  // repeated executions wasteful. So we only do one execution per mouse over.
-  // As we iterate on the model, multiple executions may become useful, but we
-  // need to take care to not produce a large amount of redundant predictions
-  // (as seen in crbug.com/338200075 ).
-  if (!MLModelOneExecutionPerHover() &&
-      inputs.hover_dwell_time < MLModelMaxHoverTime() &&
+  if (inputs.hover_dwell_time < MLModelMaxHoverTime() &&
       !ml_model_execution_timer_.IsRunning()) {
     ml_model_execution_timer_.Start(
         FROM_HERE, MLModelExecutionTimerInterval(),

@@ -2029,11 +2029,6 @@ BASE_FEATURE_PARAM(int,
                    &kPreloadingHeuristicsMLModel,
                    "timer_interval",
                    100);
-BASE_FEATURE_PARAM(bool,
-                   kPreloadingModelOneExecutionPerHover,
-                   &kPreloadingHeuristicsMLModel,
-                   "one_execution_per_hover",
-                   true);
 // The default max hover time of 10s covers the 98th percentile of hovering
 // cases that are relevant to the model.
 BASE_FEATURE_PARAM(base::TimeDelta,
