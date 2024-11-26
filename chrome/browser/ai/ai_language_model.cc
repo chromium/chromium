@@ -183,9 +183,12 @@ AILanguageModel::AILanguageModel(
 
   // If the context is not provided, initialize a new context with the default
   // configuration.
-  context_ = std::make_unique<Context>(
-      session_->GetTokenLimits().max_context_tokens, Context::ContextItem(),
-      ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >= 1);
+  bool use_prompt_api_proto =
+      ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >=
+      kMinVersionUsingProto;
+  context_ =
+      std::make_unique<Context>(session_->GetTokenLimits().max_context_tokens,
+                                Context::ContextItem(), use_prompt_api_proto);
 }
 
 AILanguageModel::~AILanguageModel() = default;

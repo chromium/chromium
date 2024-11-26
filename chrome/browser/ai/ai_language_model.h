@@ -35,6 +35,10 @@ class AILanguageModel : public AIContextBoundObject,
                      blink::mojom::AIManagerCreateLanguageModelError>,
       blink::mojom::AILanguageModelInfoPtr)>;
 
+  // The minimum version of the model execution config for prompt API that
+  // starts using proto instead of string value for the request.
+  static const uint32_t kMinVersionUsingProto = 2;
+
   // The Context class manages the history of prompt input and output, which are
   // used to build the context when performing the next execution. Context is
   // stored in a FIFO and kept below a limited number of tokens.

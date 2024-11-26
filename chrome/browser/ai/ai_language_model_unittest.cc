@@ -135,7 +135,7 @@ std::string ToString(const google::protobuf::MessageLite& request_metadata) {
 const optimization_guide::proto::Any& GetPromptApiMetadata() {
   static base::NoDestructor<optimization_guide::proto::Any> data([]() {
     optimization_guide::proto::PromptApiMetadata metadata;
-    metadata.set_version(1);
+    metadata.set_version(AILanguageModel::kMinVersionUsingProto);
     return optimization_guide::AnyWrapProto(metadata);
   }());
   return *data;
