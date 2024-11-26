@@ -437,19 +437,8 @@ bool DrawingBuffer::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
-  bool result = PrepareTransferableResourceInternal(
+  return PrepareTransferableResourceInternal(
       /*client_si=*/nullptr, out_resource, out_release_callback);
-
-  bool flipped = true;
-  if (opengl_flip_y_extension_ && IsUsingGpuCompositing()) {
-    flipped = false;
-  }
-
-  // TODO(crbug.com/378688985): Move this inside
-  // PrepareTransferableResourceInternal.
-  out_resource->origin =
-      flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
-  return result;
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -570,6 +559,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   out_resource->color_space = back_color_buffer_->color_space;
   out_resource->hdr_metadata = hdr_metadata_;
 
+  // ReadFramebufferIntoBitmapPixels always produced bottom-Left origin.
+  out_resource->origin = kBottomLeft_GrSurfaceOrigin;
+
   // This holds a ref on the DrawingBuffer that will keep it alive until the
   // mailbox is released (and while the release callback is running). It also
   // owns the SharedBitmap.
@@ -674,6 +666,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
         viz::TransferableResource::ResourceSource::kDrawingBuffer);
     out_resource->color_space = color_buffer_for_mailbox->color_space;
     out_resource->hdr_metadata = hdr_metadata_;
+    out_resource->origin =
+        color_buffer_for_mailbox->shared_image->surface_origin();
+
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
     auto func = base::BindOnce(&DrawingBuffer::NotifyMailboxReleasedGpu,
