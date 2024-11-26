@@ -8,7 +8,6 @@
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shape-v1-client-protocol.h>
-#include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
@@ -211,7 +210,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_cursor_shapes_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_surface_v1)

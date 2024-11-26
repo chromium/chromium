@@ -59,7 +59,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
@@ -1206,8 +1205,6 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
 
   std::optional<uint32_t> shape =
       WaylandCursorShape::ShapeFromType(cursor->type());
-  std::optional<int32_t> zcr_shape =
-      WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   // Round cursor scale factor to ceil as wl_surface.set_buffer_scale accepts
   // only integers.
@@ -1222,10 +1219,6 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
     connection_->SetPlatformCursor(
         reinterpret_cast<wl_cursor*>(cursor->platform_data()),
         std::ceil(cursor->cursor_image_scale_factor()));
-  } else if (connection_->zcr_cursor_shapes() && zcr_shape.has_value()) {
-    // Check for Exo server-side cursor support.
-    // TODO(crbug.com/374244479): remove this protocol.
-    connection_->zcr_cursor_shapes()->SetCursorShape(zcr_shape.value());
   } else if (!cursor->bitmaps()
                   .empty()) {  // Use client-side bitmap cursors as fallback.
     // Translate physical pixels to DIPs.
