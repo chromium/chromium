@@ -5,11 +5,18 @@
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
 import android.content.Context;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.collaboration.messaging.ActivityLogItem;
+import org.chromium.components.collaboration.messaging.ActivityLogQueryParams;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /**
  * Core business logic for the recent activity UI. Populates a {@link ModelList} from a list of
@@ -49,11 +56,47 @@ class RecentActivityListMediator {
      * @param callback The callback to run after populating the list.
      */
     void requestShowUI(String collaborationId, Runnable callback) {
+        ActivityLogQueryParams activityLogQueryParams = new ActivityLogQueryParams();
+        activityLogQueryParams.collaborationId = collaborationId;
+        List<ActivityLogItem> activityLogItems =
+                mMessagingBackendService.getActivityLog(activityLogQueryParams);
+        updateModelList(activityLogItems);
         callback.run();
     }
 
     /** Called to clear the model when the bottom sheet is closed. */
     void onBottomSheetClosed() {
         mModelList.clear();
+    }
+
+    private void updateModelList(List<ActivityLogItem> activityLogItems) {
+        for (ActivityLogItem logItem : activityLogItems) {
+            if (logItem == null) {
+                continue;
+            }
+
+            // Create a property model for the item.
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(RecentActivityListProperties.ALL_KEYS)
+                            .with(RecentActivityListProperties.TITLE_TEXT, logItem.titleText)
+                            .with(
+                                    RecentActivityListProperties.DESCRIPTION_TEXT,
+                                    logItem.descriptionText)
+                            .build();
+            propertyModel.set(
+                    RecentActivityListProperties.ON_CLICK_LISTENER,
+                    createActivityLogItemOnClickListener(logItem));
+
+            // Add the item to the list.
+            mModelList.add(new ListItem(0, propertyModel));
+        }
+    }
+
+    private OnClickListener createActivityLogItemOnClickListener(ActivityLogItem logItem) {
+        return view -> {
+            assert logItem != null;
+            // TODO(crbug.com/380962101): Invoke backend to switch to take action.
+            mCloseBottomSheetCallback.run();
+        };
     }
 }

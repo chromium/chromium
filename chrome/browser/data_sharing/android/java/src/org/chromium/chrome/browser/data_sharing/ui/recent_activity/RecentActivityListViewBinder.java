@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
+import static org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListProperties.DESCRIPTION_TEXT;
+import static org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListProperties.TITLE_TEXT;
+
 import android.view.View;
+import android.widget.TextView;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -12,5 +17,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** View binder for the single recent activity row UI. */
 class RecentActivityListViewBinder {
     /** Stateless propagation of properties. */
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {}
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (TITLE_TEXT == propertyKey) {
+            ((TextView) view.findViewById(R.id.title)).setText(model.get(TITLE_TEXT));
+        } else if (DESCRIPTION_TEXT == propertyKey) {
+            ((TextView) view.findViewById(R.id.description)).setText(model.get(DESCRIPTION_TEXT));
+        } else if (ON_CLICK_LISTENER == propertyKey) {
+            view.setOnClickListener(model.get(ON_CLICK_LISTENER));
+        }
+    }
 }
