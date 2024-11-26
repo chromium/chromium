@@ -190,6 +190,13 @@ class BookmarkUIOperationsHelperMergedSurfaces
 
   ~BookmarkUIOperationsHelperMergedSurfaces() override;
 
+  // Merged bookmark surfaces can trigger a non-merged bookmark UI e.g. bookmark
+  // context menu can trigger the edit bookmark UI or the bookmark manager with
+  // a choice of a highlighted node.
+  // This function returns the default parent to use for non-merged surfaces UIs
+  // triggered from merged surfaces.
+  const bookmarks::BookmarkNode* GetDefaultParentForNonMergedSurfaces() const;
+
  protected:
   bookmarks::BookmarkModel* model() override;
   void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,

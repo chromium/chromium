@@ -450,6 +450,27 @@ BookmarkUIOperationsHelperMergedSurfaces::
 BookmarkUIOperationsHelperMergedSurfaces::
     ~BookmarkUIOperationsHelperMergedSurfaces() = default;
 
+const BookmarkNode*
+BookmarkUIOperationsHelperMergedSurfaces::GetDefaultParentForNonMergedSurfaces()
+    const {
+  CHECK(parent_folder());
+  std::vector<const BookmarkNode*> nodes =
+      merged_surface_service_->GetUnderlyingNodes(*parent_folder());
+
+  if (nodes.size() == 1) {
+    return nodes[0];
+  }
+
+  // In case of permanent folder and local and account bookmark permanent node
+  // exist, `GetUnderlyingNodes()` is expected to return both nodes.
+  CHECK_EQ(nodes.size(), 2u);
+  // Account permanent folder should be the first in the list.
+  CHECK_EQ(nodes[0], merged_surface_service_->bookmark_model()->GetNodeByUuid(
+                         nodes[0]->uuid(),
+                         BookmarkModel::NodeTypeForUuidLookup::kAccountNodes));
+  return nodes[0];
+}
+
 bookmarks::BookmarkModel* BookmarkUIOperationsHelperMergedSurfaces::model() {
   return merged_surface_service_->bookmark_model();
 }

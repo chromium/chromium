@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -29,6 +30,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -411,5 +413,70 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
 }
 
 #endif  // !BUILDFLAG(IS_MAC)
+
+TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
+     GetDefaultParentForNonMergedSurfacesWithAccountPermanentNodes) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  bookmarks::BookmarkModel model(
+      std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(&model,
+                                       /*managed_bookmark_service=*/nullptr);
+  model.LoadEmptyForTest();
+  model.CreateAccountPermanentFolders();
+
+  ASSERT_TRUE(model.account_bookmark_bar_node());
+  BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
+  EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
+                .GetDefaultParentForNonMergedSurfaces(),
+            model.account_bookmark_bar_node());
+}
+
+TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
+     GetDefaultParentForNonMergedSurfacesWithoutAccountPermanentNodes) {
+  bookmarks::BookmarkModel model(
+      std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(&model,
+                                       /*managed_bookmark_service=*/nullptr);
+  model.LoadEmptyForTest();
+  ASSERT_FALSE(model.account_bookmark_bar_node());
+  BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
+  EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
+                .GetDefaultParentForNonMergedSurfaces(),
+            model.bookmark_bar_node());
+}
+
+TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
+     GetDefaultParentForNonMergedSurfacesNonPermanentFolder) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  bookmarks::BookmarkModel model(
+      std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(&model,
+                                       /*managed_bookmark_service=*/nullptr);
+  model.LoadEmptyForTest();
+  {
+    // Test regular non permanent node.
+    const BookmarkNode* node =
+        model.AddFolder(model.bookmark_bar_node(), 0, u"folder");
+    BookmarkParentFolder folder =
+        BookmarkParentFolder::FromNonPermanentNode(node);
+    EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
+                  .GetDefaultParentForNonMergedSurfaces(),
+              node);
+  }
+
+  {
+    model.CreateAccountPermanentFolders();
+    ASSERT_TRUE(model.account_bookmark_bar_node());
+    const BookmarkNode* node =
+        model.AddFolder(model.account_bookmark_bar_node(), 0, u"folder");
+    BookmarkParentFolder folder =
+        BookmarkParentFolder::FromNonPermanentNode(node);
+    EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
+                  .GetDefaultParentForNonMergedSurfaces(),
+              node);
+  }
+}
 
 }  // namespace
