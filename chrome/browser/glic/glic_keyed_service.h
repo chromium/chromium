@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
 #define CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,6 +36,7 @@ class GlicKeyedService : public KeyedService {
                  const std::optional<int32_t>& window_id,
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
   void ClosePanel();
+  std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
 
   void GetContextFromFocusedTab(
       bool include_inner_text,

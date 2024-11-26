@@ -49,6 +49,7 @@ namespace glic {
 
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   auto web_view = std::make_unique<views::WebView>(profile);
+  web_view_ = web_view.get();
   web_view->SetSize(initial_size);
   web_view->LoadInitialURL(GURL("chrome://glic"));
   web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
@@ -58,8 +59,9 @@ GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
 GlicView::~GlicView() = default;
 
 // static
-views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
-                                              const gfx::Rect& initial_bounds) {
+std::pair<views::UniqueWidgetPtr, GlicView*> GlicView::CreateWidget(
+    Profile* profile,
+    const gfx::Rect& initial_bounds) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -71,10 +73,11 @@ views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
 
-  widget->SetContentsView(
-      std::make_unique<GlicView>(profile, initial_bounds.size()));
+  auto glic_view = std::make_unique<GlicView>(profile, initial_bounds.size());
+  GlicView* raw_glic_view = glic_view.get();
+  widget->SetContentsView(std::move(glic_view));
 
-  return widget;
+  return {std::move(widget), raw_glic_view};
 }
 
 void GlicView::AddedToWidget() {

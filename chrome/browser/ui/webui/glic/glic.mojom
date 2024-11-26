@@ -7,6 +7,7 @@ module glic.mojom;
 import "mojo/public/mojom/base/version.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
@@ -44,6 +45,9 @@ interface WebClientHandler {
   // before data is collected.
   GetContextFromFocusedTab(bool include_inner_text,
     bool include_viewport_screenshot) => (TabContextResult? tab_context_result);
+
+  // Set the bounds of the widget hosting the WebUI to the given size.
+  ResizeWidget(gfx.mojom.Size size) => (gfx.mojom.Size? actual_size);
 };
 
 // Access from the browser to the Glic web client by proxy of the WebUI page.

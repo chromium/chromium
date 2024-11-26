@@ -165,6 +165,19 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       },
     };
   }
+
+  async glicBrowserResizeWindow(
+      resizeDimensions:
+          HostRequestTypes['glicBrowserResizeWindow']['request']) {
+    const response = await this.handler.resizeWidget(resizeDimensions);
+    if (!response.actualSize) {
+      throw new Error('Can\'t resize the widget while it\'s closed');
+    }
+    return {
+      actualWidth: response.actualSize.width,
+      actualHeight: response.actualSize.height,
+    };
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {

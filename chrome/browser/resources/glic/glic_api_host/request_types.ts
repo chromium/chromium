@@ -67,6 +67,16 @@ export interface HostRequestTypes {
       tabContextResult?: TabContextResult,
     },
   };
+  'glicBrowserResizeWindow': {
+    request: {
+      width: number,
+      height: number,
+    },
+    response: {
+      actualWidth: number,
+      actualHeight: number,
+    },
+  };
 }
 
 // Types of requests to the GlicWebClient.

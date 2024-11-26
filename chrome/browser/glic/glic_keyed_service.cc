@@ -57,6 +57,13 @@ void GlicKeyedService::ClosePanel() {
   LOG(ERROR) << "Ignoring unimplemented ClosePanel()";
 }
 
+std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
+  if (!window_controller_ || !window_controller_->Resize(size)) {
+    return std::nullopt;
+  }
+  return window_controller_->GetSize();
+}
+
 void GlicKeyedService::GetContextFromFocusedTab(
     bool include_inner_text,
     bool include_viewport_screenshot,

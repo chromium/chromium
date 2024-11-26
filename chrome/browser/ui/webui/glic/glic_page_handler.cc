@@ -7,7 +7,12 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/glic_window_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "ui/gfx/geometry/mojom/geometry.mojom.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace glic {
 class GlicWebClientHandler : public glic::mojom::WebClientHandler {
@@ -37,6 +42,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler {
 
   void ClosePanel() override { glic_service_->ClosePanel(); }
 
+  void ResizeWidget(const gfx::Size& size,
+                    ResizeWidgetCallback callback) override {
+    std::optional<gfx::Size> actual_size = glic_service_->ResizePanel(size);
+    if (!actual_size) {
+      std::move(callback).Run(std::nullopt);
+    }
+    std::move(callback).Run(actual_size);
+  }
+
   void GetContextFromFocusedTab(
       bool include_inner_text,
       bool include_viewport_screenshot,
@@ -65,4 +79,5 @@ void GlicPageHandler::CreateWebClient(
       GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_),
       std::move(web_client_receiver));
 }
+
 }  // namespace glic

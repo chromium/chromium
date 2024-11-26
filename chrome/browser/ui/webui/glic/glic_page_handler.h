@@ -12,6 +12,9 @@
 namespace content {
 class BrowserContext;
 }
+namespace gfx {
+class Size;
+}  // namespace gfx
 
 namespace glic {
 class GlicWebClientHandler;

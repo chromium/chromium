@@ -69,6 +69,11 @@ export declare interface GlicBrowserHost {
   getChromeVersion():
       Promise<{major: number, minor: number, build: number, patch: number}>;
 
+  // Sets the size of the glic window to the specified dimensions. Returns the
+  // resulting width and height of the window.
+  resizeWindow(width: number, height: number):
+      Promise<{actualWidth: number, actualHeight: number}>;
+
   // Fetches page context for the currently focused tab, optionally including
   // more expensive-to-generate data. Undefined optional arguments indicate that
   // the respective data is not being requested.

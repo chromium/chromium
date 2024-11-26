@@ -132,6 +132,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     }
     return context.tabContextResult;
   }
+
+  async resizeWindow(width: number, height: number) {
+    return this.sender.requestWithResponse(
+        'glicBrowserResizeWindow', {width, height});
+  }
 }
 
 export function boot(windowProxy: WindowProxy): GlicHostRegistry {
