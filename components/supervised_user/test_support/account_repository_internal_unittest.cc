@@ -11,6 +11,10 @@
 namespace supervised_user {
 namespace {
 TEST(AccountRepositoryInternalTest, ProdConfigIsParseable) {
+  if (!test_accounts::IsDefaultAccountRepositoryAvailable()) {
+    GTEST_SKIP() << "Default repository not available";
+  }
+
   TestAccountRepository repository;
   std::optional<test_accounts::Family> family =
       repository.GetRandomFamilyByFeature(test_accounts::Feature::REGULAR);

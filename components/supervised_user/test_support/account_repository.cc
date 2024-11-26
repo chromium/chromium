@@ -186,6 +186,12 @@ Repository& Repository::operator=(const Repository& other) {
   return *this;
 }
 Repository::~Repository() = default;
+
+bool IsDefaultAccountRepositoryAvailable() {
+  return base::PathExists(
+      GetAbsolutePath(base::FilePath(kAccountRepositoryFileName)));
+}
+
 }  // namespace test_accounts
 
 }  // namespace supervised_user
