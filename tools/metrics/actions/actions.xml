@@ -32537,6 +32537,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.ReserveErrorTryAgainClicked">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User tried again reserving a plus address after receiving a reserve error.
+    Only available on Mobile platforms.
+  </description>
+</action>
+
 <action
     name="PlusAddresses.SelectPlusAddressOptionOnAddressManualFallbackSelected">
   <owner>vizcay@google.com</owner>

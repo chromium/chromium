@@ -474,6 +474,126 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
   EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest, TriesAgainToReserve) {
+  base::UserActionTester user_action_tester;
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+  plus_address_service().set_should_fail_to_reserve(true);
+
+  controller->TryAgainToReservePlusAddress();
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.ReserveErrorTryAgainClicked"),
+            1);
+}
+
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
+       CancelAfterAffiliationError) {
+  base::UserActionTester user_action_tester;
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
+      .WillByDefault(Return(true));
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://timofeywashere.example")),
+      /*is_manual_fallback=*/false, future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  plus_address_service().set_should_return_affiliated_plus_profile_on_confirm(
+      true);
+  task_environment()->FastForwardBy(kDuration);
+  controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->OnCanceled();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.AffiliationErrorCanceled"),
+            1);
+}
+
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
+       AcceptedAfterAffiliationError) {
+  base::UserActionTester user_action_tester;
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
+      .WillByDefault(Return(true));
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://timofeywashere.example")),
+      /*is_manual_fallback=*/false, future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  plus_address_service().set_should_return_affiliated_plus_profile_on_confirm(
+      true);
+  task_environment()->FastForwardBy(kDuration);
+  controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->OnConfirmed();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.AffiliationErrorFilledExisting"),
+            1);
+}
+
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
+       AcceptedAfterQuotaError) {
+  base::UserActionTester user_action_tester;
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
+      .WillByDefault(Return(true));
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://timofeywashere.example")),
+      /*is_manual_fallback=*/false, future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  plus_address_service().set_should_return_quota_error(true);
+  task_environment()->FastForwardBy(kDuration);
+  controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+  controller->OnCanceled();
+  ASSERT_FALSE(future.IsReady());
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("PlusAddresses.QuotaErrorAccepted"), 1);
+}
+
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        StoredPlusProfileClearedOnDialogDestroyed) {
   std::unique_ptr<content::WebContents> web_contents =

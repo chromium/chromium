@@ -215,7 +215,10 @@ void PlusAddressCreationControllerAndroid::TryAgainToReservePlusAddress() {
   if (!plus_address_service) {
     return;
   }
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.ReserveErrorTryAgainClicked"));
   modal_error_status_.reset();
+  modal_error_state_info_.reset();
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
       base::BindOnce(
@@ -268,12 +271,14 @@ void PlusAddressCreationControllerAndroid::OnCanceled() {
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalCanceled,
                             was_notice_shown);
   if (modal_error_status_.has_value()) {
-    RecordModalShownOutcome(modal_error_status_.value(), was_notice_shown);
+    RecordModalShownOutcome(modal_error_status_.value(),
+                            modal_error_state_info_, was_notice_shown);
     modal_error_status_.reset();
+    modal_error_state_info_.reset();
   } else {
     RecordModalShownOutcome(
         metrics::PlusAddressModalCompletionStatus::kModalCanceled,
-        was_notice_shown);
+        modal_error_state_info_, was_notice_shown);
     if (was_notice_shown) {
       TriggerUserPerceptionSurvey(hats::SurveyType::kDeclinedFirstTimeCreate);
     }
@@ -337,30 +342,35 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
       std::move(callback_).Run(*maybe_plus_profile->plus_address);
       RecordModalShownOutcome(
           metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
-          was_notice_shown);
+          modal_error_state_info_, was_notice_shown);
     } else {
       // Persist the confirmed profile if it's different from the reserved one.
       plus_profile_ = maybe_plus_profile.value();
       modal_error_status_ =
           metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+      modal_error_state_info_ =
+          GetAffiliationErrorStateInfo(maybe_plus_profile.value());
       if (view_) {
-        view_->ShowError(
-            GetAffiliationErrorStateInfo(maybe_plus_profile.value()));
+        view_->ShowError(*modal_error_state_info_);
       }
     }
   } else {
     modal_error_status_ =
         metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+    modal_error_state_info_ =
+        GetCreateErrorStateInfo(maybe_plus_profile.error());
     // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
     // prior to service response, `view_` will be null.
     if (view_) {
-      view_->ShowError(GetCreateErrorStateInfo(maybe_plus_profile.error()));
+      view_->ShowError(*modal_error_state_info_);
     }
   }
 }
 
 void PlusAddressCreationControllerAndroid::RecordModalShownOutcome(
     metrics::PlusAddressModalCompletionStatus status,
+    const std::optional<PlusAddressCreationErrorStateInfo>&
+        modal_error_state_info,
     bool was_notice_shown) {
   if (!modal_shown_time_.has_value()) {
     return;
@@ -376,20 +386,40 @@ void PlusAddressCreationControllerAndroid::RecordModalShownOutcome(
           base::UserMetricsAction("PlusAddresses.OfferedPlusAddressDeclined"));
       break;
     case kModalConfirmed:
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
+      if (modal_error_state_info &&
+          modal_error_state_info.value().error_type ==
+              PlusAddressCreationBottomSheetErrorType::kCreateAffiliation) {
+        base::RecordAction(base::UserMetricsAction(
+            "PlusAddresses.AffiliationErrorFilledExisting"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "PlusAddresses.OfferedPlusAddressAccepted"));
+      }
       break;
     case kReservePlusAddressError:
       base::RecordAction(
           base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
       break;
     case kConfirmPlusAddressError:
-      base::RecordAction(
-          base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+      if (modal_error_state_info &&
+          modal_error_state_info.value().error_type ==
+              PlusAddressCreationBottomSheetErrorType::kCreateAffiliation) {
+        base::RecordAction(
+            base::UserMetricsAction("PlusAddresses.AffiliationErrorCanceled"));
+      } else if (modal_error_state_info &&
+                 modal_error_state_info.value().error_type ==
+                     PlusAddressCreationBottomSheetErrorType::kCreateQuota) {
+        base::RecordAction(
+            base::UserMetricsAction("PlusAddresses.QuotaErrorAccepted"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+      }
       break;
   }
 
   modal_shown_time_.reset();
+  modal_error_state_info_.reset();
   reserve_response_count_ = 0;
 }
 
