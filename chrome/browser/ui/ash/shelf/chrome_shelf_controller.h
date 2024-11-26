@@ -207,7 +207,7 @@ class ChromeShelfController
 
   // Updates the browser shortcut item state.
   // This may create or delete the item, specifically if the browser icon
-  // is not pinned. Practically, when Lacros is the primary browser.
+  // is not pinned.
   void UpdateBrowserItemState();
 
   // Sets the shelf id for the browser window if the browser is represented.
