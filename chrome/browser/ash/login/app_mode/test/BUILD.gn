@@ -142,6 +142,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/shill",
