@@ -3264,6 +3264,7 @@ TEST_F(QuickInsertViewTest, CheckingGifButtonWithQueryShowsGifSearchResults) {
               /*has_more_results=*/false),
       });
 
+  EXPECT_EQ(query, u"a");
   EXPECT_TRUE(
       quick_insert_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(
@@ -3310,6 +3311,7 @@ TEST_F(QuickInsertViewTest,
               /*has_more_results=*/false),
       });
 
+  EXPECT_EQ(query, u"a");
   EXPECT_TRUE(
       quick_insert_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(
@@ -3350,6 +3352,7 @@ TEST_F(QuickInsertViewTest, UncheckingGifButtonSearchesNormally) {
                                           /*has_more_results=*/false),
       });
 
+  EXPECT_EQ(query, u"a");
   EXPECT_TRUE(
       quick_insert_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(

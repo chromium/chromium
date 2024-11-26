@@ -218,6 +218,10 @@ class ASH_EXPORT QuickInsertView
 
   views::View* GetPseudoFocusedView();
 
+  // Removes the currently selected category filter, with the option to clear
+  // the search field.
+  void ResetSelectedCategory(bool reset_query);
+
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
 
