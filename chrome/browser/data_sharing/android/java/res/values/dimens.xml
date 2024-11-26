@@ -23,4 +23,9 @@ found in the LICENSE file.
     <!-- Dimens for recipient invitation modal -->
     <dimen name="data_sharing_invitation_footer_width">300dp</dimen>
     <dimen name="data_sharing_invitation_button_margin">8dp</dimen>
+
+    <!-- Dimens for recent activity screen -->
+    <dimen name="recent_activity_title_top_margin">14dp</dimen>
+    <dimen name="recent_activity_recycler_view_top_margin">7dp</dimen>
+
 </resources>

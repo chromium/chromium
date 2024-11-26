@@ -21,6 +21,7 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -809,7 +810,10 @@ public class DataSharingTabManager {
         assert mProfile != null;
         assert mMessagingBackendService != null;
 
-        // TODO(crbug.com/380962101): Finish implementation.
+        RecentActivityListCoordinator recentActivityListCoordinator =
+                new RecentActivityListCoordinator(
+                        activity, mBottomSheetControllerSupplier.get(), mMessagingBackendService);
+        recentActivityListCoordinator.requestShowUI(collaborationId);
     }
 
     protected BottomSheetContent showBottomSheet(

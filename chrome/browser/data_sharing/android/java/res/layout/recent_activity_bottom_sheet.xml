@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <include layout="@layout/bottom_sheet_handlebar"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:textAppearance="@style/TextAppearance.Headline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/recent_activity_title_top_margin"
+        android:layout_marginStart="@dimen/list_item_default_margin"
+        android:text="@string/data_sharing_recent_activity_bottom_sheet_title"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recent_activity_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/recent_activity_recycler_view_top_margin"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+</LinearLayout>
