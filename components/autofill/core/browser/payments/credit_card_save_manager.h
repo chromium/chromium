@@ -137,7 +137,8 @@ class CreditCardSaveManager {
       const FormStructure& submitted_form,
       const CreditCard& card,
       FormDataImporter::CreditCardImportType credit_card_import_type,
-      bool is_credit_card_upstream_enabled);
+      bool is_credit_card_upstream_enabled,
+      ukm::SourceId ukm_source_id);
 
   // Begins the process to offer upload credit card save to the user if the
   // imported card passes all requirements and Google Payments approves.
@@ -145,7 +146,8 @@ class CreditCardSaveManager {
   // offered for upload is already a local card on the device.
   void AttemptToOfferCardUploadSave(const FormStructure& submitted_form,
                                     const CreditCard& card,
-                                    const bool uploading_local_card);
+                                    const bool uploading_local_card,
+                                    ukm::SourceId ukm_source_id);
 
   // Begins the process to offer server CVC save to the user.
   virtual void AttemptToOfferCvcUploadSave(const CreditCard& card);
@@ -220,6 +222,7 @@ class CreditCardSaveManager {
   // are supported, with the first and second number in the pair being the start
   // and end of the range.
   void OnDidGetUploadDetails(
+      ukm::SourceId ukm_source_id,
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
@@ -255,7 +258,7 @@ class CreditCardSaveManager {
 
   // Offers credit card upload if Payments has allowed offering to save and the
   // Autofill StrikeSystem has made its decision.
-  void OfferCardUploadSave();
+  void OfferCardUploadSave(ukm::SourceId ukm_source_id);
 
   // Called once the user makes a decision with respect to the local credit card
   // offer-to-save prompt. If accepted, clears strikes for the to-be-saved card
@@ -339,7 +342,8 @@ class CreditCardSaveManager {
   // Logs the card upload decisions in UKM and UMA.
   // |upload_decision_metrics| is a bitmask of
   // |AutofillMetrics::CardUploadDecisionMetric|.
-  void LogCardUploadDecisions(int upload_decision_metrics);
+  void LogCardUploadDecisions(ukm::SourceId ukm_source_id,
+                              int upload_decision_metrics);
 
   // Logs the card upload decisions bitmask to chrome://autofill-internals.
   void LogCardUploadDecisionsToAutofillInternals(int upload_decision_metrics);

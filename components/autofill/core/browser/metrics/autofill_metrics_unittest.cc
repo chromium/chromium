@@ -323,8 +323,7 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
                   .is_autofilled = true},
                  {.role = PHONE_HOME_CITY_AND_NUMBER, .is_autofilled = true}},
       .renderer_id = test::MakeFormRendererId(),
-      .main_frame_origin =
-          url::Origin::Create(autofill_client_->form_origin())};
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
 
   FormData form = GetAndAddSeenForm(form_description);
 
@@ -1072,17 +1071,10 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     form.set_host_frame(test::MakeLocalFrameToken());
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_url(GURL("http://example.com/form.html"));
+    form.set_main_frame_origin(url::Origin::Create(form.url()));
     form.set_action(GURL("http://example.com/submit.html"));
-    // In order to test that the QueriedCreditCardFormIsSecure is logged as
-    // false, we need to set the main frame origin, otherwise this fill is
-    // skipped due to the form being detected as mixed content.
-    GURL client_form_origin = autofill_client_->form_origin();
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr(url::kHttpScheme);
-    autofill_client_->set_form_origin(
-        client_form_origin.ReplaceComponents(replacements));
-    form.set_main_frame_origin(
-        url::Origin::Create(autofill_client_->form_origin()));
+    autofill_driver_->set_url(form.url());
+    autofill_client_->set_last_committed_primary_main_frame_url(form.url());
     autofill_manager().AddSeenForm(form, field_types);
 
     // Simulate an Autofill query on a credit card field (HTTP, non-secure
@@ -1092,8 +1084,6 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
                                                 form.fields()[1].global_id());
     histogram_tester.ExpectUniqueSample(
         "Autofill.QueriedCreditCardFormIsSecure", false, 1);
-    // Reset the main frame origin to secure for other tests
-    autofill_client_->set_form_origin(client_form_origin);
   }
 
   {
@@ -1102,8 +1092,9 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_url(GURL("https://example.com/form.html"));
     form.set_action(GURL("https://example.com/submit.html"));
-    form.set_main_frame_origin(
-        url::Origin::Create(autofill_client_->form_origin()));
+    form.set_main_frame_origin(url::Origin::Create(form.url()));
+    autofill_driver_->set_url(form.url());
+    autofill_client_->set_last_committed_primary_main_frame_url(form.url());
     autofill_manager().AddSeenForm(form, field_types);
 
     // Simulate an Autofill query on a credit card field (HTTPS form).
@@ -2791,7 +2782,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
 
   // Add another masked server card, this time with a linked offer.
   AddMaskedServerCreditCardWithOffer(kMaskedServerCardIds[0], "$4",
-                                     autofill_client_->form_origin(),
+                                     autofill_driver_->url(),
                                      /*id=*/0x4fff);
   // Reset the autofill manager state.
   test_api(autofill_manager()).Reset();
@@ -2895,7 +2886,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
   AddMaskedServerCreditCardWithOffer(kMaskedServerCardIds[1], "$4",
-                                     autofill_client_->form_origin(),
+                                     autofill_driver_->url(),
                                      /*id=*/0x3fff, /*offer_expired=*/true);
 
   // Reset the autofill manager state.
@@ -2957,7 +2948,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
   AddMaskedServerCreditCardWithOffer(kMaskedServerCardIds[2], "$5",
-                                     autofill_client_->form_origin(),
+                                     autofill_driver_->url(),
                                      /*id=*/0x5fff);
 
   // Reset the autofill manager state.
@@ -4595,7 +4586,7 @@ TEST_F(AutofillMetricsTest, NonSecureCreditCardForm) {
   // Non-https origin.
   GURL frame_origin("http://example_root.com/form.html");
   form.set_main_frame_origin(url::Origin::Create(frame_origin));
-  autofill_client_->set_form_origin(frame_origin);
+  autofill_driver_->set_url(frame_origin);
 
   autofill_manager().AddSeenForm(form, field_types);
 
@@ -4664,18 +4655,17 @@ TEST_F(AutofillMetricsTest,
 
 // Tests that logging CardUploadDecision UKM works as expected.
 TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
-  GURL url("https://www.google.com");
   int upload_decision = 1;
-  autofill_client_->set_form_origin(url);
+  autofill_driver_->set_url(GURL("https://www.google.com"));
 
   LogCardUploadDecisionsUkm(&test_ukm_recorder(),
-                            autofill_client_->GetActivePageUkmSourceId(), url,
-                            upload_decision);
+                            autofill_driver_->GetPageUkmSourceId(),
+                            autofill_driver_->url(), upload_decision);
   auto entries = test_ukm_recorder().GetEntriesByName(
       UkmCardUploadDecisionType::kEntryName);
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
-    test_ukm_recorder().ExpectEntrySourceHasUrl(entry, url);
+    test_ukm_recorder().ExpectEntrySourceHasUrl(entry, autofill_driver_->url());
     EXPECT_EQ(1u, entry->metrics.size());
     test_ukm_recorder().ExpectEntryMetric(
         entry, UkmCardUploadDecisionType::kUploadDecisionName, upload_decision);
@@ -4684,20 +4674,19 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
 
 // Tests that logging DeveloperEngagement UKM works as expected.
 TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
-  GURL url("https://www.google.com");
   int form_structure_metric = 1;
   FormSignature form_signature(100);
-  autofill_client_->set_form_origin(url);
+  autofill_driver_->set_url(GURL("https://www.google.com"));
 
   AutofillMetrics::LogDeveloperEngagementUkm(
-      &test_ukm_recorder(), autofill_client_->GetActivePageUkmSourceId(), url,
-      true, {FormTypeNameForLogging::kCreditCardForm}, form_structure_metric,
-      form_signature);
+      &test_ukm_recorder(), autofill_driver_->GetPageUkmSourceId(),
+      autofill_driver_->url(), true, {FormTypeNameForLogging::kCreditCardForm},
+      form_structure_metric, form_signature);
   auto entries = test_ukm_recorder().GetEntriesByName(
       UkmDeveloperEngagementType::kEntryName);
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
-    test_ukm_recorder().ExpectEntrySourceHasUrl(entry, url);
+    test_ukm_recorder().ExpectEntrySourceHasUrl(entry, autofill_driver_->url());
     EXPECT_EQ(4u, entry->metrics.size());
     test_ukm_recorder().ExpectEntryMetric(
         entry, UkmDeveloperEngagementType::kDeveloperEngagementName,
@@ -4851,7 +4840,7 @@ TEST_F(AutofillMetricsTest, FrameHasSinglePhoneNumberFieldWithoutAutocomplete) {
 // autocomplete attribute.
 TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithAutocomplete) {
   FormData form;  // Form with phone number.
-  CreateSimpleForm(autofill_client_->form_origin(), form);
+  CreateSimpleForm(autofill_driver_->url(), form);
   form.set_fields(
       {CreateTestFormField("", "", "", FormControlType::kInputText, "phone")});
 
@@ -4960,7 +4949,7 @@ TEST_P(WebOTPPhoneCollectionMetricsTest,
 
   if (!test_case.autocomplete_field.empty()) {
     FormData form;
-    CreateSimpleForm(autofill_client_->form_origin(), form);
+    CreateSimpleForm(autofill_driver_->url(), form);
     for (const char* autocomplete : test_case.autocomplete_field) {
       test_api(form).Append(CreateTestFormField(
           "", "", "", FormControlType::kInputText, autocomplete));
@@ -4985,7 +4974,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
   ASSERT_TRUE(entries.empty());
 
   FormData form;
-  CreateSimpleForm(autofill_client_->form_origin(), form);
+  CreateSimpleForm(autofill_driver_->url(), form);
   // Document collects phone number
   test_api(form).Append(
       CreateTestFormField("", "", "", FormControlType::kInputTelephone, "tel"));

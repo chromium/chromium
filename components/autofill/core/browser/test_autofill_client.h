@@ -93,13 +93,6 @@ class TestAutofillClientTemplate : public T {
       delete;
   ~TestAutofillClientTemplate() override = default;
 
-  // Initializes UKM source from form_origin_. This needs to be called
-  // in unittests after calling Purge for ukm recorder to re-initialize
-  // sources.
-  void InitializeUKMSources() {
-    test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
-  }
-
   base::WeakPtr<AutofillClient> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -203,14 +196,6 @@ class TestAutofillClientTemplate : public T {
 
   ukm::TestAutoSetUkmRecorder* GetUkmRecorder() override {
     return &test_ukm_recorder_;
-  }
-
-  ukm::SourceId GetActivePageUkmSourceId() override {
-    if (source_id_ == -1) {
-      source_id_ = ukm::UkmRecorder::GetNewSourceID();
-      test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
-    }
-    return source_id_;
   }
 
   TestAddressNormalizer* GetAddressNormalizer() override {
@@ -351,8 +336,7 @@ class TestAutofillClientTemplate : public T {
                             bool is_refill) override {}
 
   bool IsContextSecure() const override {
-    // Simplified secure context check for tests.
-    return form_origin_.SchemeIs("https");
+    return last_committed_primary_main_frame_url_.SchemeIs("https");
   }
 
   LogManager* GetLogManager() const override { return log_manager_.get(); }
@@ -457,13 +441,6 @@ class TestAutofillClientTemplate : public T {
     test_strike_database_ = std::move(test_strike_database);
   }
 
-  void set_form_origin(const GURL& url) {
-    form_origin_ = url;
-    // Also reset source_id_.
-    source_id_ = ukm::UkmRecorder::GetNewSourceID();
-    test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
-  }
-
   void set_sync_service(syncer::SyncService* test_sync_service) {
     test_sync_service_ = test_sync_service;
   }
@@ -530,8 +507,6 @@ class TestAutofillClientTemplate : public T {
     notify_iph_feature_used_mock_callback_ = std::move(callback);
   }
 
-  GURL form_origin() { return form_origin_; }
-
   signin::IdentityTestEnvironment& identity_test_environment() {
     return identity_test_env_;
   }
@@ -576,8 +551,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
-  GURL form_origin_{"https://example.test"};
-  ukm::SourceId source_id_ = -1;
   GeoIpCountryCode variation_config_country_code_;
 
   security_state::SecurityLevel security_level_ =

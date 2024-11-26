@@ -218,10 +218,6 @@ ukm::UkmRecorder* ChromeAutofillClientIOS::GetUkmRecorder() {
   return GetApplicationContext()->GetUkmRecorder();
 }
 
-ukm::SourceId ChromeAutofillClientIOS::GetActivePageUkmSourceId() {
-  return ukm::GetSourceIdForWebStateDocument(web_state_);
-}
-
 AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
 }

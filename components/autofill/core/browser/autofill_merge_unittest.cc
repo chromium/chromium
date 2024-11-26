@@ -162,6 +162,8 @@ class AutofillMergeTest : public testing::DataDrivenTest,
         .test_address_data_manager();
   }
 
+  ukm::SourceId ukm_source_id() const { return 123; }
+
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillClient autofill_client_;
@@ -249,7 +251,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       test_api(*form_data_importer_)
           .ProcessAddressProfileImportCandidates(
               extracted_data.address_profile_import_candidates,
-              /*allow_prompt=*/true);
+              /*allow_prompt=*/true, ukm_source_id());
       EXPECT_FALSE(extracted_data.extracted_credit_card);
 
       // Clear the |form| to start a new profile.

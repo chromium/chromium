@@ -551,13 +551,14 @@ bool WasEmailOverrideAppliedOnSuggestions(
 
 // Triggers the possible import of submitted data at submission time.
 void MaybeImportFromSubmittedForm(AutofillClient& client,
+                                  ukm::SourceId ukm_source_id,
                                   const FormStructure& form_structure,
                                   bool autofill_ai_shows_bubble) {
   if (!autofill_ai_shows_bubble && form_structure.IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client.GetFormDataImporter()->ImportAndProcessFormData(
         form_structure, client.IsAutofillProfileEnabled(),
-        client.IsAutofillPaymentMethodsEnabled());
+        client.IsAutofillPaymentMethodsEnabled(), ukm_source_id);
   }
 
   AutofillPlusAddressDelegate* plus_address_delegate =
@@ -846,13 +847,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         std::move(submitted_form),
         base::BindOnce(
             [](base::WeakPtr<AutofillClient> client,
+               ukm::SourceId ukm_source_id,
                base::WeakPtr<BrowserAutofillManager> manager,
                const FormData& form, SubmissionSource source,
                base::TimeTicks form_submitted_timestamp,
                std::unique_ptr<FormStructure> submitted_form,
                bool autofill_ai_shows_bubble) {
               if (client) {
-                MaybeImportFromSubmittedForm(*client, *submitted_form,
+                MaybeImportFromSubmittedForm(*client, ukm_source_id,
+                                             *submitted_form,
                                              autofill_ai_shows_bubble);
               }
               // The manager may have been destroyed already.
@@ -863,7 +866,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                     form_submitted_timestamp);
               }
             },
-            client().GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(), form, source,
+            client().GetWeakPtr(), driver().GetPageUkmSourceId(),
+            weak_ptr_factory_.GetWeakPtr(), form, source,
             form_submitted_timestamp));
   } else {
     // TODO(crbug.com/376016569): Refactor this:
@@ -873,7 +877,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // - It should be guaranteed that they are always called. Currently, it is
     //   hard to see that all codepaths in
     //   AutofillAiDelegate::MaybeImportForm() calls it.
-    MaybeImportFromSubmittedForm(client(), *submitted_form,
+    MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),
+                                 *submitted_form,
                                  /*autofill_ai_shows_bubble=*/false);
     OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
                                form_submitted_timestamp);

@@ -428,10 +428,6 @@ ukm::UkmRecorder* ChromeAutofillClient::GetUkmRecorder() {
   return ukm::UkmRecorder::Get();
 }
 
-ukm::SourceId ChromeAutofillClient::GetActivePageUkmSourceId() {
-  return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-}
-
 AddressNormalizer* ChromeAutofillClient::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
 }

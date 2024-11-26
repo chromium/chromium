@@ -192,7 +192,8 @@ FormDataImporter::AddressProfileImportCandidate::
 void FormDataImporter::ImportAndProcessFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
-    bool payment_methods_autofill_enabled) {
+    bool payment_methods_autofill_enabled,
+    ukm::SourceId ukm_source_id) {
   ExtractedFormData extracted_data =
       ExtractFormData(submitted_form, profile_autofill_enabled,
                       payment_methods_autofill_enabled);
@@ -212,7 +213,7 @@ void FormDataImporter::ImportAndProcessFormData(
 
   bool cc_prompt_potentially_shown = ProcessExtractedCreditCard(
       submitted_form, extracted_data.extracted_credit_card,
-      credit_card_save_manager_->IsCreditCardUploadEnabled());
+      credit_card_save_manager_->IsCreditCardUploadEnabled(), ukm_source_id);
   fetched_card_instrument_id_.reset();
 
   bool iban_prompt_potentially_shown = false;
@@ -226,7 +227,9 @@ void FormDataImporter::ImportAndProcessFormData(
   // for a second address profile import dialog.
   ProcessAddressProfileImportCandidates(
       extracted_data.address_profile_import_candidates,
-      !cc_prompt_potentially_shown && !iban_prompt_potentially_shown);
+      /*allow_prompt=*/!cc_prompt_potentially_shown &&
+          !iban_prompt_potentially_shown,
+      ukm_source_id);
 }
 
 bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
@@ -680,7 +683,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 bool FormDataImporter::ProcessAddressProfileImportCandidates(
     const std::vector<FormDataImporter::AddressProfileImportCandidate>&
         address_profile_import_candidates,
-    bool allow_prompt) {
+    bool allow_prompt,
+    ukm::SourceId ukm_source_id) {
   int imported_profiles = 0;
 
   // `allow_prompt` is true if no credit card or IBAN prompt was shown. If it is
@@ -695,7 +699,8 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
       }
       address_profile_save_manager_->ImportProfileFromForm(
           candidate.profile, client_->GetAppLocale(), candidate.url,
-          /*allow_only_silent_updates=*/false, candidate.import_metadata);
+          ukm_source_id, /*allow_only_silent_updates=*/false,
+          candidate.import_metadata);
       // Limit the number of importable profiles to 2.
       if (++imported_profiles >= 2) {
         return true;
@@ -712,7 +717,8 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
     // First try to import a single complete profile.
     address_profile_save_manager_->ImportProfileFromForm(
         candidate.profile, client_->GetAppLocale(), candidate.url,
-        /*allow_only_silent_updates=*/true, candidate.import_metadata);
+        ukm_source_id, /*allow_only_silent_updates=*/true,
+        candidate.import_metadata);
   }
   return false;
 }
@@ -720,7 +726,8 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
 bool FormDataImporter::ProcessExtractedCreditCard(
     const FormStructure& submitted_form,
     const std::optional<CreditCard>& extracted_credit_card,
-    bool is_credit_card_upstream_enabled) {
+    bool is_credit_card_upstream_enabled,
+    ukm::SourceId ukm_source_id) {
   // If no card was successfully extracted from the form, return.
   if (credit_card_import_type_ == CreditCardImportType::kNoCard) {
     return false;
@@ -780,7 +787,7 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   return extracted_credit_card &&
          credit_card_save_manager_->ProceedWithSavingIfApplicable(
              submitted_form, *extracted_credit_card, credit_card_import_type_,
-             is_credit_card_upstream_enabled);
+             is_credit_card_upstream_enabled, ukm_source_id);
 }
 
 bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {

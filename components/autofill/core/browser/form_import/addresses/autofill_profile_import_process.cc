@@ -63,12 +63,14 @@ ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& form_source_url,
+    ukm::SourceId ukm_source_id,
     AddressDataManager* address_data_manager,
     bool allow_only_silent_updates,
     ProfileImportMetadata import_metadata)
     : observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
+      ukm_source_id_(ukm_source_id),
       address_data_manager_(CHECK_DEREF(address_data_manager)),
       allow_only_silent_updates_(allow_only_silent_updates),
       import_metadata_(import_metadata) {
@@ -428,15 +430,14 @@ void ProfileImportProcess::set_prompt_was_shown() {
 
 void ProfileImportProcess::CollectMetrics(
     ukm::UkmRecorder* ukm_recorder,
-    ukm::SourceId source_id,
     const std::vector<const AutofillProfile*>& existing_profiles) const {
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
   auto LogUkmMetrics = [&](int num_edited_fields = 0) {
     autofill_metrics::LogAddressProfileImportUkm(
-        ukm_recorder, source_id, import_type_, user_decision_, import_metadata_,
-        num_edited_fields,
+        ukm_recorder, ukm_source_id_, import_type_, user_decision_,
+        import_metadata_, num_edited_fields,
         UserAccepted() ? confirmed_import_candidate_ : import_candidate_,
         existing_profiles, app_locale_);
   };

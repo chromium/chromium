@@ -90,8 +90,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
                   .form_control_type = FormControlType::kInputTelephone,
                   .is_autofilled = true}},
       .renderer_id = test::MakeFormRendererId(),
-      .main_frame_origin =
-          url::Origin::Create(autofill_client_->form_origin())};
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
 
   std::vector<FieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,

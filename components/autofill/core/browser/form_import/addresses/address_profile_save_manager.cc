@@ -52,10 +52,11 @@ void AddressProfileSaveManager::ImportProfileFromForm(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& url,
+    ukm::SourceId ukm_source_id,
     bool allow_only_silent_updates,
     ProfileImportMetadata import_metadata) {
   MaybeOfferSavePrompt(std::make_unique<ProfileImportProcess>(
-      observed_profile, app_locale, url, &address_data_manager(),
+      observed_profile, app_locale, url, ukm_source_id, &address_data_manager(),
       allow_only_silent_updates, import_metadata));
 }
 
@@ -129,7 +130,6 @@ void AddressProfileSaveManager::OnUserDecision(
 void AddressProfileSaveManager::FinalizeProfileImport(
     std::unique_ptr<ProfileImportProcess> import_process) {
   import_process->CollectMetrics(client_->GetUkmRecorder(),
-                                 client_->GetActivePageUkmSourceId(),
                                  address_data_manager().GetProfiles());
   import_process->ApplyImport();
 

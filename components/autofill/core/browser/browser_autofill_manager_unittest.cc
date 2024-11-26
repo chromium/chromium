@@ -1009,23 +1009,13 @@ class BrowserAutofillManagerTest : public testing::Test {
                                     bool use_month_type) {
     form->set_name(u"MyForm");
     if (is_https) {
-      GURL::Replacements replacements;
-      replacements.SetSchemeStr(url::kHttpsScheme);
-      autofill_client_.set_form_origin(
-          autofill_client_.form_origin().ReplaceComponents(replacements));
       form->set_url(GURL("https://myform.com/form.html"));
       form->set_action(GURL("https://myform.com/submit.html"));
     } else {
-      // If we are testing a form that submits over HTTP, we also need to set
-      // the main frame to HTTP, otherwise mixed form warnings will trigger and
-      // autofill will be disabled.
-      GURL::Replacements replacements;
-      replacements.SetSchemeStr(url::kHttpScheme);
-      autofill_client_.set_form_origin(
-          autofill_client_.form_origin().ReplaceComponents(replacements));
       form->set_url(GURL("http://myform.com/form.html"));
       form->set_action(GURL("http://myform.com/submit.html"));
     }
+    autofill_client_.set_last_committed_primary_main_frame_url(form->url());
 
     test_api(*form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
                                                FormControlType::kInputText));
@@ -4266,10 +4256,8 @@ TEST_F(BrowserAutofillManagerTest,
   // Since we are testing a form that submits over HTTP, we also need to set
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(url::kHttpScheme);
-  autofill_client_.set_form_origin(
-      autofill_client_.form_origin().ReplaceComponents(replacements));
+  autofill_client_.set_last_committed_primary_main_frame_url(
+      GURL("http://example.test"));
   ResetBrowserAutofillManager();
   autofill_client_.SetAutofillProfileEnabled(false);
   autofill_client_.SetAutofillPaymentMethodsEnabled(false);
@@ -4295,10 +4283,8 @@ TEST_F(BrowserAutofillManagerTest,
   // Since we are testing a form that submits over HTTP, we also need to set
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(url::kHttpScheme);
-  autofill_client_.set_form_origin(
-      autofill_client_.form_origin().ReplaceComponents(replacements));
+  autofill_client_.set_last_committed_primary_main_frame_url(
+      GURL("http://example.test"));
   ResetBrowserAutofillManager();
   autofill_client_.SetAutofillProfileEnabled(false);
   autofill_client_.SetAutofillPaymentMethodsEnabled(false);

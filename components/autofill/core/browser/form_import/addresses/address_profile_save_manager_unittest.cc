@@ -198,6 +198,8 @@ class AddressProfileSaveManagerTest
     return GURL("https://www.importmyform.com/index.html");
   }
 
+  ukm::SourceId ukm_source_id() const { return 123; }
+
  protected:
   void VerifyFinalProfiles(const ImportScenarioTestCase& test_scenario);
 
@@ -294,7 +296,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // Initiate the profile import.
   save_manager.ImportProfileFromForm(
-      test_scenario.observed_profile, "en-US", form_url(),
+      test_scenario.observed_profile, "en-US", form_url(), ukm_source_id(),
       /*allow_only_silent_updates=*/test_scenario.allow_only_silent_updates,
       import_metadata());
 

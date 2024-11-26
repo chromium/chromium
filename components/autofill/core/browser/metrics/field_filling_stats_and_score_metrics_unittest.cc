@@ -101,12 +101,11 @@ class AutofillFieldFillingStatsAndScoreMetricsTest
   // Creates, adds and "sees" a form that contains `fields`.
   const FormData& GetAndAddSeenFormWithFields(
       const std::vector<test::FieldDescription>& fields) {
-    form_data_ =
-        GetAndAddSeenForm({.description_for_logging = "FieldFillingStats",
-                           .fields = fields,
-                           .renderer_id = test::MakeFormRendererId(),
-                           .main_frame_origin = url::Origin::Create(
-                               autofill_client_->form_origin())});
+    form_data_ = GetAndAddSeenForm(
+        {.description_for_logging = "FieldFillingStats",
+         .fields = fields,
+         .renderer_id = test::MakeFormRendererId(),
+         .main_frame_origin = url::Origin::Create(autofill_driver_->url())});
     return form_data_;
   }
 

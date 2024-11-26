@@ -520,7 +520,8 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
               (const FormStructure& submitted_form,
                const CreditCard& card,
                FormDataImporter::CreditCardImportType credit_card_import_type,
-               bool is_credit_card_upstream_enabled),
+               bool is_credit_card_upstream_enabled,
+               ukm::SourceId ukm_source_id),
               (override));
 };
 
@@ -623,16 +624,17 @@ class FormDataImporterTest : public testing::Test {
                           form, &address_profile_import_candidates) > 0);
 
     if (!extraction_successful) {
-      EXPECT_FALSE(
-          test_api(form_data_importer())
-              .ProcessAddressProfileImportCandidates(
-                  address_profile_import_candidates, allow_save_prompts));
+      EXPECT_FALSE(test_api(form_data_importer())
+                       .ProcessAddressProfileImportCandidates(
+                           address_profile_import_candidates,
+                           allow_save_prompts, ukm_source_id()));
       return;
     }
 
     EXPECT_EQ(test_api(form_data_importer())
                   .ProcessAddressProfileImportCandidates(
-                      address_profile_import_candidates, allow_save_prompts),
+                      address_profile_import_candidates, allow_save_prompts,
+                      ukm_source_id()),
               allow_save_prompts);
   }
 
@@ -674,7 +676,8 @@ class FormDataImporterTest : public testing::Test {
                              payment_methods_autofill_enabled);
     test_api(form_data_importer())
         .ProcessAddressProfileImportCandidates(
-            extracted_data.address_profile_import_candidates);
+            extracted_data.address_profile_import_candidates,
+            /*allow_prompt=*/true, ukm_source_id());
     return extracted_data;
   }
 
@@ -755,6 +758,8 @@ class FormDataImporterTest : public testing::Test {
     return *static_cast<MockCreditCardSaveManager*>(
         form_data_importer().GetCreditCardSaveManager());
   }
+
+  ukm::SourceId ukm_source_id() { return 123; }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
@@ -3827,10 +3832,11 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
   syncer::TestSyncService sync_service;
   personal_data_manager_->SetSyncServiceForTest(&sync_service);
 
-  EXPECT_FALSE(test_api(form_data_importer())
-                   .ProcessExtractedCreditCard(
-                       *form_structure, extracted_credit_card,
-                       /*is_credit_card_upstream_enabled=*/true));
+  EXPECT_FALSE(
+      test_api(form_data_importer())
+          .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
+                                      /*is_credit_card_upstream_enabled=*/true,
+                                      ukm_source_id()));
   personal_data_manager_->SetSyncServiceForTest(nullptr);
 }
 
@@ -3860,10 +3866,11 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
                                     _, _, _, _))
       .Times(0);
 
-  EXPECT_FALSE(test_api(form_data_importer())
-                   .ProcessExtractedCreditCard(
-                       *form_structure, extracted_credit_card,
-                       /*is_credit_card_upstream_enabled=*/true));
+  EXPECT_FALSE(
+      test_api(form_data_importer())
+          .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
+                                      /*is_credit_card_upstream_enabled=*/true,
+                                      ukm_source_id()));
 
   form_data_importer().SetFetchedCardInstrumentId(1111);
   EXPECT_CALL(virtual_card_enrollment_manager(),
@@ -3871,10 +3878,11 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
                                     _, _, _, _))
       .Times(1);
 
-  EXPECT_TRUE(test_api(form_data_importer())
-                  .ProcessExtractedCreditCard(
-                      *form_structure, extracted_credit_card,
-                      /*is_credit_card_upstream_enabled=*/true));
+  EXPECT_TRUE(
+      test_api(form_data_importer())
+          .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
+                                      /*is_credit_card_upstream_enabled=*/true,
+                                      ukm_source_id()));
 
   personal_data_manager_->SetSyncServiceForTest(nullptr);
 }
@@ -3911,7 +3919,8 @@ TEST_F(FormDataImporterTest,
 
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
-                                  /*is_credit_card_upstream_enabled=*/true);
+                                  /*is_credit_card_upstream_enabled=*/true,
+                                  ukm_source_id());
 }
 
 // Test that in the case where the MandatoryReauthManager denotes re-auth opt-in
@@ -3943,7 +3952,8 @@ TEST_F(FormDataImporterTest,
 
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, test::GetCreditCard2(),
-                                  /*is_credit_card_upstream_enabled=*/true);
+                                  /*is_credit_card_upstream_enabled=*/true,
+                                  ukm_source_id());
 }
 
 // Test that in the case where the MandatoryReauthManager denotes we should
@@ -3975,10 +3985,11 @@ TEST_F(FormDataImporterTest,
       StartOptInFlow)
       .Times(1);
 
-  EXPECT_TRUE(test_api(form_data_importer())
-                  .ProcessExtractedCreditCard(
-                      *form_structure, extracted_credit_card,
-                      /*is_credit_card_upstream_enabled=*/true));
+  EXPECT_TRUE(
+      test_api(form_data_importer())
+          .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
+                                      /*is_credit_card_upstream_enabled=*/true,
+                                      ukm_source_id()));
 
   // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
@@ -4056,7 +4067,8 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, card,
-                                  /*is_credit_card_upstream_enabled=*/false);
+                                  /*is_credit_card_upstream_enabled=*/false,
+                                  ukm_source_id());
 }
 
 // Test that ProceedWithSavingIfApplicable gets called for local cards with the
@@ -4073,7 +4085,8 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
   test_api(form_data_importer())
       .ProcessExtractedCreditCard(*form_structure, card,
-                                  /*is_credit_card_upstream_enabled=*/false);
+                                  /*is_credit_card_upstream_enabled=*/false,
+                                  ukm_source_id());
 }
 
 // Test that Autofill will not try to import from a field that was filled with

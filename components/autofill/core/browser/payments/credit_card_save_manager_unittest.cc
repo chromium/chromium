@@ -5768,6 +5768,10 @@ class ProceedWithSavingIfApplicableTest
   // This bool indicates whether the user has credit card upload enabled.
   bool IsCreditCardUpstreamEnabled() const { return std::get<3>(GetParam()); }
 
+  ukm::SourceId ukm_source_id() {
+    return autofill_driver_->GetPageUkmSourceId();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -5827,7 +5831,7 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Card) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
   credit_card_save_manager_->ProceedWithSavingIfApplicable(
       form_structure, card, CreditCardImportType(),
-      IsCreditCardUpstreamEnabled());
+      IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CreditCardWasUploaded(),
             IsCreditCardUpstreamEnabled() &&
                 (CreditCardImportType() ==
@@ -5853,7 +5857,7 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Cvc) {
   credit_card_save_manager_->ProceedWithSavingIfApplicable(
       form_structure, local_card,
       FormDataImporter::CreditCardImportType::kLocalCard,
-      IsCreditCardUpstreamEnabled());
+      IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcLocalSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
                 !IsCreditCardUpstreamEnabled());
@@ -5864,7 +5868,7 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Cvc) {
   credit_card_save_manager_->ProceedWithSavingIfApplicable(
       form_structure, server_card,
       FormDataImporter::CreditCardImportType::kServerCard,
-      IsCreditCardUpstreamEnabled());
+      IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcUploadSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
                 IsCreditCardUpstreamEnabled());
@@ -5888,7 +5892,7 @@ TEST_P(ProceedWithSavingIfApplicableTest,
   credit_card_save_manager_->ProceedWithSavingIfApplicable(
       form_structure, local_card,
       FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
-      /*is_credit_card_upstream_enabled=*/true);
+      /*is_credit_card_upstream_enabled=*/true, ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcLocalSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled());
   EXPECT_FALSE(credit_card_save_manager_->CvcUploadSaveStarted());
@@ -5912,7 +5916,7 @@ TEST_P(ProceedWithSavingIfApplicableTest,
   credit_card_save_manager_->ProceedWithSavingIfApplicable(
       form_structure, server_card,
       FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
-      IsCreditCardUpstreamEnabled());
+      IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcUploadSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
                 IsCreditCardUpstreamEnabled());

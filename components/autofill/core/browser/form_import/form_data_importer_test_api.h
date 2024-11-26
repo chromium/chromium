@@ -86,9 +86,10 @@ class FormDataImporterTestApi {
   bool ProcessAddressProfileImportCandidates(
       const std::vector<AddressProfileImportCandidate>&
           address_profile_import_candidates,
-      bool allow_prompt = true) {
+      bool allow_prompt,
+      ukm::SourceId ukm_source_id) {
     return fdi_->ProcessAddressProfileImportCandidates(
-        address_profile_import_candidates, allow_prompt);
+        address_profile_import_candidates, allow_prompt, ukm_source_id);
   }
 
   ExtractedFormData ExtractFormData(const FormStructure& form,
@@ -101,10 +102,11 @@ class FormDataImporterTestApi {
   bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
       const std::optional<CreditCard>& credit_card_import_candidate,
-      bool is_credit_card_upstream_enabled) {
-    return fdi_->ProcessExtractedCreditCard(submitted_form,
-                                            credit_card_import_candidate,
-                                            is_credit_card_upstream_enabled);
+      bool is_credit_card_upstream_enabled,
+      ukm::SourceId ukm_source_id) {
+    return fdi_->ProcessExtractedCreditCard(
+        submitted_form, credit_card_import_candidate,
+        is_credit_card_upstream_enabled, ukm_source_id);
   }
 
   std::optional<int64_t> fetched_card_instrument_id() {

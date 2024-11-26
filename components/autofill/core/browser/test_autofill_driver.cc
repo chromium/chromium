@@ -26,13 +26,22 @@ AutofillManager& TestAutofillDriver::GetAutofillManager() {
 }
 
 ukm::SourceId TestAutofillDriver::GetPageUkmSourceId() const {
-  // This test implementation does not correctly simulate production code, where
-  // the UKM source IDs of inactive drivers and active drivers differ.
-  //
-  // Simulating the production code is difficult because UKM source IDs are
-  // controlled by navigations, but TestAutofillClient and TestAutofillDriver
-  // have no access to simulated navigation.
-  return autofill_client_->GetActivePageUkmSourceId();
+  return const_cast<TestAutofillDriver*>(this)->GetPageUkmSourceId();
+}
+
+void TestAutofillDriver::InitializeUKMSources() {
+  GetAutofillClient().GetUkmRecorder()->UpdateSourceURL(ukm_source_id_, url_);
+}
+
+ukm::SourceId TestAutofillDriver::GetPageUkmSourceId() {
+  if (auto* parent = GetParent()) {
+    return parent->GetPageUkmSourceId();
+  }
+  if (ukm_source_id_ == ukm::kInvalidSourceId) {
+    ukm_source_id_ = ukm::UkmRecorder::GetNewSourceID();
+    GetAutofillClient().GetUkmRecorder()->UpdateSourceURL(ukm_source_id_, url_);
+  }
+  return ukm_source_id_;
 }
 
 }  // namespace autofill

@@ -196,14 +196,26 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   TestAutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
+  ukm::SourceId GetPageUkmSourceId();
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);
   }
 
+  // Initializes UKM source from `url()`. This needs to be called in unittests
+  // after calling Purge for ukm recorder to re-initialize sources.
+  void InitializeUKMSources();
+
+  // The faked URL of the driver's frame.
+  const GURL& url() { return url_; }
+  void set_url(GURL url) { url_ = std::move(url); }
+
  private:
   raw_ref<TestAutofillClient> autofill_client_;
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
+
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+  GURL url_{"https://example.test"};
 };
 
 }  // namespace autofill

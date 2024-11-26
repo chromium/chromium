@@ -43,6 +43,7 @@ class AddressProfileSaveManager {
   void ImportProfileFromForm(const AutofillProfile& profile,
                              const std::string& app_locale,
                              const GURL& url,
+                             ukm::SourceId ukm_source_id,
                              bool allow_only_silent_updates,
                              ProfileImportMetadata import_metadata);
 

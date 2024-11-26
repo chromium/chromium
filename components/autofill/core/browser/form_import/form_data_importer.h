@@ -75,7 +75,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   // begins the process to offer local or upload credit card save.
   void ImportAndProcessFormData(const FormStructure& submitted_form,
                                 bool profile_autofill_enabled,
-                                bool payment_methods_autofill_enabled);
+                                bool payment_methods_autofill_enabled,
+                                ukm::SourceId ukm_source_id);
 
   struct ExtractCreditCardFromFormResult {
     // The extracted credit card, which may be a candidate for import.
@@ -268,7 +269,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
       const std::optional<CreditCard>& extracted_credit_card,
-      bool is_credit_card_upstream_enabled);
+      bool is_credit_card_upstream_enabled,
+      ukm::SourceId ukm_source_id);
 
   // Processes the address profile import candidates.
   // |address_profile_import_candidates| contains the addresses extracted
@@ -277,7 +279,8 @@ class FormDataImporter : public AddressDataManager::Observer,
   bool ProcessAddressProfileImportCandidates(
       const std::vector<AddressProfileImportCandidate>&
           address_profile_import_candidates,
-      bool allow_prompt = true);
+      bool allow_prompt,
+      ukm::SourceId ukm_source_id);
 
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);

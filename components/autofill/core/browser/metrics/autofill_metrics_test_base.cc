@@ -72,6 +72,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
   autofill_driver_ =
       std::make_unique<TestAutofillDriver>(autofill_client_.get());
+  autofill_driver_->SetLocalFrameToken(test::MakeLocalFrameToken());
 
   payments::TestPaymentsNetworkInterface* payments_network_interface =
       new payments::TestPaymentsNetworkInterface(
@@ -121,7 +122,7 @@ void AutofillMetricsBaseTest::TearDownHelper() {
 void AutofillMetricsBaseTest::PurgeUKM() {
   test_api(autofill_manager()).Reset();
   test_ukm_recorder().Purge();
-  autofill_client_->InitializeUKMSources();
+  autofill_driver_->InitializeUKMSources();
 }
 
 void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {

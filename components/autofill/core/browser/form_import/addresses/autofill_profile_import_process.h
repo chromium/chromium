@@ -119,6 +119,7 @@ class ProfileImportProcess {
   ProfileImportProcess(const AutofillProfile& observed_profile,
                        const std::string& app_locale,
                        const GURL& form_source_url,
+                       ukm::SourceId ukm_source_id,
                        AddressDataManager* address_data_manager,
                        bool allow_only_silent_updates,
                        ProfileImportMetadata import_metadata = {});
@@ -225,7 +226,6 @@ class ProfileImportProcess {
   // `existing_profiles` are the profiles before the import was applied.
   void CollectMetrics(
       ukm::UkmRecorder* ukm_recorder,
-      ukm::SourceId source_id,
       const std::vector<const AutofillProfile*>& existing_profiles) const;
 
  private:
@@ -295,6 +295,9 @@ class ProfileImportProcess {
 
   // The url of the form.
   GURL form_source_url_;
+
+  // The UKM source ID of the page whose form is imported.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   // A reference to the address data manager that is used to retrieve additional
   // information about existing profiles and save/update imported profiles.
