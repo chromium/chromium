@@ -3154,8 +3154,7 @@ DOMArrayBuffer* Internals::serializeObject(
 ScriptValue Internals::deserializeBuffer(v8::Isolate* isolate,
                                          DOMArrayBuffer* buffer) const {
   scoped_refptr<SerializedScriptValue> serialized_value =
-      SerializedScriptValue::Create(base::make_span(
-          static_cast<const uint8_t*>(buffer->Data()), buffer->ByteLength()));
+      SerializedScriptValue::Create(buffer->ByteSpan());
   return ScriptValue(isolate, serialized_value->Deserialize(isolate));
 }
 

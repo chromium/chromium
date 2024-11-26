@@ -1491,7 +1491,7 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
   // |AddPreviousItems| may have added more than one lines. Propagate baselines
   // from them.
-  for (const auto& child : base::make_span(children).subspan(children_before)) {
+  for (const auto& child : base::span(children).subspan(children_before)) {
     DCHECK(child.fragment->IsLineBox());
     PropagateBaselineFromLineBox(*child.fragment, child.offset.block_offset);
   }

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
 #include <algorithm>
+#include <functional>
 
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -346,7 +347,7 @@ OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
 
   UnitVector result;
   result.reserve(base::checked_cast<wtf_size_t>(result_end - result_begin));
-  for (const auto& unit : base::make_span(result_begin, result_end)) {
+  for (const auto& unit : base::span(result_begin, result_end)) {
     // If the unit isn't fully within the range, create a new unit that's
     // within the range.
     const unsigned clamped_start = std::max(unit.DOMStart(), start_offset);
@@ -369,15 +370,15 @@ base::span<const OffsetMappingUnit> OffsetMapping::GetMappingUnitsForNode(
   if (it == ranges_.end()) {
     return {};
   }
-  return base::make_span(units_.begin() + it->value.first,
-                         units_.begin() + it->value.second);
+  const auto [first, last] = it->value;
+  return base::span(units_).subspan(first, last - first);
 }
 
 base::span<const OffsetMappingUnit>
 OffsetMapping::GetMappingUnitsForLayoutObject(
     const LayoutObject& layout_object) const {
-  const auto begin = base::ranges::find(units_, layout_object,
-                                        &OffsetMappingUnit::GetLayoutObject);
+  const auto begin = std::ranges::find(units_, layout_object,
+                                       &OffsetMappingUnit::GetLayoutObject);
   CHECK_NE(begin, units_.end());
   const auto end =
       std::find_if(std::next(begin), units_.end(),
@@ -385,7 +386,7 @@ OffsetMapping::GetMappingUnitsForLayoutObject(
                      return unit.GetLayoutObject() != layout_object;
                    });
   DCHECK_LT(begin, end);
-  return base::make_span(begin, end);
+  return base::span(begin, end);
 }
 
 base::span<const OffsetMappingUnit>
@@ -397,21 +398,16 @@ OffsetMapping::GetMappingUnitsForTextContentOffsetRange(unsigned start,
     return {};
 
   // Find the first unit where unit.text_content_end > start
-  auto result_begin =
-      std::lower_bound(units_.begin(), units_.end(), start,
-                       [](const OffsetMappingUnit& unit, unsigned offset) {
-                         return unit.TextContentEnd() <= offset;
-                       });
-  if (result_begin == units_.end() || result_begin->TextContentStart() >= end)
+  auto result_begin = std::ranges::lower_bound(
+      units_, start, std::less_equal<>{}, &OffsetMappingUnit::TextContentEnd);
+  if (result_begin == units_.end() || result_begin->TextContentStart() >= end) {
     return {};
+  }
 
   // Find the next of the last unit where unit.text_content_start < end
-  auto result_end =
-      std::upper_bound(units_.begin(), units_.end(), end,
-                       [](unsigned offset, const OffsetMappingUnit& unit) {
-                         return offset <= unit.TextContentStart();
-                       });
-  return base::make_span(result_begin, result_end);
+  auto result_end = std::ranges::upper_bound(
+      units_, end, std::less_equal<>{}, &OffsetMappingUnit::TextContentStart);
+  return base::span(result_begin, result_end);
 }
 
 std::optional<unsigned> OffsetMapping::GetTextContentOffset(

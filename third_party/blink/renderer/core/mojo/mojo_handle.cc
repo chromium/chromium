@@ -81,7 +81,7 @@ MojoResult MojoHandle::writeMessage(
 
   base::span<const uint8_t> bytes = ByteSpanForBufferSource(*buffer);
 
-  auto message = mojo::Message(bytes, base::make_span(scoped_handles));
+  auto message = mojo::Message(bytes, base::span(scoped_handles));
   DCHECK(!message.IsNull());
   return mojo::WriteMessageNew(mojo::MessagePipeHandle(handle_.get().value()),
                                message.TakeMojoMessage(),

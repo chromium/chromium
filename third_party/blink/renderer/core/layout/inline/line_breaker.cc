@@ -1803,7 +1803,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
 #if EXPENSIVE_DCHECKS_ARE_ON()
     // Whether the start offset is at middle of a word or not can also be
     // determined by `line_info->Results()`. Check if they match.
-    auto results = base::make_span(line_info->Results());
+    auto results = base::span(line_info->Results());
     DCHECK_EQ(item_result, &results.back());
     results = results.first(results.size() - 1);
     bool is_at_mid_word = false;
@@ -2235,11 +2235,10 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
 
 bool LineBreaker::CanBreakInside(const LineInfo& line_info) {
   const InlineItemResults& item_results = line_info.Results();
-  for (const InlineItemResult& item_result :
-       base::make_span(item_results.begin(), item_results.size() - 1)) {
-    if (item_result.can_break_after) {
-      return true;
-    }
+  if (std::ranges::any_of(
+          base::span(item_results).first(item_results.size() - 1),
+          std::identity(), &InlineItemResult::can_break_after)) {
+    return true;
   }
   for (const InlineItemResult& item_result : item_results) {
     DCHECK(item_result.item);
@@ -3727,7 +3726,7 @@ void LineBreaker::RewindFloats(unsigned new_end,
                                LineInfo& line_info,
                                InlineItemResults& item_results) {
   for (const InlineItemResult& item_result :
-       base::make_span(item_results).subspan(new_end)) {
+       base::span(item_results).subspan(new_end)) {
     if (item_result.positioned_float) {
       const unsigned item_index = item_result.item_index;
       line_info.RemoveParallelFlowBreakToken(item_index);

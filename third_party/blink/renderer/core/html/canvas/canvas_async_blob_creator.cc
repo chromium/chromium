@@ -505,7 +505,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
         .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
-             blink::IdentifiabilityDigestOfBytes(base::make_span(
+             blink::IdentifiabilityDigestOfBytes(base::span(
                  data_buffer->Pixels(), data_buffer->ComputeByteSize())))
         .Record(context_->UkmRecorder());
   }

@@ -1143,8 +1143,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if (line_break_strategy.NeedsToPrepare()) [[unlikely]] {
       line_break_strategy.Prepare(
           context_, Node(), constraint_space,
-          base::make_span(opportunities_it, opportunities.end()),
-          line_opportunity, leading_floats, break_token, &GetExclusionSpace());
+          base::span(opportunities_it, opportunities.end()), line_opportunity,
+          leading_floats, break_token, &GetExclusionSpace());
     }
     bool is_line_info_cached = false;
     LineInfo& line_info =

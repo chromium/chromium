@@ -900,8 +900,8 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       /*cached_metadata=*/std::nullopt);
   image_resource->Loader()->DidReceiveDataForTesting(
-      base::make_span(reinterpret_cast<const char*>(kJpegImage),
-                      kJpegImageSubrangeWithoutDimensionsLength));
+      base::span(reinterpret_cast<const char*>(kJpegImage),
+                 kJpegImageSubrangeWithoutDimensionsLength));
 
   EXPECT_EQ(ResourceStatus::kPending, image_resource->GetStatus());
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());

@@ -808,7 +808,7 @@ void PhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
 base::span<const PhysicalFragmentLink> PhysicalFragment::Children() const {
   if (Type() == kFragmentBox)
     return static_cast<const PhysicalBoxFragment*>(this)->Children();
-  return base::make_span(static_cast<PhysicalFragmentLink*>(nullptr), 0u);
+  return {};
 }
 
 PhysicalFragment::PostLayoutChildLinkList PhysicalFragment::PostLayoutChildren()

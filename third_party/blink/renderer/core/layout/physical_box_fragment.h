@@ -99,7 +99,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
   base::span<const PhysicalFragmentLink> Children() const {
     DCHECK(children_valid_);
-    return base::make_span(children_);
+    return base::span(children_);
   }
 
   const HeapVector<Member<Element>>* ReadingFlowElements() const {
@@ -123,7 +123,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
    protected:
     friend class OutOfFlowLayoutPart;
     base::span<PhysicalFragmentLink> Children() const {
-      return base::make_span(buffer_, num_children_);
+      return base::span(buffer_, num_children_);
     }
 
    private:
@@ -534,7 +534,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     }
     base::span<PhysicalFragmentLink> Children() const {
       DCHECK(fragment_.children_valid_);
-      return base::make_span(fragment_.children_);
+      return base::span(fragment_.children_);
     }
 
     // Remove existing children, and add those from new_fragment.

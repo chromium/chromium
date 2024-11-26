@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -107,8 +108,8 @@ class BodyLoaderTestDelegate : public URLLoaderTestDelegate {
     return true;
   }
 
-  void Write(const char* data) {
-    body_loader_raw_->Write(base::make_span(data, strlen(data)));
+  void Write(std::string_view data) {
+    body_loader_raw_->Write(base::span(data));
   }
 
   void Finish() { body_loader_raw_->Finish(); }
@@ -484,7 +485,7 @@ TEST_P(DocumentLoaderTest, MultiChunkWithReentrancy) {
 
     void DispatchOneByte() {
       char c = data_.TakeFirst();
-      body_loader_->Write(base::make_span(&c, static_cast<size_t>(1)));
+      body_loader_->Write(base::span_from_ref(c));
     }
 
     bool ServedReentrantly() const { return served_reentrantly_; }

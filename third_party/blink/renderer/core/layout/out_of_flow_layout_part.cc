@@ -1461,14 +1461,14 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   // to add the fixed-positioned elements to those as well.
   wtf_size_t previous_repeaded_fixedpos_resume_idx = WTF::kNotFound;
 
-  while (descendants->size() > 0) {
+  while (!descendants->empty()) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
 
     // When there are anchor queries, each containing block should be laid out
     // separately. This loop chunks |descendants| by their containing blocks, if
     // they have anchor queries.
     base::span<LogicalOofNodeForFragmentation> descendants_span =
-        base::make_span(*descendants);
+        base::span(*descendants);
     for (;;) {
       bool has_new_descendants_span = false;
       // The CSS containing block of the last descendant, to group |descendants|
