@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/ash/shelf/lacros_shelf_item_controller.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -25,7 +25,7 @@ class IsolatedWebAppInstallerContextMenu;
 // has its own IsolatedWebAppInstallerShelfItemController. This class tracks
 // the window it starts with, and prohibits tracking of additional windows.
 class IsolatedWebAppInstallerShelfItemController
-    : public LacrosShelfItemController,
+    : public ash::ShelfItemDelegate,
       aura::WindowObserver {
  public:
   explicit IsolatedWebAppInstallerShelfItemController(
@@ -50,9 +50,14 @@ class IsolatedWebAppInstallerShelfItemController
                       int64_t display_id) override;
   void Close() override;
 
-  // LacrosShelfItemController overrides:
-  void AddWindow(aura::Window* window) override;
-  std::u16string GetTitle() override;
+  // This method is called  to hand off a window to the controller.
+  //
+  // TODO(https://crbug.com/378932949): Confirm whether this method is still
+  // useful after the lacros removal.
+  void AddWindow(aura::Window* window);
+
+  // Shelf item must have a non-empty title for accessibility.
+  std::u16string GetTitle();
 
   // aura::WindowObserver
   void OnWindowDestroying(aura::Window* window) override;

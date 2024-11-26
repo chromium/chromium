@@ -13,7 +13,6 @@
 #include "ash/wm/window_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_context_menu.h"
-#include "chrome/browser/ui/ash/shelf/lacros_shelf_item_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,7 +45,7 @@ IsolatedWebAppInstallerShelfItemController::GetDefaultInstallerShelfIcon() {
 
 IsolatedWebAppInstallerShelfItemController::
     IsolatedWebAppInstallerShelfItemController(const ash::ShelfID& shelf_id)
-    : LacrosShelfItemController(shelf_id) {
+    : ash::ShelfItemDelegate(shelf_id) {
   context_menu_ = std::make_unique<IsolatedWebAppInstallerContextMenu>(
       base::BindOnce(&IsolatedWebAppInstallerShelfItemController::Close,
                      weak_factory_.GetWeakPtr()));
