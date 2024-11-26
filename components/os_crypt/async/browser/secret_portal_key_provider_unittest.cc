@@ -50,15 +50,46 @@ class SecretPortalKeyProviderTest : public testing::Test {
                                            dbus::ObjectPath(DBUS_PATH_DBUS)))
         .WillRepeatedly(Return(mock_dbus_proxy_.get()));
 
-    response_path_ = dbus::ObjectPath(base::nix::XdgDesktopPortalRequestPath(
-        kBusName, SecretPortalKeyProvider::kHandleToken));
-    mock_response_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
-        mock_bus_.get(), SecretPortalKeyProvider::kServiceSecret,
-        response_path_);
-    EXPECT_CALL(
-        *mock_bus_,
-        GetObjectProxy(SecretPortalKeyProvider::kServiceSecret, response_path_))
-        .WillRepeatedly(Return(mock_response_proxy_.get()));
+    EXPECT_CALL(*mock_bus_, AssertOnOriginThread()).WillRepeatedly([] {});
+
+    EXPECT_CALL(*mock_bus_, GetDBusTaskRunner())
+        .WillRepeatedly(
+            Return(task_environment_.GetMainThreadTaskRunner().get()));
+
+    EXPECT_CALL(*mock_bus_,
+                GetObjectProxy(SecretPortalKeyProvider::kServiceSecret, _))
+        .WillRepeatedly(Invoke([&](std::string_view service_name,
+                                   const dbus::ObjectPath& object_path) {
+          response_path_ = object_path;
+          mock_response_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
+              mock_bus_.get(), SecretPortalKeyProvider::kServiceSecret,
+              response_path_);
+          EXPECT_CALL(*mock_response_proxy_, DoConnectToSignal(_, _, _, _))
+              .WillOnce(
+                  Invoke([&](const std::string& interface_name,
+                             const std::string& signal_name,
+                             dbus::ObjectProxy::SignalCallback signal_callback,
+                             dbus::ObjectProxy::OnConnectedCallback*
+                                 on_connected_callback) {
+                    EXPECT_EQ(interface_name,
+                              SecretPortalKeyProvider::kInterfaceRequest);
+                    EXPECT_EQ(signal_name,
+                              SecretPortalKeyProvider::kSignalResponse);
+
+                    std::move(*on_connected_callback)
+                        .Run(interface_name, signal_name, true);
+
+                    dbus::Signal signal(interface_name, signal_name);
+                    dbus::MessageWriter writer(&signal);
+                    constexpr uint32_t kResponseSuccess = 0;
+                    writer.AppendUint32(kResponseSuccess);
+                    DbusDictionary dict;
+                    dict.Put("token", MakeDbusVariant(DbusString(kPrefToken)));
+                    dict.Write(&writer);
+                    signal_callback.Run(&signal);
+                  }));
+          return mock_response_proxy_.get();
+        }));
 
     mock_secret_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
         mock_bus_.get(), SecretPortalKeyProvider::kServiceSecret,
@@ -74,10 +105,6 @@ class SecretPortalKeyProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*mock_bus_, GetDBusTaskRunner())
-        .WillRepeatedly(
-            Return(task_environment_.GetMainThreadTaskRunner().get()));
-
     EXPECT_CALL(*mock_bus_, ShutdownAndBlock());
 
     // Shutdown the bus to ensure clean-up
@@ -119,28 +146,6 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
       }));
 
   EXPECT_CALL(*mock_bus_, GetConnectionName()).WillOnce(Return(kBusName));
-
-  EXPECT_CALL(*mock_response_proxy_, DoConnectToSignal(_, _, _, _))
-      .WillOnce(Invoke(
-          [&](const std::string& interface_name, const std::string& signal_name,
-              dbus::ObjectProxy::SignalCallback signal_callback,
-              dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
-            EXPECT_EQ(interface_name,
-                      SecretPortalKeyProvider::kInterfaceRequest);
-            EXPECT_EQ(signal_name, SecretPortalKeyProvider::kSignalResponse);
-
-            std::move(*on_connected_callback)
-                .Run(interface_name, signal_name, true);
-
-            dbus::Signal signal(interface_name, signal_name);
-            dbus::MessageWriter writer(&signal);
-            constexpr uint32_t kResponseSuccess = 0;
-            writer.AppendUint32(kResponseSuccess);
-            DbusDictionary dict;
-            dict.Put("token", MakeDbusVariant(DbusString(kPrefToken)));
-            dict.Write(&writer);
-            signal_callback.Run(&signal);
-          }));
 
   EXPECT_CALL(
       *mock_secret_proxy_,
