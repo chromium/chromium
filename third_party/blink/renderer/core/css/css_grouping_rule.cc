@@ -68,21 +68,12 @@ CSSRule* FindClosestStyleOrScopeRule(CSSRule* parent) {
 // on the stack, but for rule insertion we need to traverse and inspect
 // the ancestor chain.
 //
-// The 'is_nested_scope_rule' parameter is set to true when
-// `parent_rule` is a CSSScopeRule with an immediate CSSStyleRule parent,
-// making it a "nested group rule" [1]. Certain child rule insertions into
-// CSSScopeRule are only valid when it's a nested group rule.
-// TODO(crbug.com/351045927): This parameter can be removed once declarations
-// are valid directly in top-level @scope rules.
-//
 // [1] https://drafts.csswg.org/css-nesting-1/#nested-group-rules
 void CalculateNestingContext(CSSRule& parent_rule,
                              CSSNestingType& nesting_type,
-                             StyleRule*& parent_rule_for_nesting,
-                             bool& is_nested_scope_rule) {
+                             StyleRule*& parent_rule_for_nesting) {
   nesting_type = CSSNestingType::kNone;
   parent_rule_for_nesting = nullptr;
-  is_nested_scope_rule = false;
 
   if (CSSRule* closest_style_or_scope_rule =
           FindClosestStyleOrScopeRule(&parent_rule)) {
@@ -97,7 +88,6 @@ void CalculateNestingContext(CSSRule& parent_rule,
       // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
       parent_rule_for_nesting =
           scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting();
-      is_nested_scope_rule = IsA<CSSStyleRule>(scope_rule->parentRule());
     } else {
       NOTREACHED();
     }
@@ -129,16 +119,13 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   } else {
     CSSNestingType nesting_type;
     StyleRule* parent_rule_for_nesting;
-    bool is_nested_scope_rule;
-    CalculateNestingContext(parent_rule, nesting_type, parent_rule_for_nesting,
-                            is_nested_scope_rule);
+    CalculateNestingContext(parent_rule, nesting_type, parent_rule_for_nesting);
 
     new_rule = CSSParser::ParseRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
         parent_rule_for_nesting, rule_string);
 
-    bool allow_nested_declarations =
-        (nesting_type == CSSNestingType::kNesting) || is_nested_scope_rule;
+    bool allow_nested_declarations = nesting_type != CSSNestingType::kNone;
     if (!new_rule && allow_nested_declarations &&
         RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
       // Retry as a CSSNestedDeclarations rule.
