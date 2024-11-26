@@ -61,6 +61,10 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
         disable_idle_sockets_close_on_memory_pressure;
   }
 
+  void set_enable_quic(bool enable_quic) {
+    session_deps_.enable_quic = enable_quic;
+  }
+
   void InitializePool() {
     http_network_session_ =
         SpdySessionDependencies::SpdyCreateSession(&session_deps_);
@@ -429,6 +433,22 @@ TEST_F(HttpStreamPoolGroupTest, DestroySessionWhileStreamAlive) {
 
   // Destroy the session. This should not cause a crash.
   DestroyHttpNetworkSession();
+}
+
+TEST_F(HttpStreamPoolGroupTest, EnableDisableQuic) {
+  const url::SchemeHostPort kHost("https", "www.example.com", 443);
+
+  set_enable_quic(true);
+  InitializePool();
+  ASSERT_TRUE(pool().CanUseQuic(kHost, NetworkAnonymizationKey(),
+                                /*enable_ip_based_pooling=*/true,
+                                /*enable_alternative_services=*/true));
+
+  set_enable_quic(false);
+  InitializePool();
+  ASSERT_FALSE(pool().CanUseQuic(kHost, NetworkAnonymizationKey(),
+                                 /*enable_ip_based_pooling=*/true,
+                                 /*enable_alternative_services=*/true));
 }
 
 }  // namespace net

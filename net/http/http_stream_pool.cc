@@ -302,7 +302,8 @@ bool HttpStreamPool::CanUseQuic(
                                               /*is_websocket=*/false)) {
     return true;
   }
-  return enable_ip_based_pooling && enable_alternative_services &&
+  return http_network_session()->IsQuicEnabled() && enable_ip_based_pooling &&
+         enable_alternative_services &&
          GURL::SchemeIsCryptographic(destination.scheme()) &&
          !RequiresHTTP11(destination, network_anonymization_key) &&
          !IsQuicBroken(destination, network_anonymization_key);
