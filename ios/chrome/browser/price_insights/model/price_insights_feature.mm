@@ -7,7 +7,9 @@
 #import "base/metrics/field_trial_params.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -19,8 +21,11 @@ const char kLowPriceParamGoodDealNow[] = "GoodDealNow";
 
 const char kLowPriceParamSeePriceHistory[] = "SeePriceHistory";
 
-bool IsPriceInsightsEnabled() {
-  return base::FeatureList::IsEnabled(commerce::kPriceInsightsIos);
+bool IsPriceInsightsRegionEnabled() {
+  return commerce::IsRegionLockedFeatureEnabled(
+      commerce::kPriceInsights, commerce::kPriceInsightsRegionLaunched,
+      GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
+      GetApplicationContext()->GetApplicationLocale());
 }
 
 bool IsPriceInsightsEnabled(ProfileIOS* profile) {
