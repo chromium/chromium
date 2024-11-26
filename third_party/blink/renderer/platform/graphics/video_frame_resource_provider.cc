@@ -35,7 +35,6 @@ VideoFrameResourceProvider::~VideoFrameResourceProvider() {
 
 void VideoFrameResourceProvider::Initialize(
     viz::RasterContextProvider* media_context_provider,
-    viz::SharedBitmapReporter* shared_bitmap_reporter,
     scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
   context_provider_ = media_context_provider;
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
@@ -49,7 +48,7 @@ void VideoFrameResourceProvider::Initialize(
   }
 
   resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-      media_context_provider, shared_bitmap_reporter, resource_provider_.get(),
+      media_context_provider, resource_provider_.get(),
       std::move(shared_image_interface), settings_.use_stream_video_draw_quad,
       settings_.use_gpu_memory_buffer_resources, max_texture_size);
 }

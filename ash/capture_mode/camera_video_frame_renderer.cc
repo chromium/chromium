@@ -76,8 +76,7 @@ void CameraVideoFrameRenderer::Initialize() {
   const int max_texture_size =
       context_provider_->ContextCapabilities().max_texture_size;
   video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-      context_provider_.get(), layer_tree_frame_sink_.get(),
-      &client_resource_provider_,
+      context_provider_.get(), &client_resource_provider_,
       layer_tree_frame_sink_->shared_image_interface(),
       /*use_stream_video_draw_quad=*/false,
       /*use_gpu_memory_buffer_resources=*/false, max_texture_size);

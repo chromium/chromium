@@ -34,13 +34,11 @@
 #include "cc/base/math_util.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -49,7 +47,6 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -67,10 +64,6 @@
 
 namespace media {
 namespace {
-
-bool MediaSharedBitmapConversionEnabled() {
-  return base::FeatureList::IsEnabled(kMediaSharedBitmapToSharedImage);
-}
 
 // Generates process-unique IDs to use for tracing video resources.
 base::AtomicSequenceNumber g_next_video_resource_updater_id;
@@ -450,52 +443,31 @@ class VideoResourceUpdater::SoftwarePlaneResource
       uint32_t plane_resource_id,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      viz::SharedBitmapReporter* shared_bitmap_reporter,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       VideoResourceUpdater* video_resource_updater)
       : PlaneResource(plane_resource_id,
                       size,
-                      shared_image_interface
-                          ? viz::SinglePlaneFormat::kBGRA_8888
-                          : viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
                       /*is_software=*/true),
-        video_resource_updater_(video_resource_updater),
-        shared_bitmap_reporter_(shared_bitmap_reporter),
-        shared_bitmap_id_(shared_image_interface
-                              ? viz::SharedBitmapId()
-                              : viz::SharedBitmap::GenerateId()) {
-    if (shared_image_interface) {
-      auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-          {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater"});
-      shared_image_ = std::move(shared_image_mapping.shared_image);
-      shared_mapping_ = std::move(shared_image_mapping.mapping);
-      CHECK(shared_image_);
-    } else {
-      DCHECK(shared_bitmap_reporter_);
-      // Allocate SharedMemory and notify display compositor of the allocation.
-      base::MappedReadOnlyRegion shm =
-          viz::bitmap_allocation::AllocateSharedBitmap(
-              resource_size(), viz::SinglePlaneFormat::kRGBA_8888);
-      shared_mapping_ = std::move(shm.mapping);
-      shared_bitmap_reporter_->DidAllocateSharedBitmap(std::move(shm.region),
-                                                       shared_bitmap_id_);
-    }
+        video_resource_updater_(video_resource_updater) {
+    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+        {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater"});
+    shared_image_ = std::move(shared_image_mapping.shared_image);
+    shared_mapping_ = std::move(shared_image_mapping.mapping);
+    CHECK(shared_image_);
   }
 
   SoftwarePlaneResource(const SoftwarePlaneResource&) = delete;
   SoftwarePlaneResource& operator=(const SoftwarePlaneResource&) = delete;
 
   ~SoftwarePlaneResource() override {
-    if (shared_image_) {
-      auto shared_image_interface =
-          video_resource_updater_->shared_image_interface();
-      if (shared_image_interface) {
-        shared_image_interface->DestroySharedImage(
-            GetSyncToken(shared_image_interface), std::move(shared_image_));
-      }
-    } else {
-      shared_bitmap_reporter_->DidDeleteSharedBitmap(shared_bitmap_id_);
+    DCHECK(shared_image_);
+    auto shared_image_interface =
+        video_resource_updater_->shared_image_interface();
+    if (shared_image_interface) {
+      shared_image_interface->DestroySharedImage(
+          GetSyncToken(shared_image_interface), std::move(shared_image_));
     }
   }
 
@@ -503,19 +475,12 @@ class VideoResourceUpdater::SoftwarePlaneResource
     return shared_image_;
   }
 
-  const viz::SharedBitmapId& shared_bitmap_id() const {
-    return shared_bitmap_id_;
-  }
-
   void* pixels() { return shared_mapping_.memory(); }
 
   gpu::SyncToken GetSyncToken(
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
-    if (shared_image_ && shared_image_interface) {
-      return shared_image_interface->GenVerifiedSyncToken();
-    }
-
-    return gpu::SyncToken();
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
+    DCHECK(shared_image_interface);
+    return shared_image_interface->GenVerifiedSyncToken();
   }
 
   // Returns a memory dump GUID consistent across processes.
@@ -523,20 +488,11 @@ class VideoResourceUpdater::SoftwarePlaneResource
     return shared_mapping_.guid();
   }
 
-  viz::SharedImageFormat SupportedFormat() {
-    return shared_image_ ? viz::SinglePlaneFormat::kBGRA_8888
-                         : viz::SinglePlaneFormat::kRGBA_8888;
-  }
-
  private:
   // Used for SharedImage.
   // SoftwarePlaneResource is called only in VideoResourceUpdater.
   const raw_ptr<VideoResourceUpdater> video_resource_updater_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-
-  // Used for SharedBitmap.
-  const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
-  const viz::SharedBitmapId shared_bitmap_id_;
 
   base::WritableSharedMemoryMapping shared_mapping_;
 };
@@ -629,25 +585,19 @@ VideoResourceUpdater::PlaneResource::AsHardware() {
 
 VideoResourceUpdater::VideoResourceUpdater(
     viz::RasterContextProvider* context_provider,
-    viz::SharedBitmapReporter* shared_bitmap_reporter,
     viz::ClientResourceProvider* resource_provider,
-    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
     bool use_stream_video_draw_quad,
     bool use_gpu_memory_buffer_resources,
     int max_resource_size)
     : context_provider_(context_provider),
-      shared_bitmap_reporter_(shared_bitmap_reporter),
-      shared_image_interface_(MediaSharedBitmapConversionEnabled()
-                                  ? std::move(shared_image_interface)
-                                  : nullptr),
+      shared_image_interface_(std::move(shared_image_interface)),
       resource_provider_(resource_provider),
       use_stream_video_draw_quad_(use_stream_video_draw_quad),
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
       max_resource_size_(max_resource_size),
       tracing_id_(g_next_video_resource_updater_id.GetNext()) {
-  DCHECK(context_provider_ || shared_bitmap_reporter_ ||
-         shared_image_interface_);
-
+  DCHECK(context_provider_ || shared_image_interface_);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "media::VideoResourceUpdater",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -851,13 +801,11 @@ VideoResourceUpdater::PlaneResource* VideoResourceUpdater::AllocateResource(
   const uint32_t plane_resource_id = next_plane_resource_id_++;
 
   if (software_compositor()) {
-    DCHECK_EQ(format,
-              (shared_image_interface() ? viz::SinglePlaneFormat::kBGRA_8888
-                                        : viz::SinglePlaneFormat::kRGBA_8888));
+    DCHECK_EQ(format, viz::SinglePlaneFormat::kBGRA_8888);
 
     all_resources_.push_back(std::make_unique<SoftwarePlaneResource>(
-        plane_resource_id, plane_size, color_space, shared_bitmap_reporter_,
-        shared_image_interface(), this));
+        plane_resource_id, plane_size, color_space, shared_image_interface(),
+        this));
   } else {
     all_resources_.push_back(std::make_unique<HardwarePlaneResource>(
         plane_resource_id, plane_size, format, color_space,
@@ -1077,8 +1025,7 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
   if (software_compositor() || texture_needs_rgb_conversion_out) {
     output_si_format =
         software_compositor()
-            ? (shared_image_interface() ? viz::SinglePlaneFormat::kBGRA_8888
-                                        : viz::SinglePlaneFormat::kRGBA_8888)
+            ? viz::SinglePlaneFormat::kBGRA_8888
             : PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
 
@@ -1094,7 +1041,7 @@ void VideoResourceUpdater::TransferRGBPixelsToPaintCanvas(
 
   SoftwarePlaneResource* software_resource = plane_resource->AsSoftware();
 
-  DCHECK_EQ(plane_resource->si_format(), software_resource->SupportedFormat());
+  DCHECK_EQ(plane_resource->si_format(), viz::SinglePlaneFormat::kBGRA_8888);
 
   // We know the format is RGBA_8888 or BGRA_8888 from check above.
   SkImageInfo info = SkImageInfo::MakeN32Premul(
@@ -1418,19 +1365,11 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
       external_resource.type = VideoFrameResourceType::RGBA_PREMULTIPLIED;
       const auto& shared_image = software_resource->shared_image();
       transferable_resource =
-          shared_image
-              ? viz::TransferableResource::MakeSoftwareSharedImage(
-                    shared_image,
-                    software_resource->GetSyncToken(shared_image_interface()),
-                    software_resource->resource_size(),
-                    plane_resource->si_format(),
-                    viz::TransferableResource::ResourceSource::kVideo)
-              : viz::TransferableResource::MakeSoftwareSharedBitmap(
-                    software_resource->shared_bitmap_id(),
-                    software_resource->GetSyncToken(shared_image_interface()),
-                    software_resource->resource_size(),
-                    plane_resource->si_format(),
-                    viz::TransferableResource::ResourceSource::kVideo);
+          viz::TransferableResource::MakeSoftwareSharedImage(
+              shared_image,
+              software_resource->GetSyncToken(shared_image_interface()),
+              software_resource->resource_size(), plane_resource->si_format(),
+              viz::TransferableResource::ResourceSource::kVideo);
     } else {
       HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
       external_resource.type = VideoFrameResourceType::RGB;
@@ -1572,7 +1511,7 @@ bool VideoResourceUpdater::OnMemoryDump(
   return true;
 }
 
-scoped_refptr<gpu::ClientSharedImageInterface>
+scoped_refptr<gpu::SharedImageInterface>
 VideoResourceUpdater::shared_image_interface() const {
   return shared_image_interface_;
 }

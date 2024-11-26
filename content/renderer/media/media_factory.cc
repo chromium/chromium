@@ -182,22 +182,11 @@ void PostContextProviderToCallback(
             bool is_gpu_composition_disabled = rti->IsGpuCompositingDisabled();
             scoped_refptr<gpu::ClientSharedImageInterface>
                 shared_image_interface;
-            bool use_shared_image = base::FeatureList::IsEnabled(
-                                        media::kMediaSharedBitmapToSharedImage);
-            if (is_gpu_composition_disabled && use_shared_image) {
+
+            if (is_gpu_composition_disabled) {
               shared_image_interface =
                   rti->GetRenderThreadSharedImageInterface();
-              if (!shared_image_interface) {
-                // Delay for 150 ms and retry.
-                base::OnceClosure task =
-                    base::BindOnce(&PostContextProviderToCallback,
-                                   main_task_runner, nullptr, std::move(cb));
-                main_task_runner->PostDelayedTask(FROM_HERE, std::move(task),
-                                                  base::Milliseconds(150));
-                return;
-              }
             }
-
             std::move(cb).Run(!is_gpu_composition_disabled,
                               std::move(context_provider),
                               std::move(shared_image_interface));

@@ -27,6 +27,7 @@
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -136,11 +137,10 @@ class MockVideoFrameResourceProvider
  public:
   MockVideoFrameResourceProvider(
       viz::RasterContextProvider* context_provider,
-      viz::SharedBitmapReporter* shared_bitmap_reporter,
       scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
       : blink::VideoFrameResourceProvider(cc::LayerTreeSettings(), false) {
-    blink::VideoFrameResourceProvider::Initialize(
-        context_provider, shared_bitmap_reporter, shared_image_interface);
+    blink::VideoFrameResourceProvider::Initialize(context_provider,
+                                                  shared_image_interface);
   }
   MockVideoFrameResourceProvider(const MockVideoFrameResourceProvider&) =
       delete;
@@ -148,11 +148,9 @@ class MockVideoFrameResourceProvider
       const MockVideoFrameResourceProvider&) = delete;
   ~MockVideoFrameResourceProvider() override = default;
 
-  MOCK_METHOD3(Initialize,
+  MOCK_METHOD2(Initialize,
                void(viz::RasterContextProvider*,
-                    viz::SharedBitmapReporter*,
-                    scoped_refptr<gpu::ClientSharedImageInterface>
-                        shared_image_interface));
+                    scoped_refptr<gpu::ClientSharedImageInterface>));
   MOCK_METHOD4(AppendQuads,
                void(viz::CompositorRenderPass*,
                     scoped_refptr<media::VideoFrame>,
@@ -173,6 +171,21 @@ class MockSurfaceEmbedder : public mojom::blink::SurfaceEmbedder {
   MOCK_METHOD1(OnOpacityChanged, void(bool));
   mojo::Receiver<mojom::blink::SurfaceEmbedder> receiver_{this};
 };
+
+class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {
+ public:
+  TestClientSharedImageInterface()
+      : gpu::ClientSharedImageInterface(
+            nullptr,
+            base::MakeRefCounted<gpu::GpuChannelHost>(
+                0 /* channel_id */,
+                gpu::GPUInfo(),
+                gpu::GpuFeatureInfo(),
+                gpu::SharedImageCapabilities(),
+                mojo::ScopedMessagePipeHandle(
+                    mojo::MessagePipeHandle(mojo::kInvalidHandleValue)))) {}
+};
+
 }  // namespace
 
 // Supports testing features::OnBeginFrameAcks, which changes the expectations
@@ -186,7 +199,9 @@ class VideoFrameSubmitterTest : public testing::Test,
       : now_src_(new base::SimpleTestTickClock()),
         begin_frame_source_(new viz::FakeExternalBeginFrameSource(0.f, false)),
         video_frame_provider_(new StrictMock<MockVideoFrameProvider>()),
-        context_provider_(viz::TestContextProvider::Create()) {
+        context_provider_(viz::TestContextProvider::Create()),
+        client_shared_image_interface_(
+            base::MakeRefCounted<TestClientSharedImageInterface>()) {
     if (HasBeginFrameAcks()) {
       scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
     } else {
@@ -204,7 +219,7 @@ class VideoFrameSubmitterTest : public testing::Test,
   void MakeSubmitter(
       cc::VideoPlaybackRoughnessReporter::ReportingCallback reporting_cb) {
     resource_provider_ = new StrictMock<MockVideoFrameResourceProvider>(
-        context_provider_.get(), nullptr, nullptr);
+        context_provider_.get(), nullptr);
     submitter_ = std::make_unique<VideoFrameSubmitter>(
         base::DoNothing(), reporting_cb,
         base::WrapUnique<MockVideoFrameResourceProvider>(
@@ -294,6 +309,7 @@ class VideoFrameSubmitterTest : public testing::Test,
   std::unique_ptr<StrictMock<MockVideoFrameProvider>> video_frame_provider_;
   std::unique_ptr<StrictMock<MockSurfaceEmbedder>> surface_embedder_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
+  scoped_refptr<TestClientSharedImageInterface> client_shared_image_interface_;
   std::unique_ptr<VideoFrameSubmitter> submitter_;
   raw_ptr<StrictMock<MockVideoFrameResourceProvider>> resource_provider_;
 
@@ -753,7 +769,7 @@ TEST_P(VideoFrameSubmitterTest, RecreateCompositorFrameSinkAfterContextLost) {
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           embedded_frame_sink_provider_receivers);
 
-  EXPECT_CALL(*resource_provider_, Initialize(_, _, _));
+  EXPECT_CALL(*resource_provider_, Initialize(_, _));
   EXPECT_CALL(mock_embedded_frame_sink_provider, ConnectToEmbedder(_, _))
       .Times(0);
   EXPECT_CALL(mock_embedded_frame_sink_provider, CreateCompositorFrameSink_(_))
@@ -764,8 +780,8 @@ TEST_P(VideoFrameSubmitterTest, RecreateCompositorFrameSinkAfterContextLost) {
   task_environment_.RunUntilIdle();
 }
 
-// Test that after context is lost, the CompositorFrameSink is recreated but the
-// SurfaceEmbedder isn't even with software compositing.
+// Test software compositing after GpuChannel is lost, and the GpuChannel has
+// be established.
 TEST_P(VideoFrameSubmitterTest,
        RecreateCompositorFrameSinkAfterContextLostSoftwareCompositing) {
   MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
@@ -775,15 +791,37 @@ TEST_P(VideoFrameSubmitterTest,
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           embedded_frame_sink_provider_receivers);
 
-  EXPECT_CALL(*resource_provider_, Initialize(_, _, _));
+  EXPECT_CALL(*resource_provider_, Initialize(_, _));
   EXPECT_CALL(mock_embedded_frame_sink_provider, ConnectToEmbedder(_, _))
       .Times(0);
   EXPECT_CALL(mock_embedded_frame_sink_provider, CreateCompositorFrameSink_(_))
       .Times(1);
   EXPECT_CALL(*video_frame_provider_, OnContextLost()).Times(1);
   submitter_->OnContextLost();
-  OnReceivedContextProvider(false, nullptr, nullptr);
+  OnReceivedContextProvider(false, nullptr, client_shared_image_interface_);
   task_environment_.RunUntilIdle();
+}
+
+// Test software compositing after GpuChannel is lost, and the GpuChannel is not
+// yet reestablished.
+TEST_P(VideoFrameSubmitterTest,
+       GpuChannelNotReadyAfterContextLostSoftwareCompositing) {
+  MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
+  mojo::ReceiverSet<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receivers;
+  auto override =
+      mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
+          embedded_frame_sink_provider_receivers);
+
+  EXPECT_CALL(*resource_provider_, Initialize(_, _)).Times(0);
+  EXPECT_CALL(mock_embedded_frame_sink_provider, ConnectToEmbedder(_, _))
+      .Times(0);
+  EXPECT_CALL(mock_embedded_frame_sink_provider, CreateCompositorFrameSink_(_))
+      .Times(0);
+  EXPECT_CALL(*video_frame_provider_, OnContextLost()).Times(1);
+  submitter_->OnContextLost();
+  OnReceivedContextProvider(false, nullptr, nullptr);
+  task_environment_.QuitClosure();
 }
 
 // This test simulates a race condition in which the |video_frame_provider_| is

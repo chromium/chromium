@@ -1708,11 +1708,6 @@ BASE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Convert SharedBitmap to SharedImage for media resources.
-BASE_FEATURE(kMediaSharedBitmapToSharedImage,
-             "MediaSharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
              "MediaFoundationD3DVideoProcessing",

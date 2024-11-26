@@ -1918,12 +1918,12 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        this->child_context_provider_.get(), nullptr,
+        this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
         /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
-        this->child_context_provider_.get(), nullptr,
+        this->child_context_provider_.get(),
         this->child_resource_provider_.get(),
         /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
@@ -2396,7 +2396,7 @@ class VideoRendererPixelTestBase : public VizPixelTest {
     constexpr bool kUseGpuMemoryBufferResources = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-        child_context_provider_.get(), nullptr, child_resource_provider_.get(),
+        child_context_provider_.get(), child_resource_provider_.get(),
         /*shared_image_interface=*/nullptr, kUseStreamVideoDrawQuad,
         kUseGpuMemoryBufferResources, kMaxResourceSize);
   }
