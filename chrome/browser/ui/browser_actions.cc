@@ -183,9 +183,7 @@ void BrowserActions::InitializeBrowserActions() {
               SidePanelAction(SidePanelEntryId::kMerchantTrust,
                               IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
                               IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
-                              // TODO(crbug.com/378671877): Add a new store icon
-                              // for the MerchantTrust side panel.
-                              vector_icons::kShoppingBagIcon,
+                              vector_icons::kStorefrontIcon,
                               kActionSidePanelShowMerchantTrust, browser,
                               false))
 

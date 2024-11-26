@@ -214,6 +214,7 @@ aggregate_vector_icons("components_vector_icons") {
     "stop_circle.icon",
     "storage_access.icon",
     "storage_access_off.icon",
+    "storefront.icon",
     "submenu_arrow.icon",
     "submenu_arrow_chrome_refresh.icon",
     "sync.icon",
