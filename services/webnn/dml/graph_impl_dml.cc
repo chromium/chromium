@@ -1403,20 +1403,20 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
   // underlying DirectML runtime can handle.
 
   GraphFusionInfo graph_fusion_info;
-  // Based on that all the operand ids are contiguous, it's used to record how
-  // many times each operand id is used as an output edge from one operation.
-  // Notice that the operand id from renderer is increased from 1, so reserve
-  // `operand count + 1` size for the vector.
-  base::FixedArray<uint32_t> node_output_edge_counts(
-      graph_info->id_to_operand_map.size() + 1, 0);
+  // A map to record how many times each operand id is used as one
+  // operation's input edge or the graph's output edge.
+  std::map<uint64_t, uint32_t> operand_id_to_use_count_map;
+  for (const auto& pair : graph_info->id_to_operand_map) {
+    operand_id_to_use_count_map[pair.first] = 0;
+  }
 
   for (uint64_t graph_output_id : graph_info->output_operands) {
-    ++node_output_edge_counts[graph_output_id];
+    ++operand_id_to_use_count_map[graph_output_id];
   }
 
   // Iterate from the end of operations instead from the beginning, so we
-  // can easily get the total output edges count of a fusible base operation
-  // before visiting it.
+  // can easily get the total use count of a fusible base operation's output
+  // edge before visiting it.
   OperationConnectivity operation_connectivity;
   for (size_t operation_index = graph_info->operations.size();
        operation_index-- > 0;) {
@@ -1426,7 +1426,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
         /*out_operation_connectivity*/ operation_connectivity);
 
     for (uint64_t input_id : operation_connectivity.input_ids) {
-      ++node_output_edge_counts[input_id];
+      ++operand_id_to_use_count_map[input_id];
     }
 
     // Try to find standalone activations that can be fused into preceding
@@ -1449,7 +1449,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
       // edge to a fusible standalone activation.
       const auto activation_iterator =
           input_id_to_activation_map.find(output_id);
-      if (node_output_edge_counts[output_id] == 1 &&
+      if (operand_id_to_use_count_map[output_id] == 1 &&
           activation_iterator != input_id_to_activation_map.end()) {
         const auto* activation = activation_iterator->second.get();
         graph_fusion_info.fusible_operations_set.insert(activation);
@@ -1483,7 +1483,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
         CHECK_EQ(operation_connectivity.output_ids.size(), 1U);
         uint64_t output_id = operation_connectivity.output_ids[0];
         if (!input_id_to_matmul_map.contains(output_id) ||
-            node_output_edge_counts[output_id] != 1) {
+            operand_id_to_use_count_map[output_id] != 1) {
           break;
         }
         const mojom::TransposePtr& transpose = operation->get_transpose();

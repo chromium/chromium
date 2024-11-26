@@ -1412,7 +1412,6 @@ union Operation {
 // Describes an entire WebNN graph information.
 struct GraphInfo {
   // A map of all operands used in this `GraphInfo`, the key is the operand id.
-  // The operand ids must be increasing from 1 and contiguous.
   map<uint64, Operand> id_to_operand_map;
   // The id array from the `GraphInfo.id_to_operand_map` is used to identify the
   // input operands of this graph.
