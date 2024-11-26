@@ -1302,7 +1302,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.OutgoingPassordSharingInvitation.CommitError"
     enum="OutgoingPasswordSharingInvitationCommitError"
-    expires_after="2025-01-05">
+    expires_after="2025-11-05">
   <owner>rushans@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
