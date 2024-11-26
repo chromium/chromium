@@ -587,7 +587,11 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
 }
 
 void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
-    const base::Version& component_version) {
+    const base::Version& version,
+    bool is_preloaded) {
+  if (is_preloaded) {
+    return;
+  }
   ProcessPolicy(/*finished_closure=*/base::DoNothing());
 }
 

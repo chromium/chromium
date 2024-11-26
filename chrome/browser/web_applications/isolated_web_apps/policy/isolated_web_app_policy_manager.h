@@ -72,8 +72,8 @@ class IsolatedWebAppPolicyManager
   void CleanupOrphanedBundles(base::OnceClosure finished_closure);
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(
-      const base::Version& component_version) override;
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
 
   // Keeps track of the last few processing logs for debugging purposes.
   // Automatically discards older logs to keep at most `kMaxEntries`.

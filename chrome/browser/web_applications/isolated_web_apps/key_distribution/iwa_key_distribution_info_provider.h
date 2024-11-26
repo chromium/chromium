@@ -59,9 +59,9 @@ class IwaKeyDistributionInfoProvider {
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnComponentUpdateSuccess(
-        const base::Version& component_version) {}
-    virtual void OnComponentUpdateError(const base::Version& component_version,
+    virtual void OnComponentUpdateSuccess(const base::Version& version,
+                                          bool is_preloaded) {}
+    virtual void OnComponentUpdateError(const base::Version& version,
                                         ComponentUpdateError error) {}
   };
 
@@ -98,8 +98,6 @@ class IwaKeyDistributionInfoProvider {
 
   base::Value AsDebugValue() const;
 
-  bool IsPreloadedForTesting() const;
-
  private:
   struct ComponentData {
     ComponentData(base::Version version,
@@ -121,10 +119,10 @@ class IwaKeyDistributionInfoProvider {
       bool is_preloaded,
       base::expected<KeyRotations, ComponentUpdateError>);
 
-  void DispatchComponentUpdateSuccess(
-      const base::Version& component_version) const;
+  void DispatchComponentUpdateSuccess(const base::Version& version,
+                                      bool is_preloaded) const;
 
-  void DispatchComponentUpdateError(const base::Version& component_version,
+  void DispatchComponentUpdateError(const base::Version& version,
                                     ComponentUpdateError error) const;
 
   // Component data protobuf parsing tasks are posted to a sequenced runner

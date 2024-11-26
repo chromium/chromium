@@ -298,8 +298,8 @@ class IsolatedWebAppUpdateManager
   };
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(
-      const base::Version& component_version) override;
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
 
   bool IsAnyIwaInstalled();
 

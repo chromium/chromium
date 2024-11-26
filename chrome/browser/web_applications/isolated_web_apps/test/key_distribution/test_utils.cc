@@ -31,16 +31,26 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
       base::expected<void,
                      IwaKeyDistributionInfoProvider::ComponentUpdateError>)>;
 
-  ComponentUpdateWaiter(std::optional<base::Version> expected_version,
+  ComponentUpdateWaiter(base::Version expected_version,
                         UpdateCallback on_update)
       : expected_version_(std::move(expected_version)),
         on_update_(std::move(on_update)) {
     obs_.Observe(IwaKeyDistributionInfoProvider::GetInstance());
   }
 
+  // Waits for the preloaded component.
+  explicit ComponentUpdateWaiter(UpdateCallback on_update)
+      : is_preloaded_(true), on_update_(std::move(on_update)) {
+    obs_.Observe(IwaKeyDistributionInfoProvider::GetInstance());
+  }
+
   // IwaKeyRotationInfoProvider::Observer:
-  void OnComponentUpdateSuccess(const base::Version& version) override {
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override {
     if (expected_version_ && version != expected_version_) {
+      return;
+    }
+    if (is_preloaded != is_preloaded_) {
       return;
     }
     std::move(on_update_).Run(base::ok());
@@ -58,6 +68,8 @@ class ComponentUpdateWaiter : public IwaKeyDistributionInfoProvider::Observer {
 
  private:
   std::optional<base::Version> expected_version_;
+  bool is_preloaded_ = false;
+
   UpdateCallback on_update_;
   base::ScopedObservation<IwaKeyDistributionInfoProvider,
                           IwaKeyDistributionInfoProvider::Observer>
@@ -176,8 +188,7 @@ InstallIwaKeyDistributionComponent(
 base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
 RegisterPreloadedIwaKeyDistributionComponent() {
   ComponentUpdateFuture future;
-  auto waiter = std::make_unique<ComponentUpdateWaiter>(
-      /*expected_version=*/std::nullopt, future.GetCallback());
+  auto waiter = std::make_unique<ComponentUpdateWaiter>(future.GetCallback());
   component_updater::RegisterIwaKeyDistributionComponent(
       g_browser_process->component_updater());
   return future.Take();

@@ -76,9 +76,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(test::InstallIwaKeyDistributionComponent(base::Version("2.1.0"),
                                                        CreateValidData()),
               HasValue());
-
-  EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance()->IsPreloadedForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
@@ -90,8 +87,6 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
       component_updater::DIR_COMPONENT_USER);
 
   EXPECT_THAT(test::RegisterPreloadedIwaKeyDistributionComponent(), HasValue());
-  EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance()->IsPreloadedForTesting());
 }
 
 }  // namespace web_app

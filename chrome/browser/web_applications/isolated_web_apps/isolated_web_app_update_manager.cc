@@ -440,9 +440,14 @@ void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
 }
 
 void IsolatedWebAppUpdateManager::OnComponentUpdateSuccess(
-    const base::Version& component_version) {
+    const base::Version& version,
+    bool is_preloaded) {
   // The corresponding observer is added during `Start()`.
   CHECK(has_started_);
+
+  if (is_preloaded) {
+    return;
+  }
 
   if (!automatic_updates_enabled_) {
     return;

@@ -159,7 +159,7 @@ void IwaKeyDistributionInfoProvider::OnKeyDistributionDataLoaded(
 
   data_ =
       ComponentData(component_version, std::move(key_rotations), is_preloaded);
-  DispatchComponentUpdateSuccess(component_version);
+  DispatchComponentUpdateSuccess(component_version, is_preloaded);
 }
 
 void IwaKeyDistributionInfoProvider::AddObserver(Observer* observer) {
@@ -176,7 +176,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
     const std::optional<std::vector<uint8_t>>& rotated_key) {
   GetDevModeKeyRotationData().insert_or_assign(web_bundle_id,
                                                KeyRotationInfo(rotated_key));
-  DispatchComponentUpdateSuccess(base::Version());
+  DispatchComponentUpdateSuccess(base::Version(), /*is_preloaded=*/false);
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
@@ -205,14 +205,11 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
   return base::Value(std::move(debug_data));
 }
 
-bool IwaKeyDistributionInfoProvider::IsPreloadedForTesting() const {
-  return data_ && data_->is_preloaded;
-}
-
 void IwaKeyDistributionInfoProvider::DispatchComponentUpdateSuccess(
-    const base::Version& component_version) const {
+    const base::Version& component_version,
+    bool is_preloaded) const {
   for (auto& observer : observers_) {
-    observer.OnComponentUpdateSuccess(component_version);
+    observer.OnComponentUpdateSuccess(component_version, is_preloaded);
   }
 }
 
