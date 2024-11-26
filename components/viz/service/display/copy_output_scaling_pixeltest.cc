@@ -74,13 +74,6 @@ class CopyOutputScalingPixelTest
   // The scene is drawn, which also causes the copy request to execute. Then,
   // the resulting bitmap is compared against an expected bitmap.
   void RunTest() {
-    // TODO(b/341104760): Enable these once non-rescale cases are handled
-    // correctly.
-    if (is_skia_graphite() && scale_from_ == scale_to_ &&
-        result_format_ == CopyOutputResult::Format::I420_PLANES) {
-      GTEST_SKIP();
-    }
-
     const char* result_format_as_str = "<unknown>";
 
     // Tests only issue requests for system-memory destinations, no need to
