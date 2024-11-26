@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Feature not enabled">
     The feature gating use of the on-device model is not enabled.
   </int>
-  <int value="3" label="Model not available">
+  <int value="3" label="DEPRECATED: Model not available">
     The on-device model is not available.
   </int>
   <int value="4" label="Config not available for feature">
@@ -403,6 +403,17 @@ chromium-metrics-reviews@google.com.
     The on-device model is not available, but it may be downloaded and installed
     later.
   </int>
+  <int value="16" label="Model not eligible">
+    The device is not eligible for running the on-device model.
+  </int>
+  <int value="17" label="Insufficient disk space">
+    The device does not have enough space to download and install the on-device
+    model.
+  </int>
+  <int value="18" label="No on-device feature used">
+    There was no on-device feature usage so the model has not been downloaded
+    yet.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelStatus">
@@ -421,6 +432,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Installed too late">
     The model is ready, but it wasn't ready early enough for
     OnDeviceModelServiceController to use it.
+  </int>
+  <int value="5" label="Not ready for unknown reason">
+    The model is not ready, and the reason is unknown.
+  </int>
+  <int value="6" label="Insufficient disk space">
+    The client does not have enough space to install the model.
+  </int>
+  <int value="7" label="No on-device feature used">
+    The client is eligible for downloading and installing the model, but there
+    was no on-device feature used so the model is not installed yet.
   </int>
 </enum>
 

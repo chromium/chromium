@@ -70,8 +70,6 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
       return blink::mojom::ModelAvailabilityCheckResult::kNoUnknown;
     case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
       return blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled;
-    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotAvailable:
-      return blink::mojom::ModelAvailabilityCheckResult::kNoModelNotAvailable;
     case optimization_guide::OnDeviceModelEligibilityReason::
         kConfigNotAvailableForFeature:
       return blink::mojom::ModelAvailabilityCheckResult::
@@ -106,13 +104,23 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
         kModelAdaptationNotAvailable:
       return blink::mojom::ModelAvailabilityCheckResult::
           kNoModelAdaptationNotAvailable;
+    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotEligible:
+      return blink::mojom::ModelAvailabilityCheckResult::kModelNotEligible;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationPending:
       return blink::mojom::ModelAvailabilityCheckResult::kNoValidationPending;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
       return blink::mojom::ModelAvailabilityCheckResult::kNoValidationFailed;
     case optimization_guide::OnDeviceModelEligibilityReason::
+        kInsufficientDiskSpace:
+      return blink::mojom::ModelAvailabilityCheckResult::
+          kNoInsufficientDiskSpace;
+    case optimization_guide::OnDeviceModelEligibilityReason::
         kModelToBeInstalled:
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kNoOnDeviceFeatureUsed:
       return blink::mojom::ModelAvailabilityCheckResult::kAfterDownload;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kDeprecatedModelNotAvailable:
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
       NOTREACHED();
   }

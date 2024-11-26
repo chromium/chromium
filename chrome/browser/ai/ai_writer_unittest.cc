@@ -115,7 +115,7 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
   run_loop.Run();
 }
 
-TEST_F(AIWriterTest, CreateWriterModelNotAvailable) {
+TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
@@ -129,7 +129,7 @@ TEST_F(AIWriterTest, CreateWriterModelNotAvailable) {
               raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
                   debug_reason) {
             *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
-                kModelNotAvailable;
+                kModelNotEligible;
             return false;
           }));
 

@@ -110,17 +110,20 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
 
   if (!model_metadata_) {
     if (!on_device_component_state_manager_) {
-      return OnDeviceModelEligibilityReason::kModelNotAvailable;
+      return OnDeviceModelEligibilityReason::kModelNotEligible;
     }
 
     switch (on_device_component_state_manager_->GetOnDeviceModelStatus()) {
       case optimization_guide::OnDeviceModelStatus::kNotEligible:
-        return OnDeviceModelEligibilityReason::kModelNotAvailable;
+        return OnDeviceModelEligibilityReason::kModelNotEligible;
+      case optimization_guide::OnDeviceModelStatus::kInsufficientDiskSpace:
+        return OnDeviceModelEligibilityReason::kInsufficientDiskSpace;
       case optimization_guide::OnDeviceModelStatus::kInstallNotComplete:
       case optimization_guide::OnDeviceModelStatus::
           kModelInstallerNotRegisteredForUnknownReason:
       case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
       case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
+      case optimization_guide::OnDeviceModelStatus::kNoOnDeviceFeatureUsed:
         return OnDeviceModelEligibilityReason::kModelToBeInstalled;
       case optimization_guide::OnDeviceModelStatus::kReady:
         // The model is downloaded but the installation is not completed yet.

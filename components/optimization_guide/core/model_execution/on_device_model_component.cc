@@ -156,11 +156,17 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
   if (component_installer_registered_) {
     return OnDeviceModelStatus::kInstallNotComplete;
   }
-  if (registration_criteria_->should_install()) {
-    // This may happen before the first registration.
-    return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
+  if (!registration_criteria_->is_model_allowed()) {
+    return OnDeviceModelStatus::kNotEligible;
   }
-  return OnDeviceModelStatus::kNotEligible;
+  if (!registration_criteria_->disk_space_available) {
+    return OnDeviceModelStatus::kInsufficientDiskSpace;
+  }
+  if (!registration_criteria_->on_device_feature_recently_used) {
+    return OnDeviceModelStatus::kNoOnDeviceFeatureUsed;
+  }
+  // This may happen before the first registration.
+  return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(

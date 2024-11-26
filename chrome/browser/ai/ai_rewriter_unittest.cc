@@ -248,7 +248,7 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
   run_loop.Run();
 }
 
-TEST_F(AIRewriterTest, CreateRewriterModelNotAvailable) {
+TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
@@ -262,7 +262,7 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotAvailable) {
               optimization_guide::OnDeviceModelEligibilityReason*
                   on_device_model_eligibility_reason) {
             *on_device_model_eligibility_reason = optimization_guide::
-                OnDeviceModelEligibilityReason::kModelNotAvailable;
+                OnDeviceModelEligibilityReason::kModelNotEligible;
             return false;
           }));
 
