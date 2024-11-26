@@ -62,9 +62,15 @@ Profile& CreateNewProfile() {
 
 std::string GetFamilyIdentifier() {
   const base::CommandLine* const cmd = base::CommandLine::ForCurrentProcess();
-  CHECK(cmd->HasSwitch(kFamilyIdentifierSwitch))
-      << "Please specify " << kFamilyIdentifierSwitch << " switch";
-  return cmd->GetSwitchValueASCII(kFamilyIdentifierSwitch);
+  if (cmd->HasSwitch(kFamilyIdentifierLegacySwitch)) {
+    return cmd->GetSwitchValueASCII(kFamilyIdentifierLegacySwitch);
+  }
+  if (cmd->HasSwitch(kFamilyIdentifierSwitch)) {
+    return cmd->GetSwitchValueASCII(kFamilyIdentifierSwitch);
+  }
+
+  NOTREACHED() << "Please specify " << kFamilyIdentifierSwitch << " or "
+               << kFamilyIdentifierLegacySwitch << " switch";
 }
 
 std::string GetFamilyMemberIdentifier(std::string_view member_identifier) {

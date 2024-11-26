@@ -25,6 +25,9 @@ namespace supervised_user {
 // Refers to the family prefix in resources/signin/test_accounts.json
 const char* const kFamilyIdentifierSwitch =
     "supervised-tests-family-identifier";
+// Legacy version of the above
+const char* const kFamilyIdentifierLegacySwitch =
+    "supervised-tests-family-legacy-identifier";
 
 // Alternatively, use these two to provide head of household's and child's
 // credentials directly, in <username>:<password> syntax (colon separated).
