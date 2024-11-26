@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -428,7 +429,16 @@ public class DataSharingTabManager {
                             preview.tabs.get(i).url,
                             // TODO(haileywang): add this to resources when using it in service.
                             72,
-                            (Bitmap bitmap, GURL ignored) -> {
+                            (Bitmap bitmap, GURL url) -> {
+                                if (bitmap == null) {
+                                    // TODO(ssid): use favicon provider used for recent activity.
+                                    bitmap =
+                                            new FaviconHelper.DefaultFaviconHelper()
+                                                    .getDefaultFaviconBitmap(
+                                                            ContextUtils.getApplicationContext(),
+                                                            url,
+                                                            /* useDarkIcon= */ true);
+                                }
                                 joinFlowTracker.onFaviconFetched(index, bitmap);
                             });
         }
