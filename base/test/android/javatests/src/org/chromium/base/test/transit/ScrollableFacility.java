@@ -446,6 +446,8 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
             try {
                 return mItem.getSelectHandler().apply(this);
+            } catch (TravelException e) {
+                throw e;
             } catch (Exception e) {
                 throw TravelException.newTravelException("Select handler threw an exception:", e);
             }

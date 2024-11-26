@@ -18,6 +18,8 @@ public class TravelException extends RuntimeException {
     /**
      * Factory method for TravelException from a raw String message.
      *
+     * <p>Notifies PublicTransitConfig to maybe pause execution or execute debugging callbacks.
+     *
      * @param message the error message
      * @return a new TravelException instance
      */
@@ -27,6 +29,8 @@ public class TravelException extends RuntimeException {
 
     /**
      * Factory method for TravelException from a raw String message with an underlying cause.
+     *
+     * <p>Notifies PublicTransitConfig to maybe pause execution or execute debugging callbacks.
      *
      * @param message the error message
      * @param cause the root cause

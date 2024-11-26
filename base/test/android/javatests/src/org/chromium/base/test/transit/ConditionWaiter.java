@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import static org.junit.Assert.fail;
-
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -251,35 +249,24 @@ public class ConditionWaiter {
      * Blocks waiting for multiple {@link Condition}s, polling them and reporting their status to he
      * {@link ConditionWait}es.
      *
-     * @param transitionName String representing the Transition to print
      * @throws TravelException if not all {@link Condition}s are fulfilled before timing out.
      */
-    void waitFor(String transitionName) throws Throwable {
-        Runnable checker =
-                () -> {
-                    boolean anyCriteriaMissing = processWaits(/* startMonitoringNewWaits= */ true);
-
-                    if (anyCriteriaMissing) {
-                        throw new CriteriaNotSatisfiedException(
-                                createWaitConditionsSummary(
-                                        mWaits, /* generateMainMessage= */ true));
-                    } else {
-                        Log.i(
-                                TAG,
-                                "%s: Conditions fulfilled:\n%s",
-                                transitionName,
-                                createWaitConditionsSummary(
-                                        mWaits, /* generateMainMessage= */ false));
-                    }
-                };
-
+    void waitFor() throws TravelException {
         TransitionOptions options = mTransition.getOptions();
         long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
         try {
-            CriteriaHelper.pollInstrumentationThread(checker, timeoutMs, POLLING_INTERVAL);
+            CriteriaHelper.pollInstrumentationThread(
+                    new CheckConditionsOnce(), timeoutMs, POLLING_INTERVAL);
         } catch (CriteriaHelper.TimeoutException timeoutException) {
-            // Remove the TimeoutException part of the stack to reduce the error message.
-            throw timeoutException.getCause();
+            // Unwrap the TimeoutException and CriteriaNotSatisfiedException parts of the stack to
+            // reduce the error message.
+            if (timeoutException.getCause()
+                    instanceof CriteriaNotSatisfiedException criteriaNotSatisfiedException) {
+                throw TravelException.newTravelException(
+                        criteriaNotSatisfiedException.getMessage());
+            } else {
+                throw timeoutException;
+            }
         }
 
         // Check that all element factories were used.
@@ -289,7 +276,7 @@ public class ConditionWaiter {
             for (Condition condition : mConditionsGuardingFactories.keySet()) {
                 failureMessage.append("  * ").append(condition.getDescription()).append("\n");
             }
-            fail(failureMessage.toString());
+            throw TravelException.newTravelException(failureMessage.toString());
         }
     }
 
@@ -531,18 +518,17 @@ public class ConditionWaiter {
 
         if (generateMainMessage) {
             if (unfulfilledConditionCount == 0) {
-                return String.format("All Conditions fulfilled:\n%s", detailsString);
+                return String.format("all Conditions fulfilled:\n%s", detailsString);
             } else if (unfulfilledConditionCount == 1) {
                 return String.format(
-                        "Did not meet 1 Condition:%s\n%s",
+                        "missing 1 Condition :%s\n%s",
                         firstUnfulfilledConditionString, detailsString);
             } else {
                 return String.format(
-                        "Did not meet %d Conditions: %s (+ %d other%s)\n%s",
+                        "missing %d Conditions: %s (+%d more)\n%s",
                         unfulfilledConditionCount,
                         firstUnfulfilledConditionString,
                         unfulfilledConditionCount - 1,
-                        unfulfilledConditionCount > 2 ? "s" : "",
                         detailsString);
             }
         } else {
@@ -561,5 +547,28 @@ public class ConditionWaiter {
         int ENTER = 0;
         int EXIT = 1;
         int TRANSITION = 2;
+    }
+
+    private class CheckConditionsOnce implements Runnable {
+        @Override
+        public void run() {
+            boolean anyCriteriaMissing =
+                    ConditionWaiter.this.processWaits(/* startMonitoringNewWaits= */ true);
+
+            if (anyCriteriaMissing) {
+                throw new CriteriaNotSatisfiedException(
+                        "Did not complete "
+                                + mTransition.toDebugString()
+                                + ", "
+                                + createWaitConditionsSummary(
+                                        mWaits, /* generateMainMessage= */ true));
+            } else {
+                Log.i(
+                        TAG,
+                        "%s: Conditions fulfilled:\n%s",
+                        mTransition.toDebugString(),
+                        createWaitConditionsSummary(mWaits, /* generateMainMessage= */ false));
+            }
+        }
     }
 }
