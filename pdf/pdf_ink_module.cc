@@ -31,6 +31,7 @@
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_cursor.h"
+#include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -535,6 +536,8 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
 
+  ReportDrawStroke(state.brush_type);
+
   // Reset `state` now that the stroke operation is done.
   state.inputs.clear();
   state.start_time = std::nullopt;
@@ -604,6 +607,8 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
     for (int page_index : state.page_indices_with_erasures) {
       client_->UpdateThumbnail(page_index);
     }
+
+    ReportEraseStroke();
   }
 
   // Reset `state` now that the erase operation is done.

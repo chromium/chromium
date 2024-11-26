@@ -144,6 +144,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
 
+<!-- LINT.IfChange(PDFInk2StrokeBrushType) -->
+
+<enum name="PDFInk2StrokeBrushType">
+  <int value="0" label="Pen"/>
+  <int value="1" label="Highlighter"/>
+  <int value="2" label="Eraser"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeBrushType) -->
+
 <enum name="PDFPostMessageDataType">
 <!-- This must be kept current with PostMessageDataType in
      chrome/browser/resources/pdf/pdf_viewer.ts. -->
