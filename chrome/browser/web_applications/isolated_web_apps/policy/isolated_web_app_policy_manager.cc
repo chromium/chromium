@@ -15,6 +15,7 @@
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
@@ -28,6 +29,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
@@ -153,6 +155,15 @@ void MaybeRecordFirstPolicyProcessingDelay(Profile* profile) {
       /*max=*/base::Seconds(20), /*buckets=*/50);
 }
 
+base::RepeatingCallback<void(web_package::SignedWebBundleId,
+                             IwaInstaller::Result)>&
+GetOnInstallTaskCompletedCallbackForTesting() {
+  static base::NoDestructor<base::RepeatingCallback<void(
+      web_package::SignedWebBundleId, IwaInstaller::Result)>>
+      kCallback;
+  return *kCallback;
+}
+
 }  // namespace
 
 // static
@@ -163,6 +174,14 @@ void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
       prefs::kIsolatedWebAppPendingInitializationCount, 0);
 }
 
+// static
+void IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+    base::RepeatingCallback<void(web_package::SignedWebBundleId,
+                                 IwaInstaller::Result)> callback) {
+  CHECK_IS_TEST();
+  GetOnInstallTaskCompletedCallbackForTesting() = callback;
+}
+
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
     : profile_(profile),
       install_retry_backoff_entry_(&kInstallRetryBackoffPolicy) {}
@@ -170,6 +189,9 @@ IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(Profile* profile)
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
+  key_distribution_info_observation_.Observe(
+      IwaKeyDistributionInfoProvider::GetInstance());
+
   CHECK(on_started_callback_.is_null());
   on_started_callback_ = std::move(on_started_callback);
 
@@ -491,6 +513,11 @@ void IsolatedWebAppPolicyManager::OnInstallTaskCompleted(
   current_process_log_.EnsureDict("install_results")
       ->Set(base::ToString(web_bundle_id), install_result.ToDebugValue());
 
+  if (auto& testing_callback = GetOnInstallTaskCompletedCallbackForTesting()) {
+    CHECK_IS_TEST();
+    testing_callback.Run(web_bundle_id, install_result);
+  }
+
   callback.Run(install_result);
 }
 
@@ -557,6 +584,11 @@ void IsolatedWebAppPolicyManager::CleanupOrphanedBundles(
           base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
                          CleanupOrphanedIsolatedWebAppsCommandError>>(
           std::move(finished_closure)));
+}
+
+void IsolatedWebAppPolicyManager::OnComponentUpdateSuccess(
+    const base::Version& component_version) {
+  ProcessPolicy(/*finished_closure=*/base::DoNothing());
 }
 
 IsolatedWebAppPolicyManager::ProcessLogs::ProcessLogs() = default;

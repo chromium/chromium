@@ -36,7 +36,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
@@ -51,6 +53,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
@@ -1267,6 +1270,66 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
     EXPECT_THAT(EvalJs(web_contents, "document.body.innerText").ExtractString(),
                 HasSubstr("This application is missing or damaged"));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
+                       PolicyReprocessOnComponentUpdate) {
+  base::HistogramTester ht;
+
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
+  auto app_id = url_info.app_id();
+
+  {
+    // Add a bundle with version 1.0.0 signed by a rotated key and attempt to
+    // install it; this installation will fail.
+    AddBundleSignedBy(test::GetDefaultEcdsaP256KeyPair());
+
+    base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
+        future;
+    IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+        future.GetRepeatingCallback());
+
+    profile()->GetPrefs()->SetList(
+        prefs::kIsolatedWebAppInstallForceList,
+        base::Value::List().Append(
+            update_server_mixin_.CreateForceInstallPolicyEntry(
+                web_bundle_id_)));
+
+    auto [web_bundle_id, result] = future.Take();
+    EXPECT_EQ(web_bundle_id, web_bundle_id_);
+    EXPECT_EQ(result.type(),
+              IwaInstallerResultType::kErrorCantInstallFromWebBundle);
+
+    EXPECT_FALSE(GetIsolatedWebApp(app_id));
+
+    IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+        base::NullCallback());
+  }
+
+  auto waiter = web_app::WebAppTestInstallObserver(browser()->profile());
+  waiter.BeginListening({app_id});
+
+  // Key rotation should trigger a policy reprocess.
+  EXPECT_THAT(
+      test::InstallIwaKeyDistributionComponent(
+          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
+          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
+      HasValue());
+
+  waiter.Wait();
+
+  // Now the app should be installed.
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(Eq("app-1.0.0"),
+                  test::IsolationDataIs(
+                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(std::nullopt),
+                      /*integrity_block_data=*/
+                      test::IntegrityBlockDataPublicKeysAre(
+                          test::GetDefaultEcdsaP256KeyPair().public_key))));
 }
 
 }  // namespace
