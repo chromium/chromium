@@ -61,7 +61,7 @@ void CollaborationServiceImpl::StartJoinFlow(
     token = parse_result.value();
   }
 
-  if (join_controllers_.find(token) != join_controllers_.end()) {
+  if (join_controllers_.contains(token)) {
     // TODO(crbug.com/345856704): Find the controller, and tell the controller
     // to promote the current screen.
     return;
