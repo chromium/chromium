@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/web/public/web_state.h"
 
 PriceCardItem* CreatePriceCardItem(web::WebState* web_state) {

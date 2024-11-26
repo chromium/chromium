@@ -20,7 +20,7 @@ include_rules = [
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/ui/settings/sync/utils",
   "+ios/chrome/browser/sharing/ui_bundled",
-  "+ios/chrome/browser/ui/tab_switcher/tab_grid",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
   "+ios/chrome/browser/url_loading/model",
 ]
 
