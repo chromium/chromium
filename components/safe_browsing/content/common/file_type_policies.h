@@ -29,6 +29,10 @@ class FileTypePoliciesTestOverlay;
 // The data to populate it is read from a ResourceBundle and then also
 // fetched periodically from Google to get the most up-to-date policies.
 //
+// Overrides based on download URL may also be applied, such that a file that
+// would ordinarily be treated as "dangerous" may have this policy overridden
+// and be treated as "not dangerous".
+//
 // This is thread safe. We assume it is updated at most every few hours.
 
 class FileTypePolicies {
@@ -58,6 +62,7 @@ class FileTypePolicies {
 
   //
   // Accessors
+  // These do not take overrides into account.
   //
   bool IsArchiveFile(const base::FilePath& file) const;
 
@@ -72,20 +77,27 @@ class FileTypePolicies {
   bool IsAllowedToOpenAutomatically(const base::FilePath& file) const;
 
   // Return the danger level of this file type.
+  // If `source_url` is invalid, the danger level will always be obtained from
+  // the config and will not take overrides into account.
   DownloadFileType::DangerLevel GetFileDangerLevel(
       const base::FilePath& file,
       const GURL& source_url,
       const PrefService* prefs) const;
 
   // Return the type of ping we should send for this file
+  // Does not take overrides into account.
   DownloadFileType::PingSetting PingSettingForFile(
       const base::FilePath& file) const;
 
   float SampledPingProbability() const;
 
+  // If `source_url` is invalid, the policy will always be obtained from the
+  // config and will not take overrides into account.
   DownloadFileType PolicyForFile(const base::FilePath& file,
                                  const GURL& source_url,
                                  const PrefService* prefs) const;
+  // If `source_url` is invalid, the platform settings will always be obtained
+  // from the config and will not take overrides into account.
   DownloadFileType::PlatformSettings SettingsForFile(
       const base::FilePath& file,
       const GURL& source_url,
@@ -93,6 +105,7 @@ class FileTypePolicies {
 
   // Return max size for which unpacking and/or binary feature extraction is
   // supported for the given file extension.
+  // Does not take overrides into account.
   uint64_t GetMaxFileSizeToAnalyze(const std::string& ascii_ext) const;
   uint64_t GetMaxFileSizeToAnalyze(const base::FilePath& path) const;
 
@@ -130,6 +143,8 @@ class FileTypePolicies {
   static std::string CanonicalizedExtension(const base::FilePath& file);
 
   // Look up the policy for a given ASCII ext.
+  // If `source_url` is invalid, the policy will always be obtained from the
+  // config and will not take overrides into account.
   virtual const DownloadFileType& PolicyForExtension(
       const std::string& ext,
       const GURL& source_url,
