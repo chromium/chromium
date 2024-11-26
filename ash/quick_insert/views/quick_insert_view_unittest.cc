@@ -3380,5 +3380,23 @@ TEST_F(QuickInsertViewTest, CheckingGifButtonDoesNotShowBackButton) {
                    .GetVisible());
 }
 
+TEST_F(QuickInsertViewTest, CheckingGifButtonKeepsEmojiBarVisible) {
+  base::test::ScopedFeatureList feature_list(ash::features::kPickerGifs);
+  FakeQuickInsertViewDelegate delegate({
+      .available_categories = {QuickInsertCategory::kEmojisGifs,
+                               QuickInsertCategory::kGifs},
+  });
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
+  views::Button* gifs_button = quick_insert_view->emoji_bar_view_for_testing()
+                                   ->gifs_button_for_testing();
+  ViewDrawnWaiter().Wait(gifs_button);
+
+  LeftClickOn(gifs_button);
+
+  EXPECT_TRUE(quick_insert_view->emoji_bar_view_for_testing()->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash
