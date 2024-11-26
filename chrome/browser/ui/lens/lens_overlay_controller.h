@@ -1109,6 +1109,12 @@ class LensOverlayController : public LensSearchboxClient,
   // Indicates whether contextual zero suggest was shown in a session.
   bool contextual_zps_shown_in_session_ = false;
 
+  // Indicates whether contextual zero suggest was used in a session.
+  bool contextual_zps_used_in_session_ = false;
+
+  // Indicates whether a contextual query was issued in a session.
+  bool contextual_query_issued_in_session_ = false;
+
   // Indicates whether the contextual searchbox was focused in the current
   // session. Used to record interaction rate, defined by whether or not a
   // user focused the contextual searchbox in sessions in which it was shown.

@@ -59,6 +59,8 @@ void RecordContextualSearchboxSessionEndMetrics(
     ukm::SourceId source_id,
     bool contextual_searchbox_focused_in_session,
     bool contextual_zps_shown_in_session,
+    bool contextual_zps_used_in_session,
+    bool contextual_query_issued_in_session,
     lens::MimeType page_content_type);
 
 // Records the time in foreground of a lens overlay. Both sliced and unsliced.

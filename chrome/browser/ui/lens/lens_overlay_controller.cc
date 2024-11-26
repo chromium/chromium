@@ -1934,8 +1934,11 @@ void LensOverlayController::InitializeOverlayUI(
       !init_data.page_content_bytes_.empty();
   if (should_show_contextual_search_box) {
     contextual_searchbox_focused_in_session_ = false;
-    // Reset in case it was set to true previously and the overlay was closed.
+    // Reset metric booleans in case they were set to true previously and the
+    // overlay was reopened.
     contextual_zps_shown_in_session_ = false;
+    contextual_zps_used_in_session_ = false;
+    contextual_query_issued_in_session_ = false;
   }
   initial_page_content_type_ = init_data.page_content_type_;
   initial_document_type_ =
@@ -2640,6 +2643,9 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     lens_overlay_query_controller_->SendContextualTextQuery(
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
+    contextual_zps_used_in_session_ =
+        contextual_zps_used_in_session_ || is_zero_prefix_suggestion;
+    contextual_query_issued_in_session_ = true;
   } else if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
         search_box_text, lens_selection_type_,
@@ -2770,12 +2776,13 @@ void LensOverlayController::RecordEndOfSessionMetrics(
                                    search_performed_in_session_,
                                    session_duration);
 
-  // UMA contextual searchbox focused in session and contextual zero suggest
+  // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
   // shown in session.
   if (contextual_searchbox_focused_in_session_.has_value()) {
     lens::RecordContextualSearchboxSessionEndMetrics(
         source_id, contextual_searchbox_focused_in_session_.value(),
-        contextual_zps_shown_in_session_, initial_page_content_type_);
+        contextual_zps_shown_in_session_, contextual_zps_used_in_session_,
+        contextual_query_issued_in_session_, initial_page_content_type_);
   }
 }
 

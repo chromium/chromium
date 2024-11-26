@@ -5006,7 +5006,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordContextualZpsShownInSessionHistograms) {
+                       RecordContextualZpsSessionHistograms) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
@@ -5030,10 +5030,22 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   controller->OnZeroSuggestShownForTesting();
 
+  // Simulate a zero suggest suggestion being chosen.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
+
+  // Issuing a search from the overlay state can only be done through the
+  // contextual searchbox and should result in a live page with results.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
   // Close the overlay and assert that the histogram was recorded once and
   // that zps was shown in the session.
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Assert zps shown in session metrics get recorded.
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
       /*expected_count=*/1);
@@ -5060,6 +5072,174 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   test_ukm_recorder.ExpectEntryMetric(
       entries[1],
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kPlainTextName,
+      true);
+
+  // Assert zps used in session metrics get recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession", true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "SuggestionUsedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "SuggestionUsedInSession",
+      true, /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::
+          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
+              kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::
+          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
+              kAllPageContentTypesName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::
+          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
+              kPlainTextName,
+      true);
+
+  // Assert query issued in session metrics get recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession", true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ByPageContentType.PlainText."
+      "QueryIssuedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ByPageContentType.PlainText."
+      "QueryIssuedInSession",
+      true, /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kAllPageContentTypesName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kPlainTextName,
+      true);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordContextualZpsNotSelectedInSessionHistograms) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify inner HTML was included as bytes in the the query.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_FALSE(
+      fake_query_controller->last_sent_underlying_content_bytes().empty());
+
+  controller->OnZeroSuggestShownForTesting();
+
+  // Simulate a manual typed suggestion being entered.
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Issuing a search from the overlay state can only be done through the
+  // contextual searchbox and should result in a live page with results.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kLivePageAndResults; }));
+
+  // Close the overlay and assert that the histogram was recorded once and
+  // that zps was shown in the session.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Assert used in session metrics get recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession", false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "SuggestionUsedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "SuggestionUsedInSession",
+      false, /*expected_count=*/1);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::
+          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
+              kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::
+          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
+              kAllPageContentTypesName,
+      false);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::
+          Lens_Overlay_ContextualSuggest_ZPS_SuggestionUsedInSession::
+              kPlainTextName,
+      false);
+
+  // Assert query issued in session metrics get recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession", true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ByPageContentType.PlainText."
+      "QueryIssuedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ByPageContentType.PlainText."
+      "QueryIssuedInSession",
+      true, /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kAllPageContentTypesName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kPlainTextName,
       true);
 }
@@ -5117,6 +5297,36 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   test_ukm_recorder.ExpectEntryMetric(
       entries[1],
       ukm::builders::Lens_Overlay_ContextualSuggest_ZPS_ShownInSession::
+          kPlainTextName,
+      false);
+
+  // Assert query issued in session metrics get recorded.
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.QueryIssuedInSession", false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSuggest.ByPageContentType.PlainText."
+      "QueryIssuedInSession",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ContextualSuggest.ByPageContentType.PlainText."
+      "QueryIssuedInSession",
+      false, /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
+          kAllPageContentTypesName,
+      false);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::Lens_Overlay_ContextualSuggest_QueryIssuedInSession::
           kPlainTextName,
       false);
 }
