@@ -33,6 +33,7 @@ chromium-metrics-reviews@google.com.
   <variant name="HistoryClusters"/>
   <variant name="Lens"/>
   <variant name="LensOverlayResults"/>
+  <variant name="MerchantTrust"/>
   <variant name="ReadAnything"/>
   <variant name="ReadingList"/>
   <variant name="ShoppingInsights"/>

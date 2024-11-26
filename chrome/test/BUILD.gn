@@ -4533,6 +4533,7 @@ if (!is_android) {
         "../browser/ui/views/page_action/pwa_install_view_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/page_info/about_this_site_side_panel_coordinator_browsertest.cc",
+        "../browser/ui/views/page_info/merchant_trust_side_panel_coordinator_browsertest.cc",
         "../browser/ui/views/page_info/page_info_bubble_view_browsertest.cc",
         "../browser/ui/views/page_info/page_info_bubble_view_dialog_browsertest.cc",
         "../browser/ui/views/page_info/page_info_bubble_view_sync_browsertest.cc",

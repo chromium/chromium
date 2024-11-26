@@ -17,6 +17,7 @@ source_set("page_info") {
   } else {
     sources += [
       "about_this_site_side_panel.h",
+      "merchant_trust_side_panel.h",
       "page_info_dialog.h",
       "page_info_infobar_delegate.h",
     ]

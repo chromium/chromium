@@ -812,6 +812,12 @@
     This site is in a group, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can see your activity
   </message>
 
+  <!-- Merchant trust strings -->
+  <!-- TODO(crbug.com/378671877): Finalize string and remove translateable="false". -->
+  <message name="IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE" desc="The title of the merchant trust side panel." translateable="false">
+    What people are saying
+  </message>
+
   <!-- History strings -->
   <if expr="is_ios">
     <then>

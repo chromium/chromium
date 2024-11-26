@@ -37019,6 +37019,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.MerchantTrust.Shown">
+  <owner>tommasin@chromium.org</owner>
+  <owner>privacy-on-the-web@google.com</owner>
+  <description>
+    Recorded when the merchant trust side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Performance.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>agale@chromium.org</owner>
