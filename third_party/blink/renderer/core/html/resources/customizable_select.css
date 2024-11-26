@@ -13,7 +13,8 @@ select:not(:-internal-list-box) {
   color: -internal-appearance-auto-base-select(FieldText, inherit);
   background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
   border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), currentColor);
-  padding: -internal-appearance-auto-base-select(0, 0.25em);
+  padding-block: -internal-appearance-auto-base-select(0, 0.25em);
+  padding-inline: -internal-appearance-auto-base-select(0, 0.5em);
 
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
@@ -22,9 +23,15 @@ select:not(:-internal-list-box) {
    * default select option rules at some point. This should be re-evaluated
    * before StylableSelect is shipped. */
   min-inline-size: -internal-appearance-auto-base-select(auto, 24px);
-  /* The 1.2em here makes sure that options with no text still make the button
+  /* The 1lh here makes sure that options with no text still make the button
    * have the same height as options with text. */
-  min-block-size: -internal-appearance-auto-base-select(auto, max(24px, 1.2em));
+  min-block-size: -internal-appearance-auto-base-select(auto, max(24px, 1lh));
+
+  display: -internal-appearance-auto-base-select(inline-block, inline-flex);
+  gap: -internal-appearance-auto-base-select(initial, 0.5em);
+  border-radius: -internal-appearance-auto-base-select(0, 0.25em);
+
+  align-items: -internal-appearance-auto-base-select(center, unset);
 }
 
 select:not(:-internal-list-box) > button:first-child {
@@ -55,9 +62,8 @@ select::picker(select) {
 select:not(:-internal-list-box)::picker(select) {
   box-sizing: border-box;
   overflow: auto;
-  border: solid;
-  padding-block: 0.25em;
-  padding-inline: 0;
+  border: 1px solid;
+  padding: 0;
   color: CanvasText;
   background-color: Canvas;
   margin: 0;
@@ -99,9 +105,13 @@ select:not(:-internal-list-box) option {
    * default select option rules at some point. This should be re-evaluted
    * before CustomizableSelect is shipped. */
   min-inline-size: 24px;
-  min-block-size: max(24px, 1.2em);
-  align-content: center;
+  min-block-size: max(24px, 1lh);
   font-weight: -internal-appearance-auto-base-select(normal, inherit);
+  padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
+  padding-block-end: -internal-appearance-auto-base-select(1px, 0);
+  display: -internal-appearance-auto-base-select(block, flex);
+  place-items: center;
+  gap: 0.5em;
 }
 
 select:not(:-internal-list-box) option:enabled:hover {
@@ -146,26 +156,20 @@ select::-internal-select-autofill-preview-text {
 }
 
 select:not(-internal-list-box)::select-arrow {
+  content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
   /* We don't have to use -internal-appearance-auto-base-select() here because
    * the pseudo-element won't get generated unless the content property is set. */
-  padding-inline-start: 0.5em;
   display: block;
-}
-select:not(:-internal-list-box)::select-arrow {
-  content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
+  margin-inline-start: auto;
 }
 
-select:not(:-internal-list-box) optgroup {
-  padding-inline: 2px;
-}
 /* This can be merged with the :-internal-list-box rule in html.css */
 select:not(:-internal-list-box) optgroup option {
-  padding-inline-start: 20px;
+  padding-inline-start: -internal-appearance-auto-base-select(20px, 0.5em);
   font-weight: normal;
 }
 
-/* These styles are copied from optgroup's label attribute inline style properties */
 select:not(:-internal-list-box) optgroup legend {
-  padding: 0 2px 1px 2px;
-  min-height: 1.2em;
+  padding-inline: -internal-appearance-auto-base-select(2px, 0.5em);
+  min-block-size: -internal-appearance-auto-base-select(initial, 1lh);
 }

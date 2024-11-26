@@ -5,16 +5,10 @@
 .border {
   border: 2px solid green;
 }
-.optgroup {
-  padding-inline: 2px;
-}
-.optgroup-label {
-  padding: 0 2px 1px;
+/* TODO(crbug.com/379886419): Remove these proprietary styles */
+.customizable-select-legend {
+  padding: 0px 2px 1px;
   min-height: 1.2em;
-  font-weight: bolder;
-}
-.optgroup .customizable-select-option {
-  padding-inline-start: 20px;
 }
 </style>
 
@@ -23,8 +17,8 @@
 </div>
 <div id=popover popover=auto anchor=button class=customizable-select-popover>
   <div class="customizable-select-option selected">one</div>
-  <div class=optgroup>
-    <div class=optgroup-label>labelattribute</div>
+  <div class=customizable-select-optgroup>
+    <div class=customizable-select-legend>labelattribute</div>
     <div class=customizable-select-option>two</div>
     <div class=border>
       <div class=customizable-select-option>three</div>
