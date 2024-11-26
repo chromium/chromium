@@ -1986,6 +1986,10 @@ TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
 class PdfInkModuleMetricsTest : public PdfInkModuleUndoRedoTest {
  protected:
   static constexpr char kTypeMetric[] = "PDF.Ink2StrokeBrushType";
+  static constexpr char kPenSizeMetric[] = "PDF.Ink2StrokePenSize";
+  static constexpr char kHighlighterSizeMetric[] =
+      "PDF.Ink2StrokeHighlighterSize";
+  static constexpr char kEraserSizeMetric[] = "PDF.Ink2StrokeEraserSize";
 };
 
 TEST_F(PdfInkModuleMetricsTest, StrokeUndoRedoDoesNotAffectMetrics) {
@@ -1996,6 +2000,8 @@ TEST_F(PdfInkModuleMetricsTest, StrokeUndoRedoDoesNotAffectMetrics) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
+                                1);
 
   // Undo and redo.
   PerformUndo();
@@ -2003,6 +2009,119 @@ TEST_F(PdfInkModuleMetricsTest, StrokeUndoRedoDoesNotAffectMetrics) {
 
   // The metrics should stay the same.
   histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
+                                1);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  // Draw a stroke.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
+                                1);
+
+  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
+                                             /*color_b=*/130};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 1.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kPenSizeMetric,
+                               StrokeMetricBrushSize::kExtraThin, 1);
+  histograms.ExpectTotalCount(kPenSizeMetric, 2);
+
+  SelectBrushTool(PdfInkBrush::Type::kPen, 8.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kPenSizeMetric,
+                               StrokeMetricBrushSize::kExtraThick, 1);
+  histograms.ExpectTotalCount(kPenSizeMetric, 3);
+  histograms.ExpectTotalCount(kHighlighterSizeMetric, 0);
+  histograms.ExpectTotalCount(kEraserSizeMetric, 0);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  // Draw a stroke with medium size.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
+                                             /*color_b=*/130};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 8.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectUniqueSample(kHighlighterSizeMetric,
+                                StrokeMetricBrushSize::kMedium, 1);
+
+  // Draw a stroke with extra thin size.
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 4.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kHighlighterSizeMetric,
+                               StrokeMetricBrushSize::kExtraThin, 1);
+  histograms.ExpectTotalCount(kHighlighterSizeMetric, 2);
+
+  // Draw a stroke with extra thick size.
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 16.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kHighlighterSizeMetric,
+                               StrokeMetricBrushSize::kExtraThick, 1);
+  histograms.ExpectTotalCount(kPenSizeMetric, 0);
+  histograms.ExpectTotalCount(kHighlighterSizeMetric, 3);
+  histograms.ExpectTotalCount(kEraserSizeMetric, 0);
+}
+
+TEST_F(PdfInkModuleMetricsTest, StrokeBrushSizeEraser) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+  base::HistogramTester histograms;
+
+  // Draw a pen stroke. Draw an eraser stroke that erases it with medium size.
+  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
+                                             /*color_b=*/130};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+  SelectEraserToolOfSize(3.0f);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectUniqueSample(kEraserSizeMetric,
+                                StrokeMetricBrushSize::kMedium, 1);
+
+  // Draw a pen stroke. Draw an eraser stroke that erases it with extra thin
+  // size.
+  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+  SelectEraserToolOfSize(1.0f);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kEraserSizeMetric,
+                               StrokeMetricBrushSize::kExtraThin, 1);
+  histograms.ExpectTotalCount(kEraserSizeMetric, 2);
+
+  // Draw a pen stroke. Draw an eraser stroke that erases it with extra thick
+  // size.
+  SelectBrushTool(PdfInkBrush::Type::kPen, 3.0f, params);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+  SelectEraserToolOfSize(8.0f);
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kEraserSizeMetric,
+                               StrokeMetricBrushSize::kExtraThick, 1);
+
+  // There should be no visible strokes on the page. Draw an eraser stroke that
+  // does not erase any other strokes. The metric should stay the same.
+  ApplyStrokeWithMouseAtMouseDownPoint();
+
+  histograms.ExpectBucketCount(kEraserSizeMetric,
+                               StrokeMetricBrushSize::kExtraThick, 1);
+
+  histograms.ExpectTotalCount(kPenSizeMetric, 3);
+  histograms.ExpectTotalCount(kHighlighterSizeMetric, 0);
+  histograms.ExpectTotalCount(kEraserSizeMetric, 3);
 }
 
 TEST_F(PdfInkModuleMetricsTest, StrokeBrushType) {

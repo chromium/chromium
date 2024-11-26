@@ -15,6 +15,20 @@ namespace chrome_pdf {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(PDFInk2StrokeBrushSize)
+enum class StrokeMetricBrushSize {
+  kExtraThin = 0,
+  kThin = 1,
+  kMedium = 2,
+  kThick = 3,
+  kExtraThick = 4,
+  kMaxValue = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeBrushSize)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(PDFInk2StrokeBrushType)
 enum class StrokeMetricBrushType {
   kPen = 0,
@@ -24,9 +38,9 @@ enum class StrokeMetricBrushType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2StrokeBrushType)
 
-void ReportDrawStroke(PdfInkBrush::Type type);
+void ReportDrawStroke(PdfInkBrush::Type type, const ink::Brush& brush);
 
-void ReportEraseStroke();
+void ReportEraseStroke(float size);
 
 }  // namespace chrome_pdf
 

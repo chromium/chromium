@@ -536,7 +536,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
 
-  ReportDrawStroke(state.brush_type);
+  ReportDrawStroke(state.brush_type, GetDrawingBrush().ink_brush());
 
   // Reset `state` now that the stroke operation is done.
   state.inputs.clear();
@@ -608,7 +608,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
       client_->UpdateThumbnail(page_index);
     }
 
-    ReportEraseStroke();
+    ReportEraseStroke(eraser_size_);
   }
 
   // Reset `state` now that the erase operation is done.

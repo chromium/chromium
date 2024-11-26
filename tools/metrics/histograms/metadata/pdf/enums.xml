@@ -144,6 +144,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
 
+<!-- LINT.IfChange(PDFInk2StrokeBrushSize) -->
+
+<enum name="PDFInk2StrokeBrushSize">
+  <int value="0" label="ExtraThin"/>
+  <int value="1" label="Thin"/>
+  <int value="2" label="Medium"/>
+  <int value="3" label="Thick"/>
+  <int value="4" label="ExtraThick"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeBrushSize) -->
+
 <!-- LINT.IfChange(PDFInk2StrokeBrushType) -->
 
 <enum name="PDFInk2StrokeBrushType">
