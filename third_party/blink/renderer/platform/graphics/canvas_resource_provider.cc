@@ -820,7 +820,6 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kPassThrough,
                                info,
@@ -867,7 +866,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
-      base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSwapChain,
                                info,
@@ -1197,7 +1195,6 @@ CanvasResourceProvider::CreatePassThroughProvider(
     const SkImageInfo& info,
     cc::PaintFlags::FilterQuality filter_quality,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     CanvasResourceHost* resource_host) {
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
@@ -1229,8 +1226,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
   // fact that it simply delegates the internal parts of the resource to other
   // classes).
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
-      info, filter_quality, context_provider_wrapper, resource_dispatcher,
-      resource_host);
+      info, filter_quality, context_provider_wrapper, resource_host);
   CHECK(provider->IsValid());
   return provider;
 }
@@ -1241,7 +1237,6 @@ CanvasResourceProvider::CreateSwapChainProvider(
     cc::PaintFlags::FilterQuality filter_quality,
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     CanvasResourceHost* resource_host) {
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
@@ -1263,8 +1258,7 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      info, filter_quality, context_provider_wrapper, resource_dispatcher,
-      resource_host);
+      info, filter_quality, context_provider_wrapper, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

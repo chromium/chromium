@@ -181,7 +181,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       DCHECK(LowLatencyEnabled());
       provider = CanvasResourceProvider::CreatePassThroughProvider(
           resource_info, FilterQuality(),
-          SharedGpuContext::ContextProviderWrapper(), dispatcher, this);
+          SharedGpuContext::ContextProviderWrapper(), this);
     }
     if (!provider) {
       // If PassThrough failed, try a SharedImage with usage display enabled,
@@ -258,7 +258,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
         resource_info, FilterQuality(), kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), dispatcher, this);
+        SharedGpuContext::ContextProviderWrapper(), this);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
     // Concurrent Read and Write if possible.

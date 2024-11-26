@@ -141,7 +141,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const SkImageInfo& info,
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceDispatcher>,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
@@ -149,7 +148,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceDispatcher>,
       CanvasResourceHost* resource_host = nullptr);
 
   // Use Snapshot() for capturing a frame that is intended to be displayed via
