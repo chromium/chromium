@@ -8653,9 +8653,6 @@ crbug.com/378566925 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-image
 crbug.com/356930166 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-same-size.html [ Failure Pass Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Failure Pass Timeout ]
 
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.html [ Pass Timeout ]
-crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Pass Timeout ]
-
 # Gardener 2024-11-14
 crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-valid.html [ Failure Pass ]
 
