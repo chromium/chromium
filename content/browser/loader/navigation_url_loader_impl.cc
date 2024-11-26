@@ -1653,7 +1653,6 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
            /*is_download=*/false, factory_builder,
            /*factory_override=*/nullptr);
 
-  scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory;
   if (header_client) {
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
         CreateURLLoaderFactoryWithHeaderClient(std::move(header_client),
