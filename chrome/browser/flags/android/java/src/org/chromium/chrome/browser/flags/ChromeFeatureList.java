@@ -721,7 +721,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(TAB_STATE_FLAT_BUFFER, false);
     public static final CachedFlag sTabStripIncognitoMigration =
-            newCachedFlag(TAB_STRIP_INCOGNITO_MIGRATION, false);
+            newCachedFlag(
+                    TAB_STRIP_INCOGNITO_MIGRATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(
                     TAB_STRIP_LAYOUT_OPTIMIZATION,

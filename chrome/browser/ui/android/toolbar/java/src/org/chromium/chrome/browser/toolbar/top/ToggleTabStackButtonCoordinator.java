@@ -263,7 +263,10 @@ public class ToggleTabStackButtonCoordinator {
                                 R.string.iph_tab_switcher_switch_into_incognito_text,
                                 R.string.iph_tab_switcher_switch_into_incognito_accessibility_text);
             }
-        } else if (!mIsIncognitoSupplier.get()
+        }
+
+        if (builder == null
+                && !mIsIncognitoSupplier.get()
                 && mPromoShownOneshotSupplier.hasValue()
                 && !mPromoShownOneshotSupplier.get()) {
             builder =
