@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -49,19 +50,53 @@ class UnsizedVector {
 
 [[maybe_unused]] void StaticAsserts() {
   {
-    // A named local variable is more readable than std::declval<T>().
-    [[maybe_unused]] std::vector<int> v;
+    // Named local variables are more readable than std::declval<T>().
+    std::vector<int> v;
     static_assert(std::ranges::range<decltype(base::Reversed(v))>);
     static_assert(std::ranges::sized_range<decltype(base::Reversed(v))>);
+    // `base::Reversed()` takes a const ref to the vector, which is, by
+    // definition, a borrowed range.
+    static_assert(std::ranges::borrowed_range<decltype(base::Reversed(v))>);
+
+    auto make_vector = [] { return std::vector<int>(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(make_vector()))>);
+    static_assert(
+        std::ranges::sized_range<decltype(base::Reversed(make_vector()))>);
+    static_assert(
+        !std::ranges::borrowed_range<decltype(base::Reversed(make_vector()))>);
+  }
+
+  {
+    base::span<int> s;
+    static_assert(std::ranges::range<decltype(base::Reversed(s))>);
+    static_assert(std::ranges::sized_range<decltype(base::Reversed(s))>);
+    static_assert(std::ranges::borrowed_range<decltype(base::Reversed(s))>);
+
+    auto make_span = [] { return base::span<int>(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(make_span()))>);
+    static_assert(
+        std::ranges::sized_range<decltype(base::Reversed(make_span()))>);
+    static_assert(
+        std::ranges::borrowed_range<decltype(base::Reversed(make_span()))>);
   }
 
   {
     // A named local variable is more readable than std::declval<T>().
-    [[maybe_unused]] UnsizedVector v;
+    UnsizedVector v;
     static_assert(std::ranges::range<decltype(v)>);
     static_assert(!std::ranges::sized_range<decltype(v)>);
+
     static_assert(std::ranges::range<decltype(base::Reversed(v))>);
     static_assert(!std::ranges::sized_range<decltype(base::Reversed(v))>);
+    // `base::Reversed()` takes a const ref to the vector, which is, by
+    // definition, a borrowed range.
+    static_assert(std::ranges::borrowed_range<decltype(base::Reversed(v))>);
+
+    auto make_vector = [] { return UnsizedVector(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(make_vector()))>);
+    static_assert(
+        !std::ranges::sized_range<decltype(base::Reversed(make_vector()))>);
+    static_assert(!std::ranges::borrowed_range<decltype(make_vector())>);
   }
 }
 

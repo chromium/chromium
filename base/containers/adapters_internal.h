@@ -15,6 +15,16 @@
 #include "base/memory/raw_ptr_exclusion.h"
 
 namespace base::internal {
+template <typename Range>
+class ReversedAdapter;
+}  // namespace base::internal
+
+template <typename Range>
+inline constexpr bool
+    std::ranges::enable_borrowed_range<base::internal::ReversedAdapter<Range>> =
+        std::ranges::borrowed_range<Range>;
+
+namespace base::internal {
 
 // Internal adapter class for implementing base::Reversed.
 // TODO(crbug.com/378623811): Parts of this (e.g. the `size()` helper) should be
