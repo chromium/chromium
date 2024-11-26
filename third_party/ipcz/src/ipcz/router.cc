@@ -992,6 +992,7 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
   auto new_decaying_sublink =
       to_node_link.GetSublink(descriptor.new_decaying_sublink);
   if (!new_sublink) {
+    AcceptRouteDisconnectedFrom(LinkType::kPeripheralInward);
     Flush(kForceProxyBypassAttempt);
     return;
   }
