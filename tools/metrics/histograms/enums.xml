@@ -10905,6 +10905,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5200" label="CrossTopLevelSiteBlobURLNavigation"/>
   <int value="5201" label="GeolocationSucceeded"/>
   <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
+  <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

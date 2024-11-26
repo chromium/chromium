@@ -135,6 +135,13 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
       network::mojom::RequestDestination::kSharedWorker) {
     base::UmaHistogramBoolean("ServiceWorker.SharedWorkerScript.IsBlob",
                               resource_request.url.SchemeIsBlob());
+    if (resource_request.url.SchemeIsBlob() &&
+        navigation_handle->service_worker_client() &&
+        navigation_handle->service_worker_client()->controller()) {
+      navigation_handle->service_worker_client()->controller()->CountFeature(
+          blink::mojom::WebFeature::
+              kSharedWorkerScriptUnderServiceWorkerControlIsBlob);
+    }
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
