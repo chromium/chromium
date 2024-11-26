@@ -25,7 +25,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/suggestions_context.h"
+#include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/ui/suggestion.h"

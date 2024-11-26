@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/address_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 
 #include <optional>
 #include <string>

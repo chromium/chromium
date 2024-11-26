@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
-#include "components/autofill/core/browser/suggestions_context.h"
+#include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"

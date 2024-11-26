@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 
 #include <optional>
 #include <string>
@@ -1946,7 +1946,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   CreditCard server_card = CreateServerCard();
 
   const std::u16string obfuscated_number =
-      CreditCard::GetObfuscatedStringForCardDigits(/*obfuscation_length=*/2, u"1111");
+      CreditCard::GetObfuscatedStringForCardDigits(/*obfuscation_length=*/2,
+                                                   u"1111");
   const std::u16string name_full =
       server_card.GetRawInfo(CREDIT_CARD_NAME_FULL);
   const std::u16string exp_date =

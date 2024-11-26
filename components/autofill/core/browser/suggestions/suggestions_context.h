@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_CONTEXT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_CONTEXT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTIONS_CONTEXT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTIONS_CONTEXT_H_
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
@@ -54,4 +54,4 @@ struct SuggestionsContext {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_CONTEXT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTIONS_CONTEXT_H_
