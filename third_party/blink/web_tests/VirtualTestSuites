@@ -2705,6 +2705,8 @@
       "external/wpt/webnn/validation_tests/transpose.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/triangular.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/triangular.https.any.worker.html?gpu",
+      "external/wpt/webnn/validation_tests/unprintableNames.https.any.html?gpu",
+      "external/wpt/webnn/validation_tests/unprintableNames.https.any.worker.html?gpu",
       "external/wpt/webnn/validation_tests/where.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/where.https.any.worker.html?gpu"
     ],
@@ -3035,6 +3037,8 @@
       "external/wpt/webnn/validation_tests/transpose.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/triangular.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/triangular.https.any.worker.html?cpu",
+      "external/wpt/webnn/validation_tests/unprintableNames.https.any.html?cpu",
+      "external/wpt/webnn/validation_tests/unprintableNames.https.any.worker.html?cpu",
       "external/wpt/webnn/validation_tests/where.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/where.https.any.worker.html?cpu"
     ],
@@ -3363,6 +3367,8 @@
       "external/wpt/webnn/validation_tests/transpose.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/triangular.https.any.html?npu",
       "external/wpt/webnn/validation_tests/triangular.https.any.worker.html?npu",
+      "external/wpt/webnn/validation_tests/unprintableNames.https.any.html?npu",
+      "external/wpt/webnn/validation_tests/unprintableNames.https.any.worker.html?npu",
       "external/wpt/webnn/validation_tests/where.https.any.html?npu",
       "external/wpt/webnn/validation_tests/where.https.any.worker.html?npu"
     ],

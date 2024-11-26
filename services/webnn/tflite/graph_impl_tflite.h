@@ -49,6 +49,8 @@ class GraphImplTflite final : public WebNNGraphImpl {
   using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
 
   GraphImplTflite(ComputeResourceInfo compute_resource_info,
+                  base::flat_map<std::string, int> input_name_to_index,
+                  base::flat_map<std::string, int> output_name_to_index,
                   scoped_refptr<QueueableResourceState<ComputeResources>>
                       compute_resources_state,
                   ContextImplTflite* context);
@@ -62,6 +64,8 @@ class GraphImplTflite final : public WebNNGraphImpl {
 
   scoped_refptr<QueueableResourceState<ComputeResources>>
       compute_resources_state_;
+  base::flat_map<std::string, int> input_name_to_index_;
+  base::flat_map<std::string, int> output_name_to_index_;
   base::WeakPtrFactory<GraphImplTflite> weak_factory_{this};
 };
 

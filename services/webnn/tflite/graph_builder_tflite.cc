@@ -325,8 +325,23 @@ GetCoordinatesNDFromIndex(size_t flat_index,
 
 }  // namespace
 
+GraphBuilderTflite::Result::Result(
+    flatbuffers::DetachedBuffer buffer,
+    base::flat_map<std::string, int> input_name_to_index,
+    base::flat_map<std::string, int> output_name_to_index)
+    : buffer(std::move(buffer)),
+      input_name_to_index(std::move(input_name_to_index)),
+      output_name_to_index(std::move(output_name_to_index)) {}
+
+GraphBuilderTflite::Result::Result(Result&&) = default;
+
+GraphBuilderTflite::Result& GraphBuilderTflite::Result::operator=(Result&&) =
+    default;
+
+GraphBuilderTflite::Result::~Result() = default;
+
 // static
-base::expected<flatbuffers::DetachedBuffer, std::string>
+base::expected<GraphBuilderTflite::Result, std::string>
 GraphBuilderTflite::CreateAndBuild(
     ContextProperties context_properties,
     const mojom::GraphInfo& graph_info,
@@ -339,8 +354,8 @@ GraphBuilderTflite::CreateAndBuild(
     RETURN_IF_ERROR(builder.SerializeOperation(*operation));
   }
 
-  return builder.FinishAndTakeFlatBuffer(graph_info.input_operands,
-                                         graph_info.output_operands);
+  return builder.FinishAndTakeResult(graph_info.input_operands,
+                                     graph_info.output_operands);
 }
 
 // static
@@ -530,10 +545,12 @@ GraphBuilderTflite::~GraphBuilderTflite() = default;
 GraphBuilderTflite::TensorInfo::TensorInfo() = default;
 GraphBuilderTflite::TensorInfo::TensorInfo(int32_t index,
                                            ::tflite::TensorType data_type,
-                                           base::span<const int32_t> dimensions)
+                                           base::span<const int32_t> dimensions,
+                                           std::optional<std::string> name)
     : index(index),
       data_type(data_type),
-      dimensions(dimensions.begin(), dimensions.end()) {}
+      dimensions(dimensions.begin(), dimensions.end()),
+      name(std::move(name)) {}
 GraphBuilderTflite::TensorInfo::~TensorInfo() = default;
 
 GraphBuilderTflite::TensorInfo::TensorInfo(const TensorInfo&) = default;
@@ -580,7 +597,8 @@ GraphBuilderTflite::SerializeOperand(
   tensors_.emplace_back(::tflite::CreateTensor(builder_, std::move(dimensions),
                                                operand_type, buffer_index,
                                                operand_name, quantize_params));
-  TensorInfo tensor_info(tensor_index, operand_type, signed_operand_dimensions);
+  TensorInfo tensor_info(tensor_index, operand_type, signed_operand_dimensions,
+                         operand.name);
   operand_to_tensor_info_map_.insert({operand_id, tensor_info});
 
   return tensor_info;
@@ -930,26 +948,42 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
   return base::ok();
 }
 
-flatbuffers::DetachedBuffer GraphBuilderTflite::FinishAndTakeFlatBuffer(
+auto GraphBuilderTflite::FinishAndTakeResult(
     base::span<const uint64_t> input_operands,
-    base::span<const uint64_t> output_operands) {
+    base::span<const uint64_t> output_operands) -> Result {
   CHECK(!is_created_model_);
+
+  auto get_index = [&](uint64_t operand_id) {
+    return operand_to_tensor_info_map_.at(operand_id).index;
+  };
+
+  auto get_name_and_index = [&](uint64_t operand_id) {
+    const TensorInfo& info = operand_to_tensor_info_map_.at(operand_id);
+    CHECK(info.name.has_value() && !info.name.value().empty());
+    return std::make_pair(info.name.value(), info.index);
+  };
 
   int32_t* graph_input_ids = nullptr;
   auto graph_input_ids_index = builder_.CreateUninitializedVector<int32_t>(
       input_operands.size(), &graph_input_ids);
-  base::ranges::transform(
-      input_operands, graph_input_ids, [&](uint64_t operand_id) {
-        return operand_to_tensor_info_map_.at(operand_id).index;
-      });
+  base::ranges::transform(input_operands, graph_input_ids, get_index);
+
+  std::vector<std::pair<std::string, int>> input_name_to_index;
+  input_name_to_index.reserve(input_operands.size());
+  base::ranges::transform(input_operands,
+                          std::back_inserter(input_name_to_index),
+                          get_name_and_index);
 
   int32_t* graph_output_ids = nullptr;
   auto graph_output_ids_index = builder_.CreateUninitializedVector<int32_t>(
       output_operands.size(), &graph_output_ids);
-  base::ranges::transform(
-      output_operands, graph_output_ids, [&](uint64_t operand_id) {
-        return operand_to_tensor_info_map_.at(operand_id).index;
-      });
+  base::ranges::transform(output_operands, graph_output_ids, get_index);
+
+  std::vector<std::pair<std::string, int>> output_name_to_index;
+  output_name_to_index.reserve(output_operands.size());
+  base::ranges::transform(output_operands,
+                          std::back_inserter(output_name_to_index),
+                          get_name_and_index);
 
   // Insert the cast operator for the graph output operand after the unsupported
   // float16 inference operation.
@@ -982,7 +1016,8 @@ flatbuffers::DetachedBuffer GraphBuilderTflite::FinishAndTakeFlatBuffer(
   ::tflite::FinishModelBuffer(builder_, model_buffer);
   is_created_model_ = true;
 
-  return builder_.Release();
+  return {builder_.Release(), std::move(input_name_to_index),
+          std::move(output_name_to_index)};
 }
 
 uint32_t GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer) {

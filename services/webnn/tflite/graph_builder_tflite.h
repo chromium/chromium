@@ -55,13 +55,27 @@ class GraphBuilderTflite final {
   STACK_ALLOCATED();
 
  public:
+  struct Result {
+    Result(flatbuffers::DetachedBuffer buffer,
+           base::flat_map<std::string, int> input_name_to_index,
+           base::flat_map<std::string, int> output_name_to_index);
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+    Result(Result&&);
+    Result& operator=(Result&&);
+    ~Result();
+
+    flatbuffers::DetachedBuffer buffer;
+    base::flat_map<std::string, int> input_name_to_index;
+    base::flat_map<std::string, int> output_name_to_index;
+  };
+
   GraphBuilderTflite(const GraphBuilderTflite&) = delete;
   GraphBuilderTflite& operator=(const GraphBuilderTflite&) = delete;
 
   // Factory method that creates a GraphBuilderTflite and builds a TFLite
   // Flatbuffer Returns unexpected if it fails.
-  [[nodiscard]] static base::expected<flatbuffers::DetachedBuffer, std::string>
-  CreateAndBuild(
+  [[nodiscard]] static base::expected<Result, std::string> CreateAndBuild(
       ContextProperties context_properties,
       const mojom::GraphInfo& graph_info,
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
@@ -91,7 +105,8 @@ class GraphBuilderTflite final {
     TensorInfo();
     TensorInfo(int32_t index,
                ::tflite::TensorType data_type,
-               base::span<const int32_t> dimensions);
+               base::span<const int32_t> dimensions,
+               std::optional<std::string> name = std::nullopt);
     ~TensorInfo();
 
     // Copyable and movable.
@@ -103,6 +118,7 @@ class GraphBuilderTflite final {
     int32_t index;
     ::tflite::TensorType data_type;
     std::vector<int32_t> dimensions;
+    std::optional<std::string> name;
   };
 
   // Serialize tensor for input, constant and output operand and return the
@@ -629,9 +645,8 @@ class GraphBuilderTflite final {
 
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
-  flatbuffers::DetachedBuffer FinishAndTakeFlatBuffer(
-      base::span<const uint64_t> input_operands,
-      base::span<const uint64_t> output_operands);
+  Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
+                             base::span<const uint64_t> output_operands);
 
   const ContextProperties context_properties_;
 
