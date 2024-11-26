@@ -357,6 +357,10 @@ void CollaborationController::TransitionTo(StateId state,
   current_state_->OnEnter(error);
 }
 
+void CollaborationController::PromoteCurrentSession() {
+  delegate_->PromoteCurrentScreen();
+}
+
 void CollaborationController::Exit() {
   current_state_->OnExit();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

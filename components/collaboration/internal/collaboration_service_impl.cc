@@ -62,8 +62,8 @@ void CollaborationServiceImpl::StartJoinFlow(
   }
 
   if (join_controllers_.contains(token)) {
-    // TODO(crbug.com/345856704): Find the controller, and tell the controller
-    // to promote the current screen.
+    auto it = join_controllers_.find(token);
+    it->second->PromoteCurrentSession();
     return;
   }
 

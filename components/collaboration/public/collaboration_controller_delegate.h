@@ -72,6 +72,9 @@ class CollaborationControllerDelegate {
 
   // Open the local tab group in UI.
   virtual void PromoteTabGroup(ResultCallback result) = 0;
+
+  // Focus the UI screen associated with the current delegate instance.
+  virtual void PromoteCurrentScreen() = 0;
 };
 
 }  // namespace collaboration

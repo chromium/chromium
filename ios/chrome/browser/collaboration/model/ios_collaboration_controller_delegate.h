@@ -34,6 +34,7 @@ class IOSCollaborationControllerDelegate
                       ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
   void PromoteTabGroup(ResultCallback result) override;
+  void PromoteCurrentScreen() override;
 
  private:
   std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow_;

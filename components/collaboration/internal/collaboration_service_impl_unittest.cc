@@ -147,11 +147,14 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   // New join flow will be appended with a valid url parsing.
   EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
       .WillRepeatedly(Return(base::ok(token)));
-  service_->StartJoinFlow(
-      std::make_unique<MockCollaborationControllerDelegate>(), url);
+  std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
+      std::make_unique<MockCollaborationControllerDelegate>();
+  EXPECT_CALL(*mock_delegate, PromoteCurrentScreen());
+  service_->StartJoinFlow(std::move(mock_delegate), url);
   EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);
 
-  // Existing join flow should not start new flow.
+  // Existing join flow should not start a new flow and should promote the
+  // existing flow's delegate.
   service_->StartJoinFlow(
       std::make_unique<MockCollaborationControllerDelegate>(), url);
   EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);

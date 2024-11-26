@@ -132,4 +132,8 @@ void IOSCollaborationControllerDelegate::PromoteTabGroup(
   // TODO(crbug.com/377306986): Implement this.
 }
 
+void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
+  // TODO(crbug.com/377306986): Implement this.
+}
+
 }  // namespace collaboration

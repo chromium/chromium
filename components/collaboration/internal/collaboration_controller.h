@@ -105,6 +105,9 @@ class CollaborationController {
           CollaborationControllerDelegate::ErrorInfo(
               CollaborationControllerDelegate::ErrorInfo::Type::kUnknown));
 
+  // Called to refocus the current flow.
+  void PromoteCurrentSession();
+
   // Called when the flow is finished to exit and clean itself up in the
   // service.
   void Exit();

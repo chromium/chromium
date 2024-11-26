@@ -133,7 +133,8 @@ bool operator==(const GroupToken& lhs, const GroupToken& rhs) {
 }
 
 bool operator<(const GroupToken& lhs, const GroupToken& rhs) {
-  return lhs.group_id < rhs.group_id;
+  return std::tie(lhs.group_id, lhs.access_token) <
+         std::tie(rhs.group_id, rhs.access_token);
 }
 
 }  // namespace data_sharing
