@@ -229,9 +229,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             // depend on the value of the "Save and fill payment methods" toggle, since we would
             // like to allow the user to delete saved CVCs even when the toggle is disabled.
             // Conditionally show the deletion button based on whether there are any CVCs stored.
-            if (personalDataManager.getCreditCardsForSettings().stream()
-                    .anyMatch(card -> !card.getCvc().isEmpty())) {
-                createDeleteSavedCvcsButton();
+            for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
+                if (!card.getCvc().isEmpty()) {
+                    createDeleteSavedCvcsButton();
+                    break;
+                }
             }
         }
 

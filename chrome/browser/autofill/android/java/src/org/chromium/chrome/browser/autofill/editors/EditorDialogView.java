@@ -56,7 +56,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The editor dialog. Can be used for editing contact information, shipping address, billing
@@ -579,10 +578,11 @@ public class EditorDialogView extends AlwaysDismissedDialog
                 () -> {
                     List<FieldView> invalidViews = new ArrayList<>();
                     if (mValidateOnShow) {
-                        invalidViews =
-                                mFieldViews.stream()
-                                        .filter(view -> !view.validate())
-                                        .collect(Collectors.toList());
+                        for (FieldView view : mFieldViews) {
+                            if (!view.validate()) {
+                                invalidViews.add(view);
+                            }
+                        }
                     }
 
                     // If TalkBack is enabled, we want to keep the focus at the top
