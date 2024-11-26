@@ -373,6 +373,13 @@ void DigitalIdentityRequestImpl::Request(
                      std::move(*request_to_send)));
 }
 
+void DigitalIdentityRequestImpl::Create(
+    blink::mojom::DigitalCredentialRequestPtr digital_credential_request,
+    CreateCallback callback) {
+  // TODO(crbug.com/378330032): implement this method.
+  return;
+}
+
 void DigitalIdentityRequestImpl::Abort() {
   if (!callback_) {
     // Renderer sent abort request after the browser sent the callback but

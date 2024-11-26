@@ -56,6 +56,11 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   void Request(std::vector<blink::mojom::DigitalCredentialProviderPtr>
                    digital_credential_providers,
                RequestCallback) override;
+
+  void Create(
+      blink::mojom::DigitalCredentialRequestPtr digital_credential_request,
+      CreateCallback) override;
+
   void Abort() override;
 
  private:

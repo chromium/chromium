@@ -14,6 +14,12 @@ struct DigitalCredentialProvider {
   string? request;
 };
 
+// The specification of the request to digital credentials.
+struct DigitalCredentialRequest {
+  string protocol;
+  string data;
+};
+
 // Represents the fetch result from a digital identity request. It is
 // used to determine whether a JavaScript exception should be thrown, and what
 // the error message of such exception should say.
@@ -39,6 +45,19 @@ interface DigitalIdentityRequest {
   // Does not support concurrent requests. Throws an error on a new request if
   // there is a pending request.
   Request(array<DigitalCredentialProvider> digital_credential_providers) =>
+      (RequestDigitalIdentityStatus status,
+      string? protocol,
+      string? token);
+
+  // Requests a token to be generated, given a DigitalCredentialRequest.
+  // Returns:
+  // - Status of the request.
+  // - Raw content of the token.
+  // - Protocol of the selected provider.
+  //
+  // Does not support concurrent requests. Throws an error on a new request if
+  // there is a pending request.
+  Create(DigitalCredentialRequest digital_credential_request) =>
       (RequestDigitalIdentityStatus status,
       string? protocol,
       string? token);

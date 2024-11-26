@@ -1259,9 +1259,9 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
 
-  if (IsDigitalIdentityCredentialType(*options) &&
-      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
-          resolver->GetExecutionContext())) {
+  if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+          resolver->GetExecutionContext()) &&
+      IsDigitalIdentityCredentialType(*options)) {
     DiscoverDigitalIdentityCredentialFromExternalSource(resolver, *options,
                                                         exception_state);
     return promise;
@@ -1637,6 +1637,14 @@ AuthenticationCredentialsContainer::create(
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
   auto promise = resolver->Promise();
+
+  if (RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
+          resolver->GetExecutionContext()) &&
+      IsDigitalIdentityCredentialType(*options)) {
+    CreateDigitalIdentityCredentialInExternalSource(resolver, *options,
+                                                    exception_state);
+    return promise;
+  }
 
   RequiredOriginType required_origin_type;
   if (IsForPayment(options, resolver->GetExecutionContext())) {
