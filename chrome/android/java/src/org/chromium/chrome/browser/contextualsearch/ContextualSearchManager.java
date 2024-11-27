@@ -453,13 +453,6 @@ public class ContextualSearchManager
         return mSelectionController.getBaseWebContents();
     }
 
-    /** @return The Base Page's {@link GURL}. */
-    private @Nullable GURL getBasePageURL() {
-        WebContents baseWebContents = mSelectionController.getBaseWebContents();
-        if (baseWebContents == null) return null;
-        return baseWebContents.getVisibleUrl();
-    }
-
     /** Notifies that the base page has started loading a page. */
     public void onBasePageLoadStarted() {
         mSelectionController.onBasePageLoadStarted();

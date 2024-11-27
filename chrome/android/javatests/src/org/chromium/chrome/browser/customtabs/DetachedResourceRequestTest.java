@@ -670,10 +670,6 @@ public class DetachedResourceRequestTest {
         return prepareSession(ORIGIN, null);
     }
 
-    private CustomTabsSessionToken prepareSession(Uri origin) throws Exception {
-        return prepareSession(origin, null);
-    }
-
     private CustomTabsSessionToken prepareSession(Uri origin, CustomTabsCallback callback)
             throws Exception {
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(callback).session;
@@ -773,10 +769,6 @@ public class DetachedResourceRequestTest {
             }
         }
 
-        public void waitForRequest() throws TimeoutException {
-            mRequestedWaiter.waitForOnly();
-        }
-
         public void waitForRequest(int currentCallCount, int numberOfCallsToWaitFor)
                 throws TimeoutException {
             mRequestedWaiter.waitForCallback(currentCallCount, numberOfCallsToWaitFor);
@@ -785,10 +777,6 @@ public class DetachedResourceRequestTest {
         public void waitForRequest(int currentCount, int expectCount, int timeout, TimeUnit unit)
                 throws TimeoutException {
             mRequestedWaiter.waitForCallback(currentCount, expectCount, timeout, unit);
-        }
-
-        public void waitForCompletion() throws TimeoutException {
-            mCompletionWaiter.waitForOnly();
         }
 
         public void waitForCompletion(int currentCallCount, int numberOfCallsToWaitFor)

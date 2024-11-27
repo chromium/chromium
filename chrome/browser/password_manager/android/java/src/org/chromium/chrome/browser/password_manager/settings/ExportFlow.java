@@ -139,24 +139,6 @@ public class ExportFlow implements ExportFlowInterface {
     @VisibleForTesting public static final int PROGRESS_HIDDEN_DIRECTLY = 1;
     @VisibleForTesting public static final int PROGRESS_HIDDEN_DELAYED = 2;
 
-    /**
-     * Converts a {@link DialogManager.HideActions} value to a value for the
-     * "PasswordManager.Android.ExportPasswordsProgressBarUsage" histogram.
-     */
-    private int actionToHistogramValue(@DialogManager.HideActions int action) {
-        switch (action) {
-            case DialogManager.HideActions.NO_OP:
-                return PROGRESS_NOT_SHOWN;
-            case DialogManager.HideActions.HIDDEN_IMMEDIATELY:
-                return PROGRESS_HIDDEN_DIRECTLY;
-            case DialogManager.HideActions.HIDING_DELAYED:
-                return PROGRESS_HIDDEN_DELAYED;
-        }
-        // All cases should be covered by the above switch statement.
-        assert false;
-        return PROGRESS_NOT_SHOWN;
-    }
-
     // Takes care of displaying and hiding the progress bar for exporting, while avoiding
     // flickering.
     private final DialogManager mProgressBarManager = new DialogManager(null);

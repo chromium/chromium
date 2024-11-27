@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -35,7 +34,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -361,14 +359,6 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
     private void onEditClicked(View v) {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditBookmark");
         BookmarkUtils.startEditActivity(mContext, mBookmarkId);
-        mCloseRunnable.run();
-    }
-
-    private void onFolderSelectClicked() {
-        RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
-        BookmarkUtils.startFolderPickerActivity(mContext, mBookmarkId);
-        TrackerFactory.getTrackerForProfile(mProfile)
-                .notifyEvent(EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
         mCloseRunnable.run();
     }
 

@@ -169,10 +169,6 @@ public class IncognitoTabLauncherTest {
         return intent;
     }
 
-    private void assertNonIncognitoTabLaunched(ChromeTabbedActivity activity) {
-        Assert.assertFalse(activity.getTabModelSelector().isIncognitoSelected());
-    }
-
     private void assertIncognitoTabLaunched(
             ChromeTabbedActivity activity, boolean isUrlBarFocused) {
         Assert.assertTrue(activity.getTabModelSelector().isIncognitoSelected());

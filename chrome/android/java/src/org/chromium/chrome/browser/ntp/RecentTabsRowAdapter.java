@@ -53,7 +53,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -1098,10 +1097,5 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     @Override
     public int getChildTypeCount() {
         return ChildType.NUM_ENTRIES;
-    }
-
-    /** Retrieves the user's preferred locale from the app's configurations. */
-    private Locale getPreferredLocale() {
-        return mActivity.getResources().getConfiguration().getLocales().get(0);
     }
 }

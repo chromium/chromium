@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.bookmarks;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -204,11 +203,6 @@ public class BookmarkFolderPickerActivityTest {
         CriteriaHelper.pollUiThread(
                 () -> ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED,
                 "Timed out waiting for activity to enter the RESUMED state.");
-    }
-
-    // Clicks the "Go back" button in the selectable list layout.
-    private void clickToolbarBackButton() {
-        onView(withContentDescription("Navigate up")).perform(click());
     }
 
     private void verifyBookmarkMoved(

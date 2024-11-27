@@ -21,7 +21,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
@@ -884,33 +883,6 @@ public class NewTabPage
                 "NewTabPage.TimeSpent",
                 (System.nanoTime() - mLastShownTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND);
         SuggestionsMetrics.recordSurfaceHidden();
-    }
-
-    /**
-     * Returns an arbitrary int value stored in the last committed navigation entry. If some step
-     * fails then the default is returned instead.
-     *
-     * @param key The string previously used to tag this piece of data.
-     * @param tab A tab that is used to access the NavigationController and the NavigationEntry
-     *     extras.
-     * @param defaultValue The value to return if lookup or parsing is unsuccessful.
-     * @return The value for the given key.
-     *     <p>TODO(crbug.com/40618119): Refactor this to be reusable across NativePage components.
-     */
-    private static int getIntFromNavigationEntry(String key, Tab tab, int defaultValue) {
-        if (tab.getWebContents() == null) return defaultValue;
-
-        String stringValue = getStringFromNavigationEntry(tab, key);
-        if (stringValue == null || stringValue.isEmpty()) {
-            return RecyclerView.NO_POSITION;
-        }
-
-        try {
-            return Integer.parseInt(stringValue);
-        } catch (NumberFormatException e) {
-            Log.w(TAG, "Bad data found for %s : %s", key, stringValue, e);
-            return RecyclerView.NO_POSITION;
-        }
     }
 
     /**

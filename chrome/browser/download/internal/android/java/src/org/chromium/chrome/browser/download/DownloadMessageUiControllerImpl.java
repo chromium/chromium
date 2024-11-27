@@ -38,7 +38,6 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -238,13 +237,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public int completed;
         // Download is blocked, each blocked downloaded is also counted in failed.
         public int blocked;
-
-        /**
-         * @return The total number of downloads being tracked.
-         */
-        public int totalCount() {
-            return inProgress + pending + failed + completed;
-        }
 
         public int getCountForResultState(@ResultState int state) {
             switch (state) {
@@ -498,10 +490,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     private MessageDispatcher getMessageDispatcher() {
         return mDelegate.getMessageDispatcher();
-    }
-
-    private ModalDialogManager getModalDialogManager() {
-        return mDelegate.getModalDialogManager();
     }
 
     private boolean isVisibleToUser(OfflineItem offlineItem) {

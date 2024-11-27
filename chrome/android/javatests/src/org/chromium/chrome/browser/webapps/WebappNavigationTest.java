@@ -6,10 +6,6 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.base.ApplicationState.HAS_DESTROYED_ACTIVITIES;
-import static org.chromium.base.ApplicationState.HAS_PAUSED_ACTIVITIES;
-import static org.chromium.base.ApplicationState.HAS_STOPPED_ACTIVITIES;
-
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -33,7 +29,6 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -500,17 +495,5 @@ public class WebappNavigationTest {
     private void addAnchorAndClick(String url, String target) throws Exception {
         addAnchor("testId", url, target);
         clickNodeWithId("testId");
-    }
-
-    private void waitForExternalAppOrIntentPicker() {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            ApplicationStatus.getStateForApplication(),
-                            Matchers.isOneOf(
-                                    HAS_PAUSED_ACTIVITIES,
-                                    HAS_STOPPED_ACTIVITIES,
-                                    HAS_DESTROYED_ACTIVITIES));
-                });
     }
 }

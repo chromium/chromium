@@ -139,6 +139,7 @@ public class MimeTypeUtilsTest {
     }
 
     @Implements(MimeTypeUtils.class)
+    @SuppressWarnings("UnusedMethod") // Error Prone does not know about shadows.
     private static class ShadowMimeTypeUtilsForT {
         @Implementation
         public static boolean useExternalStoragePermission() {

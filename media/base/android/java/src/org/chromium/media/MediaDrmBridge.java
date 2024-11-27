@@ -77,8 +77,6 @@ public class MediaDrmBridge {
     // systems.
     private static final UUID WIDEVINE_UUID =
             UUID.fromString("edef8ba9-79d6-4ace-a3c8-27dcd51d21ed");
-    private static final UUID CLEARKEY_UUID =
-            UUID.fromString("e2719d58-a985-b3c9-781a-b030af78d30e");
 
     // On Android L and before, MediaDrm doesn't support KeyStatus at all. On later Android
     // versions, key IDs are not available on sessions where getKeyRequest() has been called with
@@ -267,10 +265,6 @@ public class MediaDrmBridge {
 
     private boolean isWidevine() {
         return mKeySystemUuid.equals(WIDEVINE_UUID);
-    }
-
-    private boolean isClearKey() {
-        return mKeySystemUuid.equals(CLEARKEY_UUID);
     }
 
     private MediaDrmBridge(

@@ -5,7 +5,6 @@
 package org.chromium.media;
 
 import android.annotation.SuppressLint;
-import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCrypto;
@@ -982,24 +981,6 @@ class MediaCodecBridge {
             Log.e(TAG, "Cannot configure the audio codec", e);
         }
         return false;
-    }
-
-    @SuppressWarnings("deprecation")
-    private int getAudioFormat(int channelCount) {
-        switch (channelCount) {
-            case 1:
-                return AudioFormat.CHANNEL_OUT_MONO;
-            case 2:
-                return AudioFormat.CHANNEL_OUT_STEREO;
-            case 4:
-                return AudioFormat.CHANNEL_OUT_QUAD;
-            case 6:
-                return AudioFormat.CHANNEL_OUT_5POINT1;
-            case 8:
-                return AudioFormat.CHANNEL_OUT_7POINT1_SURROUND;
-            default:
-                return AudioFormat.CHANNEL_OUT_DEFAULT;
-        }
     }
 
     @CalledByNative

@@ -15,11 +15,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
@@ -56,10 +54,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -74,7 +70,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
-import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactoryJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -103,9 +98,6 @@ import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
-import org.chromium.components.optimization_guide.OptimizationGuideDecision;
-import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
-import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -113,7 +105,6 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1178,52 +1169,6 @@ public class TabListViewHolderTest {
         Bitmap image = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         Resources resources = ContextUtils.getApplicationContext().getResources();
         return new BitmapDrawable(resources, image);
-    }
-
-    private void mockCurrencyFormatter() {
-        doAnswer(
-                        new Answer<String>() {
-                            @Override
-                            public String answer(InvocationOnMock invocation) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(USD_CURRENCY_SYMBOL);
-                                sb.append(invocation.getArguments()[2]);
-                                return sb.toString();
-                            }
-                        })
-                .when(mCurrencyFormatterJniMock)
-                .format(anyLong(), any(CurrencyFormatter.class), anyString());
-    }
-
-    private void mockUrlUtilities() {
-        doAnswer(
-                        new Answer<String>() {
-                            @Override
-                            public String answer(InvocationOnMock invocation) {
-                                return (String) invocation.getArguments()[0];
-                            }
-                        })
-                .when(mUrlUtilitiesJniMock)
-                .escapeQueryParamValue(anyString(), anyBoolean());
-    }
-
-    private void mockOptimizationGuideResponse(
-            @OptimizationGuideDecision int decision, Any metadata) {
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) {
-                                OptimizationGuideCallback callback =
-                                        (OptimizationGuideCallback) invocation.getArguments()[2];
-                                callback.onOptimizationGuideDecision(decision, metadata);
-                                return null;
-                            }
-                        })
-                .when(mOptimizationGuideBridge)
-                .canApplyOptimization(
-                        any(GURL.class),
-                        any(HintsProto.OptimizationType.class),
-                        any(OptimizationGuideCallback.class));
     }
 
     @After

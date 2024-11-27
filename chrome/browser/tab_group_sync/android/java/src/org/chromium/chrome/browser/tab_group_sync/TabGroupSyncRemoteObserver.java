@@ -11,7 +11,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -132,8 +131,4 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     @Override
     public void onTabGroupLocalIdChanged(
             String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
-
-    private TabModel getTabModel() {
-        return mTabGroupModelFilter.getTabModel();
-    }
 }

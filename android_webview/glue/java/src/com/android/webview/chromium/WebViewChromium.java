@@ -3644,6 +3644,7 @@ class WebViewChromium
         }
 
         // @Override
+        @SuppressWarnings("UnusedMethod")
         public boolean super_onHoverEvent(MotionEvent event) {
             return mWebViewPrivate.super_onHoverEvent(event);
         }

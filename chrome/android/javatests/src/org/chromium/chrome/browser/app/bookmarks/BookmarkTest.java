@@ -2087,11 +2087,6 @@ public class BookmarkTest {
                                 mBookmarkModel.getDefaultBookmarkFolder(), 0, title));
     }
 
-    private BookmarkId addFolder(final String title, BookmarkId parent) throws ExecutionException {
-        BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
-        return runOnUiThreadBlocking(() -> mBookmarkModel.addFolder(parent, 0, title));
-    }
-
     private void removeBookmark(final BookmarkId bookmarkId) {
         runOnUiThreadBlocking(() -> mBookmarkModel.deleteBookmark(bookmarkId));
     }

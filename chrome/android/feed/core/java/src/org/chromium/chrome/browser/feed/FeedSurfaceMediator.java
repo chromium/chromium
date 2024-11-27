@@ -1295,13 +1295,6 @@ public class FeedSurfaceMediator
         }
     }
 
-    private FeedScrollState getScrollStateForAutoScrollToTop() {
-        FeedScrollState state = new FeedScrollState();
-        state.position = 1;
-        state.lastPosition = 5;
-        return state;
-    }
-
     // Detects animation finishes in RecyclerView.
     // https://stackoverflow.com/questions/33710605/detect-animation-finish-in-androids-recyclerview
     private class RecyclerViewAnimationFinishDetector

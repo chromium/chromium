@@ -454,15 +454,6 @@
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
       </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
-        Forget this site?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialog which deletes stored information displayed in page info.">
-        Are you sure you want to reset permissions, and delete cookies and site data?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
-        Forget
-      </message>
       <message name="IDS_PAGE_INFO_HISTORY_TITLE" desc="Label used in the Page Info dialog above the history list.">
         History
       </message>

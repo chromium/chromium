@@ -418,13 +418,6 @@ public class RenderTestRule extends TestWatcher {
         return String.format("%s.%s.rev_%s", testClass, desc, mSkiaGoldRevision);
     }
 
-    /**
-     * Returns a string encoding the device model and sdk. It is used to identify device goldens.
-     */
-    private static String modelSdkIdentifier() {
-        return Build.MODEL.replace(' ', '_') + "-" + Build.VERSION.SDK_INT;
-    }
-
     /** Saves a the given |bitmap| to the |file|. */
     private static void saveBitmap(Bitmap bitmap, File file) throws IOException {
         FileOutputStream out = new FileOutputStream(file);

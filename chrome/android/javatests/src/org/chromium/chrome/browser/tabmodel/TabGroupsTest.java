@@ -488,15 +488,4 @@ public class TabGroupsTest {
                 });
         return tabs;
     }
-
-    private List<Integer> getCurrentTabIds() {
-        List<Integer> tabIds = new ArrayList<>();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (int i = 0; i < mTabModel.getCount(); i++) {
-                        tabIds.add(mTabModel.getTabAt(i).getId());
-                    }
-                });
-        return tabIds;
-    }
 }

@@ -119,10 +119,6 @@ public class SaveBitmapDelegateTest {
             super(context, /* trackOcclusion= */ true);
         }
 
-        public void setPermissionResults(int result) {
-            mPermissionResult = result;
-        }
-
         public void setHasPermission(boolean hasPermission) {
             mHasPermission = hasPermission;
         }

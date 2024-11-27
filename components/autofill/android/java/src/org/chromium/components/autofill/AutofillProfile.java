@@ -24,6 +24,7 @@ import java.util.Map;
  * {@link VerificationStatus.USER_VERIFIED} status.
  */
 @JNINamespace("autofill")
+@SuppressWarnings("UnusedMethod") // Some of private getters are unused, but exist for completeness.
 public class AutofillProfile {
     private String mGUID;
     private @RecordType int mRecordType;

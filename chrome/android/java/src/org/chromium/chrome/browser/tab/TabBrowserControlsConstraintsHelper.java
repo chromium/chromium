@@ -32,8 +32,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private long mNativeTabBrowserControlsConstraintsHelper; // Lazily initialized in |update|
     private BrowserControlsVisibilityDelegate mVisibilityDelegate;
 
-    private @BrowserControlsState int mPreviousConstraints;
-
     // These OffsetTags are used in:
     //   - Browser, to tag the layers that move with top controls to be moved by viz.
     //   - Renderer, to tag the corresponding scroll offset in the compositor frame's metadata.
@@ -106,11 +104,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private TabBrowserControlsConstraintsHelper(Tab tab) {
         mOffsetTags = new BrowserControlsOffsetTagsInfo(null, null, null);
         mTab = (TabImpl) tab;
-        mConstraintsChangedCallback =
-                (constraints) -> {
-                    updateEnabledState();
-                    mPreviousConstraints = constraints;
-                };
+        mConstraintsChangedCallback = unused_constraints -> updateEnabledState();
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @Override
@@ -200,10 +194,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     private boolean isStateForced(int state) {
         return state == BrowserControlsState.HIDDEN || state == BrowserControlsState.SHOWN;
-    }
-
-    private boolean wasPreviousStateForced() {
-        return isStateForced(mPreviousConstraints);
     }
 
     private void updateEnabledState() {

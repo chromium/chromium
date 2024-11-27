@@ -269,12 +269,6 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         }
     }
 
-    private boolean isVisible() {
-        // Consider layer visible even during its transition.
-        return mModel.get(Properties.VISIBILITY) == VisibilityState.VISIBLE
-                || mModel.get(Properties.VISIBILITY) == VisibilityState.SHOWING;
-    }
-
     // Implements BottomControlsStacker.BottomControlsLayer
 
     @Override

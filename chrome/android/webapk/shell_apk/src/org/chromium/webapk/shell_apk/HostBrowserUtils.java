@@ -140,12 +140,4 @@ public class HostBrowserUtils {
                 packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY);
         return WebApkUtils.getComponentNameFromResolveInfo(resolveInfo);
     }
-
-    /** Deletes the internal storage for the given context. */
-    private static void deleteInternalStorage(Context context) {
-        DexLoader.deletePath(context.getCacheDir());
-        DexLoader.deletePath(context.getFilesDir());
-        DexLoader.deletePath(
-                context.getDir(HostBrowserClassLoader.DEX_DIR_NAME, Context.MODE_PRIVATE));
-    }
 }

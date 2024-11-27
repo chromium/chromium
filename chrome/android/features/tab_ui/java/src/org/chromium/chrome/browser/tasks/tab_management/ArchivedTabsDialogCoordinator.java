@@ -727,10 +727,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mIphMessagePropertyModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, ss);
     }
 
-    private boolean shouldShowIph() {
-        return true;
-    }
-
     // SnackbarManageable implementation.
 
     @Override

@@ -589,22 +589,6 @@ public class ChildProcessLauncherHelperTest {
                 });
     }
 
-    private static void stopProcesses(ChildProcessLauncherHelperImpl... launcherHelpers) {
-        final int[] pids = new int[launcherHelpers.length];
-        for (int i = 0; i < launcherHelpers.length; i++) {
-            pids[i] = getPid(launcherHelpers[i]);
-        }
-        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int pid : pids) {
-                            ChildProcessLauncherHelperImpl.stop(pid);
-                        }
-                    }
-                });
-    }
-
     private static int getPid(final ChildProcessLauncherHelperImpl launcherHelper) {
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                 new Callable<Integer>() {

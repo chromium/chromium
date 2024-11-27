@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
@@ -22,7 +21,6 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private final BookmarkModel mBookmarkModel;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
-    private final ShoppingService mShoppingService;
 
     /**
      * @param bookmarkModel The underlying source of bookmark data.
@@ -30,11 +28,9 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
      */
     public BasicBookmarkQueryHandler(
             BookmarkModel bookmarkModel,
-            BookmarkUiPrefs bookmarkUiPrefs,
-            ShoppingService shoppingService) {
+            BookmarkUiPrefs bookmarkUiPrefs) {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
-        mShoppingService = shoppingService;
     }
 
     @Override
@@ -127,21 +123,5 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         } else {
             return PowerBookmarkType.UNKNOWN;
         }
-    }
-
-    private boolean isBookmarkMetaSubscribed(PowerBookmarkMeta powerBookmarkMeta) {
-        if (mShoppingService == null
-                || powerBookmarkMeta == null
-                || !powerBookmarkMeta.hasShoppingSpecifics()
-                || !powerBookmarkMeta.getShoppingSpecifics().hasProductClusterId()) {
-            return false;
-        }
-
-        // TODO(b:326440332): Ideally this uses PriceTrackingUtils.IsBookmarkPriceTracked,
-        //                    but the UI does not currently support async updates which is
-        //                    required by that api.
-        return mShoppingService.isSubscribedFromCache(
-                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(
-                        powerBookmarkMeta));
     }
 }

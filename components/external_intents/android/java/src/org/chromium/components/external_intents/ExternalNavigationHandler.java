@@ -68,7 +68,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -2540,25 +2539,6 @@ public class ExternalNavigationHandler {
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
         return UrlUtilitiesJni.get().isGoogleSearchUrl(referrerUrl.getSpec());
-    }
-
-    private boolean isInitiatorOriginGoogleReferrer(ExternalNavigationParams params) {
-        Origin initiatorOrigin = params.getInitiatorOrigin();
-        String url =
-                String.format(
-                        "%s://%s:%s",
-                        initiatorOrigin.getScheme(),
-                        initiatorOrigin.getHost(),
-                        initiatorOrigin.getPort());
-        return UrlUtilitiesJni.get().isGoogleSubDomainUrl(url);
-    }
-
-    @Deprecated
-    private boolean isLastCommittedUrlGoogleReferrer() {
-        GURL referrerUrl = getLastCommittedUrl();
-        if (referrerUrl == null || referrerUrl.isEmpty()) return false;
-
-        return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl.getSpec());
     }
 
     /** @return whether this navigation is a redirect from an intent. */

@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.hardware.biometrics.BiometricManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -20,7 +18,6 @@ import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
@@ -480,29 +477,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         } else {
             pref.setSummary(R.string.payment_no_apps_summary);
             pref.setEnabled(false);
-        }
-    }
-
-    private boolean isBiometricAvailable() {
-        // Only Android versions 9 and above are supported.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            return false;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            BiometricManager biometricManager =
-                    getStyledContext().getSystemService(BiometricManager.class);
-            return biometricManager != null
-                    && biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
-        } else {
-            // For API level < Q, we will use FingerprintManagerCompat to check enrolled
-            // fingerprints. Note that for API level lower than 23, FingerprintManagerCompat behaves
-            // like no fingerprint hardware and no enrolled fingerprints.
-            FingerprintManagerCompat fingerprintManager =
-                    FingerprintManagerCompat.from(getStyledContext());
-            return fingerprintManager != null
-                    && fingerprintManager.isHardwareDetected()
-                    && fingerprintManager.hasEnrolledFingerprints();
         }
     }
 

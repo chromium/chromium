@@ -145,8 +145,6 @@ public class ScreenshotMonitorTest {
         Mockito.doReturn(height).when(mDisplayAndroid).getDisplayHeight();
     }
 
-    private void mockValidScreenshot() {}
-
     /**
      * Verify that if monitoring starts, the delegate should be called. Also verify that the inner
      * TestFileObserver monitors as expected.

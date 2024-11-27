@@ -22,7 +22,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Resources;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.KeyEvent;
@@ -981,11 +980,6 @@ public class NewTabPageTest {
                 "The shape of the background of the most visited tiles container is wrong.",
                 GradientDrawable.RECTANGLE,
                 ((GradientDrawable) mvTilesContainerBackground).getShape());
-    }
-
-    private void captureThumbnail() {
-        Canvas canvas = new Canvas();
-        mNtp.captureThumbnail(canvas);
     }
 
     private boolean getUrlFocusAnimationsDisabled() {

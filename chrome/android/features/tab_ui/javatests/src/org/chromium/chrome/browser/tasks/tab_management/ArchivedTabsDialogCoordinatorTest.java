@@ -43,7 +43,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -777,12 +776,6 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertEquals(mTimesShown, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogShown"));
     }
 
-    private @TabListCoordinator.TabListMode int getMode() {
-        return SysUtils.isLowEndDevice()
-                ? TabListCoordinator.TabListMode.LIST
-                : TabListCoordinator.TabListMode.GRID;
-    }
-
     private Tab addArchivedTab(GURL url, String title) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -794,14 +787,6 @@ public class ArchivedTabsDialogCoordinatorTest {
                                         TabLaunchType.FROM_RESTORE,
                                         null,
                                         mArchivedTabModel.getCount()));
-    }
-
-    private void removeArchivedTab(Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mArchivedTabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false);
-                    return null;
-                });
     }
 
     private void waitForArchivedTabModelsToLoad(

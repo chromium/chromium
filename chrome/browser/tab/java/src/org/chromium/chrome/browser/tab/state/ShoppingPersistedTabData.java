@@ -710,23 +710,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return true;
     }
 
-    private static boolean hasPrice(PriceTrackingData priceTrackingDataProto) {
-        if (!priceTrackingDataProto.hasBuyableProduct()) {
-            return false;
-        }
-        if (!priceTrackingDataProto.getBuyableProduct().hasCurrentPrice()) {
-            return false;
-        }
-        if (!priceTrackingDataProto.getBuyableProduct().getCurrentPrice().hasAmountMicros()
-                || !priceTrackingDataProto
-                        .getBuyableProduct()
-                        .getCurrentPrice()
-                        .hasCurrencyCode()) {
-            return false;
-        }
-        return true;
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void setPriceMicros(long priceMicros) {
         mPriceDropData.priceMicros = priceMicros;
@@ -848,18 +831,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private boolean isPriceChangeStale() {
         return mLastPriceChangeTimeMs != NO_TRANSITIONS_OCCURRED
                 && System.currentTimeMillis() - mLastPriceChangeTimeMs > getDisplayTimeMs();
-    }
-
-    private boolean isQualifyingPriceDrop() {
-        if (mPriceDropData.previousPriceMicros - mPriceDropData.priceMicros
-                < getMinimumDropThresholdAbsolute()) {
-            return false;
-        }
-        if ((100L * mPriceDropData.priceMicros) / mPriceDropData.previousPriceMicros
-                > (100 - getMinimumDroppedThresholdPercentage())) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -1047,24 +1018,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private static long getTimeSinceTabLastOpenedMs(Tab tab) {
         return System.currentTimeMillis() - tab.getTimestampMillis();
-    }
-
-    /**
-     * Returns true if there is an incoming change for the price.
-     *
-     * @param productPriceUpdate incoming price update data.
-     */
-    private boolean hasPriceChange(ProductPriceUpdate productPriceUpdate) {
-        if (productPriceUpdate.getNewPrice().getAmountMicros() != mPriceDropData.priceMicros) {
-            return true;
-        }
-        if (!productPriceUpdate
-                .getNewPrice()
-                .getCurrencyCode()
-                .equals(mPriceDropData.currencyCode)) {
-            return true;
-        }
-        return false;
     }
 
     /**

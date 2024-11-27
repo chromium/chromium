@@ -82,10 +82,6 @@ public class CafMessageHandlerTest {
     private CafMessageHandler mMessageHandler;
     private int mNumStopApplicationCalled;
 
-    private interface CheckedRunnable {
-        void run();
-    }
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -1230,16 +1226,6 @@ public class CafMessageHandlerTest {
         message.put("sessionId", sessionId);
 
         return message;
-    }
-
-    private void expectException(CheckedRunnable r, Class exceptionClass) {
-        boolean caughtException = false;
-        try {
-            r.run();
-        } catch (Exception e) {
-            if (e.getClass() == exceptionClass) caughtException = true;
-        }
-        assertTrue(caughtException);
     }
 
     private JSONObject buildJsonCastMessage(String message) throws JSONException {

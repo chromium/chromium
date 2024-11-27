@@ -4,11 +4,8 @@
 
 package org.chromium.components.browser_ui.webshare;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.net.Uri;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.FileProviderUtils;
@@ -21,7 +18,6 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.mojom.Url;
@@ -325,15 +321,5 @@ public class ShareServiceImpl implements ShareService {
 
     static boolean isDangerousMimeType(String contentType) {
         return !PERMITTED_MIME_TYPES.contains(contentType);
-    }
-
-    @Nullable
-    private static Activity activityFromWebContents(@Nullable WebContents webContents) {
-        if (webContents == null) return null;
-
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-
-        return window.getActivity().get();
     }
 }

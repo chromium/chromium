@@ -19,12 +19,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
-import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -91,19 +88,6 @@ public class PowerBookmarkUtilsTest {
     }
 
     /**
-     * @param clusterId The cluster ID the subscription should be created with.
-     * @return A user-managed subscription with the specified ID.
-     */
-    private CommerceSubscription buildSubscription(String clusterId) {
-        return new CommerceSubscription(
-                SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID,
-                clusterId,
-                ManagementType.USER_MANAGED,
-                null);
-    }
-
-    /**
      * @param clusterId The product's cluster ID.
      * @param isPriceTracked Whether the product is price tracked.
      * @return Power bookmark meta for shopping.
@@ -115,21 +99,5 @@ public class PowerBookmarkUtilsTest {
                         .setProductClusterId(UnsignedLongs.parseUnsignedLong(clusterId))
                         .build();
         return PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
-    }
-
-    /**
-     * Create a mock bookmark and set up the mock model to have shopping meta for it.
-     *
-     * @param bookmarkId The bookmark's ID.
-     * @param clusterId The cluster ID for the product.
-     * @param isPriceTracked Whether the product is price tracked.
-     * @return The bookmark that was created.
-     */
-    private BookmarkId setUpBookmarkWithMetaInModel(
-            long bookmarkId, String clusterId, boolean isPriceTracked) {
-        BookmarkId bookmark = new BookmarkId(bookmarkId, BookmarkType.NORMAL);
-        when(mMockBookmarkModel.getPowerBookmarkMeta(bookmark))
-                .thenReturn(buildPowerBookmarkMeta(clusterId, isPriceTracked));
-        return bookmark;
     }
 }

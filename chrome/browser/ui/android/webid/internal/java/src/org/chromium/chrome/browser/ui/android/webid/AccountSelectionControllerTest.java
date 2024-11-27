@@ -59,8 +59,6 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -703,15 +701,5 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         if (mBottomSheetContent.handleBackPress()) return;
 
         mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
-    }
-
-    private static int countListItemsOfType(ModelList list, int searchType) {
-        int count = 0;
-        for (ListItem item : list) {
-            if (item.type == searchType) {
-                count += 1;
-            }
-        }
-        return count;
     }
 }

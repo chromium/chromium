@@ -145,23 +145,6 @@ public class GamepadList {
         return LazyHolder.INSTANCE;
     }
 
-    private int getDeviceCount() {
-        int count = 0;
-        for (int i = 0; i < MAX_GAMEPADS; i++) {
-            if (getDevice(i) != null) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private boolean isDeviceConnected(int index) {
-        if (index < MAX_GAMEPADS && getDevice(index) != null) {
-            return true;
-        }
-        return false;
-    }
-
     private GamepadDevice getDeviceById(int deviceId) {
         for (int i = 0; i < MAX_GAMEPADS; i++) {
             GamepadDevice gamepad = mGamepadDevices[i];

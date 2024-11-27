@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotEquals;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -239,19 +238,6 @@ public class MainIntentBehaviorMetricsIntegrationTest {
                     mActionTester.getActions(),
                     Matchers.hasItem(expectedMetric));
         }
-    }
-
-    private void startActivityWithAboutBlank(boolean addLauncherCategory) {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setData(Uri.parse("about:blank"));
-        if (addLauncherCategory) intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setComponent(
-                new ComponentName(
-                        ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
-
-        mActivityTestRule.startActivityCompletely(intent);
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
     }
 
     private void startActivity(boolean addLauncherCategory) {

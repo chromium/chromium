@@ -16,13 +16,11 @@ import android.text.SpannableStringBuilder;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 
 import androidx.annotation.GravityInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
 
 import org.jni_zero.CalledByNative;
@@ -382,30 +380,6 @@ public class PageInfoController
             mForgetSiteDialog.dismiss();
             mForgetSiteDialog = null;
         }
-    }
-
-    private void setupForgetSiteButton(Button button) {
-        button.setOnClickListener(
-                (View v) -> {
-                    recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_OPENED);
-                    mForgetSiteDialog =
-                            new AlertDialog.Builder(
-                                            mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                                    .setTitle(R.string.page_info_forget_site_title)
-                                    .setMessage(R.string.page_info_forget_site_message)
-                                    .setPositiveButton(
-                                            R.string.page_info_forget_site_confirmation_button,
-                                            (dialog, which) -> {
-                                                clearData();
-                                            })
-                                    .setNegativeButton(
-                                            R.string.cancel,
-                                            (dialog, which) -> {
-                                                mForgetSiteDialog = null;
-                                            })
-                                    .show();
-                });
-        button.setVisibility(View.VISIBLE);
     }
 
     private void clearData() {

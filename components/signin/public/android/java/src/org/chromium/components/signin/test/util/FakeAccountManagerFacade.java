@@ -394,19 +394,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         }
     }
 
-    // Deprecated, use the version with CoreAccountId below.
-    @Deprecated
-    @MainThread
-    private @Nullable AccountHolder getAccountHolder(Account account) {
-        ThreadUtils.checkUiThread();
-        synchronized (mAccountHolders) {
-            return mAccountHolders.stream()
-                    .filter(accountHolder -> account.equals(accountHolder.getAccount()))
-                    .findFirst()
-                    .orElse(null);
-        }
-    }
-
     @AnyThread
     private @Nullable AccountHolder getAccountHolder(CoreAccountId accountId) {
         synchronized (mAccountHolders) {

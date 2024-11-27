@@ -75,11 +75,6 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         mRedirectHandler = RedirectHandler.create();
     }
 
-    private RedirectHandlerTabHelper(Tab tab, RedirectHandler handler) {
-        mTab = tab;
-        mRedirectHandler = handler;
-    }
-
     @Override
     public void destroy() {
         mTab.removeObserver(this);

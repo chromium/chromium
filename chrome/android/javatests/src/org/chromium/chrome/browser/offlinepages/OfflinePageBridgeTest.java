@@ -671,13 +671,6 @@ public class OfflinePageBridgeTest {
         return result;
     }
 
-    private void forceConnectivityStateOnUiThread(final boolean state) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    NetworkChangeNotifier.forceConnectivityState(state);
-                });
-    }
-
     private Set<String> getUrlsExistOfflineFromSet(final Set<String> query)
             throws TimeoutException {
         final Set<String> result = new HashSet<>();

@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
 
@@ -270,25 +269,6 @@ public class AutocompleteMediatorUnitTest {
         }
 
         return list;
-    }
-
-    /**
-     * Build a fake group headers map with elements named 'Header #', where '#' is the group header
-     * index (1-based) and 'Header' is the supplied prefix. Each header has a corresponding key
-     * computed as baseKey + #.
-     *
-     * @param count Number of group headers to build.
-     * @param baseKey Key of the first group header.
-     * @param prefix Name prefix for each group.
-     * @return Map of group headers (populated in random order).
-     */
-    private SparseArray<String> buildSampleGroupHeaders(int count, int baseKey, String prefix) {
-        SparseArray<String> headers = new SparseArray<>(count);
-        for (int index = 0; index < count; index++) {
-            headers.put(baseKey + index, prefix + " " + (index + 1));
-        }
-
-        return headers;
     }
 
     /**

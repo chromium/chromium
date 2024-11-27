@@ -743,11 +743,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         return COLOR_SCHEME_LIGHT;
     }
 
-    private static int getCoreCount() {
-        if (sOverrideCoreCountForTesting != null) return sOverrideCoreCountForTesting;
-        return Runtime.getRuntime().availableProcessors();
-    }
-
     /**
      * @return {@link ThemeColorProvider} for top UI.
      */

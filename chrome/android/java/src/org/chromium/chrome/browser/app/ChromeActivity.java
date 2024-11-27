@@ -2259,11 +2259,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
     }
 
-    private SelectionPopupController getSelectionPopupController() {
-        WebContents webContents = getCurrentWebContents();
-        return webContents != null ? SelectionPopupController.fromWebContents(webContents) : null;
-    }
-
     /** Opens the chrome://management page on a new tab. */
     private void openChromeManagementPage() {
         Tab currentTab = getActivityTab();

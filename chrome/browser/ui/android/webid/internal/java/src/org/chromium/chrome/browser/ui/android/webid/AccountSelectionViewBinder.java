@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
@@ -571,42 +570,6 @@ class AccountSelectionViewBinder {
             if (properties.mSetFocusViewCallback != null) {
                 properties.mSetFocusViewCallback.onResult(button);
             }
-        } else {
-            assert false : "Unhandled update to property:" + key;
-        }
-    }
-
-    /**
-     * Called whenever a button on the error dialog is bound to this view.
-     * @param model The model containing the data for the view.
-     * @param view The view to be bound.
-     * @param key The key of the property to be bound.
-     * @param button The button to be bound.
-     * @param buttonText The text that should be set to the button to be bound.
-     */
-    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
-    private static void bindErrorButtonView(
-            PropertyModel model, View view, PropertyKey key, ButtonCompat button, int textId) {
-        Context context = view.getContext();
-        if (key == ErrorButtonProperties.IDP_METADATA) {
-            String buttonText = context.getString(textId);
-            button.setText(buttonText);
-            if (!ColorUtils.inNightMode(context)) {
-                IdentityProviderMetadata idpMetadata =
-                        model.get(ErrorButtonProperties.IDP_METADATA);
-
-                // TODO(crbug.com/40282202): Decide on how to set colours for error buttons.
-                Integer textColor = idpMetadata.getBrandBackgroundColor();
-                button.setTextColor(
-                        textColor != null
-                                ? textColor
-                                : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG));
-            }
-        } else if (key == ErrorButtonProperties.ON_CLICK_LISTENER) {
-            button.setOnClickListener(
-                    clickedView -> {
-                        model.get(ErrorButtonProperties.ON_CLICK_LISTENER).run();
-                    });
         } else {
             assert false : "Unhandled update to property:" + key;
         }

@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -1599,18 +1598,6 @@ public class RecentlyClosedBridgeTest {
 
     // TODO(crbug.com/40218713): Add a test a case where bulk closures remain in the native service,
     // but the flag state is flipped.
-
-    private Tab findTabWithUrlAndTitle(TabList list, String url, String title) {
-        Tab targetTab = null;
-        for (int i = 0; i < list.getCount(); ++i) {
-            Tab tab = list.getTabAt(i);
-            if (tab.getUrl().getSpec().equals(url) && tab.getTitle().equals(title)) {
-                targetTab = tab;
-                break;
-            }
-        }
-        return targetTab;
-    }
 
     private String getUrl(String relativeUrl) {
         return sActivityTestRule.getTestServer().getURL(relativeUrl);

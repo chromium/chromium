@@ -308,18 +308,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
                         SettingsUtils.getShowShadowOnScrollListener(scrollView, shadow));
     }
 
-    /** @return The validatable item for the given view. */
-    @Nullable
-    private FieldView getTextFieldView(View v) {
-        if (v instanceof TextView && v.getParent() != null && v.getParent() instanceof FieldView) {
-            return (FieldView) v.getParent();
-        } else if (v instanceof Spinner && v.getTag() != null) {
-            return (FieldView) v.getTag();
-        } else {
-            return null;
-        }
-    }
-
     @Override
     public void onClick(View view) {
         // Disable interaction during animation.

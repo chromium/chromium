@@ -218,10 +218,6 @@ public class TabSwitcherLayoutTest {
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
     }
 
-    private int getTabCountInCurrentTabModel() {
-        return mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount();
-    }
-
     @Test
     @LargeTest
     public void testThumbnailAspectRatio_default() {

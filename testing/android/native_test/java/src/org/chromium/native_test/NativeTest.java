@@ -172,13 +172,6 @@ public class NativeTest {
         mReporter.testRunFinished(Process.myPid());
     }
 
-    // Signal a failure of the native test loader to python scripts
-    // which run tests.  For example, we look for
-    // RUNNER_FAILED build/android/test_package.py.
-    private void nativeTestFailed() {
-        Log.e(TAG, "[ RUNNER_FAILED ] could not load native library");
-    }
-
     @NativeMethods
     interface Natives {
         void runTests(

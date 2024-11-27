@@ -1315,12 +1315,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 isOneTime(ContentSettingsType.ADS));
     }
 
-    private String getDseCategorySummary(@ContentSettingValues int value) {
-        return value == ContentSettingValues.ALLOW
-                ? getString(R.string.website_settings_permissions_allowed_dse)
-                : getString(R.string.website_settings_permissions_blocked_dse);
-    }
-
     public @ContentSettingsType.EnumType int getContentSettingsTypeFromPreferenceKey(
             String preferenceKey) {
         if (mPreferenceMap == null) {

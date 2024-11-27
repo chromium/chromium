@@ -65,10 +65,6 @@ public class CustomTabActivitySecurityIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
     }
 
-    private CustomTabActivity getActivity() {
-        return mCustomTabActivityTestRule.getActivity();
-    }
-
     // Custom tabs should use the new security indicators.
     @Test
     @MediumTest

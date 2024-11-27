@@ -236,17 +236,6 @@ public class AppBannerManagerTest {
                 });
     }
 
-    private void assertAppBannerPipelineStatus(int expectedValue) {
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertEquals(
-                            expectedValue,
-                            getAppBannerManager(tab.getWebContents())
-                                    .getPipelineStatusForTesting());
-                });
-    }
-
     private void navigateToUrlAndWaitForBannerManager(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
         Tab tab = rule.getActivity().getActivityTab();

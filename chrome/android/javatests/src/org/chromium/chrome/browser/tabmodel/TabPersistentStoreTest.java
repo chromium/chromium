@@ -1416,22 +1416,6 @@ public class TabPersistentStoreTest {
         Assert.assertEquals(5, TabRestoreMethod.SKIPPED_EMPTY_URL);
     }
 
-    private void addTabsToSaveQueue(TabPersistentStore store, Tab[] tabsToSave) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (int i = 0; i < tabsToSave.length; i++) {
-                        // Tabs are uninitialized so TabState won't save unless we override here.
-                        // It doesn't matter what TabState is saved for the tests which use this
-                        // function only that it is saved. So an arbitrary TabState is used.
-                        TabStateExtractor.setTabStateForTesting(
-                                tabsToSave[i].getId(), new TabState());
-                        TabStateAttributes.from(tabsToSave[i])
-                                .setStateForTesting(TabStateAttributes.DirtinessState.DIRTY);
-                        store.addTabToSaveQueue(tabsToSave[i]);
-                    }
-                });
-    }
-
     private TestTabModelSelector createAndRestoreRealTabModelImpls(TabModelMetaDataInfo info)
             throws Exception {
         return createAndRestoreRealTabModelImpls(info, true, true);

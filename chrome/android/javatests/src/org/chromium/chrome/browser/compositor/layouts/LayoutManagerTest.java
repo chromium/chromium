@@ -48,7 +48,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -78,7 +77,6 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.Sc
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
@@ -717,56 +715,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         Assert.assertTrue(
                 "LayoutManager took too long to finish the animations",
                 simulateTime(mManager, 1000));
-    }
-
-    /** Simple tuple for LayoutStateProvider.LayoutStateObserver events. */
-    private static class LayoutStateLayoutType {
-        public final @LayoutState int layoutState;
-        public final @LayoutType int layoutType;
-
-        public LayoutStateLayoutType(@LayoutState int layoutState, @LayoutType int layoutType) {
-            this.layoutState = layoutState;
-            this.layoutType = layoutType;
-        }
-    }
-
-    private void observeLayoutManager(List<LayoutStateLayoutType> observationSequence) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LayoutManagerChrome layoutManagerChrome = getLayoutManagerChrome();
-                    Assert.assertNotNull(
-                            "Must be called after initialization", layoutManagerChrome);
-                    layoutManagerChrome.addObserver(
-                            new LayoutStateProvider.LayoutStateObserver() {
-                                @Override
-                                public void onStartedShowing(int layoutType) {
-                                    observationSequence.add(
-                                            new LayoutStateLayoutType(
-                                                    LayoutState.STARTING_TO_SHOW, layoutType));
-                                }
-
-                                @Override
-                                public void onFinishedShowing(int layoutType) {
-                                    observationSequence.add(
-                                            new LayoutStateLayoutType(
-                                                    LayoutState.SHOWING, layoutType));
-                                }
-
-                                @Override
-                                public void onStartedHiding(int layoutType) {
-                                    observationSequence.add(
-                                            new LayoutStateLayoutType(
-                                                    LayoutState.STARTING_TO_HIDE, layoutType));
-                                }
-
-                                @Override
-                                public void onFinishedHiding(int layoutType) {
-                                    observationSequence.add(
-                                            new LayoutStateLayoutType(
-                                                    LayoutState.HIDDEN, layoutType));
-                                }
-                            });
-                });
     }
 
     @Override

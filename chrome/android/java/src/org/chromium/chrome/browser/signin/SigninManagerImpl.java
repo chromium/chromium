@@ -773,11 +773,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 .getUserAcceptedAccountManagement(mNativeSigninManagerAndroid);
     }
 
-    private boolean isGooglePlayServicesPresent() {
-        return !ExternalAuthUtils.getInstance()
-                .isGooglePlayServicesMissing(ContextUtils.getApplicationContext());
-    }
-
     private void fetchAndApplyCloudPolicy(CoreAccountInfo account, final Runnable callback) {
         SigninManagerImplJni.get()
                 .fetchAndApplyCloudPolicy(mNativeSigninManagerAndroid, account, callback);

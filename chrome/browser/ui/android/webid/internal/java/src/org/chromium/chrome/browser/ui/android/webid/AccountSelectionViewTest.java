@@ -511,16 +511,4 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpEtldPlusOne)
                 .build();
     }
-
-    private PropertyModel buildErrorItem(
-            String idpEtldPlusOne, String rpEtldPlusOne, IdentityCredentialTokenError error) {
-        ErrorProperties.Properties properties = new ErrorProperties.Properties();
-        properties.mIdpForDisplay = idpEtldPlusOne;
-        properties.mRpForDisplay = rpEtldPlusOne;
-        properties.mError = error;
-
-        return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
-                .with(ErrorProperties.PROPERTIES, properties)
-                .build();
-    }
 }
