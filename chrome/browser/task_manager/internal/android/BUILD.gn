@@ -48,6 +48,7 @@ android_resources("java_resources") {
     "java/res/layout/task_item.xml",
     "java/res/layout/task_manager_activity.xml",
   ]
+  deps = [ "//chrome/app:java_strings_grd" ]
 }
 
 robolectric_library("junit") {

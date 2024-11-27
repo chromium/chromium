@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -80,8 +79,6 @@ public class TaskManagerActivity extends AppCompatActivity {
                 TaskManagerActivity::bindTask);
     }
 
-    // TOOD(crbug.com/380158926): i18n.
-    @SuppressLint("SetTextI18n")
     private static void bindHeader(PropertyModel model, View view, PropertyKey key) {
         if (key != TaskManagerProperties.COLUMNS) {
             throw new IllegalArgumentException();
@@ -92,16 +89,18 @@ public class TaskManagerActivity extends AppCompatActivity {
                 continue;
             } else if (columnKey == TaskManagerProperties.TASK_NAME) {
                 textView = view.findViewById(R.id.task_name);
-                textView.setText("Task");
+                textView.setText(view.getContext().getString(R.string.task_manager_task_column));
             } else if (columnKey == TaskManagerProperties.MEMORY_FOOTPRINT) {
                 textView = view.findViewById(R.id.memory_footprint);
-                textView.setText("Memory footprint");
+                textView.setText(
+                        view.getContext().getString(R.string.task_manager_mem_footprint_column));
             } else if (columnKey == TaskManagerProperties.CPU) {
                 textView = view.findViewById(R.id.cpu);
-                textView.setText("CPU");
+                textView.setText(view.getContext().getString(R.string.task_manager_cpu_column));
             } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
                 textView = view.findViewById(R.id.process_id);
-                textView.setText("Process ID");
+                textView.setText(
+                        view.getContext().getString(R.string.task_manager_process_id_column));
             } else {
                 throw new IllegalArgumentException();
             }

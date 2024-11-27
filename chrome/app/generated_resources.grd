@@ -4852,7 +4852,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
           End process
         </message>
-        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column.">
+        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
           Process ID
         </message>
         <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
@@ -4861,7 +4861,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_USER_HANDLES_COLUMN" desc="The title for Task Manager USER handles column.">
           USER handles
         </message>
-        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column">
+        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
           Task
         </message>
         <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
@@ -4870,7 +4870,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
           Network
         </message>
-        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column">
+        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
           CPU
         </message>
         <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
@@ -4879,7 +4879,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time usage column">
           CPU Time
         </message>
-        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process.">
+        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process." formatter_data="android_java">
           Memory footprint
         </message>
         <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
@@ -4926,7 +4926,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
           End Process
         </message>
-        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column.">
+        <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
           Process ID
         </message>
         <message name="IDS_TASK_MANAGER_GDI_HANDLES_COLUMN" desc="The title for Task Manager GDI handles column.">
@@ -4938,13 +4938,13 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
           NaCl Debug Port
         </message>
-        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column">
+        <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
           Task
         </message>
         <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
           Network
         </message>
-        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column">
+        <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
           CPU
         </message>
         <message name="IDS_TASK_MANAGER_START_TIME_COLUMN" desc="The text of the process start time column">
@@ -4953,7 +4953,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_CPU_TIME_COLUMN" desc="The text of the CPU time column. This is the time that this process actually occupies the CPU.">
           CPU Time
         </message>
-        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process.">
+        <message name="IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN" desc="Task manager process memory footprint column. This is the amount of memory used by the process." formatter_data="android_java">
           Memory Footprint
         </message>
         <message name="IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN" desc="Task manager process swapped memory column. Shows the size of the memory that lives in the swap space.">
