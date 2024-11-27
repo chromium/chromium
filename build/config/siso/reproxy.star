@@ -5,12 +5,12 @@
 """Siso configuration for rewriting remote calls into reproxy config."""
 
 load("@builtin//encoding.star", "json")
-load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
+load("./gn_logs.star", "gn_logs")
 load("./platform.star", "platform")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
@@ -241,17 +241,7 @@ __handlers = {
 }
 
 def __use_reclient(ctx):
-    use_remoteexec = False
-    use_reclient = None
-    if "args.gn" in ctx.metadata:
-        gn_args = gn.args(ctx)
-        if gn_args.get("use_remoteexec") == "true":
-            use_remoteexec = True
-        if gn_args.get("use_reclient") == "false":
-            use_reclient = False
-    if use_reclient == None:
-        use_reclient = use_remoteexec
-    return use_reclient
+    return gn_logs.read(ctx).get("use_reclient") == "true"
 
 def __step_config(ctx, step_config):
     # New rules to convert commands calling rewrapper to use reproxy instead.

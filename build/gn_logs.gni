@@ -4,9 +4,13 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/toolchain/concurrent_links.gni")
+import("//build/toolchain/rbe.gni")
+
+build_gn_logs = [ "### rbe.gni ###" ] + rbe_logs
+build_gn_logs += [ "" ]
 
 # Log lines for gn_logs.txt that originate from within //build.
-build_gn_logs = [ "### compiler.gni ###" ] + compiler_logs
+build_gn_logs += [ "### compiler.gni ###" ] + compiler_logs
 build_gn_logs += [ "" ]
 
 if (target_os == "ios") {

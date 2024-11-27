@@ -26,7 +26,9 @@ declare_args() {
 
 declare_args() {
   # Use Reclient as the RBE client by default.
+  # Set to true to use re-client.
   # Set to false to use Siso's builtin RBE client.
+  # TODO(crbug.com/341167943): make default false if use_siso=true
   use_reclient = use_remoteexec
 
   # The directory where the re-client tooling binaries are.
@@ -55,6 +57,18 @@ declare_args() {
 # Check if any unsupported combination is specified.
 if (use_reclient) {
   assert(use_remoteexec, "Can't enable Reclient when use_remoteexec is false")
+}
+
+if (use_remoteexec) {
+  rbe_logs = [ "use_remoteexec=true" ]
+} else {
+  rbe_logs = [ "use_remoteexec=false" ]
+}
+
+if (use_reclient) {
+  rbe_logs += [ "use_reclient=true" ]
+} else {
+  rbe_logs += [ "use_reclient=false" ]
 }
 
 # Siso native also uses rewrapper cfg file
