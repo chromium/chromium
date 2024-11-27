@@ -230,7 +230,14 @@ class ParentPermissionDialogViewTest
           InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>> {
  protected:
   void ShowUi(const std::string& name) override {
-    if (name.find("default") != std::string::npos) {
+    if (name == "LongNameExtension") {
+      const std::string long_name =
+          "This extension name should be longer than our truncation threshold "
+          "to test that the bubble can handle long names";
+      scoped_refptr<const extensions::Extension> extension =
+          AddAndDisableExtensionWithName(long_name);
+      harness_.ShowUi(extension.get(), browser());
+    } else if (name.find("default") != std::string::npos) {
       harness_.ShowUi(std::u16string(u"Test prompt message"), browser());
       return;
     } else if (name.find("extension") != std::string::npos) {
@@ -253,11 +260,7 @@ class ParentPermissionDialogViewTest
         std::make_unique<extensions::SupervisedUserExtensionsDelegateImpl>(
             browser()->profile());
 
-    test_extension_ = extensions::ExtensionBuilder("test extension").Build();
-    extension_service()->AddExtension(test_extension_.get());
-    extension_service()->DisableExtension(
-        test_extension_->id(),
-        extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+    test_extension_ = AddAndDisableExtensionWithName("test extension");
   }
 
   void TearDownOnMainThread() override {
@@ -331,6 +334,17 @@ class ParentPermissionDialogViewTest
   ParentPermissionDialogViewHarness harness_{supervision_mixin_};
 
  private:
+  scoped_refptr<const extensions::Extension> AddAndDisableExtensionWithName(
+      const std::string& extension_name) {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder(extension_name).Build();
+    extension_service()->AddExtension(extension.get());
+    extension_service()->DisableExtension(
+        extension->id(),
+        extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+    return extension;
+  }
+
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   scoped_refptr<const extensions::Extension> test_extension_;
@@ -345,6 +359,11 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest, InvokeUi_default) {
 // Tests that a plain dialog widget is shown using the TestBrowserUi
 // infrastructure.
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest, InvokeUi_extension) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
+                       InvokeUi_LongNameExtension) {
   ShowAndVerifyUi();
 }
 

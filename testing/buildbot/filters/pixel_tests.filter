@@ -80,6 +80,7 @@ PageInfoBubbleViewPrivacySandboxDialogBrowserTest.*
 PageInfoBubbleViewHistoryDialogBrowserTest.*
 PageInfoBubbleViewCookiesSubpageBrowserTest.*
 PageInfoBubbleViewIsolatedWebAppBrowserTest.*
+ParentPermissionDialogViewTest.*
 *PasswordBubbleBrowserTest.*
 *PasswordAutomaticSaveBubbleBrowserTest.*
 *PasswordCrossDomainConfirmationPopupViewBrowsertest.*

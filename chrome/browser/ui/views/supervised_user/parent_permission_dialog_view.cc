@@ -852,7 +852,7 @@ void ParentPermissionDialogView::InitializeExtensionData(
   // Create the dialog's message using the extension's name.
   params_->message = l10n_util::GetStringFUTF16(
       IDS_PARENT_PERMISSION_PROMPT_GO_GET_A_PARENT_FOR_EXTENSION_LABEL,
-      base::UTF8ToUTF16(extension->name()));
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
   ShowDialogInternal();
 }
