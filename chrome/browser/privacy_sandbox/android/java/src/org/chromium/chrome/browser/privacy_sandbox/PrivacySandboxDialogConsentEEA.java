@@ -387,7 +387,11 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private void showNotice() {
         PrivacySandboxDialogController.showNoticeEEA(
-                getContext(), mPrivacySandboxBridge, mSurfaceType);
+                getContext(),
+                mPrivacySandboxBridge,
+                mSurfaceType,
+                mProfile,
+                mActivityWindowAndroid);
     }
 
     private boolean isDropdownExpanded() {

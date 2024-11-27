@@ -371,11 +371,32 @@ public final class PrivacySandboxDialogTest {
                             new PrivacySandboxDialogNoticeEeaV2(
                                     sActivityTestRule.getActivity(),
                                     new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    SurfaceType.BR_APP);
+                                    SurfaceType.BR_APP,
+                                    sActivityTestRule.getProfile(false),
+                                    sActivityTestRule.getActivity().getWindowAndroid());
                     mDialog.show();
                 });
         onViewWaiting(withId(R.id.privacy_sandbox_dialog));
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog_v2");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY
+    })
+    public void testRenderEeaNoticeV2PrivacyPolicyEnabled() throws IOException {
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
+        launchDialog();
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        onView(withId(R.id.site_suggested_ads_dropdown_element))
+                .inRoot(isDialog())
+                .perform(scrollTo(), click());
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog,
+                "privacy_sandbox_eea_notice_dialog_v2_privacy_policy_link_shown");
     }
 
     @Test
@@ -389,7 +410,9 @@ public final class PrivacySandboxDialogTest {
                             new PrivacySandboxDialogNoticeEeaV2(
                                     sActivityTestRule.getActivity(),
                                     new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
-                                    SurfaceType.BR_APP);
+                                    SurfaceType.BR_APP,
+                                    sActivityTestRule.getProfile(false),
+                                    sActivityTestRule.getActivity().getWindowAndroid());
                     mDialog.show();
                 });
         onViewWaiting(withId(R.id.privacy_sandbox_dialog));

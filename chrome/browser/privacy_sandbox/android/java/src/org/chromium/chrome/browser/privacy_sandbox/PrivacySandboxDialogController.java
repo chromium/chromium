@@ -112,7 +112,8 @@ public class PrivacySandboxDialogController {
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_EEA:
-                showNoticeEEA(context, privacySandboxBridge, surfaceType);
+                showNoticeEEA(
+                        context, privacySandboxBridge, surfaceType, profile, activityWindowAndroid);
                 return true;
             case PromptType.M1_NOTICE_ROW:
                 dialog =
@@ -139,14 +140,20 @@ public class PrivacySandboxDialogController {
     public static void showNoticeEEA(
             Context context,
             PrivacySandboxBridge privacySandboxBridge,
-            @SurfaceType int surfaceType) {
+            @SurfaceType int surfaceType,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;
             if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
                 dialog =
                         new PrivacySandboxDialogNoticeEeaV2(
-                                context, privacySandboxBridge, surfaceType);
+                                context,
+                                privacySandboxBridge,
+                                surfaceType,
+                                profile,
+                                activityWindowAndroid);
             } else {
                 dialog =
                         new PrivacySandboxDialogNoticeEEA(

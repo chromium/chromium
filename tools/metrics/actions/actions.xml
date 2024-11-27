@@ -35297,6 +35297,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.Notice.PrivacyPolicyLinkClicked">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User clicked on the Privacy Policy Link in the Privacy Sandbox Notice.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Notice.Shown">
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
