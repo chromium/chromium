@@ -606,7 +606,30 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
+TEST_F(CanvasResourceProviderTest,
+       CanvasResourceProviderSharedBitmap_GPUCompositing) {
+  const gfx::Size kSize(10, 10);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider =
+          TestWebGraphicsSharedImageInterfaceProvider::Create();
+
+  MockCanvasResourceDispatcherClient client;
+  CanvasResourceDispatcher resource_dispatcher(
+      &client, scheduler::GetSingleThreadTaskRunnerForTesting(),
+      scheduler::GetSingleThreadTaskRunnerForTesting(), 1 /* client_id */,
+      1 /* sink_id */, 1 /* placeholder_canvas_id */, kSize);
+
+  EXPECT_FALSE(CanvasResourceProvider::CreateSharedBitmapProvider(
+      kInfo, cc::PaintFlags::FilterQuality::kLow,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      test_web_shared_image_interface_provider.get()));
+}
+
+TEST_F(CanvasResourceProviderTest,
+       CanvasResourceProviderSharedBitmap_SWCompositing) {
+  platform_->SetGpuCompositingDisabled(true);
+
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>

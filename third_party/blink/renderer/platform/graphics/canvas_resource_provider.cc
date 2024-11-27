@@ -97,6 +97,13 @@ static FlushForImageListener* GetFlushForImageListener() {
 
 namespace {
 
+// Serves as reverse-killswitch while we roll out the change for
+// CanvasResourceProviderSharedBitmap creation to require SW compositing.
+// TODO(crbug.com/379996128): Eliminet post-safe rollout.
+BASE_FEATURE(kCanvasAllowCRPSharedBitmapWithGPUCompositing,
+             "CanvasAllowCRPSharedBitmapWithGPUCompositing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 gfx::ColorSpace SkColorSpaceToGfxColorSpace(
     sk_sp<SkColorSpace> sk_color_space) {
   return sk_color_space ? gfx::ColorSpace(*sk_color_space)
@@ -1057,6 +1064,16 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
     ShouldInitialize should_initialize,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceHost* resource_host) {
+  if (!base::FeatureList::IsEnabled(
+          kCanvasAllowCRPSharedBitmapWithGPUCompositing)) {
+    // CanvasResourceProviderSharedBitmap works only with the software
+    // compositor. However, this was not historically enforced. We are rolling
+    // out this enforcement with a reverse killswitch.
+    if (SharedGpuContext::IsGpuCompositingEnabled()) {
+      return nullptr;
+    }
+  }
+
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
       info, filter_quality, shared_image_interface_provider, resource_host);
   if (provider->IsValid()) {
