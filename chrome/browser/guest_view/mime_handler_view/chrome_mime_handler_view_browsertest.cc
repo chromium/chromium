@@ -186,8 +186,8 @@ class UserActivationUpdateWaiter {
 // A DevToolsAgentHostClient implementation doing nothing.
 class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
  public:
-  StubDevToolsAgentHostClient() {}
-  ~StubDevToolsAgentHostClient() override {}
+  StubDevToolsAgentHostClient() = default;
+  ~StubDevToolsAgentHostClient() override = default;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override {}
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {}

@@ -4327,8 +4327,8 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoContentSettingsAPI) {
 
 class WebViewCaptureTest : public WebViewTest {
  public:
-  WebViewCaptureTest() {}
-  ~WebViewCaptureTest() override {}
+  WebViewCaptureTest() = default;
+  ~WebViewCaptureTest() override = default;
   void SetUp() override {
     EnablePixelOutput();
     WebViewTest::SetUp();
@@ -5328,7 +5328,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_ReloadAfterCrash) {
 // disable it.
 class WebViewTestNoDomAutomationController : public WebViewTest {
  public:
-  ~WebViewTestNoDomAutomationController() override {}
+  ~WebViewTestNoDomAutomationController() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     WebViewTest::SetUpInProcessBrowserTestFixture();
@@ -5458,7 +5458,7 @@ class WebContentsAccessibilityEventWatcher
   WebContentsAccessibilityEventWatcher(content::WebContents* web_contents,
                                        ax::mojom::Event event)
       : content::WebContentsObserver(web_contents), event_(event), count_(0) {}
-  ~WebContentsAccessibilityEventWatcher() override {}
+  ~WebContentsAccessibilityEventWatcher() override = default;
 
   void Wait() {
     if (count_ == 0) {
@@ -5838,8 +5838,8 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
 // of accounts.google.com.
 class ChromeSignInWebViewTest : public WebViewTest {
  public:
-  ChromeSignInWebViewTest() {}
-  ~ChromeSignInWebViewTest() override {}
+  ChromeSignInWebViewTest() = default;
+  ~ChromeSignInWebViewTest() override = default;
 
  protected:
   void WaitForWebViewInDom() {
@@ -5949,8 +5949,8 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 // testing isolated origins inside of a WebView.
 class IsolatedOriginWebViewTest : public WebViewTest {
  public:
-  IsolatedOriginWebViewTest() {}
-  ~IsolatedOriginWebViewTest() override {}
+  IsolatedOriginWebViewTest() = default;
+  ~IsolatedOriginWebViewTest() override = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
