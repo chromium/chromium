@@ -330,13 +330,18 @@ void TouchToFillControllerAutofillDelegate::VerifyBeforeFilling(
     return;
   }
 
-  OnVerificationBeforeFillingFinished(credential, /*success=*/true);
+  // TODO (crbug.com/377215451): Refactor the code so that this call is only
+  // made for a grouped credential.
+  OnVerificationBeforeFillingFinished(
+      credential,
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
 }
 
 void TouchToFillControllerAutofillDelegate::OnVerificationBeforeFillingFinished(
     const UiCredential& credential,
-    bool success) {
-  if (!success) {
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  if (dismiss_reason !=
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept) {
     // TODO(crbug.com/372635361): Introduce new bucket to report
     // grouped credential filling metric.
     CleanUpFillerAndReportOutcome(TouchToFillOutcome::kSheetDismissed,

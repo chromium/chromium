@@ -51,15 +51,17 @@ public class AcknowledgeGroupedCredentialSheetBridge {
         mNativeAcknowledgeGroupedCredentialSheetBridge = 0;
     }
 
-    public void onDismissed(boolean accepted) {
+    public void onDismissed(@DismissReason int dismissReason) {
         if (mNativeAcknowledgeGroupedCredentialSheetBridge == 0) return;
         AcknowledgeGroupedCredentialSheetBridgeJni.get()
-                .onDismissed(mNativeAcknowledgeGroupedCredentialSheetBridge, accepted);
+                .onDismissed(mNativeAcknowledgeGroupedCredentialSheetBridge, dismissReason);
         mNativeAcknowledgeGroupedCredentialSheetBridge = 0;
     }
 
     @NativeMethods
     interface Natives {
-        void onDismissed(long nativeAcknowledgeGroupedCredentialSheetBridge, boolean accepted);
+        void onDismissed(
+                long nativeAcknowledgeGroupedCredentialSheetBridge,
+                @DismissReason int dismissReason);
     }
 }

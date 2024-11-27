@@ -138,6 +138,7 @@
 #include "chrome/browser/password_manager/android/auto_signin_prompt_controller.h"
 #include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
@@ -1345,8 +1346,11 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
       base::UTF16ToUTF8(password_origin),
       web_contents()->GetTopLevelNativeWindow(),
       base::BindOnce(
-          [](base::OnceClosure confirmation_callback, bool accepted) {
-            if (!accepted) {
+          [](base::OnceClosure confirmation_callback,
+             AcknowledgeGroupedCredentialSheetBridge::DismissReason
+                 dismiss_reason) {
+            if (dismiss_reason != AcknowledgeGroupedCredentialSheetBridge::
+                                      DismissReason::kAccept) {
               return;
             }
             std::move(confirmation_callback).Run();

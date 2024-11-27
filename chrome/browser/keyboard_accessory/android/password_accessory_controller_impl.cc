@@ -1021,8 +1021,9 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
 void PasswordAccessoryControllerImpl::OnAcknowledgementBeforeFillingReceived(
     const autofill::AccessorySheetField& selection,
     const url::Origin& origin_to_fill_on,
-    bool accepted) {
-  if (!accepted) {
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  if (dismiss_reason !=
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept) {
     return;
   }
 

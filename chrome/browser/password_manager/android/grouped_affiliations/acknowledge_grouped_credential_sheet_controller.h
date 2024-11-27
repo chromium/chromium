@@ -32,13 +32,18 @@ class AcknowledgeGroupedCredentialSheetController
 
   ~AcknowledgeGroupedCredentialSheetController() override;
 
-  void ShowAcknowledgeSheet(std::string current_origin,
-                            std::string credential_origin,
-                            gfx::NativeWindow window,
-                            base::OnceCallback<void(bool)> on_close_callback);
+  void ShowAcknowledgeSheet(
+      std::string current_origin,
+      std::string credential_origin,
+      gfx::NativeWindow window,
+      base::OnceCallback<
+          void(AcknowledgeGroupedCredentialSheetBridge::DismissReason)>
+          on_close_callback);
 
  private:
-  base::OnceCallback<void(bool)> on_close_callback_ = base::NullCallback();
+  base::OnceCallback<void(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason)>
+      on_close_callback_ = base::NullCallback();
 
   std::unique_ptr<AcknowledgeGroupedCredentialSheetBridge> bridge_;
 };

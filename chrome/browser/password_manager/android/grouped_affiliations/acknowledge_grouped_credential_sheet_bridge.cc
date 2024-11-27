@@ -86,7 +86,7 @@ void AcknowledgeGroupedCredentialSheetBridge::Show(
     std::string current_origin,
     std::string credential_origin,
     gfx::NativeWindow window,
-    base::OnceCallback<void(bool)> closure_callback) {
+    base::OnceCallback<void(DismissReason)> closure_callback) {
   if (!window) {
     return;
   }
@@ -96,6 +96,6 @@ void AcknowledgeGroupedCredentialSheetBridge::Show(
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,
-                                                          bool accepted) {
-  std::move(closure_callback_).Run(accepted);
+                                                          int dismiss_reason) {
+  std::move(closure_callback_).Run(static_cast<DismissReason>(dismiss_reason));
 }

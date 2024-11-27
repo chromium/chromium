@@ -37,6 +37,7 @@ AcknowledgeGroupedCredentialSheetControllerTestHelper::CreateController() {
 }
 
 void AcknowledgeGroupedCredentialSheetControllerTestHelper::DismissSheet(
-    bool accepted) {
-  bridge_->OnDismissed(jni_zero::AttachCurrentThread(), accepted);
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  bridge_->OnDismissed(jni_zero::AttachCurrentThread(),
+                       static_cast<int>(dismiss_reason));
 }

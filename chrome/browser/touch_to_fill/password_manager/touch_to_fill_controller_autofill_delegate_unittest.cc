@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -977,7 +978,8 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword);
-  acknowledge_grouped_credential_sheet_helper().DismissSheet(/*accepted=*/true);
+  acknowledge_grouped_credential_sheet_helper().DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
 }
 
 class TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest

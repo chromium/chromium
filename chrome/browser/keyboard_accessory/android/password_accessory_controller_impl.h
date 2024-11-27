@@ -252,7 +252,7 @@ class PasswordAccessoryControllerImpl
   void OnAcknowledgementBeforeFillingReceived(
       const autofill::AccessorySheetField& selection,
       const url::Origin& origin,
-      bool accepted);
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason);
 
   // Checks if reauthentication is required; if yes, schedules re-auth, if no,
   // fills right away.

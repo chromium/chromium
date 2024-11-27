@@ -28,6 +28,18 @@ class AcknowledgeGroupedCredentialSheetBridge {
                       std::string credential_origin) = 0;
     virtual void Dismiss() = 0;
   };
+  // Represents all possible ways to resolve the sheet: acceptance, clicking
+  // `Back`, or just dismissing it. The difference between `Back` and just
+  // dismissing is that the first may navigate user to the previous UI (like
+  // TTF).
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //    org.chromium.chrome.browser.grouped_affiliations)
+  enum class DismissReason {
+    kAccept = 0,
+    kBack = 1,
+    kIgnore = 2,
+  };
   AcknowledgeGroupedCredentialSheetBridge();
   // Test constructors
   AcknowledgeGroupedCredentialSheetBridge(
@@ -48,11 +60,11 @@ class AcknowledgeGroupedCredentialSheetBridge {
   void Show(std::string current_origin,
             std::string credential_origin,
             gfx::NativeWindow window,
-            base::OnceCallback<void(bool)> closure_callback);
-  void OnDismissed(JNIEnv* env, bool accepted);
+            base::OnceCallback<void(DismissReason)> closure_callback);
+  void OnDismissed(JNIEnv* env, int dismiss_reason);
 
  private:
-  base::OnceCallback<void(bool)> closure_callback_;
+  base::OnceCallback<void(DismissReason)> closure_callback_;
   std::unique_ptr<JniDelegate> jni_delegate_;
 };
 

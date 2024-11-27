@@ -7241,6 +7241,7 @@ test("unit_tests") {
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/password_manager/android/access_loss:test_support",
       "//chrome/browser/password_manager/android/access_loss:unit_tests",
+      "//chrome/browser/password_manager/android/grouped_affiliations:public",
       "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
       "//chrome/browser/password_manager/android/grouped_affiliations:unit_tests",
       "//chrome/browser/readaloud/android:native",

@@ -27,13 +27,13 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     private final View mContent;
     private final String mCurrentOrigin;
     private String mCredentialOrigin;
-    private final Callback<Boolean> mInterationCallback;
+    private final Callback<Integer> mInterationCallback;
 
     public AcknowledgeGroupedCredentialSheetView(
             View content,
             String currentOrigin,
             String credentialOrigin,
-            Callback<Boolean> interactionCallback) {
+            Callback<Integer> interactionCallback) {
         mContent = content;
         mCurrentOrigin = currentOrigin;
         mCredentialOrigin = credentialOrigin;
@@ -99,9 +99,10 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
 
     private void setInteractionCallback() {
         Button positiveButton = mContent.findViewById(R.id.confirmation_button);
-        positiveButton.setOnClickListener(view -> mInterationCallback.onResult(true));
+        positiveButton.setOnClickListener(
+                view -> mInterationCallback.onResult(DismissReason.ACCEPT));
         Button negativeButton = mContent.findViewById(R.id.cancel_button);
-        negativeButton.setOnClickListener(view -> mInterationCallback.onResult(false));
+        negativeButton.setOnClickListener(view -> mInterationCallback.onResult(DismissReason.BACK));
     }
 
     @Override

@@ -47,7 +47,8 @@ class AcknowledgeGroupedCredentialSheetControllerTestHelper {
   std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
   CreateController();
 
-  void DismissSheet(bool accepted);
+  void DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason);
 
   MockJniDelegate* jni_bridge() { return jni_bridge_; }
 

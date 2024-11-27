@@ -1891,7 +1891,8 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
+TEST_F(ChromePasswordManagerClientTest,
+       ShowAndAcceptCrossDomainConfirmationPopup) {
   AcknowledgeGroupedCredentialSheetControllerTestHelper helper;
   GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
       base::BindRepeating(
@@ -1907,6 +1908,28 @@ TEST_F(ChromePasswordManagerClientTest, ShowCrossDomainConfirmationPopup) {
           gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
           GURL("https://google.com"), u"google.de", accepted_callback.Get());
   EXPECT_CALL(accepted_callback, Run);
-  helper.DismissSheet(/*accepted=*/true);
+  helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       ShowAndDeclineCrossDomainConfirmationPopup) {
+  AcknowledgeGroupedCredentialSheetControllerTestHelper helper;
+  GetClient()->set_cross_domain_confirmation_popup_factory_for_testing(
+      base::BindRepeating(
+          &AcknowledgeGroupedCredentialSheetControllerTestHelper::
+              CreateController,
+          base::Unretained(&helper)));
+
+  base::MockOnceClosure accepted_callback;
+  // Need to store the returned controller to dismiss the sheet.
+  std::unique_ptr<
+      password_manager::PasswordCrossDomainConfirmationPopupController>
+      controller = GetClient()->ShowCrossDomainConfirmationPopup(
+          gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
+          GURL("https://google.com"), u"google.de", accepted_callback.Get());
+  EXPECT_CALL(accepted_callback, Run).Times(0);
+  helper.DismissSheet(
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack);
 }
 #endif  // BUILDFLAG(IS_ANDROID)

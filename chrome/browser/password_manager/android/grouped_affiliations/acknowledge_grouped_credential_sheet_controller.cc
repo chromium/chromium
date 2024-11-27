@@ -30,7 +30,9 @@ void AcknowledgeGroupedCredentialSheetController::ShowAcknowledgeSheet(
     std::string current_origin,
     std::string credential_origin,
     gfx::NativeWindow window,
-    base::OnceCallback<void(bool)> on_close_callback) {
+    base::OnceCallback<
+        void(AcknowledgeGroupedCredentialSheetBridge::DismissReason)>
+        on_close_callback) {
   CHECK(!current_origin.empty());
   CHECK(!credential_origin.empty());
   bridge_->Show(std::move(current_origin), std::move(credential_origin), window,

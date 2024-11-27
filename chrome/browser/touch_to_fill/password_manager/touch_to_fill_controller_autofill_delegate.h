@@ -160,7 +160,7 @@ class TouchToFillControllerAutofillDelegate
   // Triggered upon user confirmation to fill the credential.
   void OnVerificationBeforeFillingFinished(
       const password_manager::UiCredential& credential,
-      bool success);
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason);
 
   // Fills the credential into the form and triggers form submission when
   // appropriate.
