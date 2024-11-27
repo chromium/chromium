@@ -40,9 +40,10 @@ enum class ActionButtonsVisibility {
 // Style screens.
 @interface PromoStyleViewController : UIViewController <UITextViewDelegate>
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil
-    NS_DESIGNATED_INITIALIZER;
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 

@@ -14,7 +14,10 @@
 
 // Initializes the Post Restore Sign-in promo and displays the passed-in user
 // info.
-- (instancetype)initWithAccountInfo:(AccountInfo)accountInfo;
+- (instancetype)initWithAccountInfo:(AccountInfo)accountInfo
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 
