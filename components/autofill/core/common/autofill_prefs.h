@@ -146,6 +146,8 @@ inline constexpr char kAutofillUsingVirtualViewStructure[] =
 inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
     "autofill.third_party_password_managers_allowed";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
+inline constexpr char kFacilitatedPaymentsEwallet[] =
+    "facilitated_payments.ewallet";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The maximum value for the
@@ -227,6 +229,10 @@ bool UsesVirtualViewStructureForAutofill(const PrefService* prefs);
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs);
+
+void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
+
+bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);
 
 }  // namespace autofill::prefs
 

@@ -21,8 +21,15 @@
   <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet and Pix accounts. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
     When you make purchases in Chrome, see eWallet and Pix as options
   </message>
+  <!-- Ewallet and Pix related strings -->
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_EWALLET" desc="This is the string added to the summary for the 'Manage other financial accounts' preference when user has eWallets accounts available to be used." formatter_data="android_java" translateable="false">
+    eWallet
+  </message>
   <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the toggle preference when user has Pix accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
     Pix
+  </message>
+  <message name="IDS_SETTINGS_EWALLET_ACCOUNT_IDENTIFER" desc="Identifier for eWallet account that can be used for the eWallet payment." formatter_data="android_java" translateable="false">
+    eWallet  •  <ph name="ACCOUNT_DISPLAY_VALUE">%1$s<ex>nikit••••@hotmail.com</ex></ph>
   </message>
   <!--TODO(b/339939404): Fix typo and make PIX related strings to generic names shared between bottom sheet and settings page. -->
   <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">

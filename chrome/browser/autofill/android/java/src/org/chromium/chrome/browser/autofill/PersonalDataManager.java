@@ -1186,6 +1186,16 @@ public class PersonalDataManager implements Destroyable {
         return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_PIX);
     }
 
+    /** Sets the preference value for supporting payments using Ewallet. */
+    public void setFacilitatedPaymentsEwalletPref(boolean value) {
+        mPrefService.setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, value);
+    }
+
+    /** Returns the preference value for supporting payments using Ewallet. */
+    public boolean getFacilitatedPaymentsEwalletPref() {
+        return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_EWALLET);
+    }
+
     @NativeMethods
     interface Natives {
         long init(PersonalDataManager caller, @JniType("Profile*") Profile profile);
