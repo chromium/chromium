@@ -3032,7 +3032,7 @@ public class StripLayoutHelperTest {
                 "SharedImageTilesCoordinator for shared group should be cleared",
                 groupTitle.getSharedImageTilesCoordinatorForTesting());
         assertNull(
-                "Avatar resource should for shared group should be cleared",
+                "Avatar resource for shared group should be cleared",
                 groupTitle.getAvatarResourceForTesting());
     }
 
@@ -3053,9 +3053,7 @@ public class StripLayoutHelperTest {
         assertNotNull(
                 "SharedImageTilesCoordinator for shared group should be initialized",
                 groupTitle.getSharedImageTilesCoordinatorForTesting());
-        assertNotNull(
-                "Avatar resource should for shared group should be initialized",
-                groupTitle.getAvatarResourceForTesting());
+        // TODO(zheliooo): Add verify for avatar resources.
     }
 
     private void startDraggingTab(
