@@ -430,8 +430,13 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // that the location bar view is visible and is considered focusable. When it
   // actually receives focus, ImmersiveFocusWatcher will add another lock to
   // keep it revealed. |location_bar_view_| can be nullptr in unit tests.
+  //
+  // Besides tests, location bar is also used in non-browser UI (e.g.
+  // SimpleWebViewDialog and PresentationReceiverWindowView). Null check to
+  // avoid crash before these UIs are migrated away.
+  // See http://crbug.com/379534750
   std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock;
-  if (location_bar_view_) {
+  if (location_bar_view_ && location_bar_view_->browser()) {
     focus_reveal_lock =
         BrowserView::GetBrowserViewForBrowser(location_bar_view_->browser())
             ->immersive_mode_controller()
@@ -1873,7 +1878,11 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
                                             IDS_CONTEXT_MENU_SHOW_FULL_URLS);
   }
 
+  // Location bar is also used in non-browser UI (e.g. SimpleWebViewDialog and
+  // PresentationReceiverWindowView). Null check to avoid crash before these
+  // UIs are migrated away. See http://crbug.com/379534750
   if (lens::features::IsOmniboxEntryPointEnabled() &&
+      location_bar_view_->browser() &&
       location_bar_view_->browser()
           ->GetFeatures()
           .lens_overlay_entry_point_controller()
