@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 
-#include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/ui_base_types.h"
-
 namespace crosapi {
 
 DeskTemplateAsh::DeskTemplateAsh() = default;
@@ -15,17 +12,6 @@ DeskTemplateAsh::~DeskTemplateAsh() = default;
 void DeskTemplateAsh::BindReceiver(
     mojo::PendingReceiver<mojom::DeskTemplate> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
-}
-
-void DeskTemplateAsh::CreateBrowserWithRestoredData(
-    const gfx::Rect& bounds,
-    const ui::mojom::WindowShowState show_state,
-    crosapi::mojom::DeskTemplateStatePtr additional_state) {
-  if (remotes_.empty())
-    return;
-
-  remotes_.begin()->get()->CreateBrowserWithRestoredData(
-      bounds, show_state, std::move(additional_state));
 }
 
 void DeskTemplateAsh::GetFaviconImage(

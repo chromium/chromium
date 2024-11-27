@@ -83,54 +83,6 @@ class OpenUrlAction final : public BrowserAction {
   base::WeakPtrFactory<OpenUrlAction> weak_ptr_factory_;
 };
 
-class CreateBrowserWithRestoredDataAction final : public BrowserAction {
- public:
-  CreateBrowserWithRestoredDataAction(
-      const std::vector<GURL>& urls,
-      const gfx::Rect& bounds,
-      const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-      ui::mojom::WindowShowState show_state,
-      int32_t active_tab_index,
-      int32_t first_non_pinned_tab_index,
-      std::string_view app_name,
-      int32_t restore_window_id,
-      uint64_t lacros_profile_id)
-      : BrowserAction(true),
-        urls_(urls),
-        bounds_(bounds),
-        tab_group_infos_(tab_group_infos),
-        show_state_(show_state),
-        active_tab_index_(active_tab_index),
-        first_non_pinned_tab_index_(first_non_pinned_tab_index),
-        app_name_(app_name),
-        restore_window_id_(restore_window_id),
-        lacros_profile_id_(lacros_profile_id) {}
-
-  void Perform(const VersionedBrowserService& service,
-               BrowserManagerCallback on_performed) override {
-    crosapi::mojom::DeskTemplateStatePtr additional_state =
-        crosapi::mojom::DeskTemplateState::New(
-            urls_, active_tab_index_, app_name_, restore_window_id_,
-            first_non_pinned_tab_index_, tab_group_infos_, lacros_profile_id_);
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->desk_template_ash()
-        ->CreateBrowserWithRestoredData(bounds_, show_state_,
-                                        std::move(additional_state));
-  }
-
- private:
-  const std::vector<GURL> urls_;
-  const gfx::Rect bounds_;
-  const std::vector<tab_groups::TabGroupInfo> tab_group_infos_;
-  const ui::mojom::WindowShowState show_state_;
-  const int32_t active_tab_index_;
-  const int32_t first_non_pinned_tab_index_;
-  const std::string app_name_;
-  const int32_t restore_window_id_;
-  const uint64_t lacros_profile_id_;
-};
-
 // static
 std::unique_ptr<BrowserAction> BrowserAction::OpenUrl(
     const GURL& url,
@@ -138,23 +90,6 @@ std::unique_ptr<BrowserAction> BrowserAction::OpenUrl(
     crosapi::mojom::OpenUrlFrom from,
     NavigateParams::PathBehavior path_behavior) {
   return std::make_unique<OpenUrlAction>(url, disposition, from, path_behavior);
-}
-
-// static
-std::unique_ptr<BrowserAction> BrowserAction::CreateBrowserWithRestoredData(
-    const std::vector<GURL>& urls,
-    const gfx::Rect& bounds,
-    const std::vector<tab_groups::TabGroupInfo>& tab_groups,
-    ui::mojom::WindowShowState show_state,
-    int32_t active_tab_index,
-    int32_t first_non_pinned_tab_index,
-    std::string_view app_name,
-    int32_t restore_window_id,
-    uint64_t lacros_profile_id) {
-  return std::make_unique<CreateBrowserWithRestoredDataAction>(
-      urls, bounds, tab_groups, show_state, active_tab_index,
-      first_non_pinned_tab_index, app_name, restore_window_id,
-      lacros_profile_id);
 }
 
 }  // namespace crosapi

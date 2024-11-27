@@ -34,16 +34,6 @@ class BrowserAction {
       crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
       crosapi::mojom::OpenUrlFrom from,
       NavigateParams::PathBehavior path_behavior);
-  static std::unique_ptr<BrowserAction> CreateBrowserWithRestoredData(
-      const std::vector<GURL>& urls,
-      const gfx::Rect& bounds,
-      const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-      ui::mojom::WindowShowState show_state,
-      int32_t active_tab_index,
-      int32_t first_non_pinned_tab_index,
-      std::string_view app_name,
-      int32_t restore_window_id,
-      uint64_t lacros_profile_id);
 
   // The type of BrowserManager::OnActionPerformed.
   using BrowserManagerCallback = base::OnceCallback<void(bool)>;

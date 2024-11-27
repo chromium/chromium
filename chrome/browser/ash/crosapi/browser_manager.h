@@ -38,10 +38,8 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "components/tab_groups/tab_group_info.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace component_updater {
@@ -102,24 +100,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // name in the `NavigateParams` struct that's used to perform the actual
   // navigation downstream.
   void SwitchToTab(const GURL& url, NavigateParams::PathBehavior path_behavior);
-
-  // Create a browser with the restored data containing `urls`,
-  // `bounds`,`tab_group_infos`, `show_state`, `active_tab_index`,
-  // `first_non_pinned_tab_index`, and `app_name`. Note an non-empty `app_name`
-  // indicates that the browser window is an app type browser window.  Also
-  // note that` first_non_pinned_tab_indexes` with negative values are ignored
-  // type constraints for the `first_non_pinned_tab_index` and are enforced on
-  // the browser side and are dropped if they don't comply with said restraints.
-  void CreateBrowserWithRestoredData(
-      const std::vector<GURL>& urls,
-      const gfx::Rect& bounds,
-      const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
-      const ui::mojom::WindowShowState show_state,
-      int32_t active_tab_index,
-      int32_t first_non_pinned_tab_index,
-      const std::string& app_name,
-      int32_t restore_window_id,
-      uint64_t lacros_profile_id);
 
   // Initialize resources and start Lacros.
   //
