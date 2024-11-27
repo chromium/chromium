@@ -1610,11 +1610,6 @@
       status: "experimental",
     },
     {
-      // https://chromestatus.com/feature/5113053598711808
-      name: "DocumentRenderBlocking",
-      status: "stable",
-    },
-    {
       name: "DocumentWrite",
     },
     {
