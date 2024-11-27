@@ -212,10 +212,9 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
 
  private:
   raw_ref<TestAutofillClient> autofill_client_;
-  std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
-
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
   GURL url_{"https://example.test"};
+  std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 };
 
 }  // namespace autofill
