@@ -15,7 +15,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {LensSidePanelPageHandlerInterface} from '../lens.mojom-webui.js';
+import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
 
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';

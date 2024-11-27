@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LensGhostLoaderPageCallbackRouter, type LensGhostLoaderPageRemote} from 'chrome-untrusted://lens/lens/shared/lens.mojom-webui.js';
+import {LensGhostLoaderPageCallbackRouter, type LensGhostLoaderPageRemote} from 'chrome-untrusted://lens/lens/shared/lens_ghost_loader.mojom-webui.js';
 import type {BrowserProxy} from 'chrome-untrusted://lens/lens/shared/searchbox_ghost_loader_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
