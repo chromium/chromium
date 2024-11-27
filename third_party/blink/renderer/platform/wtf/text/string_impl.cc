@@ -196,16 +196,12 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
-  StringImpl* string = static_cast<StringImpl*>(Partitions::BufferMalloc(
-      AllocationSize<LChar>(narrowed_length), "WTF::StringImpl"));
+  StringImpl* string = new (Partitions::BufferMalloc(
+      AllocationSize<LChar>(narrowed_length), "WTF::StringImpl"))
+      StringImpl(narrowed_length, kForce8BitConstructor);
 
-  // SAFETY: The AllocationSize<LChar>() helper function computes a size that
-  // includes `narrowed_length` LChar characters in addition to the size
-  // required for the StringImpl.
-  data = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<LChar*>(string + 1), narrowed_length));
-  return base::AdoptRef(new (string)
-                            StringImpl(narrowed_length, kForce8BitConstructor));
+  data = string->CharacterBuffer<LChar>();
+  return base::AdoptRef(string);
 }
 
 scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
@@ -220,15 +216,12 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
-  StringImpl* string = static_cast<StringImpl*>(Partitions::BufferMalloc(
-      AllocationSize<UChar>(narrowed_length), "WTF::StringImpl"));
+  StringImpl* string = new (Partitions::BufferMalloc(
+      AllocationSize<UChar>(narrowed_length), "WTF::StringImpl"))
+      StringImpl(narrowed_length);
 
-  // SAFETY: The AllocationSize<UChar>() helper function computes a size that
-  // includes `narrowed_length` UChar characters in addition to the size
-  // required for the StringImpl.
-  data = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<UChar*>(string + 1), narrowed_length));
-  return base::AdoptRef(new (string) StringImpl(narrowed_length));
+  data = string->CharacterBuffer<UChar>();
+  return base::AdoptRef(string);
 }
 
 static StaticStringsTable& StaticStrings() {
@@ -282,22 +275,20 @@ StringImpl* StringImpl::CreateStatic(const char* string, wtf_size_t length) {
 
   StaticStringsTable::const_iterator it = StaticStrings().find(hash);
   if (it != StaticStrings().end()) {
-    DCHECK(!memcmp(string, it->value + 1, length * sizeof(LChar)));
+    DCHECK_EQ(it->value->Span8(), base::as_bytes(base::span(string, length)));
     return it->value;
   }
 
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
-  const size_t size = AllocationSize<LChar>(length);
-
   WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE;
-  StringImpl* impl = static_cast<StringImpl*>(
-      Partitions::BufferMalloc(size, "WTF::StringImpl"));
+  StringImpl* impl = new (Partitions::BufferMalloc(
+      AllocationSize<LChar>(length), "WTF::StringImpl"))
+      StringImpl(length, hash, kStaticString);
 
-  LChar* data = reinterpret_cast<LChar*>(impl + 1);
-  impl = new (impl) StringImpl(length, hash, kStaticString);
-  memcpy(data, string, length * sizeof(LChar));
+  impl->CharacterBuffer<LChar>().copy_from(
+      base::as_bytes(base::span(string, length)));
 #if DCHECK_IS_ON()
   impl->AssertHashIsCorrect();
 #endif

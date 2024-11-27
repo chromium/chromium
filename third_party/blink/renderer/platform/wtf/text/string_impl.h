@@ -193,11 +193,11 @@ class WTF_EXPORT StringImpl {
   }
   ALWAYS_INLINE base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
-    return {reinterpret_cast<const LChar*>(this + 1), length_};
+    return CharacterBuffer<LChar>();
   }
   ALWAYS_INLINE base::span<const UChar> Span16() const {
     DCHECK(!Is8Bit());
-    return {reinterpret_cast<const UChar*>(this + 1), length_};
+    return CharacterBuffer<UChar>();
   }
   ALWAYS_INLINE const void* Bytes() const {
     return reinterpret_cast<const void*>(this + 1);
@@ -576,6 +576,19 @@ class WTF_EXPORT StringImpl {
     return base::CheckAdd(sizeof(StringImpl),
                           base::CheckMul(length, sizeof(CharType)))
         .ValueOrDie();
+  }
+
+  template <typename CharType>
+  ALWAYS_INLINE base::span<CharType> CharacterBuffer() {
+    // SAFETY: The AllocationSize<CharType>() helper function computes a size
+    // that includes `length_` UChar/LChar characters in addition to the size
+    // required for the StringImpl.
+    return UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<CharType*>(this + 1), length_));
+  }
+  template <typename CharType>
+  ALWAYS_INLINE base::span<const CharType> CharacterBuffer() const {
+    return const_cast<StringImpl*>(this)->CharacterBuffer<CharType>();
   }
 
   template <typename DestCharType,
