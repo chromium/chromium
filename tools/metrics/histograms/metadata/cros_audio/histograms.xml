@@ -323,7 +323,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo"
-    enum="AudioDeviceType" expires_after="2025-05-11">
+    enum="AudioDeviceType" expires_after="2025-12-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -334,7 +334,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.InputGainSetTo" units="%"
-    expires_after="2025-01-05">
+    expires_after="2025-12-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -356,7 +356,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.NoiseCancellationEnabled"
-    enum="BooleanEnabled" expires_after="2025-03-09">
+    enum="BooleanEnabled" expires_after="2025-12-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -366,7 +366,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo"
-    enum="AudioDeviceType" expires_after="2025-01-05">
+    enum="AudioDeviceType" expires_after="2025-12-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -377,7 +377,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputMuteStateChange"
-    enum="AudioMuteButtonAction" expires_after="2025-01-05">
+    enum="AudioMuteButtonAction" expires_after="2025-12-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -387,7 +387,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CrosAudioConfig.OutputVolumeSetTo" units="%"
-    expires_after="2025-01-05">
+    expires_after="2025-12-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
