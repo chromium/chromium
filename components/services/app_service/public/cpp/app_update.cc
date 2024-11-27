@@ -660,7 +660,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   }
 
   out << "InstallReason: " << app.InstallReason() << std::endl;
-  out << "InstallSource: " << EnumToString(app.InstallSource()) << std::endl;
+  out << "InstallSource: " << app.InstallSource() << std::endl;
 
   out << "PolicyId: " << base::JoinString(app.PolicyIds(), ", ") << std::endl;
 

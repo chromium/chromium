@@ -128,13 +128,27 @@ std::ostream& operator<<(std::ostream& os, InstallReason v) {
   return os << "(unknown: " << static_cast<int>(v) << ")";
 }
 
-APP_ENUM_TO_STRING(InstallSource,
-                   kUnknown,
-                   kSystem,
-                   kSync,
-                   kPlayStore,
-                   kChromeWebStore,
-                   kBrowser)
+std::ostream& operator<<(std::ostream& os, InstallSource v) {
+  switch (v) {
+    case InstallSource::kUnknown:
+      return os << "InstallSource::kUnknown";
+    case InstallSource::kSystem:
+      return os << "InstallSource::kSystem";
+    case InstallSource::kSync:
+      return os << "InstallSource::kSync";
+    case InstallSource::kPlayStore:
+      return os << "InstallSource::kPlayStore";
+    case InstallSource::kChromeWebStore:
+      return os << "InstallSource::kChromeWebStore";
+    case InstallSource::kBrowser:
+      return os << "InstallSource::kBrowser";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
+
 APP_ENUM_TO_STRING(WindowMode, kUnknown, kWindow, kBrowser, kTabbedWindow)
 
 ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {

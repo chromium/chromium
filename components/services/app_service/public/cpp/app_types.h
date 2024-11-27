@@ -128,14 +128,20 @@ std::ostream& operator<<(std::ostream& os, InstallReason v);
 //
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-ENUM(InstallSource,
-     kUnknown,
-     kSystem,          // Installed as part of Chrome OS.
-     kSync,            // Installed from sync.
-     kPlayStore,       // Installed from Play store.
-     kChromeWebStore,  // Installed from Chrome web store.
-     kBrowser          // Installed from browser.
-)
+enum class InstallSource {
+  kUnknown = 0,
+  kSystem = 1,          // Installed as part of Chrome OS.
+  kSync = 2,            // Installed from sync.
+  kPlayStore = 3,       // Installed from Play store.
+  kChromeWebStore = 4,  // Installed from Chrome web store.
+  kBrowser = 5,         // Installed from browser.
+
+  // The value for UMA. Should be updated when a new entry is added.
+  kMaxValue = kBrowser,
+};
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& os, InstallSource v);
 
 // What caused the app to be uninstalled.
 // This should be kept in sync with UninstallSource in enums.xml as well as
