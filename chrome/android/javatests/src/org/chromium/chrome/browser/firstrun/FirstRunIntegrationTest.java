@@ -44,7 +44,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -113,7 +112,7 @@ public class FirstRunIntegrationTest {
     @Mock public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
 
     private final Set<Class> mSupportedActivities =
-            CollectionUtil.newHashSet(
+            Set.of(
                     ChromeLauncherActivity.class,
                     FirstRunActivity.class,
                     ChromeTabbedActivity.class,

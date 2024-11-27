@@ -39,7 +39,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -92,9 +91,8 @@ public class ChromeFeedbackCollectorUnitTest {
     private static final String VALUE_10 = "value10";
 
     private static List<FeedbackSource> buildSynchronousFeedbackSources() {
-        Map<String, String> map1 =
-                CollectionUtil.newHashMap(Pair.create(KEY_1, VALUE_1), Pair.create(KEY_2, VALUE_2));
-        Map<String, String> map2 = CollectionUtil.newHashMap(Pair.create(KEY_3, VALUE_3));
+        Map<String, String> map1 = Map.of(KEY_1, VALUE_1, KEY_2, VALUE_2);
+        Map<String, String> map2 = Map.of(KEY_3, VALUE_3);
 
         Pair<String, String> logs1 = Pair.create(KEY_4, VALUE_4);
         Pair<String, String> logs2 = Pair.create(KEY_5, VALUE_5);
@@ -121,9 +119,8 @@ public class ChromeFeedbackCollectorUnitTest {
     }
 
     private static List<AsyncFeedbackSource> buildAsyncronousFeedbackSources() {
-        Map<String, String> map1 =
-                CollectionUtil.newHashMap(Pair.create(KEY_6, VALUE_6), Pair.create(KEY_7, VALUE_7));
-        Map<String, String> map2 = CollectionUtil.newHashMap(Pair.create(KEY_8, VALUE_8));
+        Map<String, String> map1 = Map.of(KEY_6, VALUE_6, KEY_7, VALUE_7);
+        Map<String, String> map2 = Map.of(KEY_8, VALUE_8);
 
         Pair<String, String> logs1 = Pair.create(KEY_9, VALUE_9);
         Pair<String, String> logs2 = Pair.create(KEY_10, VALUE_10);

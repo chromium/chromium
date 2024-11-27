@@ -34,7 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -68,6 +67,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for quick delete dialog view. */
@@ -152,8 +152,7 @@ public class QuickDeleteDialogDelegateTest {
                     when(mMockSyncService.getActiveDataTypes())
                             .thenReturn(
                                     syncable
-                                            ? CollectionUtil.newHashSet(
-                                                    DataType.HISTORY_DELETE_DIRECTIVES)
+                                            ? Set.of(DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<>());
                 });
     }

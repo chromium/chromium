@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download.home;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
@@ -116,7 +115,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
         OfflineItem item = mItems.remove(id);
         if (item == null) return;
 
-        Set<OfflineItem> removedSet = CollectionUtil.newHashSet(item);
+        Set<OfflineItem> removedSet = Set.of(item);
         for (OfflineItemFilterObserver observer : mObservers) observer.onItemsRemoved(removedSet);
     }
 

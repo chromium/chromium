@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -35,7 +34,7 @@ import java.util.Set;
  */
 public class TabStripSnapshotter {
     private static final Set<PropertyKey> SNAPSHOT_PROPERTY_KEY_SET =
-            CollectionUtil.newHashSet(
+            Set.of(
                     TabProperties.FAVICON_FETCHER,
                     TabProperties.FAVICON_FETCHED,
                     TabProperties.IS_SELECTED);

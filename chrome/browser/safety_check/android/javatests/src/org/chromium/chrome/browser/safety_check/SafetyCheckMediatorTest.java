@@ -47,7 +47,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -109,6 +108,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -226,8 +226,7 @@ public class SafetyCheckMediatorTest {
         // account storage.
         // This will no longer be true once the local and account store split happens.
         if (mUseGmsApi) {
-            when(mSyncService.getSelectedTypes())
-                    .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
+            when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
         } else {
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         }

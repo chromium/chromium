@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -48,6 +47,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 
 /** Integration tests for ClearBrowsingDataFragmentBasic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -95,8 +95,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                     when(mMockSyncService.getActiveDataTypes())
                             .thenReturn(
                                     syncable
-                                            ? CollectionUtil.newHashSet(
-                                                    DataType.HISTORY_DELETE_DIRECTIVES)
+                                            ? Set.of(DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<Integer>());
                 });
     }

@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.feedback;
 
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Pair;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 
 import java.util.Map;
@@ -24,6 +22,6 @@ public class IMEFeedbackSource implements FeedbackSource {
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.Secure.DEFAULT_INPUT_METHOD);
         if (TextUtils.isEmpty(imePackage)) return null;
-        return CollectionUtil.newHashMap(Pair.create("Default IME", imePackage));
+        return Map.of("Default IME", imePackage);
     }
 }

@@ -14,7 +14,6 @@ import android.widget.TextView;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.CollectionUtil;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -121,11 +120,11 @@ public class AndroidPermissionRequester {
             }
 
             final Set<String> requiredPermissions =
-                    CollectionUtil.newHashSet(
+                    Set.of(
                             PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
                                     contentSettingType));
             final Set<String> optionalPermissions =
-                    CollectionUtil.newHashSet(
+                    Set.of(
                             PermissionUtil.getOptionalAndroidPermissionsForContentSetting(
                                     contentSettingType));
 
