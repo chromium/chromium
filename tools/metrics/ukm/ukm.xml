@@ -3969,6 +3969,16 @@ be describing additional metrics about the same event.
       when the id token response is received.
     </summary>
   </metric>
+  <metric name="UseOtherAccountResult" enum="FedCmUseOtherAccountResult">
+    <summary>
+      Records the outcome of the user clicking on the &quot;use other
+      account&quot; button in FedCM. Recorded once per API call when the user
+      attempts to login with a new account via the &quot;use other account&quot;
+      button, when the request is fulfilled (either resolved or rejected). Only
+      considers the last &quot;use other account&quot; button clicked if there
+      are multiple attempts.
+    </summary>
+  </metric>
 </event>
 
 <event name="Blink.FedCmIdp">
@@ -4148,6 +4158,16 @@ be describing additional metrics about the same event.
     <summary>
       Records the overall time (in milliseconds) from when the API is called to
       when the id token response is received.
+    </summary>
+  </metric>
+  <metric name="UseOtherAccountResult" enum="FedCmUseOtherAccountResult">
+    <summary>
+      Records the outcome of the user clicking on the &quot;use other
+      account&quot; button in FedCM. Recorded once per API call when the user
+      attempts to login with a new account via the &quot;use other account&quot;
+      button, when the request is fulfilled (either resolved or rejected). Only
+      considers the last &quot;use other account&quot; button clicked if there
+      are multiple attempts.
     </summary>
   </metric>
 </event>

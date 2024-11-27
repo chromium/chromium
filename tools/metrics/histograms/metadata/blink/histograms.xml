@@ -2024,6 +2024,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.UseOtherAccountResult"
+    enum="FedCmUseOtherAccountResult" expires_after="2025-04-20">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome of the user clicking on the &quot;use other
+    account&quot; button in FedCM. Recorded once per API call when the user
+    attempts to login with a new account via the &quot;use other account&quot;
+    button, when the request is fulfilled (either resolved or rejected). Only
+    considers the last &quot;use other account&quot; button clicked if there are
+    multiple attempts.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.UserInfo.NumAccounts" enum="FedCmNumAccounts"
     expires_after="2025-04-20">
   <owner>npm@chromium.org</owner>
