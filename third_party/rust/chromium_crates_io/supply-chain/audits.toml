@@ -1337,6 +1337,14 @@ Straightforward diff between 1.0.10 and 1.0.11 - only 3 commits:
   https://github.com/dtolnay/itoa/pull/42
 """
 
+[[audits.itoa]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.11 -> 1.0.14"
+notes = """
+Unsafe review at https://crrev.com/c/6051067
+"""
+
 [[audits.lazy_static]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

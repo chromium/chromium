@@ -672,9 +672,9 @@ third_party/rust/chromium_crates_io/vendor/getrandom-0.2.15 5 1
 third_party/rust/chromium_crates_io/vendor/glob-0.3.1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/hex-0.4.3 1 1
 third_party/rust/chromium_crates_io/vendor/itertools-0.11.0/.github/workflows 1 1
-third_party/rust/chromium_crates_io/vendor/itoa-1.0.11 2 1
-third_party/rust/chromium_crates_io/vendor/itoa-1.0.11/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/itoa-1.0.11/src 1 1
+third_party/rust/chromium_crates_io/vendor/itoa-1.0.14 2 1
+third_party/rust/chromium_crates_io/vendor/itoa-1.0.14/.github/workflows 2 1
+third_party/rust/chromium_crates_io/vendor/itoa-1.0.14/src 1 1
 third_party/rust/chromium_crates_io/vendor/log-0.4.22 1 1
 third_party/rust/chromium_crates_io/vendor/log-0.4.22/.github/workflows 8 1
 third_party/rust/chromium_crates_io/vendor/miniz_oxide-0.8.0 4 2

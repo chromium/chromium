@@ -143,7 +143,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."itertools:0.11.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."itoa:1.0.11"]
+[policy."itoa:1.0.14"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."lazy_static:1.5.0"]
