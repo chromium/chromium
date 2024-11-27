@@ -19,6 +19,7 @@ class SafetyHubHatsBridge {
             WebContents webContents,
             String moduleType,
             boolean hasTappedCard,
+            boolean hasVisited,
             String globalState) {
         if (!ChromeFeatureList.sSafetyHubAndroidSurvey.isEnabled()) {
             return false;
@@ -26,7 +27,7 @@ class SafetyHubHatsBridge {
 
         return SafetyHubHatsBridgeJni.get()
                 .triggerHatsSurveyIfEnabled(
-                        profile, webContents, moduleType, hasTappedCard, globalState);
+                        profile, webContents, moduleType, hasTappedCard, hasVisited, globalState);
     }
 
     @NativeMethods
@@ -36,6 +37,7 @@ class SafetyHubHatsBridge {
                 WebContents webContents,
                 @JniType("std::string") String moduleType,
                 boolean hasTappedCard,
+                boolean hasVisited,
                 @JniType("std::string") String globalState);
     }
 }

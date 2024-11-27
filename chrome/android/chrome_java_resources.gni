@@ -501,6 +501,7 @@ chrome_java_resources = [
   "java/res/layout/find_in_page.xml",
   "java/res/layout/find_toolbar.xml",
   "java/res/layout/fre_tos_privacy_disclaimer.xml",
+  "java/res/layout/hats_survey_container.xml",
   "java/res/layout/history_clear_browsing_data_header.xml",
   "java/res/layout/history_item_view.xml",
   "java/res/layout/history_main.xml",
