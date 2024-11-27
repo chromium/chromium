@@ -428,7 +428,7 @@ suite('WallpaperSearchTest', () => {
       assertTrue(!wallpaperSearchElement.shadowRoot!.querySelector('.tile'));
     });
 
-    test('shows mix of filled and empty containers', async () => {
+    test('shows results', async () => {
       handler.setResultFor('getWallpaperSearchResults', Promise.resolve({
         status: WallpaperSearchStatus.kOk,
         results: [
@@ -438,27 +438,27 @@ suite('WallpaperSearchTest', () => {
       }));
       createWallpaperSearchElementWithDescriptors();
       await microtasksFinished();
+      const resultGrid =
+          wallpaperSearchElement.$.wallpaperSearch.querySelector('#resultGrid');
+      assertFalse(isVisible(resultGrid));
+      assertEquals(
+          0,
+          wallpaperSearchElement.$.wallpaperSearch.querySelectorAll('.tile')
+              .length);
 
       wallpaperSearchElement.$.submitButton.click();
       await microtasksFinished();
 
-      // There should always be 6 tiles total. Since there are 2 images in the
-      // response, there should be 2 result tiles and the remaining 4 should be
-      // empty.
+      assertTrue(isVisible(resultGrid));
       assertEquals(
+          2,
           wallpaperSearchElement.$.wallpaperSearch.querySelectorAll('.tile')
-              .length,
-          6);
+              .length);
       assertEquals(
+          2,
           wallpaperSearchElement.$.wallpaperSearch
               .querySelectorAll('.tile.result')
-              .length,
-          2);
-      assertEquals(
-          wallpaperSearchElement.$.wallpaperSearch
-              .querySelectorAll('.tile.empty')
-              .length,
-          4);
+              .length);
     });
 
     test('handle result click', async () => {
