@@ -24,7 +24,6 @@
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/platform/wayland/test/test_zcr_pointer_stylus.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -272,54 +271,6 @@ TEST_F(WaylandPointerTest, MotionDragged) {
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->root_location_f());
 }
 
-TEST_F(WaylandPointerTest, MotionDraggedWithStylus) {
-  SendEnter();
-
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const pointer = server->seat()->pointer()->resource();
-    auto* const stylus =
-        server->seat()->pointer()->pointer_stylus()->resource();
-
-    wl_pointer_send_button(pointer, server->GetNextSerial(),
-                           server->GetNextTime(), BTN_LEFT,
-                           WL_POINTER_BUTTON_STATE_PRESSED);
-
-    // Stylus data.
-    zcr_pointer_stylus_v2_send_tool(stylus,
-                                    ZCR_POINTER_STYLUS_V2_TOOL_TYPE_PEN);
-    zcr_pointer_stylus_v2_send_force(stylus, server->GetNextTime(),
-                                     wl_fixed_from_double(1.0f));
-    zcr_pointer_stylus_v2_send_tilt(stylus, server->GetNextTime(),
-                                    wl_fixed_from_double(-45),
-                                    wl_fixed_from_double(45));
-    wl_pointer_send_frame(pointer);
-  });
-
-  CheckEventType(ui::EventType::kMousePressed, event.get(),
-                 ui::EventPointerType::kPen, 1.0f /* force */,
-                 -45.0f /* tilt_x */, 45.0f /* tilt_y */);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const pointer = server->seat()->pointer()->resource();
-
-    wl_pointer_send_motion(pointer, server->GetNextTime(),
-                           wl_fixed_from_int(400), wl_fixed_from_int(500));
-    wl_pointer_send_frame(pointer);
-  });
-
-  ASSERT_TRUE(event);
-  ASSERT_TRUE(event->IsMouseEvent());
-  auto* mouse_event = event->AsMouseEvent();
-  EXPECT_EQ(EventType::kMouseDragged, mouse_event->type());
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, mouse_event->button_flags());
-  EXPECT_EQ(0, mouse_event->changed_button_flags());
-  EXPECT_EQ(gfx::PointF(400, 500), mouse_event->location_f());
-  EXPECT_EQ(gfx::PointF(400, 500), mouse_event->root_location_f());
-}
-
 // Verifies whether the platform event source handles all types of axis sources.
 // The actual behaviour of each axis source is not tested here.
 TEST_F(WaylandPointerTest, AxisSourceTypes) {
@@ -353,43 +304,6 @@ TEST_F(WaylandPointerTest, AxisSourceTypes) {
   ASSERT_TRUE(event3->IsScrollEvent());
   ASSERT_TRUE(event4);
   ASSERT_TRUE(event4->IsMouseWheelEvent());
-}
-
-// This test ensures Ozone/Wayland does not crash when spurious
-// `stylus tool` and `axis source` events are sent by the Compositor, prior
-// to a pointer clicking event.
-// In practice, this might happen with specific compositors, eg Exo, when a
-// device wakes up from sleeping.
-TEST_F(WaylandPointerTest, SpuriousAxisSourceAndStylusToolEvents) {
-  SendEnter();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const pointer = server->seat()->pointer()->resource();
-    auto* const stylus =
-        server->seat()->pointer()->pointer_stylus()->resource();
-
-    // Stylus data.
-    zcr_pointer_stylus_v2_send_tool(stylus,
-                                    ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE);
-    wl_pointer_send_frame(pointer);
-
-    // Wheel data.
-    wl_pointer_send_axis_source(pointer, WL_POINTER_AXIS_SOURCE_WHEEL);
-  });
-
-  // Button press.  This may generate more than a single event.
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const pointer = server->seat()->pointer()->resource();
-
-    wl_pointer_send_button(pointer, 2, 1, BTN_LEFT,
-                           WL_POINTER_BUTTON_STATE_PRESSED);
-    wl_pointer_send_frame(pointer);
-  });
-
-  // Do not validate anything, this test only ensures that no crash occurred.
 }
 
 TEST_F(WaylandPointerTest, Axis) {

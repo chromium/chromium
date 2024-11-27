@@ -131,9 +131,6 @@ class WaylandEventSource : public PlatformEventSource,
   bool IsPointerButtonPressed(EventFlags button) const override;
   void ReleasePressedPointerButtons(WaylandWindow* window,
                                     base::TimeTicks timestamp) override;
-  void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
-  void OnPointerStylusForceChanged(float force) override;
-  void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
@@ -155,11 +152,6 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
   const WaylandWindow* GetTouchTarget(PointerId id) const override;
-  void OnTouchStylusToolChanged(PointerId pointer_id,
-                                EventPointerType pointer_type) override;
-  void OnTouchStylusForceChanged(PointerId pointer_id, float force) override;
-  void OnTouchStylusTiltChanged(PointerId pointer_id,
-                                const gfx::Vector2dF& tilt) override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,
@@ -225,12 +217,6 @@ class WaylandEventSource : public PlatformEventSource,
   // The fling velocity is computed the same way as in libgestures.
   gfx::Vector2dF ComputeFlingVelocity();
 
-  // For pointer events.
-  std::optional<PointerDetails> AmendStylusData() const;
-
-  // For touch events.
-  std::optional<PointerDetails> AmendStylusData(PointerId pointer_id) const;
-
   // Wrap up method to support async pointer down/up event processing.
   void OnPointerButtonEventInternal(WaylandWindow* window, EventType type);
 
@@ -277,19 +263,6 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
-
-  struct StylusData {
-    EventPointerType type = EventPointerType::kUnknown;
-    gfx::Vector2dF tilt;
-    float force = std::numeric_limits<float>::quiet_NaN();
-  };
-
-  // Last known pointer stylus data (eg {mouse, pen, eraser or touch}, tilt and
-  // force).
-  std::optional<StylusData> last_pointer_stylus_data_;
-
-  // Last known touch stylus data (eg {touch, pen or eraser}, tilt and force).
-  base::flat_map<PointerId, std::optional<StylusData>> last_touch_stylus_data_;
 
   // Order set of touch events to be dispatching on the next
   // wl_touch::frame event.

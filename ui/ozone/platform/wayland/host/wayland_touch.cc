@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
-#include <stylus-unstable-v2-client-protocol.h>
-
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -45,8 +43,6 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
   };
 
   wl_touch_add_listener(obj_.get(), &kTouchListener, this);
-
-  SetupStylus();
 }
 
 WaylandTouch::~WaylandTouch() {
@@ -147,72 +143,6 @@ void WaylandTouch::OnTouchFrame(void* data, wl_touch* touch) {
   DCHECK(self);
 
   self->delegate_->OnTouchFrame();
-}
-
-void WaylandTouch::SetupStylus() {
-  auto* stylus_v2 = connection_->stylus_v2();
-  if (!stylus_v2)
-    return;
-
-  zcr_touch_stylus_v2_.reset(
-      zcr_stylus_v2_get_touch_stylus(stylus_v2, obj_.get()));
-
-  static constexpr zcr_touch_stylus_v2_listener kTouchStylusListener = {
-      .tool = &OnTouchStylusTool,
-      .force = &OnTouchStylusForce,
-      .tilt = &OnTouchStylusTilt};
-  zcr_touch_stylus_v2_add_listener(zcr_touch_stylus_v2_.get(),
-                                   &kTouchStylusListener, this);
-}
-
-// static
-void WaylandTouch::OnTouchStylusTool(void* data,
-                                     struct zcr_touch_stylus_v2* stylus,
-                                     uint32_t id,
-                                     uint32_t stylus_type) {
-  auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
-
-  ui::EventPointerType pointer_type = ui::EventPointerType::kTouch;
-  switch (stylus_type) {
-    case ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN:
-      pointer_type = EventPointerType::kPen;
-      break;
-    case ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_ERASER:
-      pointer_type = ui::EventPointerType::kEraser;
-      break;
-    case ZCR_POINTER_STYLUS_V2_TOOL_TYPE_TOUCH:
-      break;
-  }
-
-  self->delegate_->OnTouchStylusToolChanged(id, pointer_type);
-}
-
-// static
-void WaylandTouch::OnTouchStylusForce(void* data,
-                                      struct zcr_touch_stylus_v2* stylus,
-                                      uint32_t time,
-                                      uint32_t id,
-                                      wl_fixed_t force) {
-  auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
-
-  self->delegate_->OnTouchStylusForceChanged(id, wl_fixed_to_double(force));
-}
-
-// static
-void WaylandTouch::OnTouchStylusTilt(void* data,
-                                     struct zcr_touch_stylus_v2* stylus,
-                                     uint32_t time,
-                                     uint32_t id,
-                                     wl_fixed_t tilt_x,
-                                     wl_fixed_t tilt_y) {
-  auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
-
-  self->delegate_->OnTouchStylusTiltChanged(
-      id,
-      gfx::Vector2dF(wl_fixed_to_double(tilt_x), wl_fixed_to_double(tilt_y)));
 }
 
 }  // namespace ui

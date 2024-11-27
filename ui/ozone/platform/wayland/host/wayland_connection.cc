@@ -91,7 +91,6 @@ constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgToplevelDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
-constexpr uint32_t kMaxStylusVersion = 2;
 constexpr uint32_t kMaxWpContentTypeVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
@@ -730,13 +729,6 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
     // Recognized but not yet supported.
     NOTIMPLEMENTED_LOG_ONCE();
     ReportShellUMA(UMALinuxWaylandShell::kZwlrLayerShellV1);
-  } else if (!zcr_stylus_v2_ && strcmp(interface, "zcr_stylus_v2") == 0) {
-    zcr_stylus_v2_ = wl::Bind<zcr_stylus_v2>(
-        registry, name, std::min(version, kMaxStylusVersion));
-    if (!zcr_stylus_v2_) {
-      LOG(ERROR) << "Failed to bind to zcr_stylus_v2";
-      return;
-    }
   }
 
   available_globals_.emplace_back(interface, version);

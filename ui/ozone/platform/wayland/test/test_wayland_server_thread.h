@@ -36,7 +36,6 @@
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_wp_linux_drm_syncobj.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
-#include "ui/ozone/platform/wayland/test/test_zcr_stylus.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
@@ -236,7 +235,6 @@ class TestWaylandServerThread : public base::Thread,
   TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;
   ::testing::NiceMock<MockZcrColorManagerV1> zcr_color_manager_v1_;
-  TestZcrStylus zcr_stylus_;
   TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
   TestZwpTextInputManagerV3 zwp_text_input_manager_v3_;

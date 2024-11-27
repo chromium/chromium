@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <linux/input.h>
-#include <stylus-unstable-v2-server-protocol.h>
 #include <wayland-server.h>
 #include <cstdint>
 #include <memory>
@@ -20,7 +19,6 @@
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/platform/wayland/test/test_zcr_touch_stylus.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
@@ -119,109 +117,6 @@ TEST_F(WaylandTouchTest, TouchPressAndMotion) {
   });
 
   CheckEventType(ui::EventType::kTouchReleased, event.get());
-}
-
-// Tests that touch events with stylus pen work.
-TEST_F(WaylandTouchTest, TouchPressAndMotionWithStylus) {
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
-
-  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
-                          wl::TestWaylandServerThread* server) {
-    auto* const touch = server->seat()->touch()->resource();
-    auto* const stylus = server->seat()->touch()->touch_stylus()->resource();
-    auto* const surface =
-        server->GetObject<wl::MockSurface>(surface_id)->resource();
-
-    zcr_touch_stylus_v2_send_tool(stylus, 0 /* id */,
-                                  ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN);
-
-    wl_touch_send_down(touch, server->GetNextSerial(), server->GetNextTime(),
-                       surface, 0 /* id */, wl_fixed_from_int(50),
-                       wl_fixed_from_int(100));
-    wl_touch_send_frame(touch);
-  });
-
-  CheckEventType(ui::EventType::kTouchPressed, event.get(),
-                 ui::EventPointerType::kPen);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const touch = server->seat()->touch()->resource();
-
-    wl_touch_send_motion(touch, server->GetNextTime(), 0 /* id */,
-                         wl_fixed_from_int(100), wl_fixed_from_int(100));
-    wl_touch_send_frame(touch);
-  });
-
-  CheckEventType(ui::EventType::kTouchMoved, event.get(),
-                 ui::EventPointerType::kPen);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const touch = server->seat()->touch()->resource();
-
-    wl_touch_send_up(touch, server->GetNextSerial(), server->GetNextTime(),
-                     0 /* id */);
-    wl_touch_send_frame(touch);
-  });
-
-  CheckEventType(ui::EventType::kTouchReleased, event.get(),
-                 ui::EventPointerType::kPen);
-}
-
-// Tests that touch events with stylus pen work. This variant of the test sends
-// the tool information after the touch down event, and ensures that
-// wl_touch::frame event handles it correctly.
-TEST_F(WaylandTouchTest, TouchPressAndMotionWithStylus2) {
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
-
-  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
-                          wl::TestWaylandServerThread* server) {
-    auto* const touch = server->seat()->touch()->resource();
-    auto* const stylus = server->seat()->touch()->touch_stylus()->resource();
-    auto* const surface =
-        server->GetObject<wl::MockSurface>(surface_id)->resource();
-
-    wl_touch_send_down(touch, server->GetNextSerial(), server->GetNextTime(),
-                       surface, 0 /* id */, wl_fixed_from_int(50),
-                       wl_fixed_from_int(100));
-    zcr_touch_stylus_v2_send_tool(stylus, 0 /* id */,
-                                  ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN);
-    zcr_touch_stylus_v2_send_force(stylus, server->GetNextTime(), 0 /* id */,
-                                   wl_fixed_from_double(1.0f));
-    zcr_touch_stylus_v2_send_tilt(stylus, server->GetNextTime(), 0 /* id */,
-                                  wl_fixed_from_double(-45),
-                                  wl_fixed_from_double(45));
-    wl_touch_send_frame(touch);
-  });
-
-  CheckEventType(ui::EventType::kTouchPressed, event.get(),
-                 ui::EventPointerType::kPen, 1.0f /* force */,
-                 -45.0f /* tilt_x */, 45.0f /* tilt_y */);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const touch = server->seat()->touch()->resource();
-
-    wl_touch_send_motion(touch, server->GetNextTime(), 0 /* id */,
-                         wl_fixed_from_int(100), wl_fixed_from_int(100));
-    wl_touch_send_frame(touch);
-  });
-
-  CheckEventType(ui::EventType::kTouchMoved, event.get(),
-                 ui::EventPointerType::kPen, 1.0f /* force */,
-                 -45.0f /* tilt_x */, 45.0f /* tilt_y */);
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const touch = server->seat()->touch()->resource();
-
-    wl_touch_send_up(touch, server->GetNextSerial(), server->GetNextTime(),
-                     0 /* id */);
-    wl_touch_send_frame(touch);
-  });
-
-  CheckEventType(ui::EventType::kTouchReleased, event.get(),
-                 ui::EventPointerType::kPen, 1.0f /* force */,
-                 -45.0f /* tilt_x */, 45.0f /* tilt_y */);
 }
 
 // Tests that touch focus is correctly set and released.

@@ -410,10 +410,6 @@ void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window,
                                                       EventType type) {
   if (window)
     window_manager_->SetPointerFocusedWindow(window);
-
-  if (type == EventType::kMouseReleased) {
-    last_pointer_stylus_data_.reset();
-  }
 }
 
 void WaylandEventSource::OnPointerMotionEvent(
@@ -514,20 +510,6 @@ void WaylandEventSource::OnPointerFrameEvent() {
     auto pointer_frame = std::move(pointer_frames_.front());
     pointer_frames_.pop_front();
 
-    // In case there are pointer stylus information, override the current
-    // 'event' instance, given that PointerDetails is 'const'.
-    auto pointer_details_with_stylus_data = AmendStylusData();
-    if (pointer_details_with_stylus_data &&
-        pointer_frame->event->IsMouseEvent() &&
-        pointer_frame->event->AsMouseEvent()->IsOnlyLeftMouseButton()) {
-      auto old_event = std::move(pointer_frame->event);
-      pointer_frame->event = std::make_unique<MouseEvent>(
-          old_event->type(), old_event->AsMouseEvent()->location(),
-          old_event->AsMouseEvent()->root_location(), old_event->time_stamp(),
-          old_event->flags(), old_event->AsMouseEvent()->changed_button_flags(),
-          pointer_details_with_stylus_data.value());
-    }
-
     SetTargetAndDispatchEvent(pointer_frame->event.get(), target);
     if (!pointer_frame->completion_cb.is_null())
       std::move(pointer_frame->completion_cb).Run();
@@ -624,11 +606,6 @@ void WaylandEventSource::OnTouchReleaseInternal(PointerId id) {
   TouchPoint* touch_point = it->second.get();
   HandleTouchFocusChange(touch_point->window, false, id);
   touch_points_.erase(it);
-
-  // Clean up stylus touch tracking, if any.
-  const auto stylus_data_it = last_touch_stylus_data_.find(id);
-  if (stylus_data_it != last_touch_stylus_data_.end())
-    last_touch_stylus_data_.erase(stylus_data_it);
 }
 
 void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
@@ -705,7 +682,6 @@ void WaylandEventSource::OnTouchCancelEvent() {
     HandleTouchFocusChange(touch_point.second->window, false);
   }
   touch_points_.clear();
-  last_touch_stylus_data_.clear();
 }
 
 void WaylandEventSource::OnTouchFrame() {
@@ -714,17 +690,6 @@ void WaylandEventSource::OnTouchFrame() {
     auto touch_frame = std::move(touch_frames_.front());
     touch_frames_.pop_front();
 
-    // In case there are touch stylus information, override the current 'event'
-    // instance, given that PointerDetails is 'const'.
-    auto pointer_details_with_stylus_data = AmendStylusData(
-        touch_frame->event->AsTouchEvent()->pointer_details().id);
-    if (pointer_details_with_stylus_data) {
-      auto old_event = std::move(touch_frame->event);
-      touch_frame->event = std::make_unique<TouchEvent>(
-          old_event->type(), old_event->AsTouchEvent()->location_f(),
-          old_event->AsTouchEvent()->root_location_f(), old_event->time_stamp(),
-          pointer_details_with_stylus_data.value(), old_event->flags());
-    }
     SetTouchTargetAndDispatchTouchEvent(touch_frame->event->AsTouchEvent());
     if (!touch_frame->completion_cb.is_null())
       std::move(touch_frame->completion_cb).Run();
@@ -750,29 +715,6 @@ std::vector<PointerId> WaylandEventSource::GetActiveTouchPointIds() {
   for (auto& touch_point : touch_points_)
     pointer_ids.push_back(touch_point.first);
   return pointer_ids;
-}
-
-void WaylandEventSource::OnTouchStylusToolChanged(
-    PointerId pointer_id,
-    EventPointerType pointer_type) {
-  StylusData stylus_data = {.type = pointer_type,
-                            .tilt = gfx::Vector2dF(),
-                            .force = std::numeric_limits<float>::quiet_NaN()};
-  bool inserted =
-      last_touch_stylus_data_.try_emplace(pointer_id, stylus_data).second;
-  DCHECK(inserted);
-}
-
-void WaylandEventSource::OnTouchStylusForceChanged(PointerId pointer_id,
-                                                   float force) {
-  DCHECK(last_touch_stylus_data_[pointer_id].has_value());
-  last_touch_stylus_data_[pointer_id]->force = force;
-}
-
-void WaylandEventSource::OnTouchStylusTiltChanged(PointerId pointer_id,
-                                                  const gfx::Vector2dF& tilt) {
-  DCHECK(last_touch_stylus_data_[pointer_id].has_value());
-  last_touch_stylus_data_[pointer_id]->tilt = tilt;
 }
 
 const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
@@ -888,48 +830,6 @@ void WaylandEventSource::ReleasePressedPointerButtons(
   CHECK(!pointer_flags_);
 }
 
-void WaylandEventSource::OnPointerStylusToolChanged(
-    EventPointerType pointer_type) {
-  // When the reported pointer stylus type is `mouse`, handle it as a regular
-  // pointer event.
-  //
-  // TODO(crbug.com/40822980): Better handle the `touch` type, which
-  // seems mis-specified in
-  // //t_p/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml.
-  if (pointer_type == ui::EventPointerType::kMouse) {
-    last_pointer_stylus_data_.reset();
-    return;
-  }
-
-  last_pointer_stylus_data_ = {
-      .type = pointer_type,
-      .tilt = gfx::Vector2dF(),
-      .force = std::numeric_limits<float>::quiet_NaN()};
-}
-
-void WaylandEventSource::OnPointerStylusForceChanged(float force) {
-  if (!last_pointer_stylus_data_.has_value()) {
-    // This is a stray force event that the default tool cannot accept.
-    LOG(WARNING) << "Cannot handle force for the default tool!  (the value is "
-                 << force << ")";
-    return;
-  }
-
-  last_pointer_stylus_data_->force = force;
-}
-
-void WaylandEventSource::OnPointerStylusTiltChanged(
-    const gfx::Vector2dF& tilt) {
-  if (!last_pointer_stylus_data_.has_value()) {
-    // This is a stray tilt event that the default tool cannot accept.
-    LOG(WARNING) << "Cannot handle tilt for the default tool!  (the value is ["
-                 << tilt.x() << "," << tilt.y() << "])";
-    return;
-  }
-
-  last_pointer_stylus_data_->tilt = tilt;
-}
-
 void WaylandEventSource::OnDispatcherListChanged() {
   StartProcessingEvents();
 }
@@ -1042,34 +942,6 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
   const float det_inv = 1.0 / det;
   return gfx::Vector2dF((count * sums.tx_ - sums.t_ * sums.x_) * det_inv,
                         (count * sums.ty_ - sums.t_ * sums.y_) * det_inv);
-}
-
-std::optional<PointerDetails> WaylandEventSource::AmendStylusData() const {
-  if (!last_pointer_stylus_data_)
-    return std::nullopt;
-
-  DCHECK_NE(last_pointer_stylus_data_->type, EventPointerType::kUnknown);
-  return PointerDetails(last_pointer_stylus_data_->type, /*pointer_id=*/0,
-                        /*radius_x=*/1.0f,
-                        /*radius_y=*/1.0f, last_pointer_stylus_data_->force,
-                        /*twist=*/0.0f, last_pointer_stylus_data_->tilt.x(),
-                        last_pointer_stylus_data_->tilt.y());
-}
-
-std::optional<PointerDetails> WaylandEventSource::AmendStylusData(
-    PointerId pointer_id) const {
-  const auto it = last_touch_stylus_data_.find(pointer_id);
-  if (it == last_touch_stylus_data_.end() || !it->second ||
-      it->second->type == EventPointerType::kTouch) {
-    return std::nullopt;
-  }
-
-  // The values below come from the default values in pointer_details.cc|h.
-  return PointerDetails(it->second->type, pointer_id,
-                        /*radius_x=*/1.0f,
-                        /*radius_y=*/1.0f, it->second->force,
-                        /*twist=*/0.0f, it->second->tilt.x(),
-                        it->second->tilt.y());
 }
 
 void WaylandEventSource::EnsurePointerScrollData(
