@@ -4,8 +4,8 @@ URL: https://aomedia.googlesource.com/aom/
 Version: N/A
 Revision: 37c5c4e6aa461b264642505a089503fa78f0bae3
 CPEPrefix: cpe:/a:aomedia:aomedia:3.11.0
-License: BSD-2-Clause
-License File: source/libaom/LICENSE
+License: BSD-2-Clause, Patent
+License File: source/libaom/LICENSE, source/libaom/PATENTS
 Security Critical: yes
 Shipped: yes
 
