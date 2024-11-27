@@ -14,11 +14,16 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -42,6 +47,8 @@ public class EducationalTipModuleMediator {
     private final CallbackController mCallbackController;
 
     private EducationalTipCardProvider mEducationalTipCardProvider;
+    private DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
+    private Tracker mTracker;
 
     EducationalTipModuleMediator(
             @NonNull PropertyModel model,
@@ -52,6 +59,8 @@ public class EducationalTipModuleMediator {
         mModuleDelegate = moduleDelegate;
         mActionDelegate = actionDelegate;
         mProfile = getRegularProfile(mActionDelegate.getProfileSupplier());
+        mTracker = TrackerFactory.getTrackerForProfile(mProfile);
+        mDefaultBrowserPromoTriggerStateListener = this::removeModule;
 
         mCallbackController = new CallbackController();
     }
@@ -73,8 +82,23 @@ public class EducationalTipModuleMediator {
 
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
-        EducationalTipModuleMediatorJni.get()
-                .notifyCardShown(mProfile, mEducationalTipCardProvider.getCardType());
+        @EducationalTipCardType int cardType = mEducationalTipCardProvider.getCardType();
+        EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
+
+        if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
+            boolean shouldDisplay =
+                    mTracker.shouldTriggerHelpUi(
+                            FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
+            // The shouldDisplay flag should be true in this situation because if the other default
+            // browser promotion is visible to the user, this educational tip module should already
+            // be hidden.
+            assert shouldDisplay;
+
+            DefaultBrowserPromoUtils defaultBrowserPromoUtils =
+                    DefaultBrowserPromoUtils.getInstance();
+            defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
+            defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
+        }
     }
 
     @VisibleForTesting
@@ -82,6 +106,11 @@ public class EducationalTipModuleMediator {
         if (cardType == null) {
             mModuleDelegate.onDataFetchFailed(mModuleType);
             return;
+        }
+
+        if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
+            DefaultBrowserPromoUtils.getInstance()
+                    .addListener(mDefaultBrowserPromoTriggerStateListener);
         }
 
         mEducationalTipCardProvider =
@@ -144,8 +173,11 @@ public class EducationalTipModuleMediator {
         inputContext.addEntry(
                 "is_default_browser_chrome", ProcessedValue.fromFloat(isDefaultBrowserChrome()));
         inputContext.addEntry(
-                "has_default_browser_promo_reached_limit_in_role_manager",
-                ProcessedValue.fromFloat(hasDefaultBrowserPromoReachedLimitInRoleManager()));
+                "should_show_non_role_manager_default_browser_promo",
+                ProcessedValue.fromFloat(shouldShowNonRoleManagerDefaultBrowserPromo()));
+        inputContext.addEntry(
+                "has_default_browser_promo_shown_in_other_surface",
+                ProcessedValue.fromFloat(hasDefaultBrowserPromoShownInOtherSurface()));
         return inputContext;
     }
 
@@ -173,9 +205,28 @@ public class EducationalTipModuleMediator {
         return 0.0f;
     }
 
-    private float hasDefaultBrowserPromoReachedLimitInRoleManager() {
-        // TODO(crbug.com/355015904): add trigger scenarios here for default browser promo card.
-        return 1.0f;
+    /**
+     * @see DefaultBrowserPromoUtils#shouldShowNonRoleManagerPromo(Context), returns a value of 1.0f
+     *     to indicate that a default browser promo, other than the Role Manager Promo, should be
+     *     displayed. If not, it returns 0.0f.
+     */
+    private float shouldShowNonRoleManagerDefaultBrowserPromo() {
+        return DefaultBrowserPromoUtils.getInstance()
+                        .shouldShowNonRoleManagerPromo(mActionDelegate.getContext())
+                ? 1.0f
+                : 0.0f;
+    }
+
+    /**
+     * Returns a value of 1.0f to signify that the default browser promotion has been displayed
+     * within the past 7 days on a platform other than the current one, such as through settings,
+     * messages, or alternative NTPs. If the promotion has not been shown within this timeframe, the
+     * function returns 0.0f.
+     */
+    private float hasDefaultBrowserPromoShownInOtherSurface() {
+        return mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK)
+                ? 0.0f
+                : 1.0f;
     }
 
     @ModuleType
@@ -184,11 +235,30 @@ public class EducationalTipModuleMediator {
     }
 
     void destroy() {
+        removeDefaultBrowserPromoTriggerStateListener();
         if (mEducationalTipCardProvider != null) {
             mEducationalTipCardProvider.destroy();
             mEducationalTipCardProvider = null;
         }
         mCallbackController.destroy();
+    }
+
+    /**
+     * Triggered when the user has viewed the default browser promo from another location, removing
+     * the educational tip module from the magic stack.
+     */
+    private void removeModule() {
+        mModuleDelegate.removeModule(mModuleType);
+        removeDefaultBrowserPromoTriggerStateListener();
+    }
+
+    /**
+     * Removes the {@link DefaultBrowserPromoTriggerStateListener} from the listener list in {@link
+     * DefaultBrowserPromoUtils}.
+     */
+    private void removeDefaultBrowserPromoTriggerStateListener() {
+        DefaultBrowserPromoUtils.getInstance()
+                .removeListener(mDefaultBrowserPromoTriggerStateListener);
     }
 
     /** Called when user clicks the card. */
@@ -201,6 +271,10 @@ public class EducationalTipModuleMediator {
         assert profileSupplier.hasValue();
 
         return profileSupplier.get().getOriginalProfile();
+    }
+
+    DefaultBrowserPromoTriggerStateListener getDefaultBrowserPromoTriggerStateListenerForTesting() {
+        return mDefaultBrowserPromoTriggerStateListener;
     }
 
     @NativeMethods

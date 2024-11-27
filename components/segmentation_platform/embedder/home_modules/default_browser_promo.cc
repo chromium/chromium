@@ -18,16 +18,21 @@ DefaultBrowserPromo::DefaultBrowserPromo()
 
 std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
-      {kHasDefaultBrowserPromoReachedLimitInRoleManager,
+      {kHasDefaultBrowserPromoShownInOtherSurface,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kHasDefaultBrowserPromoReachedLimitInRoleManager})},
+           .name = kHasDefaultBrowserPromoShownInOtherSurface})},
       {kIsDefaultBrowserChrome,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kIsDefaultBrowserChrome})}};
+           .name = kIsDefaultBrowserChrome})},
+      {kShouldShowNonRoleManagerDefaultBrowserPromo,
+       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+           .tensor_length = 1,
+           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+           .name = kShouldShowNonRoleManagerDefaultBrowserPromo})}};
   return map;
 }
 
@@ -38,18 +43,21 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
 
   std::optional<float> resultForIsDefaultBrowserChrome =
       signals.GetSignal(kIsDefaultBrowserChrome);
-  std::optional<float>
-      resultForHasDefaultBrowserPromoReachedLimitInRoleManager =
-          signals.GetSignal(kHasDefaultBrowserPromoReachedLimitInRoleManager);
+  std::optional<float> resultForShouldShowNonRoleManagerDefaultBrowserPromo =
+      signals.GetSignal(kShouldShowNonRoleManagerDefaultBrowserPromo);
+  std::optional<float> resultForHasDefaultBrowserPromoShownInOtherSurface =
+      signals.GetSignal(kHasDefaultBrowserPromoShownInOtherSurface);
 
   if (!resultForIsDefaultBrowserChrome.has_value() ||
-      !resultForHasDefaultBrowserPromoReachedLimitInRoleManager.has_value()) {
+      !resultForShouldShowNonRoleManagerDefaultBrowserPromo.has_value() ||
+      !resultForHasDefaultBrowserPromoShownInOtherSurface.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
   if (!*resultForIsDefaultBrowserChrome &&
-      *resultForHasDefaultBrowserPromoReachedLimitInRoleManager) {
+      *resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
+      !*resultForHasDefaultBrowserPromoShownInOtherSurface) {
     result.position = EphemeralHomeModuleRank::kTop;
     return result;
   }

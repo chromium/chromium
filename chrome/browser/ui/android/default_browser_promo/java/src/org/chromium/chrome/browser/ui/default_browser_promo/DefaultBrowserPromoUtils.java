@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,16 +48,28 @@ public class DefaultBrowserPromoUtils {
         int NUM_ENTRIES = 3;
     }
 
+    /**
+     * An interface for receiving updates related to the trigger state of the default browser promo.
+     */
+    public interface DefaultBrowserPromoTriggerStateListener {
+        /** Called when a default browser promo becomes visible to the user. */
+        void onDefaultBrowserPromoTriggered();
+    }
+
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
     private final DefaultBrowserStateProvider mStateProvider;
 
     private static DefaultBrowserPromoUtils sInstance;
+
+    private final ObserverList<DefaultBrowserPromoTriggerStateListener>
+            mDefaultBrowserPromoTriggerStateListeners;
 
     DefaultBrowserPromoUtils(
             DefaultBrowserPromoImpressionCounter impressionCounter,
             DefaultBrowserStateProvider stateProvider) {
         mImpressionCounter = impressionCounter;
         mStateProvider = stateProvider;
+        mDefaultBrowserPromoTriggerStateListeners = new ObserverList<>();
     }
 
     public static DefaultBrowserPromoUtils getInstance() {
@@ -125,6 +138,7 @@ public class DefaultBrowserPromoUtils {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (shouldShowNonRoleManagerPromo(context)
                 && tracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MESSAGES)) {
+            notifyDefaultBrowserPromoVisible();
             DefaultBrowserPromoMessageController messageController =
                     new DefaultBrowserPromoMessageController(context, tracker);
             messageController.promo(dispatcher);
@@ -165,6 +179,31 @@ public class DefaultBrowserPromoUtils {
     public static void incrementSessionCount() {
         ChromeSharedPreferences.getInstance()
                 .incrementInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
+    }
+
+    /**
+     * Registers a {@link DefaultBrowserPromoTriggerStateListener} to receive updates when a default
+     * browser promo becomes visible to the user.
+     */
+    public void addListener(DefaultBrowserPromoTriggerStateListener listener) {
+        mDefaultBrowserPromoTriggerStateListeners.addObserver(listener);
+    }
+
+    /**
+     * Removes the given listener from the list of state listeners.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeListener(DefaultBrowserPromoTriggerStateListener listener) {
+        mDefaultBrowserPromoTriggerStateListeners.removeObserver(listener);
+    }
+
+    /** Notifies listeners that a default browser promo is now visible to the user. */
+    public void notifyDefaultBrowserPromoVisible() {
+        for (DefaultBrowserPromoTriggerStateListener listener :
+                mDefaultBrowserPromoTriggerStateListeners) {
+            listener.onDefaultBrowserPromoTriggered();
+        }
     }
 
     public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {

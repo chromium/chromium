@@ -277,7 +277,7 @@ BASE_FEATURE(kIPHDataSaverPreviewFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultBrowserPromoMagicStackFeature,
              "IPH_DefaultBrowserPromoMagicStack",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDefaultBrowserPromoMessagesFeature,
              "IPH_DefaultBrowserPromoMessages",
              base::FEATURE_ENABLED_BY_DEFAULT);

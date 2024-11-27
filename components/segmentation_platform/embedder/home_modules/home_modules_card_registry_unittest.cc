@@ -120,7 +120,7 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kDefaultBrowserPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 2u);
+  EXPECT_GE(registry_->all_cards_input_size(), 3u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -129,9 +129,10 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
   std::vector<std::string> signalKeys =
       GetSignalKeys(signal_map, kDefaultBrowserPromo);
-  EXPECT_THAT(
-      signalKeys,
-      Contains("has_default_browser_promo_reached_limit_in_role_manager"));
+  EXPECT_THAT(signalKeys,
+              Contains("should_show_non_role_manager_default_browser_promo"));
+  EXPECT_THAT(signalKeys,
+              Contains("has_default_browser_promo_shown_in_other_surface"));
   EXPECT_THAT(signalKeys, Contains("is_default_browser_chrome"));
 #endif
 }
@@ -158,7 +159,10 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
       GetSignalKeys(signal_map, kDefaultBrowserPromo);
   EXPECT_THAT(
       signalKeys,
-      Not(Contains("has_default_browser_promo_reached_limit_in_role_manager")));
+      Not(Contains("should_show_non_role_manager_default_browser_promo")));
+  EXPECT_THAT(
+      signalKeys,
+      Not(Contains("has_default_browser_promo_shown_in_other_surface")));
   EXPECT_THAT(signalKeys, Not(Contains("is_default_browser_chrome")));
 #endif
 }

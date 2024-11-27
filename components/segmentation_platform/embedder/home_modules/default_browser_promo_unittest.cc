@@ -22,13 +22,18 @@ class DefaultBrowserPromoTest : public testing::Test {
 TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<DefaultBrowserPromo>();
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 2u);
+  EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kIsDefaultBrowserChrome),
             inputs.end());
-  EXPECT_NE(inputs.find(segmentation_platform::
-                            kHasDefaultBrowserPromoReachedLimitInRoleManager),
-            inputs.end());
+  EXPECT_NE(
+      inputs.find(
+          segmentation_platform::kShouldShowNonRoleManagerDefaultBrowserPromo),
+      inputs.end());
+  EXPECT_NE(
+      inputs.find(
+          segmentation_platform::kHasDefaultBrowserPromoShownInOtherSurface),
+      inputs.end());
 }
 
 // Validates that ComputeCardResult() returns kTop when default browser promo
@@ -36,22 +41,24 @@ TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
 TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
   auto card = std::make_unique<DefaultBrowserPromo>();
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoReachedLimitInRoleManager */ 1,
-                   /* kIsDefaultBrowserChrome */ 0});
+      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
+                   /* kIsDefaultBrowserChrome */ 0,
+                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
   CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
 }
 
 // Validates that when the default browser promo card is disabled because the
-// promo has not reached its limit in the role manager, the ComputeCardResult()
-// function returns kNotShown.
+// non-role manager default browser promo should not be displayed, the
+// ComputeCardResult() function returns kNotShown.
 TEST_F(DefaultBrowserPromoTest,
-       TestComputeCardResultWithCardDisabledForNotReachLimit) {
+       TestComputeCardResultWithCardDisabledForNotShowNonRoleManagerPromo) {
   auto card = std::make_unique<DefaultBrowserPromo>();
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoReachedLimitInRoleManager */ 0,
-                   /* kIsDefaultBrowserChrome */ 0});
+      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
+                   /* kIsDefaultBrowserChrome */ 0,
+                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 0});
   CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
@@ -64,22 +71,39 @@ TEST_F(DefaultBrowserPromoTest,
        TestComputeCardResultWithCardDisabledForDefaultBrowserIsChrome) {
   auto card = std::make_unique<DefaultBrowserPromo>();
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoReachedLimitInRoleManager */ 1,
-                   /* kIsDefaultBrowserChrome */ 1});
+      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
+                   /* kIsDefaultBrowserChrome */ 1,
+                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
   CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
 }
 
 // Validates that the ComputeCardResult() function returns kNotShown when the
-// default browser promo card is disabled because the promo hasn't reached its
-// limit in the role manager and the user already has Chrome set as the default
-// browser.
+// default browser promo card is disabled because the non-role manager default
+// browser promo should not be displayed and the user already has Chrome set as
+// the default browser.
 TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardDisabled) {
   auto card = std::make_unique<DefaultBrowserPromo>();
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kHasDefaultBrowserPromoReachedLimitInRoleManager */ 0,
-                   /* kIsDefaultBrowserChrome */ 1});
+      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 0,
+                   /* kIsDefaultBrowserChrome */ 1,
+                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 0});
+  CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
+  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when the
+// default browser promo card is disabled because the user already saw the promo
+// in other surfaces, such as through settings, messages, or alternative NTPs.
+TEST_F(DefaultBrowserPromoTest,
+       TestComputeCardResultWithCardDisabledForShownInOtherSurface) {
+  auto card = std::make_unique<DefaultBrowserPromo>();
+  AllCardSignals all_signals = CreateAllCardSignals(
+      card.get(), {/* kHasDefaultBrowserPromoShownInOtherSurface */ 1,
+                   /* kIsDefaultBrowserChrome */ 0,
+                   /* kShouldShowNonRoleManagerDefaultBrowserPromo */ 1});
   CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
