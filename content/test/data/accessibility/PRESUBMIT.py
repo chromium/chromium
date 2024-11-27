@@ -296,11 +296,11 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
                 "content", "public", "android", "javatests", "src", "org", "chromium",
                 "content", "browser", "accessibility", "WebContentsAccessibilityEventsTest.java")
         elif any(subdir in txt_file_path for subdir in ["/accname/", "/html/", "/aria/", "/css/"]):
-            # We do not want to include tree tests with <script>'s, they flake on Android.
+            # We do not want to include tree tests with certain element that flake on Android.
             try:
-                html_file_contents = input_api.ReadFile(html_path)
-                exclusion_rule = "<script>"
-                if exclusion_rule in html_file_contents:
+                html_file_contents = input_api.ReadFile(os.path.join(input_api.change.RepositoryRoot(), html_path))
+                exclusion_rules = ["<script>", "<video>", "<noscript>"]
+                if any(rule in html_file_contents for rule in exclusion_rules):
                     continue
             except Exception as e:
                 problems.append(f"Error reading {html_path}: {e}")
@@ -312,7 +312,7 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
 
         if java_test_suite_file is not None:
             try:
-                test_contents = input_api.ReadFile(java_test_suite_file)
+                test_contents = input_api.ReadFile(os.path.join(input_api.change.RepositoryRoot(), java_test_suite_file))
                 expected_addition = f"{name}.html"
                 if expected_addition not in test_contents:
                     problems.append(f"{expected_addition} (missing reference in {readable_file_name})")
