@@ -43,10 +43,6 @@ namespace tab_groups {
 namespace {
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Seconds(10);
 
-constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
-constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
-constexpr bool is_desktop = !(is_android || is_ios);
-
 bool IsSanitizationRequired(const SavedTabGroup& tab_group, const GURL url) {
   return tab_group.is_shared_tab_group() && url.SchemeIsHTTPOrHTTPS();
 }
@@ -493,8 +489,8 @@ void TabGroupSyncServiceImpl::OnTabSelected(const LocalTabGroupID& group_id,
   LogEvent(TabGroupEvent::kTabSelected, group_id, tab_id);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void TabGroupSyncServiceImpl::SaveGroup(SavedTabGroup group) {
-  CHECK(is_desktop);
   const base::Uuid sync_id = group.saved_guid();
   const LocalTabGroupID local_id = group.local_group_id().value();
   AddGroup(std::move(group));
@@ -502,12 +498,12 @@ void TabGroupSyncServiceImpl::SaveGroup(SavedTabGroup group) {
 }
 
 void TabGroupSyncServiceImpl::UnsaveGroup(const LocalTabGroupID& local_id) {
-  CHECK(is_desktop);
   std::optional<SavedTabGroup> group = GetGroup(local_id);
   CHECK(group);
   coordinator_->DisconnectLocalTabGroup(local_id);
   RemoveGroup(group->saved_guid());
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void TabGroupSyncServiceImpl::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,

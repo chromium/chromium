@@ -114,7 +114,7 @@ void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
 #else
       // When targeting pre-N, such as for Cronet, android_dlopen_ext() might
       // not be available on the system.
-      CHECK(0) << "android_dlopen_ext not available";
+      NOTREACHED() << "android_dlopen_ext not available";
 #endif
     }
   }

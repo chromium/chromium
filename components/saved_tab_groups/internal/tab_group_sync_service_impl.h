@@ -89,8 +89,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                int new_group_index) override;
   void OnTabSelected(const LocalTabGroupID& group_id,
                      const LocalTabID& tab_id) override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SaveGroup(SavedTabGroup group) override;
   void UnsaveGroup(const LocalTabGroupID& local_id) override;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                           std::string_view collaboration_id) override;

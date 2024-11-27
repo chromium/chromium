@@ -9,6 +9,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -669,7 +670,7 @@ bool SharedContextState::InitializeGraphite(
       // GPU process in this case to trigger browser-side fallback logic (either
       // to software or to Ganesh depending on the platform).
       // TODO(crbug.com/325000752): Handle this case within the GPU process.
-      CHECK(0);
+      NOTREACHED();
     }
 #endif
   } else {
