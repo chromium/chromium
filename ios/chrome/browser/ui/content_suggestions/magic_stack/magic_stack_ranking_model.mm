@@ -382,6 +382,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
               withCompletion:nil];
 }
 
+#pragma mark - PriceTrackingPromoMediatorDelegate
+
+- (void)promoWasTapped {
+  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                           kPriceTrackingPromo];
+}
+
 #pragma mark - Private
 
 // Adds the correct Set Up List module type to the Magic Stack `order`.
