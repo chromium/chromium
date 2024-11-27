@@ -157,8 +157,6 @@ source_set("app_service") {
       "metrics/app_platform_metrics_utils.h",
       "metrics/browser_to_tab_list.cc",
       "metrics/browser_to_tab_list.h",
-      "metrics/shortcut_metrics.cc",
-      "metrics/shortcut_metrics.h",
       "metrics/website_metrics.cc",
       "metrics/website_metrics.h",
       "promise_apps/promise_app.cc",

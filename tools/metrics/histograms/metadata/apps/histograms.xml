@@ -2947,40 +2947,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.Shortcut.LaunchSource" enum="ShortcutActionSource"
-    expires_after="2024-12-01">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records whether a shortcut is launched from the Launcher or Shelf. Emitted
-    when the user activates the shortcut by clicking on the shortcut item in the
-    Launcher or Shelf. Activating a shortcut will launch its linked parent app
-    to land on a specific page or screen.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Shortcut.PinAction" enum="ShortcutPinAction"
-    expires_after="2024-12-01">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records when the user pins or unpins a shortcut in the shelf. Pinning or
-    unpinning can be triggered via the context menu of the shortcut item in the
-    launcher or shelf.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Shortcut.RemovalSource" enum="ShortcutActionSource"
-    expires_after="2024-12-01">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records whether a shortcut is removed via the Launcher or Shelf. Emitted
-    when the user removes a shortcut via the Launcher or Shelf context menu.
-    Shortcuts are items in the Launcher/ Shelf that link to an installed app.
-  </summary>
-</histogram>
-
 <histogram name="Apps.StateTransition.AnimationSmoothness" units="%"
     expires_after="2024-06-30">
   <owner>tbarzic@chromium.org</owner>
