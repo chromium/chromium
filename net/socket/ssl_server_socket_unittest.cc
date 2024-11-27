@@ -1169,24 +1169,23 @@ TEST_F(SSLServerSocketTest, ExportKeyingMaterial) {
 
   const int kKeyingMaterialSize = 32;
   const char kKeyingLabel[] = "EXPERIMENTAL-server-socket-test";
-  const char kKeyingContext[] = "";
-  unsigned char server_out[kKeyingMaterialSize];
-  int rv = server_socket_->ExportKeyingMaterial(
-      kKeyingLabel, false, kKeyingContext, server_out, sizeof(server_out));
+  std::array<uint8_t, kKeyingMaterialSize> server_out;
+  int rv = server_socket_->ExportKeyingMaterial(kKeyingLabel, std::nullopt,
+                                                server_out);
   ASSERT_THAT(rv, IsOk());
 
-  unsigned char client_out[kKeyingMaterialSize];
-  rv = client_socket_->ExportKeyingMaterial(kKeyingLabel, false, kKeyingContext,
-                                            client_out, sizeof(client_out));
+  std::array<uint8_t, kKeyingMaterialSize> client_out;
+  rv = client_socket_->ExportKeyingMaterial(kKeyingLabel, std::nullopt,
+                                            client_out);
   ASSERT_THAT(rv, IsOk());
-  EXPECT_EQ(0, memcmp(server_out, client_out, sizeof(server_out)));
+  EXPECT_EQ(server_out, client_out);
 
   const char kKeyingLabelBad[] = "EXPERIMENTAL-server-socket-test-bad";
-  unsigned char client_bad[kKeyingMaterialSize];
-  rv = client_socket_->ExportKeyingMaterial(
-      kKeyingLabelBad, false, kKeyingContext, client_bad, sizeof(client_bad));
+  std::array<uint8_t, kKeyingMaterialSize> client_bad;
+  rv = client_socket_->ExportKeyingMaterial(kKeyingLabelBad, std::nullopt,
+                                            client_bad);
   ASSERT_EQ(rv, OK);
-  EXPECT_NE(0, memcmp(server_out, client_bad, sizeof(server_out)));
+  EXPECT_NE(server_out, client_bad);
 }
 
 // Verifies that SSLConfig::require_ecdhe flags works properly.

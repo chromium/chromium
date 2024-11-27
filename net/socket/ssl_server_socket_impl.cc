@@ -68,10 +68,8 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
 
   // SSLSocket interface.
   int ExportKeyingMaterial(std::string_view label,
-                           bool has_context,
-                           std::string_view context,
-                           unsigned char* out,
-                           unsigned int outlen) override;
+                           std::optional<base::span<const uint8_t>> context,
+                           base::span<uint8_t> out) override;
 
   // Socket interface (via StreamSocket).
   int Read(IOBuffer* buf,
@@ -406,19 +404,18 @@ int SSLServerContextImpl::SocketImpl::Handshake(
 
 int SSLServerContextImpl::SocketImpl::ExportKeyingMaterial(
     std::string_view label,
-    bool has_context,
-    std::string_view context,
-    unsigned char* out,
-    unsigned int outlen) {
+    std::optional<base::span<const uint8_t>> context,
+    base::span<uint8_t> out) {
+  DCHECK(base::IsStringASCII(label));
   if (!IsConnected())
     return ERR_SOCKET_NOT_CONNECTED;
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   int rv = SSL_export_keying_material(
-      ssl_.get(), out, outlen, label.data(), label.size(),
-      reinterpret_cast<const unsigned char*>(context.data()), context.length(),
-      context.length() > 0);
+      ssl_.get(), out.data(), out.size(), label.data(), label.size(),
+      context.has_value() ? context->data() : nullptr,
+      context.has_value() ? context->size() : 0, context.has_value());
 
   if (rv != 1) {
     int ssl_error = SSL_get_error(ssl_.get(), rv);

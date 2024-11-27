@@ -1565,12 +1565,11 @@ void MockSSLClientSocket::GetSSLCertRequestInfo(
   }
 }
 
-int MockSSLClientSocket::ExportKeyingMaterial(std::string_view label,
-                                              bool has_context,
-                                              std::string_view context,
-                                              unsigned char* out,
-                                              unsigned int outlen) {
-  memset(out, 'A', outlen);
+int MockSSLClientSocket::ExportKeyingMaterial(
+    std::string_view label,
+    std::optional<base::span<const uint8_t>> context,
+    base::span<uint8_t> out) {
+  std::ranges::fill(out, 'A');
   return OK;
 }
 

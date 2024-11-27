@@ -2417,38 +2417,34 @@ TEST_P(SSLClientSocketVersionTest, ExportKeyingMaterial) {
 
   const int kKeyingMaterialSize = 32;
   const char kKeyingLabel1[] = "client-socket-test-1";
-  const char kKeyingContext1[] = "";
-  unsigned char client_out1[kKeyingMaterialSize];
-  memset(client_out1, 0, sizeof(client_out1));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, false, kKeyingContext1,
-                                   client_out1, sizeof(client_out1));
+  std::array<uint8_t, kKeyingMaterialSize> client_out1;
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, std::nullopt, client_out1);
   EXPECT_EQ(rv, OK);
 
   const char kKeyingLabel2[] = "client-socket-test-2";
-  unsigned char client_out2[kKeyingMaterialSize];
-  memset(client_out2, 0, sizeof(client_out2));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel2, false, kKeyingContext1,
-                                   client_out2, sizeof(client_out2));
+  std::array<uint8_t, kKeyingMaterialSize> client_out2;
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel2, std::nullopt, client_out2);
   EXPECT_EQ(rv, OK);
-  EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+  EXPECT_NE(client_out1, client_out2);
 
   const char kKeyingContext2[] = "context";
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, true, kKeyingContext2,
-                                   client_out2, sizeof(client_out2));
+  client_out2.fill(0);
+  rv = sock_->ExportKeyingMaterial(
+      kKeyingLabel1, base::as_byte_span(kKeyingContext2), client_out2);
   EXPECT_EQ(rv, OK);
-  EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+  EXPECT_NE(client_out1, client_out2);
 
   // Prior to TLS 1.3, using an empty context should give different key material
   // from not using a context at all. In TLS 1.3, the distinction is deprecated
   // and they are the same.
-  memset(client_out2, 0, sizeof(client_out2));
-  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, true, kKeyingContext1,
-                                   client_out2, sizeof(client_out2));
+  client_out2.fill(0);
+  rv = sock_->ExportKeyingMaterial(kKeyingLabel1, base::span<const uint8_t>(),
+                                   client_out2);
   EXPECT_EQ(rv, OK);
   if (version() >= SSL_PROTOCOL_VERSION_TLS1_3) {
-    EXPECT_EQ(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+    EXPECT_EQ(client_out1, client_out2);
   } else {
-    EXPECT_NE(memcmp(client_out1, client_out2, kKeyingMaterialSize), 0);
+    EXPECT_NE(client_out1, client_out2);
   }
 }
 
