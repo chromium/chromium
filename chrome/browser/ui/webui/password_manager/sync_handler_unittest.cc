@@ -64,6 +64,7 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     static_cast<content::WebUIMessageHandler*>(handler_)->DisallowJavascript();
+    mock_sync_service_ = nullptr;
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -132,7 +133,7 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
   content::TestWebUI web_ui_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  raw_ptr<MockSyncService, DanglingUntriaged> mock_sync_service_;
+  raw_ptr<MockSyncService> mock_sync_service_;
   raw_ptr<SyncHandler> handler_;
 };
 
