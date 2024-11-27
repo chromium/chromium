@@ -233,52 +233,6 @@ class FormFillerTest : public testing::Test {
     return filled_fields;
   }
 
-  void PrepareForRealPanResponse() {
-    // This line silences the warning from PaymentsNetworkInterface about
-    // matching sync and Payments server types.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        "sync-url", "https://google.com");
-
-    FormData form = test::CreateTestCreditCardFormData(true, false);
-    FormsSeen({form});
-    CreditCard card =
-        CreditCard(CreditCard::RecordType::kMaskedServerCard, "a123");
-    test::SetCreditCardInfo(&card, "John Dillinger", "1881" /* Visa */, "01",
-                            "2017", "1");
-    card.SetNetworkForMaskedCard(kVisaCard);
-
-    EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(AtLeast(1));
-    browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
-        form, form.fields().front().global_id(), card,
-        AutofillTriggerSource::kPopup);
-  }
-
-  void OnDidGetRealPan(
-      payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const std::string& real_pan,
-      bool is_virtual_card = false) {
-    payments::FullCardRequest* full_card_request =
-        browser_autofill_manager_->client()
-            .GetPaymentsAutofillClient()
-            ->GetCvcAuthenticator()
-            .full_card_request_.get();
-    DCHECK(full_card_request);
-
-    // Mock user response.
-    payments::FullCardRequest::UserProvidedUnmaskDetails details;
-    details.cvc = u"123";
-    full_card_request->OnUnmaskPromptAccepted(details);
-
-    // Mock payments response.
-    payments::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card ? payments::PaymentsAutofillClient::
-                                               PaymentsRpcCardType::kVirtualCard
-                                         : payments::PaymentsAutofillClient::
-                                               PaymentsRpcCardType::kServerCard;
-    full_card_request->OnDidGetRealPan(result,
-                                       response.with_real_pan(real_pan));
-  }
-
   // Convenience method to cast the FullCardRequest into a CardUnmaskDelegate.
   CardUnmaskDelegate* full_card_unmask_delegate() {
     payments::FullCardRequest* full_card_request =
@@ -1585,18 +1539,6 @@ TEST_F(FormFillerTest, FormChangesVisibilityOfFields) {
   // TODO(crbug.com/40264633): Replace with GetInfo.
   EXPECT_THAT(later_filled_fields[3],
               AutofilledWith(profile2.GetRawInfo(ADDRESS_HOME_COUNTRY)));
-}
-
-TEST_F(FormFillerTest, FillInUpdatedExpirationDate) {
-  PrepareForRealPanResponse();
-
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  details.exp_month = u"02";
-  details.exp_year = u"2018";
-  full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-                  "4012888888881881");
 }
 
 // Test that fields will be assigned with the source profile that was used for
