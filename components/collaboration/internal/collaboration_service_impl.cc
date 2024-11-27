@@ -9,6 +9,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
 
 namespace collaboration {
 
@@ -38,8 +39,10 @@ CollaborationServiceImpl::CollaborationServiceImpl(
     current_status_.collaboration_status = CollaborationStatus::kAllowedToJoin;
   }
 
-  // TODO(b/360184707): Add identity manager and sync service to observe state
-  // changes.
+  current_status_.sync_status = GetSyncStatus();
+  sync_observer_.Observe(sync_service_);
+
+  // TODO(crbug.com/360184707): Add identity manager to observe state changes.
 }
 
 CollaborationServiceImpl::~CollaborationServiceImpl() {
@@ -113,6 +116,21 @@ MemberRole CollaborationServiceImpl::GetCurrentUserRoleForGroup(
   return MemberRole::kUnknown;
 }
 
+void CollaborationServiceImpl::OnStateChanged(syncer::SyncService* sync) {
+  SyncStatus new_status = GetSyncStatus();
+
+  if (current_status_.sync_status == new_status) {
+    return;
+  }
+
+  current_status_.sync_status = new_status;
+  // TODO(crbug.com/380145739): Notify observers.
+}
+
+void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_observer_.Reset();
+}
+
 const std::map<data_sharing::GroupToken,
                std::unique_ptr<CollaborationController>>&
 CollaborationServiceImpl::GetJoinControllersForTesting() {
@@ -122,6 +140,21 @@ CollaborationServiceImpl::GetJoinControllersForTesting() {
 void CollaborationServiceImpl::FinishFlow(
     const data_sharing::GroupToken& token) {
   join_controllers_.erase(join_controllers_.find(token));
+}
+
+SyncStatus CollaborationServiceImpl::GetSyncStatus() {
+  SyncStatus status = SyncStatus::kNotSyncing;
+  if (sync_service_->IsSyncFeatureEnabled()) {
+    syncer::DataTypeSet data_types = sync_service_->GetActiveDataTypes();
+    if (data_types.Has(syncer::DataType::SAVED_TAB_GROUP) &&
+        data_types.Has(syncer::DataType::COLLABORATION_GROUP)) {
+      status = SyncStatus::kSyncEnabled;
+    } else {
+      status = SyncStatus::kSyncWithoutTabGroup;
+    }
+  }
+
+  return status;
 }
 
 }  // namespace collaboration

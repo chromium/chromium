@@ -73,6 +73,13 @@ CollaborationServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
 
+  // Sync service might be null in testing environment or explicitly disabled
+  // in command line. In the case sync service does not exist,
+  // CollaborationService is not usable.
+  if (!sync_service) {
+    return std::make_unique<EmptyCollaborationService>();
+  }
+
   auto service = std::make_unique<CollaborationServiceImpl>(
       tab_group_sync_service, data_sharing_service, identity_manager,
       sync_service);

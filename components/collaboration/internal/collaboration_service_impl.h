@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/sync/service/sync_service_observer.h"
 
 namespace data_sharing {
 class DataSharingService;
@@ -30,7 +32,8 @@ namespace collaboration {
 class CollaborationController;
 
 // The internal implementation of the CollborationService.
-class CollaborationServiceImpl : public CollaborationService {
+class CollaborationServiceImpl : public CollaborationService,
+                                 public syncer::SyncServiceObserver {
  public:
   CollaborationServiceImpl(
       tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -49,6 +52,10 @@ class CollaborationServiceImpl : public CollaborationService {
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
 
+  // SyncServiceObserver implementation.
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
+
   // For testing.
   const std::map<data_sharing::GroupToken,
                  std::unique_ptr<CollaborationController>>&
@@ -58,7 +65,11 @@ class CollaborationServiceImpl : public CollaborationService {
   void FinishFlow(const data_sharing::GroupToken& token);
 
  private:
+  SyncStatus GetSyncStatus();
+
   ServiceStatus current_status_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observer_{this};
 
   // Service providing information about tabs and tab groups.
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;

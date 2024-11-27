@@ -13,6 +13,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,20 +40,23 @@ class CollaborationServiceImplTest : public testing::Test {
 
   ~CollaborationServiceImplTest() override = default;
 
-  void SetUp() override { InitService(); }
+  void SetUp() override {
+    test_sync_service_ = std::make_unique<syncer::TestSyncService>();
+    InitService();
+  }
 
   void TearDown() override { service_.reset(); }
 
   void InitService() {
     service_ = std::make_unique<CollaborationServiceImpl>(
         /*tab_group_sync_service=*/nullptr, &mock_data_sharing_service_,
-        identity_test_env_.identity_manager(),
-        /*sync_service=*/nullptr);
+        identity_test_env_.identity_manager(), test_sync_service_.get());
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   data_sharing::MockDataSharingService mock_data_sharing_service_;
   std::unique_ptr<CollaborationServiceImpl> service_;
 };
@@ -158,6 +162,25 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   service_->StartJoinFlow(
       std::make_unique<MockCollaborationControllerDelegate>(), url);
   EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);
+}
+
+TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
+  // By default the test sync service is signed in with sync and every DataType
+  // enabled.
+  EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kSyncEnabled);
+
+  // Remove user's tab group setting.
+  test_sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status,
+            SyncStatus::kSyncWithoutTabGroup);
+
+  // Sign out removes sync consent.
+  test_sync_service_->SetSignedOut();
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kNotSyncing);
 }
 
 }  // namespace collaboration
