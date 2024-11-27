@@ -1760,7 +1760,7 @@ component("platform") {
     "//cc",
     "//cc/ipc",
     "//cc/mojo_embedder",
-    "//components/language_detection/core:language_detection",
+    "//components/language_detection/core",
     "//components/paint_preview/common",
     "//components/search_engines:search_engine_utils",
     "//components/translate/core/language_detection:language_detection",

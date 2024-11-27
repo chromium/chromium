@@ -14,7 +14,6 @@ static_library("renderer") {
     "//base",
     "//components/language_detection/content/common",
     "//components/language_detection/core",
-    "//components/language_detection/core:language_detection",
     "//third_party/blink/public:blink_headers",
   ]
 }
@@ -30,7 +29,6 @@ static_library("agent") {
     "//base",
     "//components/language_detection/content/common",
     "//components/language_detection/core",
-    "//components/language_detection/core:language_detection",
     "//content/public/renderer",
   ]
 

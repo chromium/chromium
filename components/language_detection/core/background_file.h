@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_LANGUAGE_DETECTION_CORE_BACKGROUND_FILE_H_
 #define COMPONENTS_LANGUAGE_DETECTION_CORE_BACKGROUND_FILE_H_
 
+#include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,7 +14,7 @@ namespace language_detection {
 
 // Holds a `base::File`, and provides and API that pushes the user to perform
 // opens and closes on a background task runner.
-class BackgroundFile {
+class COMPONENT_EXPORT(LANGUAGE_DETECTION) BackgroundFile {
  public:
   using ReplacedCallback = base::OnceCallback<void()>;
   using FileOpener = base::OnceCallback<base::File()>;

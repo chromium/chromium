@@ -6475,7 +6475,7 @@ test("unit_tests") {
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",
     "//components/language/core/browser",
-    "//components/language_detection/core:language_detection",
+    "//components/language_detection/core",
     "//components/lens",
     "//components/leveldb_proto:test_support",
     "//components/live_caption:constants",

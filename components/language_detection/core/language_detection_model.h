@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
@@ -44,6 +45,7 @@ struct Prediction {
 };
 
 // Returns the prediction with the highest score.
+COMPONENT_EXPORT(LANGUAGE_DETECTION)
 Prediction TopPrediction(const std::vector<Prediction>& predictions);
 
 // The state of the language detection model file needed for determining
@@ -67,7 +69,7 @@ enum class LanguageDetectionModelState {
 // A language detection model that will use a TFLite model to determine the
 // language of a string.
 // Each instance of this should only be used from a single thread.
-class LanguageDetectionModel {
+class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
  public:
   using ModelLoadedCallback = base::OnceCallback<void(LanguageDetectionModel&)>;
 
