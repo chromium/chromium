@@ -18,10 +18,11 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/updater_branding.h"
 
 namespace {
 NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
-NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+NSString* const kKeystoneSharedPreferenceSuite = @LEGACY_GOOGLE_UPDATE_APPID;
 }  // namespace
 
 namespace updater {
