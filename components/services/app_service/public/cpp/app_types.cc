@@ -99,17 +99,35 @@ std::ostream& operator<<(std::ostream& os, Readiness v) {
   return os << "(unknown: " << static_cast<int>(v) << ")";
 }
 
-APP_ENUM_TO_STRING(InstallReason,
-                   kUnknown,
-                   kSystem,
-                   kPolicy,
-                   kOem,
-                   kDefault,
-                   kSync,
-                   kUser,
-                   kSubApp,
-                   kKiosk,
-                   kCommandLine)
+std::ostream& operator<<(std::ostream& os, InstallReason v) {
+  switch (v) {
+    case InstallReason::kUnknown:
+      return os << "InstallReason::kUnknown";
+    case InstallReason::kSystem:
+      return os << "InstallReason::kSystem";
+    case InstallReason::kPolicy:
+      return os << "InstallReason::kPolicy";
+    case InstallReason::kOem:
+      return os << "InstallReason::kOem";
+    case InstallReason::kDefault:
+      return os << "InstallReason::kDefault";
+    case InstallReason::kSync:
+      return os << "InstallReason::kSync";
+    case InstallReason::kUser:
+      return os << "InstallReason::kUser";
+    case InstallReason::kSubApp:
+      return os << "InstallReason::SubApp";
+    case InstallReason::kKiosk:
+      return os << "InstallReason::kKiosk";
+    case InstallReason::kCommandLine:
+      return os << "InstallReason::kCommandLine";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
+
 APP_ENUM_TO_STRING(InstallSource,
                    kUnknown,
                    kSystem,

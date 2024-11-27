@@ -99,18 +99,24 @@ std::ostream& operator<<(std::ostream& os, Readiness v);
 //
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-ENUM(InstallReason,
-     kUnknown,
-     kSystem,   // Installed with the system and is considered a part of the OS.
-     kPolicy,   // Installed by policy.
-     kOem,      // Installed by an OEM.
-     kDefault,  // Preinstalled by default, but is not considered a system app.
-     kSync,     // Installed by sync.
-     kUser,     // Installed by user action.
-     kSubApp,   // Installed by the SubApp API call.
-     kKiosk,    // Installed by Kiosk on Chrome OS.
-     kCommandLine  // Deprecated, no longer used.
-)
+enum class InstallReason {
+  kUnknown = 0,
+  kSystem = 1,  // Installed with the system and is considered a part of the OS.
+  kPolicy = 2,  // Installed by policy.
+  kOem = 3,     // Installed by an OEM.
+  kDefault = 4,  // Preinstalled by default, but is not considered a system app.
+  kSync = 5,     // Installed by sync.
+  kUser = 6,     // Installed by user action.
+  kSubApp = 7,   // Installed by the SubApp API call.
+  kKiosk = 8,    // Installed by Kiosk on Chrome OS.
+  kCommandLine = 9,  // Deprecated, no longer used.
+
+  // The value for UMA. Should be updated when a new entry is added.
+  kMaxValue = kCommandLine,
+};
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& os, InstallReason v);
 
 // Where the app was installed from.
 // This should be kept in sync with histograms.xml, InstallSource in
