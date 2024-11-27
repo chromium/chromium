@@ -1966,7 +1966,7 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentOverlay) {
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(4);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -1974,7 +1974,7 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentOverlay) {
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(4);
   }
 
   std::ignore = OverlayProcessorWin::
@@ -2004,7 +2004,7 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentUnderlay) {
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(4);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -2012,7 +2012,7 @@ TEST_F(OverlayProcessorWinStaticTest, InsertSurfaceContentUnderlay) {
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(4);
   }
 
   std::ignore = OverlayProcessorWin::
@@ -2049,7 +2049,7 @@ TEST_F(OverlayProcessorWinStaticTest,
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(5);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -2057,7 +2057,7 @@ TEST_F(OverlayProcessorWinStaticTest,
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(5);
   }
 
   std::ignore = OverlayProcessorWin::
@@ -2084,13 +2084,13 @@ TEST_F(OverlayProcessorWinStaticTest,
 
   OverlayCandidateList candidates;
   {
+    candidates.emplace_back();
+    candidates.back().resource_id = ResourceId(1);
+
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
     candidates.back().resource_id = ResourceId(2);
     candidates.back().rpdq = &rpdq;
-
-    candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
   }
 
   std::ignore = OverlayProcessorWin::
@@ -2133,10 +2133,7 @@ TEST_F(OverlayProcessorWinStaticTest,
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(8);
-
-    candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(7);
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
@@ -2144,7 +2141,10 @@ TEST_F(OverlayProcessorWinStaticTest,
     candidates.back().rpdq = &rpdq;
 
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(7);
+
+    candidates.emplace_back();
+    candidates.back().resource_id = ResourceId(8);
   }
 
   std::ignore = OverlayProcessorWin::
@@ -2186,18 +2186,18 @@ TEST_F(OverlayProcessorWinStaticTest,
 
   OverlayCandidateList candidates;
   {
+    // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(5);
+    candidates.back().resource_id = ResourceId(1);
+    candidates.back().rpdq = &rpdq1;
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
     candidates.back().resource_id = ResourceId(3);
     candidates.back().rpdq = &rpdq2;
 
-    // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
-    candidates.back().rpdq = &rpdq1;
+    candidates.back().resource_id = ResourceId(5);
   }
 
   std::ignore = OverlayProcessorWin::
@@ -2229,20 +2229,20 @@ TEST_F(OverlayProcessorWinStaticTest,
   OverlayCandidateList candidates;
   {
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(6);
-
-    // Pretend this candidate is a RPDQ that we've pulled overlays from.
-    candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(4);
-    candidates.back().rpdq = &rpdq;
+    candidates.back().resource_id = ResourceId(1);
 
     // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
     candidates.back().resource_id = ResourceId(2);
     candidates.back().rpdq = &rpdq;
 
+    // Pretend this candidate is a RPDQ that we've pulled overlays from.
     candidates.emplace_back();
-    candidates.back().resource_id = ResourceId(1);
+    candidates.back().resource_id = ResourceId(4);
+    candidates.back().rpdq = &rpdq;
+
+    candidates.emplace_back();
+    candidates.back().resource_id = ResourceId(6);
   }
 
   std::ignore = OverlayProcessorWin::

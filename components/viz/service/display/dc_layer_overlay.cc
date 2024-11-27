@@ -263,37 +263,6 @@ bool HasOccludingDamageRect(
   return !occluding_damage_rect.IsEmpty();
 }
 
-bool IsPossibleFullScreenLetterboxing(const QuadList::ConstIterator& it,
-                                      QuadList::ConstIterator quad_list_end,
-                                      const gfx::Rect& display_rect) {
-  // Two cases are considered as possible fullscreen letterboxing:
-  // 1. If the quad beneath the overlay quad is DrawQuad::Material::kSolidColor
-  // with black, and it touches two sides of the screen, while starting at
-  // display origin (0, 0).
-  // 2. If the quad beneath the overlay quad is
-  // DrawQuad::Material::kTiledContent, and it touches two sides of the screen,
-  // while starting at display origin (0, 0).
-  // For YouTube with F11 page fullscreen mode, the kTiledContent beneath the
-  // overlay does not touch the right edge due to the existing of a scrolling
-  // bar.
-  auto beneath_overlay_it = it;
-  beneath_overlay_it++;
-
-  if (beneath_overlay_it != quad_list_end) {
-    if (beneath_overlay_it->material == DrawQuad::Material::kTiledContent ||
-        (beneath_overlay_it->material == DrawQuad::Material::kSolidColor &&
-         SolidColorDrawQuad::MaterialCast(*beneath_overlay_it)->color ==
-             SkColors::kBlack)) {
-      gfx::RectF beneath_rect = ClippedQuadRectangleF(*beneath_overlay_it);
-      return (beneath_rect.origin() == gfx::PointF(display_rect.origin()) &&
-              (beneath_rect.width() == display_rect.width() ||
-               beneath_rect.height() == display_rect.height()));
-    }
-  }
-
-  return false;
-}
-
 void RecordVideoDCLayerResult(DCLayerResult result,
                               gfx::ProtectedVideoType protected_video_type) {
   switch (protected_video_type) {
@@ -483,20 +452,20 @@ struct ValidateDrawQuadResult {
 
 ValidateDrawQuadResult ValidateDrawQuad(
     const DisplayResourceProvider* resource_provider,
-    const QuadList::ConstIterator& it,
+    const DrawQuad* quad_to_promote,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
     const bool has_overlay_support,
     const bool has_p010_video_processor_support,
     const int allowed_yuv_overlay_count,
     const int processed_yuv_overlay_count,
     const bool allow_promotion_hinting) {
-  if (it->material != DrawQuad::Material::kTextureContent) {
+  if (quad_to_promote->material != DrawQuad::Material::kTextureContent) {
     return {.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD};
   }
 
   ValidateDrawQuadResult result;
 
-  const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
+  const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(quad_to_promote);
 
   result.is_yuv_overlay = quad->is_video_frame;
 
@@ -526,17 +495,11 @@ ValidateDrawQuadResult ValidateDrawQuad(
 // |it| must point to a |TextureDrawQuad|.
 void FromDrawQuad(const DisplayResourceProvider* resource_provider,
                   const AggregatedRenderPass* render_pass,
-                  bool is_page_fullscreen_mode,
-                  const QuadList::ConstIterator& it,
+                  bool is_possible_full_screen_letterboxing,
+                  const DrawQuad* quad_to_promote,
                   int& processed_yuv_overlay_count,
                   OverlayCandidate& dc_layer) {
-  dc_layer.possible_video_fullscreen_letterboxing =
-      is_page_fullscreen_mode
-          ? IsPossibleFullScreenLetterboxing(it, render_pass->quad_list.end(),
-                                             render_pass->output_rect)
-          : false;
-
-  const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
+  const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(quad_to_promote);
   dc_layer.resource_id = quad->resource_id;
   dc_layer.resource_size_in_pixels =
       resource_provider->GetResourceBackedSize(quad->resource_id);
@@ -582,6 +545,8 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
                                            gfx::ColorSpace::TransferID::BT709);
     dc_layer.protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
   }
+  dc_layer.possible_video_fullscreen_letterboxing =
+      is_possible_full_screen_letterboxing;
   if (quad->is_video_frame) {
     processed_yuv_overlay_count++;
   }
@@ -589,52 +554,82 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
 
 }  // namespace
 
+// static
+bool DCLayerOverlayProcessor::IsPossibleFullScreenLetterboxing(
+    const DrawQuad* quad_below,
+    const gfx::Rect& display_rect) {
+  // Two cases are considered as possible fullscreen letterboxing:
+  // 1. If the quad beneath the overlay quad is DrawQuad::Material::kSolidColor
+  // with black, and it touches two sides of the screen, while starting at
+  // display origin (0, 0).
+  // 2. If the quad beneath the overlay quad is
+  // DrawQuad::Material::kTiledContent, and it touches two sides of the screen,
+  // while starting at display origin (0, 0).
+  // For YouTube with F11 page fullscreen mode, the kTiledContent beneath the
+  // overlay does not touch the right edge due to the existing of a scrolling
+  // bar.
+  if (quad_below) {
+    if (quad_below->material == DrawQuad::Material::kTiledContent ||
+        (quad_below->material == DrawQuad::Material::kSolidColor &&
+         SolidColorDrawQuad::MaterialCast(quad_below)->color ==
+             SkColors::kBlack)) {
+      gfx::RectF beneath_rect = ClippedQuadRectangleF(quad_below);
+      return (beneath_rect.origin() == gfx::PointF(display_rect.origin()) &&
+              (beneath_rect.width() == display_rect.width() ||
+               beneath_rect.height() == display_rect.height()));
+    }
+  }
+
+  return false;
+}
+
 std::optional<OverlayCandidate> DCLayerOverlayProcessor::FromTextureOrYuvQuad(
     const DisplayResourceProvider* resource_provider,
     const AggregatedRenderPass* render_pass,
-    const QuadList::ConstIterator& it,
-    bool is_page_fullscreen_mode) const {
+    const DrawQuad& quad,
+    bool is_possible_full_screen_letterboxing) const {
   // Backdrop filter occlusion is checked in |OverlayProcessorWin| via
   // |OverlayCandidate::IsOccludedByFilteredQuad|, so we don't need to populate
   // this vector.
   const std::vector<gfx::Rect> backdrop_filter_rects;
 
   ValidateDrawQuadResult result = ValidateDrawQuad(
-      resource_provider, it, backdrop_filter_rects, true,
+      resource_provider, &quad, backdrop_filter_rects, true,
       has_p010_video_processor_support_, INT_MAX, INT_MIN, false);
 
   if (result.code != DC_LAYER_SUCCESS) {
-    RecordDCLayerResult(result.code, *it);
+    RecordDCLayerResult(result.code, &quad);
     return std::nullopt;
   }
 
   OverlayCandidate candidate;
   int ignore_processed_yuv_overlay_count = 0;
-  FromDrawQuad(resource_provider, render_pass, is_page_fullscreen_mode, it,
+  FromDrawQuad(resource_provider, render_pass,
+               is_possible_full_screen_letterboxing, &quad,
                ignore_processed_yuv_overlay_count, candidate);
 
   // Once we've promoted the video as normal, add extra properties required for
   // delegated compositing.
 
-  if (it->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
+  if (quad.shared_quad_state->mask_filter_info.HasRoundedCorners()) {
     gfx::MaskFilterInfo mask_filter_info =
-        it->shared_quad_state->mask_filter_info;
+        quad.shared_quad_state->mask_filter_info;
     mask_filter_info.ApplyTransform(render_pass->transform_to_root_target);
     candidate.rounded_corners = mask_filter_info.rounded_corner_bounds();
   }
 
-  candidate.opacity = it->shared_quad_state->opacity;
+  candidate.opacity = quad.shared_quad_state->opacity;
 
   // We don't expect quads promoted by |DCLayerOverlayProcessor| to have a
   // differing |visible_rect|, but we handle it here just in case.
-  if (it->visible_rect != it->rect) {
+  if (quad.visible_rect != quad.rect) {
     // |OverlayCandidate| does not support clipping a candidate via
     // |visible_rect|, but we can get the same effect by clipping its buffer via
     // |uv_rect| and resizing its |display_rect|. This is similar to how
     // |OverlayCandidateFactory| handles |visible_rect|.
-    candidate.uv_rect = gfx::MapRect(gfx::RectF(it->visible_rect),
-                                     gfx::RectF(it->rect), candidate.uv_rect);
-    candidate.display_rect = gfx::RectF(it->visible_rect);
+    candidate.uv_rect = gfx::MapRect(gfx::RectF(quad.visible_rect),
+                                     gfx::RectF(quad.rect), candidate.uv_rect);
+    candidate.display_rect = gfx::RectF(quad.visible_rect);
   }
 
   return candidate;
@@ -711,13 +706,13 @@ void DCLayerOverlayProcessor::OnOverlayCapsChanged() {
 }
 
 void DCLayerOverlayProcessor::RemoveOverlayDamageRect(
-    const QuadList::Iterator& it,
+    const DrawQuad* quad,
     RenderPassCurrentFrameState& render_pass_state) const {
   // This is done by setting the overlay surface damage rect in the
   // |surface_damage_rect_list| to zero.
-  if (it->shared_quad_state->overlay_damage_index.has_value()) {
+  if (quad->shared_quad_state->overlay_damage_index.has_value()) {
     size_t overlay_damage_index =
-        it->shared_quad_state->overlay_damage_index.value();
+        quad->shared_quad_state->overlay_damage_index.value();
     CHECK_LT(overlay_damage_index,
              render_pass_state.surface_damage_rect_list.size());
     render_pass_state.damages_to_be_removed.push_back(overlay_damage_index);
@@ -897,7 +892,7 @@ void DCLayerOverlayProcessor::CollectCandidates(
     }
 
     ValidateDrawQuadResult result = ValidateDrawQuad(
-        resource_provider, it, backdrop_filter_rects, has_overlay_support_,
+        resource_provider, *it, backdrop_filter_rects, has_overlay_support_,
         has_p010_video_processor_support_, allowed_yuv_overlay_count_,
         global_overlay_state.processed_yuv_overlay_count,
         allow_promotion_hinting_);
@@ -1216,8 +1211,18 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   // Record the result first before ProcessForOverlay().
   RecordDCLayerResult(DC_LAYER_SUCCESS, *it);
 
+  bool is_possible_full_screen_letterboxing = false;
+  if (is_page_fullscreen_mode) {
+    QuadList::Iterator below_it = it;
+    below_it.Increment();
+    is_possible_full_screen_letterboxing = IsPossibleFullScreenLetterboxing(
+        below_it != render_pass->quad_list.end() ? *below_it : nullptr,
+        render_pass->output_rect);
+  }
+
   OverlayCandidate dc_layer;
-  FromDrawQuad(resource_provider, render_pass, is_page_fullscreen_mode, it,
+  FromDrawQuad(resource_provider, render_pass,
+               is_possible_full_screen_letterboxing, *it,
                global_overlay_state.processed_yuv_overlay_count, dc_layer);
 
   // Underlays are less efficient, so attempt regular overlays first. We can
@@ -1261,7 +1266,7 @@ void DCLayerOverlayProcessor::ProcessForOverlay(
   const bool needs_blending = it->ShouldDrawWithBlending();
 
   if (is_axis_aligned && !display_rect_changed && !needs_blending) {
-    RemoveOverlayDamageRect(it, current_frame_state);
+    RemoveOverlayDamageRect(*it, current_frame_state);
   }
 
   // Overlay quads should not be drawn. Removing the quads from the quad list
@@ -1304,7 +1309,7 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     // these quads. The output damage rect might be empty after we remove the
     // the damage from the video quad. We can save power if the damage rect is
     // empty.
-    RemoveOverlayDamageRect(it, current_frame_state);
+    RemoveOverlayDamageRect(*it, current_frame_state);
   } else {
     // Entire replacement quad must be redrawn.
     overlay_data.damage_rect.Union(quad_rect_in_target_space);
