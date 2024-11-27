@@ -1154,13 +1154,8 @@ struct BrowserInitParams {
   [MinVersion=10]
   string? cros_user_id_hash@10;
 
-  // Policy blob of the device account. If present, it's a managed account with
-  // policy data. If empty, it's unmanaged account. If absent, an error occurred
-  // while loading policy data. The format is serialized PolicyFetchResponse
-  // object. See components/policy/proto/device_management_backend.proto for
-  // details.
   [MinVersion=11]
-  array<uint8>? device_account_policy@11;
+  array<uint8>? REMOVED_11@11;
 
   // Timestamp (seconds since epoch in UTC) at which last device account policy
   // fetch was attempted.

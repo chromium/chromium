@@ -283,19 +283,6 @@ policy::DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
                         : nullptr;
 }
 
-std::optional<std::string> GetDeviceAccountPolicyForUser(
-    const user_manager::User& user) {
-  policy::CloudPolicyCore* core = GetCloudPolicyCoreForUser(user);
-  if (!core) {
-    return std::nullopt;
-  }
-  const policy::CloudPolicyStore* store = core->store();
-  if (!store || !store->policy_fetch_response()) {
-    return std::nullopt;
-  }
-  return store->policy_fetch_response()->SerializeAsString();
-}
-
 std::optional<policy::ComponentPolicyMap>
 GetDeviceAccountComponentPolicyForUser(const user_manager::User& user) {
   policy::ComponentCloudPolicyService* component_policy_service =
@@ -308,23 +295,6 @@ GetDeviceAccountComponentPolicyForUser(const user_manager::User& user) {
   }
   return policy::CopyComponentPolicyMap(
       component_policy_service->component_policy_map());
-}
-
-// Returns the vector containing policy data of the device account. In case of
-// an error, returns nullopt.
-std::optional<std::vector<uint8_t>> GetDeviceAccountPolicy() {
-  if (!user_manager::UserManager::IsInitialized()) {
-    LOG(ERROR) << "User not initialized.";
-    return std::nullopt;
-  }
-  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
-    LOG(ERROR) << "No primary user.";
-    return std::nullopt;
-  }
-  std::string policy_data =
-      GetDeviceAccountPolicyForUser(*primary_user).value_or(std::string());
-  return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
 }
 
 // Returns the map containing component policy for each namespace. The values
@@ -931,7 +901,6 @@ void InjectBrowserPostLoginParams(mojom::BrowserInitParams* params,
   params->cros_user_id_hash =
       ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
           ProfileManager::GetPrimaryUserProfile());
-  params->device_account_policy = GetDeviceAccountPolicy();
   params->last_policy_fetch_attempt_timestamp =
       GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 

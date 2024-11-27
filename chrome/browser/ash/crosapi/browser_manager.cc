@@ -155,11 +155,6 @@ void PrepareLacrosPolicies(BrowserManager* manager) {
     if (core->refresh_scheduler()) {
       core->refresh_scheduler()->AddObserver(manager);
     }
-
-    policy::CloudPolicyStore* store = core->store();
-    if (store && store->policy_fetch_response()) {
-      store->AddObserver(manager);
-    }
   }
 
   policy::ComponentCloudPolicyService* component_policy_service =
@@ -354,28 +349,6 @@ void BrowserManager::OnSessionStateChanged() {
   if (state_ == State::NOT_INITIALIZED) {
     InitializeAndStartIfNeeded();
   }
-}
-
-void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {
-  DCHECK(store);
-
-  // A new policy got installed for the current user, so we need to pass it to
-  // the Lacros browser.
-  std::string policy_blob;
-  if (store->policy_fetch_response()) {
-    const bool success =
-        store->policy_fetch_response()->SerializeToString(&policy_blob);
-    DCHECK(success);
-  }
-  SetDeviceAccountPolicy(policy_blob);
-}
-
-void BrowserManager::OnStoreError(policy::CloudPolicyStore* store) {
-  // Policy store failed, Lacros will use stale policy as well as Ash.
-}
-
-void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
-  store->RemoveObserver(this);
 }
 
 void BrowserManager::OnComponentPolicyUpdated(

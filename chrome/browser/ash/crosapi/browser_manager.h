@@ -66,7 +66,6 @@ using component_updater::ComponentUpdateService;
 // component updater for future updates. This class is a part of ash-chrome.
 class BrowserManager : public session_manager::SessionManagerObserver,
                        public policy::CloudPolicyCore::Observer,
-                       public policy::CloudPolicyStore::Observer,
                        public policy::ComponentCloudPolicyServiceObserver,
                        public policy::CloudPolicyRefreshSchedulerObserver {
  public:
@@ -220,11 +219,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) override;
   void OnCoreDisconnecting(policy::CloudPolicyCore* core) override;
   void OnCoreDestruction(policy::CloudPolicyCore* core) override;
-
-  // policy::CloudPolicyStore::Observer:
-  void OnStoreLoaded(policy::CloudPolicyStore* store) override;
-  void OnStoreError(policy::CloudPolicyStore* store) override;
-  void OnStoreDestruction(policy::CloudPolicyStore* store) override;
 
   // policy::ComponentCloudPolicyService::Observer:
   // Updates the component policy for given namespace. The policy blob is JSON
