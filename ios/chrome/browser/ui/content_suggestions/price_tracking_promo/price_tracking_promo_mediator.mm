@@ -88,6 +88,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   PrefChangeRegistrar _prefChangeRegistrar;
   raw_ptr<FaviconLoader> _faviconLoader;
   bool _faviconCallbackCalledOnce;
+  bool _subscriptionDataFound;
 }
 
 - (instancetype)
@@ -139,6 +140,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (void)reset {
   _faviconCallbackCalledOnce = false;
+  _subscriptionDataFound = false;
   _priceTrackingPromoItem = nil;
 }
 
@@ -147,6 +149,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     return;
   }
   _faviconCallbackCalledOnce = false;
+  _subscriptionDataFound = false;
   __weak PriceTrackingPromoMediator* weakSelf = self;
   GetAllPriceTrackedBookmarks(
       _shoppingService, _bookmarkModel,
@@ -324,7 +327,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (most_recent_subscription_product_image_url.is_empty()) {
     _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
     _priceTrackingPromoItem.commandHandler = self;
-    [self.delegate newSubscriptionAvailable];
+    [self onNewSubscriptionAvailable];
   } else {
     // If we have an image, fetch it and display the price tracking promo
     // with that image.
@@ -399,6 +402,16 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (attributes.faviconImage && !attributes.usesDefaultImage) {
     self->_priceTrackingPromoItem.faviconImage = attributes.faviconImage;
   }
+  [self onNewSubscriptionAvailable];
+}
+
+- (void)onNewSubscriptionAvailable {
+  // Prevent magic stack framework being called more than once in the event
+  // of multiple requests in a short period (e.g. refresh).
+  if (_subscriptionDataFound) {
+    return;
+  }
+  _subscriptionDataFound = true;
   [self.delegate newSubscriptionAvailable];
 }
 
