@@ -1397,12 +1397,6 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground,
              "ReduceGpuPriorityOnBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, shows a dropdown menu for mouse and trackpad secondary
-// clicks (i.e. right click) with respect to text selection.
-BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
-             "MouseAndTrackpadDropdownMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Apply text selection menu order correction logic for Android.
 // TODO(crbug.com/40947146) This is a kill switch landed in M122.
 // Please remove after M124.

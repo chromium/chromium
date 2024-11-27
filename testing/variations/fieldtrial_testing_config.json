@@ -23617,16 +23617,20 @@
             ]
         }
     ],
-    "TrackpadDropdownMenu": [
+    "TrackingProtection3pcdUx": [
         {
             "platforms": [
-                "android"
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230829",
-                    "enable_features": [
-                        "MouseAndTrackpadDropdownMenu"
+                    "name": "Rewind",
+                    "disable_features": [
+                        "TrackingProtection3pcdUx"
                     ]
                 }
             ]

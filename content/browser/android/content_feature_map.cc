@@ -38,7 +38,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kChangeUnfocusedPriority,
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,
-    &features::kMouseAndTrackpadDropdownMenu,
     &features::kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,

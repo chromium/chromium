@@ -57,7 +57,6 @@ import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -1320,8 +1319,6 @@ public class SelectionPopupControllerTest {
     }
 
     private void setDropdownMenuFeatureEnabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(
-                ContentFeatureList.MOUSE_AND_TRACKPAD_DROPDOWN_MENU, enabled);
         SelectionPopupControllerImpl.setEnableTabletUiModeForTesting(enabled);
     }
 

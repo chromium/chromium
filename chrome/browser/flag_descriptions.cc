@@ -4668,12 +4668,6 @@ const char kMigrateSyncingUserToSignedInDescription[] =
     "Enables the migration of syncing users to the signed-in, non-syncing "
     "state.";
 
-const char kMouseAndTrackpadDropdownMenuName[] =
-    "Android Mouse & Trackpad Drop-down Text Selection Menu";
-const char kMouseAndTrackpadDropdownMenuDescription[] =
-    "When enabled, shows a dropdown menu for mouse and trackpad secondary "
-    "clicks (i.e. right click) with respect to text selection.";
-
 const char kNavBarColorMatchesTabBackgroundName[] =
     "Nav bar color matches tab background";
 const char kNavBarColorMatchesTabBackgroundDescription[] =

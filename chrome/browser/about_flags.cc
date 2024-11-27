@@ -10253,13 +10253,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kWebPrinting)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"mouse-and-trackpad-dropdown-menu",
-     flag_descriptions::kMouseAndTrackpadDropdownMenuName,
-     flag_descriptions::kMouseAndTrackpadDropdownMenuDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kMouseAndTrackpadDropdownMenu)},
-#endif
-
     {"autofill-enable-prefetching-risk-data-for-retrieval",
      flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
      flag_descriptions::

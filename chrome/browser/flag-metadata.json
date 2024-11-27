@@ -5946,11 +5946,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "mouse-and-trackpad-dropdown-menu",
-    "owners": [ "wbjacksonjr@chromium.org" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "multi-calendar-in-quick-settings",
     "owners": [ "jiamingc@chromium.org", "amberhaynes@chromium.org", "cros-status-area-eng@google.com" ],
     "expiry_milestone": 136

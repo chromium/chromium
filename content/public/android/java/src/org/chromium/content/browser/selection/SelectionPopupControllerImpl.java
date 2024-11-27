@@ -58,7 +58,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -478,13 +477,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     /**
-     * Returns true if a dropdown menu should be used based on the current state
-     * (i.e. mouse was used to invoke text selection menu).
+     * Returns true if a dropdown menu should be used based on the current state (i.e. mouse was
+     * used to invoke text selection menu).
      */
     private boolean shouldUseDropdownMenu() {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.MOUSE_AND_TRACKPAD_DROPDOWN_MENU)) {
-            return false;
-        }
         return mView != null
                 && mDropdownMenuDelegate != null
                 && mMenuSourceType == MenuSourceType.MOUSE

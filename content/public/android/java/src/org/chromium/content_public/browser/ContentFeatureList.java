@@ -31,8 +31,6 @@ public class ContentFeatureList {
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
-    public static final String MOUSE_AND_TRACKPAD_DROPDOWN_MENU = "MouseAndTrackpadDropdownMenu";
-
     public static final String INPUT_ON_VIZ = "InputOnViz";
 
     public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";

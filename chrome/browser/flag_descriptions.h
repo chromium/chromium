@@ -2704,9 +2704,6 @@ extern const char kMediaPickerAdoptionStudyDescription[];
 extern const char kMigrateSyncingUserToSignedInName[];
 extern const char kMigrateSyncingUserToSignedInDescription[];
 
-extern const char kMouseAndTrackpadDropdownMenuName[];
-extern const char kMouseAndTrackpadDropdownMenuDescription[];
-
 extern const char kNavBarColorMatchesTabBackgroundName[];
 extern const char kNavBarColorMatchesTabBackgroundDescription[];
 
