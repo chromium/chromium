@@ -21,7 +21,7 @@ constexpr char16_t kDefaultUrl[] = u"http://example.com";
 class NearOomReductionMessageDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  NearOomReductionMessageDelegateTest() {}
+  NearOomReductionMessageDelegateTest() = default;
 
  protected:
   void SetUp() override;
