@@ -35,7 +35,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
-    private static final int EXPIRATION_FOR_TESTING = 33;
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
@@ -50,9 +49,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mDataUsed;
     private CharSequence mHostName;
     private RwsCookieInfo mRwsInfo;
+    private boolean mIsModeBUi;
+    private boolean mBlockAll3pc;
+    private boolean mIsIncognito;
     private PageInfoControllerDelegate mPageInfoControllerDelegate;
     // Sets a constant # of days until expiration to prevent test flakiness.
-    private boolean mFixedExpiration;
+    private boolean mFixedExpirationForTesting;
+    private int mDaysUntilExpirationForTesting;
 
     /** Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -69,6 +72,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public boolean isIncognito;
         public boolean isModeBUi;
         public boolean fixedExpirationForTesting;
+        public int daysUntilExpirationForTesting;
     }
 
     @Override
@@ -101,7 +105,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     public void setParams(PageInfoCookiesViewParams params) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
-        mFixedExpiration = params.fixedExpirationForTesting;
+        mFixedExpirationForTesting = params.fixedExpirationForTesting;
+        mBlockAll3pc = params.blockAll3pc;
+        mIsIncognito = params.isIncognito;
+        mIsModeBUi = params.isModeBUi;
+        mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         ClickableSpan linkSpan =
                 new ClickableSpan() {
@@ -240,8 +248,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         } else { // Not blocking and temporary exception.
             int days =
-                    mFixedExpiration
-                            ? EXPIRATION_FOR_TESTING
+                    mFixedExpirationForTesting
+                            ? mDaysUntilExpirationForTesting
                             : calculateDaysUntilExpiration(
                                     TimeUtils.currentTimeMillis(), expiration);
             updateThirdPartyCookiesTitleTemporary(days);
@@ -345,13 +353,21 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     private void updateThirdPartyCookiesTitleTemporary(int days) {
-        mThirdPartyCookiesTitle.setTitle(
-                days == 0
-                        ? getString(R.string.page_info_cookies_blocking_restart_today_title)
-                        : getQuantityString(
-                                R.plurals
-                                        .page_info_cookies_blocking_restart_tracking_protection_title,
-                                days));
+        if (mBlockAll3pc || mIsIncognito || !mIsModeBUi) {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getString(R.string.page_info_cookies_blocking_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals
+                                            .page_info_cookies_blocking_restart_tracking_protection_title,
+                                    days));
+        } else {
+            mThirdPartyCookiesTitle.setTitle(
+                    days == 0
+                            ? getString(R.string.page_info_cookies_limiting_restart_today_title)
+                            : getQuantityString(
+                                    R.plurals.page_info_cookies_limiting_restart_title, days));
+        }
     }
 
     private boolean willCreatePermanentException() {

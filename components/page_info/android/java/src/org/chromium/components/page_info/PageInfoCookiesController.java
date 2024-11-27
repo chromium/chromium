@@ -45,6 +45,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mIsModeBUi;
+    private int mDaysUntilExpirationForTesting;
     private boolean mFixedExpirationForTesting;
 
     public PageInfoCookiesController(
@@ -109,6 +110,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         params.blockAll3pc = mBlockAll3pc;
         params.isIncognito = mIsIncognito;
         params.fixedExpirationForTesting = mFixedExpirationForTesting;
+        params.daysUntilExpirationForTesting = mDaysUntilExpirationForTesting;
         params.isModeBUi = mIsModeBUi;
         mSubPage.setParams(params);
         mSubPage.setCookieStatus(
@@ -243,6 +245,10 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                                             : R.string
                                                     .page_info_tracking_protection_subtitle_cookies_limited));
         }
+    }
+
+    public void setDaysUntilExpirationForTesting(int days) {
+        mDaysUntilExpirationForTesting = days;
     }
 
     public void setFixedExceptionExpirationForTesting(boolean fixed) {
