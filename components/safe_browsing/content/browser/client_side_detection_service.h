@@ -89,6 +89,8 @@ class ClientSideDetectionService
     GetSafeBrowsingURLLoaderFactory() = 0;
     virtual bool ShouldSendModelToBrowserContext(
         content::BrowserContext* context) = 0;
+    virtual void StartListeningToOnDeviceModelUpdate() = 0;
+    virtual void StopListeningToOnDeviceModelUpdate() = 0;
   };
 
   ClientSideDetectionService(
@@ -206,6 +208,12 @@ class ClientSideDetectionService
   // debugging metadata.
   int GetTriggerModelVersion();
 
+  // Called from the delegate when the on-device model is available to create a
+  // session.
+  void NotifyOnDeviceModelAvailable();
+
+  bool IsOnDeviceModelAvailable();
+
  private:
   friend class ClientSideDetectionServiceTest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
@@ -220,6 +228,8 @@ class ClientSideDetectionService
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTestESB);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            TestModelFollowsPrefs);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
+                           TestOnDeviceModelFetchCall);
 
   // CacheState holds all information necessary to respond to a caller without
   // actually making a HTTP request.
@@ -338,6 +348,11 @@ class ClientSideDetectionService
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       observed_render_process_hosts_{this};
+
+  // This is used to check before fetching the session when the correct trigger
+  // is called to generate the on-device model LLM. This is set through the
+  // delegate.
+  bool on_device_model_available_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

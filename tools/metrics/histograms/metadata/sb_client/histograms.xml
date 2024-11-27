@@ -777,6 +777,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelDownloadSuccess"
+    enum="BooleanSuccess" expires_after="2025-11-25">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model update is successful or not. This
+    happens for Enhanced Safe Browsing enabled users.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelFetchTime" units="ms"
+    expires_after="2025-11-25">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to fetch the on-device model after
+    subscription. This is only logged if the update is successful.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
     expires_after="2025-04-13">
   <owner>andysjlim@chromium.org</owner>

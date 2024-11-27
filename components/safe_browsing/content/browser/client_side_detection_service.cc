@@ -126,6 +126,7 @@ void ClientSideDetectionService::Shutdown() {
   delegate_.reset();
   enabled_ = false;
   client_side_phishing_model_.reset();
+  on_device_model_available_ = false;
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
@@ -147,6 +148,16 @@ void ClientSideDetectionService::OnPrefsUpdated() {
                             weak_factory_.GetWeakPtr()));
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
       client_side_phishing_model_->SubscribeToImageEmbedderOptimizationGuide();
+      if (base::FeatureList::IsEnabled(
+              kClientSideDetectionBrandAndIntentForScamDetection)) {
+        delegate_->StartListeningToOnDeviceModelUpdate();
+      }
+    } else {
+      if (base::FeatureList::IsEnabled(
+              kClientSideDetectionBrandAndIntentForScamDetection)) {
+        delegate_->StopListeningToOnDeviceModelUpdate();
+        on_device_model_available_ = false;
+      }
     }
   } else {
     // Invoke pending callbacks with a false verdict.
@@ -161,6 +172,14 @@ void ClientSideDetectionService::OnPrefsUpdated() {
   }
 
   SendModelToRenderers();  // always refresh the renderer state
+}
+
+void ClientSideDetectionService::NotifyOnDeviceModelAvailable() {
+  on_device_model_available_ = true;
+}
+
+bool ClientSideDetectionService::IsOnDeviceModelAvailable() {
+  return on_device_model_available_;
 }
 
 void ClientSideDetectionService::SendClientReportPhishingRequest(

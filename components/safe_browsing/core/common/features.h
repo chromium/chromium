@@ -25,6 +25,10 @@ BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 // allowlist as well.
 BASE_DECLARE_FEATURE(kClientSideDetectionAcceptHCAllowlist);
 
+// Create a response containing the brand and the intent of the page using the
+// on-device model LLM.
+BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
+
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 
 // Killswitch for client side phishing detection. Since client side models are

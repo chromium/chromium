@@ -23,9 +23,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -107,7 +109,7 @@ class ClientSidePhishingModelObserverTracker
 
 class ClientSideDetectionServiceTest
     : public testing::Test,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
   ClientSideDetectionServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
@@ -121,10 +123,17 @@ class ClientSideDetectionServiceTest
       enabled_features.push_back(
           {kSafeBrowsingDailyPhishingReportsLimit, params});
     }
+    if (ShouldEnableClientSideDetectionBrandAndPageIntent()) {
+      enabled_features.push_back(
+          {kClientSideDetectionBrandAndIntentForScamDetection, {}});
+    }
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
-  bool ShouldEnableESBDailyPhishingLimit() { return GetParam(); }
+  bool ShouldEnableESBDailyPhishingLimit() { return get<0>(GetParam()); }
+  bool ShouldEnableClientSideDetectionBrandAndPageIntent() {
+    return get<1>(GetParam());
+  }
 
  protected:
   void SetUp() override {
@@ -138,6 +147,7 @@ class ClientSideDetectionServiceTest
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
     csd_service_.reset();
+    mock_optimization_guide_keyed_service_ = nullptr;
   }
 
   void ValidateModel(
@@ -274,6 +284,19 @@ class ClientSideDetectionServiceTest
     EXPECT_TRUE(is_phishing);
   }
 
+  void SetupMockOptimizationGuideKeyedService() {
+    mock_optimization_guide_keyed_service_ =
+        static_cast<MockOptimizationGuideKeyedService*>(
+            OptimizationGuideKeyedServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile_,
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<testing::NiceMock<
+                          MockOptimizationGuideKeyedService>>();
+                    })));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
@@ -286,6 +309,8 @@ class ClientSideDetectionServiceTest
 
   std::unique_ptr<ClientSidePhishingModelObserverTracker>
       model_observer_tracker_;
+  raw_ptr<MockOptimizationGuideKeyedService>
+      mock_optimization_guide_keyed_service_;
 
  private:
   void SendRequestDone(base::OnceClosure continuation_callback,
@@ -303,7 +328,9 @@ class ClientSideDetectionServiceTest
   bool is_phishing_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ClientSideDetectionServiceTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSideDetectionServiceTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
@@ -670,6 +697,113 @@ TEST_P(ClientSideDetectionServiceTest,
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_TRUE(csd_service_->IsSubscribedToImageEmbeddingModelUpdates());
+}
+
+TEST_P(ClientSideDetectionServiceTest, TestOnDeviceModelFetchSuccessCall) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  // When the Enhanced Safe Browsing protection setting is enabled, the next to
+  // functions will call from the delegate.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
+                  debug_reason) {
+            // Setting kConfigNotAvailableForFeature should trigger a retry and
+            // allow the delegate to start waiting.
+            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+                kConfigNotAvailableForFeature;
+            return false;
+          }));
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+}
+
+TEST_P(ClientSideDetectionServiceTest, TestOnDeviceModelFetchFailureCall) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
+                  debug_reason) {
+            // Setting kTooManyRecentCrashes will not trigger a retry and the
+            // delegate will not wait as a result.
+            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+                kTooManyRecentCrashes;
+            return false;
+          }));
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 0);
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 1);
 }
 
 }  // namespace safe_browsing
