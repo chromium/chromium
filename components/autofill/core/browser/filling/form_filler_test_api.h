@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FILLER_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FILLER_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_TEST_API_H_
 
-#include "components/autofill/core/browser/form_filler.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 
 namespace autofill {
 
@@ -38,4 +38,4 @@ inline FormFillerTestApi test_api(FormFiller& form_filler) {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FILLER_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_TEST_API_H_

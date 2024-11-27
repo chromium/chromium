@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/field_filling_address_util.h"
+#include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 
 #include <memory>
 #include <vector>

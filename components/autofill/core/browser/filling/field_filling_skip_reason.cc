@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/field_filling_skip_reason.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 
 #include <string_view>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_GRANULAR_FILLING_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_GRANULAR_FILLING_UTILS_H_
 
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -46,4 +46,4 @@ FieldTypeSet GetTargetFieldTypesFromFillingMethod(FillingMethod filling_method);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_GRANULAR_FILLING_UTILS_H_

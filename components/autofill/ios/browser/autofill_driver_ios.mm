@@ -16,7 +16,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/observer_list.h"
 #import "components/autofill/core/browser/autofill_driver_router.h"
-#import "components/autofill/core/browser/form_filler.h"
+#import "components/autofill/core/browser/filling/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"

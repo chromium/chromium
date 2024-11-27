@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_SKIP_REASON_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_SKIP_REASON_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_SKIP_REASON_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_SKIP_REASON_H_
 
 #include <cstdint>
 #include <string_view>
@@ -38,4 +38,4 @@ std::string_view GetSkipFieldFillLogMessage(FieldFillingSkipReason skip_reason);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_SKIP_REASON_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_SKIP_REASON_H_

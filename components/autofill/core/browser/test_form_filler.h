@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_FORM_FILLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_FORM_FILLER_H_
 
-#include "components/autofill/core/browser/form_filler.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 
 namespace autofill {
 
