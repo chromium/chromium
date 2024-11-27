@@ -42,6 +42,30 @@
 
 namespace views {
 
+namespace {
+
+bool IsValidOrientationStyleCombo(TabbedPane::Orientation orientation,
+                                  TabbedPane::TabStripStyle style) {
+  const bool is_horizontal =
+      orientation == TabbedPane::Orientation::kHorizontal;
+  const bool is_vertical = orientation == TabbedPane::Orientation::kVertical;
+
+  const bool is_highlight_style =
+      style == TabbedPane::TabStripStyle::kHighlight;
+  const bool is_compact_with_icon =
+      style == TabbedPane::TabStripStyle::kCompactWithIcon;
+  const bool is_with_icon = style == TabbedPane::TabStripStyle::kWithIcon;
+
+  // Determine if the combination is invalid.
+  const bool horizontal_highlight = is_horizontal && is_highlight_style;
+  const bool vertical_icon =
+      is_vertical && (is_compact_with_icon || is_with_icon);
+
+  return !horizontal_highlight && !vertical_icon;
+}
+
+}  // namespace
+
 TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
                              const std::u16string& title,
                              View* contents,
@@ -69,8 +93,8 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
 
   SetState(State::kInactive);
 
-  // Create an icon for the kCompactWithIcon style
-  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+  // Create an icon if the style requests one.
+  if (tabbed_pane_->HasIconStyle()) {
     auto icon = std::make_unique<views::ImageView>(
         GetImageModelForTab(GetIconTitleColor()));
     icon->SetProperty(views::kMarginsKey,
@@ -85,7 +109,7 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
   // Therefore, for a single child, FillLayout is okay. However when multiple
   // elements are present (e.g. icon + text), we need to use a BoxLayout to
   // arrange them correctly.
-  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+  if (tabbed_pane_->HasIconStyle()) {
     auto box_layout = std::make_unique<BoxLayout>();
     box_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
@@ -167,8 +191,9 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   int width = preferred_title_width_ + GetInsets().width();
 
-  // There is no icon if the component is not kCompactWithIcon.
-  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon &&
+  // An icon is only present in kCompactWithIcon or kWithIcon styles, in a
+  // horizontal orientation.
+  if (tabbed_pane_->HasIconStyle() &&
       tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal) {
     width += icon_view_->GetPreferredSize({}).width() + kIconRightMargin;
   }
@@ -618,10 +643,7 @@ END_METADATA
 TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
                        TabbedPane::TabStripStyle style,
                        bool scrollable) {
-  DCHECK(orientation != TabbedPane::Orientation::kHorizontal ||
-         style != TabbedPane::TabStripStyle::kHighlight);
-  DCHECK(orientation != TabbedPane::Orientation::kVertical ||
-         style != TabbedPane::TabStripStyle::kCompactWithIcon);
+  CHECK(IsValidOrientationStyleCombo(orientation, style));
 
   if (orientation == TabbedPane::Orientation::kHorizontal)
     SetOrientation(views::LayoutOrientation::kVertical);
@@ -757,6 +779,11 @@ bool TabbedPane::MoveSelectionBy(int delta) {
   }
   SelectTab(tab_strip_->GetTabAtDeltaFromSelected(delta));
   return true;
+}
+
+bool TabbedPane::HasIconStyle() const {
+  return GetStyle() == TabStripStyle::kCompactWithIcon ||
+         GetStyle() == TabStripStyle::kWithIcon;
 }
 
 gfx::Size TabbedPane::CalculatePreferredSize(

@@ -50,6 +50,7 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
     kBorder,           // Draw border around the selected tab.
     kHighlight,        // Highlight background and text of the selected tab.
     kCompactWithIcon,  // Draw an icon, shrink the highlight bar to icon+text
+    kWithIcon,         // Draw an icon, expand the highlight bar to entire tab.
   };
 
   explicit TabbedPane(Orientation orientation = Orientation::kHorizontal,
@@ -108,6 +109,9 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
 
   // Gets the style of the tab strip.
   TabStripStyle GetStyle() const;
+
+  // Returns whether an Icon should be rendered for the TabbedPaneTab children.
+  bool HasIconStyle() const;
 
   // Returns the tab at the given index.
   TabbedPaneTab* GetTabAt(size_t index);
