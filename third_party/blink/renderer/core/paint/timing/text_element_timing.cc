@@ -58,6 +58,7 @@ bool TextElementTiming::CanReportElements() const {
 }
 
 void TextElementTiming::OnTextObjectPainted(const TextRecord& record) {
+  DCHECK(record.is_needed_for_element_timing_);
   Node* node = record.node_;
 
   // Text aggregators need to be Elements. This will not be the case if the
