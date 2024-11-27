@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -50,6 +51,7 @@
 #include "url/origin.h"
 
 using base::Time;
+using base::test::EqualsProto;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
@@ -1891,6 +1893,80 @@ TEST_F(PaymentsAutofillTableTest,
       [&payment_instrument_2](sync_pb::PaymentInstrument& p) {
         return p.instrument_id() == payment_instrument_2.instrument_id();
       }));
+}
+
+// Test that multiple payment instrument creation options can be stored and
+// gotten. All payment instrument creation option types should be used in this
+// test.
+TEST_F(
+    PaymentsAutofillTableTest,
+    PaymentInstrumentCreationOption_StoresMultiplePaymentInstrumentCreationOptions) {
+  // Add multiple payment instrument creation options to the table.
+  // All payment instrument creation option types should be included at least
+  // once in the vector.
+  sync_pb::PaymentInstrumentCreationOption creation_option_1 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234");
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("5678");
+  table_->SetPaymentInstrumentCreationOptions(
+      {creation_option_1, creation_option_2});
+
+  // Retrieve the payment instrument creation options.
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      creation_options_from_table;
+  table_->GetPaymentInstrumentCreationOptions(creation_options_from_table);
+
+  // Check that both payment instrument creation options exist in the table.
+  EXPECT_THAT(creation_options_from_table,
+              UnorderedElementsAre(EqualsProto(creation_option_1),
+                                   EqualsProto(creation_option_2)));
+}
+
+// Test that when given a new vector of payment instrument creation options,
+// the previous entries are cleared and replaced with the new entries.
+TEST_F(
+    PaymentsAutofillTableTest,
+    PaymentInstrumentCreationOption_SetPaymentInstrumentCreationOptionsOverwritesExistingValues) {
+  // Add the first payment instrument creation option to the table.
+  std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options{
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234")};
+  table_->SetPaymentInstrumentCreationOptions(creation_options);
+  // Overwrite the existing payment instrument with a new instrument.
+  sync_pb::PaymentInstrumentCreationOption new_creation_option =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("5678");
+  creation_options[0] = new_creation_option;
+  table_->SetPaymentInstrumentCreationOptions(creation_options);
+
+  // Retrieve the payment instrument creation options.
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      creation_options_from_table;
+  table_->GetPaymentInstrumentCreationOptions(creation_options_from_table);
+
+  // Check that only the new payment instrument creation option exists.
+  EXPECT_THAT(creation_options_from_table,
+              testing::UnorderedElementsAre(EqualsProto(new_creation_option)));
+}
+
+// Test that when an empty vector of payment instructment creation options is
+// set, the table is cleared instead of ignoring the empty vector.
+TEST_F(
+    PaymentsAutofillTableTest,
+    PaymentInstrumentCreationOption_SetEmptyPaymentInstrumentCreationOptionsOverwritesExistingValues) {
+  // Add an existing payment instrument creation option to the table.
+  sync_pb::PaymentInstrumentCreationOption creation_option =
+      test::CreatePaymentInstrumentCreationOptionWithBnplIssuer("1234");
+  table_->SetPaymentInstrumentCreationOptions({creation_option});
+
+  // Overwrite the existing payment instrument with an empty vector.
+  table_->SetPaymentInstrumentCreationOptions({});
+
+  // Retrieve the payment instrument creation options.
+  std::vector<sync_pb::PaymentInstrumentCreationOption>
+      creation_options_from_table;
+  table_->GetPaymentInstrumentCreationOptions(creation_options_from_table);
+
+  // Check that nothing is returned.
+  EXPECT_EQ(creation_options_from_table.size(), 0u);
 }
 
 }  // namespace

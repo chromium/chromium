@@ -352,6 +352,14 @@ struct ServerCvc {
 //                      A byte-encoded representation of the payment
 //                      instrument's protobuf, encrypted.
 // -----------------------------------------------------------------------------
+// payment_instrument_creation_options
+//                    This table contains payment instrument creation
+//                    options that can create payment instruments.
+//
+//   id               The server-generated ID for the creation option.
+//   serialized_value The serialized payment instrument creation option
+//                    proto.
+// -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
   PaymentsAutofillTable();
@@ -543,6 +551,15 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool GetPaymentInstruments(
       std::vector<sync_pb::PaymentInstrument>& payment_instruments);
 
+  // Sets and gets the `payment_instrument_creation_options` table. Return true
+  // if the operation succeeded.
+  bool SetPaymentInstrumentCreationOptions(
+      const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+          payment_instrument_creation_options);
+  bool GetPaymentInstrumentCreationOptions(
+      std::vector<sync_pb::PaymentInstrumentCreationOption>&
+          payment_instrument_creation_options);
+
   // Testing helper to access the database for checking the result of database
   // update.
   sql::Database* GetDbForTesting() const { return db(); }
@@ -578,6 +595,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
   bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
   bool MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
+  bool MigrateToVersion136AddPaymentInstrumentCreationOptionsTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -610,6 +628,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
+  bool InitPaymentInstrumentCreationOptionsTable();
 };
 
 }  // namespace autofill

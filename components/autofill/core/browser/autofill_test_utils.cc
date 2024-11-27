@@ -57,6 +57,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -1080,6 +1081,24 @@ BnplIssuer GetTestBnplIssuer() {
                                      /*price_upper_bound=*/200000000);
   return BnplIssuer(12345, /*issuer_id=*/"test_issuer_id",
                     std::move(eligible_price_ranges));
+}
+
+sync_pb::PaymentInstrumentCreationOption
+CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id) {
+  sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option;
+  payment_instrument_creation_option.set_id(id);
+
+  sync_pb::BnplIssuerDetails* bnpl_option =
+      payment_instrument_creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id("issuer_id");
+
+  sync_pb::EligiblePriceRange eligible_price_range;
+  eligible_price_range.set_currency("USD");
+  eligible_price_range.set_min_price_in_micros(50);
+  eligible_price_range.set_max_price_in_micros(200);
+  *bnpl_option->add_eligible_price_range() = eligible_price_range;
+
+  return payment_instrument_creation_option;
 }
 
 }  // namespace test
