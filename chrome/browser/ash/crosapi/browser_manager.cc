@@ -63,7 +63,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -235,10 +234,6 @@ BrowserManager::~BrowserManager() {
   g_instance = nullptr;
 }
 
-bool BrowserManager::IsRunning() const {
-  return false;
-}
-
 void BrowserManager::SwitchToTab(const GURL& url,
                                  NavigateParams::PathBehavior path_behavior) {
   PerformOrEnqueue(BrowserAction::OpenUrl(
@@ -277,15 +272,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   SetState(State::UNAVAILABLE);
   browser_loader_->Unload();
   ClearLacrosData();
-}
-
-void BrowserManager::GetBrowserInformation(
-    const std::string& window_unique_id,
-    GetBrowserInformationCallback callback) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->desk_template_ash()
-      ->GetBrowserInformation(window_unique_id, std::move(callback));
 }
 
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {

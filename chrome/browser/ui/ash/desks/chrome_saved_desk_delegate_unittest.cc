@@ -8,8 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/browser_loader.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
@@ -27,10 +25,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/client/aura_constants.h"
-#include "ui/aura/client/window_types.h"
-#include "ui/aura/window.h"
-#include "ui/compositor/layer_type.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -38,18 +32,6 @@ using ::testing::Return;
 
 namespace {
 constexpr char kTestProfileEmail[] = "test@test.com";
-
-class MockBrowserManager : public crosapi::BrowserManager {
- public:
-  MockBrowserManager()
-      : BrowserManager(std::unique_ptr<crosapi::BrowserLoader>(), nullptr) {}
-  MOCK_METHOD(void,
-              GetBrowserInformation,
-              (const std::string&,
-               crosapi::BrowserManager::GetBrowserInformationCallback),
-              (override));
-};
-
 }  // namespace
 
 class ChromeSavedDeskDelegateTest : public testing::Test {
@@ -67,9 +49,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-
-    mock_browser_manager_ =
-        std::make_unique<testing::NiceMock<MockBrowserManager>>();
 
     // Create a test user and profile so the `ChromeSavedDeskDelegate` does not
     // return empty result simply because of missing user profile.
@@ -91,7 +70,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   void TearDown() override {
     chrome_saved_desk_delegate_.reset();
     profile_.reset();
-    mock_browser_manager_.reset();
     profile_manager_.reset();
   }
 
@@ -104,21 +82,12 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     return chrome_saved_desk_delegate_.get();
   }
 
-  MockBrowserManager& mock_browser_manager() { return *mock_browser_manager_; }
-
   full_restore::FullRestoreSaveHandler* GetSaveHandler(
       bool start_save_timer = true) {
     auto* save_handler = full_restore::FullRestoreSaveHandler::GetInstance();
     save_handler->SetActiveProfilePath(profile_->GetPath());
     save_handler->AllowSave();
     return save_handler;
-  }
-
-  void SaveWindowInfo(aura::Window* window, int32_t activation_index) {
-    app_restore::WindowInfo window_info;
-    window_info.window = window;
-    window_info.activation_index = activation_index;
-    full_restore::SaveWindowInfo(window_info);
   }
 
  private:
@@ -128,8 +97,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
 
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<TestingProfile> profile_;
-
-  std::unique_ptr<testing::NiceMock<MockBrowserManager>> mock_browser_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

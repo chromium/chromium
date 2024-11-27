@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom-forward.h"
 
 namespace aura {
@@ -59,23 +58,6 @@ class ChromeSavedDeskDelegate : public ash::SavedDeskDelegate {
   bool IsWindowSupportedForSavedDesk(aura::Window* window) const override;
   std::string GetAppShortName(const std::string& app_id) override;
   bool IsAppAvailable(const std::string& app_id) const override;
-
- private:
-  // Receives the state of the tabstrip from the Lacros window.
-  void OnLacrosChromeInfoReturned(
-      GetAppLaunchDataCallback callback,
-      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
-      crosapi::mojom::DeskTemplateStatePtr state);
-
-  // Asynchronously requests the state of the tabstrip from the Lacros window
-  // with `window_unique_id`.  The response is handled by
-  // OnLacrosChromeInfoReturned().
-  void GetLacrosChromeInfo(
-      GetAppLaunchDataCallback callback,
-      const std::string& window_unique_id,
-      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) const;
-
-  mutable base::WeakPtrFactory<ChromeSavedDeskDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_CHROME_SAVED_DESK_DELEGATE_H_

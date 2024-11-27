@@ -70,10 +70,7 @@ interface DeskTemplateClient {
                                   ui.mojom.WindowShowState initial_show_state,
                                   DeskTemplateState state);
 
-  // Returns state of the tab strip model in the browser window identified by
-  // |window_unique_id|.
-  GetBrowserInformation@0(uint32 serial, string window_unique_id) => (
-    uint32 serial, string window_unique_id, DeskTemplateState? state);
+  // GetBrowserInformation@0 was removed.
 
   // Gets the image of the favicon associated with `url`. Returns an empty
   // image if the favicon cannot be found. If `profile_id` is specified, then

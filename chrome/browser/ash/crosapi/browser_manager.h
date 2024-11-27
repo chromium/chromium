@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
-#include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
@@ -91,10 +90,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   ~BrowserManager() override;
 
-  // Returns true if Lacros is in running state.
-  // Virtual for testing.
-  virtual bool IsRunning() const;
-
   // NOTE on callbacks:
   // An action's callback (e.g. the last parameter to NewWindowForDetachingTab
   // below) will never be invoked with a CreationResult value of
@@ -132,14 +127,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Lacros via BrowserLoader::Unload, which also deletes the user data
   // directory.
   virtual void InitializeAndStartIfNeeded();
-
-  using GetBrowserInformationCallback =
-      base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)>;
-  // Gets URLs and active indices of the tab strip models from the Lacros
-  // browser window.
-  // Virtual for testing.
-  virtual void GetBrowserInformation(const std::string& window_unique_id,
-                                     GetBrowserInformationCallback callback);
 
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);

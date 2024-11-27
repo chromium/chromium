@@ -344,15 +344,6 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     return;
   }
 
-  if (app_id == app_constants::kLacrosAppId) {
-    const std::string* lacros_window_id =
-        window->GetProperty(app_restore::kLacrosWindowId);
-    DCHECK(lacros_window_id);
-    GetLacrosChromeInfo(std::move(callback), *lacros_window_id,
-                        std::move(app_launch_info));
-    return;
-  }
-
   std::move(callback).Run(std::move(app_launch_info));
 }
 
@@ -503,53 +494,4 @@ std::string ChromeSavedDeskDelegate::GetAppShortName(
       app_id,
       [&name](const apps::AppUpdate& update) { name = update.ShortName(); });
   return name;
-}
-
-void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
-    GetAppLaunchDataCallback callback,
-    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
-    crosapi::mojom::DeskTemplateStatePtr state) {
-  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned");
-  if (state.is_null()) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  app_launch_info->browser_extra_info.urls = state->urls;
-  app_launch_info->browser_extra_info.active_tab_index = state->active_index;
-  app_launch_info->browser_extra_info.first_non_pinned_tab_index =
-      state->first_non_pinned_index;
-  if (state->browser_app_name.has_value()) {
-    app_launch_info->browser_extra_info.app_type_browser = true;
-    app_launch_info->browser_extra_info.app_name =
-        state->browser_app_name.value();
-  }
-  app_launch_info->browser_extra_info.tab_group_infos =
-      state->groups.value_or(std::vector<tab_groups::TabGroupInfo>());
-  if (state->lacros_profile_id != 0) {
-    app_launch_info->browser_extra_info.lacros_profile_id =
-        state->lacros_profile_id;
-  }
-
-  std::move(callback).Run(std::move(app_launch_info));
-}
-
-void ChromeSavedDeskDelegate::GetLacrosChromeInfo(
-    GetAppLaunchDataCallback callback,
-    const std::string& window_unique_id,
-    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) const {
-  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetLacrosChromeInfo");
-  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
-  if (!browser_manager || !browser_manager->IsRunning()) {
-    LOG(WARNING)
-        << "The browser manager is not running.  Cannot request browser state.";
-    std::move(callback).Run({});
-    return;
-  }
-
-  browser_manager->GetBrowserInformation(
-      window_unique_id,
-      base::BindOnce(&ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(app_launch_info)));
 }
