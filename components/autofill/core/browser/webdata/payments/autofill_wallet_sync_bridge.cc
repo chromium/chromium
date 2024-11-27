@@ -67,7 +67,9 @@ std::string GetClientTagFromBankAccount(const BankAccount& bank_account) {
 
 std::string GetClientTagFromPaymentInstrument(
     const sync_pb::PaymentInstrument& payment_instrument) {
-  return base::NumberToString(payment_instrument.instrument_id());
+  return base::StrCat(
+      {"payment_instrument:",
+       base::NumberToString(payment_instrument.instrument_id())});
 }
 
 // Returns the storage key to be used for wallet data for the specified wallet
