@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.EDUCATIONAL_TIP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
@@ -93,6 +94,9 @@ public class HomeModulesMetricsUtils {
 
     private static final String SAFETY_HUB_FRESHNESS_INPUT_CONTEXT = "safety_hub_freshness";
 
+    private static final String AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT =
+            "auxiliary_search_freshness";
+
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -123,6 +127,8 @@ public class HomeModulesMetricsUtils {
                 return "SafetyHub";
             case EDUCATIONAL_TIP:
                 return "EducationalTip";
+            case AUXILIARY_SEARCH:
+                return "AuxiliarySearch";
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -144,6 +150,8 @@ public class HomeModulesMetricsUtils {
                 return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
             case SAFETY_HUB:
                 return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
+            case AUXILIARY_SEARCH:
+                return AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT;
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -162,6 +170,8 @@ public class HomeModulesMetricsUtils {
                 return ModuleType.SAFETY_HUB;
             case "EducationalTip":
                 return ModuleType.EDUCATIONAL_TIP;
+            case "AuxiliarySearch":
+                return AUXILIARY_SEARCH;
             default:
                 assert false : "Module type not supported!";
                 return ModuleType.NUM_ENTRIES;

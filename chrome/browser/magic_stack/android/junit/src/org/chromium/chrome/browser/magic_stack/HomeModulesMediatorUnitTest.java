@@ -573,7 +573,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SINGLE_TAB,
                         ModuleType.TAB_RESUMPTION,
                         ModuleType.SAFETY_HUB,
-                        ModuleType.EDUCATIONAL_TIP);
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.AUXILIARY_SEARCH);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -584,7 +585,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.PRICE_CHANGE,
                         ModuleType.TAB_RESUMPTION,
                         ModuleType.SAFETY_HUB,
-                        ModuleType.EDUCATIONAL_TIP);
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.AUXILIARY_SEARCH);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -605,7 +607,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.PRICE_CHANGE,
                         ModuleType.TAB_RESUMPTION,
                         ModuleType.SAFETY_HUB,
-                        ModuleType.EDUCATIONAL_TIP);
+                        ModuleType.EDUCATIONAL_TIP,
+                        ModuleType.AUXILIARY_SEARCH);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -731,7 +734,7 @@ public class HomeModulesMediatorUnitTest {
         scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
         mHomeModulesConfigManager.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
         mHomeModulesConfigManager.setFreshnessCountForTesting(moduleType, expectedScore);
-        int[] scores = new int[] {-1, expectedScore, -1, -1};
+        int[] scores = new int[] {-1, expectedScore, -1, -1, -1};
         inputContext = mMediator.createInputContext();
         verifyInputContext(inputContext, scores);
 

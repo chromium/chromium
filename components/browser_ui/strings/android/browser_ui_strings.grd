@@ -1131,6 +1131,23 @@
          other {Hide continue with these tabs card}}
       </message>
 
+      <!-- Auxiliary search Magic Stack strings -->
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_NAME" desc="Name of the auxiliary search module on NTP.">
+        View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the auxiliary search card.">
+        Hide View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT" desc="Content of the auxiliary search module on NTP.">
+        You can now quickly access suggested tabs from your device's app list and in device search results. Turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GO_TO_SETTINGS" desc="The text shown on the Go to settings button on the auxiliary search module on NTP.">
+        Go to settings
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GOT_IT" desc="The text shown on the Got it button on the auxiliary search module on NTP.">
+        Got it
+      </message>
+
       <!-- Educational tip module strings -->
       <message name="IDS_EDUCATIONAL_TIP_MODULE_TITLE" desc="Title of the educational tip module on NTP.">
         Chrome Tips

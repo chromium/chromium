@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.EDUCATIONAL_TIP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
@@ -88,6 +89,8 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                 return resources.getString(R.string.safety_hub_magic_stack_module_name);
             case EDUCATIONAL_TIP:
                 return resources.getString(R.string.educational_tip_module_name);
+            case AUXILIARY_SEARCH:
+                return resources.getString(R.string.auxiliary_search_module_name);
             default:
                 assert false : "Module type not supported!";
                 return null;

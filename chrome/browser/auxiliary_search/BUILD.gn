@@ -21,6 +21,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProvider.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtils.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilder.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleCoordinator.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediator.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleView.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleViewBinder.java",
   ]
 
   deps = [
@@ -37,6 +43,7 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -54,6 +61,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:gendeps_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
     "//url:url_java",
   ]
 
@@ -65,7 +73,12 @@ generate_jni("jni_headers") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/dimens.xml" ]
+  sources = [
+    "java/res/drawable/auxiliary_search_module_icon.xml",
+    "java/res/layout/auxiliary_search_module_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }
 
 robolectric_library("junit") {
