@@ -41,11 +41,14 @@ class NavigationCapturingInformationForwarder
   NavigationCapturingInformationForwarder(
       content::WebContents* contents,
       NavigationCapturingRedirectionInfo redirection_info,
-      std::optional<webapps::AppId> launched_app_id);
+      std::optional<webapps::AppId> launched_app_id,
+      bool force_iph_off);
   friend WebContentsUserData;
 
   NavigationCapturingRedirectionInfo redirection_info_;
   std::optional<webapps::AppId> launched_app_id_;
+  bool force_iph_off_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

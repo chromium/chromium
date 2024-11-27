@@ -224,7 +224,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
   // where the redirect does not result in an app being launched we don't
   // accidentally (try to) treat it as a launch. Any branch where an app launch
   // does happen will re-set the field to the correct value.
-  handle_user_data->set_launched_app(std::nullopt);
+  handle_user_data->SetLaunchedAppState(std::nullopt, /*force_iph_off=*/false);
 
   // After this point:
   // - The browsing context is a top-level browsing context.
@@ -266,14 +266,17 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
       NavigationHandlingInitialResult::kForcedNewAppContextAppWindow) {
     CHECK(redirection_info.source_browser_app_id().has_value());
     CHECK(navigation_handling_first_stage_app);
-    handle_user_data->set_launched_app(*target_app_id);
     // standalone-app -> browser-tab-app.
     if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
+      handle_user_data->SetLaunchedAppState(*target_app_id,
+                                            /*force_iph_off=*/true);
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
                                          link_click_disposition);
       return content::NavigationThrottle::PROCEED;
     }
     // standalone-app -> standalone-app.
+    handle_user_data->SetLaunchedAppState(*target_app_id,
+                                          /*force_iph_off=*/false);
     CHECK(target_display_mode != blink::mojom::DisplayMode::kBrowser);
     ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
                          final_url);
@@ -290,7 +293,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     // browser tab to an app window.
     CHECK(target_display_mode != blink::mojom::DisplayMode::kBrowser);
     if (source_browser_app_id.has_value()) {
-      handle_user_data->set_launched_app(*target_app_id);
+      handle_user_data->SetLaunchedAppState(*target_app_id,
+                                            /*force_iph_off=*/false);
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
                            final_url);
       return content::NavigationThrottle::PROCEED;
@@ -315,12 +319,15 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     if ((link_click_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
          is_source_app_matching_final_target) ||
         (link_click_disposition == WindowOpenDisposition::NEW_WINDOW)) {
-      handle_user_data->set_launched_app(*target_app_id);
       // browser-tab -> browser-tab-app.
       if (target_display_mode == blink::mojom::DisplayMode::kBrowser) {
+        handle_user_data->SetLaunchedAppState(*target_app_id,
+                                              /*force_iph_off=*/true);
         return content::NavigationThrottle::PROCEED;
       }
       // browser-tab -> standalone app
+      handle_user_data->SetLaunchedAppState(*target_app_id,
+                                            /*force_iph_off=*/false);
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
                            final_url);
       return content::NavigationThrottle::PROCEED;
@@ -358,10 +365,11 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
            NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow ||
        initial_nav_handling_result ==
            NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab)) {
-    handle_user_data->set_launched_app(*target_app_id);
     // Handle all cases that result in a standalone app.
     // (browser tab, browser-tab-app, or standalone-app -> standalone-app)
     if (target_display_mode != blink::mojom::DisplayMode::kBrowser) {
+      handle_user_data->SetLaunchedAppState(*target_app_id,
+                                            /*force_iph_off=*/false);
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
                            final_url);
       return content::NavigationThrottle::PROCEED;
@@ -369,6 +377,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     // Handle all cases that result in a browser-tab-app.
     // (browser tab, browser-tab-app, or standalone-app -> browser-tab-app)
     CHECK(target_display_mode == blink::mojom::DisplayMode::kBrowser);
+    handle_user_data->SetLaunchedAppState(*target_app_id,
+                                          /*force_iph_off=*/true);
     if (initial_nav_handling_result ==
         NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow) {
       ReparentWebContentsToTabbedBrowser(web_contents_for_navigation,
@@ -428,7 +438,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
                             CreateForNavigationHandle(
                                 navigation_handle,
                                 /*redirection_info=*/std::nullopt,
-                                target_app_id);
+                                target_app_id, /*force_iph_off=*/false);
                       },
                       *target_app_id));
 

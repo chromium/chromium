@@ -174,6 +174,16 @@ class WebAppNavigationCapturingIphUiTest
             .SetDescription("ClickLaunchLink()"));
   }
 
+  auto TriggerNavigateExisting(
+      const std::string& element_id,
+      ui_controls::MouseButton button,
+      ui_controls::AcceleratorState accel = ui_controls::kNoAccelerator) {
+    auto steps = Steps(ClickLaunchLink(element_id, button, accel),
+                       InAnyContext(WaitForShow(kDestinationPageId)));
+    AddDescription(steps, "TriggerNavigateExisting( %s )");
+    return steps;
+  }
+
   // Clicks on `element_id` in the start page, which must be open in at least
   // one browser, launching a new app window. The context of the last step is
   // the window in which the link was opened.
@@ -334,18 +344,22 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
-                       IPHShownForAppInTab) {
+                       IPHShownForNavigateExistingAppInTab) {
   webapps::AppId app_id = test::InstallWebApp(
       browser()->profile(),
       WebAppInstallInfo::CreateForTesting(
           GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
           mojom::UserDisplayMode::kBrowser,
-          blink::mojom::ManifestLaunchHandler_ClientMode::kAuto));
+          blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting));
   RunTestSequence(
       OpenStartPage(),
       TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
                        ui_controls::kNoAccelerator,
                        /* expect_new_browser= */ false),
+      // The second launch is required to trigger the kNavigateExisting behavior
+      // and show the IPH.
+      TriggerNavigateExisting(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                              ui_controls::kNoAccelerator),
       InSameContext(WaitForPromo(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)));
 }
