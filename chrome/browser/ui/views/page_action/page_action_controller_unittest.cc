@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,17 +19,17 @@ class PageActionTestObserver : public PageActionModelObserver {
   PageActionTestObserver() = default;
   ~PageActionTestObserver() override = default;
 
-  void OnVisibleChanged(bool is_visible) override {
-    ++visible_changed_;
-    is_visible_ = is_visible;
+  void OnPageActionModelChanged(PageActionModel* model) override {
+    ++model_changed_;
+    show_requested_ = model->show_requested();
   }
 
-  bool is_visible() const { return is_visible_; }
-  int visible_changed() const { return visible_changed_; }
+  bool show_requested() const { return show_requested_; }
+  int model_changed() const { return model_changed_; }
 
  private:
-  bool is_visible_ = false;
-  int visible_changed_ = 0;
+  bool show_requested_ = false;
+  int model_changed_ = 0;
 };
 
 class PageActionControllerTest : public ::testing::Test {
@@ -49,37 +51,41 @@ class PageActionControllerTest : public ::testing::Test {
 // Tests adding/removing observers.
 TEST_F(PageActionControllerTest, AddAndRemoveObserver) {
   auto observer = PageActionTestObserver();
+  base::ScopedObservation<PageActionModel, PageActionModelObserver> observation(
+      &observer);
   PageActionController* controller = page_action_controller();
   controller->Register(0);
-  controller->AddObserver(0, &observer);
+  controller->AddObserver(0, observation);
 
   controller->Show(0);
-  EXPECT_TRUE(observer.is_visible());
+  EXPECT_TRUE(observer.show_requested());
 
-  controller->RemoveObserver(0, &observer);
+  observation.Reset();
   controller->Hide(0);
-  EXPECT_TRUE(observer.is_visible());
+  EXPECT_TRUE(observer.show_requested());
 }
 
 // Tests that calling Show/HidePageAction will show/hide updates the model.
 TEST_F(PageActionControllerTest, ShowAndHidePageAction) {
   auto observer = PageActionTestObserver();
+  base::ScopedObservation<PageActionModel, PageActionModelObserver> observation(
+      &observer);
   PageActionController* controller = page_action_controller();
   controller->Register(0);
-  controller->AddObserver(0, &observer);
+  controller->AddObserver(0, observation);
 
-  EXPECT_EQ(0, observer.visible_changed());
+  EXPECT_EQ(0, observer.model_changed());
   controller->Show(0);
-  EXPECT_EQ(1, observer.visible_changed());
-  EXPECT_TRUE(observer.is_visible());
+  EXPECT_EQ(1, observer.model_changed());
+  EXPECT_TRUE(observer.show_requested());
 
   controller->Show(0);
-  EXPECT_EQ(1, observer.visible_changed());
-  EXPECT_TRUE(observer.is_visible());
+  EXPECT_EQ(1, observer.model_changed());
+  EXPECT_TRUE(observer.show_requested());
 
   controller->Hide(0);
-  EXPECT_EQ(2, observer.visible_changed());
-  EXPECT_FALSE(observer.is_visible());
+  EXPECT_EQ(2, observer.model_changed());
+  EXPECT_FALSE(observer.show_requested());
 }
 
 // Tests that calling Show/HidePageAction will show/hide update the correct
@@ -87,23 +93,27 @@ TEST_F(PageActionControllerTest, ShowAndHidePageAction) {
 TEST_F(PageActionControllerTest, ShowAndHidePageActionUpdatesCorrectModel) {
   auto observer_a = PageActionTestObserver();
   auto observer_b = PageActionTestObserver();
+  base::ScopedObservation<PageActionModel, PageActionModelObserver>
+      observation_a(&observer_a);
+  base::ScopedObservation<PageActionModel, PageActionModelObserver>
+      observation_b(&observer_b);
   PageActionController* controller = page_action_controller();
 
   controller->Initialize({0, 1});
-  controller->AddObserver(0, &observer_a);
-  controller->AddObserver(1, &observer_b);
+  controller->AddObserver(0, observation_a);
+  controller->AddObserver(1, observation_b);
 
   controller->Show(0);
-  EXPECT_TRUE(observer_a.is_visible());
-  EXPECT_FALSE(observer_b.is_visible());
+  EXPECT_TRUE(observer_a.show_requested());
+  EXPECT_FALSE(observer_b.show_requested());
 
   controller->Show(1);
-  EXPECT_TRUE(observer_a.is_visible());
-  EXPECT_TRUE(observer_b.is_visible());
+  EXPECT_TRUE(observer_a.show_requested());
+  EXPECT_TRUE(observer_b.show_requested());
 
   controller->Hide(0);
-  EXPECT_FALSE(observer_a.is_visible());
-  EXPECT_TRUE(observer_b.is_visible());
+  EXPECT_FALSE(observer_a.show_requested());
+  EXPECT_TRUE(observer_b.show_requested());
 }
 
 }  // namespace

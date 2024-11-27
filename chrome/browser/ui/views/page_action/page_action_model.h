@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_MODEL_H_
 
 #include "base/observer_list.h"
-#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 namespace page_actions {
 
@@ -25,10 +24,13 @@ class PageActionModel {
 
   // TODO(crbug.com/376285151): Add base::PassKey protection to limit access to
   // the controller.
-  void SetVisible(bool visible);
+  void SetShowRequested(bool requested);
+
+  bool show_requested() const { return show_requested_; }
 
  private:
-  bool is_visible_ = false;
+  // Represents whether a feature requested to show this page action.
+  bool show_requested_ = false;
 
   base::ObserverList<PageActionModelObserver> observer_list_;
 };

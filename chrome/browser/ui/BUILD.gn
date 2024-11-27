@@ -4369,6 +4369,8 @@ static_library("ui") {
       "views/page_action/page_action_model.cc",
       "views/page_action/page_action_model.h",
       "views/page_action/page_action_model_observer.h",
+      "views/page_action/page_action_view.cc",
+      "views/page_action/page_action_view.h",
       "views/page_action/pwa_install_view.cc",
       "views/page_action/pwa_install_view.h",
       "views/page_action/zoom_view.cc",

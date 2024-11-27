@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
-#include <vector>
+#include <set>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/actions/action_id.h"
 
 namespace page_actions {
@@ -33,16 +35,16 @@ class PageActionController {
   void Hide(actions::ActionId action_id);
 
   // Manages observers for the page action's underlying `PageActionModel`.
-  void AddObserver(actions::ActionId action_id,
-                   PageActionModelObserver* observer);
-  void RemoveObserver(actions::ActionId action_id,
-                      PageActionModelObserver* observer);
+  void AddObserver(
+      actions::ActionId action_id,
+      base::ScopedObservation<PageActionModel, PageActionModelObserver>&
+          observation);
 
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModel>>;
 
-  PageActionModel* FindPageActionModel(actions::ActionId action_id);
+  PageActionModel* FindPageActionModel(actions::ActionId action_id) const;
 
   PageActionModelsMap page_actions_;
 };

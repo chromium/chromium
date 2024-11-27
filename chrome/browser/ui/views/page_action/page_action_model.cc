@@ -9,15 +9,19 @@
 namespace page_actions {
 
 PageActionModel::PageActionModel() = default;
-PageActionModel::~PageActionModel() = default;
 
-void PageActionModel::SetVisible(bool visible) {
-  if (is_visible_ == visible) {
+PageActionModel::~PageActionModel() {
+  observer_list_.Notify(
+      &PageActionModelObserver::OnPageActionModelWillBeDeleted, this);
+}
+
+void PageActionModel::SetShowRequested(bool requested) {
+  if (show_requested_ == requested) {
     return;
   }
-  is_visible_ = visible;
-  observer_list_.Notify(&PageActionModelObserver::OnVisibleChanged,
-                        is_visible_);
+  show_requested_ = requested;
+  observer_list_.Notify(&PageActionModelObserver::OnPageActionModelChanged,
+                        this);
 }
 
 void PageActionModel::AddObserver(PageActionModelObserver* observer) {
