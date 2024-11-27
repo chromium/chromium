@@ -32,6 +32,7 @@
 #include "chrome/test/fuzzing/atspi_in_process_fuzzer.pb.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "sql/database.h"
+#include "sql/statement.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
