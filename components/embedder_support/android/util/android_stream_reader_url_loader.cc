@@ -30,6 +30,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -343,9 +344,8 @@ void AndroidStreamReaderURLLoader::SendBody() {
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  options.capacity_num_bytes = network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
   if (CreateDataPipe(&options, producer_handle_, consumer_handle_) !=
       MOJO_RESULT_OK) {
     RequestComplete(net::ERR_FAILED);

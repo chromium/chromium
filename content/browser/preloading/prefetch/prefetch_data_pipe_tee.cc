@@ -7,7 +7,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/string_data_source.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 
 namespace content {
 
@@ -21,9 +21,8 @@ MojoResult CreateDataPipeForServingData(
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible);
+  options.capacity_num_bytes = network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
 
   return mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
 }

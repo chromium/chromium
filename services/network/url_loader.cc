@@ -85,9 +85,9 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
@@ -1945,9 +1945,8 @@ void URLLoader::ContinueOnResponseStarted() {
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
-    options.capacity_num_bytes =
-        network::features::GetDataPipeDefaultAllocationSize(
-            features::DataPipeAllocationSize::kLargerSizeIfPossible);
+    options.capacity_num_bytes = GetDataPipeDefaultAllocationSize(
+        DataPipeAllocationSize::kLargerSizeIfPossible);
     MojoResult result =
         mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
     if (result != MOJO_RESULT_OK) {

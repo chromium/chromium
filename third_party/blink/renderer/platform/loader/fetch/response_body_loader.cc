@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
@@ -594,7 +594,7 @@ void ResponseBodyLoader::OnStateChange() {
 
   size_t num_bytes_consumed = 0;
   while (!aborted_ && (!IsSuspended() || IsSuspendedForBackForwardCache())) {
-    const size_t chunk_size = network::features::kMaxNumConsumedBytesInTask;
+    const size_t chunk_size = network::kMaxNumConsumedBytesInTask;
     if (chunk_size == num_bytes_consumed) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.

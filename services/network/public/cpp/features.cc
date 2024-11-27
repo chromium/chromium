@@ -225,43 +225,6 @@ BASE_FEATURE_ENUM_PARAM(TrustTokenOriginTrialSpec,
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
 BASE_FEATURE(kAcceptCHFrame, "AcceptCHFrame", base::FEATURE_ENABLED_BY_DEFAULT);
 
-namespace {
-
-// The default Mojo ring buffer size, used to send the content body.
-constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;
-
-// The larger ring buffer size, used primarily for network::URLLoader loads.
-// This value was optimized via Finch: see crbug.com/1041006.
-constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
-
-// The smallest buffer size must be larger than the maximum MIME sniffing
-// chunk size. This is assumed several places in content/browser/loader.
-static_assert(kDefaultDataPipeAllocationSize < kLargerDataPipeAllocationSize);
-static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
-              "Smallest data pipe size must be at least as large as a "
-              "MIME-type sniffing buffer.");
-}  // namespace
-
-// static
-uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1306998): ChromeOS experiences a much higher OOM crash
-  // rate if the larger data pipe size is used.
-  return kDefaultDataPipeAllocationSize;
-#else
-  // For low-memory devices, always use the (smaller) default buffer size.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512) {
-    return kDefaultDataPipeAllocationSize;
-  }
-  switch (option) {
-    case DataPipeAllocationSize::kDefaultSizeOnly:
-      return kDefaultDataPipeAllocationSize;
-    case DataPipeAllocationSize::kLargerSizeIfPossible:
-      return kLargerDataPipeAllocationSize;
-  }
-#endif
-}
-
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              "CorsNonWildcardRequestHeadersSupport",

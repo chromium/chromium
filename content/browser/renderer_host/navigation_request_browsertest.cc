@@ -60,7 +60,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/url_request/url_request_failed_job.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
@@ -4790,10 +4790,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest,
             client_throttle->response_body().find(
                 "Test page with a long response body"));
   // The initial response body chunk may be smaller than the max data pipe size.
-  EXPECT_LE(
-      client_throttle->response_body().length(),
-      network::features::GetDataPipeDefaultAllocationSize(
-          network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+  EXPECT_LE(client_throttle->response_body().length(),
+            network::GetDataPipeDefaultAllocationSize(
+                network::DataPipeAllocationSize::kLargerSizeIfPossible));
 
   // Finish the navigation.
   ASSERT_TRUE(manager.WaitForNavigationFinished());

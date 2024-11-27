@@ -7,10 +7,11 @@
 #include <memory>
 #include <string>
 #include <utility>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -352,7 +353,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
-  const size_t kMax = network::features::kMaxNumConsumedBytesInTask;
+  const size_t kMax = network::kMaxNumConsumedBytesInTask;
 
   consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
   consumer->Add(Command(Command::kData, std::string(2, 'b').data()));

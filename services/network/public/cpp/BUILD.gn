@@ -90,6 +90,8 @@ component("cpp") {
     "link_header_parser.h",
     "load_info_util.cc",
     "load_info_util.h",
+    "loading_params.cc",
+    "loading_params.h",
     "net_adapters.cc",
     "net_adapters.h",
     "network_connection_tracker.cc",
