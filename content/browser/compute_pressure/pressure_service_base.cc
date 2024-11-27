@@ -131,27 +131,23 @@ void PressureServiceBase::BindReceiver(
                           base::Unretained(this)));
 }
 
-void PressureServiceBase::AddClient(
-    device::mojom::PressureSource source,
-    mojo::PendingAssociatedRemote<device::mojom::PressureClient> client,
-    AddClientCallback callback) {
+void PressureServiceBase::AddClient(device::mojom::PressureSource source,
+                                    AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanCallAddClient()) {
     std::move(callback).Run(
-        blink::mojom::WebPressureManagerAddClientResult::NewError(
+        device::mojom::PressureManagerAddClientResult::NewError(
             device::mojom::PressureManagerAddClientError::kNotSupported));
     return;
   }
 
   auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
-  if (pressure_client.is_client_associated_remote_bound()) {
+  if (pressure_client.is_client_remote_bound()) {
     manager_receiver_.ReportBadMessage(
         "PressureClientImpl is already connected.");
     return;
   }
-
-  pressure_client.BindPendingAssociatedRemote(std::move(client));
 
   if (!manager_remote_.is_bound()) {
     auto receiver = manager_remote_.BindNewPipeAndPassReceiver();
@@ -165,9 +161,11 @@ void PressureServiceBase::AddClient(
   }
 
   if (pressure_client.is_client_receiver_bound()) {
+    // Calling BindNewPipeAndPassReceiver() is safe because we call
+    // PressureClientImpl::is_client_remote_bound() above.
     std::move(callback).Run(
-        blink::mojom::WebPressureManagerAddClientResult::NewSuccess(
-            device::mojom::PressureManagerAddClientSuccess::kOk));
+        device::mojom::PressureManagerAddClientResult::NewPressureClient(
+            pressure_client.BindNewPipeAndPassReceiver()));
   } else {
     const std::optional<base::UnguessableToken>& token = GetTokenFor(source);
     manager_remote_->AddClient(
@@ -253,22 +251,20 @@ void PressureServiceBase::DidAddClient(
     device::mojom::PressureManagerAddClientResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
-
   if (result->is_error()) {
-    pressure_client.Reset();
-    std::move(client_callback)
-        .Run(blink::mojom::WebPressureManagerAddClientResult::NewError(
-            device::mojom::PressureManagerAddClientError::kNotSupported));
+    std::move(client_callback).Run(std::move(result));
     return;
   }
 
+  auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
   pressure_client.BindReceiver(std::move(result->get_pressure_client()),
                                token.has_value());
 
   std::move(client_callback)
-      .Run(blink::mojom::WebPressureManagerAddClientResult::NewSuccess(
-          device::mojom::PressureManagerAddClientSuccess::kOk));
+      .Run(device::mojom::PressureManagerAddClientResult::NewPressureClient(
+          // This is safe because AddClient() already checked
+          // PressureClientImpl::is_client_remote_bound()'s return value.
+          pressure_client.BindNewPipeAndPassReceiver()));
 
   RenderFrameHost* rfh = GetRenderFrameHost();
   auto* web_content = WebContents::FromRenderFrameHost(rfh);

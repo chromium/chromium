@@ -13,12 +13,6 @@ enum PressureManagerAddClientError {
   kNotSupported,
 };
 
-enum PressureManagerAddClientSuccess {
-  // The underlying platform has build successfully the backend to report
-  // the results of the pressure source selected.
-  kOk,
-};
-
 // PressureManager.AddClient()'s return type.
 union PressureManagerAddClientResult {
   PressureManagerAddClientError error;

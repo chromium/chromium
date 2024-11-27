@@ -57,7 +57,7 @@ PressureClientImpl::PressureClientImpl(ExecutionContext* context,
                                        PressureObserverManager* manager)
     : ExecutionContextClient(context),
       manager_(manager),
-      associated_receiver_(this, context) {}
+      receiver_(this, context) {}
 
 PressureClientImpl::~PressureClientImpl() = default;
 
@@ -85,32 +85,20 @@ void PressureClientImpl::RemoveObserver(PressureObserver* observer) {
   }
 }
 
-mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient>
-PressureClientImpl::BindNewEndpointAndPassRemote(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  auto associated_pending_remote =
-      associated_receiver_.BindNewEndpointAndPassRemote(task_runner);
-
-  associated_receiver_.set_disconnect_handler(
-      WTF::BindOnce(&PressureClientImpl::Disconnect, WrapWeakPersistent(this)));
-
-  return associated_pending_remote;
-}
-
-void PressureClientImpl::Disconnect() {
-  // Disconnection handler can call Reset also from the master interface.
-  // Therefore we need to make sure that observers with pending promises are
-  // served.
-  for (const auto& observer : observers_) {
-    observer->OnConnectionError();
-  }
-  Reset();
+void PressureClientImpl::BindPressureClient(
+    mojo::PendingReceiver<device::mojom::blink::PressureClient>
+        pending_client_receiver) {
+  receiver_.Bind(
+      std::move(pending_client_receiver),
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  receiver_.set_disconnect_handler(
+      WTF::BindOnce(&PressureClientImpl::Reset, WrapWeakPersistent(this)));
 }
 
 void PressureClientImpl::Reset() {
   state_ = State::kUninitialized;
   observers_.clear();
-  associated_receiver_.reset();
+  receiver_.reset();
 }
 
 DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
@@ -129,8 +117,8 @@ DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
 }
 
 void PressureClientImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(associated_receiver_);
   visitor->Trace(manager_);
+  visitor->Trace(receiver_);
   visitor->Trace(observers_);
   ExecutionContextClient::Trace(visitor);
 }

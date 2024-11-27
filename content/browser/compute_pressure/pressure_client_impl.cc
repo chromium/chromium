@@ -21,7 +21,7 @@ void PressureClientImpl::OnPressureUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (service_->ShouldDeliverUpdate()) {
-    client_associated_remote_->OnPressureUpdated(std::move(update));
+    client_remote_->OnPressureUpdated(std::move(update));
   }
 }
 
@@ -32,8 +32,21 @@ void PressureClientImpl::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   client_receiver_.reset();
-  client_associated_remote_.reset();
+  client_remote_.reset();
   pressure_source_type_ = PressureSourceType::kUnknown;
+}
+
+mojo::PendingReceiver<device::mojom::PressureClient>
+PressureClientImpl::BindNewPipeAndPassReceiver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto pending_receiver = client_remote_.BindNewPipeAndPassReceiver();
+  // base::Unretained is safe because Mojo guarantees the callback will not
+  // be called after `client_remote_` is deallocated, and `client_remote_`
+  // is owned by this class.
+  client_remote_.set_disconnect_handler(
+      base::BindRepeating(&PressureClientImpl::Reset, base::Unretained(this)));
+  return pending_receiver;
 }
 
 void PressureClientImpl::BindReceiver(
@@ -49,15 +62,6 @@ void PressureClientImpl::BindReceiver(
 
   client_receiver_.Bind(std::move(pending_receiver));
   client_receiver_.set_disconnect_handler(
-      base::BindOnce(&PressureClientImpl::Reset, base::Unretained(this)));
-}
-
-void PressureClientImpl::BindPendingAssociatedRemote(
-    mojo::PendingAssociatedRemote<device::mojom::PressureClient>
-        pending_associated_remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_associated_remote_.Bind(std::move(pending_associated_remote));
-  client_associated_remote_.set_disconnect_handler(
       base::BindOnce(&PressureClientImpl::Reset, base::Unretained(this)));
 }
 
