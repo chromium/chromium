@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_FORM_FILLER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_FORM_FILLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_TEST_FORM_FILLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_TEST_FORM_FILLER_H_
 
 #include "components/autofill/core/browser/filling/form_filler.h"
 
@@ -23,4 +23,4 @@ class TestFormFiller : public FormFiller {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_FORM_FILLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_TEST_FORM_FILLER_H_
