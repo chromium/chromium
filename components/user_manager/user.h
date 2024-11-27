@@ -82,9 +82,6 @@ class USER_MANAGER_EXPORT User {
   // Returns the user type.
   UserType GetType() const { return type_; }
 
-  // Will LOG(FATAL) unless overridden.
-  void UpdateType(UserType new_type);
-
   // Returns true if user has gaia account. True for users of types
   // UserType::kRegular and UserType::kChild.
   bool HasGaiaAccount() const;
@@ -197,7 +194,7 @@ class USER_MANAGER_EXPORT User {
 
   void AddProfileCreatedObserver(base::OnceClosure on_profile_created);
 
- protected:
+ private:
   friend class UserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
   friend class ash::UserImageManagerImpl;
@@ -227,10 +224,9 @@ class USER_MANAGER_EXPORT User {
 
   // Setters are private so only UserManager can call them.
   void SetAccountLocale(const std::string& resolved_account_locale);
-
   void SetImage(std::unique_ptr<UserImage> user_image, int image_index);
-
   void SetImageURL(const GURL& image_url);
+  void SetType(UserType new_type);
 
   // Sets a stub image until the next |SetImage| call. |image_index| may be
   // one of |UserImage::Type::kExternal| or |UserImage::Type::kProfile|.
@@ -277,7 +273,6 @@ class USER_MANAGER_EXPORT User {
 
   void SetAffiliated(bool is_affiliated);
 
- private:
   AccountId account_id_;
   UserType type_;
   std::u16string display_name_;

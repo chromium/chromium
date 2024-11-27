@@ -1483,7 +1483,7 @@ void UserManagerImpl::RegularUserLoggedIn(const AccountId& account_id,
   KnownUser known_user(local_state_.get());
 
   if (active_user_ && active_user_->GetType() != user_type) {
-    active_user_->UpdateType(user_type);
+    active_user_->SetType(user_type);
     // Clear information about profile policy requirements to enforce setting it
     // again for the new account type.
     known_user.ClearProfileRequiresPolicy(account_id);
