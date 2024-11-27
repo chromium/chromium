@@ -113,8 +113,17 @@ public class TabRemoverImpl implements TabRemover {
 
         @Override
         public void showTabGroupDeletionConfirmationDialog(@NonNull Callback<Integer> onResult) {
-            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, takeListener());
-            if (mOriginalTabClosureParams.isTabGroup) {
+            boolean isTabGroup = mOriginalTabClosureParams.isTabGroup;
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                boolean willSkipDialog =
+                        isTabGroup
+                                ? mActionConfirmationManager.willSkipDeleteGroupAttempt()
+                                : mActionConfirmationManager.willSkipCloseTabAttempt();
+                listener.willPerformActionOrShowDialog(DialogType.SYNC, willSkipDialog);
+            }
+            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, listener);
+            if (isTabGroup) {
                 mActionConfirmationManager.processDeleteGroupAttempt(adaptedCallback);
             } else {
                 mActionConfirmationManager.processCloseTabAttempt(adaptedCallback);
@@ -124,8 +133,13 @@ public class TabRemoverImpl implements TabRemover {
         @Override
         public void showCollaborationKeepDialog(
                 @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
+            }
             var adaptedCallback =
-                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, takeListener());
+                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, listener);
             if (memberRole == MemberRole.OWNER) {
                 mActionConfirmationManager.processCollaborationOwnerRemoveLastTab(
                         title, adaptedCallback);
@@ -148,9 +162,13 @@ public class TabRemoverImpl implements TabRemover {
                             mPreventUndo);
             if (newTabClosureParams == null) return;
 
+            @Nullable TabModelActionListener listener = takeListener();
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+            }
             PassthroughTabRemover.doCloseTabs(mTabGroupModelFilter, newTabClosureParams);
-            if (mListener != null) {
-                mListener.onConfirmationDialogResult(
+            if (listener != null) {
+                listener.onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
             }
         }
@@ -231,9 +249,13 @@ public class TabRemoverImpl implements TabRemover {
             if (tabModel.getTabById(mTabToRemove.getId()) == null || mTabToRemove.isClosing()) {
                 return;
             }
+            @Nullable TabModelActionListener listener = mListener;
+            if (listener != null) {
+                listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+            }
             PassthroughTabRemover.doRemoveTab(tabModel, mTabToRemove);
-            if (mListener != null) {
-                mListener.onConfirmationDialogResult(
+            if (listener != null) {
+                listener.onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
             }
         }

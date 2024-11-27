@@ -101,6 +101,8 @@ public class TabUngrouperImplUnitTest {
         // No placeholder created.
 
         handler.performAction();
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         verify(mTabGroupModelFilter)
                 .moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
         verify(mListener)
@@ -136,9 +138,13 @@ public class TabUngrouperImplUnitTest {
         assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
         assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
 
+        when(mActionConfirmationManager.willSkipUngroupAttempt()).thenReturn(true);
+
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mActionConfirmationManager).processUngroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mListener)
@@ -180,9 +186,13 @@ public class TabUngrouperImplUnitTest {
         assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
         assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
 
+        when(mActionConfirmationManager.willSkipUngroupAttempt()).thenReturn(false);
+
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager).processUngroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mListener)
@@ -225,9 +235,13 @@ public class TabUngrouperImplUnitTest {
         assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
         assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
 
+        when(mActionConfirmationManager.willSkipUngroupAttempt()).thenReturn(true);
+
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mActionConfirmationManager).processUngroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mListener)
@@ -266,9 +280,13 @@ public class TabUngrouperImplUnitTest {
         assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
         assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
 
+        when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(true);
+
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mActionConfirmationManager).processUngroupTabAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mListener)
@@ -312,6 +330,9 @@ public class TabUngrouperImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.showCollaborationKeepDialog(MemberRole.OWNER, TITLE, mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
                 .processCollaborationOwnerRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
@@ -356,6 +377,9 @@ public class TabUngrouperImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.showCollaborationKeepDialog(MemberRole.MEMBER, TITLE, mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
                 .processCollaborationMemberRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);

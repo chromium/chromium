@@ -34,6 +34,9 @@ public class PassthroughTabRemover implements TabRemover {
             @NonNull TabClosureParams tabClosureParams,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
+        if (listener != null) {
+            listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        }
         forceCloseTabs(tabClosureParams);
         if (listener != null) {
             listener.onConfirmationDialogResult(
@@ -50,6 +53,9 @@ public class PassthroughTabRemover implements TabRemover {
     @Override
     public void removeTab(
             @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
+        if (listener != null) {
+            listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        }
         TabGroupModelFilterInternal tabGroupModelFilter = getTabGroupModelFilter();
         doRemoveTab(tabGroupModelFilter.getTabModel(), tab);
         if (listener != null) {

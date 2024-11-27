@@ -107,14 +107,62 @@ public class TabRemoverImplUnitTest {
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
-        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
-        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ false, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
         GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
         assertTrue(groupsPendingDestroy.isEmpty());
 
         // No placeholder created.
+
+        handler.performAction();
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        verify(mTabGroupModelFilter).closeTabs(eq(params));
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verifyNoMoreInteractions(mListener);
+    }
+
+    @Test
+    public void testCloseTabsHandler_SkipDialog() {
+        int id = 0;
+        Tab tab0 = mTabModel.addTab(id);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        TabClosureParams params = TabClosureParams.closeAllTabs().build();
+
+        mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
+        verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
+        TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
+
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = id;
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = TAB_GROUP_ID;
+        savedTabGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
+        when(mTabGroupSyncService.getGroup(SYNC_ID)).thenReturn(savedTabGroup);
+
+        GroupsPendingDestroy groupsPendingDestroy = handler.computeGroupsPendingDestroy();
+        assertFalse(groupsPendingDestroy.isEmpty());
+        assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
+        assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
+
+        when(mActionConfirmationManager.willSkipCloseTabAttempt()).thenReturn(true);
+
+        // No placeholder tabs created.
+
+        handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
+        verify(mActionConfirmationManager).processCloseTabAttempt(mOnResultCaptor.capture());
+        mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mListener)
+                .onConfirmationDialogResult(
+                        DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
+        verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
         verify(mTabGroupModelFilter).closeTabs(eq(params));
@@ -151,9 +199,13 @@ public class TabRemoverImplUnitTest {
         assertTrue(groupsPendingDestroy.collaborationGroupsDestroyed.isEmpty());
         assertFalse(groupsPendingDestroy.syncedGroupsDestroyed.isEmpty());
 
+        when(mActionConfirmationManager.willSkipDeleteGroupAttempt()).thenReturn(true);
+
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ true);
         verify(mActionConfirmationManager).processDeleteGroupAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
         verify(mListener)
@@ -194,6 +246,8 @@ public class TabRemoverImplUnitTest {
         // No placeholder tabs created.
 
         handler.showTabGroupDeletionConfirmationDialog(mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.SYNC, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager).processCloseTabAttempt(mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mListener)
@@ -236,6 +290,9 @@ public class TabRemoverImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.showCollaborationKeepDialog(MemberRole.OWNER, TITLE, mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
                 .processCollaborationOwnerRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
@@ -279,6 +336,9 @@ public class TabRemoverImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.showCollaborationKeepDialog(MemberRole.MEMBER, TITLE, mOnResult);
+        verify(mListener)
+                .willPerformActionOrShowDialog(
+                        DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
                 .processCollaborationMemberRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
@@ -486,6 +546,8 @@ public class TabRemoverImplUnitTest {
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
         handler.performAction();
+        verify(mListener)
+                .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         verify(mTabModel).removeTab(tab0);
         verify(mListener)
                 .onConfirmationDialogResult(

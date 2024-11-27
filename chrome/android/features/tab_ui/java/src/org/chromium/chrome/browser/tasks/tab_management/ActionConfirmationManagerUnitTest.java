@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -388,5 +390,31 @@ public class ActionConfirmationManagerUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
         String action = "TabGroupConfirmation.CollaborationMemberRemoveLastTab.KeepGroupImplicit";
         assertTrue(mActionTester.getActions().contains(action));
+    }
+
+    @Test
+    public void testWillSkipChecks() {
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(mProfile, mActivity, mModalDialogManager);
+
+        assertFalse(actionConfirmationManager.willSkipCloseTabAttempt());
+        when(mPrefService.getBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE))
+                .thenReturn(true);
+        assertTrue(actionConfirmationManager.willSkipCloseTabAttempt());
+
+        assertFalse(actionConfirmationManager.willSkipDeleteGroupAttempt());
+        when(mPrefService.getBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_CLOSE))
+                .thenReturn(true);
+        assertTrue(actionConfirmationManager.willSkipDeleteGroupAttempt());
+
+        assertFalse(actionConfirmationManager.willSkipUngroupTabAttempt());
+        when(mPrefService.getBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE))
+                .thenReturn(true);
+        assertTrue(actionConfirmationManager.willSkipUngroupTabAttempt());
+
+        assertFalse(actionConfirmationManager.willSkipUngroupAttempt());
+        when(mPrefService.getBoolean(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP))
+                .thenReturn(true);
+        assertTrue(actionConfirmationManager.willSkipUngroupAttempt());
     }
 }

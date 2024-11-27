@@ -208,8 +208,7 @@ public class ActionConfirmationManager {
             descriptionResolver = resources -> resources.getString(noSyncDescriptionRes);
         }
 
-        PrefService prefService = UserPrefs.get(mProfile);
-        if (prefService.getBoolean(stopShowingPref)) {
+        if (shouldSkipDialog(stopShowingPref)) {
             onResult.onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
             return;
         }
@@ -218,6 +217,7 @@ public class ActionConfirmationManager {
                 (buttonClickResult, resultStopShowing) -> {
                     if (resultStopShowing) {
                         RecordUserAction.record(userActionBaseString + "StopShowing");
+                        PrefService prefService = UserPrefs.get(mProfile);
                         prefService.setBoolean(stopShowingPref, true);
                     }
                     handleDialogResult(buttonClickResult, userActionBaseString, onResult);
@@ -339,6 +339,31 @@ public class ActionConfirmationManager {
                 assert false : "Not reached";
                 return true;
         }
+    }
+
+    /** Returns whether the dialog will be skipped for the close tab attempt. */
+    public boolean willSkipCloseTabAttempt() {
+        return shouldSkipDialog(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE);
+    }
+
+    /** Returns whether the dialog will be skipped for the delete group attempt. */
+    public boolean willSkipDeleteGroupAttempt() {
+        return shouldSkipDialog(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_CLOSE);
+    }
+
+    /** Returns whether the dialog will be skipped for the ungroup tab attempt. */
+    public boolean willSkipUngroupAttempt() {
+        return shouldSkipDialog(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP);
+    }
+
+    /** Returns whether the dialog will be skipped for the ungroup attempt. */
+    public boolean willSkipUngroupTabAttempt() {
+        return shouldSkipDialog(Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE);
+    }
+
+    private boolean shouldSkipDialog(@NonNull String stopShowingPref) {
+        PrefService prefService = UserPrefs.get(mProfile);
+        return prefService.getBoolean(stopShowingPref);
     }
 
     public static void clearStopShowingPrefsForTesting(PrefService prefService) {
