@@ -106,10 +106,6 @@
 // Accessibility identifier of the window.
 @property(nonatomic, assign, readonly) NSString* windowAccessibilityIdentifier;
 
-// Gesture Recognizers of the window.
-@property(nonatomic, assign, readonly)
-    NSArray<UIGestureRecognizer*>* windowGestureRecognizers;
-
 // Root view controller's view.
 @property(nonatomic, assign, readonly) UIView* rootView;
 

@@ -133,10 +133,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return self.window.accessibilityIdentifier;
 }
 
-- (NSArray<UIGestureRecognizer*>*)windowGestureRecognizers {
-  return self.window.gestureRecognizers;
-}
-
 - (UIViewController*)rootViewController {
   return [self.window rootViewController];
 }
