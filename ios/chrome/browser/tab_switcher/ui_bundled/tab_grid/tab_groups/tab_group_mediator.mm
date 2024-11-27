@@ -44,6 +44,11 @@ using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
 
+namespace {
+// The preferred size in points for the avatar icons.
+constexpr CGFloat kFacePileAvatarSize = 24;
+}  // namespace
+
 @implementation TabGroupMediator {
   // The service to observe.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
@@ -527,6 +532,8 @@ using ScopedTabGroupSyncObservation =
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
   config.collabID = savedCollabID;
+  config.showsEmptyState = YES;
+  config.avatarSize = kFacePileAvatarSize;
   [_groupConsumer setFacePileViewController:_shareKitService->FacePile(config)];
 }
 
