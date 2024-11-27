@@ -5,10 +5,13 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
 
-#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
+
+class FileSystemAccessWatcherManager;
 
 // Keeps track of the total usage of observer resource for a given StorageKey.
 // TODO(crbug.com/338457523): Update size_t to int64_t.

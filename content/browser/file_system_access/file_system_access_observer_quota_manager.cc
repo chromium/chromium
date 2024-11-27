@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 
 namespace content {
 

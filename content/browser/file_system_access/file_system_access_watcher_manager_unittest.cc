@@ -440,7 +440,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     const std::unique_ptr<Observation>& observation =
         observation_or_error.value();
 
-    const FileSystemAccessObservationGroup& observation_group =
+    const FileSystemAccessObservationGroup* observation_group =
         observation->GetObservationGroupForTesting();
 
     CHECK(watcher_manager().HasObservationGroupForTesting(observation_group));
@@ -496,7 +496,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
     // An observation should have been created.
     std::unique_ptr<content::FileSystemAccessObservationGroup::Observer>
         observation = get_observation_future.Take().value();
-    FileSystemAccessObservationGroup& observation_group =
+    FileSystemAccessObservationGroup* observation_group =
         observation->GetObservationGroupForTesting();
 
     // An observation group should exist for the scope of the observation.
@@ -553,10 +553,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
   source.Signal();
 
   std::list<Change> expected_changes = {{file_url, ChangeInfo()}};
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::ContainerEq(expected_changes))(
-        accumulator.changes());
-  }));
+  EXPECT_THAT(accumulator.changes(), testing::ContainerEq(expected_changes));
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
@@ -670,10 +667,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
     source.Signal();
 
     std::list<Change> expected_changes = {{file_url, ChangeInfo()}};
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return testing::Matches(testing::ContainerEq(expected_changes))(
-          accumulator.changes());
-    }));
+    EXPECT_THAT(accumulator.changes(), testing::ContainerEq(expected_changes));
   }
 
   // Signaling changes after the observation was removed should not crash.
@@ -763,10 +757,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
 
   Change expected_change{file_url, ChangeInfo()};
   std::list<Change> expected_changes = {expected_change};
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::ContainerEq(expected_changes))(
-        accumulator.changes());
-  }));
+  EXPECT_THAT(accumulator.changes(), testing::ContainerEq(expected_changes));
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest,
@@ -921,10 +912,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
       {manager_->CreateFileSystemURLFromPath(
            PathInfo(dir_path.Append(relative_path))),
        ChangeInfo()}};
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::ContainerEq(expected_changes))(
-        accumulator.changes());
-  }));
+  EXPECT_THAT(accumulator.changes(), testing::ContainerEq(expected_changes));
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
@@ -945,10 +933,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
   source.Signal(/*relative_path=*/path, /*error=*/false, change_info);
 
   std::list<Change> expected_changes = {{file_url, change_info}};
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::ContainerEq(expected_changes))(
-        accumulator.changes());
-  }));
+  EXPECT_THAT(accumulator.changes(), testing::ContainerEq(expected_changes));
 }
 
 // TODO(crbug.com/321980129): Consider parameterizing these tests once
@@ -1245,44 +1230,44 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
   std::unique_ptr<Observation> foo_file_observation1 =
       std::move(ObserveFile(foo_storage_key, file_url)).value();
-  FileSystemAccessObservationGroup& foo_file_observation1_group =
+  FileSystemAccessObservationGroup* foo_file_observation1_group =
       foo_file_observation1->GetObservationGroupForTesting();
 
   std::unique_ptr<Observation> foo_file_observation2 =
       std::move(ObserveFile(foo_storage_key, file_url)).value();
-  FileSystemAccessObservationGroup& foo_file_observation2_group =
+  FileSystemAccessObservationGroup* foo_file_observation2_group =
       foo_file_observation2->GetObservationGroupForTesting();
 
   std::unique_ptr<Observation> bar_file_observation =
       std::move(ObserveFile(bar_storage_key, file_url)).value();
-  FileSystemAccessObservationGroup& bar_file_observation_group =
+  FileSystemAccessObservationGroup* bar_file_observation_group =
       bar_file_observation->GetObservationGroupForTesting();
 
   std::unique_ptr<Observation> foo_dir_observation =
       std::move(
           ObserveDirectory(foo_storage_key, dir_url, /*is_recursive=*/false))
           .value();
-  FileSystemAccessObservationGroup& foo_dir_observation_group =
+  FileSystemAccessObservationGroup* foo_dir_observation_group =
       foo_dir_observation->GetObservationGroupForTesting();
 
   // Both foo file observations have the same storage_key and scope, so they
   // should be a part of the observation group.
-  EXPECT_EQ(&foo_file_observation1_group, &foo_file_observation2_group);
+  EXPECT_EQ(foo_file_observation1_group, foo_file_observation2_group);
 
   // The bar and foo file observations have the same scope but different storage
   // keys, so they should be in different observation groups.
-  EXPECT_NE(&foo_file_observation1_group, &bar_file_observation_group);
+  EXPECT_NE(foo_file_observation1_group, bar_file_observation_group);
 
   // The foo file and dir have the same storage key but different scopes, so
   // they should be in different observation groups.
-  EXPECT_NE(&foo_dir_observation_group, &foo_file_observation1_group);
+  EXPECT_NE(foo_dir_observation_group, foo_file_observation1_group);
 
   // The bar file and foo dir neither have the same storage key or scope, so
   // they should be in different observation groups.
-  EXPECT_NE(&foo_dir_observation_group, &bar_file_observation_group);
+  EXPECT_NE(foo_dir_observation_group, bar_file_observation_group);
 }
 
-TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
+TEST_F(FileSystemAccessWatcherManagerTest, ObservationGroupGetsUsageChange) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
   auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
@@ -1296,22 +1281,22 @@ TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
   auto observation_or_error = ObserveFile(file_url);
   ASSERT_TRUE(observation_or_error.has_value());
 
-  FileSystemAccessObservationGroup& observation_group =
+  FileSystemAccessObservationGroup* observation_group =
       observation_or_error.value()->GetObservationGroupForTesting();
   ASSERT_TRUE(
       watcher_manager().HasObservationGroupForTesting(observation_group));
 
-  UsageChangeAccumulator accumulator(observation_group);
+  UsageChangeAccumulator accumulator(*observation_group);
 
+  source.SignalUsageChange(0, 50);
   source.SignalUsageChange(50, 100);
   source.SignalUsageChange(100, 80);
 
-  std::list<std::pair<size_t, size_t>> expected_changes = {{50, 100},
-                                                           {100, 80}};
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return testing::Matches(testing::ContainerEq(expected_changes))(
-        accumulator.usage_changes());
-  }));
+  std::list<std::pair<size_t, size_t>> expected_changes = {
+      {0, 50}, {50, 100}, {100, 80}};
+
+  EXPECT_THAT(accumulator.usage_changes(),
+              testing::ContainerEq(expected_changes));
 }
 
 }  // namespace content

@@ -94,10 +94,11 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     return !observation_groups_.empty();
   }
   bool HasObservationGroupForTesting(
-      const FileSystemAccessObservationGroup& observation_group) {
+      const FileSystemAccessObservationGroup* observation_group) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return observation_groups_.HasObserver(&observation_group);
+    return observation_groups_.HasObserver(observation_group);
   }
+
   bool HasSourceForTesting(FileSystemAccessChangeSource* source) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source_observations_.IsObservingSource(source);

@@ -217,9 +217,13 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
  public:
   explicit FakeChangeSource(
       FileSystemAccessWatchScope scope,
-      scoped_refptr<storage::FileSystemContext> file_system_context)
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      FileSystemAccessWatcherManager& watcher_manager)
       : FileSystemAccessChangeSource(std::move(scope),
-                                     std::move(file_system_context)) {}
+                                     std::move(file_system_context)) {
+    watcher_manager.RegisterSourceForTesting(this);
+    EXPECT_TRUE(watcher_manager.HasSourceForTesting(this));
+  }
   FakeChangeSource(const FakeChangeSource&) = delete;
   FakeChangeSource& operator=(const FakeChangeSource&) = delete;
   ~FakeChangeSource() override = default;
@@ -316,6 +320,12 @@ class FileSystemAccessObserverObservationTest
     rfh->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
   }
 
+  FakeChangeSource CreateFileChangeSource(storage::FileSystemURL file_url) {
+    return FakeChangeSource(
+        FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+        file_system_context_, manager_->watcher_manager());
+  }
+
   base::FilePath CreateFile() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -343,6 +353,14 @@ class FileSystemAccessObserverObservationTest
         manager_.get(), GetBindingContext(), file_url,
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
+  }
+
+  FakeChangeSource CreateDirectoryChangeSource(storage::FileSystemURL dir_url,
+                                               bool is_recursive) {
+    return FakeChangeSource(
+        FileSystemAccessWatchScope::GetScopeForDirectoryWatch(dir_url,
+                                                              is_recursive),
+        file_system_context_, manager_->watcher_manager());
   }
 
   base::FilePath CreateDirectory() {
@@ -376,12 +394,7 @@ class FileSystemAccessObserverObservationTest
 
     FakeObserver fake_observer(std::move(observer));
 
-    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
-
-    auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL, rfh->GetGlobalId());
-
-    manager_->watcher_manager().BindObserverHost(bf_cache_context,
+    manager_->watcher_manager().BindObserverHost(GetBindingContext(),
                                                  std::move(host_receiver));
     return fake_observer;
   }
@@ -390,9 +403,10 @@ class FileSystemAccessObserverObservationTest
   FileSystemAccessManagerImpl::BindingContext GetBindingContext() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
     return FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL,
-        web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+        kTestStorageKey, kTestURL, rfh->GetGlobalId());
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -419,11 +433,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation = observer.Observe(file_handle.get(), false);
@@ -454,22 +464,14 @@ TEST_F(FileSystemAccessObserverObservationTest,
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle1 =
       CreateFileHandle(file_url1);
 
-  FileSystemAccessWatchScope scope1 =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url1);
-
-  FakeChangeSource source1(scope1, file_system_context());
-  RegisterChangeSource(source1);
+  FakeChangeSource source1 = CreateFileChangeSource(file_url1);
 
   base::FilePath file_path2 = CreateFile();
   storage::FileSystemURL file_url2 = CreateFileSystemURL(file_path2);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle2 =
       CreateFileHandle(file_url2);
 
-  FileSystemAccessWatchScope scope2 =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url2);
-
-  FakeChangeSource source2(scope2, file_system_context());
-  RegisterChangeSource(source2);
+  FakeChangeSource source2 = CreateFileChangeSource(file_url2);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation1 = observer.Observe(file_handle1.get(), false);
@@ -507,11 +509,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation =
@@ -548,11 +546,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation =
@@ -585,12 +579,8 @@ TEST_F(FileSystemAccessObserverObservationTest,
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
       CreateDirectoryHandle(dir_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
-          dir_url, /*is_recursive=*/false);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source =
+      CreateDirectoryChangeSource(dir_url, /*is_recursive=*/false);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation =
@@ -626,12 +616,8 @@ TEST_F(FileSystemAccessObserverObservationTest,
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
       CreateDirectoryHandle(dir_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
-          dir_url, /*is_recursive=*/false);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source =
+      CreateDirectoryChangeSource(dir_url, /*is_recursive=*/false);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation =
@@ -663,11 +649,7 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation = observer.Observe(file_handle.get(), false);
@@ -705,11 +687,7 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedErrorsInBFCache) {
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
-  FileSystemAccessWatchScope scope =
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
-
-  FakeChangeSource source(scope, file_system_context());
-  RegisterChangeSource(source);
+  FakeChangeSource source = CreateFileChangeSource(file_url);
 
   FakeObserver observer = CreateObserver();
   FakeObservation observation = observer.Observe(file_handle.get(), false);

@@ -84,9 +84,9 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
       return obs_.GetSource()->scope();
     }
 
-    FileSystemAccessObservationGroup& GetObservationGroupForTesting() {
+    FileSystemAccessObservationGroup* GetObservationGroupForTesting() {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      return *obs_.GetSource();
+      return obs_.GetSource();
     }
 
    private:
