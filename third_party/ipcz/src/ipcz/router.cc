@@ -701,7 +701,6 @@ IpczResult Router::MergeRoute(const Ref<Router>& other) {
 // static
 Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                                 NodeLink& from_node_link) {
-  bool disconnected = false;
   auto router = MakeRefCounted<Router>();
   Ref<RemoteRouterLink> new_outward_link;
   {
@@ -784,17 +783,14 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                  << from_node_link.remote_node_name().ToString() << " to "
                  << from_node_link.local_node_name().ToString()
                  << " via sublink " << descriptor.new_sublink;
-      } else if (!descriptor.peer_closed) {
-        // The new portal is DOA, either because the associated NodeLink is
-        // dead, or the sublink ID was already in use. The latter implies a bug
-        // or bad behavior, but it should be harmless to ignore beyond this
-        // point.
-        disconnected = true;
       }
     }
   }
 
-  if (disconnected) {
+  if (!new_outward_link) {
+    // The new portal is DOA, either because the associated NodeLink is dead, or
+    // or the sublink ID was already in use. The latter implies a bug or bad
+    // behavior, but it should be harmless to ignore beyond this point.
     DVLOG(4) << "Disconnected new Router immediately after deserialization";
     router->AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
   } else if (descriptor.proxy_peer_node_name.is_valid()) {
