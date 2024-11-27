@@ -8,9 +8,13 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -267,6 +271,50 @@
           forHistogram:eventHistogram],
       @"Failed to record event histogram");
   [[self class] dismissDefaultBrowser];
+}
+
+// Tests that incognito can be forced through the FRE with search engine screen.
+- (void)testIncognitoForcedByPolicy {
+  // Configure the policy to force sign-in.
+  [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
+                  xmlPolicyValue:"<integer>2</integer>"];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
+
+  // Verify 2 steps FRE.
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentSigninWithPolicy];
+  // Accept sign-in.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept sync.
+  [self acceptSyncOrHistory];
+  // Check that UMA is on.
+  GREYAssertTrue(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
+  // Check signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  // Select a search engine.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
 }
 
 @end

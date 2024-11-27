@@ -16,6 +16,9 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -28,9 +31,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -547,20 +548,33 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 }
 
 // Tests that incognito can be forced with the FRE.
-- (void)testIncognitoForcedByPolicy {
+- (void)testIncognitoForcedByPolicyWithAddAccount {
   // Configure the policy to force sign-in.
   [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
                   xmlPolicyValue:"<integer>2</integer>"];
 
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  GREYAssertTrue(
-      [SigninEarlGrey isIdentityAdded:fakeIdentity],
-      @"Identity not added by kSignInAtStartup flag, in "
-      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
-
   // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithPolicy];
+
+  // Add the identity list.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+  // Open the fake add identity screen.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityPickerAddAccountIdentifier)]
+      performAction:grey_tap()];
+  // Setup the identity to add.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity2];
+  // Confirm the fake add identity screen.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
@@ -574,11 +588,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       [FirstRunAppInterface isUMACollectionEnabled],
       @"kMetricsReportingEnabled pref was unexpectedly false by default.");
   // Check signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  // Check sync is on.
-  [[self class] dismissDefaultBrowser];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [self verifySyncOrHistoryEnabled:YES];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
 }
 
 // Tests that the UMA link does not appear in  FRE when UMA is disabled by

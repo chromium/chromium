@@ -105,7 +105,7 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   id<SystemIdentityInteractionManager> identityInteractionManager =
@@ -296,7 +296,8 @@ using signin_metrics::PromoAction;
   self.historySyncPopupCoordinator = nil;
 
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
   // Even if `result` is not "success" for the history opt-in step, the sign-in
   // step did succeed, so pass SigninCoordinatorResultSuccess.
   [self addAccountDoneWithSigninResult:SigninCoordinatorResultSuccess
