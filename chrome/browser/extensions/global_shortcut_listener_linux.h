@@ -104,6 +104,9 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   void OnBindShortcuts(
       base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
 
+  void RecreateSessionOnClosed(const SessionKey& session_key,
+                               dbus::Response* response);
+
   // Callbacks for DBus signals.
   void OnActivatedSignal(dbus::Signal* signal);
 

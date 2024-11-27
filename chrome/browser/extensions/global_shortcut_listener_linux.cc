@@ -152,15 +152,17 @@ void GlobalShortcutListenerLinux::OnCommandsChanged(
   SessionKey session_key = {extension_id, profile_id};
   auto it = session_map_.find(session_key);
   if (it != session_map_.end()) {
-    it->second->commands = commands;
-    // If BindShortcuts() was already called, there's no need to check against
-    // the list of registered shortcuts again since it should match against the
-    // previous value of `commands`, so we can call BindShortcuts() directly.
-    // Otherwise, updating `commands` above is sufficient since there's a
-    // running asynchronous job that will result in BindShortcuts() getting
-    // called.
-    if (it->second->bind_shortcuts_called) {
-      BindShortcuts(*it->second);
+    auto& session_context = *it->second;
+    session_context.commands = commands;
+
+    // BindShortcuts can only be called once per session.
+    if (session_context.bind_shortcuts_called) {
+      // If BindShortcuts was already called then recreate the session.
+      dbus::MethodCall method_call(kSessionInterface, kMethodCloseSession);
+      session_context.session_proxy->CallMethod(
+          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+          base::BindOnce(&GlobalShortcutListenerLinux::RecreateSessionOnClosed,
+                         weak_ptr_factory_.GetWeakPtr(), session_key));
     }
     return;
   }
@@ -299,6 +301,16 @@ void GlobalShortcutListenerLinux::OnBindShortcuts(
 
   // Shortcuts successfully bound. The signal also includes information about
   // the bound shortcuts, but it's currently not needed.
+}
+
+void GlobalShortcutListenerLinux::RecreateSessionOnClosed(
+    const SessionKey& session_key,
+    dbus::Response* response) {
+  auto session_it = session_map_.find(session_key);
+  if (session_it == session_map_.end()) {
+    return;
+  }
+  CreateSession(*session_it);
 }
 
 void GlobalShortcutListenerLinux::OnActivatedSignal(dbus::Signal* signal) {
