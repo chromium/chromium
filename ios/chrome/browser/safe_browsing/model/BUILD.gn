@@ -142,7 +142,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/ui_bundled:constants",
-    "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
+    "//ios/chrome/browser/settings/ui_bundled/privacy:privacy_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",

@@ -12,11 +12,11 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/safe_browsing/model:infobar_delegate",
     "//ios/chrome/browser/safe_browsing/model:model",
+    "//ios/chrome/browser/settings/ui_bundled/privacy:ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/components/security_interstitials/safe_browsing",
   ]
 }
