@@ -25,8 +25,6 @@ class UpdateLayout;
 class V8Compile;
 }  // namespace probe
 
-using blink::protocol::Maybe;
-
 class CORE_EXPORT InspectorPerformanceAgent final
     : public InspectorBaseAgent<protocol::Performance::Metainfo>,
       public base::sequence_manager::TaskTimeObserver {

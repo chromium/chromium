@@ -97,8 +97,6 @@ using crdtp::json::ConvertCBORToJSON;
 
 namespace blink {
 
-using protocol::Maybe;
-
 namespace {
 
 bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,

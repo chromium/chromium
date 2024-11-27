@@ -67,7 +67,6 @@ const char kListenerEventCategoryType[] = "listener:";
 }  // namespace
 
 namespace blink {
-using protocol::Maybe;
 namespace {
 // Returns the key that we use to identify the brekpoint in
 // event_listener_breakpoints_. |target_name| may be "", in which case

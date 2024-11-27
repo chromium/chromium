@@ -631,9 +631,9 @@ InspectorCacheStorageAgent::GetCacheStorageRemoteForId(
 }
 
 void InspectorCacheStorageAgent::requestCacheNames(
-    protocol::Maybe<String> maybe_security_origin,
-    protocol::Maybe<String> maybe_storage_key,
-    protocol::Maybe<protocol::Storage::StorageBucket> maybe_storage_bucket,
+    std::optional<String> maybe_security_origin,
+    std::optional<String> maybe_storage_key,
+    std::unique_ptr<protocol::Storage::StorageBucket> maybe_storage_bucket,
     std::unique_ptr<RequestCacheNamesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
@@ -696,7 +696,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
       WTF::BindOnce(
           [](String security_origin, String storage_key,
              std::optional<WTF::String> bucket_name,
-             protocol::Maybe<protocol::Storage::StorageBucket>
+             std::unique_ptr<protocol::Storage::StorageBucket>
                  maybe_storage_bucket,
              int64_t trace_id,
              scoped_refptr<RequestCallbackWrapper<RequestCacheNamesCallback>>
@@ -728,9 +728,9 @@ void InspectorCacheStorageAgent::requestCacheNames(
 
 void InspectorCacheStorageAgent::requestEntries(
     const String& cache_id,
-    protocol::Maybe<int> skip_count,
-    protocol::Maybe<int> page_size,
-    protocol::Maybe<String> path_filter,
+    std::optional<int> skip_count,
+    std::optional<int> page_size,
+    std::optional<String> path_filter,
     std::unique_ptr<RequestEntriesCallback> callback) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage",

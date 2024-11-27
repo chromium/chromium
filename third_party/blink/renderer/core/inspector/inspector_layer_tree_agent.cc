@@ -63,7 +63,6 @@
 namespace blink {
 
 using protocol::Array;
-using protocol::Maybe;
 unsigned InspectorLayerTreeAgent::last_snapshot_id_;
 
 inline String IdForLayer(const cc::Layer* layer) {

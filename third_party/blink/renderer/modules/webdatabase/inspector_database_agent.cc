@@ -48,7 +48,6 @@ typedef blink::protocol::Database::Backend::ExecuteSQLCallback
     ExecuteSQLCallback;
 
 namespace blink {
-using protocol::Maybe;
 
 namespace {
 
@@ -66,9 +65,7 @@ class ExecuteSQLCallbackWrapper : public RefCounted<ExecuteSQLCallbackWrapper> {
                             .setMessage(error->message())
                             .setCode(error->code())
                             .build();
-    callback_->sendSuccess(Maybe<protocol::Array<String>>(),
-                           Maybe<protocol::Array<protocol::Value>>(),
-                           std::move(error_object));
+    callback_->sendSuccess(nullptr, nullptr, std::move(error_object));
   }
 
  private:
@@ -111,8 +108,7 @@ class StatementCallback final : public SQLStatement::OnSuccessCallback {
       }
     }
     request_callback_->Get()->sendSuccess(std::move(column_names),
-                                          std::move(values),
-                                          Maybe<protocol::Database::Error>());
+                                          std::move(values), nullptr);
     return true;
   }
 

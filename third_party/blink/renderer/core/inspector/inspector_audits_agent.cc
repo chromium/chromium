@@ -28,8 +28,6 @@
 
 namespace blink {
 
-using protocol::Maybe;
-
 namespace encoding_enum = protocol::Audits::GetEncodedResponse::EncodingEnum;
 
 namespace {

@@ -64,8 +64,6 @@ class LocalFrame;
 class ClassicScript;
 enum class ResourceType : uint8_t;
 
-using blink::protocol::Maybe;
-
 class CORE_EXPORT InspectorPageAgent final
     : public InspectorBaseAgent<protocol::Page::Metainfo> {
  public:

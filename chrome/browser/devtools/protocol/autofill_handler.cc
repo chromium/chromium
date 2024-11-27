@@ -34,7 +34,6 @@
 
 namespace {
 
-using protocol::Maybe;
 using protocol::Response;
 
 std::optional<autofill::FormData> FindFormDataWithField(

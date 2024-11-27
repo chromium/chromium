@@ -28,7 +28,6 @@
 
 namespace blink {
 
-using protocol::Maybe;
 using protocol::Accessibility::AXNode;
 using protocol::Accessibility::AXNodeId;
 using protocol::Accessibility::AXProperty;
@@ -587,10 +586,10 @@ InspectorAccessibilityAgent::InspectorAccessibilityAgent(
       enabled_(&agent_state_, /*default_value=*/false) {}
 
 protocol::Response InspectorAccessibilityAgent::getPartialAXTree(
-    Maybe<int> dom_node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id,
-    Maybe<bool> fetch_relatives,
+    std::optional<int> dom_node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id,
+    std::optional<bool> fetch_relatives,
     std::unique_ptr<protocol::Array<AXNode>>* nodes) {
   Node* dom_node = nullptr;
   protocol::Response response =
@@ -826,7 +825,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForUnignoredAXObject(
 }
 
 LocalFrame* InspectorAccessibilityAgent::FrameFromIdOrRoot(
-    const protocol::Maybe<String>& frame_id) {
+    const std::optional<String>& frame_id) {
   if (frame_id.has_value()) {
     return IdentifiersFactory::FrameById(inspected_frames_.Get(),
                                          frame_id.value());
@@ -835,8 +834,8 @@ LocalFrame* InspectorAccessibilityAgent::FrameFromIdOrRoot(
 }
 
 protocol::Response InspectorAccessibilityAgent::getFullAXTree(
-    protocol::Maybe<int> depth,
-    Maybe<String> frame_id,
+    std::optional<int> depth,
+    std::optional<String> frame_id,
     std::unique_ptr<protocol::Array<AXNode>>* nodes) {
   LocalFrame* frame = FrameFromIdOrRoot(frame_id);
   if (!frame) {
@@ -890,7 +889,7 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
 }
 
 protocol::Response InspectorAccessibilityAgent::getRootAXNode(
-    Maybe<String> frame_id,
+    std::optional<String> frame_id,
     std::unique_ptr<AXNode>* node) {
   LocalFrame* frame = FrameFromIdOrRoot(frame_id);
   if (!frame) {
@@ -919,9 +918,9 @@ protocol::Response InspectorAccessibilityAgent::getRootAXNode(
 }
 
 protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
-    Maybe<int> dom_node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id,
+    std::optional<int> dom_node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id,
     std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
         out_nodes) {
   if (!enabled_.Get()) {
@@ -972,7 +971,7 @@ protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
 
 protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
     const String& in_id,
-    Maybe<String> frame_id,
+    std::optional<String> frame_id,
     std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
         out_nodes) {
   if (!enabled_.Get()) {
@@ -1068,11 +1067,11 @@ void InspectorAccessibilityAgent::AddChildren(
 }
 
 void InspectorAccessibilityAgent::queryAXTree(
-    Maybe<int> dom_node_id,
-    Maybe<int> backend_node_id,
-    Maybe<String> object_id,
-    Maybe<String> accessible_name,
-    Maybe<String> role,
+    std::optional<int> dom_node_id,
+    std::optional<int> backend_node_id,
+    std::optional<String> object_id,
+    std::optional<String> accessible_name,
+    std::optional<String> role,
     std::unique_ptr<QueryAXTreeCallback> callback) {
   Node* root_dom_node = nullptr;
   protocol::Response response = dom_agent_->AssertNode(

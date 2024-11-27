@@ -352,11 +352,10 @@ void TracingAgent::OnTraceComplete() {
   frontend()->tracingComplete(data_loss);
 }
 
-void TracingAgent::start(
-    protocol::Maybe<std::string> categories,
-    protocol::Maybe<std::string> options,
-    protocol::Maybe<double> buffer_usage_reporting_interval,
-    std::unique_ptr<StartCallback> callback) {
+void TracingAgent::start(std::optional<std::string> categories,
+                         std::optional<std::string> options,
+                         std::optional<double> buffer_usage_reporting_interval,
+                         std::unique_ptr<StartCallback> callback) {
   if (g_any_agent_tracing) {
     callback->sendFailure(Response::ServerError("Tracing is already started"));
     return;

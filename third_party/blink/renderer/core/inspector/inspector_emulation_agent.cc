@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
-using protocol::Maybe;
 
 InspectorEmulationAgent::InspectorEmulationAgent(
     WebLocalFrameImpl* web_local_frame_impl,

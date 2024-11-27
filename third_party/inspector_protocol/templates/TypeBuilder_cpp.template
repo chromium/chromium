@@ -249,7 +249,7 @@ struct {{command.name}}Params : public {{config.crdtp.namespace}}::Deserializabl
       {% for parameter in command.parameters %}
         {% set parameter_type = protocol.resolve_type(parameter) %}
         {% if parameter.optional %}
-    Maybe<{{parameter_type.raw_type}}> {{parameter.name}};
+    {{protocol.optional_type(parameter)}} {{parameter.name}};
         {% else %}
     {{parameter_type.type}} {{parameter.name}};
         {% endif %}

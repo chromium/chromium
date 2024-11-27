@@ -14,7 +14,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
 
-using protocol::Maybe;
 using protocol::String;
 
 namespace autofill {
