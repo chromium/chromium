@@ -26,6 +26,9 @@
 
 namespace media {
 
+constexpr char kTestFile[] = "test-25fps.h264";
+constexpr size_t kTestFileNALUnits = 1009;
+
 class H264SPSTest : public ::testing::Test {
  public:
   // An exact clone of an SPS from Big Buck Bunny 480p.
@@ -105,9 +108,7 @@ TEST_F(H264SPSTest, GetVisibleRect) {
 }
 
 TEST(H264ParserTest, StreamFileParsing) {
-  base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
-  // Number of NALUs in the test stream to be parsed.
-  int num_nalus = 759;
+  base::FilePath file_path = GetTestDataFilePath(kTestFile);
 
   base::MemoryMappedFile stream;
   ASSERT_TRUE(stream.Initialize(file_path))
@@ -117,7 +118,7 @@ TEST(H264ParserTest, StreamFileParsing) {
   parser.SetStream(stream.data(), stream.length());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
-  int num_parsed_nalus = 0;
+  size_t num_parsed_nalus = 0;
   while (true) {
     media::H264SliceHeader shdr;
     media::H264SEI sei;
@@ -126,7 +127,7 @@ TEST(H264ParserTest, StreamFileParsing) {
     if (res == H264Parser::kEOStream) {
       DVLOG(1) << "Number of successfully parsed NALUs before EOS: "
                << num_parsed_nalus;
-      ASSERT_EQ(num_nalus, num_parsed_nalus);
+      ASSERT_EQ(kTestFileNALUnits, num_parsed_nalus);
       return;
     }
     ASSERT_EQ(res, H264Parser::kOk);
@@ -161,9 +162,7 @@ TEST(H264ParserTest, StreamFileParsing) {
 }
 
 TEST(H264ParserTest, ParseNALUsFromStreamFile) {
-  base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
-  // Number of NALUs in the test stream to be parsed.
-  const size_t num_nalus = 759;
+  base::FilePath file_path = GetTestDataFilePath(kTestFile);
 
   base::MemoryMappedFile stream;
   ASSERT_TRUE(stream.Initialize(file_path))
@@ -171,7 +170,7 @@ TEST(H264ParserTest, ParseNALUsFromStreamFile) {
 
   std::vector<H264NALU> nalus;
   ASSERT_TRUE(H264Parser::ParseNALUs(stream.data(), stream.length(), &nalus));
-  ASSERT_EQ(num_nalus, nalus.size());
+  ASSERT_EQ(kTestFileNALUnits, nalus.size());
 }
 
 // Verify that GetCurrentSubsamples works.

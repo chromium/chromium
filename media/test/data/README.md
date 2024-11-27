@@ -958,11 +958,9 @@ Additional containers created by Dolby:
 ### test-25fps
 
 #### test-25fps.h264
-Using ffmpeg SVN-r0.5.9-4:0.5.9-0ubuntu0.10.04.1 @ WebKit r122718, generated
-with:
 ```
-ffmpeg -i third_party/WebKit/LayoutTests/media/content/test-25fps.mp4 \
-      -vcodec copy -vbsf h264_mp4toannexb -an test-25fps.h264
+MP4Box -raw 2:output=test-25fps.h264 \
+       third_party/webkit/web_tests/media/content/test-25fps.mp4
 ```
 
 #### test-25fps.h264.json:
