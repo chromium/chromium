@@ -112,7 +112,7 @@ int64_t GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
 
 void OnStaleArcVmStopped(
     EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
-    std::optional<vm_tools::concierge::StopVmResponse> response) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   // Successful response is returned even when the VM is not running. See
   // Service::StopVm() in platform2/vm_tools/concierge/service.cc.
   if (!response.has_value() || !response->success()) {

@@ -317,7 +317,7 @@ TEST_F(BorealisContextManagerTest, FailureToShutdownReportsError) {
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(context_manager.IsRunning());
 
-  vm_tools::concierge::StopVmResponse response;
+  vm_tools::concierge::SuccessFailureResponse response;
   response.set_success(false);
   response.set_failure_reason("expected failure");
   ash::FakeConciergeClient* fake_concierge_client =

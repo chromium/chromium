@@ -168,12 +168,12 @@ class ArcPowerBridge : public KeyedService,
   // SuspendVm D-Bus call.
   void OnConciergeSuspendVmResponse(
       base::UnguessableToken token,
-      std::optional<vm_tools::concierge::SuspendVmResponse> reply);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> reply);
 
   // Called by ConciergeClient when a response has been receive for the
   // ResumeVm D-Bus call.
   void OnConciergeResumeVmResponse(
-      std::optional<vm_tools::concierge::ResumeVmResponse> reply);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> reply);
 
   // Called on PowerManagerClient::GetBatterySaverModeState() completion.
   void OnBatterySaverModeStateReceived(

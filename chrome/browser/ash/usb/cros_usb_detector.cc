@@ -1262,13 +1262,13 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
     const std::string& vm_name,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
-    std::optional<vm_tools::concierge::DetachUsbDeviceResponse> response) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   bool success = true;
   if (!response) {
     LOG(ERROR) << "Failed to detach USB device, empty dbus response";
     success = false;
   } else if (!response->success()) {
-    LOG(ERROR) << "Failed to detach USB device, " << response->reason();
+    LOG(ERROR) << "Failed to detach USB device, " << response->failure_reason();
     success = false;
   }
 

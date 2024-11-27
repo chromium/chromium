@@ -433,7 +433,7 @@ TEST_F(ArcVmDataMigrationScreenTest, StopArcVmFailureIsFatal) {
 
 TEST_F(ArcVmDataMigrationScreenTest, StopArcVmSuccess) {
   auto* fake_concierge_client = FakeConciergeClient::Get();
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(true);
   fake_concierge_client->set_stop_vm_response(stop_vm_response);
 

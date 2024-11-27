@@ -1268,7 +1268,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       observer.ArcInstanceStopped(is_system_shutdown);
   }
 
-  void OnStopVmReply(std::optional<vm_tools::concierge::StopVmResponse> reply) {
+  void OnStopVmReply(
+      std::optional<vm_tools::concierge::SuccessFailureResponse> reply) {
     // If the reply indicates the D-Bus call is successfully done, do nothing.
     // Concierge will call OnVmStopped() eventually.
     if (reply.has_value() && reply.value().success())

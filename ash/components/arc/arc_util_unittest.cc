@@ -758,7 +758,7 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStoppedStopVmFailure) {
                                              future_no_response.GetCallback());
   EXPECT_FALSE(future_no_response.Get());
 
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(false);
   ash::FakeConciergeClient::Get()->set_stop_vm_response(stop_vm_response);
   base::test::TestFuture<bool> future_failure;
@@ -783,7 +783,7 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStoppedSuccess) {
         return (jobs_to_be_stopped.size() % 2) == 0;
       }));
 
-  vm_tools::concierge::StopVmResponse stop_vm_response;
+  vm_tools::concierge::SuccessFailureResponse stop_vm_response;
   stop_vm_response.set_success(true);
   ash::FakeConciergeClient::Get()->set_stop_vm_response(stop_vm_response);
 

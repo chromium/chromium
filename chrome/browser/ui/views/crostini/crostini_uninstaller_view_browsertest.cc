@@ -36,8 +36,8 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
 
     void StopVm(
         const vm_tools::concierge::StopVmRequest& request,
-        chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
-            callback) override {
+        chromeos::DBusMethodCallback<
+            vm_tools::concierge::SuccessFailureResponse> callback) override {
       ash::FakeConciergeClient::StopVm(request, std::move(callback));
       if (closure_) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUninstallerViewBrowserTest, ErrorThenCancel) {
   base::HistogramTester histogram_tester;
   ShowUi("default");
   EXPECT_NE(nullptr, ActiveView());
-  vm_tools::concierge::StopVmResponse response;
+  vm_tools::concierge::SuccessFailureResponse response;
   response.set_success(false);
   waiting_fake_concierge_client_->set_stop_vm_response(std::move(response));
 

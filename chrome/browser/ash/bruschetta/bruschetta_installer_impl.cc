@@ -495,7 +495,7 @@ void BruschettaInstallerImpl::InstallPflash() {
 }
 
 void BruschettaInstallerImpl::OnInstallPflash(
-    std::optional<vm_tools::concierge::InstallPflashResponse> result) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> result) {
   if (MaybeClose()) {
     return;
   }

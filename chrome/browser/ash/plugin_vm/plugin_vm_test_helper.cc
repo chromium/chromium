@@ -127,7 +127,7 @@ void SetupConciergeForFailedDiskImageImport(
 void SetupConciergeForCancelDiskImageOperation(
     ash::FakeConciergeClient* fake_concierge_client_,
     bool success) {
-  vm_tools::concierge::CancelDiskImageResponse cancel_disk_image_response;
+  vm_tools::concierge::SuccessFailureResponse cancel_disk_image_response;
   cancel_disk_image_response.set_success(success);
   fake_concierge_client_->set_cancel_disk_image_response(
       cancel_disk_image_response);

@@ -690,9 +690,10 @@ class CrostiniManager : public KeyedService,
 
   // Callback for ConciergeClient::StopVm. Called after the Concierge
   // service method finishes.
-  void OnStopVm(std::string vm_name,
-                CrostiniResultCallback callback,
-                std::optional<vm_tools::concierge::StopVmResponse> response);
+  void OnStopVm(
+      std::string vm_name,
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Callback for ConciergeClient::GetVmEnterpriseReportingInfo.
   // Currently used to report the Termina kernel version for enterprise
@@ -765,7 +766,7 @@ class CrostiniManager : public KeyedService,
   // Callback for CiceroneClient::CancelExportDiskImage.
   void OnCancelDiskImageOp(
       const guest_os::GuestId& key,
-      std::optional<vm_tools::concierge::CancelDiskImageResponse> response);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Callback for CiceroneClient::CancelExportLxdContainer.
   void OnCancelExportLxdContainer(

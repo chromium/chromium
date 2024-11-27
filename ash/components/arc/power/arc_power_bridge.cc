@@ -232,7 +232,7 @@ void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
 
 void ArcPowerBridge::OnConciergeSuspendVmResponse(
     base::UnguessableToken token,
-    std::optional<vm_tools::concierge::SuspendVmResponse> reply) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> reply) {
   if (!reply.has_value())
     LOG(ERROR) << "Failed to suspend arcvm, no reply received.";
   else if (!reply.value().success())
@@ -256,7 +256,7 @@ void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void ArcPowerBridge::OnConciergeResumeVmResponse(
-    std::optional<vm_tools::concierge::ResumeVmResponse> reply) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to resume arcvm, no reply received.";
     return;

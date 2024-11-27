@@ -169,9 +169,10 @@ class TestConciergeClient : public ash::FakeConciergeClient {
 
   ~TestConciergeClient() override = default;
 
-  void StopVm(const vm_tools::concierge::StopVmRequest& request,
-              chromeos::DBusMethodCallback<vm_tools::concierge::StopVmResponse>
-                  callback) override {
+  void StopVm(
+      const vm_tools::concierge::StopVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
     ++stop_vm_call_count_;
     stop_vm_request_ = request;
     ash::FakeConciergeClient::StopVm(request, std::move(callback));
@@ -960,7 +961,7 @@ TEST_F(ArcVmClientAdapterTest, StopArcInstanceFail) {
   UpgradeArc(true);
 
   // Inject failure.
-  vm_tools::concierge::StopVmResponse response;
+  vm_tools::concierge::SuccessFailureResponse response;
   response.set_success(false);
   GetTestConciergeClient()->set_stop_vm_response(response);
 
@@ -1128,7 +1129,7 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArcNoSerial) {
 
 TEST_F(ArcVmClientAdapterTest, StartMiniArcStopExistingVmFailure) {
   // Inject failure.
-  vm_tools::concierge::StopVmResponse response;
+  vm_tools::concierge::SuccessFailureResponse response;
   response.set_success(false);
   GetTestConciergeClient()->set_stop_vm_response(response);
 
