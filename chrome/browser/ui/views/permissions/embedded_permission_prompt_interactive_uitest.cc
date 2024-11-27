@@ -43,11 +43,19 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDoneVisibleEvent);
 
 using UkmEntry = ukm::builders::Permissions_EmbeddedPromptAction;
+
+constexpr int kMinWindowHeight = 400;
 }  // namespace
 
-class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
+class EmbeddedPermissionPromptInteractiveTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<float> {
  public:
   EmbeddedPermissionPromptInteractiveTest() {
+    // Force the scale factor to test that the prompt is positioned correctly
+    // for all device scale factors.
+    display::Display::SetForceDeviceScaleFactor(GetParam());
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
@@ -76,6 +84,10 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+    // Force the window to be large enough.
+    BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+        {10, 10, 800, 800});
   }
 
   void TearDownOnMainThread() override {
@@ -380,7 +392,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        BasicFlowMicrophone) {
   TestAskBlockAllowFlow(
       "microphone", {ContentSettingsType::MEDIASTREAM_MIC},
@@ -392,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       std::vector<std::u16string>({u"Use your microphones"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        BasicFlowCamera) {
   TestAskBlockAllowFlow(
       "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
@@ -404,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       std::vector<std::u16string>({u"Use your cameras"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        BasicFlowGeolocation) {
   TestAskBlockAllowFlow(
       "geolocation", {ContentSettingsType::GEOLOCATION},
@@ -416,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       std::vector<std::u16string>({u"Know your location"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        BasicFlowCameraMicrophone) {
   TestAskBlockAllowFlow(
       "camera-microphone",
@@ -431,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       std::vector<std::u16string>({u"Use your microphones"}));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        TestPartialPermissionsLabels) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()));
@@ -462,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       u"You previously didn't allow microphone for this site");
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        TestButtonsLabel) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()));
@@ -475,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                         expected_ask_labels, /*check_buttons=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        TestPepcHistograms) {
   base::HistogramTester tester;
   RunTestSequence(
@@ -592,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           /*count=*/1));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        FocusableViaTabKey) {
   StateChange pepc_visible;
   pepc_visible.where = DeepQuery{"#geolocation"};
@@ -642,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       WaitForStateChange(kWebContentsElementId, done_visible));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       "EmbeddedPermissionPromptContentScrimWidget");
@@ -712,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0));
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        TestOsSystemPromptTransition) {
   base::AutoReset<bool> mock_system_prompt =
       system_permission_settings::MockSystemPromptForTesting();
@@ -769,7 +781,7 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
                        TestPermissionElementDialogPositioning) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -779,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
 
   // Click on multiple elements in order from left to right, and ensure that
   // dialog moves with each click
-  int previous_x = 0;
+  gfx::Point current_origin;
   struct ElementAction {
     std::string element_name;
     ui::ElementIdentifier button_identifier;
@@ -792,24 +804,31 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
   };
 
   for (const auto& element_action : element_actions) {
-    RunTestSequence(ClickOnPEPCElement(element_action.element_name),
-                    InAnyContext(WaitForShow(
-                        EmbeddedPermissionPromptBaseView::kMainViewId)),
+    RunTestSequence(
+        ClickOnPEPCElement(element_action.element_name),
+        InAnyContext(
+            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
 
-                    InAnyContext(CheckView(
-                        EmbeddedPermissionPromptBaseView::kMainViewId,
-                        [&previous_x](views::View* view) {
-                          gfx::Rect bounds = view->GetBoundsInScreen();
-                          previous_x = bounds.x();
-                          return bounds.x();
-                        },
-                        testing::Gt(previous_x))),
-                    PushPEPCPromptButton(element_action.button_identifier));
+        InAnyContext(CheckView(EmbeddedPermissionPromptBaseView::kMainViewId,
+                               [&current_origin](views::View* view) {
+                                 gfx::Point previous_origin = current_origin;
+                                 current_origin =
+                                     view->GetBoundsInScreen().origin();
+                                 return previous_origin < current_origin;
+                               })),
+        PushPEPCPromptButton(element_action.button_identifier));
   }
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
                        TestPositionUsingZoom) {
+  auto* widget = BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  if (widget->GetWindowBoundsInScreen().height() < kMinWindowHeight) {
+    // Skip the test if the actual window size is too small to fit the prompt
+    // even after forcing the window size in the test suite.
+    return;
+  }
+
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   ExecuteJs(kWebContentsElementId, "setFontSizeSmall"));
@@ -853,8 +872,15 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
   zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel());
 }
 
-IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
                        TestPositionInsideCrossOriginFrame) {
+  auto* widget = BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  if (widget->GetWindowBoundsInScreen().height() < kMinWindowHeight) {
+    // Skip the test if the actual window size is too small to fit the prompt
+    // even after forcing the window size in the test suite.
+    return;
+  }
+
   StateChange done_visible;
   done_visible.where = DeepQuery{"#done"};
   done_visible.type = StateChange::Type::kExists;
@@ -896,3 +922,11 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptPositioningInteractiveTest,
         }));
   }
 }
+
+// Setting up to run all tests with two screen scale factors.
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptInteractiveTest,
+                         testing::Values(1.0, 2.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptPositioningInteractiveTest,
+                         testing::Values(1.0, 2.0));
