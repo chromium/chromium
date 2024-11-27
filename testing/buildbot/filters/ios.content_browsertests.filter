@@ -801,3 +801,8 @@
 # https://crrev.com/c/6000136.
 -All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor1
 -All/AccessibilityHitTestingBrowserTest.HitTestingInStitchedChildTree/ZoomFactor2
+
+# TODO(crbug.com/381127650): This test has been failing on the bot.
+-ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/2
+-ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/3
+
