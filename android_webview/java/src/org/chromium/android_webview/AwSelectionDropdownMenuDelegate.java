@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -40,7 +41,6 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
     private static final String TAG = "AwSelectionDropdown";
 
     private @Nullable PopupWindow mPopupWindow;
-    private @Nullable Context mWindowContext;
 
     private AwSelectionDropdownMenuDelegate() {
         // No external instantiation.
@@ -197,7 +197,6 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
     /** For nulling out references after drop-down dismissal or the inability to show. */
     private void cleanup() {
         mPopupWindow = null;
-        mWindowContext = null;
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -206,22 +205,24 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
             final @NonNull Context context,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener) {
+        Context windowContext;
         // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
         try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
             Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
-            mWindowContext =
-                    context.createWindowContext(
-                            display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
+            windowContext =
+                    ClassLoaderContextWrapperFactory.get(
+                            context.createWindowContext(
+                                    display, WindowManager.LayoutParams.TYPE_APPLICATION, null));
         }
 
-        assert mWindowContext != null : "Window context cannot be null.";
+        assert windowContext != null : "Window context cannot be null.";
 
         LayoutInflater inflater =
-                (LayoutInflater) mWindowContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                (LayoutInflater) windowContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View contentView = inflater.inflate(R.layout.list_menu_layout, null);
         ListView listView = contentView.findViewById(R.id.menu_list);
         return new BasicListMenu(
-                mWindowContext, items, contentView, listView, clickListener::onItemClick, 0);
+                windowContext, items, contentView, listView, clickListener::onItemClick, 0);
     }
 
     /**
