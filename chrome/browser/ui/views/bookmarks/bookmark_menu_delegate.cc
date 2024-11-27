@@ -526,8 +526,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
-      parent_, browser_, profile_, location_, node->parent(), nodes,
-      ShouldCloseOnRemove(node));
+      parent_, browser_, profile_, location_, nodes, ShouldCloseOnRemove(node));
   context_menu_->set_observer(this);
   context_menu_->RunMenuAt(p, source_type);
   return true;

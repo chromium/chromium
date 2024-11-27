@@ -244,44 +244,6 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   }
 }
 
-TEST_F(BookmarkUtilsTest, GetParentForNewNodes) {
-  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  // This tests the case where selection contains one item and that item is a
-  // folder.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
-  nodes.push_back(model->bookmark_bar_node());
-  size_t index = static_cast<size_t>(-1);
-  const BookmarkNode* real_parent =
-      GetParentForNewNodes(model->bookmark_bar_node(), nodes, &index);
-  EXPECT_EQ(real_parent, model->bookmark_bar_node());
-  EXPECT_EQ(0u, index);
-
-  nodes.clear();
-
-  // This tests the case where selection contains one item and that item is an
-  // url.
-  const BookmarkNode* page1 = model->AddURL(
-      model->bookmark_bar_node(), 0, u"Google", GURL("http://google.com"));
-  nodes.push_back(page1);
-  real_parent = GetParentForNewNodes(model->bookmark_bar_node(), nodes, &index);
-  EXPECT_EQ(real_parent, model->bookmark_bar_node());
-  EXPECT_EQ(1u, index);
-
-  // This tests the case where selection has more than one item.
-  const BookmarkNode* folder1 =
-      model->AddFolder(model->bookmark_bar_node(), 1, u"Folder 1");
-  nodes.push_back(folder1);
-  real_parent = GetParentForNewNodes(model->bookmark_bar_node(), nodes, &index);
-  EXPECT_EQ(real_parent, model->bookmark_bar_node());
-  EXPECT_EQ(2u, index);
-
-  // This tests the case where selection doesn't contain any items.
-  nodes.clear();
-  real_parent = GetParentForNewNodes(model->bookmark_bar_node(), nodes, &index);
-  EXPECT_EQ(real_parent, model->bookmark_bar_node());
-  EXPECT_EQ(2u, index);
-}
-
 // Ensures the BookmarkClient has the power to suggest the parent for new nodes.
 TEST_F(BookmarkUtilsTest, GetParentForNewNodes_ClientOverride) {
   std::unique_ptr<SuggestFolderClient> client =

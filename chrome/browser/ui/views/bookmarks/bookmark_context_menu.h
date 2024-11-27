@@ -46,7 +46,6 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
                       Browser* browser,
                       Profile* profile,
                       BookmarkLaunchLocation opened_from,
-                      const bookmarks::BookmarkNode* parent,
                       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                                 VectorExperimental>>& selection,
                       bool close_on_remove);

@@ -125,16 +125,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // Register managed bookmarks preferences.
 void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry);
 
-// Returns the parent for newly created folders/bookmarks. If `selection` has
-// one element and it is a folder, `selection[0]` is returned, otherwise
-// `parent` is returned. If `index` is non-null it is set to the index newly
-// added nodes should be added at.
-const BookmarkNode* GetParentForNewNodes(
-    const BookmarkNode* parent,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selection,
-    size_t* index);
-
 // Deletes the bookmark folders for the given list of `ids`.
 void DeleteBookmarkFolders(BookmarkModel* model,
                            const std::vector<int64_t>& ids,

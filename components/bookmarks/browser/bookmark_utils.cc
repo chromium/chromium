@@ -385,30 +385,6 @@ void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry) {
       prefs::kManagedBookmarksFolderName, std::string());
 }
 
-const BookmarkNode* GetParentForNewNodes(
-    const BookmarkNode* parent,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selection,
-    size_t* index) {
-  const BookmarkNode* real_parent = parent;
-
-  if (selection.size() == 1 && selection[0]->is_folder())
-    real_parent = selection[0];
-
-  if (index) {
-    if (selection.size() == 1 && selection[0]->is_url()) {
-      std::optional<size_t> selection_index =
-          real_parent->GetIndexOf(selection[0]);
-      DCHECK(selection_index.has_value());
-      *index = selection_index.value() + 1;
-    } else {
-      *index = real_parent->children().size();
-    }
-  }
-
-  return real_parent;
-}
-
 void DeleteBookmarkFolders(BookmarkModel* model,
                            const std::vector<int64_t>& ids,
                            const base::Location& location) {
