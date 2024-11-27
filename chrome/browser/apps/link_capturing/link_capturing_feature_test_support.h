@@ -42,18 +42,8 @@ std::string ToString(LinkCapturingFeatureVersion version);
 std::string LinkCapturingVersionToString(
     const testing::TestParamInfo<LinkCapturingFeatureVersion>& version);
 
-// The functions should only be called from tests, and is used to enable or
-// disable link capturing UXes. Only use these if link capturing needs to be
-// enabled on all platforms, i.e. ChromeOS, Windows, Mac and Linux. For platform
-// specific implementations, prefer initializing the feature list in the test
-// file itself.
-// Note: `captures_by_default` being set to true is not supported by ChromeOS.
-std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
-    std::optional<bool> override_captures_by_default = std::nullopt,
-    bool use_v2 = false);
-
-// Same as above, but simplifies to using an enum to only accept the valid
-// configurations for a given platform.
+// Used from tests to enable link capturing on all platforms, taking into
+// account per platform behavior.
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     LinkCapturingFeatureVersion version);
 
