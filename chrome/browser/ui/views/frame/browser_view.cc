@@ -1464,23 +1464,8 @@ bool BrowserView::IsVisible() const {
   return frame_->IsVisible();
 }
 
-bool BrowserView::CanSetBounds(const gfx::Rect& new_bounds) {
-  if (GetActiveWebContents() && !GetCanResizeFromWebAPI().value_or(true) &&
-      GetBounds().size() != new_bounds.size()) {
-    GetActiveWebContents()->GetPrimaryMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("Resizing the window has been blocked with "
-                           "window.setResizable API."));
-    return false;
-  }
-  return true;
-}
-
 void BrowserView::SetBounds(const gfx::Rect& bounds) {
   if (IsForceFullscreen()) {
-    return;
-  }
-  if (!CanSetBounds(bounds)) {
     return;
   }
 
