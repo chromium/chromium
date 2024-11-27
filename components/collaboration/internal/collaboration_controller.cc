@@ -155,6 +155,8 @@ class AuthenticatingState : public ControllerState {
       return;
     }
 
+    // TODO(crbug.com/380957996): Handle signin/sync changes during a flow.
+    controller->delegate()->NotifySignInAndSyncStatusChange();
     controller->TransitionTo(StateId::kCheckingFlowRequirements);
   }
 };

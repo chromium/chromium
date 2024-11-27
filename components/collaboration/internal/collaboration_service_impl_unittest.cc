@@ -183,4 +183,18 @@ TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
   EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kNotSyncing);
 }
 
+TEST_F(CollaborationServiceImplTest, SigninStatusChanges) {
+  EXPECT_EQ(service_->GetServiceStatus().signin_status,
+            SigninStatus::kNotSignedIn);
+
+  identity_test_env_.SetPrimaryAccount(kUserEmail,
+                                       signin::ConsentLevel::kSignin);
+  EXPECT_EQ(service_->GetServiceStatus().signin_status,
+            SigninStatus::kSignedInPaused);
+
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+  EXPECT_EQ(service_->GetServiceStatus().signin_status,
+            SigninStatus::kSignedIn);
+}
+
 }  // namespace collaboration

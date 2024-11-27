@@ -42,7 +42,8 @@ CollaborationServiceImpl::CollaborationServiceImpl(
   current_status_.sync_status = GetSyncStatus();
   sync_observer_.Observe(sync_service_);
 
-  // TODO(crbug.com/360184707): Add identity manager to observe state changes.
+  current_status_.signin_status = GetSigninStatus();
+  identity_manager_observer_.Observe(identity_manager_);
 }
 
 CollaborationServiceImpl::~CollaborationServiceImpl() {
@@ -131,6 +132,26 @@ void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
   sync_observer_.Reset();
 }
 
+void CollaborationServiceImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  RefreshSigninStatus();
+}
+
+void CollaborationServiceImpl::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  RefreshSigninStatus();
+}
+
+void CollaborationServiceImpl::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  RefreshSigninStatus();
+}
+
+void CollaborationServiceImpl::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observer_.Reset();
+}
+
 const std::map<data_sharing::GroupToken,
                std::unique_ptr<CollaborationController>>&
 CollaborationServiceImpl::GetJoinControllersForTesting() {
@@ -155,6 +176,30 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
   }
 
   return status;
+}
+
+SigninStatus CollaborationServiceImpl::GetSigninStatus() {
+  SigninStatus status = SigninStatus::kNotSignedIn;
+
+  if (identity_manager_->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin)) {
+    status = SigninStatus::kSignedIn;
+  } else if (identity_manager_->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    status = SigninStatus::kSignedInPaused;
+  }
+
+  return status;
+}
+
+void CollaborationServiceImpl::RefreshSigninStatus() {
+  SigninStatus new_status = GetSigninStatus();
+  if (current_status_.signin_status == new_status) {
+    return;
+  }
+
+  current_status_.signin_status = new_status;
+  // TODO(crbug.com/380145739): Notify observers.
 }
 
 }  // namespace collaboration
