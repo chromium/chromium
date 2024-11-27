@@ -228,8 +228,12 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     // Layout box only includes elements that are in the reading flow
     // container's layout. For each reading flow item, check if itself or its
     // ancestor should be included in this scope instead, in reading flow order.
-    for (Element* reading_flow_item :
-         reading_flow_container_->GetLayoutBox()->ReadingFlowElements()) {
+    for (Node* reading_flow_node :
+         reading_flow_container_->GetLayoutBox()->ReadingFlowNodes()) {
+      Element* reading_flow_item = DynamicTo<Element>(reading_flow_node);
+      if (!reading_flow_item) {
+        continue;
+      }
       do {
         if (IsOwnedByRoot(*reading_flow_item)) {
           // TODO(dizhangg) this check is O(n^2)

@@ -348,7 +348,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   container_builder_.TransferGridLayoutData(
       std::make_unique<GridLayoutData>(layout_data));
 
-  SetReadingFlowElements(grid_sizing_tree);
+  SetReadingFlowNodes(grid_sizing_tree);
 
   if (constraint_space.HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
@@ -4239,7 +4239,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   }
 }
 
-void GridLayoutAlgorithm::SetReadingFlowElements(
+void GridLayoutAlgorithm::SetReadingFlowNodes(
     const GridSizingTree& sizing_tree) {
   const auto& style = Style();
   const EReadingFlow reading_flow = style.ReadingFlow();
@@ -4249,12 +4249,12 @@ void GridLayoutAlgorithm::SetReadingFlowElements(
     return;
   }
   const auto& grid_items = sizing_tree.TreeRootData().grid_items;
-  HeapVector<Member<Element>> reading_flow_elements;
-  reading_flow_elements.ReserveInitialCapacity(grid_items.Size());
-  // Add grid item if it is a DOM element
+  HeapVector<Member<blink::Node>> reading_flow_nodes;
+  reading_flow_nodes.ReserveInitialCapacity(grid_items.Size());
+  // Add grid item if it is a DOM node
   auto AddItemIfNeeded = [&](const GridItemData& grid_item) {
-    if (Element* element = DynamicTo<Element>(grid_item.node.GetDOMNode())) {
-      reading_flow_elements.push_back(element);
+    if (blink::Node* node = grid_item.node.GetDOMNode()) {
+      reading_flow_nodes.push_back(node);
     }
   };
 
@@ -4296,7 +4296,7 @@ void GridLayoutAlgorithm::SetReadingFlowElements(
       AddItemIfNeeded(grid_item);
     }
   }
-  container_builder_.SetReadingFlowElements(std::move(reading_flow_elements));
+  container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }
 
 namespace {

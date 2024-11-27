@@ -326,7 +326,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   }
 }
 
-void FlexLayoutAlgorithm::SetReadingFlowElements(
+void FlexLayoutAlgorithm::SetReadingFlowNodes(
     const HeapVector<NGFlexLine>& flex_line_outputs) {
   const auto& style = Style();
   const EReadingFlow reading_flow = style.ReadingFlow();
@@ -334,12 +334,11 @@ void FlexLayoutAlgorithm::SetReadingFlowElements(
       reading_flow != EReadingFlow::kFlexFlow) {
     return;
   }
-  HeapVector<Member<Element>> reading_flow_elements;
-  // Add flex item if it is a DOM element
+  HeapVector<Member<blink::Node>> reading_flow_nodes;
+  // Add flex item if it is a DOM node
   auto AddItemIfNeeded = [&](const NGFlexItem& item) {
-    if (Element* element =
-            DynamicTo<Element>(item.ng_input_node.GetDOMNode())) {
-      reading_flow_elements.push_back(element);
+    if (blink::Node* node = item.ng_input_node.GetDOMNode()) {
+      reading_flow_nodes.push_back(node);
     }
   };
   // Given CSS reading-flow, flex-flow, flex-direction; read values
@@ -366,7 +365,7 @@ void FlexLayoutAlgorithm::SetReadingFlowElements(
       AddFlexItems(line);
     }
   }
-  container_builder_.SetReadingFlowElements(std::move(reading_flow_elements));
+  container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }
 
 bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
@@ -1038,7 +1037,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
-  SetReadingFlowElements(flex_line_outputs);
+  SetReadingFlowNodes(flex_line_outputs);
   HandleOutOfFlowPositionedItems(oof_children);
 
   // For rows, the break-before of the first row and the break-after of the

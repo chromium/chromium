@@ -4428,12 +4428,12 @@ bool LayoutBox::IsReadingFlowContainer() const {
   return false;
 }
 
-const HeapVector<Member<Element>>& LayoutBox::ReadingFlowElements() const {
-  if (const auto* elements = GetPhysicalFragment(0)->ReadingFlowElements()) {
-    return *elements;
+const HeapVector<Member<Node>>& LayoutBox::ReadingFlowNodes() const {
+  if (const auto* nodes = GetPhysicalFragment(0)->ReadingFlowNodes()) {
+    return *nodes;
   }
-  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,
-                      (MakeGarbageCollected<HeapVector<Member<Element>>>()));
+  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Node>>>, empty_vector,
+                      (MakeGarbageCollected<HeapVector<Member<Node>>>()));
   return *empty_vector;
 }
 

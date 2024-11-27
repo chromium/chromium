@@ -5685,8 +5685,8 @@ void AXNodeObject::AddNodeChildren() {
       closest_layout_parent->IsReadingFlowContainer()) {
     HeapHashSet<Member<Node>> ax_children_added;
     // Add all reading flow items first, in the reading flow order.
-    for (Element* reading_flow_item :
-         closest_layout_parent->GetLayoutBox()->ReadingFlowElements()) {
+    for (Node* reading_flow_item :
+         closest_layout_parent->GetLayoutBox()->ReadingFlowNodes()) {
       // reading_flow_item or its parent (for example, display: contents) might
       // be a child of element. Loop the parents and only add the node if its
       // LayoutTreeBuilderTraversal::Parent is this element.

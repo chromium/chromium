@@ -33,7 +33,7 @@
 namespace blink {
 
 class BoxFragmentBuilder;
-class Element;
+class Node;
 enum class OutlineType;
 struct FrameSetLayoutData;
 
@@ -102,9 +102,9 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return base::span(children_);
   }
 
-  const HeapVector<Member<Element>>* ReadingFlowElements() const {
+  const HeapVector<Member<Node>>* ReadingFlowNodes() const {
     if (rare_data_) {
-      return rare_data_->reading_flow_elements_;
+      return rare_data_->reading_flow_nodes_;
     }
     return nullptr;
   }
