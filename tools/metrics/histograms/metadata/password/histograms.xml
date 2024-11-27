@@ -4123,7 +4123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus2"
-    enum="UnifiedPasswordManagerActiveStatus" expires_after="2024-12-29">
+    enum="UnifiedPasswordManagerActiveStatus" expires_after="2024-03-29">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
