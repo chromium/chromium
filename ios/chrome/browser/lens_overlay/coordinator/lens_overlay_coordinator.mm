@@ -640,14 +640,14 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 }
 
 - (void)adjustSelectionOcclusionInsets {
-  UIWindow* sceneWindow = self.browser->GetSceneState().window;
-  if (!sceneWindow) {
+  UIView* sceneView = self.browser->GetSceneState().rootView;
+  if (!sceneView) {
     return;
   }
 
   // Pad the offset by a small ammount to avoid having the bottom edge of the
   // selection overlapped over the sheet.
-  CGFloat estimatedMediumDetentHeight = sceneWindow.frame.size.height / 2;
+  CGFloat estimatedMediumDetentHeight = sceneView.frame.size.height / 2;
   CGFloat offsetNeeded = estimatedMediumDetentHeight + kSelectionOffsetPadding;
 
   [_selectionViewController
@@ -1067,8 +1067,8 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 }
 
 - (void)monitorResultsBottomSheetPosition {
-  UIWindow* sceneWindow = self.browser->GetSceneState().window;
-  if (!sceneWindow) {
+  UIView* sceneView = self.browser->GetSceneState().rootView;
+  if (!sceneView) {
     return;
   }
 
@@ -1084,7 +1084,7 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
                      forMode:NSRunLoopCommonModes];
 
-  _windowPanTracker = [[LensOverlayPanTracker alloc] initWithView:sceneWindow];
+  _windowPanTracker = [[LensOverlayPanTracker alloc] initWithView:sceneView];
   _windowPanTracker.delegate = self;
   [_windowPanTracker startTracking];
 }
@@ -1121,12 +1121,12 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 - (NSSet<UIPanGestureRecognizer*>*)panGestureRecognizersOnWindow {
   NSMutableSet<UIPanGestureRecognizer*>* panRecognizersOnWindow =
       [[NSMutableSet alloc] init];
-  UIWindow* sceneWindow = self.browser->GetSceneState().window;
-  if (!sceneWindow) {
+  SceneState* sceneState = self.browser->GetSceneState();
+  if (!sceneState) {
     return panRecognizersOnWindow;
   }
 
-  for (UIGestureRecognizer* recognizer in sceneWindow.gestureRecognizers) {
+  for (UIGestureRecognizer* recognizer in sceneState.windowGestureRecognizers) {
     if (recognizer &&
         [recognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
       [panRecognizersOnWindow addObject:(UIPanGestureRecognizer*)recognizer];
