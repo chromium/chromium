@@ -37,6 +37,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model",
+    "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled:util",
