@@ -193,6 +193,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     return;
   }
   LogFopSelected();
+  LogFopSelectorResultUkm(/*accepted=*/true, ukm_source_id_);
   ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
@@ -308,6 +309,7 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
       if (ui_state_ == UiState::kFopSelector) {
         LogPixFopSelectorShownLatency(base::TimeTicks::Now() -
                                       pix_code_copied_timestamp_);
+        LogFopSelectorShownUkm(ukm_source_id_);
       }
       break;
     }
@@ -322,6 +324,7 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
     case UiEvent::kScreenClosedByUser: {
       if (ui_state_ == UiState::kFopSelector) {
         LogPayflowExitedReason(PayflowExitedReason::kFopSelectorClosedByUser);
+        LogFopSelectorResultUkm(/*accepted=*/false, ukm_source_id_);
       }
       ui_state_ = UiState::kHidden;
       break;

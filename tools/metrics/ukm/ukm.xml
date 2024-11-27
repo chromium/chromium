@@ -8056,6 +8056,38 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.Pix.FopSelectorResult">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged when the FoP selector UI for Pix is closed.
+  </summary>
+  <metric name="Result" enum="Boolean">
+    <summary>
+      Set to true after user accepted the FoP selector UI and selected a FoP to
+      use, and to false after user rejected/dismissed the FoP selector UI.
+    </summary>
+  </metric>
+</event>
+
+<event name="FacilitatedPayments.Pix.FopSelectorShown">
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    An event that is logged after the FoP selector UI is shown.
+  </summary>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Always set to true. So acts as a counter for the number of times a FoP
+      selector is shown for Pix.
+    </summary>
+  </metric>
+</event>
+
 <event name="FacilitatedPayments.Pix.Transaction">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>

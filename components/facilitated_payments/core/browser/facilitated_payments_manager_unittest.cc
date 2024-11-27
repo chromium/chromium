@@ -220,6 +220,12 @@ TEST_F(FacilitatedPaymentsManagerTest, OnPixPaymentPromptResult_FopSelected) {
       "FacilitatedPayments.Pix.FopSelector.UserAction",
       /*sample=*/FopSelectorAction::kFopSelected,
       /*expected_bucket_count=*/1);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::kEntryName,
+      {ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::kResultName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"), true);
 }
 
 // Verify risk data metrics are logged when risk data is fetched successfully.
@@ -1029,9 +1035,8 @@ TEST_F(FacilitatedPaymentsManagerTest, DismissPrompt) {
   EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
 }
 
-// Test that when the Pix FOP selector is shown, its latency is logged.
-TEST_F(FacilitatedPaymentsManagerTest,
-       PixFopSelectorShown_LatencyHistogramLogged) {
+// Test that when the Pix FOP selector is shown, related Pix metrics are logged.
+TEST_F(FacilitatedPaymentsManagerTest, PixFopSelectorShown_HistogramsLogged) {
   base::HistogramTester histogram_tester;
 
   // Simulate Pix code being copied. The latency is computed from this point.
@@ -1046,12 +1051,17 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->ShowPixPaymentPrompt(std::move(bank_accounts), base::DoNothing());
   manager_->OnUiEvent(UiEvent::kNewScreenShown);
 
-  // Verify that when the Pix FOP selector is shown, latency histogram is
+  // Verify that when the Pix FOP selector is shown, related metrics are
   // logged.
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kEntryName,
+      {ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kShownName});
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
 }
 
 class FacilitatedPaymentsManagerTestForUiScreens
@@ -1106,6 +1116,13 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, NewScreenShown) {
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.UiScreenShown",
                                       /*sample=*/ui_state(),
                                       /*expected_bucket_count=*/1);
+  if (ui_state() == UiState::kFopSelector) {
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kShownName});
+    EXPECT_EQ(ukm_entries.size(), 1UL);
+    EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
+  }
 }
 
 // Test that when a new screen could not be shown, UI state is updated.
@@ -1160,6 +1177,14 @@ TEST_P(FacilitatedPaymentsManagerTestForUiScreens, ScreenClosedByUser) {
       "FacilitatedPayments.Pix.PayflowExitedReason",
       /*sample=*/PayflowExitedReason::kFopSelectorClosedByUser,
       /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+  if (ui_state() == UiState::kFopSelector) {
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::
+             kResultName});
+    ASSERT_EQ(ukm_entries.size(), 1UL);
+    EXPECT_EQ(ukm_entries[0].metrics.at("Result"), false);
+  }
 }
 
 }  // namespace payments::facilitated

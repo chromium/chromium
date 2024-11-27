@@ -289,8 +289,32 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PixCodeCopied::kEntryName,
       {ukm::builders::FacilitatedPayments_PixCodeCopied::kPixCodeCopiedName});
-  EXPECT_EQ(ukm_entries.size(), 1UL);
+  ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("PixCodeCopied"), true);
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorShown) {
+  LogFopSelectorShownUkm(ukm::UkmRecorder::GetNewSourceID());
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kEntryName,
+      {ukm::builders::FacilitatedPayments_Pix_FopSelectorShown::kShownName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
+}
+
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorResult) {
+  size_t index = 0;
+  for (bool accepted : {true, false}) {
+    LogFopSelectorResultUkm(accepted, ukm::UkmRecorder::GetNewSourceID());
+
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::kEntryName,
+        {ukm::builders::FacilitatedPayments_Pix_FopSelectorResult::
+             kResultName});
+    ASSERT_EQ(ukm_entries.size(), index + 1);
+    EXPECT_EQ(ukm_entries[index++].metrics.at("Result"), accepted);
+  }
 }
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
@@ -304,7 +328,7 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogTransactionResult_UkmLogged) {
       ukm::builders::FacilitatedPayments_Pix_Transaction::kEntryName,
       {ukm::builders::FacilitatedPayments_Pix_Transaction::kResultName,
        ukm::builders::FacilitatedPayments_Pix_Transaction::kTriggerSourceName});
-  EXPECT_EQ(ukm_entries.size(), 1UL);
+  ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
             static_cast<uint8_t>(TransactionResult::kSuccess));
   EXPECT_EQ(ukm_entries[0].metrics.at("TriggerSource"),
