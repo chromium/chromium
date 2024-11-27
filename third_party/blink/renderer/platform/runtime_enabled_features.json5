@@ -1319,11 +1319,6 @@
       status: "experimental"
     },
     {
-      // https://chromestatus.com/feature/5064894363992064
-      name: "CSSViewTransitionClass",
-      status: "stable"
-    },
-    {
       name: "CursorAnchorInfoMojoPipe",
       // No status as this will be controlled by the matching Chromium feature.
     },

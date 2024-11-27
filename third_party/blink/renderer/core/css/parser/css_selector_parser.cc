@@ -1808,11 +1808,10 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     case CSSSelector::kPseudoViewTransitionNew: {
       std::unique_ptr<Vector<AtomicString>> name_and_classes =
           std::make_unique<Vector<AtomicString>>();
-      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
-        if (stream.Peek().GetType() == kDelimiterToken &&
-            stream.Peek().Delimiter() == '.') {
-          name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
-        }
+      // Is this a view transition class?
+      if (stream.Peek().GetType() == kDelimiterToken &&
+          stream.Peek().Delimiter() == '.') {
+        name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
       }
 
       if (name_and_classes->empty()) {
@@ -1831,19 +1830,17 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
 
       CHECK_EQ(name_and_classes->size(), 1ull);
 
-      if (RuntimeEnabledFeatures::CSSViewTransitionClassEnabled()) {
-        while (!stream.AtEnd() && stream.Peek().GetType() != kWhitespaceToken) {
-          if (stream.Peek().GetType() != kDelimiterToken ||
-              stream.Consume().Delimiter() != '.') {
-            return false;
-          }
-
-          if (stream.Peek().GetType() != kIdentToken) {
-            return false;
-          }
-          name_and_classes->push_back(
-              stream.Consume().Value().ToAtomicString());
+      // Parse view transition classes.
+      while (!stream.AtEnd() && stream.Peek().GetType() != kWhitespaceToken) {
+        if (stream.Peek().GetType() != kDelimiterToken ||
+            stream.Consume().Delimiter() != '.') {
+          return false;
         }
+
+        if (stream.Peek().GetType() != kIdentToken) {
+          return false;
+        }
+        name_and_classes->push_back(stream.Consume().Value().ToAtomicString());
       }
 
       stream.ConsumeWhitespace();
