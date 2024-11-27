@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 
 namespace specialized_features {
 
@@ -28,7 +29,9 @@ enum class COMPONENT_EXPORT(
                                          // for manta, which is a proxy to check
                                          // user requirements such as the user
                                          // inferred not to be a minor.
-  kMaxValue = kMantaAccountCapabilitiesCheckFailed,
+  kCountryCheckFailed,                   // Device's country is not authorised
+                                         // to use this feature.
+  kMaxValue = kCountryCheckFailed,
 };
 
 // EnumSet containing FeatureAccessFailures.
@@ -66,6 +69,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // management system. The FeatureAccessChecker::Check() verifies if its value
   // is true and returns kFeatureManagementCheckFailed if not.
   raw_ref<const base::Feature> feature_management_flag;
+  // Only these country codes are allowed. If empty, allows all country codes.
+  base::raw_span<std::string_view> country_codes;
   // Special key used to guard users from accessing the feature.
   // FeatureAccessChecker::Check() only checks this special key if the optional
   // value is set since secret keys could be removed.
@@ -88,12 +93,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
     FeatureAccessChecker {
  public:
   // The config determines which dependencies to check.
-  // Buffers referred to by string_views in `config` and instance referred to by
-  // `prefs` and `identity_manager` should not be destroyed before this class is
-  // destroyed.
+  // Buffers referred to by string_views and raw_span in `config` and instance
+  // referred to by `prefs` and `identity_manager` should not be destroyed
+  // before this class is destroyed.
   FeatureAccessChecker(FeatureAccessConfig config,
                        const PrefService& prefs,
-                       const signin::IdentityManager& identity_manager);
+                       const signin::IdentityManager& identity_manager,
+                       const variations::VariationsService& variations_service);
 
   FeatureAccessChecker(const FeatureAccessChecker&) = delete;
   FeatureAccessChecker& operator=(const FeatureAccessChecker&) = delete;
@@ -106,6 +112,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   FeatureAccessConfig config_;
   raw_ref<const PrefService> prefs_;
   raw_ref<const signin::IdentityManager> identity_manager_;
+  raw_ref<const variations::VariationsService> variations_service_;
 };
 
 }  // namespace specialized_features

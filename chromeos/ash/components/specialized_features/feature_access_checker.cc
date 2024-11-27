@@ -8,6 +8,7 @@
 #include "base/hash/sha1.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -18,8 +19,12 @@ using enum FeatureAccessFailure;
 FeatureAccessChecker::FeatureAccessChecker(
     FeatureAccessConfig config,
     const PrefService& prefs,
-    const signin::IdentityManager& identity_manager)
-    : config_(config), prefs_(prefs), identity_manager_(identity_manager) {}
+    const signin::IdentityManager& identity_manager,
+    const variations::VariationsService& variations_service)
+    : config_(config),
+      prefs_(prefs),
+      identity_manager_(identity_manager),
+      variations_service_(variations_service) {}
 
 FeatureAccessFailureSet FeatureAccessChecker::Check() {
   FeatureAccessFailureSet failures;
@@ -60,6 +65,13 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
     if (identity_manager_->FindExtendedAccountInfoByAccountId(account_id)
             .capabilities.can_use_manta_service() != signin::Tribool::kTrue) {
       failures.Put(kMantaAccountCapabilitiesCheckFailed);
+    }
+  }
+
+  if (!config_.country_codes.empty()) {
+    if (!base::Contains(config_.country_codes,
+                        variations_service_->GetLatestCountry())) {
+      failures.Put(kCountryCheckFailed);
     }
   }
 

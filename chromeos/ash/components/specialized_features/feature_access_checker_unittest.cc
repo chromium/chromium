@@ -4,12 +4,16 @@
 
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
 #include "base/hash/sha1.h"
 #include "base/test/task_environment.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,6 +23,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/service/test_variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,7 +65,19 @@ void RegisterAndEnableAllPrefs(TestingPrefServiceSimple& pref) {
 
 class FeatureAccessCheckerTest : public testing::Test {
  public:
-  FeatureAccessCheckerTest() {}
+  FeatureAccessCheckerTest()
+      : metrics_enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
+    // Prefs need to be registered before creating a metrics_state_manager and
+    // variations_service, as the ctors will try to access a few prefs.
+    variations::TestVariationsService::RegisterPrefs(pref_service_.registry());
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        &pref_service_, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    variations_service_ = std::make_unique<variations::TestVariationsService>(
+        &pref_service_, metrics_state_manager_.get());
+  }
 
   FeatureAccessCheckerTest(const FeatureAccessCheckerTest&) = delete;
   FeatureAccessCheckerTest& operator=(const FeatureAccessCheckerTest&) = delete;
@@ -76,11 +94,18 @@ class FeatureAccessCheckerTest : public testing::Test {
   TestingPrefServiceSimple pref_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
+  TestingPrefServiceSimple pref_service_;
+  // These metrics objects are just required to set up the variations_service.
+  // They are not used directly in any test.
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> variations_service_;
 };
 
 TEST_F(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPass) {
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
-                                                  *GetIdentityManager())
+                                                  *GetIdentityManager(),
+                                                  *variations_service_)
                                  .Check()),
               IsEmpty());
 }
@@ -89,7 +114,8 @@ TEST_F(FeatureAccessCheckerTest, CheckSettingsPrefCheckFail) {
   pref_.SetBoolean(kSettingsTogglePref, false);
 
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
-                                                  *GetIdentityManager())
+                                                  *GetIdentityManager(),
+                                                  *variations_service_)
                                  .Check()),
               ElementsAre(kDisabledInSettings));
 }
@@ -98,7 +124,8 @@ TEST_F(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckFail) {
   pref_.SetBoolean(kConsentAcceptedPref, false);
 
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(DefaultConfig(), pref_,
-                                                  *GetIdentityManager())
+                                                  *GetIdentityManager(),
+                                                  *variations_service_)
                                  .Check()),
               ElementsAre(kConsentNotAccepted));
 }
@@ -108,8 +135,9 @@ TEST_F(FeatureAccessCheckerTest, FeatureFlagFail) {
   config.feature_flag = kFeatureOffByDefault;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kFeatureFlagDisabled));
 }
 
@@ -118,8 +146,9 @@ TEST_F(FeatureAccessCheckerTest, FeatureManagementFlagFail) {
   config.feature_management_flag = kFeatureOffByDefault;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kFeatureManagementCheckFailed));
 }
 
@@ -132,8 +161,9 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckPass) {
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       IsEmpty());
 }
 
@@ -145,8 +175,9 @@ TEST_F(FeatureAccessCheckerTest, SecretKeyCheckFail) {
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kSecretKeyCheckFailed));
 }
 
@@ -161,8 +192,9 @@ TEST_F(FeatureAccessCheckerTest,
   config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kSecretKeyCheckFailed));
 }
 
@@ -178,8 +210,9 @@ TEST_F(FeatureAccessCheckerTest,
   config.allow_google_accounts_skip_secret_key = true;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kSecretKeyCheckFailed));
 }
 
@@ -196,8 +229,9 @@ TEST_F(
   config.allow_google_accounts_skip_secret_key = true;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       IsEmpty());
 }
 
@@ -212,8 +246,9 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckPass) {
   config.requires_manta_account_capabilities = true;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       IsEmpty());
 }
 
@@ -226,8 +261,9 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfFalse) {
   config.requires_manta_account_capabilities = true;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kMantaAccountCapabilitiesCheckFailed));
 }
 
@@ -238,9 +274,66 @@ TEST_F(FeatureAccessCheckerTest, MantaAccountCapabilitiesCheckFailIfUnset) {
   config.requires_manta_account_capabilities = true;
 
   EXPECT_THAT(
-      base::ToVector(
-          FeatureAccessChecker(config, pref_, *GetIdentityManager()).Check()),
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
       ElementsAre(kMantaAccountCapabilitiesCheckFailed));
+}
+
+TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfNothingInList) {
+  FeatureAccessConfig config = DefaultConfig();
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "fr");
+  std::vector<std::string_view> country_codes;
+  config.country_codes = country_codes;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
+}
+
+TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassIfExactMatch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "us");
+  FeatureAccessConfig config = DefaultConfig();
+  std::string_view country_codes[] = {"us"};
+  config.country_codes = country_codes;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
+}
+
+TEST_F(FeatureAccessCheckerTest, CountryCodeCheckPassOneOfMany) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "jp");
+  FeatureAccessConfig config = DefaultConfig();
+  std::string_view country_codes[] = {"us", "fr", "jp"};
+  config.country_codes = country_codes;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      IsEmpty());
+}
+
+TEST_F(FeatureAccessCheckerTest, CountryCodeCheckFailCountryNotInList) {
+  FeatureAccessConfig config = DefaultConfig();
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "fr");
+  std::string_view country_codes[] = {"us"};
+  config.country_codes = country_codes;
+
+  EXPECT_THAT(
+      base::ToVector(FeatureAccessChecker(config, pref_, *GetIdentityManager(),
+                                          *variations_service_)
+                         .Check()),
+      ElementsAre(kCountryCheckFailed));
 }
 
 }  // namespace
