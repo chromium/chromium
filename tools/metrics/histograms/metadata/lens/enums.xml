@@ -124,6 +124,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Translate text selection"/>
   <int value="15" label="Copy as image action"/>
   <int value="16" label="Save as image action"/>
+  <int value="17" label="Math selection"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/lens/core/mojom/lens.mojom:UserAction) -->

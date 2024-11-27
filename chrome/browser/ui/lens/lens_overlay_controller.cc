@@ -72,6 +72,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "lens_overlay_url_builder.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
@@ -998,6 +999,15 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
     int selection_end_index) {
   IssueTranslateSelectionRequest(text_query, content_language,
                                  selection_start_index, selection_end_index);
+}
+
+void LensOverlayController::IssueMathSelectionRequestForTesting(
+    const std::string& query,
+    const std::string& formula,
+    int selection_start_index,
+    int selection_end_index) {
+  IssueMathSelectionRequest(query, formula, selection_start_index,
+                            selection_end_index);
 }
 
 void LensOverlayController::IssueTranslateFullPageRequestForTesting(
@@ -2516,6 +2526,20 @@ void LensOverlayController::IssueTranslateSelectionRequest(
   lens::AppendTranslateParamsToMap(
       initialization_data_->additional_search_query_params_, query, "auto");
   lens_selection_type_ = lens::TRANSLATE_CHIP;
+
+  IssueTextSelectionRequestInner(query, selection_start_index,
+                                 selection_end_index);
+}
+
+void LensOverlayController::IssueMathSelectionRequest(
+    const std::string& query,
+    const std::string& formula,
+    int selection_start_index,
+    int selection_end_index) {
+  initialization_data_->additional_search_query_params_.clear();
+  lens::AppendStickinessSignalForFormula(
+      initialization_data_->additional_search_query_params_, formula);
+  lens_selection_type_ = lens::SYMBOLIC_MATH_OBJECT;
 
   IssueTextSelectionRequestInner(query, selection_start_index,
                                  selection_end_index);

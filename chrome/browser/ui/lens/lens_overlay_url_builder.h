@@ -20,6 +20,10 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,
                                 const std::string& content_language);
 
+void AppendStickinessSignalForFormula(
+    std::map<std::string, std::string>& params,
+    const std::string& formula);
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode);
 

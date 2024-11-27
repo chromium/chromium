@@ -39,6 +39,7 @@ enum UserAction {
   kTranslateTextSelection = 14,
   kCopyAsImage = 15,
   kSaveAsImage = 16,
+  kMathSelection = 17,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
@@ -137,6 +138,11 @@ interface LensPageHandler {
   // text be translated.
   IssueTranslateSelectionRequest(string query,
                                  string content_language,
+                                 int32 selection_start_index,
+                                 int32 selection_end_index);
+
+  // Similar to IssueTextSelectionRequest(), but adds a math formula.
+  IssueMathSelectionRequest(string query, string formula,
                                  int32 selection_start_index,
                                  int32 selection_end_index);
 

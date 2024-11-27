@@ -1493,6 +1493,68 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
 }
 
+// TODO(crbug.com/335028577): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowSidePanelAfterMathSelectionRequest \
+  DISABLED_ShowSidePanelAfterMathSelectionRequest
+#else
+#define MAYBE_ShowSidePanelAfterMathSelectionRequest \
+  ShowSidePanelAfterMathSelectionRequest
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_ShowSidePanelAfterMathSelectionRequest) {
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerLensOverlayResults, _,
+                                       _, _, _, _, _, _, _, _));
+  WaitForPaint();
+
+  std::string query = "query";
+  std::string formula = "\\frac{x + 2}{4} = 4";
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  controller->IssueMathSelectionRequestForTesting(query, formula,
+                                                  /*selection_start_index=*/0,
+                                                  /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  auto search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(search_query);
+  EXPECT_EQ(search_query->search_query_text_, query);
+  EXPECT_EQ(search_query->lens_selection_type_, lens::SYMBOLIC_MATH_OBJECT);
+
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_queried_text(), query);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
+            lens::SYMBOLIC_MATH_OBJECT);
+
+  // Verify that the side panel displays our query.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true == content::EvalJs(
+                       controller->GetSidePanelWebContentsForTesting(),
+                       content::JsReplace(
+                           kCheckSidePanelTranslateResultsLoadedScript, query));
+  }));
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        IssueTranslateFullPageRequest) {
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(

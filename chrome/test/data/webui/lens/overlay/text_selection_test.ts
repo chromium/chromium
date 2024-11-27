@@ -91,6 +91,11 @@ suite('TextSelection', function() {
   }
 
   async function addWords() {
+    const formula = createWord(  // X from 5 to 35, Y from 210 to 220.
+        '(x + 2) / 4 = 4',
+        normalizedBox({x: 20, y: 215, width: 30, height: 10}));
+    formula.formulaMetadata = {latex: '\\frac{x + 2}{4} = 4'};
+
     const text = createText([
       createParagraph([
         createLine([
@@ -118,6 +123,9 @@ suite('TextSelection', function() {
               'HEADING', normalizedBox({x: 320, y: 50, width: 80, height: 30})),
         ]),
       ]),
+      createParagraph([
+        createLine([formula]),
+      ]),
     ]);
     callbackRouterRemote.textReceived(text);
     await flushTasks();
@@ -137,7 +145,7 @@ suite('TextSelection', function() {
   test('verify that text renders on the page', async () => {
     const wordsOnPage = getRenderedWords();
 
-    assertEquals(8, wordsOnPage.length);
+    assertEquals(9, wordsOnPage.length);
   });
 
   test('verify that dragging over a word highlights the word', async () => {
@@ -325,6 +333,46 @@ suite('TextSelection', function() {
     const textQuery =
         await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
     assertEquals('line FAKE HEADING', textQuery);
+  });
+
+  test('verify that selecting formula works', async () => {
+    const wordsOnPage = getRenderedWords();
+    const formulaBoundingBox = wordsOnPage[8]!.getBoundingClientRect();
+
+    // Drag from beginning of first word to end of first word.
+    await simulateDrag(
+        selectionOverlayElement,
+        {x: formulaBoundingBox.left + 2, y: formulaBoundingBox.top + 2},
+        {x: formulaBoundingBox.right - 2, y: formulaBoundingBox.top + 2});
+
+    const highlightedLines = getHighlightedLines();
+    assertEquals(1, highlightedLines.length);
+
+    assertSameRenderedPixel(
+        formulaBoundingBox.left,
+        highlightedLines[0]!.getBoundingClientRect().left);
+    assertSameRenderedPixel(
+        formulaBoundingBox.top,
+        highlightedLines[0]!.getBoundingClientRect().top);
+
+    // Verify the correct request was made.
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueMathSelectionRequest');
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.kMathSelection));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kMathSelection));
+    assertEquals('(x + 2) / 4 = 4', textQuery[0]);
+    assertEquals('\\frac{x + 2}{4} = 4', textQuery[1]);
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
+    assertEquals(UserAction.kMathSelection, action);
   });
 
   test('verify that starting a drag off a word does nothing', async () => {

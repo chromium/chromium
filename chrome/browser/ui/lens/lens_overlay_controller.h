@@ -439,6 +439,12 @@ class LensOverlayController : public LensSearchboxClient,
       int selection_start_index,
       int selection_end_index);
 
+  // Testing function to issue a math request.
+  void IssueMathSelectionRequestForTesting(const std::string& query,
+                                           const std::string& formula,
+                                           int selection_start_index,
+                                           int selection_end_index);
+
   // Testing function to issue a full page translate request.
   void IssueTranslateFullPageRequestForTesting(
       const std::string& source_language,
@@ -881,6 +887,11 @@ class LensOverlayController : public LensSearchboxClient,
                                       const std::string& content_language,
                                       int selection_start_index,
                                       int selection_end_index) override;
+  void IssueMathSelectionRequest(const std::string& query,
+                                 const std::string& formula,
+                                 int selection_start_index,
+                                 int selection_end_index) override;
+
   void NotifyOverlayInitialized() override;
   void RecordUkmAndTaskCompletionForLensOverlayInteraction(
       lens::mojom::UserAction user_action) override;
