@@ -3471,7 +3471,9 @@ if (current_toolchain == default_toolchain) {
     if (is_official_build && !skip_secondary_abi_for_cq) {
       _trichrome_library_basename = "TrichromeLibrary.apk"
       _trichrome_chrome_basename = "TrichromeChrome.minimal.apks"
+      _trichrome_chrome_bundle = "TrichromeChrome.aab"
       _trichrome_webview_basename = "TrichromeWebView.minimal.apks"
+      _trichrome_webview_bundle = "TrichromeWebView.aab"
       _ssargs_filename = "Trichrome.ssargs"
 
       write_ssargs_trichrome("ssargs_trichrome") {
@@ -3506,7 +3508,9 @@ if (current_toolchain == default_toolchain) {
 
         _trichrome_library_32_basename = "TrichromeLibrary32.apk"
         _trichrome_chrome_32_basename = "TrichromeChrome32.minimal.apks"
+        _trichrome_chrome_32_bundle = "TrichromeChrome32.aab"
         _trichrome_webview_32_basename = "TrichromeWebView32.minimal.apks"
+        _trichrome_webview_32_bundle = "TrichromeWebView32.aab"
         _ssargs_32_filename = "Trichrome32.ssargs"
 
         write_ssargs_trichrome("ssargs_trichrome_32") {
@@ -3531,7 +3535,9 @@ if (current_toolchain == default_toolchain) {
         }
         _trichrome_library_basename_for_size = _trichrome_library_32_basename
         _trichrome_chrome_basename_for_size = _trichrome_chrome_32_basename
+        _trichrome_chrome_bundle_for_size = _trichrome_chrome_32_bundle
         _trichrome_webview_basename_for_size = _trichrome_webview_32_basename
+        _trichrome_webview_bundle_for_size = _trichrome_webview_32_bundle
         _symbol_dir_for_size = "android_clang_arm/lib.unstripped"
         _ssargs_filename_for_size = _ssargs_32_filename
       } else {
@@ -3548,7 +3554,9 @@ if (current_toolchain == default_toolchain) {
         }
         _trichrome_library_basename_for_size = _trichrome_library_basename
         _trichrome_chrome_basename_for_size = _trichrome_chrome_basename
+        _trichrome_chrome_bundle_for_size = _trichrome_chrome_bundle
         _trichrome_webview_basename_for_size = _trichrome_webview_basename
+        _trichrome_webview_bundle_for_size = _trichrome_webview_bundle
         _symbol_dir_for_size = "lib.unstripped"
         _ssargs_filename_for_size = _ssargs_filename
       }
@@ -3581,7 +3589,11 @@ if (current_toolchain == default_toolchain) {
               mapping_files + [
                 "apks/$_trichrome_library_basename_for_size",
                 "apks/$_trichrome_chrome_basename_for_size",
+                "apks/$_trichrome_chrome_bundle_for_size.unused_resources",
+                "apks/$_trichrome_chrome_bundle_for_size.R.txt",
                 "apks/$_trichrome_webview_basename_for_size",
+                "apks/$_trichrome_webview_bundle_for_size.unused_resources",
+                "apks/$_trichrome_webview_bundle_for_size.R.txt",
                 "${_symbol_dir_for_size}/libmonochrome__combined.so",
               ]
           to_resource_sizes_py = {
