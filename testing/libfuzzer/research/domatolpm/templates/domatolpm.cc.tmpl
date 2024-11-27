@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <limits>
 #include <string>
-#include <unordered_map>
 
 #include "{{basename}}.h"
 #include "{{basename}}.pb.h"
@@ -45,35 +44,8 @@ template <typename From, typename To>
     return std::string(1, conv);
 }
 
-auto escape(const std::string& str) {
-    static std::unordered_map<char, std::string> const escapes = {
-        { '\a', "\\a" },
-        { '\b', "\\b" },
-        { '\t', "\\t" },
-        { '\n', "\\n" },
-        { '\v', "\\v" },
-        { '\f', "\\f" },
-        { '\r', "\\r" },
-        {   27, "\\e" },
-        { '\\', "\\\\" },
-        { '"', "\\\"" },
-    };
-
-    std::string res;
-    res.reserve(str.length());
-    for (const char c : str) {
-        auto it = escapes.find(c);
-        if (it == std::end(escapes)) {
-            res += c;
-        } else {
-            res += it->second;
-        }
-    }
-    return res;
-}
-
 [[maybe_unused]] std::string handle_string(domatolpm::Context* ctx [[maybe_unused]], const std::string& arg) {
-    return escape(arg);
+    return arg;
 }
 
 [[maybe_unused]] std::string handle_hex(domatolpm::Context* ctx [[maybe_unused]], const int32_t& arg) {

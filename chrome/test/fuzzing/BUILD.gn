@@ -12,10 +12,7 @@ import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
 # into the build.
 group("test") {
   testonly = true
-  deps = [
-    "renderer_fuzzing:test",
-    "webidl_fuzzing:test",
-  ]
+  deps = [ "renderer_fuzzing:test" ]
 }
 
 if (fuzzing_engine_supports_custom_main) {

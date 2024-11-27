@@ -34,9 +34,6 @@ template("domatolpm") {
       "${_gen_file_format}.cc",
       "${_gen_file_format}.h",
     ]
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    }
   }
   proto_library(_gen_target_name) {
     testonly = true
@@ -76,9 +73,6 @@ template("domatolpm_fuzzer") {
     domatolpm(_target_name) {
       grammar_file = _grammars[1]
       grammar_name = _grammars[0]
-      if (defined(invoker.deps)) {
-        deps = invoker.deps
-      }
     }
   }
 
