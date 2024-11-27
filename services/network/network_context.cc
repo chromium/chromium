@@ -46,7 +46,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
-#include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 #include "components/ip_protection/common/ip_protection_proxy_delegate.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
@@ -2594,12 +2594,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (requires_ipp_proxy_delegate) {
     CHECK(!params_->initial_custom_proxy_config);
     CHECK(!params_->custom_proxy_config_client_receiver);
-    auto ip_protection_core_impl = std::make_unique<
-        ip_protection::IpProtectionCoreImplMojo>(
-        std::move(params_->ip_protection_control),
-        base::MakeRefCounted<ip_protection::IpProtectionConfigGetterMojoImpl>(
-            std::move(params_->ip_protection_core_host)),
-        mdl_manager, params_->enable_ip_protection);
+    scoped_refptr<ip_protection::IpProtectionCoreHostRemote> core_host_remote =
+        params_->ip_protection_core_host
+            ? base::MakeRefCounted<ip_protection::IpProtectionCoreHostRemote>(
+                  std::move(params_->ip_protection_core_host))
+            : nullptr;
+    auto ip_protection_core_impl =
+        std::make_unique<ip_protection::IpProtectionCoreImplMojo>(
+            std::move(params_->ip_protection_control), core_host_remote,
+            mdl_manager, params_->enable_ip_protection);
     builder.set_proxy_delegate(
         std::make_unique<ip_protection::IpProtectionProxyDelegate>(
             ip_protection_core_impl.get()));

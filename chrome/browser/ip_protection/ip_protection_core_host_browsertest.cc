@@ -116,7 +116,7 @@ class IpProtectionCoreHostInterceptor
   }
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::mojom::ProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     if (should_intercept_) {
       std::vector<BlindSignedAuthToken> tokens;

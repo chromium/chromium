@@ -313,7 +313,7 @@ component("network_service") {
     "//components/content_settings/core/common",
     "//components/cookie_config",
     "//components/domain_reliability",
-    "//components/ip_protection/common:ip_protection_config_getter_mojo_impl",
+    "//components/ip_protection/common:ip_protection_core_host_remote",
     "//components/ip_protection/common:ip_protection_core_impl",
     "//components/ip_protection/common:ip_protection_core_impl_mojo",
     "//components/ip_protection/common:ip_protection_proxy_delegate",

@@ -8,21 +8,21 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {
 
 namespace {
 
-class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
- public:
-  bool IsAvailable() override { return true; }
-
+class FakeCoreHost : public ip_protection::mojom::CoreHost {
   void TryGetAuthTokens(uint32_t batch_size,
-                        ProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     std::move(callback).Run(std::nullopt, std::nullopt);
   }
@@ -30,14 +30,15 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
   void GetProxyConfig(GetProxyConfigCallback callback) override {
     NOTREACHED();
   }
-
- protected:
-  ~MockIpProtectionConfigGetter() override = default;
 };
 
 TEST(IpProtectionTokenMojoFetcherTest, CallsThrough) {
-  auto getter = base::MakeRefCounted<MockIpProtectionConfigGetter>();
-  IpProtectionTokenMojoFetcher fetcher(getter.get());
+  base::test::TaskEnvironment task_environment;
+  FakeCoreHost fake_core_host;
+  mojo::Receiver<ip_protection::mojom::CoreHost> receiver{&fake_core_host};
+  auto core_host_remote = base::MakeRefCounted<IpProtectionCoreHostRemote>(
+      receiver.BindNewPipeAndPassRemote());
+  IpProtectionTokenMojoFetcher fetcher(core_host_remote.get());
   base::test::TestFuture<std::optional<std::vector<BlindSignedAuthToken>>,
                          std::optional<::base::Time>>
       future;
@@ -48,4 +49,5 @@ TEST(IpProtectionTokenMojoFetcherTest, CallsThrough) {
 }
 
 }  // namespace
+
 }  // namespace ip_protection

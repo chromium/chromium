@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -32,15 +32,15 @@ namespace {
 std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
 MakeTokenManagerMap(
     IpProtectionCore* ip_protection_core,
-    scoped_refptr<IpProtectionConfigGetter> ip_protection_config_getter) {
+    scoped_refptr<IpProtectionCoreHostRemote> core_host_remote) {
   std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
   for (ProxyLayer proxy_layer : {ProxyLayer::kProxyA, ProxyLayer::kProxyB}) {
     managers.insert(
-        {proxy_layer, std::make_unique<IpProtectionTokenManagerImpl>(
-                          ip_protection_core,
-                          std::make_unique<IpProtectionTokenMojoFetcher>(
-                              ip_protection_config_getter),
-                          proxy_layer)});
+        {proxy_layer,
+         std::make_unique<IpProtectionTokenManagerImpl>(
+             ip_protection_core,
+             std::make_unique<IpProtectionTokenMojoFetcher>(core_host_remote),
+             proxy_layer)});
   }
   return managers;
 }
@@ -49,19 +49,19 @@ MakeTokenManagerMap(
 
 IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
     mojo::PendingReceiver<ip_protection::mojom::CoreControl> pending_receiver,
-    scoped_refptr<IpProtectionConfigGetter> config_getter,
+    scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
     MaskedDomainListManager* masked_domain_list_manager,
     bool is_ip_protection_enabled)
     : IpProtectionCoreImpl(
           masked_domain_list_manager,
-          config_getter->IsAvailable()
+          core_host_remote
               ? std::make_unique<IpProtectionProxyConfigManagerImpl>(
                     this,
                     std::make_unique<IpProtectionProxyConfigMojoFetcher>(
-                        config_getter))
+                        core_host_remote))
               : nullptr,
-          config_getter->IsAvailable()
-              ? MakeTokenManagerMap(this, config_getter)
+          core_host_remote
+              ? MakeTokenManagerMap(this, core_host_remote)
               : std::map<ProxyLayer,
                          std::unique_ptr<IpProtectionTokenManager>>(),
           is_ip_protection_enabled),

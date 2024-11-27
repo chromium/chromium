@@ -87,7 +87,8 @@ In the browser process, the `IpProtectionCoreHost` class manages the necessary
 functionality. It implements the `ip_protection::mojo::CoreHost` type and
 implements methods to fetch data using privileged information such as user
 credentials. In the network service, purpose-specific fetchers (with `Mojo` in
-the type name) translate fetch calls into IPC calls.
+the type name) translate fetch calls into IPC calls. These fetchers share a
+reference-counted remote in an `IpProtectionCoreHostRemote` instance.
 
 In the reverse direction, `IpProtectionCoreImplMojo` derives from
 `IpProtectionCoreImpl`and implements the `ip_protection::mojo::Core` type,

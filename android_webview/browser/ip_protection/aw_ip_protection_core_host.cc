@@ -131,7 +131,7 @@ void AwIpProtectionCoreHost::AuthenticateRequest(
 
 void AwIpProtectionCoreHost::TryGetAuthTokens(
     uint32_t batch_size,
-    ip_protection::mojom::ProxyLayer proxy_layer,
+    ip_protection::ProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
@@ -142,16 +142,6 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
   if (!base::IsValueInRangeForNumericType<int>(batch_size)) {
     receivers_.ReportBadMessage("Invalid batch_size");
     return;
-  }
-
-  ip_protection::ProxyLayer ipp_proxy_layer;
-  switch (proxy_layer) {
-    case ip_protection::mojom::ProxyLayer::kProxyA:
-      ipp_proxy_layer = ip_protection::ProxyLayer::kProxyA;
-      break;
-    case ip_protection::mojom::ProxyLayer::kProxyB:
-      ipp_proxy_layer = ip_protection::ProxyLayer::kProxyB;
-      break;
   }
 
   // The mojo callback requires `std::optional<..>&`, while the fetcher callback
@@ -165,7 +155,7 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
       },
       std::move(callback));
 
-  ip_protection_token_fetcher_->TryGetAuthTokens(batch_size, ipp_proxy_layer,
+  ip_protection_token_fetcher_->TryGetAuthTokens(batch_size, proxy_layer,
                                                  std::move(callback_with_refs));
 }
 

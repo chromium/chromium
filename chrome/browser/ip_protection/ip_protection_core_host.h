@@ -66,7 +66,7 @@ class IpProtectionCoreHost
   // Get a batch of blind-signed auth tokens. It is forbidden for two calls to
   // this method for the same proxy layer to be outstanding at the same time.
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::mojom::ProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   void GetProxyConfig(GetProxyConfigCallback callback) override;
 

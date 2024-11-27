@@ -11,15 +11,15 @@
 
 namespace ip_protection {
 
-class IpProtectionConfigGetter;
+class IpProtectionCoreHostRemote;
 enum class ProxyLayer;
 
-// Manages fetching tokens via Mojo. This is a simple wrapper around a config
-// getter.
+// Manages fetching tokens via Mojo. This is a simple wrapper around
+// `IpProtectionCoreHostRemote`.
 class IpProtectionTokenMojoFetcher : public IpProtectionTokenFetcher {
  public:
   explicit IpProtectionTokenMojoFetcher(
-      scoped_refptr<IpProtectionConfigGetter> config_getter);
+      scoped_refptr<IpProtectionCoreHostRemote> core_host_remote);
   ~IpProtectionTokenMojoFetcher() override;
 
   // IpProtectionTokenFetcher implementation:
@@ -28,7 +28,7 @@ class IpProtectionTokenMojoFetcher : public IpProtectionTokenFetcher {
                         TryGetAuthTokensCallback callback) override;
 
  private:
-  scoped_refptr<IpProtectionConfigGetter> config_getter_;
+  scoped_refptr<IpProtectionCoreHostRemote> core_host_remote_;
 };
 
 }  // namespace ip_protection

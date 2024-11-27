@@ -4,7 +4,10 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_mojo_fetcher.h"
 
-#include "components/ip_protection/common/ip_protection_config_getter.h"
+#include <optional>
+#include <vector>
+
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -12,15 +15,21 @@
 namespace ip_protection {
 
 IpProtectionProxyConfigMojoFetcher::IpProtectionProxyConfigMojoFetcher(
-    scoped_refptr<IpProtectionConfigGetter> config_getter)
-    : config_getter_(std::move(config_getter)) {}
+    scoped_refptr<IpProtectionCoreHostRemote> core_host)
+    : core_host_remote_(std::move(core_host)) {}
 
 IpProtectionProxyConfigMojoFetcher::~IpProtectionProxyConfigMojoFetcher() =
     default;
 
 void IpProtectionProxyConfigMojoFetcher::GetProxyConfig(
     GetProxyConfigCallback callback) {
-  config_getter_->GetProxyConfig(std::move(callback));
+  core_host_remote_->core_host()->GetProxyConfig(base::BindOnce(
+      [](GetProxyConfigCallback callback,
+         const std::optional<std::vector<net::ProxyChain>>& proxy_chains,
+         const std::optional<ip_protection::GeoHint>& geo_hint) {
+        std::move(callback).Run(proxy_chains, geo_hint);
+      },
+      std::move(callback)));
 }
 
 }  // namespace ip_protection

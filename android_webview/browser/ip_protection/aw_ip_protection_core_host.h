@@ -63,7 +63,7 @@ class AwIpProtectionCoreHost
   // IpProtectionConfigGetter:
   // Get a batch of blind-signed auth tokens.
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::mojom::ProxyLayer proxy_layer,
+                        ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   // Get the list of IP Protection proxies.
   void GetProxyConfig(GetProxyConfigCallback callback) override;

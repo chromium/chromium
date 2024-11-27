@@ -16,7 +16,7 @@
 
 namespace ip_protection {
 
-class IpProtectionConfigGetter;
+class IpProtectionCoreHostRemote;
 class IpProtectionProxyConfigManaager;
 class IpProtectionTokenManaager;
 
@@ -25,16 +25,16 @@ class IpProtectionTokenManaager;
 class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
                                  public ip_protection::mojom::CoreControl {
  public:
-  // If `config_getter` is unbound, no tokens will be provided.
+  // If `core_host_remote` is null, no tokens or proxy config will be provided.
   IpProtectionCoreImplMojo(
       mojo::PendingReceiver<ip_protection::mojom::CoreControl> pending_receiver,
-      scoped_refptr<IpProtectionConfigGetter> config_getter,
+      scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
       MaskedDomainListManager* masked_domain_list_manager,
       bool is_ip_protection_enabled);
   ~IpProtectionCoreImplMojo() override;
 
-  // Create an instance with parameters for IpProtectionCoreImpl and a null
-  // config_getter.
+  // Create an instance with parameters for IpProtectionCoreImpl and a
+  // null core_host_remote.
   static IpProtectionCoreImplMojo CreateForTesting(
       MaskedDomainListManager* masked_domain_list_manager,
       std::unique_ptr<IpProtectionProxyConfigManager>

@@ -128,8 +128,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // testing).
   const raw_ptr<IpProtectionCore> ip_protection_core_;
 
-  // True if an invocation of `config_getter_.TryGetAuthTokens()` is
-  // outstanding.
+  // True if an attempt to fetch tokens is outstanding.
   bool fetching_auth_tokens_ = false;
 
   // True if the cache has been filled at least once.

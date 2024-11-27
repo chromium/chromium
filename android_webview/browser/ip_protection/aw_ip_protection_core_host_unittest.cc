@@ -71,8 +71,7 @@ class AwIpProtectionCoreHostTest : public testing::Test {
   void TearDown() override { core_host_->Shutdown(); }
 
   // Call `TryGetAuthTokens()` and run until it completes.
-  void TryGetAuthTokens(int num_tokens,
-                        ip_protection::mojom::ProxyLayer proxy_layer) {
+  void TryGetAuthTokens(int num_tokens, ip_protection::ProxyLayer proxy_layer) {
     core_host_->TryGetAuthTokens(num_tokens, proxy_layer,
                                  tokens_future_.GetCallback());
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
@@ -147,7 +146,7 @@ TEST_F(AwIpProtectionCoreHostTest, Success) {
                         CreateBlindSignTokenForTesting(
                             "single-use-2", expiration_time_, geo_hint_)});
 
-  TryGetAuthTokens(2, ip_protection::mojom::ProxyLayer::kProxyB);
+  TryGetAuthTokens(2, ip_protection::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
@@ -176,7 +175,7 @@ TEST_F(AwIpProtectionCoreHostTest, NoTokens) {
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kEnableIpProtectionProxy);
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -204,7 +203,7 @@ TEST_F(AwIpProtectionCoreHostTest, MalformedTokens) {
   bsa_->set_tokens(
       {{"invalid-token-proto-data", absl::Now() + absl::Hours(1), geo_hint}});
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -231,7 +230,7 @@ TEST_F(AwIpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
            CreateBlindSignTokenForTesting("single-use-2", expiration_time_,
                                           geo_hint_country)});
 
-  TryGetAuthTokens(2, ip_protection::mojom::ProxyLayer::kProxyB);
+  TryGetAuthTokens(2, ip_protection::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
@@ -264,7 +263,7 @@ TEST_F(AwIpProtectionCoreHostTest, TokenHasMissingGeoHint) {
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint)});
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -284,7 +283,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedAuthTransientError) {
 
   bsa_->set_status(absl::UnavailableError("uhoh"));
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -304,7 +303,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedAuthPersistentError) {
 
   bsa_->set_status(absl::FailedPreconditionError("uhoh"));
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -324,7 +323,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
 
   bsa_->set_status(absl::UnknownError("uhoh"));
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -342,7 +341,7 @@ TEST_F(AwIpProtectionCoreHostTest, TryGetAuthTokensIpProtectionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       net::features::kEnableIpProtectionProxy);
 
-  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyA);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
