@@ -12,8 +12,8 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "components/lens/lens_overlay_new_tab_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_new_tab_source.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -91,6 +91,7 @@ void RecordUKMSessionEndMetrics(
     LensOverlayInvocationSource invocation_source,
     bool search_performed_in_session,
     base::TimeDelta session_duration,
+    lens::MimeType document_content_type,
     std::optional<base::TimeDelta> session_foreground_duration = std::nullopt,
     std::optional<int> generated_tab_count = std::nullopt);
 

@@ -11906,6 +11906,18 @@ be describing additional metrics about the same event.
       in the background through the web context menu.
     </summary>
   </metric>
+  <metric name="InvocationDocumentType" enum="MimeType">
+    <summary>
+      The type of document the Lens Overlay was invoked on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="InvocationResultedInSearch" enum="Boolean">
     <summary>
       Indicates whether or not a search was performed at any point since the

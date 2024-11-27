@@ -141,6 +141,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_permission_user_action.h:LensPermissionUserAction) -->
 
+<!-- LINT.IfChange(LensOverlayMimeType) -->
+
+<enum name="MimeType">
+  <summary>
+    The mime type of the document the Lens Overlay is invoked on.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Pdf"/>
+  <int value="2" label="Html"/>
+  <int value="3" label="PlainText"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
+
 </enums>
 
 </histogram-configuration>

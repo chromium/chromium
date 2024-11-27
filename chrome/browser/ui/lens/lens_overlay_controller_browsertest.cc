@@ -3299,6 +3299,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       entries[0],
       ukm::builders::Lens_Overlay_SessionEnd::kInvocationResultedInSearchName,
       false);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_SessionEnd::kInvocationDocumentTypeName,
+      static_cast<int64_t>(lens::MimeType::kHtml));
   const char kSessionDuration[] = "SessionDuration";
   EXPECT_TRUE(
       ukm::TestUkmRecorder::EntryHasMetric(entries[0].get(), kSessionDuration));

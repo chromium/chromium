@@ -2793,12 +2793,13 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   lens::RecordSessionDuration(invocation_source_, session_duration);
 
   // UKM session end metrics. Includes invocation source, whether the
-  // session resulted in a search, and session duration.
+  // session resulted in a search, invocation document type and session
+  // duration.
   ukm::SourceId source_id =
       tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   lens::RecordUKMSessionEndMetrics(source_id, invocation_source_,
                                    search_performed_in_session_,
-                                   session_duration);
+                                   session_duration, initial_document_type_);
 
   // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
   // shown in session.
