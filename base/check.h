@@ -223,35 +223,30 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // Discard log strings to reduce code bloat when there is no NotFatalUntil
 // argument (which temporarily preserves logging both locally and in crash
 // reports).
-//
-// This is not calling BreakDebugger since this is called frequently, and
-// calling an out-of-line function instead of a noreturn inline macro prevents
-// compiler optimizations.
-#define CHECK(cond, ...)                                                 \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                                    \
-          DISCARDING_CHECK_FUNCTION_IMPL(logging::CheckFailure(), cond), \
-          LOGGING_CHECK_FUNCTION_IMPL(                                   \
-              logging::CheckError::Check(#cond, __VA_ARGS__), cond))
-
-// Strip the conditional string from official builds.
-#define PCHECK(condition) \
-  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
+#define CHECK_INTERNAL_IMPL(cond) \
+  DISCARDING_CHECK_FUNCTION_IMPL(::logging::CheckFailure(), cond)
 
 #else
 
 // Generate logging versions of CHECKs to help diagnosing failures.
 #define CHECK_WILL_STREAM() true
 
-#define CHECK(condition, ...)                                              \
-  LOGGING_CHECK_FUNCTION_IMPL(                                             \
-      ::logging::CheckError::Check(#condition __VA_OPT__(, ) __VA_ARGS__), \
-      condition)
-
-#define PCHECK(condition)                                                \
-  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(#condition), \
-                              condition)
+#define CHECK_INTERNAL_IMPL(cond) \
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::Check(#cond), cond)
 
 #endif
+
+#define CHECK(cond, ...)                                         \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), CHECK_INTERNAL_IMPL(cond), \
+          LOGGING_CHECK_FUNCTION_IMPL(                           \
+              logging::CheckError::Check(#cond, __VA_ARGS__), cond))
+
+// Strip the conditional string based on CHECK_WILL_STREAM()
+#define PCHECK(cond)                                                     \
+  LOGGING_CHECK_FUNCTION_IMPL(                                           \
+      BASE_IF(CHECK_WILL_STREAM(), ::logging::CheckError::PCheck(#cond), \
+              ::logging::CheckError::PCheck()),                          \
+      cond)
 
 #if DCHECK_IS_ON()
 
