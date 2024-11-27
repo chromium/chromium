@@ -70,6 +70,7 @@ def __rust_link_handler(ctx, cmd):
             ])
         elif arg.startswith("--sysroot=../../third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot"):
             use_android_toolchain = True
+            inputs.append("third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers")
         if arg == "-isysroot":
             sysroot = ctx.fs.canonpath(args[i + 1])
             inputs.extend([
@@ -162,6 +163,7 @@ def __step_config(ctx, step_config):
             "action": "(.*_)?rust_macro",
             "inputs": rust_inputs + clang_inputs,
             "indirect_inputs": rust_indirect_inputs,
+            "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
             # "canonicalize_dir": True,  # TODO(b/300352286)
             "remote": True,

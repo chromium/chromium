@@ -43,6 +43,29 @@ def __filegroups(ctx):
                 "clang_rt.profile*.lib",
             ],
         },
+        "third_party/cronet_android_mainline_clang/linux-amd64:headers": {
+            "type": "glob",
+            "includes": [
+                "*.h",
+                "bin/clang*",
+            ],
+        },
+        "third_party/cronet_android_mainline_clang/linux-amd64:link": {
+            "type": "glob",
+            "includes": [
+                "bin/clang*",
+                "bin/ld.lld",
+                "bin/lld",
+                "bin/llvm-nm",
+                "bin/llvm-objcopy",
+                "bin/llvm-readelf",
+                "bin/llvm-readobj",
+                "bin/llvm-strip",
+                "*.so",
+                "*.so.*",
+                "*.a",
+            ],
+        },
     }
     if win_sdk.enabled(ctx):
         fg.update(win_sdk.filegroups(ctx))

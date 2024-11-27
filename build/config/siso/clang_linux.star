@@ -175,6 +175,9 @@ def __clang_link(ctx, cmd):
         elif arg.startswith("-L"):
             lib_path = ctx.fs.canonpath(arg.removeprefix("-L"))
             inputs.append(lib_path + ":link")
+        elif arg == "--":
+            clang_base = ctx.fs.canonpath(path.dir(path.dir(cmd.args[i + 1])))
+            inputs.append(clang_base + ":link")
     if sysroot:
         inputs.extend([sysroot + ":link"])
 
