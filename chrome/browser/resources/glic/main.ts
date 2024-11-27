@@ -27,6 +27,11 @@ class GlicAppHostManager {
     webview.addEventListener('newwindow', (e: Event) => {
       this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
     });
+    webview.addEventListener('permissionrequest', (e: any) => {
+      if (e.permission === 'media') {
+        e.request.allow();
+      }
+    });
   }
 
   onNewWindowEvent(event: chrome.webviewTag.NewWindowEvent) {
