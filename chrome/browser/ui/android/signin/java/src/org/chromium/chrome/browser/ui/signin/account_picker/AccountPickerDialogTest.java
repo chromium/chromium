@@ -36,9 +36,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -106,7 +103,6 @@ public class AccountPickerDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testTitle() {
         onView(withText(R.string.signin_account_picker_dialog_title))
                 .inRoot(isDialog())
@@ -115,7 +111,6 @@ public class AccountPickerDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testAddAccount() {
         onView(withText(R.string.signin_add_account_to_device)).inRoot(isDialog()).perform(click());
         verify(mListenerMock).addAccount();
@@ -123,7 +118,6 @@ public class AccountPickerDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSelectDefaultAccount() {
         onView(withText(TestAccounts.ACCOUNT1.getEmail()))
                 .inRoot(isDialog())
@@ -134,7 +128,6 @@ public class AccountPickerDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSelectNonDefaultAccount() {
         onView(withText(TestAccounts.ACCOUNT2.getEmail())).inRoot(isDialog()).perform(click());
         verify(mListenerMock).onAccountSelected(TestAccounts.ACCOUNT2.getEmail());
@@ -143,17 +136,6 @@ public class AccountPickerDialogTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testAccountPickerDialogView() throws IOException {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        mRenderTestRule.render(
-                mCoordinator.getAccountPickerViewForTests(), "account_picker_dialog");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testAccountPickerDialogView_replaceSyncWithSigninPromosEnabled()
             throws IOException {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
