@@ -13,6 +13,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -177,10 +178,20 @@ TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
   EXPECT_EQ(service_->GetServiceStatus().sync_status,
             SyncStatus::kSyncWithoutTabGroup);
 
-  // Sign out removes sync consent.
-  test_sync_service_->SetSignedOut();
-  test_sync_service_->FireStateChanged();
-  EXPECT_EQ(service_->GetServiceStatus().sync_status, SyncStatus::kNotSyncing);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // If sync-the-feature is not required, kNotSyncing is never happening.
+    test_sync_service_->SetSignedOut();
+    test_sync_service_->FireStateChanged();
+    EXPECT_EQ(service_->GetServiceStatus().sync_status,
+              SyncStatus::kSyncWithoutTabGroup);
+  } else {
+    // Sign out removes sync consent.
+    test_sync_service_->SetSignedOut();
+    test_sync_service_->FireStateChanged();
+    EXPECT_EQ(service_->GetServiceStatus().sync_status,
+              SyncStatus::kNotSyncing);
+  }
 }
 
 TEST_F(CollaborationServiceImplTest, SigninStatusChanges) {

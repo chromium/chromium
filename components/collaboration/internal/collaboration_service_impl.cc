@@ -9,6 +9,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 
 namespace collaboration {
@@ -164,18 +165,27 @@ void CollaborationServiceImpl::FinishFlow(
 }
 
 SyncStatus CollaborationServiceImpl::GetSyncStatus() {
-  SyncStatus status = SyncStatus::kNotSyncing;
-  if (sync_service_->IsSyncFeatureEnabled()) {
-    syncer::DataTypeSet data_types = sync_service_->GetActiveDataTypes();
-    if (data_types.Has(syncer::DataType::SAVED_TAB_GROUP) &&
-        data_types.Has(syncer::DataType::COLLABORATION_GROUP)) {
-      status = SyncStatus::kSyncEnabled;
-    } else {
-      status = SyncStatus::kSyncWithoutTabGroup;
-    }
+  syncer::DataTypeSet data_types = sync_service_->GetActiveDataTypes();
+  if (data_types.Has(syncer::DataType::SAVED_TAB_GROUP) &&
+      data_types.Has(syncer::DataType::COLLABORATION_GROUP)) {
+    return SyncStatus::kSyncEnabled;
   }
 
-  return status;
+  if (sync_service_->IsSyncFeatureEnabled()) {
+    // Sync-the-feature is enabled, but the required data types are not.
+    // The user needs to enable them in settings.
+    return SyncStatus::kSyncWithoutTabGroup;
+  } else {
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      // Sync-the-feature is not required, but the user needs to enable
+      // the required data types in settings.
+      return SyncStatus::kSyncWithoutTabGroup;
+    } else {
+      // The user needs to enable Sync-the-feature.
+      return SyncStatus::kNotSyncing;
+    }
+  }
 }
 
 SigninStatus CollaborationServiceImpl::GetSigninStatus() {
