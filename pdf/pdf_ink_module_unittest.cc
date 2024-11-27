@@ -831,6 +831,57 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     EXPECT_TRUE(updated_thumbnail_page_indices.empty());
   }
 
+  void RunStrokeMissedEndEventCheckTest() {
+    {
+      // Start a drawing or erase action.
+      blink::WebMouseEvent mouse_down_event =
+          MouseEventBuilder()
+              .CreateLeftClickAtPosition(kMouseDownPoint)
+              .Build();
+      EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+      // Simulate scenario where another view has taken the focus and consumed
+      // the mouse up event, such that subsequent mouse moves don't show the
+      // left mouse button being pressed.  This should be handled, as it treats
+      // it as a signal to terminate the prior stroke.
+      blink::WebMouseEvent mouse_move_event =
+          MouseEventBuilder()
+              .SetType(blink::WebInputEvent::Type::kMouseMove)
+              .SetPosition(kMouseMovePoint)
+              .SetButton(blink::WebPointerProperties::Button::kNoButton)
+              .Build();
+      EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+    }
+
+    {
+      // Another mouse move event without the button down is no longer handled
+      // since there is no longer any active drawing or erasing.
+      constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(21.0f, 26.0f);
+      blink::WebMouseEvent mouse_move_event =
+          MouseEventBuilder()
+              .SetType(blink::WebInputEvent::Type::kMouseMove)
+              .SetPosition(kMouseMovePoint2)
+              .SetButton(blink::WebPointerProperties::Button::kNoButton)
+              .Build();
+      EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+    }
+
+    {
+      // Start another stroke with a new mouse down event, which is handled.
+      blink::WebMouseEvent mouse_down_event =
+          MouseEventBuilder()
+              .CreateLeftClickAtPosition(kMouseDownPoint)
+              .Build();
+      EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+      blink::WebMouseEvent mouse_up_event =
+          MouseEventBuilder()
+              .CreateLeftMouseUpAtPosition(kMouseUpPoint)
+              .Build();
+      EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+    }
+  }
+
   void SelectBrushTool(PdfInkBrush::Type type,
                        float size,
                        const TestAnnotationBrushMessageParams& params) {
@@ -891,6 +942,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
           MouseEventBuilder()
               .SetType(blink::WebInputEvent::Type::kMouseMove)
               .SetPosition(mouse_move_point)
+              .SetButton(blink::WebPointerProperties::Button::kLeft)
               .Build();
       EXPECT_EQ(expect_mouse_events_handled,
                 ink_module().HandleInputEvent(mouse_move_event));
@@ -1431,6 +1483,30 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeWithTouch) {
   // Nothing got erased, so the count stays at 2.
   EXPECT_EQ(2, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
+}
+
+TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringDrawing) {
+  InitializeSimpleSinglePageBasicLayout();
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateSetAnnotationModeMessageForTesting(/*enable=*/true)));
+  EXPECT_TRUE(ink_module().enabled());
+
+  // No need to distinguish between pen or highlighter here.
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateGetAnnotationBrushMessageForTesting("pen")));
+
+  RunStrokeMissedEndEventCheckTest();
+}
+
+TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringErasing) {
+  InitializeSimpleSinglePageBasicLayout();
+  EXPECT_TRUE(ink_module().OnMessage(
+      CreateSetAnnotationModeMessageForTesting(/*enable=*/true)));
+  EXPECT_TRUE(ink_module().enabled());
+
+  SelectEraserToolOfSize(3.0f);
+
+  RunStrokeMissedEndEventCheckTest();
 }
 
 class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {

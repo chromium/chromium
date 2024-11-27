@@ -106,6 +106,16 @@ SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
   return gfx::RectFToSkRect(clip_rect);
 }
 
+blink::WebMouseEvent GenerateLeftMouseUpEvent(const gfx::PointF& position,
+                                              base::TimeTicks timestamp) {
+  return blink::WebMouseEvent(
+      blink::WebInputEvent::Type::kMouseUp,
+      /*position=*/position,
+      /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
+      /*click_count_param=*/1, blink::WebInputEvent::Modifiers::kNoModifiers,
+      timestamp);
+}
+
 }  // namespace
 
 PdfInkModule::PdfInkModule(PdfInkModuleClient& client)
@@ -336,10 +346,43 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   gfx::PointF position = event.PositionInWidget();
-  return is_drawing_stroke()
-             ? ContinueStroke(position, event.TimeStamp(),
-                              ink::StrokeInput::ToolType::kMouse)
-             : ContinueEraseStroke(position);
+  bool still_interacting_with_ink =
+      event.GetModifiers() & blink::WebInputEvent::kLeftButtonDown;
+  if (still_interacting_with_ink) {
+    return is_drawing_stroke()
+               ? ContinueStroke(position, event.TimeStamp(),
+                                ink::StrokeInput::ToolType::kMouse)
+               : ContinueEraseStroke(position);
+  }
+
+  // Some other view consumed the input events sometime after the stroke was
+  // started, and the input end event went missing for PdfInkModule.  Notice
+  // that now, and compensate by synthesizing a mouse-up input event at the
+  // last known input position.  Intentionally do not use `position`.
+  if (is_drawing_stroke()) {
+    DrawingStrokeState& state = drawing_stroke_state();
+    if (!state.input_last_event.has_value()) {
+      // Ignore when not drawing.
+      return false;
+    }
+
+    const DrawingStrokeState::EventDetails& input_last_event =
+        state.input_last_event.value();
+    return OnMouseUp(GenerateLeftMouseUpEvent(input_last_event.position,
+                                              input_last_event.timestamp));
+  }
+
+  CHECK(is_erasing_stroke());
+  EraserState& state = erasing_stroke_state();
+  if (!state.input_last_event_position.has_value()) {
+    // Ignore when not erasing.
+    CHECK(!state.erasing);
+    return false;
+  }
+
+  // Erasing is not sensitive to particular timestamps, just use current time.
+  return OnMouseUp(GenerateLeftMouseUpEvent(
+      state.input_last_event_position.value(), base::TimeTicks::Now()));
 }
 
 bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
@@ -416,10 +459,12 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
-  // Remember this location to support invalidating all of the area between
-  // this location and the next position.
-  CHECK(!state.input_last_event_position.has_value());
-  state.input_last_event_position = position;
+  // Remember this location and timestamp to support invalidating all of the
+  // area between this location and the next position, and to possibly
+  // compensate for missed input events.
+  CHECK(!state.input_last_event.has_value());
+  state.input_last_event =
+      DrawingStrokeState::EventDetails{position, timestamp};
 
   return true;
 }
@@ -434,8 +479,8 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     return false;
   }
 
-  CHECK(state.input_last_event_position.has_value());
-  const gfx::PointF last_position = state.input_last_event_position.value();
+  CHECK(state.input_last_event.has_value());
+  const gfx::PointF last_position = state.input_last_event.value().position;
   if (position == last_position) {
     // Since the position did not change, do nothing.
     return true;
@@ -445,8 +490,9 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
   const int last_page_index = client_->VisiblePageIndexFromPoint(last_position);
   if (page_index != state.page_index && last_page_index != state.page_index) {
     // If `position` is outside the page, and so was `last_position`, then just
-    // update `last_position` and treat the event as handled.
-    state.input_last_event_position = position;
+    // update `last_input_event` and treat the event as handled.
+    state.input_last_event =
+        DrawingStrokeState::EventDetails{position, timestamp};
     return true;
   }
 
@@ -465,8 +511,10 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
           last_position, boundary_position));
     }
 
-    // Remember `position` for use in the next event and treat event as handled.
-    state.input_last_event_position = position;
+    // Remember `position` and `timestamp` for use in the next event and treat
+    // event as handled.
+    state.input_last_event =
+        DrawingStrokeState::EventDetails{position, timestamp};
     return true;
   }
 
@@ -493,8 +541,9 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
   client_->Invalidate(
       GetDrawingBrush().GetInvalidateArea(position, invalidation_position));
 
-  // Remember `position` for use in the next event.
-  state.input_last_event_position = position;
+  // Remember `position` and `timestamp` for use in the next event.
+  state.input_last_event =
+      DrawingStrokeState::EventDetails{position, timestamp};
 
   return true;
 }
@@ -542,7 +591,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   state.inputs.clear();
   state.start_time = std::nullopt;
   state.page_index = -1;
-  state.input_last_event_position.reset();
+  state.input_last_event.reset();
   return true;
 }
 
@@ -566,6 +615,11 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
   if (EraseHelper(position, page_index)) {
     state.page_indices_with_erasures.insert(page_index);
   }
+
+  // Remember this position to possibly compensate for missed input events.
+  CHECK(!state.input_last_event_position.has_value());
+  state.input_last_event_position = position;
+
   return true;
 }
 
@@ -581,12 +635,18 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
     // Do nothing when the eraser tool is in use, but the event position is
     // off-page. Treat the event as handled to be consistent with
     // ContinueStroke(), and so that nothing else attempts to handle this event.
+    // Remember this position for possible use in the next event.
+    state.input_last_event_position = position;
     return true;
   }
 
   if (EraseHelper(position, page_index)) {
     state.page_indices_with_erasures.insert(page_index);
   }
+
+  // Remember this position for possible use in the next event.
+  state.input_last_event_position = position;
+
   return true;
 }
 
@@ -614,6 +674,7 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
   // Reset `state` now that the erase operation is done.
   state.erasing = false;
   state.page_indices_with_erasures.clear();
+  state.input_last_event_position.reset();
   return true;
 }
 
