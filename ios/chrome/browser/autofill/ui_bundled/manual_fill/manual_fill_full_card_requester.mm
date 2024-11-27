@@ -80,11 +80,8 @@ class CreditCard;
   __weak __typeof(self) weakSelf = self;
   creditCardAccessManager.FetchCreditCard(
       (recordType == kVirtualCard ? &virtualCard : &card),
-      base::BindOnce(^(autofill::CreditCardFetchResult result,
-                       const autofill::CreditCard* fetchedCard) {
-        [weakSelf onCreditCardFetched:result
-                          fetchedCard:fetchedCard
-                            fieldType:fieldType];
+      base::BindOnce(^(const autofill::CreditCard& fetchedCard) {
+        [weakSelf onCreditCardFetched:fetchedCard fieldType:fieldType];
       }));
 
   // TODO(crbug.com/40577448): closing CVC requester doesn't restore icon bar
@@ -96,14 +93,9 @@ class CreditCard;
 // Callback invoked when the card retrieval is finished. It notifies the
 // delegate the result of the card retrieval process and provides the card if
 // the process succeeded.
-- (void)onCreditCardFetched:(autofill::CreditCardFetchResult)result
-                fetchedCard:(const autofill::CreditCard*)fetchedCard
+- (void)onCreditCardFetched:(const autofill::CreditCard&)fetchedCard
                   fieldType:(manual_fill::PaymentFieldType)fieldType {
-  if (result == autofill::CreditCardFetchResult::kSuccess && fetchedCard) {
-    [_delegate onFullCardRequestSucceeded:*fetchedCard fieldType:fieldType];
-  } else {
-    [_delegate onFullCardRequestFailed];
-  }
+  [_delegate onFullCardRequestSucceeded:fetchedCard fieldType:fieldType];
 }
 
 @end

@@ -181,9 +181,6 @@ class AutofillMetricsBaseTest {
                                       AutofillTriggerSource trigger_source,
                                       const std::u16string& real_pan,
                                       bool is_virtual_card = false);
-  void OnCreditCardFetchingFailed(const FormData& form,
-                                  const FormFieldData& field,
-                                  AutofillTriggerSource trigger_source);
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);

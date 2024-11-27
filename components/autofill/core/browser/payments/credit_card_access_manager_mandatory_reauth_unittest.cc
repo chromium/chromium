@@ -183,10 +183,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   // enabled, but the mandatory re-auth authentication was not successful.
   if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
       !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
     EXPECT_TRUE(accessor_->number().empty());
   } else {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
     EXPECT_EQ(accessor_->number(), kTestNumber16);
     EXPECT_EQ(accessor_->cvc(), kTestCvc16);
   }
@@ -267,11 +265,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
           PaymentsRpcResult::kSuccess, response);
 
   // Ensure the accessor received the correct response.
-  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
-      !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
-  } else {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+  if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
+      MandatoryReauthResponseIsSuccess()) {
     EXPECT_EQ(accessor_->number(), u"4111111111111111");
     EXPECT_EQ(accessor_->cvc(), u"321");
     EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
@@ -358,11 +353,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
           .with_card(card));
 
   // Ensure the accessor received the correct response.
-  if (IsMandatoryReauthEnabled() && HasAuthenticator() &&
-      !MandatoryReauthResponseIsSuccess()) {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
-  } else {
-    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+  if (!IsMandatoryReauthEnabled() || !HasAuthenticator() ||
+      MandatoryReauthResponseIsSuccess()) {
     EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
   }
   std::string reauth_usage_histogram_name =

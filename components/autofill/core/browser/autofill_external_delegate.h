@@ -37,7 +37,6 @@ namespace autofill {
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
-enum class CreditCardFetchResult;
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillSuggestionDelegate {

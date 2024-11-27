@@ -64,19 +64,6 @@ enum class UnmaskAuthFlowType {
   kMaxValue = kThreeDomainSecureConsentAlreadyGiven,
 };
 
-// TODO(crbug.com/40197696): Remove this. This was added and never used.
-// The result of the attempt to fetch full information for a credit card.
-enum class CreditCardFetchResult {
-  kNone = 0,
-  // The attempt succeeded retrieving the full information of a credit card.
-  kSuccess = 1,
-  // The attempt failed due to a transient error.
-  kTransientError = 2,
-  // The attempt failed due to a permanent error.
-  kPermanentError = 3,
-  kMaxValue = kPermanentError,
-};
-
 // TODO(crbug.com/40927041): Remove CVC from CachedServerCardInfo.
 struct CachedServerCardInfo {
  public:
@@ -100,7 +87,7 @@ class CreditCardAccessManager
       public CreditCardRiskBasedAuthenticator::Requester {
  public:
   using OnCreditCardFetchedCallback =
-      base::OnceCallback<void(CreditCardFetchResult, const CreditCard*)>;
+      base::OnceCallback<void(const CreditCard&)>;
   using OtpAuthenticationResponse =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
@@ -122,7 +109,8 @@ class CreditCardAccessManager
   // Makes a call to Google Payments to retrieve authentication details.
   virtual void PrepareToFetchCreditCard();
 
-  // `on_credit_card_fetched` is run once `card` is fetched.
+  // `on_credit_card_fetched` is run once `card` is fetched, if fetching is
+  // successful.
   virtual void FetchCreditCard(
       const CreditCard* card,
       OnCreditCardFetchedCallback on_credit_card_fetched);

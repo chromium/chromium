@@ -103,7 +103,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .with_card(card));
 
   // Ensure the accessor received the correct response.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(accessor_->number(), base::UTF8ToUTF16(test_number));
 
   // There was no interactive authentication in this flow, so check that this
@@ -145,7 +144,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                            RiskBasedAuthenticationResponse::Result::kError));
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_error_dialog_shown());
 
@@ -178,9 +176,6 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
           .with_result(CreditCardRiskBasedAuthenticator::
                            RiskBasedAuthenticationResponse::Result::
                                kAuthenticationCancelled));
-
-  // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(

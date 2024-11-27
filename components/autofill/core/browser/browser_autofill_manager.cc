@@ -2095,17 +2095,10 @@ void BrowserAutofillManager::OnCreditCardFetched(
     const FormData& form,
     const FieldGlobalId& field_id,
     AutofillTriggerSource fetched_credit_card_trigger_source,
-    CreditCardFetchResult result,
-    const CreditCard* credit_card) {
-  if (result != CreditCardFetchResult::kSuccess) {
-    return;
-  }
-  // In the failure case, `credit_card` can be `nullptr`, but in the success
-  // case it is non-null.
-  CHECK(credit_card);
-  OnCreditCardFetchedSuccessfully(*credit_card);
+    const CreditCard& credit_card) {
+  OnCreditCardFetchedSuccessfully(credit_card);
   FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, form, field_id,
-                              *credit_card, fetched_credit_card_trigger_source);
+                              credit_card, fetched_credit_card_trigger_source);
 }
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {

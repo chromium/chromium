@@ -331,8 +331,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
       AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -379,8 +378,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -421,8 +419,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
       AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
   SubmitForm(form());
 
   // Verify that:
@@ -653,8 +650,7 @@ class CardBenefitFormEventMetricsTest
         .OnCreditCardFetched(
             form(),
             form().fields()[credit_card_number_field_index()].global_id(),
-            AutofillTriggerSource::kPopup,
-            /*result=*/CreditCardFetchResult::kSuccess, card);
+            AutofillTriggerSource::kPopup, CHECK_DEREF(card));
   }
 
   const CreditCard* GetCreditCard() {

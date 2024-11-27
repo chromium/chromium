@@ -143,7 +143,6 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
   PrepareToFetchCreditCardAndWaitForCallbacks();
   FetchCreditCard(card);
 
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -154,16 +153,6 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
           .payment_method_type_if_non_interactive_authentication_flow_completed();
   ASSERT_TRUE(type.has_value());
   ASSERT_EQ(type.value(), NonInteractivePaymentMethodType::kLocalCard);
-}
-
-// Ensures that FetchCreditCard() reports a failure when a card does not exist.
-TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
-  personal_data().test_payments_data_manager().ClearCreditCards();
-
-  PrepareToFetchCreditCardAndWaitForCallbacks();
-  FetchCreditCard(nullptr);
-
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
@@ -184,7 +173,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCSuccess) {
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -214,7 +202,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCNetworkError) {
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kNetworkError, std::string()));
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
 // Ensures that FetchCreditCard() returns a failure upon a negative response
@@ -230,7 +217,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kPermanentFailure,
                                    std::string()));
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 }
 
 // Ensures that a "try again" response from payments does not end the flow.
@@ -243,10 +229,8 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardCVCTryAgainFailure) {
 
   EXPECT_TRUE(
       GetRealPanForCVCAuth(PaymentsRpcResult::kTryAgainFailure, std::string()));
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -286,7 +270,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, FetchServerCardFIDOSuccess) {
   TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
                                                 /*did_succeed=*/true);
   EXPECT_TRUE(GetRealPanForFIDOAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   EXPECT_EQ(kCredentialId,
             BytesToBase64(GetFIDOAuthenticator()->GetCredentialId()));
@@ -468,7 +451,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
                                     kTestCvc));
 
   // Expect accessor to successfully retrieve the DCVV.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -512,13 +494,11 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
   EXPECT_FALSE(GetRealPanForFIDOAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   // Followed by a fallback to CVC.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::NONE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -561,13 +541,11 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
                                                 /*did_succeed=*/true);
   EXPECT_TRUE(
       GetRealPanForFIDOAuth(PaymentsRpcResult::kPermanentFailure, kTestNumber));
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   // Followed by a fallback to CVC.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::NONE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
@@ -598,11 +576,9 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
 
   // FIDO Failure.
   EXPECT_FALSE(GetRealPanForFIDOAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_NE(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   // Followed by a fallback to CVC.
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -626,7 +602,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
   WaitForCallbacks();
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
 }
@@ -1635,7 +1610,6 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
 
   histogram_tester.ExpectBucketCount(
       flow_events_histogram_name,
@@ -1786,7 +1760,6 @@ TEST_F(CreditCardAccessManagerTest,
           PaymentsRpcResult::kSuccess, response);
 
   // Ensure the accessor received the correct response.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(accessor_->number(), u"4111111111111111");
   EXPECT_EQ(accessor_->cvc(), u"321");
   EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
@@ -2033,7 +2006,6 @@ TEST_F(CreditCardAccessManagerTest,
       .OnVcn3dsAuthenticationComplete(response);
 
   // Check that `accessor_` was triggered with the expected values.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(accessor_->number(), response.card->number());
   EXPECT_EQ(accessor_->cvc(), response.card->cvc());
   EXPECT_FALSE(
@@ -2063,8 +2035,6 @@ TEST_F(CreditCardAccessManagerTest,
   test_api(credit_card_access_manager())
       .OnVcn3dsAuthenticationComplete(response);
 
-  // Check that `accessor_` was triggered with the expected error.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(
       test_api(credit_card_access_manager()).is_authentication_in_progress());
   histogram_tester.ExpectUniqueSample(
@@ -2090,8 +2060,6 @@ TEST_F(
   test_api(credit_card_access_manager())
       .OnVcn3dsAuthenticationComplete(response);
 
-  // Check that `accessor_` was triggered with the expected error.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.ThreeDomainSecure",
       autofill_metrics::ServerCardUnmaskResult::kFlowCancelled, 1);
@@ -2325,7 +2293,6 @@ TEST_F(
           PaymentsRpcResult::kSuccess, response);
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 
@@ -2373,7 +2340,6 @@ TEST_F(CreditCardAccessManagerTest,
           PaymentsRpcResult::kPermanentFailure, response);
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
@@ -2418,7 +2384,6 @@ TEST_F(CreditCardAccessManagerTest,
           PaymentsRpcResult::kVcnRetrievalPermanentFailure, response);
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_error_dialog_shown());
@@ -2495,7 +2460,6 @@ TEST_F(CreditCardAccessManagerTest,
   // Mock that the flow was cancelled by the user.
   test_api(credit_card_access_manager()).OnVirtualCardUnmaskCancelled();
 
-  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());

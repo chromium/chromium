@@ -63,8 +63,7 @@ class CreditCardAccessManagerTestBase : public testing::Test {
     TestAccessor();
     ~TestAccessor();
 
-    void OnCreditCardFetched(CreditCardFetchResult result,
-                             const CreditCard* card);
+    void OnCreditCardFetched(const CreditCard& card);
 
     base::WeakPtr<TestAccessor> GetWeakPtr() {
       return weak_ptr_factory_.GetWeakPtr();
@@ -74,11 +73,8 @@ class CreditCardAccessManagerTestBase : public testing::Test {
     std::u16string cvc() { return cvc_; }
     std::u16string expiry_month() { return expiry_month_; }
     std::u16string expiry_year() { return expiry_year_; }
-    CreditCardFetchResult result() { return result_; }
 
    private:
-    // The result of the credit card fetching.
-    CreditCardFetchResult result_ = CreditCardFetchResult::kNone;
     // The card number returned from OnCreditCardFetched().
     std::u16string number_;
     // The returned CVC, if any.

@@ -344,8 +344,4 @@ std::vector<CreditCard> FetchCards(
                              requiresHTTPS:YES];
 }
 
-- (void)onFullCardRequestFailed {
-  // This is called on user cancelling, so there's nothing to do here.
-}
-
 @end

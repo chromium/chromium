@@ -224,8 +224,7 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   if (!using_local_card()) {
     test_api(autofill_manager())
         .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup,
-                             CreditCardFetchResult::kSuccess, &card());
+                             AutofillTriggerSource::kPopup, card());
   }
 
   EXPECT_THAT(
@@ -247,8 +246,7 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   if (!using_local_card()) {
     test_api(autofill_manager())
         .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup,
-                             CreditCardFetchResult::kSuccess, &card());
+                             AutofillTriggerSource::kPopup, card());
   }
 
   EXPECT_THAT(
@@ -283,8 +281,7 @@ TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   if (!using_local_card()) {
     test_api(autofill_manager())
         .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup,
-                             CreditCardFetchResult::kSuccess, &card());
+                             AutofillTriggerSource::kPopup, card());
   }
   SubmitForm(form());
 

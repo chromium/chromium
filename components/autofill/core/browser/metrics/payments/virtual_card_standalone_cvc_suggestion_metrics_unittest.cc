@@ -167,8 +167,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
       AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -192,8 +191,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
       AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
@@ -224,8 +222,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
       AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                           AutofillTriggerSource::kPopup,
-                           CreditCardFetchResult::kSuccess, &card());
+                           AutofillTriggerSource::kPopup, card());
   SubmitForm(form());
 
   EXPECT_THAT(

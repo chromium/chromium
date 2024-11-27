@@ -64,8 +64,7 @@ class TestAccessManager : public CreditCardAccessManager {
   void FetchCreditCard(
       const CreditCard* card,
       OnCreditCardFetchedCallback on_credit_card_fetched) override {
-    std::move(on_credit_card_fetched)
-        .Run(CreditCardFetchResult::kSuccess, card);
+    std::move(on_credit_card_fetched).Run(CHECK_DEREF(card));
   }
 };
 

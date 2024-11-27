@@ -45,16 +45,11 @@ CreditCardAccessManagerTestBase::TestAccessor::TestAccessor() = default;
 CreditCardAccessManagerTestBase::TestAccessor::~TestAccessor() = default;
 
 void CreditCardAccessManagerTestBase::TestAccessor::OnCreditCardFetched(
-    CreditCardFetchResult result,
-    const CreditCard* card) {
-  result_ = result;
-  if (result == CreditCardFetchResult::kSuccess) {
-    DCHECK(card);
-    number_ = card->number();
-    cvc_ = card->cvc();
-    expiry_month_ = card->Expiration2DigitMonthAsString();
-    expiry_year_ = card->Expiration4DigitYearAsString();
-  }
+    const CreditCard& card) {
+  number_ = card.number();
+  cvc_ = card.cvc();
+  expiry_month_ = card.Expiration2DigitMonthAsString();
+  expiry_year_ = card.Expiration4DigitYearAsString();
 }
 
 CreditCardAccessManagerTestBase::CreditCardAccessManagerTestBase()

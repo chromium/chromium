@@ -401,8 +401,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       AutofillTriggerSource fetched_credit_card_trigger_source,
-      CreditCardFetchResult result,
-      const CreditCard* credit_card);
+      const CreditCard& credit_card);
 
   // Updates event loggers with information about data stored for Autofill.
   void UpdateLoggersReadinessData();
