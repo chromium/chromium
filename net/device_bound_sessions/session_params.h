@@ -32,8 +32,8 @@ struct NET_EXPORT SessionParams final {
     std::vector<Specification> specifications;
 
     Scope();
-    Scope(Scope&& other);
-    Scope& operator=(Scope&& other);
+    Scope(Scope&& other) noexcept;
+    Scope& operator=(Scope&& other) noexcept;
     ~Scope();
   };
 
@@ -48,8 +48,8 @@ struct NET_EXPORT SessionParams final {
                 std::string refresh_url,
                 Scope scope,
                 std::vector<Credential> creds);
-  SessionParams(SessionParams&& other);
-  SessionParams& operator=(SessionParams&& other);
+  SessionParams(SessionParams&& other) noexcept;
+  SessionParams& operator=(SessionParams&& other) noexcept;
 
   ~SessionParams();
 

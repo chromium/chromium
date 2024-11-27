@@ -328,8 +328,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   std::string data_received_;
 };
 
-std::optional<RegistrationFetcher::RegistrationCompleteParams> (
-    *g_mock_fetcher)() = nullptr;
+RegistrationFetcher::FetcherType g_mock_fetcher = nullptr;
 
 }  // namespace
 

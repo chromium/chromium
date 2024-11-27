@@ -7,11 +7,13 @@
 #include "base/test/test_future.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "net/device_bound_sessions/mock_session_store.h"
+#include "net/device_bound_sessions/session_store.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using ::testing::InSequence;
 using ::testing::Invoke;
@@ -25,59 +27,59 @@ namespace {
 constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
 
+// Constant variables
+constexpr char kUrlString[] = "https://example.com";
+const GURL kTestUrl(kUrlString);
+const std::string kSessionId = "SessionId";
+const std::string kChallenge = "challenge";
+
 // Matcher for SessionKeys
 auto ExpectId(std::string_view id) {
   return testing::Field(&SessionKey::id, Session::Id(std::string(id)));
 }
 
-class SessionServiceImplTest : public TestWithTaskEnvironment {
- protected:
-  SessionServiceImplTest()
-      : context_(CreateTestURLRequestContextBuilder()->Build()),
-        service_(*UnexportableKeyServiceFactory::GetInstance()->GetShared(),
-                 context_.get(),
-                 /*store=*/nullptr) {}
-
-  SessionServiceImpl& service() { return service_; }
-
-  std::unique_ptr<URLRequestContext> context_;
-
- private:
-  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
-  SessionServiceImpl service_;
-};
-
-// Variables to be used by TestFetcher
-// Can be changed by tests
-std::string g_session_id = "SessionId";
-// Constant variables
-constexpr char kUrlString[] = "https://example.com";
-const GURL kTestUrl(kUrlString);
-
-std::optional<RegistrationFetcher::RegistrationCompleteParams> TestFetcher() {
+std::optional<RegistrationFetcher::RegistrationCompleteParams> TestFetcher(
+    std::string session_id,
+    std::optional<std::string> referral_session_identifier) {
   std::vector<SessionParams::Credential> cookie_credentials;
   cookie_credentials.push_back(
       SessionParams::Credential{"test_cookie", "secure"});
   SessionParams::Scope scope;
   scope.include_site = true;
-  SessionParams session_params(g_session_id, kUrlString, std::move(scope),
-                               std::move(cookie_credentials));
+  SessionParams session_params(std::move(session_id), kUrlString,
+                               std::move(scope), std::move(cookie_credentials));
   unexportable_keys::UnexportableKeyId key_id;
   return std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
-      std::move(session_params), std::move(key_id), kTestUrl, std::nullopt);
+      std::move(session_params), std::move(key_id), kTestUrl,
+      std::move(referral_session_identifier));
 }
-
-class ScopedTestFetcher {
- public:
-  ScopedTestFetcher() {
-    RegistrationFetcher::SetFetcherForTesting(TestFetcher);
-  }
-  ~ScopedTestFetcher() { RegistrationFetcher::SetFetcherForTesting(nullptr); }
-};
 
 std::optional<RegistrationFetcher::RegistrationCompleteParams> NullFetcher() {
   return std::nullopt;
 }
+
+RegistrationFetcher::FetcherType TestFetcherFactory(
+    std::string session_id,
+    std::optional<std::string> referral_session_identifier) {
+  static std::string g_session_id;
+  static std::optional<std::string> g_referral_session_id;
+  g_session_id = std::move(session_id);
+  g_referral_session_id = std::move(referral_session_identifier);
+
+  return []() { return TestFetcher(g_session_id, g_referral_session_id); };
+}
+
+class ScopedTestFetcher {
+ public:
+  explicit ScopedTestFetcher(
+      std::string session_id,
+      std::optional<std::string> referral_session_identifier = std::nullopt) {
+    RegistrationFetcher::SetFetcherForTesting(TestFetcherFactory(
+        std::move(session_id), std::move(referral_session_identifier)));
+  }
+
+  ~ScopedTestFetcher() { RegistrationFetcher::SetFetcherForTesting(nullptr); }
+};
 
 class ScopedNullFetcher {
  public:
@@ -87,30 +89,46 @@ class ScopedNullFetcher {
   ~ScopedNullFetcher() { RegistrationFetcher::SetFetcherForTesting(nullptr); }
 };
 
+class SessionServiceImplTest : public TestWithTaskEnvironment {
+ public:
+  SessionServiceImplTest()
+      : context_(CreateTestURLRequestContextBuilder()->Build()),
+        service_(*UnexportableKeyServiceFactory::GetInstance()->GetShared(),
+                 context_.get(),
+                 /*store=*/nullptr) {}
+
+  URLRequestContext* context() { return context_.get(); }
+  SessionServiceImpl& service() { return service_; }
+
+ private:
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  std::unique_ptr<URLRequestContext> context_;
+  SessionServiceImpl service_;
+};
+
 // Not implemented so test just makes sure it can run
 TEST_F(SessionServiceImplTest, TestDefer) {
   SessionService::RefreshCompleteCallback cb1 = base::DoNothing();
   SessionService::RefreshCompleteCallback cb2 = base::DoNothing();
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   service().DeferRequestForRefresh(request.get(), Session::Id("test"),
                                    std::move(cb1), std::move(cb2));
 }
 
 TEST_F(SessionServiceImplTest, RegisterSuccess) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
-
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
+      kChallenge,
+      /*authorization=*/std::nullopt);
   service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
+
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
@@ -119,42 +137,42 @@ TEST_F(SessionServiceImplTest, RegisterSuccess) {
   std::optional<Session::Id> maybe_id =
       service().GetAnySessionRequiringDeferral(request.get());
   ASSERT_TRUE(maybe_id);
-  EXPECT_EQ(**maybe_id, g_session_id);
+  EXPECT_EQ(**maybe_id, kSessionId);
 }
 
 TEST_F(SessionServiceImplTest, RegisterNoId) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "";
-  ScopedTestFetcher scopedTestFetcher;
-
+  ScopedTestFetcher scoped_test_fetcher(/*session_id=*/"");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
+      kChallenge,
+      /*authorization=*/std::nullopt);
   service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
+
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   std::optional<Session::Id> maybe_id =
       service().GetAnySessionRequiringDeferral(request.get());
-  // g_session_id is empty, so should not be valid
+  // session_id is empty, so should not be valid
   EXPECT_FALSE(maybe_id);
 }
 
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   ScopedNullFetcher scopedNullFetcher;
-
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
+      kChallenge,
+      /*authorization=*/std::nullopt);
   service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
+
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
@@ -165,22 +183,20 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
 }
 
 TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
-
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
+      kChallenge,
+      /*authorization=*/std::nullopt);
   service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader("Sec-Session-Challenge",
-                     "\"challenge\";id=\"SessionId\", "
-                     "\"challenge1\";id=\"NonExisted\"");
-  headers->AddHeader("Sec-Session-Challenge", "\"challenge2\"");
+  headers->AddHeader(
+      "Sec-Session-Challenge",
+      R"("challenge";id="SessionId", "challenge1";id="NonExisted")");
+  headers->AddHeader("Sec-Session-Challenge", R"("challenge2")");
 
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
@@ -192,7 +208,7 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   }
 
   const Session* session =
-      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id);
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), kSessionId);
   ASSERT_TRUE(session);
   EXPECT_EQ(session->cached_challenge(), "challenge");
 
@@ -202,24 +218,22 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
 }
 
 TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
-
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
+      kChallenge,
+      /*authorization=*/std::nullopt);
   service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
   Session* session =
-      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id);
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), kSessionId);
   ASSERT_TRUE(session);
   session->set_expiry_date(base::Time::Now() + base::Days(1));
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   // The request needs to be samesite for it to be considered
   // candidate for deferral.
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
@@ -230,9 +244,7 @@ TEST_F(SessionServiceImplTest, ExpiryExtendedOnUser) {
 }
 
 TEST_F(SessionServiceImplTest, NullAccessObserver) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -245,9 +257,7 @@ TEST_F(SessionServiceImplTest, NullAccessObserver) {
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -259,20 +269,17 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
 
   SessionKey session_key = future.Take();
   EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
-  EXPECT_EQ(session_key.id.value(), g_session_id);
+  EXPECT_EQ(session_key.id.value(), kSessionId);
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
-
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
                                  IsolationInfo::CreateTransient());
 
@@ -287,13 +294,11 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnDeferral) {
 
   SessionKey session_key = future.Take();
   EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
-  EXPECT_EQ(session_key.id.value(), g_session_id);
+  EXPECT_EQ(session_key.id.value(), kSessionId);
 }
 
 TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -315,38 +320,72 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
 
   SessionKey session_key = future.Take();
   EXPECT_EQ(session_key.site, SchemefulSite(kTestUrl));
-  EXPECT_EQ(session_key.id.value(), g_session_id);
+  EXPECT_EQ(session_key.id.value(), kSessionId);
+}
+
+TEST_F(SessionServiceImplTest, ReferralSessionIdentifier) {
+  // Register a session with Id `kSessionId`.
+  {
+    ScopedTestFetcher scoped_test_fetcher(kSessionId);
+
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        "challenge", /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                   IsolationInfo::CreateTransient());
+  }
+
+  auto site = SchemefulSite(kTestUrl);
+  ASSERT_TRUE(service().GetSessionForTesting(site, kSessionId));
+
+  // Register a session with new Id to replace the former session.
+  std::string session_id("NewSessionId");
+  {
+    ScopedTestFetcher scoped_test_fetcher(session_id, kSessionId);
+
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        "challenge", /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                   IsolationInfo::CreateTransient());
+  }
+
+  ASSERT_TRUE(service().GetSessionForTesting(site, session_id));
+  ASSERT_FALSE(service().GetSessionForTesting(site, kSessionId));
 }
 
 TEST_F(SessionServiceImplTest, GetAllSessions) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
+  const std::string session_id_1("SessionId");
+  {
+    ScopedTestFetcher scoped_test_fetcher(session_id_1);
 
-  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
-      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
-                                 IsolationInfo::CreateTransient());
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        "challenge", /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                   IsolationInfo::CreateTransient());
+  }
 
-  g_session_id = "SessionId2";
-  fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
-      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt);
-  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
-                                 IsolationInfo::CreateTransient());
+  const std::string session_id_2("SessionId2");
+  {
+    ScopedTestFetcher scoped_test_fetcher(session_id_2);
+
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        "challenge", /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                   IsolationInfo::CreateTransient());
+  }
 
   base::test::TestFuture<std::vector<SessionKey>> future;
   service().GetAllSessionsAsync(
       future.GetCallback<const std::vector<SessionKey>&>());
-  EXPECT_THAT(future.Take(), UnorderedElementsAre(ExpectId("SessionId"),
-                                                  ExpectId("SessionId2")));
+  EXPECT_THAT(future.Take(), UnorderedElementsAre(ExpectId(session_id_1),
+                                                  ExpectId(session_id_2)));
 }
 
 TEST_F(SessionServiceImplTest, DeleteSession) {
-  // Set the session id to be used for in TestFetcher()
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
 
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
@@ -355,12 +394,12 @@ TEST_F(SessionServiceImplTest, DeleteSession) {
                                  IsolationInfo::CreateTransient());
 
   ASSERT_TRUE(
-      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id));
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), kSessionId));
 
-  service().DeleteSession(SchemefulSite(kTestUrl), Session::Id(g_session_id));
+  service().DeleteSession(SchemefulSite(kTestUrl), Session::Id(kSessionId));
 
   EXPECT_FALSE(
-      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id));
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), kSessionId));
 }
 
 }  // namespace
@@ -411,9 +450,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   // Will invoke the store's load session method.
   service().LoadSessionsAsync();
 
-  // Set the session id to be used in TestFetcher().
-  g_session_id = "SessionId";
-  ScopedTestFetcher scopedTestFetcher;
+  ScopedTestFetcher scoped_test_fetcher(kSessionId);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt);
@@ -422,7 +459,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
                                  IsolationInfo::CreateTransient());
 
   auto site = SchemefulSite(kTestUrl);
-  Session* session = service().GetSessionForTesting(site, g_session_id);
+  Session* session = service().GetSessionForTesting(site, kSessionId);
   ASSERT_TRUE(session);
   EXPECT_EQ(GetSiteSessionsCount(site), 1u);
   session->set_expiry_date(base::Time::Now() - base::Days(1));
@@ -442,7 +479,7 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
 
   std::unique_ptr<Session> session = Session::CreateIfValid(
       SessionParams("session_id", "https://example.com/refresh", /*scope=*/{},
-                    /*credentials=*/{}),
+                    /*creds=*/{}),
       kTestUrl);
   ASSERT_TRUE(session);
 
