@@ -734,12 +734,6 @@ struct AuthenticatorCommonImpl::RequestState {
                 ReportCallback>
       response_callback;
   std::string client_data_json;
-  // conditional_ui_treatment tracks any non-standard conditional UI behaviours
-  // that have been requested.
-  device::FidoRequestHandlerBase::TransportAvailabilityInfo::
-      ConditionalUITreatment conditional_ui_treatment =
-          device::FidoRequestHandlerBase::TransportAvailabilityInfo::
-              ConditionalUITreatment::kDefault;
   url::Origin caller_origin;
   std::string relying_party_id;
   std::unique_ptr<base::OneShotTimer> timer =
@@ -925,8 +919,6 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
-  request_handler->transport_availability_info().conditional_ui_treatment =
-      req_state_->conditional_ui_treatment;
 
   req_state_->request_delegate->RegisterActionCallbacks(
       base::BindOnce(&AuthenticatorCommonImpl::OnCancelFromUI,
@@ -1365,24 +1357,6 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
-  } else if (options->timeout) {
-    // These are magic values that a site can set to experiment with different
-    // conditional UI behaviours.
-    //
-    // TODO(crbug.com/40066138): remove this and everything else from
-    // the CL that added it if this is unused by June 2024.
-    switch (options->timeout->InMilliseconds()) {
-      case 324441:
-        req_state_->conditional_ui_treatment =
-            device::FidoRequestHandlerBase::TransportAvailabilityInfo::
-                ConditionalUITreatment::kDontShowEmptyConditionalUI;
-        break;
-      case 324442:
-        req_state_->conditional_ui_treatment =
-            device::FidoRequestHandlerBase::TransportAvailabilityInfo::
-                ConditionalUITreatment::kNeverOfferPasskeyFromAnotherDevice;
-        break;
-    }
   }
 
   WebAuthRequestSecurityChecker::RequestType request_type =

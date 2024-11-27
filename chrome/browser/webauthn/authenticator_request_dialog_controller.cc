@@ -1941,20 +1941,6 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
           *priority_phone_name));
     }
   }
-  bool is_security_key_or_hybrid_flow_available;
-  switch (transport_availability_.conditional_ui_treatment) {
-    case TransportAvailabilityInfo::ConditionalUITreatment::kDefault:
-      is_security_key_or_hybrid_flow_available = true;
-      break;
-    case TransportAvailabilityInfo::ConditionalUITreatment::
-        kDontShowEmptyConditionalUI:
-      is_security_key_or_hybrid_flow_available = !credentials.empty();
-      break;
-    case TransportAvailabilityInfo::ConditionalUITreatment::
-        kNeverOfferPasskeyFromAnotherDevice:
-      is_security_key_or_hybrid_flow_available = false;
-      break;
-  }
   ReportConditionalUiPasskeyCount(credentials.size());
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin) &&
@@ -1983,7 +1969,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
     webauthn_credentials_delegate->OnCredentialsReceived(
         std::move(credentials),
         ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
-            is_security_key_or_hybrid_flow_available));
+            true));
   }
   SetCurrentStep(Step::kPasskeyAutofill);
 }
