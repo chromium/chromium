@@ -1230,7 +1230,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenAlmanacScheme) {
+// TODO(crbug.com/381127101): Re-enable this test
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       DISABLED_HelpAppV2CanOpenAlmanacScheme) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
 
