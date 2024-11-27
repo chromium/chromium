@@ -55,7 +55,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
+#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -202,6 +204,16 @@ void Resource::CheckResourceIntegrity() {
   if (ErrorOccurred()) {
     CHECK(!Data());
     integrity_disposition_ = ResourceIntegrityDisposition::kNetworkError;
+    return;
+  }
+
+  // Check `Identity-Digest` headers. If the digest doesn't match, fail.
+  // Otherwise, fall through to validating SRI.
+  auto identity_digest = GetResponse().IdentityDigest();
+  if (identity_digest.has_value() && !identity_digest->DoesMatch(Data())) {
+    DCHECK(RuntimeEnabledFeatures::IdentityDigestEnabled());
+    integrity_disposition_ =
+        ResourceIntegrityDisposition::kFailedIdentityDigest;
     return;
   }
 
@@ -392,6 +404,10 @@ void Resource::Finish(base::TimeTicks load_response_end,
 
 AtomicString Resource::HttpContentType() const {
   return GetResponse().HttpContentType();
+}
+
+bool Resource::ForceIntegrityChecks() const {
+  return IsLinkPreload() || GetResponse().IdentityDigest().has_value();
 }
 
 bool Resource::MustRefetchDueToIntegrityMetadata(

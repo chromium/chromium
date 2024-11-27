@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
+#include "third_party/blink/renderer/platform/loader/identity_digest.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -504,23 +505,30 @@ class FetchManager::Loader final
   void DidFail(uint64_t, const ResourceError&) override;
   void DidFailRedirectCheck(uint64_t) override;
 
-  class SRIVerifier final : public GarbageCollected<SRIVerifier>,
-                            public BytesConsumer::Client {
+  class IntegrityVerifier final : public GarbageCollected<IntegrityVerifier>,
+                                  public BytesConsumer::Client {
    public:
-    SRIVerifier(BytesConsumer* body,
-                PlaceHolderBytesConsumer* updater,
-                Response* response,
-                FetchManager::Loader* loader,
-                String integrity_metadata,
-                const KURL& url,
-                FetchResponseType response_type)
+    IntegrityVerifier(BytesConsumer* body,
+                      PlaceHolderBytesConsumer* updater,
+                      Response* response,
+                      FetchManager::Loader* loader,
+                      String integrity_metadata,
+                      std::optional<IdentityDigest> identity_digest,
+                      const KURL& url,
+                      FetchResponseType response_type)
         : body_(body),
           updater_(updater),
           response_(response),
           loader_(loader),
           integrity_metadata_(integrity_metadata),
+          identity_digest_(identity_digest),
           url_(url),
           response_type_(response_type) {
+      // We need to have some kind of integrity metadata to check: either SRI
+      // metadata, or an `Identity-Digest` header.
+      DCHECK(!integrity_metadata.empty() ||
+             (identity_digest.has_value() &&
+              RuntimeEnabledFeatures::IdentityDigestEnabled()));
       body_->SetClient(this);
 
       OnStateChange();
@@ -548,25 +556,30 @@ class FetchManager::Loader final
 
       finished_ = true;
       if (result == Result::kDone) {
-        SubresourceIntegrity::ReportInfo report_info;
-        bool check_result = true;
-        bool body_is_null = !updater_;
-        if (body_is_null || (response_type_ != FetchResponseType::kBasic &&
-                             response_type_ != FetchResponseType::kCors &&
-                             response_type_ != FetchResponseType::kDefault)) {
-          report_info.AddConsoleErrorMessage(
-              "Subresource Integrity: The resource '" + url_.ElidedString() +
-              "' has an integrity attribute, but the response is not "
-              "eligible for integrity validation.");
-          check_result = false;
+        bool integrity_failed = false;
+        if (identity_digest_.has_value() &&
+            !identity_digest_->DoesMatch(&buffer_)) {
+          integrity_failed = true;
         }
-        if (check_result) {
-          check_result = SubresourceIntegrity::CheckSubresourceIntegrity(
-              integrity_metadata_, &buffer_, url_, report_info);
+        if (!integrity_failed && !integrity_metadata_.empty()) {
+          SubresourceIntegrity::ReportInfo report_info;
+          bool body_is_null = !updater_;
+          if (body_is_null || (response_type_ != FetchResponseType::kBasic &&
+                               response_type_ != FetchResponseType::kCors &&
+                               response_type_ != FetchResponseType::kDefault)) {
+            report_info.AddConsoleErrorMessage(
+                "Subresource Integrity: The resource '" + url_.ElidedString() +
+                "' has an integrity attribute, but the response is not "
+                "eligible for integrity validation.");
+            integrity_failed = true;
+          } else {
+            integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
+                integrity_metadata_, &buffer_, url_, report_info);
+          }
+          SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
+                                               report_info);
         }
-        SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
-                                             report_info);
-        if (check_result) {
+        if (!integrity_failed) {
           updater_->Update(
               MakeGarbageCollected<FormDataBytesConsumer>(std::move(buffer_)));
           loader_->response_resolver_->Resolve(response_);
@@ -583,7 +596,7 @@ class FetchManager::Loader final
       loader_->PerformNetworkError(error_message);
     }
 
-    String DebugName() const override { return "SRIVerifier"; }
+    String DebugName() const override { return "IntegrityVerifier"; }
 
     bool IsFinished() const { return finished_; }
 
@@ -600,6 +613,7 @@ class FetchManager::Loader final
     Member<Response> response_;
     Member<FetchManager::Loader> loader_;
     String integrity_metadata_;
+    std::optional<IdentityDigest> identity_digest_;
     KURL url_;
     const FetchResponseType response_type_;
     SegmentedBuffer buffer_;
@@ -629,7 +643,7 @@ class FetchManager::Loader final
   bool finished_;
   int response_http_status_code_;
   bool response_has_no_store_header_ = false;
-  Member<SRIVerifier> integrity_verifier_;
+  Member<IntegrityVerifier> integrity_verifier_;
   Vector<KURL> url_list_;
   Member<ScriptCachedMetadataHandler> cached_metadata_handler_;
   base::TimeTicks request_started_time_;
@@ -797,19 +811,22 @@ void FetchManager::Loader::DidReceiveResponse(
   Response* r = Response::Create(response_resolver_->GetExecutionContext(),
                                  tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
-  if (GetFetchRequestData()->Integrity().empty()) {
+  std::optional<IdentityDigest> identity_digest = response.IdentityDigest();
+  if (GetFetchRequestData()->Integrity().empty() &&
+      !identity_digest.has_value()) {
     response_resolver_->Resolve(r);
     response_resolver_.Clear();
   } else {
     DCHECK(!integrity_verifier_);
-    // We have another place holder body for SRI.
+    // We have another place holder body for integrity checks.
     PlaceHolderBytesConsumer* verified = place_holder_body_;
     place_holder_body_ = MakeGarbageCollected<PlaceHolderBytesConsumer>();
     BytesConsumer* underlying = place_holder_body_;
 
-    integrity_verifier_ = MakeGarbageCollected<SRIVerifier>(
+    integrity_verifier_ = MakeGarbageCollected<IntegrityVerifier>(
         underlying, verified, r, this, GetFetchRequestData()->Integrity(),
-        response.CurrentRequestUrl(), r->GetResponse()->GetType());
+        identity_digest, response.CurrentRequestUrl(),
+        r->GetResponse()->GetType());
   }
 }
 

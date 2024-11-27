@@ -357,9 +357,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // integrity metadata and checks were destined for this request, so we cannot
   // skip the integrity check.
   //
-  // TODO(375343417): This will also be the case for server-initiated integrity
-  // checks like `Identity-Digest`.
-  bool ForceIntegrityChecks() const { return IsLinkPreload(); }
+  // We also force integrity checks for resources that declare their own
+  // integrity information via an `Identity-Digest` header. Those should be
+  // checked regardless of any given page's assertion through `integrity`
+  // attributes.
+  bool ForceIntegrityChecks() const;
 
   const SubresourceIntegrity::ReportInfo& IntegrityReportInfo() const {
     return integrity_report_info_;

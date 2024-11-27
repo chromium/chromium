@@ -2328,6 +2328,10 @@
       status: "stable",
     },
     {
+      name: "IdentityDigest",
+      status: "experimental"
+    },
+    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,
