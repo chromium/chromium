@@ -4576,6 +4576,7 @@ enum WebFeature {
   kGeolocationSucceededWithoutInjectionMitigation = 5202,
   kSharedWorkerScriptUnderServiceWorkerControlIsBlob = 5203,
   kDisableThirdPartyStoragePartitioning3 = 5204,
+  kControlledFrameElement = 5205,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -25,6 +25,7 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/permissions/permission_util.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -81,6 +82,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/menus/simple_menu_model.h"
@@ -948,7 +950,12 @@ WebViewGuest::WebViewGuest(content::RenderFrameHost* owner_rfh)
           ExtensionsAPIClient::Get()->CreateWebViewGuestDelegate(this))),
       is_spatial_navigation_enabled_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableSpatialNavigation)) {}
+              switches::kEnableSpatialNavigation)) {
+  if (IsOwnedByControlledFrameEmbedder()) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        owner_rfh, blink::mojom::WebFeature::kControlledFrameElement);
+  }
+}
 
 WebViewGuest::~WebViewGuest() {
   if (!attached() && GetOpener())

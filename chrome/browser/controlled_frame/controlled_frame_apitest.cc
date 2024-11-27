@@ -41,6 +41,7 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 using testing::HasSubstr;
 using testing::Not;
@@ -858,8 +859,15 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
   base::HistogramTester histogram_tester;
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  histogram_tester.ExpectUniqueSample(
+      "GuestView.GuestViewCreated",
+      guest_view::GuestViewHistogramValue::kControlledFrame, 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kControlledFrameElement, 0);
+
   ASSERT_TRUE(CreateControlledFrame(
       app_frame, embedded_https_test_server().GetURL("/index.html")));
 
@@ -868,6 +876,9 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
   histogram_tester.ExpectUniqueSample(
       "GuestView.GuestViewCreated",
       guest_view::GuestViewHistogramValue::kControlledFrame, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kControlledFrameElement, 1);
 }
 
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {

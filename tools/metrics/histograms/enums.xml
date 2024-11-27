@@ -10913,6 +10913,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
   <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
   <int value="5204" label="DisableThirdPartyStoragePartitioning3"/>
+  <int value="5205" label="ControlledFrameElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
