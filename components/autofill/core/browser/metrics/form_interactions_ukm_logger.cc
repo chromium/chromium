@@ -592,19 +592,18 @@ void FormInteractionsUkmLogger::
   std::array<int, 5> num_experimental_fields = {0, 0, 0, 0, 0};
 
   // Build icu::RegexPattern* from experiment parameters.
-  static base::NoDestructor<AutofillRegexCache> regex_cache(ThreadSafe(false));
-  auto compile_pattern =
-      [](const std::string& pattern) -> const icu::RegexPattern* {
-    return pattern.empty()
-               ? nullptr
-               : regex_cache->GetRegexPattern(base::UTF8ToUTF16(pattern));
+  auto compile_regex = [](std::string_view regex) {
+    return regex.empty() ? nullptr : CompileRegex(base::UTF8ToUTF16(regex));
   };
-  std::array<const icu::RegexPattern*, 5> kRegexPatterns = {
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket0.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket1.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket2.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket3.Get()),
-      compile_pattern(features::kAutofillUKMExperimentalFieldsBucket4.Get())};
+  static base::NoDestructor<
+      std::array<std::unique_ptr<const icu::RegexPattern>, 5>>
+      kRegexPatterns{{
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket0.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket1.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket2.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket3.Get()),
+          compile_regex(features::kAutofillUKMExperimentalFieldsBucket4.Get()),
+      }};
 
   // Determine whether `pattern` matches `value`.
   auto matches = [](const std::u16string& value,
@@ -616,8 +615,8 @@ void FormInteractionsUkmLogger::
   // matched.
   auto count_experimental_field = [&](const AutofillField& field) {
     bool found_experimental_fields = false;
-    for (size_t i = 0; i < kRegexPatterns.size(); ++i) {
-      const icu::RegexPattern* pattern = kRegexPatterns[i];
+    for (size_t i = 0; i < kRegexPatterns->size(); ++i) {
+      const icu::RegexPattern* pattern = (*kRegexPatterns)[i].get();
       if (pattern && (matches(field.label(), *pattern) ||
                       matches(field.id_attribute(), *pattern) ||
                       matches(field.name_attribute(), *pattern))) {
