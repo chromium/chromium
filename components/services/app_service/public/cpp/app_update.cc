@@ -693,7 +693,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
       << std::endl;
   out << "AllowWindowModeSelection: "
       << PRINT_OPTIONAL_BOOL(app.AllowWindowModeSelection()) << std::endl;
-  out << "WindowMode: " << EnumToString(app.WindowMode()) << std::endl;
+  out << "WindowMode: " << app.WindowMode() << std::endl;
   if (app.RunOnOsLogin().has_value()) {
     out << "RunOnOsLoginMode: "
         << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;

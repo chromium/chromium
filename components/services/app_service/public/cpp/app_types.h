@@ -164,14 +164,21 @@ enum class UninstallSource {
 };
 
 // The window mode that each app will open in.
-ENUM(WindowMode,
-     kUnknown,
-     // Opens in a standalone window
-     kWindow,
-     // Opens in the default web browser
-     kBrowser,
-     // Opens in a tabbed app window
-     kTabbedWindow)
+enum class WindowMode {
+  kUnknown,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
+
+  // The value for GetEnumFromKey. Should be updated when a new entry is added.
+  kMaxValue = kTabbedWindow,
+};
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& os, WindowMode v);
 
 COMPONENT_EXPORT(APP_TYPES)
 ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type);

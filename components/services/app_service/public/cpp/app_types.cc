@@ -149,7 +149,22 @@ std::ostream& operator<<(std::ostream& os, InstallSource v) {
   return os << "(unknown: " << static_cast<int>(v) << ")";
 }
 
-APP_ENUM_TO_STRING(WindowMode, kUnknown, kWindow, kBrowser, kTabbedWindow)
+std::ostream& operator<<(std::ostream& os, WindowMode v) {
+  switch (v) {
+    case WindowMode::kUnknown:
+      return os << "WindowMode::kUnknown";
+    case WindowMode::kWindow:
+      return os << "WindowMode::kWindow";
+    case WindowMode::kBrowser:
+      return os << "WindowMode::kBrowser";
+    case WindowMode::kTabbedWindow:
+      return os << "WindowMode::kTabbedWindow";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
 
 ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
   switch (app_type) {
