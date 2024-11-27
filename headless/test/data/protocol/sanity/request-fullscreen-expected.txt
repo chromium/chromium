@@ -1,3 +1,6 @@
 Tests element requestFullscreen.
+Normal page size: 400x200
 Seen page zoom and fullscreen element: fullscreen-div
+Zoomed page size: 800x600
 Seen page un-zoom
+Normal page size: 400x200

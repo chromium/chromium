@@ -378,8 +378,6 @@ HEADLESS_PROTOCOL_TEST(LargeBrowserWindowSize,
 HEADLESS_PROTOCOL_TEST(ScreencastBasics, "sanity/screencast-basics.js")
 HEADLESS_PROTOCOL_TEST(ScreencastViewport, "sanity/screencast-viewport.js")
 
-HEADLESS_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
-
 HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 
 #if !defined(HEADLESS_USE_EMBEDDED_RESOURCES)
@@ -665,13 +663,22 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/screen-details-pixel-ratio-and-color-depth.js",
     "--screen-info={ label='Screen' devicePixelRatio=3.0 colorDepth=32 }")
 
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    RequestFullscreen,
+    "sanity/request-fullscreen.js",
+    "--screen-info={ 800x600 } --window-size=400,200")
+
 // https://crbug.com/380313546
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WindowOpenOnSecondaryScreen DISABLED_WindowOpenOnSecondaryScreen
+#define MAYBE_RequestFullscreenOnSecondaryScreen \
+  DISABLED_RequestFullscreenOnSecondaryScreen
 #define MAYBE_ScreenRotationSecondaryScreen \
   DISABLED_ScreenRotationSecondaryScreen
 #else
 #define MAYBE_WindowOpenOnSecondaryScreen WindowOpenOnSecondaryScreen
+#define MAYBE_RequestFullscreenOnSecondaryScreen \
+  RequestFullscreenOnSecondaryScreen
 #define MAYBE_ScreenRotationSecondaryScreen ScreenRotationSecondaryScreen
 #endif
 
@@ -679,6 +686,11 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MAYBE_WindowOpenOnSecondaryScreen,
     "sanity/window-open-on-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ label='2nd screen' }")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_RequestFullscreenOnSecondaryScreen,
+    "sanity/request-fullscreen-on-secondary-screen.js",
+    "--screen-info={ label='1st screen' }{  600x800 label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MAYBE_ScreenRotationSecondaryScreen,
