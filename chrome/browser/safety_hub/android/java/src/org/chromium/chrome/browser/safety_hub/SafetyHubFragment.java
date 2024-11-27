@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.getModuleState;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubModuleViewBinder.isBrowserStateSafe;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,8 +20,11 @@ import android.view.MenuItem;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -82,6 +86,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @VisibleForTesting
     static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
 
+    private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
+
     private SafetyHubModuleDelegate mDelegate;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
@@ -95,9 +101,16 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private PasswordStoreBridge mPasswordStoreBridge;
     private SigninManager mSigninManager;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private CallbackController mCallbackController;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
+        mCallbackController = new CallbackController();
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(this::triggerOrganicHatsSurvey),
+                ORGANIC_HATS_SURVEY_DELAY_MS);
+
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
 
@@ -478,6 +491,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
         }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
     }
 
     @Override
@@ -702,5 +719,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         int browserState =
                 isBrowserStateSafe(mBrowserStateModule) ? ModuleState.SAFE : ModuleState.WARNING;
         recordModuleState(browserState, DashboardModuleType.BROWSER_STATE, event);
+    }
+
+    private void triggerOrganicHatsSurvey() {
+        Activity activity = getActivity();
+        SafetyHubHatsHelper safetyHubHatsHelper = SafetyHubHatsHelper.getForProfile(getProfile());
+        assert safetyHubHatsHelper != null && activity != null;
+        safetyHubHatsHelper.triggerOrganicHatsSurvey(activity);
     }
 }
