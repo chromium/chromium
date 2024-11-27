@@ -3793,8 +3793,9 @@
       // Update HandleMousePressEvent to continue handling event, even after a
       // focus slided from shadow host with delegatesFocus.
       // See https://crbug.com/40622041
+      // This feature was shipped in M133, so this flag can be removed in M135.
       name: "SelectionOnShadowDOMWithDelegatesFocus",
-      status: "experimental",
+      status: "stable",
     },
     {
       // This flag is used to relax the rules used to slot elements into a
