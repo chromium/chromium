@@ -139,8 +139,7 @@ std::vector<std::u16string> GetUnavailableAppNames(
 
     // If the app ID is a browser then we need to iterate through its windows
     // to catch uninstalled PWAs.
-    if (app_id == app_constants::kChromeAppId ||
-        app_id == app_constants::kLacrosAppId) {
+    if (app_id == app_constants::kChromeAppId) {
       GetUnavailableBrowserAppNames(*app_service_proxy, launch_list, app_names);
     }
 
@@ -189,8 +188,6 @@ void ShowUnavailableAppToast(
 
 // Creates a standard icon image via `result`, and then calls `callback` with
 // the standardized image.
-// TODO(crbug.com/1318250): Remove this once non-lacros browser is not
-// supported.
 void ImageResultToImageSkia(
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     const favicon_base::FaviconRawBitmapResult& result) {
@@ -308,7 +305,6 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
   }
 
   if (app_id != app_constants::kChromeAppId &&
-      app_id != app_constants::kLacrosAppId &&
       (app_type == apps::AppType::kChromeApp ||
        app_type == apps::AppType::kStandaloneBrowserChromeApp ||
        app_type == apps::AppType::kWeb)) {
