@@ -143,8 +143,9 @@ IdentityAPI::GetAccountsWithRefreshTokensForExtensions() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void IdentityAPI::MaybeShowChromeSigninDialog(std::string_view extension_name,
-                                              base::OnceClosure on_complete) {
+void IdentityAPI::MaybeShowChromeSigninDialog(
+    const std::u16string& extension_name_for_display,
+    base::OnceClosure on_complete) {
   if (HasAccessToChromeAccounts() ||
       identity_manager_->GetAccountsWithRefreshTokens().empty()) {
     DVLOG(1) << "The user is not signed in on the web!";
@@ -176,7 +177,7 @@ void IdentityAPI::MaybeShowChromeSigninDialog(std::string_view extension_name,
   on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
   is_chrome_signin_dialog_open_ = true;
   browser->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
-      extension_name,
+      extension_name_for_display,
       base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
                      weak_ptr_factory_.GetWeakPtr()));
 }

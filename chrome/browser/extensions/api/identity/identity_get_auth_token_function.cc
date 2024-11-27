@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_error.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -811,7 +812,7 @@ void IdentityGetAuthTokenFunction::MaybeShowChromeSigninDialog() {
   IdentityAPI* identity_api =
       IdentityAPI::GetFactoryInstance()->Get(GetProfile());
   identity_api->MaybeShowChromeSigninDialog(
-      extension()->name(),
+      util::GetFixupExtensionNameForUIDisplay(extension()->name()),
       base::BindOnce(
           &IdentityGetAuthTokenFunction::OnChromeSigninDialogDestroyed,
           weak_ptr_factory_.GetWeakPtr()));

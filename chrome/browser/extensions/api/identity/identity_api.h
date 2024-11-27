@@ -92,8 +92,9 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // - The dialog is not already showing
   // - The user is signed in on the web but not to Chrome
   // `on_complete` is guaranteed to be called.
-  void MaybeShowChromeSigninDialog(std::string_view extension_name,
-                                   base::OnceClosure on_complete);
+  void MaybeShowChromeSigninDialog(
+      const std::u16string& extension_name_for_display,
+      base::OnceClosure on_complete);
 
   // Callback to be called when the tests triggers showing UI.
   // Should be used in unittests.

@@ -130,8 +130,9 @@ class SigninViewController {
   // signed in on the web only.
   // This opens/reuses a new tab page and opens a modal dialog.
   // Note: This should  only be called if the dialog is not already showing.
-  void MaybeShowChromeSigninDialogForExtensions(std::string_view extension_name,
-                                                base::OnceClosure on_complete);
+  void MaybeShowChromeSigninDialogForExtensions(
+      const std::u16string& extension_name_for_display,
+      base::OnceClosure on_complete);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -253,7 +254,7 @@ class SigninViewController {
       syncer::DataTypeSet unsynced_datatypes);
 
   void ShowChromeSigninDialogForExtensions(
-      std::string_view extension_name,
+      const std::u16string& extension_name_for_display,
       base::OnceClosure on_complete,
       const AccountInfo& account_info_for_promos,
       content::WebContents* contents);
