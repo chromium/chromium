@@ -135,6 +135,7 @@ ts_modules = [
   "common/panel_command.ts",
   "common/panel_menu_data.ts",
   "common/permission_checker.ts",
+  "common/settings_manager.ts",
   "common/spannable.ts",
   "common/tree_dumper.ts",
   "common/tts_types.ts",
@@ -170,7 +171,6 @@ js_modules = [
   "background/primary_tts.js",
   "common/custom_automation_event.js",
   "common/role_type.js",
-  "common/settings_manager.js",
 ]
 
 # Closure library modules needed by chromevox.

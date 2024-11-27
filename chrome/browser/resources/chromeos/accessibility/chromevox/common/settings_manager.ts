@@ -17,9 +17,11 @@ import {Settings} from '/common/settings.js';
 import {StringUtil} from '/common/string_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-const PrefObject = chrome.settingsPrivate.PrefObject;
-
 export class SettingsManager {
+  static instance: SettingsManager;
+  static PREFS: string[];
+  static EVENT_STREAM_FILTERS: string[];
+
   static async init() {
     if (SettingsManager.instance) {
       throw new Error(
@@ -35,28 +37,25 @@ export class SettingsManager {
   /**
    * Gets Chrome settings pref name from local storage key name.
    * E.g. 'eventStreamFilters' -> 'settings.a11y.chromevox.event_stream_filters'
-   * @param {string} localStorageKey Name of a key used in local storage.
-   * @return {string} Corresponding name for the Chrome settings pref.
-   * @private
+   * @param localStorageKey Name of a key used in local storage.
+   * @return Corresponding name for the Chrome settings pref.
    */
-  static getPrefName_(localStorageKey) {
+  private static getPrefName_(localStorageKey: string): string {
     return 'settings.a11y.chromevox.' +
         StringUtil.camelToSnake(localStorageKey);
   }
 
   /**
    * Gets all Chrome settings pref names.
-   * @private
    */
-  static getAllPrefNames() {
+  private static getAllPrefNames(): string[] {
     return SettingsManager.PREFS.map(SettingsManager.getPrefName_);
   }
 
   /**
    * Migrates prefs from chrome.storage.local to Chrome settings prefs.
-   * @private
    */
-  static migrateFromChromeStorage_() {
+  private static migrateFromChromeStorage_(): void {
     for (const key of SettingsManager.PREFS) {
       let value = LocalStorage.get(key);
       if (value === undefined) {
@@ -77,7 +76,7 @@ export class SettingsManager {
 
     // This object starts empty so that we can know if there are any event
     // stream filters left to migrate from LocalStorage.
-    let eventStreamFilters = {};
+    let eventStreamFilters: Record<string, boolean> = {};
     for (const key of SettingsManager.EVENT_STREAM_FILTERS) {
       const value = LocalStorage.get(key);
       if (value === undefined) {
@@ -97,31 +96,23 @@ export class SettingsManager {
     }
   }
 
-  /**
-   * @param {string} key
-   * @param {Function} callback
-   */
-  static addListenerForKey(key, callback) {
+  static addListenerForKey(key: string, callback: (prefValue: any) => void):
+      void {
     const pref = SettingsManager.getPrefName_(key);
     Settings.addListener(pref, callback);
   }
 
-  /**
-   * @param {string} key
-   * @return {*}
-   */
-  static get(key) {
+  static get(key: string): any {
     const pref = SettingsManager.getPrefName_(key);
     return Settings.get(pref);
   }
 
   /**
-   * @param {string} key
-   * @param {string|Function} type A string (for primitives) or type constructor
+   * @param key
+   * @param type A string (for primitives) or type constructor
    *     (for classes) corresponding to the expected type
-   * @return {*}
    */
-  static getTypeChecked(key, type) {
+  static getTypeChecked(key: string, type: string): any {
     const value = SettingsManager.get(key);
     if ((typeof type === 'string') && (typeof value === type)) {
       return value;
@@ -130,20 +121,12 @@ export class SettingsManager {
         'Value in SettingsManager for key "' + key + '" is not a ' + type);
   }
 
-  /**
-   * @param {string} key
-   * @return {boolean}
-   */
-  static getBoolean(key) {
+  static getBoolean(key: string): boolean {
     const value = SettingsManager.getTypeChecked(key, 'boolean');
     return Boolean(value);
   }
 
-  /**
-   * @param {string} key
-   * @return {number}
-   */
-  static getNumber(key) {
+  static getNumber(key: string): number {
     const value = SettingsManager.getTypeChecked(key, 'number');
     if (isNaN(value)) {
       throw new Error('Value in SettingsManager for key "' + key + '" is NaN');
@@ -151,38 +134,27 @@ export class SettingsManager {
     return Number(value);
   }
 
-  /**
-   * @param {string} key
-   * @return {string}
-   */
-  static getString(key) {
+  static getString(key: string): string {
     const value = SettingsManager.getTypeChecked(key, 'string');
     return String(value);
   }
 
-  /**
-   * @param {string} key
-   * @param {*} value
-   */
-  static set(key, value) {
+  static set(key: string, value: any): void {
     const pref = SettingsManager.getPrefName_(key);
     Settings.set(pref, value);
   }
 
   /**
    * Get event stream filters from the event_stream_filter dictionary pref.
-   * @return {!Object<string, boolean>}
    */
-  static getEventStreamFilters() {
+  static getEventStreamFilters(): Record<string, boolean> {
     return Settings.get(this.getPrefName_('eventStreamFilters'));
   }
 
   /**
    * Set an event stream filter on the event_stream_filter dictionary pref.
-   * @param {string} key
-   * @param {boolean} value
    */
-  static setEventStreamFilter(key, value) {
+  static setEventStreamFilter(key: string, value: boolean): void {
     if (!SettingsManager.EVENT_STREAM_FILTERS.includes(key)) {
       throw new Error('Cannot set unknown event stream filter: ' + key);
     }
@@ -193,9 +165,6 @@ export class SettingsManager {
     Settings.set(this.getPrefName_('eventStreamFilters'), eventStreamFilters);
   }
 }
-
-/** @type {SettingsManager} */
-SettingsManager.instance;
 
 /**
  * List of the prefs used in ChromeVox, including in options page, each stored
