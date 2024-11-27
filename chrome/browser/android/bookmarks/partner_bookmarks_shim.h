@@ -91,7 +91,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
     // Called just before everything got destroyed
     virtual void ShimBeingDeleted(PartnerBookmarksShim*) {}
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   void AddObserver(Observer* observer);
