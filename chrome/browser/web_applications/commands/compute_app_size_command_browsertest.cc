@@ -7,26 +7,22 @@
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 const web_package::test::Ed25519KeyPair kPublicKeyPair1 =
     web_package::test::Ed25519KeyPair::CreateRandom();
@@ -35,7 +31,7 @@ const web_package::SignedWebBundleId kWebBundleId1 =
     web_package::SignedWebBundleId::CreateForPublicKey(
         kPublicKeyPair1.public_key);
 }  // namespace
-#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace web_app {
 
 namespace {
@@ -80,7 +76,6 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForWebAppBrowserTest,
   ASSERT_TRUE(CheckAppSizesNotNull(provider(), app_id));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
@@ -102,6 +97,11 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
   }
 
   IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+
+#if !BUILDFLAG(IS_CHROMEOS)
+ private:
+  base::test::ScopedFeatureList feature_list_;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
@@ -129,6 +129,5 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
 
   ASSERT_TRUE(CheckAppSizesNotNull(provider(), app_id));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

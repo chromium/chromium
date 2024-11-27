@@ -228,12 +228,12 @@ WebAppRunOnOsLoginManager& WebAppProvider::run_on_os_login_manager() {
   CheckIsConnected();
   return *web_app_run_on_os_login_manager_;
 }
+#endif
 
 IsolatedWebAppPolicyManager& WebAppProvider::iwa_policy_manager() {
   CheckIsConnected();
   return *isolated_web_app_policy_manager_;
 }
-#endif
 
 WebAppUiManager& WebAppProvider::ui_manager() {
   CheckIsConnected();
@@ -344,6 +344,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   isolated_web_app_installation_manager_ =
       std::make_unique<IsolatedWebAppInstallationManager>(*profile);
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
+  isolated_web_app_policy_manager_ =
+      std::make_unique<IsolatedWebAppPolicyManager>(profile);
   extensions_manager_ = std::make_unique<ExtensionsManager>(profile);
   generated_icon_fix_manager_ = std::make_unique<GeneratedIconFixManager>();
 
@@ -376,8 +378,6 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_ =
       std::make_unique<WebAppRunOnOsLoginManager>(profile);
-  isolated_web_app_policy_manager_ =
-      std::make_unique<IsolatedWebAppPolicyManager>(profile);
 #endif
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
@@ -406,9 +406,9 @@ void WebAppProvider::ConnectSubsystems() {
   command_scheduler_->SetProvider(pass_key, *this);
   isolated_web_app_installation_manager_->SetProvider(pass_key, *this);
   iwa_update_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_policy_manager_->SetProvider(pass_key, *this);
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_->SetProvider(pass_key, *this);
-  isolated_web_app_policy_manager_->SetProvider(pass_key, *this);
 #endif
   icon_manager_->SetProvider(pass_key, *this);
   translation_manager_->SetProvider(pass_key, *this);
@@ -453,16 +453,13 @@ void WebAppProvider::OnSyncBridgeReady() {
   web_app_policy_manager_->Start(
       std::move(on_web_app_policy_manager_done_callback));
   isolated_web_app_installation_manager_->Start();
-
   iwa_update_manager_->Start();
+  isolated_web_app_policy_manager_->Start(concurrent.CreateClosure());
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
   generated_icon_fix_manager_->Start();
   command_manager_->Start();
-#if BUILDFLAG(IS_CHROMEOS)
-  isolated_web_app_policy_manager_->Start(concurrent.CreateClosure());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: This does not wait for the call from the ChromeOS
   // SystemWebAppManager, which is a separate keyed service.

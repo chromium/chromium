@@ -138,6 +138,7 @@ IwaInstaller::IwaInstaller(
 IwaInstaller::~IwaInstaller() = default;
 
 void IwaInstaller::Start() {
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(
           features::kIsolatedWebAppManagedGuestSessionInstall)) {
@@ -145,6 +146,7 @@ void IwaInstaller::Start() {
     Finish(Result(Result::Type::kErrorManagedGuestSessionInstallDisabled));
     return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RunChainedCallbacks(

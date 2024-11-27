@@ -139,6 +139,8 @@ constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId2[] =
     "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kWebBundleId3[] =
     "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId4[] =
@@ -149,10 +151,13 @@ constexpr char kWebBundleId6[] =
     "herugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId7[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 constexpr char kWebBundleId8[] =
     "ierugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId9[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+
 class MockIwaInstallCommandWrapper
     : public IwaInstaller::IwaInstallCommandWrapper {
  public:
@@ -257,10 +262,12 @@ class IwaInstallerTest
                 &test_factory_)) {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kIsolatedWebApps};
+#if BUILDFLAG(IS_CHROMEOS)
     if (GetParam().is_mgs_install_enabled) {
       enabled_features.push_back(
           features::kIsolatedWebAppManagedGuestSessionInstall);
     }
+#endif  // BUILDFLAG(IS_CHROMEOS)
     scoped_feature_list_.InitWithFeatures(std::move(enabled_features),
                                           /*disabled_features=*/{});
   }
@@ -292,10 +299,12 @@ class IwaInstallerTest
     test_factory_.AddResponse("https://example.com/app9.swbn",
                               "Content of app9");
 
+#if BUILDFLAG(IS_CHROMEOS)
     if (!GetParam().is_user_session) {
       test_managed_guest_session_ =
           std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
     }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override { test_factory_.ClearResponses(); }
@@ -314,8 +323,10 @@ class IwaInstallerTest
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList scoped_feature_list_;
 
   IsolatedWebAppExternalInstallOptions install_options_ =
@@ -328,6 +339,7 @@ class IwaInstallerTest
           .value();
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
 // This test case represents the regular flow of force installing IWA for
 // ephemeral session. The install options will cover cases of success for
 // both, managed guest sessions and managed user sessions.
@@ -359,9 +371,12 @@ TEST_P(IwaInstallerTest, MgsRegularFlow) {
                                     kErrorManagedGuestSessionInstallDisabled
                               : GetParam().result_type)));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(IwaInstallerTest, NotMgs) {
+#if BUILDFLAG(IS_CHROMEOS)
   test_managed_guest_session_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::test::TestFuture<IwaInstallerResult> future;
   base::Value::List log;
@@ -390,9 +405,10 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IwaInstallerTest,
     ::testing::ValuesIn(std::vector<IwaInstallerTestParam>{
-        // App 1 represents the most general case: the Update Manifest has
-        // several records. We should determine the latest version, download
-        // the appropriate file and install the app. It is successful case.
+// App 1 represents the most general case: the Update Manifest has
+// several records. We should determine the latest version, download
+// the appropriate file and install the app. It is successful case.
+#if BUILDFLAG(IS_CHROMEOS)
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId1,
@@ -497,6 +513,7 @@ INSTANTIATE_TEST_SUITE_P(
              IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined,
          .update_channel = "beta",
          .pinned_version = "6.0.1"},
+#endif  // BUILDFLAG(IS_CHROMEOS)
         {.is_mgs_install_enabled = false,
          .is_user_session = false,
          .bundle_id = kWebBundleId1,
@@ -538,10 +555,14 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
         is_user_session_(is_user_session) {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kIsolatedWebApps};
+#if BUILDFLAG(IS_CHROMEOS)
     if (is_mgs_session_install_enabled_) {
       enabled_features.push_back(
           features::kIsolatedWebAppManagedGuestSessionInstall);
     }
+#else
+    enabled_features.push_back(features::kIsolatedWebApps);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
@@ -582,10 +603,12 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
     SetUpServedIwas();
 
+#if BUILDFLAG(IS_CHROMEOS)
     if (!is_user_session_) {
       test_managed_guest_session_ =
           std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
     }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_NACL)
     // Uninstalling an IWA will clear PNACL cache, which needs this delegate
@@ -624,8 +647,10 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
   const bool is_mgs_session_install_enabled_;
   const bool is_user_session_;
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   data_decoder::test::InProcessDataDecoder data_decoder_;
 #if BUILDFLAG(ENABLE_NACL)
   std::unique_ptr<ScopedNaClBrowserDelegate> nacl_browser_delegate_;
@@ -800,6 +825,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 class ManagedGuestSessionInstallFlagTest
     : public IsolatedWebAppPolicyManagerTestBase,
       public testing::WithParamInterface<bool> {
@@ -845,6 +871,8 @@ INSTANTIATE_TEST_SUITE_P(
     ManagedGuestSessionInstallFlagTest,
     // Determines whether managed guest session install is enabled.
     testing::Bool());
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // This implementation of the command scheduler can't install an IWA. Instead
 // it hangs and waits for the signal to signalize the

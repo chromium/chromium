@@ -2679,6 +2679,14 @@ inline constexpr char kBasicAuthOverHttpEnabled[] =
 inline constexpr char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
 
+// An integer pref that remembers how many force install initializations are
+// pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
+// initializations are pending, the initialization is delayed for
+// `kIsolatedWebAppForceInstallEmergencyDelay` time (More details in
+// go/iwa-install-emergency-mechanism).
+inline constexpr char kIsolatedWebAppPendingInitializationCount[] =
+    "profile.isolated_web_app.install.pending_initialization_count";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether OK-AS-DELEGATE flag from KDC is respected
 // along with kAuthNegotiateDelegateAllowlist.
@@ -2694,14 +2702,6 @@ inline constexpr char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #if BUILDFLAG(IS_CHROMEOS)
 // Boolean whether Kerberos functionality is enabled.
 inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
-
-// An integer pref that remembers how many force install initializations are
-// pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
-// initializations are pending, the initialization is delayed for
-// `kIsolatedWebAppForceInstallEmergencyDelay` time (More details in
-// go/iwa-install-emergency-mechanism).
-inline constexpr char kIsolatedWebAppPendingInitializationCount[] =
-    "profile.isolated_web_app.install.pending_initialization_count";
 
 // Holds URL patterns that specify origins that will be allowed to call
 // `subApps.{add|remove|list}())` without prior user gesture and that will skip

@@ -47,13 +47,16 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -131,6 +134,7 @@ struct AppActionInstall {
 using AppAction = std::variant<AppActionRemoveInstallSource, AppActionInstall>;
 using AppActions = base::flat_map<web_package::SignedWebBundleId, AppAction>;
 
+#if BUILDFLAG(IS_CHROMEOS)
 bool g_first_policy_processing_delay_recorded = false;
 
 // Records the elapsed time between the first user sign-in and the beginning
@@ -154,6 +158,7 @@ void MaybeRecordFirstPolicyProcessingDelay(Profile* profile) {
       /*min=*/base::Milliseconds(100),
       /*max=*/base::Seconds(20), /*buckets=*/50);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::RepeatingCallback<void(web_package::SignedWebBundleId,
                              IwaInstaller::Result)>&
@@ -193,6 +198,13 @@ void IsolatedWebAppPolicyManager::Start(base::OnceClosure on_started_callback) {
       IwaKeyDistributionInfoProvider::GetInstance());
 
   CHECK(on_started_callback_.is_null());
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+    if (!on_started_callback.is_null()) {
+      std::move(on_started_callback).Run();
+    }
+    return;
+  }
+
   on_started_callback_ = std::move(on_started_callback);
 
   pref_change_registrar_.Init(profile_->GetPrefs());
@@ -224,14 +236,6 @@ void IsolatedWebAppPolicyManager::SetProvider(base::PassKey<WebAppProvider>,
                                               WebAppProvider& provider) {
   provider_ = &provider;
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-static_assert(
-    false,
-    "Make sure to update `WebAppInternalsHandler` to call "
-    "`IsolatedWebAppPolicyManager::GetDebugValue` on non-ChromeOS when "
-    "`IsolatedWebAppPolicyManager` is no longer ChromeOS-exclusive.");
-#endif
 
 base::Value IsolatedWebAppPolicyManager::GetDebugValue() const {
   return base::Value(
@@ -274,6 +278,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(
           features::kIsolatedWebAppManagedGuestSessionInstall)) {
@@ -282,6 +287,7 @@ void IsolatedWebAppPolicyManager::ProcessPolicy(
     OnPolicyProcessed();
     return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "IsolatedWebAppPolicyManager::ProcessPolicy", AllAppsLockDescription(),
@@ -323,7 +329,9 @@ void IsolatedWebAppPolicyManager::SetPendingInitCount(int pending_count) {
 void IsolatedWebAppPolicyManager::DoProcessPolicy(
     AllAppsLock& lock,
     base::Value::Dict& debug_info) {
+#if BUILDFLAG(IS_CHROMEOS)
   MaybeRecordFirstPolicyProcessingDelay(profile_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   CHECK(provider_);
   CHECK(install_tasks_.empty());
