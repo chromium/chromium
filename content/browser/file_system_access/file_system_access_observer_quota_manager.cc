@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 
 namespace content {
@@ -37,11 +38,10 @@ FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
   CHECK_GE(total_usage_, old_usage);
 
   size_t updated_total_usage = total_usage_ + new_usage - old_usage;
-
-  // TODO(crbug.com/338457523): Use FileSystemAccessChangeSource::quota_limit()
-  // once the implementation is ready.
-  if (quota_limit_for_testing_ > 0 &&
-      updated_total_usage > quota_limit_for_testing_) {
+  size_t quota_limit = quota_limit_for_testing_ > 0
+                           ? quota_limit_for_testing_
+                           : FileSystemAccessChangeSource::quota_limit();
+  if (updated_total_usage > quota_limit) {
     total_usage_ -= old_usage;
     reached_quota_limit_ = true;
     return UsageChangeResult::kQuotaUnavailable;
