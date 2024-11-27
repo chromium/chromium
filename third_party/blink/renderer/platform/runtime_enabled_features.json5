@@ -1104,7 +1104,7 @@
     },
     {
       name: "CSSNestedPseudoElements",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSPaintAPIArguments",
