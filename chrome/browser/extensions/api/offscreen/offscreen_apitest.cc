@@ -241,6 +241,91 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
       << message_;
 }
 
+// Tests opening and immediately closing an offscreen document (so that the
+// close happens before it's fully loaded). Regression test for
+// https://crbug.com/1450784.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["offscreen"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function openAndRapidlyClose() {
+             const openResult =
+                 chrome.offscreen.createDocument(
+                     {
+                       url: 'offscreen.html',
+                       reasons: ['TESTING'],
+                       justification: 'Testing'
+                     });
+             chrome.offscreen.closeDocument();
+             await chrome.test.assertPromiseRejects(
+                 openResult,
+                 'Error: Offscreen document closed before fully loading.');
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
+ public:
+  OffscreenApiTestWithoutCommandLineFlag() = default;
+  ~OffscreenApiTestWithoutCommandLineFlag() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Explicitly don't call OffscreenApiTest's version to avoid adding the
+    // commandline flag.
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
+  }
+};
+
+// Tests that the `TESTING` reason is disallowed without the appropriate
+// commandline switch.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
+                       TestingReasonNotAllowed) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["offscreen"],
+           "background": { "service_worker": "background.js" }
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function cannotCreateDocumentWithTestingReason() {
+             await chrome.test.assertPromiseRejects(
+                 chrome.offscreen.createDocument(
+                     {
+                         url: 'offscreen.html',
+                         reasons: ['TESTING'],
+                         justification: 'testing'
+                     }),
+                 'Error: The `TESTING` reason is only available with the ' +
+                 '--offscreen-document-testing commandline switch applied.');
+             chrome.test.succeed();
+           },
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
 // TODO(crbug.com/378916068): Enable more tests on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests creating, querying, and closing offscreen documents in an incognito
@@ -479,44 +564,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   EXPECT_FALSE(manager->GetOffscreenDocumentForExtension(*extension));
 }
 
-// Tests opening and immediately closing an offscreen document (so that the
-// close happens before it's fully loaded). Regression test for
-// https://crbug.com/1450784.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "background": {"service_worker": "background.js"},
-           "permissions": ["offscreen"]
-         })";
-  static constexpr char kBackgroundJs[] =
-      R"(chrome.test.runTests([
-           async function openAndRapidlyClose() {
-             const openResult =
-                 chrome.offscreen.createDocument(
-                     {
-                       url: 'offscreen.html',
-                       reasons: ['TESTING'],
-                       justification: 'Testing'
-                     });
-             chrome.offscreen.closeDocument();
-             await chrome.test.assertPromiseRejects(
-                 openResult,
-                 'Error: Offscreen document closed before fully loading.');
-             chrome.test.succeed();
-           },
-         ]);)";
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
-
-  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
-}
-
 // TODO(crbug.com/40272130): Failing on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
@@ -538,18 +585,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_TabCaptureStreams) {
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-
-class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
- public:
-  OffscreenApiTestWithoutCommandLineFlag() = default;
-  ~OffscreenApiTestWithoutCommandLineFlag() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Explicitly don't call OffscreenApiTest's version to avoid adding the
-    // commandline flag.
-    ExtensionApiTest::SetUpCommandLine(command_line);
-  }
-};
 
 // Tests opening an offscreen document that takes awhile to load properly waits
 // for the document to load before resolving the promise, ensuring the document
@@ -661,41 +696,6 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
   ASSERT_TRUE(test_listener.WaitUntilSatisfied());
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-}
-
-// Tests that the `TESTING` reason is disallowed without the appropriate
-// commandline switch.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTestWithoutCommandLineFlag,
-                       TestingReasonNotAllowed) {
-  static constexpr char kManifest[] =
-      R"({
-           "name": "Offscreen Document Test",
-           "manifest_version": 3,
-           "version": "0.1",
-           "permissions": ["offscreen"],
-           "background": { "service_worker": "background.js" }
-         })";
-  static constexpr char kBackgroundJs[] =
-      R"(chrome.test.runTests([
-           async function cannotCreateDocumentWithTestingReason() {
-             await chrome.test.assertPromiseRejects(
-                 chrome.offscreen.createDocument(
-                     {
-                         url: 'offscreen.html',
-                         reasons: ['TESTING'],
-                         justification: 'testing'
-                     }),
-                 'Error: The `TESTING` reason is only available with the ' +
-                 '--offscreen-document-testing commandline switch applied.');
-             chrome.test.succeed();
-           },
-         ]);)";
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
-  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
-
-  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
