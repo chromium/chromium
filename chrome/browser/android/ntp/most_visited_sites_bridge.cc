@@ -176,7 +176,7 @@ MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile)
   DCHECK(!profile->IsOffTheRecord());
 }
 
-MostVisitedSitesBridge::~MostVisitedSitesBridge() {}
+MostVisitedSitesBridge::~MostVisitedSitesBridge() = default;
 
 void MostVisitedSitesBridge::Destroy(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj) {
