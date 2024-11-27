@@ -51,3 +51,24 @@ include_rules = [
   "+ios/chrome/browser/web/model/features.h",
   "+ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h",
 ]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "block_popups_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "passwords_settings_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "settings_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "search_engine_settings_test_case_base\.mm": [
+    "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h",
+  ],
+}
