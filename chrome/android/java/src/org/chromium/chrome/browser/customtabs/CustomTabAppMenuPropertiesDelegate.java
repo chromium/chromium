@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
@@ -222,7 +223,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
             // TODO(crbug.com/380936306): Hide open in Chrome for blob url. Revisit once we
             // understand when the URL can be blob. Flag guard to make it safe to merge.
-            if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
+            if ((ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
+                            || ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT))
                     && url.getScheme().equals(UrlConstants.BLOB_SCHEME)) {
                 openInChromeItemVisible = false;
             }

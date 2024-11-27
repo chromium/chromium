@@ -73,6 +73,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         Map<String, Boolean> featureMap = new HashMap<>();
         featureMap.put(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT, false);
         featureMap.put(ContentFeatureList.ANDROID_OPEN_PDF_INLINE, false);
+        featureMap.put(ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT, false);
         FeatureList.setTestFeatures(featureMap);
     }
 
