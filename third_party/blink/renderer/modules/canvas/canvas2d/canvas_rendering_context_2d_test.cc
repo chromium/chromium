@@ -472,12 +472,14 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                              RasterModeHint hint,
                              CanvasResourceHost* resource_host,
                              CompositingMode compositing_mode)
-      : CanvasResourceProvider(
-            CanvasResourceProvider::kSharedImage,
-            SkImageInfo::MakeN32Premul(size.width(), size.height()),
-            cc::PaintFlags::FilterQuality::kLow,
-            SharedGpuContext::ContextProviderWrapper(),
-            resource_host),
+      : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
+                               size,
+                               kN32_SkColorType,
+                               kPremul_SkAlphaType,
+                               SkColorSpace::MakeSRGB(),
+                               cc::PaintFlags::FilterQuality::kLow,
+                               SharedGpuContext::ContextProviderWrapper(),
+                               resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {

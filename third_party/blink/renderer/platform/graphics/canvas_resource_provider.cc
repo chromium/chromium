@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -153,7 +154,10 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
       cc::PaintFlags::FilterQuality filter_quality,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kBitmap,
-                               info,
+                               gfx::Size(info.width(), info.height()),
+                               info.colorType(),
+                               info.alphaType(),
+                               info.refColorSpace(),
                                filter_quality,
                                /*context_provider_wrapper=*/nullptr,
                                resource_host) {}
@@ -281,7 +285,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSharedImage,
-                               info,
+                               gfx::Size(info.width(), info.height()),
+                               info.colorType(),
+                               info.alphaType(),
+                               info.refColorSpace(),
                                filter_quality,
                                std::move(context_provider_wrapper),
                                resource_host),
@@ -819,7 +826,10 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
           context_provider_wrapper,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kPassThrough,
-                               info,
+                               gfx::Size(info.width(), info.height()),
+                               info.colorType(),
+                               info.alphaType(),
+                               info.refColorSpace(),
                                filter_quality,
                                std::move(context_provider_wrapper),
                                resource_host) {}
@@ -865,7 +875,10 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
           context_provider_wrapper,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSwapChain,
-                               info,
+                               gfx::Size(info.width(), info.height()),
+                               info.colorType(),
+                               info.alphaType(),
+                               info.refColorSpace(),
                                filter_quality,
                                std::move(context_provider_wrapper),
                                resource_host),
@@ -1399,13 +1412,20 @@ const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
 
 CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     cc::PaintFlags::FilterQuality filter_quality,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     CanvasResourceHost* resource_host)
     : type_(type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      info_(info),
+      info_(SkImageInfo::Make(size.width(),
+                              size.height(),
+                              sk_color_type,
+                              alpha_type,
+                              std::move(sk_color_space))),
       filter_quality_(filter_quality),
       resource_host_(resource_host),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),

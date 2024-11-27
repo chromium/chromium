@@ -355,13 +355,15 @@ class PLATFORM_EXPORT CanvasResourceProvider
                                                     FlushReason);
   scoped_refptr<CanvasResource> GetImportedResource() const;
 
-  CanvasResourceProvider(
-      const ResourceProviderType&,
-      const SkImageInfo&,
-      cc::PaintFlags::FilterQuality,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      CanvasResourceHost* resource_host);
+  CanvasResourceProvider(const ResourceProviderType&,
+                         gfx::Size size,
+                         SkColorType sk_color_type,
+                         SkAlphaType alpha_type,
+                         sk_sp<SkColorSpace> sk_color_space,
+                         cc::PaintFlags::FilterQuality,
+                         base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+                             context_provider_wrapper,
+                         CanvasResourceHost* resource_host);
 
   // Its important to use this method for generating PaintImage wrapped canvas
   // snapshots to get a cache hit from cc's ImageDecodeCache. This method
