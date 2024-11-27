@@ -241,6 +241,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
   }
 
+  async openLinkInNewTab(url: string) {
+    await this.handler.createTab(urlFromClient(url), false, null);
+  }
+
   // PostMessageRequestHandler implementation.
   async handleRawRequest(type: string, payload: any):
       Promise<{payload: any, transfer: Transferable[]}|undefined> {

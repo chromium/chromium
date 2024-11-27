@@ -24,7 +24,20 @@ class GlicAppHostManager {
     webview.addEventListener('contentload', () => {
       this.contentLoaded();
     });
+    webview.addEventListener('newwindow', (e: Event) => {
+      this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
+    });
   }
+
+  onNewWindowEvent(event: chrome.webviewTag.NewWindowEvent) {
+    if (!this.host) {
+      return;
+    }
+    event.preventDefault();
+    this.host.openLinkInNewTab(event.targetUrl);
+    event.stopPropagation();
+  }
+
   loadCommit() {
     if (this.host) {
       this.host.destroy();
@@ -36,6 +49,7 @@ class GlicAppHostManager {
           new URL(loadTimeData.getString('glicGuestURL')).origin);
     }
   }
+
   contentLoaded() {
     if (this.host) {
       this.host.contentLoaded();
