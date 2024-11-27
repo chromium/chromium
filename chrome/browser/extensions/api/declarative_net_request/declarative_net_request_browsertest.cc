@@ -2870,10 +2870,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   }
 }
 
-// Tests that we surface a warning to the user if any of its ruleset fail to
-// load.
+// Tests that we reindex rulesets on checksum mismatch.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       WarningOnFailedRulesetLoad) {
+                       RulesetLoadReindexOnChecksumMismatch) {
   const size_t kNumStaticRulesets = 4;
   const char* kStaticFilterPrefix = "static";
   std::vector<TestRulesetInfo> rulesets;
@@ -2888,8 +2887,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rulesets.emplace_back(id, ToListValue(rules));
   }
 
-  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
-      rulesets, "extension_directory", {} /* hosts */));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets(rulesets, "extension_directory", /*hosts=*/{}));
 
   const ExtensionId& extension_id = last_loaded_extension_id();
   EXPECT_TRUE(ruleset_manager()->GetMatcherForExtension(extension_id));
@@ -2918,48 +2917,102 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   WaitForExtensionsWithRulesetsCount(0);
   EXPECT_FALSE(ruleset_manager()->GetMatcherForExtension(extension_id));
 
-  // Reindexing and loading corrupted rulesets should fail now. This should
-  // cause a warning.
+  // Reindexing and loading corrupted rulesets should succeed.
+  // TODO(crbug.com/380434972): Check that a content verification job has been
+  // started in case ruleset files are corrupted.
   base::HistogramTester tester;
-  WarningService* warning_service = WarningService::Get(profile());
-  WarningServiceObserver warning_observer(warning_service, extension_id);
   EnableExtension(extension_id);
   WaitForExtensionsWithRulesetsCount(1);
   EXPECT_TRUE(ruleset_manager()->GetMatcherForExtension(extension_id));
 
-  // Wait till we surface a warning.
-  warning_observer.WaitForWarning();
-  EXPECT_THAT(warning_service->GetWarningTypesAffectingExtension(extension_id),
-              ::testing::ElementsAre(Warning::kRulesetFailedToLoad));
-
-  // Verify that loading the corrupted rulesets failed due to checksum mismatch.
-  // The non-corrupted rulesets should load fine.
+  // Verify that loading all rulesets succeeded since the previously corrupt
+  // rulesets were reindexed successfully.
   tester.ExpectTotalCount(kLoadRulesetResultHistogram, rulesets.size());
-  EXPECT_EQ(corrupted_ruleset_indices.size(),
-            static_cast<size_t>(tester.GetBucketCount(
-                kLoadRulesetResultHistogram,
-                LoadRulesetResult::kErrorChecksumMismatch /*sample*/)));
-  EXPECT_EQ(non_corrupted_ruleset_indices.size(),
-            static_cast<size_t>(
-                tester.GetBucketCount(kLoadRulesetResultHistogram,
-                                      LoadRulesetResult::kSuccess /*sample*/)));
+  EXPECT_EQ(rulesets.size(), static_cast<size_t>(tester.GetBucketCount(
+                                 kLoadRulesetResultHistogram,
+                                 /*sample=*/LoadRulesetResult::kSuccess)));
 
-  // Verify that re-indexing the corrupted rulesets failed.
+  // Verify that re-indexing the corrupted rulesets succeeded.
   tester.ExpectUniqueSample(
       "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
-      false /*sample*/, corrupted_ruleset_indices.size() /*count*/);
+      /*sample=*/true,
+      /*expected_bucket_count=*/corrupted_ruleset_indices.size());
 
-  // Finally verify that the non-corrupted rulesets still work fine, but others
-  // don't.
+  // Finally verify that all rulesets still work fine.
   std::vector<GURL> expected_blocked_urls;
   for (int index : non_corrupted_ruleset_indices)
     expected_blocked_urls.push_back(urls_for_indices[index]);
 
-  std::vector<GURL> expected_allowed_urls;
   for (int index : corrupted_ruleset_indices)
-    expected_allowed_urls.push_back(urls_for_indices[index]);
+    expected_blocked_urls.push_back(urls_for_indices[index]);
 
-  VerifyNavigations(expected_blocked_urls, expected_allowed_urls);
+  VerifyNavigations(expected_blocked_urls,
+                    /*expected_allowed_urls=*/std::vector<GURL>());
+}
+
+// Tests that checksum mismatches resulting from prefs corruption shouldn't
+// prevent rulesets from being re-enabled.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       UpdateEnabledRulesetsChecksumMismatch) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Load an extension that blocks navigations to google.com.
+  std::vector<TestRule> rules = {CreateMainFrameBlockRule("google")};
+  auto ruleset = TestRulesetInfo("id1", ToListValue(rules), true);
+
+  constexpr char kDirectory1[] = "dir1";
+  const int kInvalidRulesetChecksum = -1;
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets({ruleset}, kDirectory1, /*hosts=*/{}));
+
+  // Verify that the navigation is blocked.
+  std::vector<GURL> google_url({GetURLForFilter("google")});
+  VerifyNavigations(google_url, /*expected_allowed_urls=*/std::vector<GURL>());
+
+  const ExtensionId& extension_id = last_loaded_extension_id();
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+
+  int expected_checksum = kInvalidRulesetChecksum;
+  PrefsHelper helper(*prefs);
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, expected_checksum));
+
+  // Disable the ruleset and verify that navigations to google.com are no longer
+  // blocked.
+  ASSERT_NO_FATAL_FAILURE(UpdateEnabledRulesets(extension_id, {"id1"}, {}));
+
+  VerifyNavigations(/*expected_blocked_urls=*/std::vector<GURL>(), google_url);
+
+  // Simulate a prefs corruption.
+  helper.SetStaticRulesetChecksum(extension_id, kMinValidStaticRulesetID,
+                                  kInvalidRulesetChecksum);
+
+  base::HistogramTester tester;
+
+  // Try to enable the ruleset again; there should be no errors.
+  ASSERT_NO_FATAL_FAILURE(UpdateEnabledRulesets(extension_id, {}, {"id1"}));
+
+  // Verify that the checksum has been updated and is equal to its
+  // pre-corruption value and that reindexing has succeeded.
+  // TODO(crbug.com/380434972): Check that a content verification job has been
+  // started in case ruleset files are corrupted.
+  EXPECT_EQ(1u, static_cast<size_t>(tester.GetBucketCount(
+                    kLoadRulesetResultHistogram,
+                    /*sample=*/LoadRulesetResult::kSuccess)));
+
+  // Verify that re-indexing the corrupted rulesets succeeded.
+  tester.ExpectUniqueSample(
+      "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
+      /*sample=*/true, /*expected_bucket_count=*/1u);
+
+  int actual_checksum = kInvalidRulesetChecksum;
+  EXPECT_TRUE(helper.GetStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, actual_checksum));
+  EXPECT_EQ(expected_checksum, actual_checksum);
+
+  // Verify that the navigation is blocked after re-enabling the ruleset.
+  VerifyNavigations(google_url, /*expected_allowed_urls=*/std::vector<GURL>());
 }
 
 // Tests that we reindex the extension rulesets in case its ruleset format
