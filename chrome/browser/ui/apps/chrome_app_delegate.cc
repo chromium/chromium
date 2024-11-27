@@ -151,13 +151,13 @@ void ChromeAppDelegate::RelinquishKeepAliveAfterTimeout(
 class ChromeAppDelegate::NewWindowContentsDelegate
     : public content::WebContentsDelegate {
  public:
-  NewWindowContentsDelegate() {}
+  NewWindowContentsDelegate() = default;
 
   NewWindowContentsDelegate(const NewWindowContentsDelegate&) = delete;
   NewWindowContentsDelegate& operator=(const NewWindowContentsDelegate&) =
       delete;
 
-  ~NewWindowContentsDelegate() override {}
+  ~NewWindowContentsDelegate() override = default;
 
   void BecomeOwningDeletageOf(
       std::unique_ptr<content::WebContents> web_contents) {

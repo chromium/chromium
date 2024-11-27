@@ -10,7 +10,7 @@
 
 namespace chrome_apps {
 
-MediaGalleriesPermissionData::MediaGalleriesPermissionData() {}
+MediaGalleriesPermissionData::MediaGalleriesPermissionData() = default;
 
 bool MediaGalleriesPermissionData::Check(
     const extensions::APIPermission::CheckParam* param) const {
