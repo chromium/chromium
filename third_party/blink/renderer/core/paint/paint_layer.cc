@@ -577,16 +577,12 @@ PaintLayer* PaintLayer::ContainingLayer() const {
     return curr;
   }
 
-  // If the parent layer is not a block, there might be floating objects
-  // between this layer (included) and parent layer which need to escape the
-  // inline parent to find the actual containing layer through the containing
-  // block chain.
   // Column span need to find the containing layer through its containing block.
-  if ((!Parent() || Parent()->GetLayoutObject().IsLayoutBlock()) &&
-      !layout_object.IsColumnSpanAll())
-    return Parent();
+  if (layout_object.IsColumnSpanAll()) {
+    return SlowContainingLayer(layout_object);
+  }
 
-  return SlowContainingLayer(layout_object);
+  return Parent();
 }
 
 PaintLayer* PaintLayer::CompositingContainer() const {
