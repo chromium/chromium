@@ -518,6 +518,21 @@ bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
                                            parentElement());
 }
 
+// Keep in sync with CanGeneratePseudoElement.
+bool PseudoElement::CanHaveNestedPseudoElement() const {
+  switch (GetPseudoId()) {
+    case kPseudoIdCheckMark:
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
+    case kPseudoIdSelectArrow:
+    case kPseudoIdColumn:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Keep in sync with CanHaveNestedPseudoElement.
 bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   switch (GetPseudoId()) {
     case kPseudoIdCheckMark:

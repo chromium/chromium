@@ -149,10 +149,11 @@ class FrontendOperationScope {
 };
 
 Element* GetPseudoIdAndTag(Element* element,
+                           PseudoElement*& pseudo_element,
                            PseudoId& element_pseudo_id,
                            AtomicString& view_transition_name) {
   auto* resolved_element = element;
-  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+  if ((pseudo_element = DynamicTo<PseudoElement>(element))) {
     resolved_element = IsTransitionPseudoElement(pseudo_element->GetPseudoId())
                            ? pseudo_element->UltimateOriginatingElement()
                            : pseudo_element->ParentOrShadowHostElement();
@@ -1244,7 +1245,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   // If the requested element is a pseudo element, `element` becomes
   // the first non-pseudo parent element or shadow host element
   // after `GetPseudoIdAndTag` call below.
-  element = GetPseudoIdAndTag(element, element_pseudo_id, view_transition_name);
+  PseudoElement* pseudo_element = nullptr;
+  element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
+                              view_transition_name);
   if (!element)
     return protocol::Response::ServerError("Pseudo element has no parent");
 
@@ -1304,8 +1307,17 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       CustomPropertiesForNode(element);
 
   // Pseudo elements.
-  if (element_pseudo_id)
-    return protocol::Response::Success();
+  // Some pseudo elements can have nested pseudo elements,
+  // and we need to show them in the originating pseudo element's
+  // styles.
+  if (pseudo_element) {
+    if (!pseudo_element->CanHaveNestedPseudoElement()) {
+      return protocol::Response::Success();
+    }
+    element = pseudo_element;
+    resolver =
+        InspectorStyleResolver(pseudo_element, kPseudoIdNone, g_null_atom);
+  }
 
   InspectorStyleSheetForInlineStyle* inline_style_sheet =
       AsInspectorStyleSheet(element);
@@ -3396,7 +3408,9 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     Element* element) {
   PseudoId pseudo_id = kPseudoIdNone;
   AtomicString view_transition_name = g_null_atom;
-  element = GetPseudoIdAndTag(element, pseudo_id, view_transition_name);
+  PseudoElement* pseudo_element = nullptr;
+  element = GetPseudoIdAndTag(element, pseudo_element, pseudo_id,
+                              view_transition_name);
   if (!element)
     return {};
 
