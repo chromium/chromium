@@ -65,23 +65,29 @@ std::ostream& operator<<(std::ostream& os, PackageType v);
 // Whether an app is ready to launch, i.e. installed.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
-ENUM(Readiness,
-     kUnknown,
-     kReady,                // Installed and launchable.
-     kDisabledByBlocklist,  // Disabled by SafeBrowsing.
-     kDisabledByPolicy,     // Disabled by admin policy.
-     kDisabledByUser,       // Disabled by explicit user action.
-     kTerminated,           // Renderer process crashed.
-     kUninstalledByUser,
-     // Removed apps are purged from the registry cache and have their
-     // associated memory freed. Subscribers are not notified of removed
-     // apps, so publishers must set the app as uninstalled before
-     // removing it.
-     kRemoved,
-     // This is used for all non-user initiated uninstallation.
-     kUninstalledByNonUser,
-     kDisabledByLocalSettings  // Disabled by local settings.
-)
+enum class Readiness {
+  kUnknown = 0,
+  kReady = 1,                // Installed and launchable.
+  kDisabledByBlocklist = 2,  // Disabled by SafeBrowsing.
+  kDisabledByPolicy = 3,     // Disabled by admin policy.
+  kDisabledByUser = 4,       // Disabled by explicit user action.
+  kTerminated = 5,           // Renderer process crashed.
+  kUninstalledByUser = 6,
+  // Removed apps are purged from the registry cache and have their
+  // associated memory freed. Subscribers are not notified of removed
+  // apps, so publishers must set the app as uninstalled before
+  // removing it.
+  kRemoved = 7,
+  // This is used for all non-user initiated uninstallation.
+  kUninstalledByNonUser = 8,
+  kDisabledByLocalSettings = 9,  // Disabled by local settings.
+
+  // The value for UMA. Should be updated when a new entry is added.
+  kMaxValue = kDisabledByLocalSettings,
+};
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& os, Readiness v);
 
 // How the app was installed.
 // This should be kept in sync with histograms.xml, InstallReason in

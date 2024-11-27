@@ -70,17 +70,35 @@ std::ostream& operator<<(std::ostream& os, PackageType v) {
   return os << "(unknown: " << static_cast<int>(v) << ")";
 }
 
-APP_ENUM_TO_STRING(Readiness,
-                   kUnknown,
-                   kReady,
-                   kDisabledByBlocklist,
-                   kDisabledByPolicy,
-                   kDisabledByUser,
-                   kTerminated,
-                   kUninstalledByUser,
-                   kRemoved,
-                   kUninstalledByNonUser,
-                   kDisabledByLocalSettings)
+std::ostream& operator<<(std::ostream& os, Readiness v) {
+  switch (v) {
+    case Readiness::kUnknown:
+      return os << "Readiness::kUnknown";
+    case Readiness::kReady:
+      return os << "Readiness::kReady";
+    case Readiness::kDisabledByBlocklist:
+      return os << "Readiness::KDisabledByBlocklist";
+    case Readiness::kDisabledByPolicy:
+      return os << "Readiness::kDisabledByPolicy";
+    case Readiness::kDisabledByUser:
+      return os << "Readiness::kDisabledByUser";
+    case Readiness::kTerminated:
+      return os << "Readiness::kTerminated";
+    case Readiness::kUninstalledByUser:
+      return os << "Readiness::kUninstalledByUser";
+    case Readiness::kRemoved:
+      return os << "Readiness::kRemoved";
+    case Readiness::kUninstalledByNonUser:
+      return os << "Readiness::kUninstalledByNonUser";
+    case Readiness::kDisabledByLocalSettings:
+      return os << "Readiness::kDisabledByLocalSettings";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
+
 APP_ENUM_TO_STRING(InstallReason,
                    kUnknown,
                    kSystem,

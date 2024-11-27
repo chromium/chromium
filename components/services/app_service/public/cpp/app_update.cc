@@ -636,7 +636,7 @@ bool AppUpdate::ExtraChanged() const {
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "AppType: " << app.AppType() << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
-  out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
+  out << "Readiness: " << app.Readiness() << std::endl;
   out << "Name: " << app.Name() << std::endl;
   out << "ShortName: " << app.ShortName() << std::endl;
   out << "PublisherId: " << app.PublisherId() << std::endl;
