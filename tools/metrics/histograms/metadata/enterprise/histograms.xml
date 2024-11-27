@@ -2311,6 +2311,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.EventBasedLogUpload.{EventLogUploadType}"
+    enum="EnterpriseEventBasedLogUploadResult" expires_after="2025-11-25">
+  <owner>iremuguz@google.com</owner>
+  <owner>chromeos-commercial-supportability@google.com</owner>
+  <summary>
+    The result of event based log upload that is of type {EventLogUploadType}.
+  </summary>
+  <token key="EventLogUploadType">
+    <variant name="All" summary="All event based log uploads"/>
+    <variant name="FatalCrashTriggered"
+        summary="Event based log upload triggered by fatal crash"/>
+    <variant name="OSUpdateFailureTriggered"
+        summary="Event based log upload triggered by OS update failure"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
     units="ms" expires_after="2026-01-01">
   <owner>esalma@google.com</owner>

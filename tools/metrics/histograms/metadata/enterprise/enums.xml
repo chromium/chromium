@@ -851,6 +851,21 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseEventBasedLogUploadResult) -->
+
+<enum name="EnterpriseEventBasedLogUploadResult">
+  <summary>
+    The result of event based log upload on managed device. The values are
+    defined in
+    chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Declined"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h:EventBasedUploadStatus) -->
+
 <enum name="EnterpriseFetchSupportPacketFailureType">
   <int value="0" label="kNoFailure"/>
   <int value="1" label="kFailedOnWrongCommandPayload"/>
