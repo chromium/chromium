@@ -3551,7 +3551,7 @@
     },
     {
       name: "ResourceTimingFinalResponseHeadersStart",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ResourceTimingUseCORSForBodySizes",
