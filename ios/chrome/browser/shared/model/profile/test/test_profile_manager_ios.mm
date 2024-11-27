@@ -140,6 +140,17 @@ TestProfileManagerIOS::GetProfileAttributesStorage() {
 
 TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
     TestProfileIOS::Builder builder) {
+  // The ProfileAttributesStorage entry needs to be created before the actual
+  // profile initialization gets kicked off, because the AccountProfileMapper
+  // depends on it.
+  profile_attributes_storage_.AddProfile(builder.GetEffectiveName());
+
+  // If this is the first profile ever loaded, mark it as the personal profile.
+  if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
+    profile_attributes_storage_.SetPersonalProfileName(
+        builder.GetEffectiveName());
+  }
+
   // Ensure that the created Profile will store its data in sub-directory of
   // `profile_data_dir_` (i.e. GetStatePath().DirName() == `profile_data_dir_`).
   auto profile = std::move(builder).Build(profile_data_dir_);
@@ -148,8 +159,6 @@ TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
   auto [iterator, insertion_success] =
       profiles_map_.insert(std::make_pair(profile_name, std::move(profile)));
   DCHECK(insertion_success);
-
-  profile_attributes_storage_.AddProfile(profile_name);
 
   for (auto& observer : observers_) {
     observer.OnProfileCreated(this, iterator->second.get());
