@@ -97,6 +97,7 @@ using signin_metrics::PromoAction;
                            (BOOL)closeSettingsOnAddAccount {
   if ((self = [self initWithBaseViewController:navigationController
                                        browser:browser])) {
+    _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
     _baseNavigationController = navigationController;
   }
   return self;
