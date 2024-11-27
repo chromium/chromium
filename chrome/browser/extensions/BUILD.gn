@@ -931,6 +931,7 @@ source_set("extensions") {
       "//google_apis",
       "//google_apis/common:request_util",
       "//media:media_buildflags",
+      "//net:extras",
       "//pdf:buildflags",
       "//ppapi/buildflags",
       "//printing/buildflags",
