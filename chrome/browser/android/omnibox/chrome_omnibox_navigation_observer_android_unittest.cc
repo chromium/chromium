@@ -48,8 +48,8 @@ class ChromeOmniboxNavigationObserverAndroidTest
       const ChromeOmniboxNavigationObserverAndroidTest&) = delete;
 
  protected:
-  ChromeOmniboxNavigationObserverAndroidTest() {}
-  ~ChromeOmniboxNavigationObserverAndroidTest() override {}
+  ChromeOmniboxNavigationObserverAndroidTest() = default;
+  ~ChromeOmniboxNavigationObserverAndroidTest() override = default;
 
   content::NavigationController* navigation_controller() {
     return &(web_contents()->GetController());
