@@ -695,23 +695,26 @@ TEST_F(AutocompleteHistoryManagerTest,
 }
 
 TEST_F(AutocompleteHistoryManagerTest,
-       OnSingleFieldSuggestionSelected_Found_ShouldLogDays) {
+       OnSingleFieldSuggestionSelected_AcceptedAndUnaccepted_ShouldLogDays) {
   // Setting up by simulating that there was a query for autocomplete
   // suggestions, and that two values were found.
   int mocked_db_query_id = 100;
 
   std::u16string test_value = u"SomePrefixOne";
-  std::u16string other_test_value = u"SomePrefixOne";
-  int days_since_last_use = 10;
+  std::u16string other_test_value = u"SomePrefixTwo";
+  int days_since_last_use_accepted_suggestion = 10;
+  int days_since_last_use_unaccepted_suggestion = 20;
 
   std::vector<AutocompleteEntry> expected_values = {
-      GetAutocompleteEntry(test_field_.name(), test_value,
-                           base::Time::Now() - base::Days(30),
-                           base::Time::Now() - base::Days(days_since_last_use)),
+      GetAutocompleteEntry(
+          test_field_.name(), test_value, base::Time::Now() - base::Days(30),
+          base::Time::Now() -
+              base::Days(days_since_last_use_accepted_suggestion)),
       GetAutocompleteEntry(
           test_field_.name(), other_test_value,
           base::Time::Now() - base::Days(30),
-          base::Time::Now() - base::Days(days_since_last_use))};
+          base::Time::Now() -
+              base::Days(days_since_last_use_unaccepted_suggestion))};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -734,13 +737,19 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   base::HistogramTester histogram_tester;
 
-  // Now simulate one autocomplete entry being selected, and expect a metric
-  // being logged for that value alone.
+  // Now simulate one autocomplete entry being selected, and expect an
+  // acceptance metric being logged for that value alone.
   Suggestion suggestion(test_value, SuggestionType::kAutocompleteEntry);
   autocomplete_manager_->OnSingleFieldSuggestionSelected(suggestion);
 
   histogram_tester.ExpectBucketCount("Autocomplete.DaysSinceLastUse",
-                                     days_since_last_use, 1);
+                                     days_since_last_use_accepted_suggestion,
+                                     1);
+
+  // Also log metrics for the unaccepted entries.
+  histogram_tester.ExpectBucketCount("Autocomplete.Unaccepted.DaysSinceLastUse",
+                                     days_since_last_use_unaccepted_suggestion,
+                                     1);
 }
 
 TEST_F(AutocompleteHistoryManagerTest,

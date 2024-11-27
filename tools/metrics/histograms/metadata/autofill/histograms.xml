@@ -671,6 +671,20 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autocomplete.Unaccepted.DaysSinceLastUse" units="days"
+    expires_after="2025-08-13">
+  <owner>brunobraga@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when users ignore Autocomplete entries in the dropdown, this
+    histogram captures the number of days that have passed since an autocomplete
+    entry was last submitted on a website and the user has seen it again (but
+    not selected). I.e., the distribution of time between uses of an
+    &quot;active&quot; autocomplete entry and it being displayed and not
+    accepted.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="2025-04-27">
