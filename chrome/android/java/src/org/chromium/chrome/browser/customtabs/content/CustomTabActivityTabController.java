@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
@@ -414,7 +413,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         Tab tab = null;
         if (WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(true)
                 && warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
-            tab = warmupManager.takeSpareTab(profile, TabLaunchType.FROM_EXTERNAL_APP);
+            tab = warmupManager.takeSpareTab(profile, false, TabLaunchType.FROM_EXTERNAL_APP);
             TabAssociatedApp.from(tab)
                     .setAppId(
                             CustomTabsConnection.getInstance()
@@ -424,8 +423,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                             ReparentingDelegateFactory.createReparentingTaskDelegate(
                                     null, mWindowAndroid, mCustomTabDelegateFactory),
                             null);
-
-            tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
         } else {
             WebContents webContents = takeWebContents();
             Callback<Tab> tabCallback =

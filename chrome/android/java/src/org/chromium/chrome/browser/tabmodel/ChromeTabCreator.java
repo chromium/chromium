@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -359,7 +358,9 @@ public class ChromeTabCreator extends TabCreator {
                 // foreground and for high-end devices.
                 TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
 
-                tab = WarmupManager.getInstance().takeSpareTab(getProfile(), type);
+                tab =
+                        WarmupManager.getInstance()
+                                .takeSpareTab(getProfile(), !openInForeground, type);
                 assert tab != null;
 
                 // Reparent the tab to its parent, updating the DelegateFactory and NativeWindow.
@@ -371,11 +372,6 @@ public class ChromeTabCreator extends TabCreator {
                                         mNativeWindow,
                                         createDefaultTabDelegateFactory()),
                                 null);
-                // Set tab to visible before loading the url. This will ensure metrics are recorded
-                // correctly with spare tab.
-                if (openInForeground) {
-                    tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
-                }
                 tab.loadUrl(loadUrlParams);
                 TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
             } else {

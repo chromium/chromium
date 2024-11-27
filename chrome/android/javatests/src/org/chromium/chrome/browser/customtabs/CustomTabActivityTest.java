@@ -1205,7 +1205,13 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.CCT_EARLY_NAV})
     public void testPrecreatedRenderer() throws Exception {
+        var histograms =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("PageLoad.PaintTiming.NavigationToFirstPaint")
+                        .expectAnyRecord("PageLoad.PaintTiming.NavigationToFirstContentfulPaint")
+                        .build();
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
@@ -1231,6 +1237,7 @@ public class CustomTabActivityTest {
                 getHistory(mCustomTabActivityTestRule.getActivity().getActivityTab());
         assertEquals(1, history.size());
         assertEquals(mTestPage, history.get(0).getUrl().getSpec());
+        histograms.pollInstrumentationThreadUntilSatisfied();
     }
 
     /** Tests that calling warmup() is optional without prerendering. */
