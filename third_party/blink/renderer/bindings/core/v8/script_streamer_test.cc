@@ -1895,7 +1895,7 @@ TEST_F(BackgroundResourceScriptStreamerTest,
       v8_compile_hints_consumer = MakeGarbageCollected<
           v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>();
   Vector<int64_t> dummy_data(v8_compile_hints::kBloomFilterInt32Count / 2);
-  v8_compile_hints_consumer->SetData(dummy_data.data(), dummy_data.size());
+  v8_compile_hints_consumer->SetData(dummy_data);
 
   Init(scope.GetIsolate(), /*is_module_script=*/false, /*charset=*/std::nullopt,
        v8_compile_hints_consumer);

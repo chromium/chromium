@@ -1346,13 +1346,12 @@ void LocalFrameMojoHandler::SetV8CompileHints(
   if (!mapping.IsValid()) {
     return;
   }
-  const int64_t* memory = mapping.GetMemoryAs<int64_t>();
-  if (memory == nullptr) {
+  base::span<const int64_t> memory = mapping.GetMemoryAsSpan<int64_t>();
+  if (memory.empty()) {
     return;
   }
 
-  page->GetV8CrowdsourcedCompileHintsConsumer().SetData(memory,
-                                                        mapping.size() / 8);
+  page->GetV8CrowdsourcedCompileHintsConsumer().SetData(memory);
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
