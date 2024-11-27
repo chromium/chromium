@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 
 namespace calendar::calendar_fake_data_helper {
@@ -16,8 +17,14 @@ enum class CalendarType {
   OUTLOOK_CALENDAR = 1,
 };
 
+using GetResponseCallback = base::OnceCallback<void(std::string)>;
+
 std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
     CalendarType calendar_type);
+
+// Should only be called for CalendarType::OUTLOOK_CALENDAR. Runs `callback`
+// with a mock MSFT Graph API calendar data response.
+void GetFakeJsonResponse(GetResponseCallback callback);
 
 }  // namespace calendar::calendar_fake_data_helper
 

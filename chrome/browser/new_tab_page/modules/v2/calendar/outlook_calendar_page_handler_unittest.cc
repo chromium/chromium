@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
 #include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,7 +70,102 @@ TEST_F(OutlookCalendarPageHandlerTest, GetEvents) {
   std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
   base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
       future;
-
+  // For now, `GetEvents()` has fake calendar event data hardcoded.
   handler->GetEvents(future.GetCallback());
+  EXPECT_EQ(future.Get().size(), 3u);
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, EmptyResponse) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  handler->GetEventsForTesting(future.GetCallback(), "");
   EXPECT_EQ(future.Get().size(), 0u);
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, MalformedResponse) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  handler->GetEventsForTesting(future.GetCallback(), "} {");
+  EXPECT_EQ(future.Get().size(), 0u);
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, ResponseMissingData) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  // Missing event title.
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "isOrganizer": true,
+        "webLink": "https://outlook.com",
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [],
+        "attachments": []
+      }]})";
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  EXPECT_EQ(future.Get().size(), 0u);
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, ResponsePropertyHasWrongDataType) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  // `hasAttachments` should be a boolean, not a string value.
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": "false",
+        "subject": "Event"
+        "isOrganizer": true,
+        "webLink": "https://outlook.com",
+        "onlineMeeting": {"joinUrl": "https://outlook.com"},
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [],
+        "attachments": []
+      }]})";
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  EXPECT_EQ(future.Get().size(), 0u);
+}
+
+TEST_F(OutlookCalendarPageHandlerTest, OptionalDataMissing) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+  // Event conference URL does not exist.
+  std::string response = R"(
+    {"data-context": "some-context",
+    "value": [
+      {
+        "id": "1",
+        "hasAttachments": false,
+        "subject": "Event",
+        "isOrganizer": true,
+        "webLink": "https://outlook.com",
+        "onlineMeeting": null,
+        "start": {"dateTime": "2024-11-11T18:00:00.0000000"},
+        "end": {"dateTime": "2024-11-11T18:30:00.0000000"},
+        "location": {"displayName": "Location Name"},
+        "attendees": [],
+        "attachments": []
+      }]})";
+
+  handler->GetEventsForTesting(future.GetCallback(), response);
+  EXPECT_EQ(future.Get().size(), 1u);
 }

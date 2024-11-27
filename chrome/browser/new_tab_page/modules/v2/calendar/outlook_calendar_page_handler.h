@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_OUTLOOK_CALENDAR_PAGE_HANDLER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_OUTLOOK_CALENDAR_PAGE_HANDLER_H_
 
+#include <string>
+
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 class OutlookCalendarPageHandler
     : public ntp::calendar::mojom::OutlookCalendarPageHandler {
@@ -19,9 +22,16 @@ class OutlookCalendarPageHandler
 
   // ntp::calendar::mojom::OutlookCalendarPageHandler
   void GetEvents(GetEventsCallback callback) override;
+  // For testing purposes only.
+  void GetEventsForTesting(GetEventsCallback callback, std::string response);
 
  private:
+  void MakeRequest(GetEventsCallback callback);
+  void OnJsonReceived(GetEventsCallback callback, std::string response_body);
+  void OnJsonParsed(GetEventsCallback callback,
+                    data_decoder::DataDecoder::ValueOrError result);
   mojo::Receiver<ntp::calendar::mojom::OutlookCalendarPageHandler> handler_;
+  base::WeakPtrFactory<OutlookCalendarPageHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_OUTLOOK_CALENDAR_PAGE_HANDLER_H_
