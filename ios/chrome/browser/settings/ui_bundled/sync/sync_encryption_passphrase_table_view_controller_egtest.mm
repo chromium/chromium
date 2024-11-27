@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
 #import "base/ios/ios_util.h"
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/strings/grit/components_strings.h"
@@ -81,8 +82,9 @@ NSString* const kPassphrase = @"hello";
 // enter passphrase message appears.
 // TODO(crbug.com/330758164): Test is failing.
 - (void)DISABLED_testShowSyncPassphraseInNewWindowAndDismiss {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.

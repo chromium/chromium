@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 
 #import <memory>
 
@@ -133,10 +133,12 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (NSString*)syncErrorMessage {
-  if (_settingsAreDismissed)
+  if (_settingsAreDismissed) {
     return nil;
-  if (_syncErrorMessage)
+  }
+  if (_syncErrorMessage) {
     return _syncErrorMessage;
+  }
   ProfileIOS* profile = self.browser->GetProfile();
   syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
   DCHECK(service);
@@ -318,8 +320,9 @@ const CGFloat kSpinnerButtonPadding = 18;
   // See crbug/276714. As a temporary measure, ignore the tap on sign-in
   // button. A better fix may be to disable the rightBarButtonItem (submit)
   // until backend is initialized.
-  if (!service->IsEngineInitialized())
+  if (!service->IsEngineInitialized()) {
     return;
+  }
 
   [self showDecryptionProgress];
   std::string passphrase = base::SysNSStringToUTF8([_passphrase text]);
@@ -383,8 +386,9 @@ const CGFloat kSpinnerButtonPadding = 18;
 
 // Shows the UI to indicate the decryption is being attempted.
 - (void)showDecryptionProgress {
-  if (_isDecryptionProgressShown)
+  if (_isDecryptionProgressShown) {
     return;
+  }
   _isDecryptionProgressShown = YES;
 
   // Hide the button.
@@ -401,8 +405,9 @@ const CGFloat kSpinnerButtonPadding = 18;
 
 // Hides the UI to indicate decryption is in process.
 - (void)hideDecryptionProgress {
-  if (!_isDecryptionProgressShown)
+  if (!_isDecryptionProgressShown) {
     return;
+  }
   _isDecryptionProgressShown = NO;
 
   self.navigationItem.leftBarButtonItem = _savedLeftButton;

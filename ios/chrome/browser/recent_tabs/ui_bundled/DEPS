@@ -18,7 +18,7 @@ include_rules = [
   "+ios/chrome/browser/tabs_search/model",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/menu/ui_bundled",
-  "+ios/chrome/browser/ui/settings/sync/utils",
+  "+ios/chrome/browser/settings/ui_bundled/sync/utils",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
   "+ios/chrome/browser/url_loading/model",

@@ -155,10 +155,10 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/safety_check:eg2_tests",
+    "//ios/chrome/browser/settings/ui_bundled/sync:eg2_tests",
     "//ios/chrome/browser/ui/settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services/manage_accounts:eg2_tests",
-    "//ios/chrome/browser/ui/settings/sync:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs:eg2_tests",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:eg2_tests",
   ]
