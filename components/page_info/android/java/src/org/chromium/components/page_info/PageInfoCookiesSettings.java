@@ -118,9 +118,25 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         mOnCookieSettingsLinkClicked.run();
                     }
                 };
+
+        int summaryString;
+        if (!mIsModeBUi) {
+            // Pre Mode B description: "Cookies and other site data are used to remember you..."
+            summaryString = R.string.page_info_cookies_description;
+        } else if (mIsIncognito) {
+            // Description of chrome blocking sites: "Chrome blocks sites..."
+            summaryString =
+                    R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
+        } else if (mBlockAll3pc) {
+            // Description of user blocking sites: "You blocked sites..."
+            summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
+        } else {
+            // Description of Chrome limiting cookies: "Chrome limits most sites...""
+            summaryString = R.string.page_info_tracking_protection_description;
+        }
         cookieSummary.setSummary(
                 SpanApplier.applySpans(
-                        getString(R.string.page_info_cookies_description),
+                        getString(summaryString),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
 
         // TODO(crbug.com/40129299): Set a ManagedPreferenceDelegate?

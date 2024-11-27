@@ -259,6 +259,10 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         mEnforcement = enforcement;
     }
 
+    public void setIsIncognitoForTesting(boolean isIncognito) {
+        mIsIncognito = isIncognito;
+    }
+
     public void setIsModeBUiForTesting(boolean isModeBUi) {
         mIsModeBUi = isModeBUi;
     }
