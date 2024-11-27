@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -404,9 +405,14 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
 
 void StoreSharedTab(syncer::DataTypeStore::WriteBatch& write_batch,
                     sync_pb::SharedTabGroupDataSpecifics specifics) {
+  if (specifics.has_tab()) {
+    // Unique position is stored in the sync metadata, so it should not be
+    // stored in specifics on the disk.
+    specifics.mutable_tab()->clear_unique_position();
+  }
   std::string storage_key = specifics.guid();
   proto::SharedTabGroupData local_proto;
-  local_proto.mutable_specifics()->Swap(&specifics);
+  *local_proto.mutable_specifics() = std::move(specifics);
   write_batch.WriteData(storage_key, local_proto.SerializeAsString());
 }
 
@@ -603,10 +609,19 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
 
   std::set<base::Uuid> tab_ids_with_pending_model_update;
   for (const std::unique_ptr<syncer::EntityChange>& change : tab_updates) {
-    // TODO(crbug.com/351357559): consider duplicate GUIDs with different
-    // collaboration IDs.
-    tab_ids_with_pending_model_update.insert(base::Uuid::ParseLowercase(
-        change->data().specifics.shared_tab_group_data().guid()));
+    const bool inserted =
+        tab_ids_with_pending_model_update
+            .insert(base::Uuid::ParseLowercase(
+                change->data().specifics.shared_tab_group_data().guid()))
+            .second;
+    if (!inserted) {
+      // The processor guarantees that there is only one update per client tag.
+      // Hence, duplicate GUIDs must have different collaboration IDs which
+      // should never happen.
+      return syncer::ModelError(
+          FROM_HERE,
+          "Received duplicate tab GUID with different collaboration IDs.");
+    }
   }
 
   // Process tab updates after applying deletions so that tab updates having
@@ -1114,8 +1129,6 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
   // Tabs are stored to the local storage regardless of the existence of its
   // group in order to recover the tabs in the event the group was not received
   // and a crash / restart occurred.
-  // TODO(crbug.com/351357559): do not store unique position outside of sync
-  // metadata.
   StoreSharedTab(write_batch, specifics);
 
   // This is a new tab for the group.
@@ -1191,7 +1204,6 @@ void SharedTabGroupDataSyncBridge::ProcessTabLocalChange(
   CHECK_GE(tab_index.value(), 0);
 
   // Process new or updated tab.
-  // TODO(crbug.com/351357559): verify position handling in case of bulk update.
   const SavedTabGroupTab& tab = group.saved_tabs()[tab_index.value()];
   sync_pb::SharedTabGroupDataSpecifics specifics = SharedTabGroupTabToSpecifics(
       tab, CalculateUniquePosition(group, tab_index.value()));
