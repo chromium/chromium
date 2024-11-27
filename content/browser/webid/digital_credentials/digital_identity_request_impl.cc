@@ -313,8 +313,7 @@ base::Value BuildCreateRequest(
   auto result = Value::Dict();
   result.Set("protocol", request->protocol);
   result.Set("data", request->data);
-  base::Value::Dict out = Value::Dict().Set("request", std::move(result));
-  return base::Value(std::move(out));
+  return base::Value(std::move(result));
 }
 
 void DigitalIdentityRequestImpl::Request(
