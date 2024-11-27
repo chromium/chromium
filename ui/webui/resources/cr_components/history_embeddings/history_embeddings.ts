@@ -234,12 +234,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       case AnswerStatus.kExecutionCanceled:
       case AnswerStatus.kUnanswerable:
       case AnswerStatus.kFiltered:
+      case AnswerStatus.kModelUnavailable:
         // Still loading or answer section is not displayed.
         return undefined;
       case AnswerStatus.kSuccess:
         return this.searchResult_.answer;
-      case AnswerStatus.kModelUnavailable:
-        return this.i18n('historyEmbeddingsAnswererErrorModelUnavailable');
       case AnswerStatus.kExecutionFailure:
         return this.i18n('historyEmbeddingsAnswererErrorTryAgain');
       default:
@@ -319,8 +318,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return false;
     }
 
-    return this.searchResult_.answerStatus === AnswerStatus.kModelUnavailable ||
-        this.searchResult_.answerStatus === AnswerStatus.kExecutionFailure;
+    return this.searchResult_.answerStatus === AnswerStatus.kExecutionFailure;
   }
 
   private onFeedbackSelectedOptionChanged_(
@@ -510,7 +508,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       // loading state to show.
       return this.searchResult_.answerStatus !== AnswerStatus.kUnspecified &&
           this.searchResult_.answerStatus !== AnswerStatus.kUnanswerable &&
-          this.searchResult_.answerStatus !== AnswerStatus.kFiltered;
+          this.searchResult_.answerStatus !== AnswerStatus.kFiltered &&
+          this.searchResult_.answerStatus !== AnswerStatus.kModelUnavailable;
     }
   }
 

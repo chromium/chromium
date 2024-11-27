@@ -897,15 +897,11 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         return flushTasks();
       }
 
-      await updateAnswerStatus(AnswerStatus.kModelUnavailable);
+      await updateAnswerStatus(AnswerStatus.kExecutionFailure);
       const errorEl = element.shadowRoot!.querySelector<HTMLElement>('.answer');
       assertTrue(!!errorEl);
       assertTrue(isVisible(errorEl));
       assertTrue(errorEl.hasAttribute('is-error'));
-      assertEquals('model not available', errorEl.innerText);
-
-      await updateAnswerStatus(AnswerStatus.kExecutionFailure);
-      assertTrue(isVisible(errorEl));
       assertEquals('try again', errorEl.innerText);
     });
   });
