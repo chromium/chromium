@@ -50,13 +50,12 @@
 #include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_list.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/use_counter_and_console_logger.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "v8/include/v8-callbacks.h"
@@ -135,8 +134,7 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // in common.
 class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
                                      public MojoBindingContext,
-                                     public ConsoleLogger,
-                                     public UseCounter,
+                                     public UseCounterAndConsoleLogger,
                                      public FeatureContext {
  public:
   ExecutionContext(const ExecutionContext&) = delete;

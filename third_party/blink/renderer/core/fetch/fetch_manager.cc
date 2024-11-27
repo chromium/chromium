@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -98,6 +97,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/loader/identity_digest.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -562,22 +562,21 @@ class FetchManager::Loader final
           integrity_failed = true;
         }
         if (!integrity_failed && !integrity_metadata_.empty()) {
-          SubresourceIntegrity::ReportInfo report_info;
+          IntegrityReport integrity_report;
           bool body_is_null = !updater_;
           if (body_is_null || (response_type_ != FetchResponseType::kBasic &&
                                response_type_ != FetchResponseType::kCors &&
                                response_type_ != FetchResponseType::kDefault)) {
-            report_info.AddConsoleErrorMessage(
+            integrity_report.AddConsoleErrorMessage(
                 "Subresource Integrity: The resource '" + url_.ElidedString() +
                 "' has an integrity attribute, but the response is not "
                 "eligible for integrity validation.");
             integrity_failed = true;
           } else {
             integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
-                integrity_metadata_, &buffer_, url_, report_info);
+                integrity_metadata_, &buffer_, url_, integrity_report);
           }
-          SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
-                                               report_info);
+          integrity_report.SendReports(loader_->GetExecutionContext());
         }
         if (!integrity_failed) {
           updater_->Update(

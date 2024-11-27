@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -363,9 +364,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // attributes.
   bool ForceIntegrityChecks() const;
 
-  const SubresourceIntegrity::ReportInfo& IntegrityReportInfo() const {
-    return integrity_report_info_;
-  }
+  const IntegrityReport& IntegrityReport() const { return integrity_report_; }
   bool MustRefetchDueToIntegrityMetadata(const FetchParameters&) const;
 
   bool IsAlive() const { return is_alive_; }
@@ -598,7 +597,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   RevalidationStatus revalidation_status_;
 
   ResourceIntegrityDisposition integrity_disposition_;
-  SubresourceIntegrity::ReportInfo integrity_report_info_;
+  class IntegrityReport integrity_report_;
 
   // Ordered list of all redirects followed while fetching this resource.
   Vector<RedirectPair> redirect_chain_;

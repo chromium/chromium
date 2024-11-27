@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class IntegrityReport;
 class KURL;
 class Resource;
 
@@ -22,31 +23,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   STATIC_ONLY(SubresourceIntegrity);
 
  public:
-  class PLATFORM_EXPORT ReportInfo final {
-    DISALLOW_NEW();
-
-   public:
-    enum class UseCounterFeature {
-      kSRIElementWithMatchingIntegrityAttribute,
-      kSRIElementWithNonMatchingIntegrityAttribute,
-      kSRIElementIntegrityAttributeButIneligible,
-      kSRIElementWithUnparsableIntegrityAttribute,
-    };
-
-    void AddUseCount(UseCounterFeature);
-    void AddConsoleErrorMessage(const String&);
-    void Clear();
-
-    const Vector<UseCounterFeature>& UseCounts() const { return use_counts_; }
-    const Vector<String>& ConsoleErrorMessages() const {
-      return console_error_messages_;
-    }
-
-   private:
-    Vector<UseCounterFeature> use_counts_;
-    Vector<String> console_error_messages_;
-  };
-
   // The version with the IntegrityMetadataSet passed as the first argument
   // assumes that the integrity attribute has already been parsed, and the
   // IntegrityMetadataSet represents the result of that parsing.
@@ -56,19 +32,19 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                         const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
                                         const Resource&,
-                                        ReportInfo&);
+                                        IntegrityReport&);
   static bool CheckSubresourceIntegrity(const String&,
                                         const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
-                                        ReportInfo&);
+                                        IntegrityReport&);
 
-  // The IntegrityMetadataSet arguments are out parameters which contain the
+  // The IntegrityMetadataSet argument is an out parameters which contains the
   // set of all valid, parsed metadata from |attribute|.
   static void ParseIntegrityAttribute(const WTF::String& attribute,
                                       IntegrityMetadataSet&);
   static void ParseIntegrityAttribute(const WTF::String& attribute,
                                       IntegrityMetadataSet&,
-                                      ReportInfo*);
+                                      IntegrityReport*);
 
  private:
   friend class SubresourceIntegrityTest;
@@ -81,7 +57,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   static bool CheckSubresourceIntegrityImpl(const IntegrityMetadataSet&,
                                             const SegmentedBuffer* buffer,
                                             const KURL& resource_url,
-                                            ReportInfo&);
+                                            IntegrityReport&);
 
   enum AlgorithmParseResult {
     kAlgorithmValid,

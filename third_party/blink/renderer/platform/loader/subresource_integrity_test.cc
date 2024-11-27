@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -201,13 +202,13 @@ class SubresourceIntegrityTest : public testing::Test {
                                                   metadata_set);
     SegmentedBuffer buffer;
     buffer.Append(base::make_span(kBasicScript, strlen(kBasicScript)));
-    SubresourceIntegrity::ReportInfo report_info;
+    IntegrityReport integrity_report;
     EXPECT_EQ(expectation == kIntegritySuccess,
               SubresourceIntegrity::CheckSubresourceIntegrity(
                   metadata_set, &buffer, test.url,
                   *CreateTestResource(test.url, test.request_mode,
                                       test.response_type),
-                  report_info));
+                  integrity_report));
   }
 
   Resource* CreateTestResource(

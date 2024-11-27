@@ -200,7 +200,7 @@ void Resource::CheckResourceIntegrity() {
   }
 
   // Loading error occurred? Then result is uncheckable.
-  integrity_report_info_.Clear();
+  integrity_report_.Clear();
   if (ErrorOccurred()) {
     CHECK(!Data());
     integrity_disposition_ = ResourceIntegrityDisposition::kNetworkError;
@@ -224,7 +224,7 @@ void Resource::CheckResourceIntegrity() {
   }
 
   if (SubresourceIntegrity::CheckSubresourceIntegrity(
-          IntegrityMetadata(), Data(), Url(), *this, integrity_report_info_)) {
+          IntegrityMetadata(), Data(), Url(), *this, integrity_report_)) {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     integrity_disposition_ =
@@ -993,7 +993,7 @@ void Resource::RevalidationFailed() {
   SECURITY_CHECK(redirect_chain_.empty());
   ClearData();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
-  integrity_report_info_.Clear();
+  integrity_report_.Clear();
   DestroyDecodedDataForFailedRevalidation();
   revalidation_status_ = RevalidationStatus::kNoRevalidatingOrFailed;
 }

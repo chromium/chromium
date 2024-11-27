@@ -162,6 +162,8 @@ blink_platform_sources("loader") {
     "fetch/worker_resource_timing_notifier.h",
     "identity_digest.cc",
     "identity_digest.h",
+    "integrity_report.cc",
+    "integrity_report.h",
     "internet_disconnected_url_loader.cc",
     "internet_disconnected_url_loader.h",
     "link_header.cc",
