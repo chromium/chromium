@@ -1128,10 +1128,6 @@ export class BrowsingContextImpl {
     }
     const formatParameters = getImageFormatParameters(params);
 
-    // XXX: Focus the original tab after the screenshot is taken.
-    // This is needed because the screenshot gets blocked until the active tab gets focus.
-    await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
-
     let captureBeyondViewport = false;
     let script: string;
     params.origin ??= 'viewport';
