@@ -1865,7 +1865,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, AnchorDownloadTag) {
 
 // Test that navigating to a user script URL will result in a download.
 // TODO(crbug.com/380333248): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_UserScriptDownload DISABLED_UserScriptDownload
 #else
 #define MAYBE_UserScriptDownload UserScriptDownload
