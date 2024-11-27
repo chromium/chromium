@@ -65,11 +65,22 @@ class ASH_EXPORT CaptureRegionOverlayController {
   // Starts a glow animation to be shown around the capture region.
   void StartGlowAnimation(gfx::AnimationDelegate* animation_delegate);
 
+  // Pauses the glow animation around the capture region at minimum glow, or
+  // does nothing if there is no current glow animation.
+  void PauseGlowAnimation();
+
+  // Removes the glow animation if it exists.
+  void RemoveGlowAnimation();
+
   // Paints the current glow state onto `canvas`. `region_bounds_in_canvas`
   // specifies the coordinates of `canvas` to paint the glow around.
   void PaintCurrentGlowState(gfx::Canvas& canvas,
                              const gfx::Rect& region_bounds_in_canvas,
                              const ui::ColorProvider* color_provider) const;
+
+  const gfx::ThrobAnimation* glow_animation_for_testing() const {
+    return glow_animation_.get();
+  }
 
  private:
   // Paints detected text regions in the overlay. `region_bounds_in_canvas`

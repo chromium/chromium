@@ -129,6 +129,19 @@ void CaptureRegionOverlayController::StartGlowAnimation(
   glow_animation_->StartThrobbing(/*cycles_til_stop=*/-1);
 }
 
+void CaptureRegionOverlayController::PauseGlowAnimation() {
+  if (glow_animation_) {
+    // Complete the current animation cycle then remain there. This will pause
+    // the glow animation at the end of the cycle, where the glow has minimum
+    // outset and blur.
+    glow_animation_->set_cycles_remaining(0);
+  }
+}
+
+void CaptureRegionOverlayController::RemoveGlowAnimation() {
+  glow_animation_ = nullptr;
+}
+
 void CaptureRegionOverlayController::PaintCurrentGlowState(
     gfx::Canvas& canvas,
     const gfx::Rect& region_bounds_in_canvas,

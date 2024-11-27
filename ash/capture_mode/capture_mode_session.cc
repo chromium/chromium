@@ -1351,6 +1351,13 @@ void CaptureModeSession::OnPerformCaptureForSearchEnded(
     return;
   }
   ShowAllWidgets();
+
+  if (active_behavior_->ShouldShowGlowWhileProcessingCaptureType(
+          capture_type)) {
+    CHECK(capture_region_overlay_controller_);
+    capture_region_overlay_controller_->StartGlowAnimation(
+        /*animation_delegate=*/this);
+  }
 }
 
 base::WeakPtr<BaseCaptureModeSession>
@@ -1439,8 +1446,14 @@ void CaptureModeSession::OnTextDetected() {
   }
 }
 
-void CaptureModeSession::AddScannerActionButtons(
+void CaptureModeSession::OnScannerActionsFetched(
     std::vector<ScannerActionViewModel> scanner_actions) {
+  // TODO(crbug.com/374381937): We should also account for other types of
+  // processing, e.g. OCR. The glow should be paused whenever all processing
+  // has finished.
+  CHECK(capture_region_overlay_controller_);
+  capture_region_overlay_controller_->PauseGlowAnimation();
+
   // This is inefficient, as we repeatedly sort, insert and recalculate the
   // bounds for buttons one-by-one.
   // TODO: b/369470078 - Fix this inefficiency by adding multiple action buttons
@@ -1898,8 +1911,7 @@ void CaptureModeSession::OnColorProviderChanged() {
 void CaptureModeSession::AnimationProgressed(const gfx::Animation* animation) {
   if (capture_region_overlay_controller_ &&
       active_behavior_->CanPaintRegionOverlay()) {
-    CaptureRegionOverlayController::SchedulePaintForGlow(
-        layer(), controller_->user_capture_region());
+    RefreshGlowRegion();
   }
 }
 
@@ -2717,6 +2729,11 @@ void CaptureModeSession::UpdateCaptureRegion(
   if (old_capture_region == new_capture_region)
     return;
 
+  // TODO(crbug.com/374381937): The glow animation should also be removed in
+  // other situations where Scanner processing becomes invalid, e.g. alongside
+  // `InvalidateImageSearchTokens()`.
+  MaybeRemoveGlowAnimation();
+
   // Calculate the region that has been damaged and repaint the layer. Add some
   // extra padding to make sure the border and affordance circles are also
   // repainted.
@@ -3439,6 +3456,19 @@ void CaptureModeSession::ShowFeedbackPage() {
   // preventing the user from interacting with the dialog, so we need to stop
   // the session. `this` is destroyed here.
   controller_->Stop();
+}
+
+void CaptureModeSession::MaybeRemoveGlowAnimation() {
+  if (capture_region_overlay_controller_) {
+    capture_region_overlay_controller_->RemoveGlowAnimation();
+    // Schedule repaint to remove glow.
+    RefreshGlowRegion();
+  }
+}
+
+void CaptureModeSession::RefreshGlowRegion() {
+  CaptureRegionOverlayController::SchedulePaintForGlow(
+      layer(), controller_->user_capture_region());
 }
 
 void CaptureModeSession::InitInternal() {

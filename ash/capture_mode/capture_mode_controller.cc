@@ -1991,7 +1991,7 @@ void CaptureModeController::OnScannerActionsFetched(
   if (!image_search_token) {
     return;
   }
-  capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));
+  capture_mode_session_->OnScannerActionsFetched(std::move(scanner_actions));
 }
 
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,

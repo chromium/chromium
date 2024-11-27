@@ -108,6 +108,11 @@ class DefaultBehavior : public CaptureModeBehavior {
     return controller->type() == CaptureModeType::kImage &&
            controller->source() == CaptureModeSource::kRegion;
   }
+  bool ShouldShowGlowWhileProcessingCaptureType(
+      PerformCaptureType capture_type) const override {
+    return CanPaintRegionOverlay() && Shell::Get()->scanner_controller() &&
+           capture_type == PerformCaptureType::kScanner;
+  }
   bool ShouldEndSessionOnShowingSearchResults() const override { return true; }
   bool CanShowSmartActionsButton() const override {
     auto* scanner_controller = Shell::Get()->scanner_controller();
@@ -352,6 +357,10 @@ class SunfishBehavior : public CaptureModeBehavior {
     return IsSunfishAllowedAndEnabled();
   }
   bool CanPaintRegionOverlay() const override { return true; }
+  bool ShouldShowGlowWhileProcessingCaptureType(
+      PerformCaptureType capture_type) const override {
+    return CanPaintRegionOverlay();
+  }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldReShowUisAtPerformingCapture(
       PerformCaptureType capture_type) const override {
@@ -438,6 +447,11 @@ bool CaptureModeBehavior::ShouldRegionOverlayBeAllowed() const {
 }
 
 bool CaptureModeBehavior::CanPaintRegionOverlay() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldShowGlowWhileProcessingCaptureType(
+    PerformCaptureType capture_type) const {
   return false;
 }
 

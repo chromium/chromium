@@ -211,7 +211,7 @@ class ASH_EXPORT CaptureModeSession
                                     const gfx::VectorIcon* icon,
                                     ActionButtonRank rank,
                                     ActionButtonViewID id) override;
-  void AddScannerActionButtons(
+  void OnScannerActionsFetched(
       std::vector<ScannerActionViewModel> scanner_actions) override;
   void OnTextDetected() override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
@@ -483,9 +483,8 @@ class ASH_EXPORT CaptureModeSession
   void OnScannerActionButtonPressed(
       const ScannerActionViewModel& scanner_action);
 
-  // Called back when a Scanner action, which was executed from the user
-  // clicking an action button added by `AddScannerActionButtons`, finishes
-  // executing.
+  // Called back when a Scanner action triggered by an action button press
+  // finishes executing.
   void OnScannerActionExecuted(bool success);
 
   // Creates the feedback button widget if it wasn't previously created, and
@@ -502,6 +501,12 @@ class ASH_EXPORT CaptureModeSession
 
   // Shows the feedback page with preset information for sunfish.
   void ShowFeedbackPage();
+
+  // Removes the glow animation if there is one.
+  void MaybeRemoveGlowAnimation();
+
+  // Schedules a repaint of the glow area surrounding the capture region.
+  void RefreshGlowRegion();
 
   // BaseCaptureModeSession:
   void InitInternal() override;

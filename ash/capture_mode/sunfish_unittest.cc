@@ -24,6 +24,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
@@ -68,6 +69,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
@@ -2543,6 +2545,88 @@ TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
   // The capture label should be reshown once capture completes.
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
   EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+}
+
+// Tests that a glow animation is shown when Scanner actions are being fetched
+// during a Sunfish session.
+TEST_F(ScannerTest, GlowAnimationWhenFetchingActionsDuringSunfishSession) {
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  CaptureRegionOverlayController* region_overlay_controller =
+      session_test_api.GetCaptureRegionOverlayController();
+  ASSERT_TRUE(region_overlay_controller);
+  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+
+  // Select a region to start fetching Scanner actions.
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  // Glow should be animating.
+  const gfx::ThrobAnimation* glow_animation =
+      region_overlay_controller->glow_animation_for_testing();
+  ASSERT_TRUE(glow_animation);
+  EXPECT_TRUE(glow_animation->is_animating());
+
+  // Finish fetching Scanner actions.
+  fetch_actions_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(), manta::MantaStatus());
+
+  // Glow should be pausing.
+  EXPECT_EQ(glow_animation->cycles_remaining(), 0);
+}
+
+// Tests that a glow animation is shown when Scanner actions are being fetched
+// after the smart actions button is pressed.
+TEST_F(ScannerTest, GlowAnimationAfterPressingSmartActionsButton) {
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
+  CaptureModeSessionTestApi session_test_api(
+      CaptureModeController::Get()->capture_mode_session());
+  CaptureRegionOverlayController* region_overlay_controller =
+      session_test_api.GetCaptureRegionOverlayController();
+  ASSERT_TRUE(region_overlay_controller);
+  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
+
+  // Click on the smart actions button to start fetching Scanner actions.
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  LeftClickOn(smart_actions_button);
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  // Glow should be animating.
+  const gfx::ThrobAnimation* glow_animation =
+      region_overlay_controller->glow_animation_for_testing();
+  ASSERT_TRUE(glow_animation);
+  EXPECT_TRUE(glow_animation->is_animating());
+
+  // Finish fetching Scanner actions.
+  fetch_actions_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(), manta::MantaStatus());
+
+  // Glow should be pausing.
+  EXPECT_EQ(glow_animation->cycles_remaining(), 0);
+
+  // Reselect a capture region.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  // Glow should be removed.
+  EXPECT_FALSE(region_overlay_controller->glow_animation_for_testing());
 }
 
 TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
