@@ -192,6 +192,15 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /**
+     * .
+     *
+     * @return The vertical offset of the view.
+     */
+    public float getOffsetY() {
+        return 0f;
+    }
+
+    /**
      * @return Whether or not this {@link StripLayoutView} should be drawn.
      */
     public boolean isVisible() {
