@@ -171,6 +171,12 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
                               kCVImageBufferTransferFunctionKey,
                               kCVImageBufferTransferFunction_ITU_R_2100_HLG,
                               kCVAttachmentMode_ShouldPropagate);
+        if (@available(macOS 12, iOS 15, *)) {
+          CVBufferSetAttachment(cv_pixel_buffer.get(),
+                                kCVImageBufferAmbientViewingEnvironmentKey,
+                                gfx::GenerateAmbientViewingEnvironment().get(),
+                                kCVAttachmentMode_ShouldPropagate);
+        }
         break;
       case gfx::ColorSpace::TransferID::PQ:
         CVBufferSetAttachment(cv_pixel_buffer.get(),

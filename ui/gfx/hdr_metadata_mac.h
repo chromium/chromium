@@ -30,6 +30,12 @@ COLOR_SPACE_EXPORT base::apple::ScopedCFTypeRef<CFDataRef>
 GenerateMasteringDisplayColorVolume(
     const std::optional<gfx::HDRMetadata>& hdr_metadata);
 
+// This can be used for rendering content using AVSampleBufferDisplayLayer via
+// the key "AmbientViewingEnvironment" or for rendering content using a
+// CAMetalLayer via +[CAEDRMetadata HLGMetadataWithAmbientViewingEnvironment].
+COLOR_SPACE_EXPORT base::apple::ScopedCFTypeRef<CFDataRef>
+GenerateAmbientViewingEnvironment();
+
 }  // namespace gfx
 
 #endif  // UI_GFX_HDR_METADATA_MAC_H_
