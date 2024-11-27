@@ -1482,6 +1482,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#23-scoring-bids
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFirstFrameTimeAsRenderTime);
+
 // Enables resampling input events on main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // Enables resampling GestureScroll events on compositor thread.

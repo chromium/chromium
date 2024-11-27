@@ -2291,6 +2291,10 @@ BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              "RenderSizeInScoreAdBrowserSignals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReportFirstFrameTimeAsRenderTime,
+             "ReportFirstFrameTimeAsRenderTime",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kResamplingInputEvents,
              "ResamplingInputEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);

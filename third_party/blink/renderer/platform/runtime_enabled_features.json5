@@ -2548,10 +2548,6 @@
       status: "stable",
     },
     {
-      name: "LCPAnimatedImagesWebExposed",
-      status: "test",
-    },
-    {
       name: "LegacyWindowsDWriteFontFallback",
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
       base_feature: "none",
