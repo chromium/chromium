@@ -420,11 +420,14 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -460,6 +463,9 @@
 #include "chrome/browser/policy/cloud/profile_token_policy_web_signin_service_factory.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
@@ -825,6 +831,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   enterprise_connectors::BrowserCrashEventRouterFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -1167,6 +1175,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance();
+#endif
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance();
 #endif
   safe_browsing::ChromePasswordProtectionServiceFactory::GetInstance();

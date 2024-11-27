@@ -573,7 +573,6 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
@@ -731,12 +730,10 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#endif
-
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"  // nogncheck crbug.com/1125897
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"  // nogncheck crbug.com/1125897
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -5974,7 +5971,6 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     // Don't run checks if it matches the enterprise allowlist.
     return nullptr;
   }
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           browser_context);
@@ -5985,8 +5981,11 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
       safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
           profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
           profile->IsGuestSession());
-#else
-  bool is_enterprise_lookup_enabled = false;
+#if BUILDFLAG(IS_ANDROID)
+  is_enterprise_lookup_enabled =
+      is_enterprise_lookup_enabled &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid);
 #endif
   bool is_consumer_lookup_enabled =
       safe_browsing::RealTimePolicyEngine::CanPerformFullURLLookup(
@@ -7417,16 +7416,11 @@ ChromeContentBrowserClient::GetUrlLookupService(
   if (!safe_browsing_service_) {
     return nullptr;
   }
-
   Profile* profile = Profile::FromBrowserContext(browser_context);
-
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
   if (is_enterprise_lookup_enabled) {
     return safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
         GetForProfile(profile);
   }
-#endif
-
   if (is_consumer_lookup_enabled) {
     return safe_browsing::RealTimeUrlLookupServiceFactory::GetForProfile(
         profile);
