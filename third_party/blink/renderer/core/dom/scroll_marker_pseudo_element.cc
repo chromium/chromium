@@ -16,17 +16,6 @@
 
 namespace blink {
 
-FocusableState ScrollMarkerPseudoElement::SupportsFocus(
-    UpdateBehavior behavior) const {
-  if (parentNode()->IsColumnPseudoElement()) {
-    // TODO(crbug.com/365680822): This is a ::column::scroll-marker, which
-    // doesn't support :focus. Attempting to focus it would mark for style
-    // recalc, but nobody comes around and recalcs it...
-    return FocusableState::kNotFocusable;
-  }
-  return PseudoElement::SupportsFocus(behavior);
-}
-
 void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   bool is_click =
       event.IsMouseEvent() && event.type() == event_type_names::kClick;
@@ -52,14 +41,12 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
       } else if (is_left_or_up_arrow_key) {
         scroll_marker_group_->ActivatePrevScrollMarker(/*focus=*/true);
       } else if (is_click || is_enter_or_space) {
-        ScrollMarkerPseudoElement* scroll_marker = this;
-        scroll_marker_group_->SetSelected(*scroll_marker);
         // parentElement is ::column for column scroll marker and
         // ultimate originating element for regular scroll marker.
         mojom::blink::ScrollIntoViewParamsPtr params =
             scroll_into_view_util::CreateScrollIntoViewParams(
-                *scroll_marker->parentElement()->GetComputedStyle());
-        scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
+                *parentElement()->GetComputedStyle());
+        ScrollIntoViewNoVisualUpdate(std::move(params));
         scroll_marker_group_->SetSelected(*this);
       }
     }

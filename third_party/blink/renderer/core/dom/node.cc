@@ -463,6 +463,20 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
+      if (const ColumnPseudoElementsVector* columns =
+              parent->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->back();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(this)) {
+        const ColumnPseudoElementsVector* columns =
+            parent->GetColumnPseudoElements();
+        if (column->Index() > 0) {
+          return columns->at(column->Index() - 1u);
+        }
+      }
       if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
       }
@@ -520,6 +534,20 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (const ColumnPseudoElementsVector* columns =
+              parent->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->front();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(this)) {
+        const ColumnPseudoElementsVector* columns =
+            parent->GetColumnPseudoElements();
+        if (column->Index() + 1u < columns->size()) {
+          return columns->at(column->Index() + 1u);
+        }
+      }
       if (Node* next = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
         return next;
       }
@@ -641,6 +669,13 @@ Node* Node::PseudoAwareFirstChild() const {
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
       return first;
+    if (const ColumnPseudoElementsVector* columns =
+            current_element->GetColumnPseudoElements();
+        columns && !columns->empty()) {
+      if (Node* first = columns->front()) {
+        return first;
+      }
+    }
     if (Node* first =
             current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return first;
@@ -751,6 +786,13 @@ Node* Node::PseudoAwareLastChild() const {
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return last;
+    }
+    if (const ColumnPseudoElementsVector* columns =
+            current_element->GetColumnPseudoElements();
+        columns && !columns->empty()) {
+      if (Node* last = columns->back()) {
+        return last;
+      }
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdMarker)) {
       return last;

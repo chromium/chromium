@@ -5707,6 +5707,9 @@ crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal
 crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-large.html [ Failure ]
 crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-large.html [ Failure ]
 
+# Blocked on https://github.com/w3c/csswg-drafts/issues/4456 resolution.
+crbug.com/373478544 wpt_internal/css/css-overflow/column-scroll-marker-009.html [ Failure ]
+
 # These tests fail because the old text size adjust wasn't applied if the page didn't run the autosizer.
 crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-nested-change.html [ Failure ]
 crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-nested.html [ Failure ]
