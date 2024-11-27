@@ -6,9 +6,11 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/dips_service_impl.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
@@ -98,13 +100,29 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
 
   CHECK(dips_service_);
   CHECK(!dips_service_->storage()->is_null());
+
+  auto callback = base::BindOnce(
+      [](base::WeakPtr<RedirectHeuristicTabHelper> service,
+         const ukm::SourceId& first_party_source_id,
+         const ukm::SourceId& third_party_source_id,
+         const content::CookieAccessDetails& details,
+         const size_t sites_passed_count, bool is_current_interaction,
+         std::pair<std::optional<base::Time>, DIPSInteractionType> range) {
+        if (!service) {
+          return;
+        }
+        return service->RecordRedirectHeuristic(
+            first_party_source_id, third_party_source_id, details,
+            sites_passed_count, is_current_interaction, range.second,
+            range.first);
+      },
+      weak_factory_.GetWeakPtr(), first_party_source_id, third_party_source_id,
+      details, sites_passed_count, is_current_interaction);
+
   dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::LastUserActivationOrAuthnAssertionTime)
+      ->AsyncCall(&DIPSStorage::LastInteractionTimeAndType)
       .WithArgs(details.url)
-      .Then(base::BindOnce(&RedirectHeuristicTabHelper::RecordRedirectHeuristic,
-                           weak_factory_.GetWeakPtr(), first_party_source_id,
-                           third_party_source_id, details, sites_passed_count,
-                           is_current_interaction));
+      .Then(std::move(callback));
 }
 
 void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
@@ -113,6 +131,7 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
     const content::CookieAccessDetails& details,
     const size_t sites_passed_count,
     bool is_current_interaction,
+    DIPSInteractionType interaction_type,
     std::optional<base::Time> last_user_interaction_time) {
   // This function can only be reached if the redirect heuristic is satisfied
   // for the previous recorded redirect.
@@ -149,6 +168,7 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
       .SetSitesPassedCount(sites_passed_count)
       .SetDoesFirstPartyPrecedeThirdParty(first_party_precedes_third_party)
       .SetIsCurrentInteraction(is_current_interaction)
+      .SetInteractionType(static_cast<int64_t>(interaction_type))
       .Record(ukm::UkmRecorder::Get());
 
   ukm::builders::RedirectHeuristic_CookieAccessThirdParty2(

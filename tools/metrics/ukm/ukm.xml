@@ -15250,6 +15250,14 @@ be describing additional metrics about the same event.
   <summary>
     Recorded when the user first interacts in a pop-up with opener access.
   </summary>
+  <metric name="InteractionType" enum="CookieHeuristicInteractionType">
+    <summary>
+      Records the source of the interaction with the popup.
+      &quot;Authentication&quot; for web authentications,
+      &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
+      &quot;NoInteraction&quot; for when there was no user interaction.
+    </summary>
+  </metric>
   <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">
     <summary>
       &quot;True&quot; iff the opener page contains an iframe whose URL belongs
@@ -15292,6 +15300,14 @@ be describing additional metrics about the same event.
       The number of hours since the user last interacted with the site, until
       the pop-up was opened. Clamped to 720 hours at most, and rounded down to
       the nearest exponential bucket (out of 50 buckets).
+    </summary>
+  </metric>
+  <metric name="InteractionType" enum="CookieHeuristicInteractionType">
+    <summary>
+      Records the source of the interaction with the popup.
+      &quot;Authentication&quot; for web authentications,
+      &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
+      &quot;NoInteraction&quot; for when there was no user interaction.
     </summary>
   </metric>
   <metric name="OpenerHasSameSiteIframe" enum="HasSameSiteIframe">
@@ -19346,6 +19362,14 @@ be describing additional metrics about the same event.
       with the tracking site. Clamped to 60 days at most, and rounded down to
       the nearest exponential bucket (out of 50 buckets). Set to -1 if there has
       never been a user interaction from the tracking site.
+    </summary>
+  </metric>
+  <metric name="InteractionType" enum="CookieHeuristicInteractionType">
+    <summary>
+      Records the source of the interaction with the popup.
+      &quot;Authentication&quot; for web authentications,
+      &quot;UserActivation&quot; for mouse clicks, touch events, etc., and
+      &quot;NoInteraction&quot; for when there was no user interaction.
     </summary>
   </metric>
   <metric name="IsAdTagged" enum="IsAdTagged">

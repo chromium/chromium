@@ -3205,6 +3205,12 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Eligible: Forced via kForceEligibleForTesting"/>
 </enum>
 
+<enum name="CookieHeuristicInteractionType">
+  <int value="0" label="Authentication"/>
+  <int value="1" label="UserActivation"/>
+  <int value="2" label="NoInteraction"/>
+</enum>
+
 <enum name="CopylessCacheHit">
   <int value="0" label="Cache hit with entity"/>
   <int value="1" label="Cache hit without entity"/>

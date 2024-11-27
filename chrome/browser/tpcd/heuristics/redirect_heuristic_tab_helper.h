@@ -58,6 +58,7 @@ class RedirectHeuristicTabHelper
       const content::CookieAccessDetails& details,
       const size_t sites_passed_count,
       bool is_current_interaction,
+      DIPSInteractionType interaction_type,
       std::optional<base::Time> last_user_interaction_time);
 
   // Create all eligible RedirectHeuristic grants for the current redirect

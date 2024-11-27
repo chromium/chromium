@@ -40,17 +40,15 @@ class OpenerHeuristicTabHelper
     ~PopupObserver() override;
 
     // Set the time that the user previously interacted with this pop-up's site.
-    void SetPastInteractionTime(TimestampRange interaction_times,
-                                TimestampRange web_authn_assertion_times);
+    void SetPastInteractionTimeAndType(
+        TimestampRange interaction_times,
+        TimestampRange web_authn_assertion_times);
 
    private:
     // Emit the OpenerHeuristic.PopupPastInteraction UKM event if we have all
     // the necessary information, and create a storage access grant if
     // supported.
     void EmitPastInteractionIfReady();
-
-    // Type of interaction in third party sites
-    enum class InteractionType { UserActivation, Authentication };
 
     // Does three things:
 
@@ -64,7 +62,7 @@ class OpenerHeuristicTabHelper
     void EmitTopLevelAndCreateGrant(const GURL& tracker_url,
                                     OptionalBool has_iframe,
                                     bool is_current_interaction,
-                                    InteractionType interaction_type,
+                                    DIPSInteractionType interaction_type,
                                     bool should_record_popup_and_maybe_grant,
                                     base::TimeDelta grant_duration);
 
@@ -83,7 +81,7 @@ class OpenerHeuristicTabHelper
         content::RenderFrameHost* render_frame_host) override;
     void RecordInteractionAndCreateGrant(
         content::RenderFrameHost* render_frame_host,
-        InteractionType interaction_type);
+        DIPSInteractionType interaction_type);
 
     const int32_t popup_id_;
     // The URL originally passed to window.open().
@@ -101,6 +99,7 @@ class OpenerHeuristicTabHelper
     struct NoInteraction {};
     absl::variant<FieldNotSet, NoInteraction, base::TimeDelta>
         time_since_interaction_;
+    DIPSInteractionType past_interaction_type_;
     // A source ID for `initial_url_`.
     std::optional<ukm::SourceId> initial_source_id_;
     std::optional<base::Time> commit_time_;

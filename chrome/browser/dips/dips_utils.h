@@ -229,6 +229,15 @@ extern const base::TimeDelta kDIPSTimestampUpdateInterval;
 [[nodiscard]] bool UpdateTimestamp(std::optional<base::Time>& last_time,
                                    base::Time now);
 
+// DIPSInteractionType is used in UKM to record the way the user interacted with
+// the site. It should match CookieHeuristicInteractionType in
+// tools/metrics/ukm/ukm.xml
+enum class DIPSInteractionType {
+  Authentication = 0,
+  UserActivation = 1,
+  NoInteraction = 2,
+};
+
 enum class DIPSRecordedEvent {
   kStorage,
   kInteraction,

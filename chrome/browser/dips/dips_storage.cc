@@ -289,16 +289,26 @@ std::optional<base::Time> DIPSStorage::LastWebAuthnAssertionTime(
 
 std::optional<base::Time> DIPSStorage::LastUserActivationOrAuthnAssertionTime(
     const GURL& url) {
-  std::optional<base::Time> last_user_activation_time =
-      LastUserActivationTime(url);
-  std::optional<base::Time> last_web_authn_assertion_time =
-      LastWebAuthnAssertionTime(url);
+  return LastInteractionTimeAndType(url).first;
+}
 
-  if (last_user_activation_time >= last_web_authn_assertion_time) {
-    return last_user_activation_time;
+std::pair<std::optional<base::Time>, DIPSInteractionType>
+DIPSStorage::LastInteractionTimeAndType(const GURL& url) {
+  base::Time last_user_activation_time =
+      LastUserActivationTime(url).value_or(base::Time::Min());
+  base::Time last_web_authn_assertion_time =
+      LastWebAuthnAssertionTime(url).value_or(base::Time::Min());
+
+  if ((last_user_activation_time == last_web_authn_assertion_time) &&
+      (last_user_activation_time == base::Time::Min())) {
+    return std::make_pair(std::nullopt, DIPSInteractionType::NoInteraction);
   }
-
-  return last_web_authn_assertion_time;
+  if (last_user_activation_time >= last_web_authn_assertion_time) {
+    return std::make_pair(last_user_activation_time,
+                          DIPSInteractionType::UserActivation);
+  }
+  return std::make_pair(last_web_authn_assertion_time,
+                        DIPSInteractionType::Authentication);
 }
 
 /* static */
