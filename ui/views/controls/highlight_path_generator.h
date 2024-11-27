@@ -183,6 +183,11 @@ InstallRoundRectHighlightPathGenerator(View* view,
                                        const gfx::Insets& insets,
                                        int corner_radius);
 
+void VIEWS_EXPORT InstallRoundRectHighlightPathGenerator(
+    View* view,
+    const gfx::Insets& insets,
+    const gfx::RoundedCornersF& corner_radii);
+
 }  // namespace views
 
 #endif  // UI_VIEWS_CONTROLS_HIGHLIGHT_PATH_GENERATOR_H_

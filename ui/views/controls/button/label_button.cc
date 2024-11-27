@@ -168,19 +168,34 @@ void LabelButton::SetTextColorId(ButtonState for_state, ui::ColorId color_id) {
   explicitly_set_colors_[for_state] = true;
 }
 
-float LabelButton::GetFocusRingCornerRadius() const {
-  return focus_ring_corner_radius_;
+gfx::RoundedCornersF LabelButton::GetFocusRingCornerRadii() const {
+  return focus_ring_corner_radii_;
+}
+
+void LabelButton::SetFocusRingCornerRadii(const gfx::RoundedCornersF& radii) {
+  if (focus_ring_corner_radii_ == radii) {
+    return;
+  }
+  focus_ring_corner_radii_ = radii;
+
+  const float min_radius = std::min({focus_ring_corner_radii_.upper_left(),
+                                     focus_ring_corner_radii_.upper_right(),
+                                     focus_ring_corner_radii_.lower_right(),
+                                     focus_ring_corner_radii_.lower_left()});
+  const float max_radius = std::max({focus_ring_corner_radii_.upper_left(),
+                                     focus_ring_corner_radii_.upper_right(),
+                                     focus_ring_corner_radii_.lower_right(),
+                                     focus_ring_corner_radii_.lower_left()});
+  InkDrop::Get(this)->SetSmallCornerRadius(min_radius);
+  InkDrop::Get(this)->SetLargeCornerRadius(max_radius);
+
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                focus_ring_corner_radii_);
+  OnPropertyChanged(&focus_ring_corner_radii_, kPropertyEffectsPaint);
 }
 
 void LabelButton::SetFocusRingCornerRadius(float radius) {
-  if (focus_ring_corner_radius_ == radius)
-    return;
-  focus_ring_corner_radius_ = radius;
-  InkDrop::Get(this)->SetSmallCornerRadius(focus_ring_corner_radius_);
-  InkDrop::Get(this)->SetLargeCornerRadius(focus_ring_corner_radius_);
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                focus_ring_corner_radius_);
-  OnPropertyChanged(&focus_ring_corner_radius_, kPropertyEffectsPaint);
+  SetFocusRingCornerRadii(gfx::RoundedCornersF(radius));
 }
 
 void LabelButton::SetEnabledTextColors(std::optional<SkColor> color) {
@@ -732,7 +747,7 @@ ADD_PROPERTY_METADATA(gfx::Size, MaxSize)
 ADD_PROPERTY_METADATA(bool, IsDefault)
 ADD_PROPERTY_METADATA(int, ImageLabelSpacing)
 ADD_PROPERTY_METADATA(bool, ImageCentered)
-ADD_PROPERTY_METADATA(float, FocusRingCornerRadius)
+ADD_PROPERTY_METADATA(gfx::RoundedCornersF, FocusRingCornerRadii)
 END_METADATA
 
 }  // namespace views

@@ -156,4 +156,13 @@ void InstallRoundRectHighlightPathGenerator(View* view,
       std::make_unique<RoundRectHighlightPathGenerator>(insets, corner_radius));
 }
 
+void InstallRoundRectHighlightPathGenerator(
+    View* view,
+    const gfx::Insets& insets,
+    const gfx::RoundedCornersF& corner_radii) {
+  HighlightPathGenerator::Install(
+      view,
+      std::make_unique<RoundRectHighlightPathGenerator>(insets, corner_radii));
+}
+
 }  // namespace views

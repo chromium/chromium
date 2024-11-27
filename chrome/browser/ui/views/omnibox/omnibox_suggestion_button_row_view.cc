@@ -103,8 +103,7 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
     const auto* const color_provider = GetColorProvider();
     const SkColor color =
         color_provider->GetColor(kColorOmniboxResultsChipBackground);
-    SetBackground(
-        views::CreateRoundedRectBackground(color, GetCornerRadiusValue()));
+    SetBackground(views::CreateRoundedRectBackground(color, GetCornerRadii()));
   }
 
  private:
@@ -206,8 +205,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         color_provider->GetColor(GetOmniboxBackgroundColorId(theme_state_));
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            fill_color, stroke_color, GetCornerRadiusValue(),
-            SkBlendMode::kSrcOver, /*antialias=*/true,
+            fill_color, stroke_color, GetCornerRadii(), SkBlendMode::kSrcOver,
+            /*antialias=*/true,
             /*should_border_scale=*/true)));
   }
 
