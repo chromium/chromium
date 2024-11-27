@@ -225,11 +225,6 @@ ${this.inspirationCardEnabled_ ? html`
           </customize-chrome-check-mark-wrapper>
         </div>
       `)}
-      ${this.emptyHistoryContainers_.map(_ => html`
-        <div class="tile empty">
-          <div class="image-container"></div>
-        </div>
-      `)}
     </cr-grid>
   </div>
 </div>
