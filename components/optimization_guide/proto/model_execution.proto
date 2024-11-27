@@ -12,6 +12,8 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/common_types.proto";
 
 message ExecuteRequest {
+  reserved 3;
+
   // The feature that this execution request is for.
   optional ModelExecutionFeature feature = 1;
 
