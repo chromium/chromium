@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -33,7 +34,7 @@ constexpr char kSmallImage[] =
     "8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnL"
     "RChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g"
     "oOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uP"
-    "k5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD+/iiiigD/2Q==   ";
+    "k5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD+/iiiigD/2Q==";
 
 class AIPageContentAgentTest : public testing::Test {
  public:
@@ -135,6 +136,29 @@ TEST_F(AIPageContentAgentTest, Image) {
   const auto& image_info = *attributes.image_info[0];
   EXPECT_EQ(image_info.image_caption, "missing");
   EXPECT_EQ(image_info.image_bounding_box, gfx::Rect(-20, -10, 30, 40));
+}
+
+TEST_F(AIPageContentAgentTest, ImageNoAltText) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      base::StringPrintf("<body>"
+                         "  <style>"
+                         "    div::before {"
+                         "      content: url(%s);"
+                         "    }"
+                         "  </style>"
+                         "  <div>text</div>"
+                         "</body>",
+                         kSmallImage),
+      url_test_helpers::ToKURL("http://foobar.com"));
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(document);
+  auto page_content = agent->GetAIPageContentSync();
+
+  mojom::blink::AIPageContentPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::blink::AIPageContent>(
+      page_content, output));
 }
 
 TEST_F(AIPageContentAgentTest, Headings) {

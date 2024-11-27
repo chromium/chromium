@@ -695,6 +695,7 @@ source_set("unit_tests") {
     "//media/mojo/services:services",
     "//media/webrtc:webrtc",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net:test_support",
     "//services/device/public/cpp:test_support",
     "//services/metrics/public/cpp:ukm_builders",
