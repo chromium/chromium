@@ -193,12 +193,6 @@ BASE_FEATURE(kFedCmSameSiteNone,
              "FedCmSameSiteNone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows showing the filtered out accounts after the user attempts to login to
-// an account.
-BASE_FEATURE(kFedCmShowFilteredAccounts,
-             "FedCmShowFilteredAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables installed web app matching for getInstalledRelatedApps API.
 BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
              "FilterInstalledAppsWebAppMatching",

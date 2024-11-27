@@ -1102,6 +1102,9 @@ extern const char kFedCmMultiIdpDescription[];
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
 
+extern const char kFedCmShowFilteredAccountsName[];
+extern const char kFedCmShowFilteredAccountsDescription[];
+
 extern const char kFedCmUseOtherAccountName[];
 extern const char kFedCmUseOtherAccountDescription[];
 
