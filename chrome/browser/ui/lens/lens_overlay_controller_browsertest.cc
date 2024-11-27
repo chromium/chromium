@@ -137,6 +137,11 @@ constexpr char kSameTabLinkClickScript[] =
     "(function() {const anchor = document.createElement('a');anchor.href = "
     "$1;document.body.appendChild(anchor);anchor.click();})();";
 
+constexpr char kTopLevelNavLinkClickScript[] =
+    "(function() {const anchor = document.createElement('a');anchor.href = "
+    "$1;anchor.target='_top';document.body.appendChild(anchor);anchor.click();}"
+    ")();";
+
 constexpr char kCheckSearchboxInput[] =
     "(function() {const root = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
@@ -2027,6 +2032,80 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify the loading state was never set.
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       SidePanel_TopLevelSameOriginLinkClick) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Loading a url in the side panel should show the results page. This needs to
+  // be done to set up the WebContentsObserver.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+  int tabs = browser()->tab_strip_model()->count();
+
+  // The results frame should be the only child frame of the side panel web
+  // contents.
+  content::RenderFrameHost* results_frame = content::ChildFrameAt(
+      controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
+      0);
+  const GURL nav_url("https://www.google.com/search?q=apples");
+  content::OverrideLastCommittedOrigin(results_frame,
+                                       url::Origin::Create(search_url));
+  EXPECT_TRUE(results_frame);
+
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetSidePanelTracking();
+
+  // Simulate a top level same-origin navigation on the results frame.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  EXPECT_TRUE(content::ExecJs(
+      results_frame, content::JsReplace(kTopLevelNavLinkClickScript, nav_url),
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  observer.WaitForNavigationFinished();
+
+  // It should not open a new tab as this is a same-origin navigation.
+  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+
+  VerifySearchQueryParameters(observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(observer.last_navigation_url(), nav_url);
+
+  // Verify the loading state was set correctly.
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 1);
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
+
+  // We should find that the input text on the searchbox is the same as the text
+  // query of the nav_url.
+  EXPECT_TRUE(content::EvalJs(
+                  controller->GetSidePanelWebContentsForTesting()
+                      ->GetPrimaryMainFrame(),
+                  content::JsReplace(kCheckSearchboxInput, "apples"),
+                  content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES)
+                  .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
