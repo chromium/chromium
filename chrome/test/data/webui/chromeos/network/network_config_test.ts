@@ -13,13 +13,15 @@ import {NetworkConfigToggleElement} from 'chrome://resources/ash/common/network/
 import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ConfigProperties, EAPConfigProperties, GlobalPolicy, ManagedEAPProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConfigProperties, EAPConfigProperties, GlobalPolicy, ManagedEAPProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
+import {clearBody, createNetworkConfigWithNetworkType, createNetworkConfigWithProperties, simulateEnterPressedInElement} from './test_utils.js';
 
 suite('network-config', () => {
   let networkConfig: NetworkConfigElement;
@@ -32,61 +34,11 @@ suite('network-config', () => {
         mojoApi_);
   });
 
-  function setNetworkConfig(
-      properties: ManagedProperties,
-      prefilledProperties: ConfigProperties|undefined = undefined): void {
-    assertTrue(!!properties.guid);
-    mojoApi_.setManagedPropertiesForTest(properties);
-    clearBody();
-    networkConfig = document.createElement('network-config');
-    networkConfig.guid = properties.guid;
-    networkConfig.setManagedPropertiesForTesting(properties);
-
-    if (prefilledProperties !== undefined) {
-      networkConfig.prefilledProperties = prefilledProperties;
-    }
-  }
-
-  function setNetworkType(
-      type: NetworkType, security: SecurityType|undefined = undefined): void {
-    clearBody();
-    networkConfig = document.createElement('network-config');
-    networkConfig.type = OncMojo.getNetworkTypeString(type);
-    if (security !== undefined) {
-      networkConfig.setSecurityTypeForTesting(security);
-    }
-  }
 
   function initNetworkConfig(): void {
     document.body.appendChild(networkConfig);
     networkConfig.init();
     flush();
-  }
-
-  function flushAsync(): Promise<void> {
-    flush();
-
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
-  }
-
-  function clearBody(): void {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  }
-
-  /**
-   * Simulate an element of id |elementId| fires enter event.
-   */
-  function simulateEnterPressedInElement(elementId: string) {
-    const element = networkConfig.shadowRoot!.querySelector(`#${elementId}`);
-    networkConfig.connectOnEnter = true;
-    assertTrue(!!element);
-    const event = new CustomEvent('enter', {
-      bubbles: true,
-      composed: true,
-      detail: {path: [element]},
-    });
-    element.dispatchEvent(event);
   }
 
   suite('Share', () => {
@@ -122,15 +74,16 @@ suite('network-config', () => {
         userCreatedNetworkConfigurationsAreEphemeral: true,
       };
       mojoApi_.setGlobalPolicy(globalPolicy as GlobalPolicy);
-      await flushAsync();
+      await flushTasks();
     }
 
     test('New Config: Login or guest', () => {
       // Insecure networks are always shared so test a secure config.
-      setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+      networkConfig = createNetworkConfigWithNetworkType(
+          NetworkType.kWiFi, SecurityType.kWepPsk);
       setLoginOrGuest();
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const share =
             networkConfig.shadowRoot!.querySelector<NetworkConfigToggleElement>(
                 '#share');
@@ -149,11 +102,12 @@ suite('network-config', () => {
 
           // Insecure networks are always shared so test a secure config.
           setUserCreatedNetworkConfigurationsAreEphemeral();
-          setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+          networkConfig = createNetworkConfigWithNetworkType(
+              NetworkType.kWiFi, SecurityType.kWepPsk);
           setLoginOrGuest();
           initNetworkConfig();
 
-          await flushAsync();
+          await flushTasks();
 
           assertFalse(
               !!networkConfig.shadowRoot!
@@ -182,11 +136,12 @@ suite('network-config', () => {
 
           // Insecure networks are always shared so test a secure config.
           setUserCreatedNetworkConfigurationsAreEphemeral();
-          setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+          networkConfig = createNetworkConfigWithNetworkType(
+              NetworkType.kWiFi, SecurityType.kWepPsk);
           setLoginOrGuest();
           initNetworkConfig();
 
-          await flushAsync();
+          await flushTasks();
 
           assertTrue(
               !!networkConfig.shadowRoot!
@@ -198,10 +153,11 @@ suite('network-config', () => {
 
     test('New Config: Kiosk', () => {
       // Insecure networks are always shared so test a secure config.
-      setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+      networkConfig = createNetworkConfigWithNetworkType(
+          NetworkType.kWiFi, SecurityType.kWepPsk);
       setKiosk();
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const share =
             networkConfig.shadowRoot!.querySelector<NetworkConfigToggleElement>(
                 '#share');
@@ -212,10 +168,10 @@ suite('network-config', () => {
     });
 
     test('New Config: Authenticated, Not secure', () => {
-      setNetworkType(NetworkType.kWiFi);
+      networkConfig = createNetworkConfigWithNetworkType(NetworkType.kWiFi);
       setAuthenticated();
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const share =
             networkConfig.shadowRoot!.querySelector<NetworkConfigToggleElement>(
                 '#share');
@@ -226,10 +182,11 @@ suite('network-config', () => {
     });
 
     test('New Config: Authenticated, Secure', () => {
-      setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+      networkConfig = createNetworkConfigWithNetworkType(
+          NetworkType.kWiFi, SecurityType.kWepPsk);
       setAuthenticated();
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const share =
             networkConfig.shadowRoot!.querySelector<NetworkConfigToggleElement>(
                 '#share');
@@ -244,11 +201,12 @@ suite('network-config', () => {
         'ephemeralNetworkPoliciesEnabled': true,
       });
       setUserCreatedNetworkConfigurationsAreEphemeral();
-      setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+      networkConfig = createNetworkConfigWithNetworkType(
+          NetworkType.kWiFi, SecurityType.kWepPsk);
       setAuthenticated();
       initNetworkConfig();
 
-      await flushAsync();
+      await flushTasks();
 
       assertFalse(
           !!networkConfig.shadowRoot!.querySelector<NetworkConfigToggleElement>(
@@ -272,11 +230,11 @@ suite('network-config', () => {
         'ephemeralNetworkPoliciesEnabled': true,
       });
       setUserCreatedNetworkConfigurationsAreEphemeral();
-      setNetworkType(NetworkType.kWiFi);
+      networkConfig = createNetworkConfigWithNetworkType(NetworkType.kWiFi);
       setAuthenticated();
       initNetworkConfig();
 
-      await flushAsync();
+      await flushTasks();
 
       assertFalse(
           !!networkConfig.shadowRoot!.querySelector<NetworkConfigToggleElement>(
@@ -299,10 +257,10 @@ suite('network-config', () => {
         'New Config: Authenticated, Not secure to secure to not secure',
         async () => {
           // set default to insecure network
-          setNetworkType(NetworkType.kWiFi);
+          networkConfig = createNetworkConfigWithNetworkType(NetworkType.kWiFi);
           setAuthenticated();
           initNetworkConfig();
-          await flushAsync();
+          await flushTasks();
           const share =
               networkConfig.shadowRoot!
                   .querySelector<NetworkConfigToggleElement>('#share');
@@ -312,14 +270,14 @@ suite('network-config', () => {
 
           // change to secure network
           networkConfig.setSecurityTypeForTesting(SecurityType.kWepPsk);
-          await flushAsync();
+          await flushTasks();
           assertTrue(!!share);
           assertFalse(share.disabled);
           assertFalse(share.checked);
 
           // change back to insecure network
           networkConfig.setSecurityTypeForTesting(SecurityType.kNone);
-          await flushAsync();
+          await flushTasks();
           assertTrue(!!share);
           assertFalse(share.disabled);
           assertTrue(share.checked);
@@ -332,10 +290,10 @@ suite('network-config', () => {
       wifi1.source = OncSource.kUser;
       assertTrue(!!wifi1.typeProperties.wifi);
       wifi1.typeProperties.wifi.security = SecurityType.kWepPsk;
-      setNetworkConfig(wifi1);
+      networkConfig = createNetworkConfigWithProperties(mojoApi_, wifi1);
       setAuthenticated();
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         assertFalse(!!networkConfig.shadowRoot!
                           .querySelector<NetworkConfigToggleElement>('#share'));
       });
@@ -347,9 +305,9 @@ suite('network-config', () => {
       assertTrue(!!eth.typeProperties.ethernet);
       eth.typeProperties.ethernet.authentication =
           OncMojo.createManagedString('None');
-      setNetworkConfig(eth);
+      networkConfig = createNetworkConfigWithProperties(mojoApi_, eth);
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         assertEquals('ethernetguid', networkConfig.guid);
         assertEquals(
             SecurityType.kNone, networkConfig.getSecurityTypeForTesting());
@@ -370,9 +328,9 @@ suite('network-config', () => {
         outer: OncMojo.createManagedString('PEAP'),
       };
       eth.typeProperties.ethernet.eap = eapProperties as ManagedEAPProperties;
-      setNetworkConfig(eth);
+      networkConfig = createNetworkConfigWithProperties(mojoApi_, eth);
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         assertEquals('eapguid', networkConfig.guid);
         assertEquals(
             SecurityType.kWpaEap, networkConfig.getSecurityTypeForTesting());
@@ -396,11 +354,11 @@ suite('network-config', () => {
         outer: OncMojo.createManagedString('PEAP'),
       };
       eth.typeProperties.ethernet.eap = eapProperties as ManagedEAPProperties;
-      setNetworkConfig(eth);
+      networkConfig = createNetworkConfigWithProperties(mojoApi_, eth);
       initNetworkConfig();
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         assertFalse(networkConfig.getPropertiesSentForTesting());
-        simulateEnterPressedInElement('oncEAPIdentity');
+        simulateEnterPressedInElement(networkConfig, 'oncEAPIdentity');
         assertTrue(networkConfig.getPropertiesSentForTesting());
       });
     });
@@ -430,10 +388,11 @@ suite('network-config', () => {
     }
 
     test('None', () => {
-      setNetworkType(NetworkType.kWiFi, SecurityType.kWepPsk);
+      networkConfig = createNetworkConfigWithNetworkType(
+          NetworkType.kWiFi, SecurityType.kWepPsk);
       initNetworkConfig();
 
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const ssid =
             networkConfig.shadowRoot!.querySelector<NetworkConfigInputElement>(
                 '#ssid');
@@ -460,10 +419,11 @@ suite('network-config', () => {
           NetworkType.kWiFi, 'someguid', '');
       const prefilledProperties =
           getPrefilledProperties(testSsid, SecurityType.kNone);
-      setNetworkConfig(wifi, prefilledProperties);
+      networkConfig = createNetworkConfigWithProperties(
+          mojoApi_, wifi, prefilledProperties);
       initNetworkConfig();
 
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const ssid =
             networkConfig.shadowRoot!.querySelector<NetworkConfigInputElement>(
                 '#ssid');
@@ -487,10 +447,11 @@ suite('network-config', () => {
           NetworkType.kWiFi, 'someguid', '');
       const prefilledProperties =
           getPrefilledProperties(testSsid, SecurityType.kWpaPsk, testPassword);
-      setNetworkConfig(wifi, prefilledProperties);
+      networkConfig = createNetworkConfigWithProperties(
+          mojoApi_, wifi, prefilledProperties);
       initNetworkConfig();
 
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const ssid =
             networkConfig.shadowRoot!.querySelector<NetworkConfigInputElement>(
                 '#ssid');
@@ -533,10 +494,11 @@ suite('network-config', () => {
       const prefilledProperties = getPrefilledProperties(
           testSsid, SecurityType.kWpaEap, testPassword,
           testEapConfig as EAPConfigProperties);
-      setNetworkConfig(wifi, prefilledProperties);
+      networkConfig = createNetworkConfigWithProperties(
+          mojoApi_, wifi, prefilledProperties);
       initNetworkConfig();
 
-      return flushAsync().then(() => {
+      return flushTasks().then(() => {
         const ssid =
             networkConfig.shadowRoot!.querySelector<NetworkConfigInputElement>(
                 '#ssid');
