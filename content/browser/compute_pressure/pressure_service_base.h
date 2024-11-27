@@ -16,6 +16,7 @@
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 #include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
@@ -47,8 +48,10 @@ class CONTENT_EXPORT PressureServiceBase
   virtual bool CanCallAddClient() const;
 
   // blink::mojom::WebPressureManager implementation.
-  void AddClient(device::mojom::PressureSource source,
-                 AddClientCallback callback) override;
+  void AddClient(
+      device::mojom::PressureSource source,
+      mojo::PendingAssociatedRemote<device::mojom::PressureClient> client,
+      AddClientCallback callback) override;
 
   // WebContentsPressureManagerProxy::Observer implementation.
   void DidAddVirtualPressureSource(device::mojom::PressureSource) override;

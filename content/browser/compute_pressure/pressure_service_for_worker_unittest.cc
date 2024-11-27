@@ -49,7 +49,7 @@ namespace {
 // Test double for PressureClient that records all updates.
 class FakePressureClient : public device::mojom::PressureClient {
  public:
-  FakePressureClient() : receiver_(this) {}
+  FakePressureClient() : associated_receiver_(this) {}
   ~FakePressureClient() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -99,10 +99,8 @@ class FakePressureClient : public device::mojom::PressureClient {
     run_loop.Run();
   }
 
-  void Bind(
-      mojo::PendingReceiver<device::mojom::PressureClient> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    receiver_.Bind(std::move(pending_receiver));
+  mojo::AssociatedReceiver<device::mojom::PressureClient>& receiver() {
+    return associated_receiver_;
   }
 
  private:
@@ -113,7 +111,7 @@ class FakePressureClient : public device::mojom::PressureClient {
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::Receiver<device::mojom::PressureClient> receiver_
+  mojo::AssociatedReceiver<device::mojom::PressureClient> associated_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
@@ -178,12 +176,13 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
   SetPressureServiceForDedicatedWorker();
 
   FakePressureClient client;
-  base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
+  base::test::TestFuture<blink::mojom::WebPressureManagerAddClientResultPtr>
       future;
-  pressure_manager_->AddClient(PressureSource::kCpu, future.GetCallback());
-  ASSERT_TRUE(future.Get()->is_pressure_client());
+  pressure_manager_->AddClient(PressureSource::kCpu,
+                               client.receiver().BindNewEndpointAndPassRemote(),
+                               future.GetCallback());
+  ASSERT_TRUE(future.Get()->is_success());
   auto result = future.Take();
-  client.Bind(std::move(result->get_pressure_client()));
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
@@ -322,12 +321,13 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
   SetPressureServiceForSharedWorker();
 
   FakePressureClient client;
-  base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
+  base::test::TestFuture<blink::mojom::WebPressureManagerAddClientResultPtr>
       future;
-  pressure_manager_->AddClient(PressureSource::kCpu, future.GetCallback());
-  ASSERT_TRUE(future.Get()->is_pressure_client());
+  pressure_manager_->AddClient(PressureSource::kCpu,
+                               client.receiver().BindNewEndpointAndPassRemote(),
+                               future.GetCallback());
+  ASSERT_TRUE(future.Get()->is_success());
   auto result = future.Take();
-  client.Bind(std::move(result->get_pressure_client()));
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);

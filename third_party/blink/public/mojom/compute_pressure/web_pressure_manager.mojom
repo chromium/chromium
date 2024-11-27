@@ -7,11 +7,18 @@ module blink.mojom;
 import "services/device/public/mojom/pressure_manager.mojom";
 import "services/device/public/mojom/pressure_update.mojom";
 
+// WebPressureManager.AddClient()'s return type.
+union WebPressureManagerAddClientResult {
+  device.mojom.PressureManagerAddClientError error;
+  device.mojom.PressureManagerAddClientSuccess success;
+};
+
 // Partial view into the device.mojom.PressureManager Mojo interface.
 // This interface does not expose the privileged automation-related methods
 // that the device.mojom version does.
 interface WebPressureManager {
   // See PressureManager.AddClient()'s documentation for more details.
-  AddClient(device.mojom.PressureSource source) =>
-      (device.mojom.PressureManagerAddClientResult result);
+  AddClient(device.mojom.PressureSource source,
+            pending_associated_remote<device.mojom.PressureClient> client) =>
+      (WebPressureManagerAddClientResult result);
 };
