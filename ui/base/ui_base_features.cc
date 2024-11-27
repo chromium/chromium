@@ -156,12 +156,6 @@ BASE_FEATURE(kInputMethodSettingsUiUpdate,
              "InputMethodSettingsUiUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables percent-based scrolling for mousewheel and keyboard initiated
-// scrolls and impulse curve animations.
-BASE_FEATURE(kWindowsScrollingPersonality,
-             "WindowsScrollingPersonality",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
 // tend to slip more than touch taps (presumably because the user doesn't feel
 // the movement friction with a stylus).  As a result, it is harder to tap with

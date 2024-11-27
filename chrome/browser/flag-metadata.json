@@ -9493,11 +9493,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "windows-scrolling-personality",
-    "owners": [ "arakeri@microsoft.com", "gastonr@microsoft.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "windows11-mica-titlebar",
     "owners": [ "j@jloeffler.com", "pkasting@chromium.org" ],
     "expiry_milestone": 140

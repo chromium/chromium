@@ -2943,11 +2943,8 @@ TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
   EXPECT_FALSE(
       GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
   // Finish the smooth scroll animation for wheel.
-  const int scroll_animation_duration_ms =
-      features::IsImpulseScrollAnimationEnabled() ? 300 : 150;
-  BeginImplFrameAndAnimate(
-      begin_frame_args,
-      start_time + base::Milliseconds(scroll_animation_duration_ms));
+  BeginImplFrameAndAnimate(begin_frame_args,
+                           start_time + base::Milliseconds(150));
 
   // At the end of the previous scroll animation, a new animation for the
   // snapping should have started.
@@ -15215,13 +15212,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollUpdateTargetBeforeStarting) {
 
   // Verify no jump.
   float y = CurrentScrollOffset(scrolling_layer).y();
-  if (features::IsImpulseScrollAnimationEnabled()) {
-    // Impulse scroll animation is faster than non-impulse, which results in a
-    // traveled distance larger than the original 50px.
-    EXPECT_TRUE(y > 50 && y < 100);
-  } else {
-    EXPECT_TRUE(y > 1 && y < 49);
-  }
+  EXPECT_TRUE(y > 1 && y < 49);
 }
 
 TEST_P(LayerTreeHostImplTest, ScrollAnimatedWithDelay) {
@@ -15268,8 +15259,7 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
   host_impl_->UpdateAnimationState(true);
-  EXPECT_NEAR((features::IsImpulseScrollAnimationEnabled() ? 87 : 50),
-              CurrentScrollOffset(scrolling_layer).y(), 1);
+  EXPECT_EQ(50, CurrentScrollOffset(scrolling_layer).y());
   host_impl_->DidFinishImplFrame(begin_frame_args);
 
   // Update target.

@@ -12,10 +12,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event.h"
@@ -412,9 +410,6 @@ TEST(WebInputEventTest, KeyEvent) {
 }
 
 TEST(WebInputEventTest, WheelEvent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWindowsScrollingPersonality);
   const int kDeltaX = 14;
   const int kDeltaY = -3;
   ui::MouseWheelEvent ui_event(

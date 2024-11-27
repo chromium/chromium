@@ -5835,6 +5835,8 @@ crbug.com/1309756 [ Mac12-arm64 Release ] http/tests/images/force-reload.html [ 
 crbug.com/1311431 [ Debug Mac13-arm64 ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
 crbug.com/1311431 [ Mac Release ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
 
+crbug.com/40701909 [ Mac ] fast/scroll-behavior/smooth-scroll/track-scroll.html [ Failure ]
+
 # These tests fail on SwiftShader FEMU due to a change in log/exp implementation.
 crbug.com/1311456 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html [ Crash Failure Pass Timeout ]
 crbug.com/1311456 [ Fuchsia ] tables/mozilla/core/bloomberg.html [ Crash Failure Pass Timeout ]

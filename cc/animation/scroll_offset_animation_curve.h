@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
@@ -65,7 +64,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   // here. This delay is represented by the |delayed_by| value. The way we have
   // decided to factor this in is by reducing the duration of the resulting
   // animation by this delayed amount. This also applies to
-  // LinearSegmentDuration and ImpulseSegmentDuration.
+  // LinearSegmentDuration.
   static base::TimeDelta EaseInOutSegmentDuration(
       const gfx::Vector2dF& delta,
       DurationBehavior duration_behavior,
@@ -74,9 +73,6 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   static base::TimeDelta LinearSegmentDuration(const gfx::Vector2dF& delta,
                                                base::TimeDelta delayed_by,
                                                float velocity);
-
-  static base::TimeDelta ImpulseSegmentDuration(const gfx::Vector2dF& delta,
-                                                base::TimeDelta delayed_by);
 
   ScrollOffsetAnimationCurve(const ScrollOffsetAnimationCurve&) = delete;
   ~ScrollOffsetAnimationCurve() override;
@@ -120,7 +116,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
 
  private:
   friend class ScrollOffsetAnimationCurveFactory;
-  enum class AnimationType { kLinear, kEaseInOut, kImpulse };
+  enum class AnimationType { kLinear, kEaseInOut };
 
   // |duration_behavior| should be provided if (and only if) |animation_type| is
   // kEaseInOut.

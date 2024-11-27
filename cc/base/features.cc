@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_features.h"
 
 namespace features {
 
@@ -30,11 +29,6 @@ BASE_FEATURE(kAlignSurfaceLayerImplToPixelGrid,
 BASE_FEATURE(kAnimatedImageResume,
              "AnimatedImageResume",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The feature is deprecated. The code removal is tracked in crbug.com/359747082
-bool IsImpulseScrollAnimationEnabled() {
-  return false;
-}
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
