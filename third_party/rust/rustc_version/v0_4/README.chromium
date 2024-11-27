@@ -2,7 +2,7 @@ Name: rustc_version
 URL: https://crates.io/crates/rustc_version
 Version: 0.4.1
 Revision: eeca449cca83e24150e46739e797aa82e9142809
-License: Apache-2.0
+License: Apache 2.0
 License File: //third_party/rust/chromium_crates_io/vendor/rustc_version-0.4.1/LICENSE-APACHE
 Shipped: no
 Security Critical: no

@@ -378,7 +378,7 @@ third_party/blink/renderer/bindings 4 1
 third_party/blink/renderer/bindings/core/v8 1 1
 third_party/blink/renderer/core 1 1
 third_party/blink/renderer/core/editing/ime 1 1
-third_party/blink/renderer/core/frame 2 2
+third_party/blink/renderer/core/frame 1 1
 third_party/blink/renderer/core/html 3 2
 third_party/blink/renderer/core/html/custom 1 1
 third_party/blink/renderer/core/html/fenced_frame 2 1
@@ -834,6 +834,7 @@ tools/vim 1 1
 tools/web_bluetooth 1 1
 tools/win/RetrieveSymbols 1 1
 ui/base/cocoa/constrained_window 1 1
+ui/base/linux 2 1
 ui/base/prediction 1 1
 ui/base/x 3 3
 ui/events/devices/x11 18 4

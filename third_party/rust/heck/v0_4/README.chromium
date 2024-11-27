@@ -2,7 +2,7 @@ Name: heck
 URL: https://crates.io/crates/heck
 Version: 0.4.1
 Revision: 76a8274f948fbe3551413dc09026b733aca71995
-License: Apache-2.0
+License: Apache 2.0
 License File: //third_party/rust/chromium_crates_io/vendor/heck-0.4.1/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes

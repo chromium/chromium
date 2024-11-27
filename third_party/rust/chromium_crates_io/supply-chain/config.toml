@@ -101,7 +101,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."cxx:1.0.130"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.130"]
+[policy."cxxbridge-cmd:1.0.131"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."cxxbridge-flags:1.0.130"]
@@ -381,7 +381,7 @@ Exemption updated to 1.0.124 in June 2024.
 Exemption updated to 1.0.126 in August 2024.
 Exemption updated to 1.0.128 in September 2024.
 Exemption updated to 1.0.129 in October 2024.
-Exemption updated to 1.0.130 in November 2024.
+Exemption updated to 1.0.130 in October 2024.
 """
 
 [[exemptions.memchr]]

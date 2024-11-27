@@ -1150,7 +1150,7 @@ fn write_return_type(out: &mut OutFile, ty: &Option<Type>) {
 fn indirect_return(sig: &Signature, types: &Types) -> bool {
     sig.ret
         .as_ref()
-        .map_or(false, |ret| sig.throws || types.needs_indirect_abi(ret))
+        .is_some_and(|ret| sig.throws || types.needs_indirect_abi(ret))
 }
 
 fn write_indirect_return_type(out: &mut OutFile, ty: &Type) {

@@ -29,7 +29,8 @@
     clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
-    clippy::toplevel_ref_arg
+    clippy::toplevel_ref_arg,
+    clippy::uninlined_format_args
 )]
 
 mod app;
