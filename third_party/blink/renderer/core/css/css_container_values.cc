@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 
-#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
 namespace blink {
 
@@ -38,9 +38,7 @@ CSSContainerValues::CSSContainerValues(
           document.documentElement()->GetComputedStyle())),
       font_style_(container.GetComputedStyle()),
       root_font_style_(document.documentElement()->GetComputedStyle()),
-      container_sizes_(
-          ContainerQueryEvaluator::ParentContainerCandidateElement(container)) {
-}
+      container_sizes_(FlatTreeTraversal::ParentElement(container)) {}
 
 void CSSContainerValues::Trace(Visitor* visitor) const {
   visitor->Trace(element_);

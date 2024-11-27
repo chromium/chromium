@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -697,7 +698,6 @@ void MatchSlottedRules(const Element& element,
   }
 
   for (const auto& [slot, resolver] : base::Reversed(resolvers)) {
-    ElementRuleCollector::SlottedRulesScope scope(collector, *slot);
     collector.ClearMatchedRules();
     collector.BeginAddingAuthorRulesForTreeScope(slot->GetTreeScope());
     resolver->CollectMatchingSlottedRules(collector);
@@ -760,12 +760,6 @@ void MatchHostPartRules(const Element& element,
   // hosts (see MatchForRelation).
   TreeScope& tree_scope = element.GetTreeScope();
   if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
-    // PartRulesScope must be provided with the host where we want to start
-    // the search for container query containers.  For matching :host::part(),
-    // we want to start the search at `element`'s host.
-    const Element* host = element.OwnerShadowHost();
-    ElementRuleCollector::PartRulesScope scope(collector,
-                                               const_cast<Element&>(*host));
     resolver->CollectMatchingPartPseudoRules(collector, &current_names);
   }
 }
@@ -874,11 +868,6 @@ void MatchOuterScopeRules(const Element& matching_element,
     // Consider the ::part rules and pseudo-element rules for the given scope.
     TreeScope& tree_scope = element->GetTreeScope();
     if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
-      // PartRulesScope must be provided with the host where we want to start
-      // the search for container query containers.  Since we're not handling
-      // :host::part() here, `element` is the correct starting element/host.
-      ElementRuleCollector::PartRulesScope scope(
-          collector, const_cast<Element&>(*element));
       collector.ClearMatchedRules();
       collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
       if (state == MatchingState::kPart) {
@@ -2252,8 +2241,8 @@ Element* StyleResolver::FindContainerForElement(
     const TreeScope* selector_tree_scope) {
   DCHECK(element);
   return ContainerQueryEvaluator::FindContainer(
-      ContainerQueryEvaluator::ParentContainerCandidateElement(*element),
-      container_selector, selector_tree_scope);
+      FlatTreeTraversal::ParentElement(*element), container_selector,
+      selector_tree_scope);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(

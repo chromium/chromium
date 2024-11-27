@@ -142,22 +142,13 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
 }
 
 // static
-Element* ContainerQueryEvaluator::ParentContainerCandidateElement(
-    Element& element) {
-  if (RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled()) {
-    return FlatTreeTraversal::ParentElement(element);
-  }
-  return element.ParentOrShadowHostElement();
-}
-
-// static
 Element* ContainerQueryEvaluator::FindContainer(
     Element* starting_element,
     const ContainerSelector& container_selector,
     const TreeScope* selector_tree_scope) {
   // TODO(crbug.com/1213888): Cache results.
   for (Element* element = starting_element; element;
-       element = ParentContainerCandidateElement(*element)) {
+       element = FlatTreeTraversal::ParentElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->StyleType() == kPseudoIdNone) {
         if (Matches(*style, container_selector, selector_tree_scope)) {

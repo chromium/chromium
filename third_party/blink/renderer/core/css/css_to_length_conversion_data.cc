@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -65,10 +65,9 @@ std::optional<double> FindSizeForContainerAxis(
 
   for (Element* container = ContainerQueryEvaluator::FindContainer(
            context_element, selector, tree_scope);
-       container;
-       container = ContainerQueryEvaluator::FindContainer(
-           ContainerQueryEvaluator::ParentContainerCandidateElement(*container),
-           selector, tree_scope)) {
+       container; container = ContainerQueryEvaluator::FindContainer(
+                      FlatTreeTraversal::ParentElement(*container), selector,
+                      tree_scope)) {
     ContainerQueryEvaluator& evaluator =
         container->EnsureContainerQueryEvaluator();
     evaluator.SetReferencedByUnit();

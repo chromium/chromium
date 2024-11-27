@@ -24,9 +24,9 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
-#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -72,11 +72,9 @@ StyleResolverState::StyleResolverState(
                             element.IsPseudoElement()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
-      container_unit_context_(
-          style_recalc_context
-              ? style_recalc_context->container
-              : ContainerQueryEvaluator::ParentContainerCandidateElement(
-                    element)),
+      container_unit_context_(style_recalc_context
+                                  ? style_recalc_context->container
+                                  : FlatTreeTraversal::ParentElement(element)),
       anchor_evaluator_(style_recalc_context
                             ? style_recalc_context->anchor_evaluator
                             : nullptr),

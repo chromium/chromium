@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/css/selector_statistics.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -615,8 +616,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         if (!style_container_candidate) {
           if (pseudo_style_request_.pseudo_id == kPseudoIdNone) {
             style_container_candidate =
-                ContainerQueryEvaluator::ParentContainerCandidateElement(
-                    context_.GetElement());
+                FlatTreeTraversal::ParentElement(context_.GetElement());
           } else {
             style_container_candidate = &context_.GetElement();
           }

@@ -43,12 +43,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
                          ContainerSelectorCache&,
                          MatchResult&);
 
-  // Get the parent container candidate for container queries. Either the flat
-  // tree parent or the shadow-including parent based on a runtime flag due to a
-  // spec change.
-  // To be removed when the CSSFlatTreeContainer flag is removed.
-  static Element* ParentContainerCandidateElement(Element& element);
-
   // Width/Height are used by container relative units (qi, qb, etc).
   //
   // A return value of std::nullopt normally means that the relevant axis

@@ -3896,8 +3896,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
         MarkNonSlottedHostChildrenForStyleRecalc();
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-      slot->RecalcStyleForSlotChildren(
-          child_change, child_recalc_context.ForSlotChildren(*slot));
+      slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
     } else {
       RecalcDescendantStyles(child_change, child_recalc_context);
     }
@@ -8218,8 +8217,7 @@ PseudoElement* Element::UpdateScrollMarkerGroupPseudoElement(
     // candidate to avoid crashing. Note that the originating element can still
     // be a query container for style() queries, for instance.
     scroll_marker_group_context.container =
-        ContainerQueryEvaluator::ParentContainerCandidateElement(
-            *style_recalc_context.container);
+        FlatTreeTraversal::ParentElement(*style_recalc_context.container);
   }
   return UpdatePseudoElement(pseudo_id, change, scroll_marker_group_context);
 }

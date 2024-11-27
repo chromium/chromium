@@ -45,7 +45,6 @@ namespace blink {
 class Element;
 class ElementResolveContext;
 class ElementRuleCollector;
-class HTMLSlotElement;
 class RuleData;
 class SelectorFilter;
 class StyleRuleUsageTracker;
@@ -205,34 +204,6 @@ class CORE_EXPORT ElementRuleCollector {
   const HeapVector<MatchedRule, 32>& MatchedRulesForTest() const {
     return matched_rules_;
   }
-
-  // Temporarily swap the StyleRecalcContext with one which points to the
-  // closest query container for matching ::slotted rules for a given slot.
-  class SlottedRulesScope {
-    STACK_ALLOCATED();
-
-   public:
-    SlottedRulesScope(ElementRuleCollector& collector, HTMLSlotElement& slot)
-        : context_(&collector.style_recalc_context_,
-                   collector.style_recalc_context_.ForSlottedRules(slot)) {}
-
-   private:
-    base::AutoReset<StyleRecalcContext> context_;
-  };
-
-  // Temporarily swap the StyleRecalcContext with one which points to the
-  // closest query container for matching ::part rules for a given host.
-  class PartRulesScope {
-    STACK_ALLOCATED();
-
-   public:
-    PartRulesScope(ElementRuleCollector& collector, Element& host)
-        : context_(&collector.style_recalc_context_,
-                   collector.style_recalc_context_.ForPartRules(host)) {}
-
-   private:
-    base::AutoReset<StyleRecalcContext> context_;
-  };
 
  private:
   // If stop_at_first_match = true, CollectMatchingRules*() will stop
