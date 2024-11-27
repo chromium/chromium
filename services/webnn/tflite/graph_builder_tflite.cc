@@ -505,8 +505,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
        /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
        /*reshape_input=*/kAllDataTypesExceptUint4,
-       // TODO(crbug.com/377366939): Implement Reverse.
-       /*reverse_input=*/{},
+       /*reverse_input=*/kFloat16To32AndInt8To32AndUint8,
        // TODO(crbug.com/370538329): Implement scatterElements.
        /*scatter_elements_input=*/{},
        /*scatter_elements_indices=*/{},
@@ -889,6 +888,10 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
                                         reshape.output_operand_id));
       break;
     }
+    case mojom::Operation::Tag::kReverse: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeReverse(*op.get_reverse()));
+      break;
+    }
     case mojom::Operation::Tag::kScatterNd: {
       ASSIGN_OR_RETURN(operator_offset,
                        SerializeScatterND(*op.get_scatter_nd()));
@@ -940,7 +943,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeWhere(*op.get_where()));
       break;
     }
-    case mojom::Operation::Tag::kReverse:
     case mojom::Operation::Tag::kScatterElements:
       return base::unexpected(NotSupportedOperatorError(op));
   }
@@ -1412,6 +1414,24 @@ auto GraphBuilderTflite::SerializeScatterNDOperation(
       GetOperatorCodeIndex(::tflite::BuiltinOperator_SCATTER_ND);
   const std::array<int32_t, 3> op_inputs = {
       indices_tensor_index, updates_tensor_index, input_shape_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
+}
+
+auto GraphBuilderTflite::SerializeReverseOperation(
+    int32_t input_tensor_index,
+    base::span<const int32_t> axes,
+    int32_t output_tensor_index) -> OperatorOffset {
+  const int32_t axes_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      /*buffer=*/axes,
+      /*dimensions=*/std::array<int32_t, 1>(
+          {base::checked_cast<int32_t>(axes.size())}));
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_REVERSE_V2);
+  const std::array<int32_t, 2> op_inputs = {input_tensor_index,
+                                            axes_tensor_index};
   const std::array<int32_t, 1> op_outputs = {output_tensor_index};
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
@@ -4761,6 +4781,48 @@ auto GraphBuilderTflite::SerializeReshape(uint64_t input_operand_id,
   return SerializeReshapeOperation(input_tensor_info.index,
                                    output_tensor_info.index,
                                    output_tensor_info.dimensions);
+}
+
+auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK(context_properties_.data_type_limits.reverse_input.Has(
+      GetOperand(reverse.input_operand_id).descriptor.data_type()));
+
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(reverse.input_operand_id));
+  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                   SerializeOutputTensorInfo(reverse.output_operand_id));
+  // Don't reverse if the axes are empty.
+  if (reverse.axes.empty()) {
+    return SerializeIdentityOperation(input_tensor_info.index,
+                                      output_tensor_info.index,
+                                      output_tensor_info.dimensions);
+  }
+
+  // The TFLite kernel of reverse only supports contiguous axes, so the input
+  // tensor need to be reversed slice by slice.
+  ASSIGN_OR_RETURN(std::vector<int32_t> signed_axes,
+                   ToSignedDimensions(reverse.axes));
+  base::ranges::sort(signed_axes);
+  std::vector<int32_t> contiguous_axes = {signed_axes[0]};
+  std::optional<int32_t> previous_reverse_tensor_index;
+  for (size_t i = 1; i < signed_axes.size(); ++i) {
+    if (signed_axes[i] != signed_axes[i - 1] + 1) {
+      const int32_t reverse_tensor_index = SerializeTemporaryTensor(
+          input_tensor_info.dimensions, input_tensor_info.data_type);
+      operators_.emplace_back(SerializeReverseOperation(
+          previous_reverse_tensor_index.value_or(input_tensor_info.index),
+          contiguous_axes, reverse_tensor_index));
+
+      previous_reverse_tensor_index = reverse_tensor_index;
+      contiguous_axes.clear();
+    }
+    contiguous_axes.push_back(signed_axes[i]);
+  }
+
+  return SerializeReverseOperation(
+      previous_reverse_tensor_index.value_or(input_tensor_info.index),
+      contiguous_axes, output_tensor_info.index);
 }
 
 auto GraphBuilderTflite::SerializeSigmoid(const mojom::Sigmoid& sigmoid)

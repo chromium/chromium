@@ -348,6 +348,12 @@ class GraphBuilderTflite final {
       int32_t updates_tensor_index,
       int32_t output_tensor_index);
 
+  // This function is called by `SerializeReverse` to serialize WebNN
+  // reverse operation.
+  OperatorOffset SerializeReverseOperation(int32_t input_tensor_index,
+                                           base::span<const int32_t> axes,
+                                           int32_t output_tensor_index);
+
   // This function is called by `SerializeWhere` to serialize WebNN where
   // operation or used to emulate scatterND operation.
   OperatorOffset SerializeWhereOperation(int32_t condition_tensor_index,
@@ -620,6 +626,8 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeReshape(
       uint64_t input_operand_id,
       uint64_t output_operand_id);
+  base::expected<OperatorOffset, std::string> SerializeReverse(
+      const mojom::Reverse& reverse);
   base::expected<OperatorOffset, std::string> SerializeScatterND(
       const mojom::ScatterND& scatter_nd);
   base::expected<OperatorOffset, std::string> SerializeSigmoid(
