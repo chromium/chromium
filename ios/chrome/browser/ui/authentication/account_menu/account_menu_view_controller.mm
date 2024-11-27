@@ -296,6 +296,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                accessibilityIdentifier:kAccountMenuSecondaryActionMenuButtonId];
   _ellipsisButton.menu = ellipsisMenu;
   _ellipsisButton.showsMenuAsPrimaryAction = true;
+  _ellipsisButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ICON_OPTION_MENU);
 }
 
 // Configures and returns a cell.

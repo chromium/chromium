@@ -2215,6 +2215,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ICON_INFO" desc="Accessibility label for the info icon [iOS only].">
         Info
       </message>
+      <message name="IDS_IOS_ICON_OPTION_MENU" desc="Accessibility label for the three-dot menu item. The accessibility string should announce that there are ‘more actions’ available, and should not reference the visual look of the button. [iOS only]">
+        More actions
+      </message>
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
         Search
       </message>
