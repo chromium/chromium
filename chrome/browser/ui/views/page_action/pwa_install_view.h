@@ -41,6 +41,8 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   // PageActionIconView:
   void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
+  // This returns nullptr, which helps decoupling the showing of the PWA's
+  // install dialog with the workings of the `PwaInstallView`.
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 

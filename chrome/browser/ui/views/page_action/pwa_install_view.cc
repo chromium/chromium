@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -142,9 +141,7 @@ void PwaInstallView::UpdateImpl() {
     ResetSlideAnimation(false);
   }
 
-  // TODO(crbug.com/341254289): Cleanup after Universal Install has launched to
-  // 100% on Stable.
-  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
+  SetVisible(is_probably_promotable);
 
   // See above about safety of this call.
   std::optional<webapps::WebAppBannerData> data =
@@ -183,7 +180,7 @@ void PwaInstallView::OnIphClosed(const webapps::WebAppBannerData& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // IPH is also closed when the install button is clicked. This does not
   // count as an 'ignore'. The button should remain highlighted and will
-  // eventually be un-highlighted when PWAConfirmationBubbleView is closed.
+  // eventually be un-highlighted when the PWA install bubble is closed.
   if (install_icon_clicked_after_iph_shown_) {
     return;
   }
@@ -229,27 +226,6 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
 }
 
 views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
-  content::WebContents* web_contents = GetWebContents();
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser) {
-    return nullptr;
-  }
-
-  // TODO(crbug.com/341254289): Cleanup after Universal Install has launched to
-  // 100% on Stable.
-  auto* bubble = PWAConfirmationBubbleView::GetBubble();
-  // Only return the active bubble if it's anchored to `this`. (This check takes
-  // the more generic approach of verifying that it's the same widget as to
-  // avoid depending too heavily on the exact details of how anchoring works.)
-  if (bubble && bubble->GetAnchorView() &&
-      (bubble->GetAnchorView()->GetWidget() == GetWidget())) {
-    return bubble;
-  }
-
   return nullptr;
 }
 
