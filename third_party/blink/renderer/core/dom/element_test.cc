@@ -1306,4 +1306,29 @@ TEST_F(ElementTest, TheSelectArrowPseudoElement) {
   EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdSelectArrow));
 }
 
+TEST_F(ElementTest, GenerateScrollMarkerGroup) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id="test-style">
+      #scroller {
+        scroll-marker-group: before;
+        overflow: scroll;
+      }
+      #non-scroller {
+        scroll-marker-group: before;
+      }
+    </style>
+    <div id="scroller"></div>
+    <div id="non-scroller"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* scroller = GetElementById("scroller");
+  Element* non_scroller = GetElementById("non-scroller");
+
+  EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(
+      non_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+}
+
 }  // namespace blink

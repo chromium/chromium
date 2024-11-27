@@ -3681,7 +3681,7 @@ bool Element::SkipStyleRecalcForContainer(
   // ::scroll-marker-group boxes are created outside their originating element's
   // box and cannot be skipped if the originating element is a size container
   // because the pseudo element and its box need to be created before layout.
-  if (style.HasPseudoElementStyle(kPseudoIdScrollMarkerGroup)) {
+  if (!style.ScrollMarkerGroupNone()) {
     return false;
   }
 

@@ -228,9 +228,15 @@ bool ScrollMarkerGroupPseudoElement::ShouldScheduleNextService() {
 
 void ScrollMarkerGroupPseudoElement::DetachLayoutTree(
     bool performing_reattach) {
-  for (ScrollMarkerPseudoElement* scroll_marker : focus_group_) {
+  // Swap out the focus_group_ before iterating because
+  // ScrollMarkerPseudoElement::DetachLayoutTree() will modify focus_group_.
+  HeapVector<Member<ScrollMarkerPseudoElement>> focus_group;
+  std::swap(focus_group_, focus_group);
+  for (ScrollMarkerPseudoElement* scroll_marker : focus_group) {
     scroll_marker->DetachLayoutTree(performing_reattach);
   }
+  selected_marker_ = nullptr;
+  pending_selected_marker_ = nullptr;
   PseudoElement::DetachLayoutTree(performing_reattach);
 }
 
