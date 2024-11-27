@@ -8685,3 +8685,6 @@ crbug.com/381085690 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/vali
 crbug.com/381085690 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.worker.html?cpu [ Failure Pass ]
 crbug.com/381085690 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.worker.html?cpu [ Failure Pass ]
 crbug.com/381085690 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-logical.https.any.worker.html?cpu [ Failure Pass ]
+
+# Gardener 2024-11-27
+crbug.com/381142479 [ Linux ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
