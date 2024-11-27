@@ -34,8 +34,9 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
       ProfileResetter::DNS_CONFIGURATIONS;
 
   if (base::FeatureList::IsEnabled(ash::features::kSanitizeV1)) {
-    to_sanitize |=
-        ProfileResetter::PROXY_SETTINGS | ProfileResetter::KEYBOARD_SETTINGS;
+    to_sanitize |= ProfileResetter::PROXY_SETTINGS |
+                   ProfileResetter::KEYBOARD_SETTINGS |
+                   ProfileResetter::DEFAULT_SEARCH_ENGINE;
   }
 
   GetResetter()->ResetSettings(
