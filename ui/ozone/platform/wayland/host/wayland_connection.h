@@ -56,7 +56,6 @@ class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
 class WaylandZcrColorManager;
-class WaylandZcrTouchpadHaptics;
 class WaylandZwpPointerConstraints;
 class WaylandZwpPointerGestures;
 class WaylandZwpRelativePointerManager;
@@ -210,10 +209,6 @@ class WaylandConnection {
     return cursor_shape_.get();
   }
 
-  WaylandZcrTouchpadHaptics* zcr_touchpad_haptics() const {
-    return zcr_touchpad_haptics_.get();
-  }
-
   WaylandWindowManager* window_manager() { return &window_manager_; }
 
   WaylandBufferFactory* buffer_factory() const { return buffer_factory_.get(); }
@@ -363,7 +358,6 @@ class WaylandConnection {
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandZcrTouchpadHaptics;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
   friend class WaylandZwpRelativePointerManager;
@@ -488,7 +482,6 @@ class WaylandConnection {
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;
-  std::unique_ptr<WaylandZcrTouchpadHaptics> zcr_touchpad_haptics_;
   std::unique_ptr<WaylandZwpPointerConstraints> zwp_pointer_constraints_;
   std::unique_ptr<WaylandZwpRelativePointerManager>
       zwp_relative_pointer_manager_;

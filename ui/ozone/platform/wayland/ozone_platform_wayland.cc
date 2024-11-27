@@ -44,7 +44,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
-#include "ui/ozone/platform/wayland/host/wayland_input_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -53,6 +52,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/wayland_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
+#include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_menu_utils.h"
 #include "ui/ozone/public/system_input_injector.h"
@@ -296,7 +296,7 @@ class OzonePlatformWayland : public OzonePlatform,
 #else
     cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 #endif
-    input_controller_ = CreateWaylandInputController(connection_.get());
+    input_controller_ = CreateStubInputController();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
     supported_buffer_formats_ =

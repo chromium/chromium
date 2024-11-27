@@ -30,7 +30,6 @@
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v3-client-protocol.h>
-#include <touchpad-haptics-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-cursor.h>
@@ -225,7 +224,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_pointer_stylus_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_touch_stylus_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_stylus_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_text_input_extension_v1)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_touchpad_haptics_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_blending_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibit_manager_v1)
