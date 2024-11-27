@@ -4100,7 +4100,10 @@ template("libmonochrome_apk_or_bundle_tmpl") {
     defines = []
     if (android_64bit_target_cpu) {
       java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
+
+      # To be compatible with secondary ABI library.
       priority_java_targets = [ "//android_webview:system_webview_64_bundle" ]
+      never_omit_switch_num = true
     } else {
       java_targets = [ "//chrome/android:monochrome_public_bundle" ]
     }

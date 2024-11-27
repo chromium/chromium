@@ -5,8 +5,8 @@
 package J;
 
 public class N {
-  public static final long WHOLE_HASH = -7874644414477415950L;
-  public static final long PRIORITY_HASH = 4128442159926458845L;
+  public static final long WHOLE_HASH = -7874644414477415949L;
+  public static final long PRIORITY_HASH = 4128442159926458844L;
 
   public static native void _V(int _switchNum);
   public static native int _I_I(int _switchNum, int p0);

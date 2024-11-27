@@ -254,6 +254,8 @@ class BaseTest(unittest.TestCase):
         priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.txt'
         priority_java_file.write_text('\n'.join(priority_java_sources))
         cmd += ['--priority-java-sources-file', str(priority_java_file)]
+      if priority_java_files is not None:
+        cmd += ['--never-omit-switch-num']
 
       srcjar_path = os.path.join(tdir, 'srcjar.jar')
       cmd += ['--srcjar-path', srcjar_path]

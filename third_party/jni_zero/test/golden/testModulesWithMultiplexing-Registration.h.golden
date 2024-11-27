@@ -18,13 +18,12 @@ JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleModule_bar(JNIEnv* 
 JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleModule_foo(JNIEnv* env);
 
 // Multiplexing Methods.
-JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N__1V(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleModule_foo(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
     jboolean p0) {
   return Muxed_org_jni_1zero_SampleModule_bar(env, p0);
 }

@@ -6,7 +6,7 @@ package this.is.a.package.prefix.org.jni_zero;
 
 public class GEN_JNI {
   public static void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo() {
-    this.is.a.package.prefix.J.N._V(0);
+    this.is.a.package.prefix.J.N._V();
   }
   public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
     return this.is.a.package.prefix.J.N._O(0);
@@ -48,7 +48,7 @@ public class GEN_JNI {
     return this.is.a.package.prefix.J.N._O(12);
   }
   public static boolean this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
-    return this.is.a.package.prefix.J.N._Z(0);
+    return this.is.a.package.prefix.J.N._Z();
   }
   public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar(
       Object sample) {
@@ -88,7 +88,6 @@ public class GEN_JNI {
       boolean zbool,
       Object bools) {
     return this.is.a.package.prefix.J.N._O_BCDFIJOOOOOOOOSZ(
-        0,
         zbyte,
         zchar,
         zdouble,
@@ -126,7 +125,6 @@ public class GEN_JNI {
       Object context,
       Object convertedObjects) {
     this.is.a.package.prefix.J.N._V_OOOOOOOOOOOOOOOOOO(
-        0,
         clazz,
         classes,
         throwable,

@@ -98,7 +98,7 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_
     jobject convertedObjects);
 
 // Multiplexing Methods.
-JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O(JNIEnv* env, jclass jcaller, jint switch_num) {
@@ -134,7 +134,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O(JNIEnv* env, jclass jcaller, jint 
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z(JNIEnv* env, jclass jcaller, jint switch_num) {
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
@@ -161,7 +161,6 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1BCDFIJOOOOOOOOSZ(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
     jbyte p0,
     jchar p1,
     jdouble p2,
@@ -183,7 +182,6 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1BCDFIJOOOOOOOOSZ(
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1OOOOOOOOOOOOOOOOOO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
     jobject p0,
     jobject p1,
     jobject p2,

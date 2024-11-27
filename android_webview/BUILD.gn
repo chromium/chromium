@@ -439,6 +439,9 @@ template("webview_alternate_library") {
     # Webview's native side naturally will have more JNI present than the Java
     # side. We can just remove any uncalled Java->Native methods.
     remove_uncalled_jni = true
+
+    # To be compatible with primary ABI library.
+    never_omit_switch_num = true
   }
 }
 

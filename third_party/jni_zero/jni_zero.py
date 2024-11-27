@@ -31,6 +31,11 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         help='Same format as java-sources-file, only used by multiplexing to '
         'pick certain methods to be the first N numbers in the switch table.')
     inputs.add_argument(
+        '--never-omit-switch-num',
+        action='store_true',
+        help='Only used by multiplexing. Whether to disable optimization of '
+        'omitting switch_num for unique signatures.')
+    inputs.add_argument(
         '--native-sources-file',
         help='Newline-separated file containing paths to .java or .jni.pickle '
         'files, taken from Native dependency tree.')

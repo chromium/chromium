@@ -77,31 +77,18 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint swi
       __builtin_unreachable();
   }
 }
-JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num,
-    jint p0) {
+JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1I(JNIEnv* env, jclass jcaller, jint p0) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(env, p0);
 }
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num,
-    jobject p0) {
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(JNIEnv* env, jclass jcaller, jobject p0) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(env, p0);
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num,
-    jobject p0) {
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(JNIEnv* env, jclass jcaller, jobject p0) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(env, p0);
 }
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
     jobject p0,
     jobject p1) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_setBool(env, p0, p1);
@@ -109,7 +96,6 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
 JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
     jobject p0,
     jobject p1) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(env, p0, p1);

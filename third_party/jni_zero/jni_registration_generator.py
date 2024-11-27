@@ -91,8 +91,12 @@ def _CollectNatives(jni_objs, jni_mode):
   return ret
 
 
-def _Generate(args, jni_mode, native_sources, java_sources,
-              priority_java_sources):
+def _Generate(args,
+              jni_mode,
+              native_sources,
+              java_sources,
+              priority_java_sources,
+              never_omit_switch_num=False):
   """Generates files required to perform JNI registration.
 
   Generates a srcjar containing a single class, GEN_JNI, that contains all
@@ -110,6 +114,9 @@ def _Generate(args, jni_mode, native_sources, java_sources,
         against native_sources.
     priority_java_sources: A list of .jni.pickle or .java file paths. Used to
         put these listed java files first in multiplexing.
+    never_omit_switch_num: Relevent for multiplexing. Necessary when the
+        native library must be interchangeable with another that uses
+        priority_java_sources (aka, webview).
   """
   native_sources_set = set(native_sources)
   java_sources_set = set(java_sources)
@@ -132,8 +139,12 @@ def _Generate(args, jni_mode, native_sources, java_sources,
   priority_hash = None
   muxed_aliases_by_sig = None
   if jni_mode.is_muxing:
-    whole_hash, priority_hash = _GenerateHashes(present_jni_objs, priority_set)
-    muxed_aliases_by_sig = proxy.populate_muxed_switch_num(present_jni_objs)
+    whole_hash, priority_hash = _GenerateHashes(
+        present_jni_objs,
+        priority_set,
+        never_omit_switch_num=never_omit_switch_num)
+    muxed_aliases_by_sig = proxy.populate_muxed_switch_num(
+        present_jni_objs, never_omit_switch_num=never_omit_switch_num)
 
   java_only_jni_objs = _CheckForJavaNativeMismatch(args, jni_objs_by_path,
                                                    native_sources_set,
@@ -144,7 +155,7 @@ def _Generate(args, jni_mode, native_sources, java_sources,
   boundary_proxy_natives = present_proxy_natives
   if jni_mode.is_muxing:
     boundary_proxy_natives = [
-        n for n in present_proxy_natives if n.muxed_switch_num == 0
+        n for n in present_proxy_natives if n.muxed_switch_num <= 0
     ]
 
   short_gen_jni_class = proxy.get_gen_jni_class(
@@ -243,7 +254,7 @@ Unneeded Java files:
   return java_only_jni_objs
 
 
-def _GenerateHashes(jni_objs, priority_set):
+def _GenerateHashes(jni_objs, priority_set, *, never_omit_switch_num):
   # We assume that if we have identical files and they are in the same order, we
   # will have switch number alignment. We do this, instead of directly
   # inspecting the switch numbers, because differentiating the priority sources
@@ -267,6 +278,9 @@ def _GenerateHashes(jni_objs, priority_set):
 
   # Make it clear when there are no priority items.
   priority_ret = to_int64(priority_hash) if had_priority else 0
+  if never_omit_switch_num:
+    priority_ret ^= 1
+    whole_ret ^= 1
   return whole_ret, priority_ret
 
 
@@ -376,8 +390,14 @@ def main(parser, args, jni_mode):
     parser.error('--enable-jni-multiplexing requires --header-path.')
   if args.remove_uncalled_methods and not args.native_sources_file:
     parser.error('--remove-uncalled-methods requires --native-sources-file.')
-  if args.priority_java_sources_file and not jni_mode.is_muxing:
-    parser.error('--priority-java-sources is only for multiplexing.')
+  if args.priority_java_sources_file:
+    if not jni_mode.is_muxing:
+      parser.error('--priority-java-sources is only for multiplexing.')
+    if not args.never_omit_switch_num:
+      # We could arguably just set this rather than error out, but it's
+      # important that the flag also be set on the library that does not set
+      # --priority-java-sources.
+      parser.error('--priority-java-sources requires --never-omit-switch-num.')
 
   java_sources = _ParseSourceList(args.java_sources_file)
   if args.native_sources_file:
@@ -395,7 +415,12 @@ def main(parser, args, jni_mode):
   else:
     priority_java_sources = None
 
-  _Generate(args, jni_mode, native_sources, java_sources, priority_java_sources)
+  _Generate(args,
+            jni_mode,
+            native_sources,
+            java_sources,
+            priority_java_sources,
+            never_omit_switch_num=args.never_omit_switch_num)
 
   if args.depfile:
     # GN does not declare a dep on the sources files to avoid circular
