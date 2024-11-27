@@ -152,13 +152,16 @@ std::ostream& operator<<(std::ostream& os, InstallSource v);
 //
 // Email chromeos-data-team@google.com to request a corresponding change to
 // backend enums.
-ENUM(UninstallSource,
-     kUnknown,
-     kAppList,        // Uninstall by the user from the App List (Launcher)
-     kAppManagement,  // Uninstall by the user from the App Management page
-     kShelf,          // Uninstall by the user from the Shelf
-     kMigration       // Uninstall by app migration.
-)
+enum class UninstallSource {
+  kUnknown = 0,
+  kAppList = 1,        // Uninstall by the user from the App List (Launcher)
+  kAppManagement = 2,  // Uninstall by the user from the App Management page
+  kShelf = 3,          // Uninstall by the user from the Shelf
+  kMigration = 4,      // Uninstall by app migration.
+
+  // The value for UMA. Should be updated when a new entry is added.
+  kMaxValue = kMigration,
+};
 
 // The window mode that each app will open in.
 ENUM(WindowMode,
