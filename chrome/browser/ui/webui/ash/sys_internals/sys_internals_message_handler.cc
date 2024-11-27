@@ -40,7 +40,7 @@ struct GpuInfo {
 };
 
 struct NpuInfo {
-  int64_t busy_time_us = 0;
+  base::TimeDelta busy_time;
 };
 
 // When counter overflow, it will restart from zero. base::Value do not
@@ -294,13 +294,13 @@ std::optional<NpuInfo> GetNpuInfo() {
     return std::nullopt;
   }
 
-  NpuInfo info;
-  if (base::StringToInt64(content, &info.busy_time_us)) {
+  int64_t busy_time_us = 0;
+  if (base::StringToInt64(content, &busy_time_us)) {
     DLOG(WARNING) << "Failed to parse busy time as int64";
     return std::nullopt;
   }
 
-  return info;
+  return NpuInfo{.busy_time = base::Microseconds(busy_time_us)};
 }
 
 void SetNpuValue(const std::optional<NpuInfo>& info,
@@ -310,7 +310,7 @@ void SetNpuValue(const std::optional<NpuInfo>& info,
     return;
   }
 
-  int busy = ToCounter(base::Microseconds(info->busy_time_us).InMilliseconds());
+  int busy = ToCounter(info->busy_time.InMilliseconds());
   result->Set("npu", base::Value::Dict().Set("busy", busy));
 }
 
