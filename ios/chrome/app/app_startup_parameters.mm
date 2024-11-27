@@ -227,6 +227,7 @@
 }
 
 - (ApplicationModeForTabOpening)applicationMode {
+  CHECK(!base::FeatureList::IsEnabled(kChromeStartupParametersAsync));
   return _applicationMode;
 }
 

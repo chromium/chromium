@@ -742,29 +742,19 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
 
 void UserActivityBrowserAgent::OpenMultipleTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BOOL incognito_mode =
-      [connection_information_.startupParameters applicationMode] ==
-      ApplicationModeForTabOpening::INCOGNITO;
-  BOOL dismiss_omnibox = [[connection_information_ startupParameters]
-                             postOpeningAction] != FOCUS_OMNIBOX;
-
-  // Using a weak reference to `this` to solve a memory leak issue.
-  // `tab_opener_` and `connection_information_` are the same object in
-  // some cases (SceneController). This retains the object while the block
-  // exists. Then this block is passed around and in some cases it ends up
-  // stored in BrowserViewController. This results in a memory leak that looks
-  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
-  // -> BrowserViewController -> SceneController
-  base::OnceClosure closure =
-      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
-                     weak_ptr_factory_.GetWeakPtr());
-  [tab_opener_
-      dismissModalsAndOpenMultipleTabsWithURLs:connection_information_
-                                                   .startupParameters.URLs
-                               inIncognitoMode:incognito_mode
-                                dismissOmnibox:dismiss_omnibox
-                                    completion:base::CallbackToBlock(
-                                                   std::move(closure))];
+  const std::vector<GURL>& URLs =
+      connection_information_.startupParameters.URLs;
+  if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+        base::BindOnce(&UserActivityBrowserAgent::HandleMultipleUrlsOpening,
+                       weak_ptr_factory_.GetWeakPtr(), URLs);
+    [connection_information_.startupParameters
+        requestApplicationModeWithBlock:base::CallbackToBlock(
+                                            std::move(completion))];
+  } else {
+    HandleMultipleUrlsOpening(
+        URLs, [connection_information_.startupParameters applicationMode]);
+  }
 }
 
 GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
@@ -899,4 +889,29 @@ void UserActivityBrowserAgent::HandleUrlOpening(
                                   dismissOmnibox:YES
                                       completion:base::CallbackToBlock(
                                                      std::move(closure))];
+}
+
+void UserActivityBrowserAgent::HandleMultipleUrlsOpening(
+    const std::vector<GURL>& URLs,
+    ApplicationModeForTabOpening target_mode) {
+  BOOL incognito_mode = target_mode == ApplicationModeForTabOpening::INCOGNITO;
+  BOOL dismiss_omnibox = [[connection_information_ startupParameters]
+                             postOpeningAction] != FOCUS_OMNIBOX;
+
+  // Using a weak reference to `this` to solve a memory leak issue.
+  // `tab_opener_` and `connection_information_` are the same object in
+  // some cases (SceneController). This retains the object while the block
+  // exists. Then this block is passed around and in some cases it ends up
+  // stored in BrowserViewController. This results in a memory leak that looks
+  // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
+  // -> BrowserViewController -> SceneController
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
+  [tab_opener_
+      dismissModalsAndOpenMultipleTabsWithURLs:URLs
+                               inIncognitoMode:incognito_mode
+                                dismissOmnibox:dismiss_omnibox
+                                    completion:base::CallbackToBlock(
+                                                   std::move(closure))];
 }

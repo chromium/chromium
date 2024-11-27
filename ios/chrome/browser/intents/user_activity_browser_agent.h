@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "ios/chrome/app/app_startup_parameters.h"
@@ -15,7 +17,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "url/gurl.h"
-
 // This browser agent handles user intents events.
 class UserActivityBrowserAgent
     : public BrowserUserData<UserActivityBrowserAgent> {
@@ -96,6 +97,11 @@ class UserActivityBrowserAgent
   // `ApplicationModeForTabOpening`.
   void HandleUrlOpening(const GURL& webpage_url,
                         ApplicationModeForTabOpening target_mode);
+
+  // Handles the opening of multiple URLs based on a given
+  // `ApplicationModeForTabOpening`.
+  void HandleMultipleUrlsOpening(const std::vector<GURL>& URLs,
+                                 ApplicationModeForTabOpening target_mode);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
