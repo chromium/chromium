@@ -657,7 +657,7 @@
 <translation id="4148023517926189160">此网站想下载文件并将其添加到您的日历中。</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
 <translation id="4158491215857439601">密码管理工具</translation>
-<translation id="4163699139741158298">{count,plural, =1{书签已保存到“{title}”。这个书签仅会保存到此设备上。}other{{count} 个书签已保存到“{title}”。这些书签仅会保存到此设备上。}}</translation>
+<translation id="4163699139741158298">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{{count} 个书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，后四位数字为 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4172051516777682613">一律显示</translation>
@@ -1193,7 +1193,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6550891580932862748">不会保护您免受危险网站、下载内容和扩展程序的侵害。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
-<translation id="6559301491397835130">{count,plural, =1{书签已保存到“{title}”。这个书签仅会保存到此设备上。}other{这些书签已保存到“{title}”。这些书签仅会保存到此设备上。}}</translation>
+<translation id="6559301491397835130">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{这些书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6571070086367343653">修改信用卡</translation>
 <translation id="6574092468346088891">开启安全检查通知</translation>

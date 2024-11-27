@@ -672,7 +672,7 @@
 <translation id="4224534474590365556">要關閉 99 個以上的閒置分頁嗎？</translation>
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全性風險。</translation>
 <translation id="4231395118547300571">安全檢查通知已開啟</translation>
-<translation id="4237377247299956313">輕觸 [預設的瀏覽器應用程式]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
+<translation id="4237377247299956313">輕觸「預設瀏覽器 App」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4250432749243022864">{count,plural, =0{開啟 {count} 個分頁}=1{開啟 {count} 個分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="4251531167342733205">充分運用你喜愛的瀏覽器。</translation>
