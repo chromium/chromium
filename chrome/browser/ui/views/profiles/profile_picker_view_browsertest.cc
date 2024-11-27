@@ -2754,12 +2754,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   EXPECT_EQ(entry, nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
-                       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
+// Testing param: bool `is_consented_primary_account`.
+class ProfilePickerEnterpriseCreationFlowWithSyncParamBrowserTest
+    : public ProfilePickerEnterpriseCreationFlowBrowserTest,
+      public testing::WithParamInterface<bool> {};
+
+IN_PROC_BROWSER_TEST_P(
+    ProfilePickerEnterpriseCreationFlowWithSyncParamBrowserTest,
+    CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
-  // Create a pre-existing profile syncing with the same account as the profile
-  // being created.
+  // Create a pre-existing profile signed in/syncing (based on `GetParam()`)
+  // with the same account as the profile being created.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -2768,7 +2774,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(other_entry, nullptr);
   // Fake sync is enabled in this profile with Joe's account.
   other_entry->SetAuthInfo(kGaiaId, u"joe.consumer@gmail.com",
-                           /*is_consented_primary_account=*/true);
+                           /*is_consented_primary_account=*/GetParam());
   other_entry->SetGaiaIds({kGaiaId});
 
   size_t initial_profile_count = g_browser_process->profile_manager()
@@ -2811,12 +2817,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                                        .GetNumberOfProfiles());
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
-                       CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
+IN_PROC_BROWSER_TEST_P(
+    ProfilePickerEnterpriseCreationFlowWithSyncParamBrowserTest,
+    CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
-  // Create a pre-existing profile syncing with the same account as the profile
-  // being created.
+  // Create a pre-existing profile signed in/syncing (based on `GetParam()`)
+  // with the same account as the profile being created.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -2825,7 +2832,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_NE(other_entry, nullptr);
   // Fake sync is enabled in this profile with Joe's account.
   other_entry->SetAuthInfo(kGaiaId, u"joe.consumer@gmail.com",
-                           /*is_consented_primary_account=*/true);
+                           /*is_consented_primary_account=*/GetParam());
   other_entry->SetGaiaIds({kGaiaId});
 
   size_t initial_profile_count = g_browser_process->profile_manager()
@@ -2865,6 +2872,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                                        ->GetProfileAttributesStorage()
                                        .GetNumberOfProfiles());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProfilePickerEnterpriseCreationFlowWithSyncParamBrowserTest,
+    testing::Bool());
 
 class ProfilePickerCreationFlowEphemeralProfileBrowserTest
     : public ProfilePickerCreationFlowBrowserTest,
