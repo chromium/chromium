@@ -154,27 +154,6 @@ class WillCreateURLLoaderFactoryParams final {
   const raw_ptr<StoragePartition> storage_partition_;
 };
 
-void OnPrefetchRequestWillBeSent(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const GURL& initiator,
-    const network::ResourceRequest& request,
-    std::optional<std::pair<const GURL&,
-                            const network::mojom::URLResponseHeadDevToolsInfo&>>
-        redirect_info);
-void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
-                                const std::string& request_id,
-                                const GURL& url,
-                                const network::mojom::URLResponseHead& head);
-void OnPrefetchRequestComplete(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const network::URLLoaderCompletionStatus& status);
-void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
-                                const std::string& request_id,
-                                const std::string& body,
-                                bool is_base64_encoded);
-
 void OnResetNavigationRequest(NavigationRequest* navigation_request);
 void MaybeAssignResourceRequestId(FrameTreeNode* ftn,
                                   const std::string& id,
@@ -262,14 +241,14 @@ void BackForwardCacheNotUsed(
 void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
 void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
-bool IsPrerenderAllowed(FrameTree& frame_tree);
-void WillInitiatePrerender(FrameTree& frame_tree);
-void DidActivatePrerender(const NavigationRequest& nav_request,
-                          const std::optional<base::UnguessableToken>&
-                              initiator_devtools_navigation_token);
-
 void DidUpdatePolicyContainerHost(FrameTreeNode* ftn);
 
+// SpeculationRules
+void DidUpdateSpeculationCandidates(
+    RenderFrameHost& rfh,
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+
+// Prefetch
 void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
@@ -277,7 +256,34 @@ void DidUpdatePrefetchStatus(
     PreloadingTriggeringOutcome status,
     PrefetchStatus prefetch_status,
     const std::string& request_id);
+// CDP events Network.* for prefetch
+void OnPrefetchRequestWillBeSent(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const GURL& initiator,
+    const network::ResourceRequest& request,
+    std::optional<std::pair<const GURL&,
+                            const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info);
+void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const GURL& url,
+                                const network::mojom::URLResponseHead& head);
+void OnPrefetchRequestComplete(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status);
+void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const std::string& body,
+                                bool is_base64_encoded);
 
+// Prerender
+bool IsPrerenderAllowed(FrameTree& frame_tree);
+void WillInitiatePrerender(FrameTree& frame_tree);
+void DidActivatePrerender(const NavigationRequest& nav_request,
+                          const std::optional<base::UnguessableToken>&
+                              initiator_devtools_navigation_token);
 void DidUpdatePrerenderStatus(
     FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
@@ -287,10 +293,6 @@ void DidUpdatePrerenderStatus(
     std::optional<PrerenderFinalStatus> prerender_status,
     std::optional<std::string> disallowed_mojo_interface,
     const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
-
-void DidUpdateSpeculationCandidates(
-    RenderFrameHost& rfh,
-    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

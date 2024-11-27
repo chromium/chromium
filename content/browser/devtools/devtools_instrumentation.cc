@@ -691,6 +691,95 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node) {
   }
 }
 
+void DidUpdatePolicyContainerHost(FrameTreeNode* ftn) {
+  if (!ftn) {
+    return;
+  }
+
+  DispatchToAgents(ftn,
+                   &protocol::NetworkHandler::OnPolicyContainerHostUpdated);
+}
+
+void DidUpdateSpeculationCandidates(
+    RenderFrameHost& rfh,
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+  if (auto* storage = DevToolsPreloadStorage::GetForCurrentDocument(&rfh)) {
+    storage->SpeculationCandidatesUpdated(candidates);
+  }
+}
+
+void DidUpdatePrefetchStatus(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& initiator_devtools_navigation_token,
+    const GURL& prefetch_url,
+    PreloadingTriggeringOutcome status,
+    PrefetchStatus prefetch_status,
+    const std::string& request_id) {
+  if (!ftn) {
+    return;
+  }
+
+  // We update DevToolsPreloadStorage, even if there are no active DevTools
+  // sessions, to persist the latest status update.
+  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
+      ftn->current_frame_host())
+      ->UpdatePrefetchStatus(prefetch_url, status, prefetch_status, request_id);
+
+  std::string initiating_frame_id =
+      ftn->current_frame_host()->devtools_frame_token().ToString();
+  DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
+                   initiator_devtools_navigation_token, initiating_frame_id,
+                   prefetch_url, status, prefetch_status, request_id);
+}
+
+void OnPrefetchRequestWillBeSent(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const GURL& initiator,
+    const network::ResourceRequest& request,
+    std::optional<std::pair<const GURL&,
+                            const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info) {
+  auto timestamp = base::TimeTicks::Now();
+  std::string frame_token =
+      frame_tree_node->current_frame_host()->devtools_frame_token().ToString();
+  DispatchToAgents(
+      frame_tree_node, &protocol::NetworkHandler::PrefetchRequestWillBeSent,
+      request_id, request, initiator, frame_token, timestamp, redirect_info);
+}
+
+void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const GURL& url,
+                                const network::mojom::URLResponseHead& head) {
+  std::string frame_token =
+      frame_tree_node->current_frame_host()->devtools_frame_token().ToString();
+
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(head);
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::ResponseReceived,
+                   request_id, request_id, url,
+                   protocol::Network::ResourceTypeEnum::Prefetch, *head_info,
+                   frame_token);
+}
+
+void OnPrefetchRequestComplete(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status) {
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::LoadingComplete,
+                   request_id, protocol::Network::ResourceTypeEnum::Prefetch,
+                   status);
+}
+
+void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const std::string& body,
+                                bool is_base64_encoded) {
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::BodyDataReceived,
+                   request_id, body, is_base64_encoded);
+}
+
 bool IsPrerenderAllowed(FrameTree& frame_tree) {
   FrameTreeNode* ftn = frame_tree.root();
 
@@ -722,39 +811,6 @@ void DidActivatePrerender(const NavigationRequest& nav_request,
   UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
 }
 
-void DidUpdatePolicyContainerHost(FrameTreeNode* ftn) {
-  if (!ftn) {
-    return;
-  }
-
-  DispatchToAgents(ftn,
-                   &protocol::NetworkHandler::OnPolicyContainerHostUpdated);
-}
-
-void DidUpdatePrefetchStatus(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& initiator_devtools_navigation_token,
-    const GURL& prefetch_url,
-    PreloadingTriggeringOutcome status,
-    PrefetchStatus prefetch_status,
-    const std::string& request_id) {
-  if (!ftn) {
-    return;
-  }
-
-  // We update DevToolsPreloadStorage, even if there are no active DevTools
-  // sessions, to persist the latest status update.
-  DevToolsPreloadStorage::GetOrCreateForCurrentDocument(
-      ftn->current_frame_host())
-      ->UpdatePrefetchStatus(prefetch_url, status, prefetch_status, request_id);
-
-  std::string initiating_frame_id =
-      ftn->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
-                   initiator_devtools_navigation_token, initiating_frame_id,
-                   prefetch_url, status, prefetch_status, request_id);
-}
-
 void DidUpdatePrerenderStatus(
     FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
@@ -782,14 +838,6 @@ void DidUpdatePrerenderStatus(
                    initiator_devtools_navigation_token, prerender_url,
                    target_hint, status, prerender_status,
                    disallowed_mojo_interface, mismatched_headers);
-}
-
-void DidUpdateSpeculationCandidates(
-    RenderFrameHost& rfh,
-    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
-  if (auto* storage = DevToolsPreloadStorage::GetForCurrentDocument(&rfh)) {
-    storage->SpeculationCandidatesUpdated(candidates);
-  }
 }
 
 namespace {
@@ -1457,52 +1505,6 @@ WillCreateURLLoaderFactoryParams::ForWorkerMainScript(
   // the ancestor frame for the worker.
   return WillCreateURLLoaderFactoryParams::ForFrame(
       &ancestor_render_frame_host);
-}
-
-void OnPrefetchRequestWillBeSent(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const GURL& initiator,
-    const network::ResourceRequest& request,
-    std::optional<std::pair<const GURL&,
-                            const network::mojom::URLResponseHeadDevToolsInfo&>>
-        redirect_info) {
-  auto timestamp = base::TimeTicks::Now();
-  std::string frame_token =
-      frame_tree_node->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(
-      frame_tree_node, &protocol::NetworkHandler::PrefetchRequestWillBeSent,
-      request_id, request, initiator, frame_token, timestamp, redirect_info);
-}
-
-void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
-                                const std::string& request_id,
-                                const GURL& url,
-                                const network::mojom::URLResponseHead& head) {
-  std::string frame_token =
-      frame_tree_node->current_frame_host()->devtools_frame_token().ToString();
-
-  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
-      network::ExtractDevToolsInfo(head);
-  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::ResponseReceived,
-                   request_id, request_id, url,
-                   protocol::Network::ResourceTypeEnum::Prefetch, *head_info,
-                   frame_token);
-}
-void OnPrefetchRequestComplete(
-    FrameTreeNode* frame_tree_node,
-    const std::string& request_id,
-    const network::URLLoaderCompletionStatus& status) {
-  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::LoadingComplete,
-                   request_id, protocol::Network::ResourceTypeEnum::Prefetch,
-                   status);
-}
-void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
-                                const std::string& request_id,
-                                const std::string& body,
-                                bool is_base64_encoded) {
-  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::BodyDataReceived,
-                   request_id, body, is_base64_encoded);
 }
 
 void OnAuctionWorkletNetworkRequestWillBeSent(
