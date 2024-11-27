@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/downloads/identity_button_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_item.h"
 
+#import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/settings/downloads/identity_button_cell.h"
 
 namespace {
 

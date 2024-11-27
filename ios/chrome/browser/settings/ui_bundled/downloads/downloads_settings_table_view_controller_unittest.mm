@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/fake_save_to_photos_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
-#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller_action_delegate.h"
-#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
-#import "ios/chrome/browser/ui/settings/downloads/identity_button_cell.h"
-#import "ios/chrome/browser/ui/settings/downloads/identity_button_item.h"
-#import "ios/chrome/browser/ui/settings/downloads/save_to_photos/fake_save_to_photos_settings_mutator.h"
-#import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util_mac.h"
