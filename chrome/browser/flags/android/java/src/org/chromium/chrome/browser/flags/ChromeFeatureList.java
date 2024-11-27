@@ -689,7 +689,9 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
-    public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
+    public static final CachedFlag sPriceInsights =
+            newCachedFlag(
+                    PRICE_INSIGHTS, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             newCachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
