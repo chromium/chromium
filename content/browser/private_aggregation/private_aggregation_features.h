@@ -19,12 +19,6 @@ namespace content {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiDebugModeRequires3pcEligibility);
 
-// Controls whether contributions in a report with the same bucket and the same
-// filtering ID should be merged into a single contribution before truncating
-// (if necessary) and embedding into the report. Also drops contributions with a
-// value of zero.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApiContributionMerging);
-
 // Controls whether Protected Audience callers can make up to 100 contributions
 // per report instead of 20. When enabled, reports for Protected Audience
 // callers will be padded up to 100 contributions. This feature has no effect on
