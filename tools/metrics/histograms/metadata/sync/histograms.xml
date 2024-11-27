@@ -389,6 +389,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.CommitLatency{SyncDataType}" units="ms"
+    expires_after="2025-11-05">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded per successful network Commit request for {SyncDataType}. Records
+    the latency of each successful commit attempt. Latency is measured from the
+    time the commit cycle is started to the time the commit response is
+    received. Note that this isn't network latency when there are multiple
+    commit requests in a cycle.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType">
+    <variant name="" summary="Any type"/>
+  </token>
+</histogram>
+
 <histogram name="Sync.CommitResponseForUnknownEntity" enum="SyncDataTypes"
     expires_after="2025-11-05">
   <owner>treib@chromium.org</owner>
