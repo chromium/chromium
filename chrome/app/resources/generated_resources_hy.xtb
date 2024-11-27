@@ -4956,6 +4956,7 @@
 <translation id="4461483878391246134">Ավելացրեք լեզուներ, որոնց համար թարգմանություն երբեք չպետք է առաջարկվի</translation>
 <translation id="4462159676511157176">Անունների այլ սերվերներ</translation>
 <translation id="4465236939126352372">Նշված է <ph name="TIME" /> սահմանաչափ <ph name="APP_NAME" /> հավելվածի համար</translation>
+<translation id="4467373268340082204">PIN կոդը սխալ է</translation>
 <translation id="4467561276409486506">&amp;Միացնել/անջատել կոմպակտ ռեժիմը</translation>
 <translation id="4469324811108161144">Նշումները կարող են պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> կայքը կարող է փոփոխել <ph name="FOLDERNAME" /> պանակի ֆայլերը</translation>
@@ -10248,6 +10249,7 @@
 <translation id="8276560076771292512">Դատարկել քեշը և նորից ներբեռնել սերվերից</translation>
 <translation id="8276850948802942358">Իմանալ ավելին որևէ կայքի երրորդ կողմի քուքիներ օգտագործելու ժամանակավոր թույլտվություն տալու մասին</translation>
 <translation id="8277907305629781277">Դուք մուտքի այս կոդը ստացել եք հետևյալ ամսաթվին՝ <ph name="DATE" /></translation>
+<translation id="827966378414194229">Կառավարեք ձեր Chromebook-ը գլխի շարժումների և դեմքի արտահայտությունների միջոցով <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Ձեր լեզվով վեբ կայքեր</translation>
 <translation id="8280848878018088610">Ալեկոծված ծովի ալիքները՝ մռայլ ու ֆանտաստիկ քաղաքի և ամրոցի ֆոնին։</translation>
 <translation id="828180235270931531">Այլ հասանելի տպիչներ</translation>

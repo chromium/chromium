@@ -420,7 +420,7 @@
 <translation id="2923908459366352541">Имя недействительно</translation>
 <translation id="2932150158123903946">Хранилище Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Это не повлияет на вашу клавиатуру.</translation>
-<translation id="2936980480904111527">Воспользуйтесь преимуществами уведомлений в Chrome</translation>
+<translation id="2936980480904111527">С уведомлениями все в Chrome становится проще</translation>
 <translation id="2940075786175545812">Нижний экран, с помощью которого можно одобрить или заблокировать сайт.</translation>
 <translation id="2942036813789421260">Вкладка предпросмотра закрыта</translation>
 <translation id="2951071800649516099">Добавьте страницы в список для чтения.</translation>
@@ -704,7 +704,7 @@
 <translation id="4335835283689002019">Безопасный просмотр отключен</translation>
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4352287748243729941">Использовать пароль (<ph name="PROVIDER" />)?</translation>
-<translation id="4355272626458588338">Добавьте страницу с важными сведениями в закладки, и вам не придется ее долго искать.</translation>
+<translation id="4355272626458588338">Добавьте важные для вас страницы в закладки, чтобы легко возвращаться к ним.</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Общие сведения о безопасности</translation>
 <translation id="4378154925671717803">Телефон</translation>
@@ -1712,7 +1712,7 @@
 <translation id="8803526663383843427">Если функция включена</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Объект сохранен в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}one{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}few{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}many{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}other{Объекты сохранены в вашем аккаунте Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8812260976093120287">На некоторых сайтах вы можете совершать платежи со своего устройства с помощью перечисленных выше приложений.</translation>
-<translation id="8816556050903368450">Поделиться со ссылкой <ph name="ORIGIN" /></translation>
+<translation id="8816556050903368450">Добавить ссылку: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8828624021816895617">Chrome автоматически отзывает разрешения у ненадежных сайтов и тех, которые вы редко посещаете</translation>

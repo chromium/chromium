@@ -4974,6 +4974,7 @@
 <translation id="4461483878391246134">Додати мови, з яких ніколи не потрібно пропонувати переклад</translation>
 <translation id="4462159676511157176">Сторонні сервери імен</translation>
 <translation id="4465236939126352372">Для додатка <ph name="APP_NAME" /> налаштовано ліміт часу (<ph name="TIME" />)</translation>
+<translation id="4467373268340082204">Неправильний PIN-код</translation>
 <translation id="4467561276409486506">&amp;Увімкнути або вимкнути компактний режим</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Сайт <ph name="ORIGIN" /> може змінювати файли в папці "<ph name="FOLDERNAME" />"</translation>
@@ -10271,6 +10272,7 @@
 <translation id="8276560076771292512">Очищення кеш-пам’яті й жорстке перезавантаження</translation>
 <translation id="8276850948802942358">Докладніше про те, як надати сайту тимчасовий дозвіл на використання сторонніх файлів cookie</translation>
 <translation id="8277907305629781277">Ви створили цей ключ доступу <ph name="DATE" /></translation>
+<translation id="827966378414194229">Керуйте Chromebook за допомогою рухів головою і міміки. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Вебсайти вашими мовами</translation>
 <translation id="8280848878018088610">Бурхливі морські хвилі на тлі фантастичного міста й замку в похмурих тонах.</translation>
 <translation id="828180235270931531">Інші доступні принтери</translation>

@@ -4954,6 +4954,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4461483878391246134">Asla çeviri önerme listesine dil ekleyin</translation>
 <translation id="4462159676511157176">Özel ad sunucuları</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> için <ph name="TIME" /> süreli zaman sınırı ayarla</translation>
+<translation id="4467373268340082204">Yanlış PIN</translation>
 <translation id="4467561276409486506">&amp;En Yüksek Modu'nu aç/kapat</translation>
 <translation id="4469324811108161144">En fazla <ph name="CHARACTER_LIMIT" /> karakterden oluşan notlar kaydedilebilir.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> sitesi <ph name="FOLDERNAME" /> klasöründeki dosyaları düzenleyebilir</translation>
@@ -10250,6 +10251,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8276560076771292512">Önbelleği Boşalt ve Tam Yeniden Yükle</translation>
 <translation id="8276850948802942358">Bir siteye, üçüncü taraf çerezlerini kullanması için geçici izin verme hakkında daha fazla bilgi</translation>
 <translation id="8277907305629781277">Bu geçiş anahtarını <ph name="DATE" /> tarihinde oluşturdunuz.</translation>
+<translation id="827966378414194229">Chromebook'unuzu kontrol etmek için baş hareketlerini ve yüz ifadelerini kullanın. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="8280267190418431666">Konuştuğunuz dillerdeki web siteleri</translation>
 <translation id="8280848878018088610">Arka planda fantastik bir şehir ve kale manzarasıyla denizdeki dev dalgaların gösterildiği karanlık bir resim.</translation>
 <translation id="828180235270931531">Kullanılabilen diğer yazıcılar</translation>

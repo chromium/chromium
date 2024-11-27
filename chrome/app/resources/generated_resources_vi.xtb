@@ -4971,6 +4971,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4461483878391246134">Thêm ngôn ngữ không cần đề xuất dịch</translation>
 <translation id="4462159676511157176">Máy chủ định danh tuỳ chỉnh</translation>
 <translation id="4465236939126352372">Giới hạn thời gian sử dụng <ph name="TIME" /> đã được đặt cho <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Mã PIN không đúng</translation>
 <translation id="4467561276409486506">&amp;Bật/tắt chế độ thu gọn</translation>
 <translation id="4469324811108161144">Ghi chú có thể lưu tối đa <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong <ph name="FOLDERNAME" /></translation>
@@ -10270,6 +10271,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8276560076771292512">Làm trống bộ nhớ đệm và tải lại cứng</translation>
 <translation id="8276850948802942358">Tìm hiểu thêm về cách cấp cho một trang web quyền tạm thời sử dụng cookie của bên thứ ba</translation>
 <translation id="8277907305629781277">Bạn đã tạo khoá truy cập này vào <ph name="DATE" /></translation>
+<translation id="827966378414194229">Sử dụng chuyển động của đầu và biểu cảm trên khuôn mặt để điều khiển Chromebook. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Trang web hiển thị bằng ngôn ngữ của bạn</translation>
 <translation id="8280848878018088610">Những con sóng xô trên biển, phía sau là khung cảnh thành phố và lâu đài kỳ ảo, trong bầu không khí u ám.</translation>
 <translation id="828180235270931531">Các máy in có sẵn khác</translation>
