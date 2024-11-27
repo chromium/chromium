@@ -65,8 +65,7 @@ WebUI::WebUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kHost);
   SetupWebUIDataSource(
-      source,
-      base::make_span(kWebuiGalleryResources, kWebuiGalleryResourcesSize),
+      source, base::span(kWebuiGalleryResources, kWebuiGalleryResourcesSize),
       IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
 }
 

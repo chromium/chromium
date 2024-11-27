@@ -492,8 +492,7 @@ void ClipboardMac::WriteSvg(std::string_view markup) {
 }
 
 void ClipboardMac::WriteRTF(std::string_view rtf) {
-  WriteData(ClipboardFormatType::RtfType(),
-            base::as_bytes(base::make_span(rtf)));
+  WriteData(ClipboardFormatType::RtfType(), base::as_byte_span(rtf));
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {

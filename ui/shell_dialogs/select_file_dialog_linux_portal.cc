@@ -101,9 +101,9 @@ void AppendByteStringOption(dbus::MessageWriter* writer,
   option_writer.OpenVariant("ay", &value_writer);
 
   value_writer.AppendArrayOfBytes(
-      base::make_span(reinterpret_cast<const std::uint8_t*>(value.c_str()),
-                      // size + 1 will include the null terminator.
-                      value.size() + 1));
+      base::span(reinterpret_cast<const std::uint8_t*>(value.c_str()),
+                 // size + 1 will include the null terminator.
+                 value.size() + 1));
 
   option_writer.CloseContainer(&value_writer);
   writer->CloseContainer(&option_writer);
