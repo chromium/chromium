@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
@@ -26,22 +28,25 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  */
 public class TaskManagerActivity extends AppCompatActivity {
     private static final int REFRESH_TIME_MS = 1000;
-    private final ModelList mModelList = new ModelList();
+    private final PropertyModel mHeaderModel = new PropertyModel(TaskManagerProperties.COLUMNS);
+    private final ModelList mTasksModel = new ModelList();
     private final TaskManagerMediator mMediator =
             new TaskManagerMediator(
                     REFRESH_TIME_MS,
-                    mModelList,
+                    mHeaderModel,
+                    mTasksModel,
                     TaskManagerProperties.TASK_ID,
                     TaskManagerProperties.TASK_NAME,
                     TaskManagerProperties.MEMORY_FOOTPRINT,
                     TaskManagerProperties.CPU,
                     TaskManagerProperties.PROCESS_ID);
+    private Runnable mDestroyer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        bind(this, mModelList);
+        mDestroyer = bind(this, mHeaderModel, mTasksModel);
 
         mMediator.startObserving();
     }
@@ -50,26 +55,26 @@ public class TaskManagerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        mDestroyer.run();
+
         mMediator.stopObserving();
     }
 
     /** Sets up the UI in the activity, binding the activity and the model. */
-    static void bind(Activity activity, ModelList model) {
+    static Runnable bind(Activity activity, PropertyModel headerModel, ModelList tasksModel) {
         activity.setContentView(R.layout.task_manager_activity);
+
+        LinearLayout headerView = activity.findViewById(R.id.header_linear_layout);
+        PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> headerChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        headerModel, headerView, TaskManagerActivity::bindHeader);
 
         RecyclerView recyclerView = activity.findViewById(R.id.tasks_view);
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false));
 
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model);
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(tasksModel);
         recyclerView.setAdapter(adapter);
-
-        adapter.registerType(
-                TaskManagerProperties.RowType.HEADER,
-                (parent) ->
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.task_item, parent, false),
-                TaskManagerActivity::bindHeader);
 
         adapter.registerType(
                 TaskManagerProperties.RowType.TASK,
@@ -77,6 +82,11 @@ public class TaskManagerActivity extends AppCompatActivity {
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.task_item, parent, false),
                 TaskManagerActivity::bindTask);
+
+        return () -> {
+            adapter.destroy();
+            headerChangeProcessor.destroy();
+        };
     }
 
     private static void bindHeader(PropertyModel model, View view, PropertyKey key) {

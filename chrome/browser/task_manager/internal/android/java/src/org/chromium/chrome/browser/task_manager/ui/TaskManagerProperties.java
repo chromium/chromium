@@ -20,19 +20,12 @@ import java.lang.annotation.RetentionPolicy;
  */
 class TaskManagerProperties {
     @IntDef({
-        RowType.HEADER,
         RowType.TASK,
     })
     @Retention(RetentionPolicy.SOURCE)
     static @interface RowType {
-        /**
-         * Represents the header of the table. The item with this key has property keys
-         * corresponding to the attributes each task item should have.
-         */
-        int HEADER = 1;
-
         /** Represents a task. Each item with this key has prorperties of the corresponding task. */
-        int TASK = 2;
+        int TASK = 1;
     }
 
     /** Property key for the columns of the header. */

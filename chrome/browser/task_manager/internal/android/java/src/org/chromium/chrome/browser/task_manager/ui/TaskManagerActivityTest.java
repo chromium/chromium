@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
@@ -15,6 +16,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
 import android.app.Activity;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +37,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TaskManagerActivityTest {
     Activity mActivity;
-    ModelList mModel;
+    PropertyModel mHeaderModel;
+    ModelList mTasksModel;
+
+    LinearLayout mHeaderView;
     RecyclerView mRecyclerView;
 
     @Before
@@ -43,10 +48,14 @@ public class TaskManagerActivityTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().visible().get();
         mActivity.setTheme(R.style.Theme_Chromium_Activity);
 
-        mModel = new ModelList();
-        TaskManagerActivity.bind(mActivity, mModel);
+        mHeaderModel = new PropertyModel(COLUMNS);
+        mTasksModel = new ModelList();
+        TaskManagerActivity.bind(mActivity, mHeaderModel, mTasksModel);
 
+        mHeaderView = mActivity.findViewById(R.id.header_linear_layout);
         mRecyclerView = mActivity.findViewById(R.id.tasks_view);
+
+        assertTrue(mHeaderView.isShown());
         assertTrue(mRecyclerView.isShown());
     }
 
@@ -56,11 +65,8 @@ public class TaskManagerActivityTest {
         PropertyKey[] propertyKeys =
                 new PropertyKey[] {TASK_ID, TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
 
-        mModel.add(
-                new ListItem(
-                        RowType.HEADER,
-                        new PropertyModel.Builder(COLUMNS).with(COLUMNS, propertyKeys).build()));
-        mModel.add(
+        mHeaderModel.set(COLUMNS, propertyKeys);
+        mTasksModel.add(
                 new ListItem(
                         RowType.TASK,
                         new PropertyModel.Builder(propertyKeys)
@@ -73,9 +79,11 @@ public class TaskManagerActivityTest {
 
         mRecyclerView.layout(0, 0, 1024, 640); // let the items render
 
+        assertNotNull(mHeaderView.findViewById(R.id.task_name));
+
         TextView taskName =
                 mRecyclerView
-                        .findViewHolderForAdapterPosition(1)
+                        .findViewHolderForAdapterPosition(0)
                         .itemView
                         .findViewById(R.id.task_name);
         assertEquals("foo", taskName.getText().toString());

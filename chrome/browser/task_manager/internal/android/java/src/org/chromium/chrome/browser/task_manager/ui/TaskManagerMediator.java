@@ -28,36 +28,36 @@ import java.util.NoSuchElementException;
  * backend accessed through TaskManagerServiceBridge.
  */
 class TaskManagerMediator {
-    private static final int HEADER_OFFSET = 1;
-
     private final int mRefreshTimeMillis;
     private final TaskManagerServiceBridge mBridge = new TaskManagerServiceBridge();
     private TaskManagerServiceBridge.ObserverHandle mObserverHandle;
     private final ArrayList<PropertyKey> mColumnKeys = new ArrayList<>();
 
-    // The list containing the properties representing tasks. Sorted by task id. The first item is
-    // the header and the rest are tasks.
+    private final PropertyModel mHeader;
+    // The list containing the properties representing tasks. Sorted by task id.
     // TODO(crbug.com/380154224): Enable sorting by other attributes.
-    private final ModelList mModelList;
+    private final ModelList mTasks;
 
     /**
      * Constructs the mediator backed by the modelList.
      *
      * @param refreshTimeMillis How often the model should be refreshed.
-     * @param modelList The backing model.
+     * @param header The model for the header. The model must accept COLUMNS as a key.
+     * @param tasks The model for tasks.
      * @param columnKeys The properties to be updated. TASK_ID must be set even if it's not used in
      *     UI.
      */
-    TaskManagerMediator(int refreshTimeMillis, ModelList modelList, PropertyKey... columnKeys) {
+    TaskManagerMediator(
+            int refreshTimeMillis,
+            PropertyModel header,
+            ModelList tasks,
+            PropertyKey... columnKeys) {
         mRefreshTimeMillis = refreshTimeMillis;
-        mModelList = modelList;
+        mHeader = header;
+        mTasks = tasks;
         for (PropertyKey columnKey : columnKeys) mColumnKeys.add(columnKey);
 
-        ListItem header =
-                new ListItem(
-                        RowType.HEADER,
-                        new PropertyModel.Builder(COLUMNS).with(COLUMNS, columnKeys).build());
-        mModelList.add(header);
+        mHeader.set(COLUMNS, columnKeys);
     }
 
     /** Start observing tasks to get the model updated. */
@@ -80,7 +80,7 @@ class TaskManagerMediator {
             mBridge.removeObserver(mObserverHandle);
             mObserverHandle = null;
 
-            mModelList.removeRange(HEADER_OFFSET, mModelList.size() - HEADER_OFFSET);
+            mTasks.clear();
         }
     }
 
@@ -124,16 +124,16 @@ class TaskManagerMediator {
                     updateProperty(taskItem, taskId, columnKey);
                 }
 
-                int insertPos = HEADER_OFFSET;
-                for (; insertPos < mModelList.size(); insertPos++) {
-                    if (mModelList.get(insertPos).model.get(TASK_ID) > taskId) break;
+                int insertPos = 0;
+                for (; insertPos < mTasks.size(); insertPos++) {
+                    if (mTasks.get(insertPos).model.get(TASK_ID) > taskId) break;
                 }
-                mModelList.add(insertPos, taskItem);
+                mTasks.add(insertPos, taskItem);
             }
 
             @Override
             public void onTaskToBeRemoved(long taskId) {
-                mModelList.removeAt(getIndexForTaskId(taskId));
+                mTasks.removeAt(getIndexForTaskId(taskId));
             }
 
             @Override
@@ -143,7 +143,7 @@ class TaskManagerMediator {
                 // TODO(crbug.com/380165957): Confirm task ids are always sorted, and utilize this
                 // to speed up the computation when the model is sorted by task id.
                 for (long taskId : taskIds) {
-                    ListItem taskItem = mModelList.get(getIndexForTaskId(taskId));
+                    ListItem taskItem = mTasks.get(getIndexForTaskId(taskId));
 
                     // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
                     // refreshing them.
@@ -168,8 +168,8 @@ class TaskManagerMediator {
     }
 
     private int getIndexForTaskId(long taskId) {
-        for (int i = HEADER_OFFSET; i < mModelList.size(); i++) {
-            if (mModelList.get(i).model.get(TASK_ID) == taskId) {
+        for (int i = 0; i < mTasks.size(); i++) {
+            if (mTasks.get(i).model.get(TASK_ID) == taskId) {
                 return i;
             }
         }
