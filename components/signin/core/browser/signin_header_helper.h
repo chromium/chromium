@@ -242,6 +242,7 @@ bool IsUrlEligibleForMirrorCookie(const GURL& url);
 
 // Returns the CHROME_CONNECTED cookie, or an empty string if it should not be
 // added to the request to |url|.
+// Supports nullptr as a value for `cookie_settings` if unavailable.
 std::string BuildMirrorRequestCookieIfPossible(
     const GURL& url,
     const std::string& gaia_id,

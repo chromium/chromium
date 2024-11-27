@@ -267,6 +267,24 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
 }
 #endif
 
+TEST_F(SigninHeaderHelperTest,
+       BuildMirrorRequestCookieIfPossibleHandlesNullptrCookieSettings) {
+  std::string cookie = BuildMirrorRequestCookieIfPossible(
+      GURL("https://docs.google.com"), /*gaia_id=*/"0123456789",
+      AccountConsistencyMethod::kMirror,
+      /*cookie_settings=*/nullptr, PROFILE_MODE_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+  // Users cannot disable cookies via settings on iOS so we always build a
+  // cookie.
+  EXPECT_EQ(
+      cookie,
+      "mode=0:enable_account_consistency=true:consistency_enabled_by_default=" +
+          consistency_enabled_by_default_value());
+#else
+  EXPECT_TRUE(cookie.empty());
+#endif
+}
+
 // Tests that no Mirror request is returned when the target is a non-Google URL.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestExternalURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
