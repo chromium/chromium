@@ -106,6 +106,7 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
+      std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) = 0;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

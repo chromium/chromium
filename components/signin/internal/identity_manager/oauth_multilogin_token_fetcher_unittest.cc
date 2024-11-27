@@ -70,9 +70,17 @@ class OAuthMultiloginTokenFetcherTest : public testing::Test {
   ~OAuthMultiloginTokenFetcherTest() override = default;
 
   std::unique_ptr<OAuthMultiloginTokenFetcher> CreateFetcher(
-      const std::vector<AccountParams>& account_params) {
+      const std::vector<AccountParams>& account_params
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::string& ephemeral_public_key = std::string()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  ) {
     return std::make_unique<OAuthMultiloginTokenFetcher>(
         &test_signin_client_, &token_service_, account_params,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+        ephemeral_public_key,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         base::BindOnce(&OAuthMultiloginTokenFetcherTest::OnSuccess,
                        base::Unretained(this)),
         base::BindOnce(&OAuthMultiloginTokenFetcherTest::OnFailure,
@@ -285,9 +293,9 @@ TEST_F(OAuthMultiloginTokenFetcherTest,
   // code path as it tests multilogin with refresh tokens. In this test, we just
   // check that a challenge parameter doesn't cause a crash.
   token_service().UpdateCredentials(kAccountId, "refresh_token");
-  std::unique_ptr<OAuthMultiloginTokenFetcher> fetcher =
-      CreateFetcher({{.account_id = kAccountId,
-                      .token_binding_challenge = "test_challenge"}});
+  std::unique_ptr<OAuthMultiloginTokenFetcher> fetcher = CreateFetcher(
+      {{.account_id = kAccountId, .token_binding_challenge = "test_challenge"}},
+      "ephemeral_pubkey");
   EXPECT_EQ(FetchStatus::kPending, GetFetchStatus());
   OAuth2AccessTokenConsumer::TokenResponse success_response =
       OAuth2AccessTokenConsumer::TokenResponse::Builder()

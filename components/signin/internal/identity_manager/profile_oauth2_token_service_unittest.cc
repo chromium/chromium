@@ -623,7 +623,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
         future;
     signin::OAuthMultiloginTokenRequest request(account_id_,
                                                 future.GetCallback());
-    token_service.StartRequestForMultilogin(request, "challenge");
+    token_service.StartRequestForMultilogin(request, "challenge",
+                                            "ephemeral_pubkey");
     EXPECT_FALSE(future.IsReady());
     EXPECT_EQ(future.Get<0>(), &request);
     ASSERT_TRUE(future.Get<1>().has_value());
@@ -654,7 +655,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       future;
   signin::OAuthMultiloginTokenRequest request(account_id_,
                                               future.GetCallback());
-  token_service.StartRequestForMultilogin(request, "challenge");
+  token_service.StartRequestForMultilogin(request, "challenge",
+                                          "ephemeral_pubkey");
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get<0>(), &request);
   ASSERT_FALSE(future.Get<1>().has_value());
@@ -668,8 +670,9 @@ class FakeProfileOAuth2TokenServiceDelegateDesktopFailsBindingAssertion
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
+      std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override {
-    std::move(callback).Run(std::string(), std::nullopt);
+    std::move(callback).Run(std::string());
   }
 };
 
@@ -691,7 +694,8 @@ TEST_F(ProfileOAuth2TokenServiceTest,
       future;
   signin::OAuthMultiloginTokenRequest request(account_id_,
                                               future.GetCallback());
-  token_service.StartRequestForMultilogin(request, "challenge");
+  token_service.StartRequestForMultilogin(request, "challenge",
+                                          "ephemeral_pubkey");
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get<0>(), &request);
   ASSERT_TRUE(future.Get<1>().has_value());

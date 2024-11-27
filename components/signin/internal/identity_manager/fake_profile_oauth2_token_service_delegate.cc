@@ -62,8 +62,9 @@ void FakeProfileOAuth2TokenServiceDelegate::
     GenerateRefreshTokenBindingKeyAssertionForMultilogin(
         const CoreAccountId& account_id,
         std::string_view challenge,
+        std::string_view ephemeral_public_key,
         TokenBindingHelper::GenerateAssertionCallback callback) {
-  std::move(callback).Run(base::StrCat({challenge, ".signed"}), std::nullopt);
+  std::move(callback).Run(base::StrCat({challenge, ".signed"}));
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -107,6 +108,9 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   // Token binding challenges received from Gaia. Chrome should try to sign over
   // each challenge no more than once.
   base::flat_map<CoreAccountId, std::string> token_binding_challenges_;
+  // Ephemeral key that could be used for cookie encryption. Reset at every
+  // request retry.
+  std::optional<HybridEncryptionKey> ephemeral_key_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   base::OnceCallback<void(SetAccountsInCookieResult)> callback_;

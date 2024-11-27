@@ -33,11 +33,17 @@ OAuthMultiloginTokenFetcher::OAuthMultiloginTokenFetcher(
     SigninClient* signin_client,
     ProfileOAuth2TokenService* token_service,
     std::vector<AccountParams> account_params,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    std::string ephemeral_public_key,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     SuccessCallback success_callback,
     FailureCallback failure_callback)
     : signin_client_(signin_client),
       token_service_(token_service),
       account_params_(std::move(account_params)),
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ephemeral_public_key_(std::move(ephemeral_public_key)),
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)) {
   DCHECK(signin_client_);
@@ -77,7 +83,8 @@ void OAuthMultiloginTokenFetcher::StartFetchingToken(
   token_service_->StartRequestForMultilogin(*token_requests_.back()
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                                                 ,
-                                            account.token_binding_challenge
+                                            account.token_binding_challenge,
+                                            ephemeral_public_key_
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   );
 }

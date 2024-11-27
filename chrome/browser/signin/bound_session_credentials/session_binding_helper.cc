@@ -118,7 +118,8 @@ void SessionBindingHelper::SignAssertionToken(
   std::optional<std::string> header_and_payload =
       signin::CreateKeyAssertionHeaderAndPayload(
           algorithm, public_key, session_id_, challenge, destination_url,
-          kSessionBindingNamespace, /*ephemeral_key=*/nullptr);
+          kSessionBindingNamespace,
+          /*ephemeral_public_key=*/std::string_view());
 
   if (!header_and_payload.has_value()) {
     std::move(callback).Run(base::unexpected(Error::kCreateAssertionFailure));

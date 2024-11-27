@@ -15,6 +15,7 @@
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -100,21 +101,31 @@ void OAuthMultiloginHelper::StartFetchingTokens() {
     const CoreAccountId& account_id = account.first;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     auto challenge_it = token_binding_challenges_.find(account_id);
+    bool has_challenge = challenge_it != token_binding_challenges_.end();
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     account_params.push_back(
         {.account_id = account_id
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
          ,
          .token_binding_challenge =
-             challenge_it != token_binding_challenges_.end()
-                 ? challenge_it->second
-                 : std::string()
+             has_challenge ? challenge_it->second : std::string()
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
         });
   }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::string ephemeral_public_key;
+  if (!token_binding_challenges_.empty()) {
+    ephemeral_key_.emplace();
+    ephemeral_public_key = ephemeral_key_->ExportPublicKey();
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   token_fetcher_ = std::make_unique<OAuthMultiloginTokenFetcher>(
       signin_client_, token_service_, std::move(account_params),
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      std::move(ephemeral_public_key),
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensSuccess,
                      base::Unretained(this)),
       base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensFailure,

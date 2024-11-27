@@ -49,8 +49,8 @@ TokenBindingOAuth2AccessTokenFetcher::~TokenBindingOAuth2AccessTokenFetcher() =
     default;
 
 void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
-    std::string assertion,
-    std::optional<HybridEncryptionKey> ephemeral_key) {
+    std::optional<HybridEncryptionKey> ephemeral_key,
+    std::string assertion) {
   if (assertion.empty()) {
     // Even if the assertion failed, we want to make a server request because
     // the server doesn't verify assertions during dark launch.

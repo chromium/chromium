@@ -95,6 +95,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
+      std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::vector<CoreAccountId> GetAccounts() const override;

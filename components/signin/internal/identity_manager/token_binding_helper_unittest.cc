@@ -11,6 +11,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -24,8 +26,7 @@
 #include "url/gurl.h"
 
 namespace {
-using GenerateAssertionFuture =
-    base::test::TestFuture<std::string, std::optional<HybridEncryptionKey>>;
+using GenerateAssertionFuture = base::test::TestFuture<std::string>;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -171,16 +172,15 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
   helper().SetBindingKey(account_id, wrapped_key);
 
   GenerateAssertionFuture sign_future;
+  HybridEncryptionKey ephemeral_key = CreateHybridEncryptionKeyForTesting();
   helper().GenerateBindingKeyAssertion(
-      account_id, "challenge", GURL("https://oauth.example.com/IssueToken"),
-      sign_future.GetCallback());
+      account_id, "challenge", ephemeral_key.ExportPublicKey(),
+      GURL("https://oauth.example.com/IssueToken"), sign_future.GetCallback());
   RunBackgroundTasks();
-  std::string assertion = sign_future.Get<0>();
-  EXPECT_FALSE(assertion.empty());
-  EXPECT_NE(sign_future.Get<1>(), std::nullopt);
+  EXPECT_FALSE(sign_future.Get().empty());
 
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      assertion, *unexportable_key_service().GetAlgorithm(key_id),
+      sign_future.Get(), *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
   histogram_tester().ExpectUniqueSample(kGenerateAssertionResultHistogram,
                                         TokenBindingHelper::kNoErrorForMetrics,
@@ -191,13 +191,12 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoBindingKey) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
 
   GenerateAssertionFuture sign_future;
+  HybridEncryptionKey ephemeral_key = CreateHybridEncryptionKeyForTesting();
   helper().GenerateBindingKeyAssertion(
-      account_id, "challenge", GURL("https://oauth.example.com/IssueToken"),
-      sign_future.GetCallback());
+      account_id, "challenge", ephemeral_key.ExportPublicKey(),
+      GURL("https://oauth.example.com/IssueToken"), sign_future.GetCallback());
   RunBackgroundTasks();
-  std::string assertion = sign_future.Get<0>();
-  EXPECT_TRUE(assertion.empty());
-  EXPECT_EQ(sign_future.Get<1>(), std::nullopt);
+  EXPECT_TRUE(sign_future.Get().empty());
   histogram_tester().ExpectUniqueSample(kGenerateAssertionResultHistogram,
                                         TokenBindingHelper::Error::kKeyNotFound,
                                         /*expected_bucket_count=*/1);
@@ -209,15 +208,35 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
   helper().SetBindingKey(account_id, kInvalidWrappedKey);
 
   GenerateAssertionFuture sign_future;
+  HybridEncryptionKey ephemeral_key = CreateHybridEncryptionKeyForTesting();
   helper().GenerateBindingKeyAssertion(
-      account_id, "challenge", GURL("https://oauth.example.com/IssueToken"),
-      sign_future.GetCallback());
+      account_id, "challenge", ephemeral_key.ExportPublicKey(),
+      GURL("https://oauth.example.com/IssueToken"), sign_future.GetCallback());
   RunBackgroundTasks();
-  std::string assertion = sign_future.Get<0>();
-  EXPECT_TRUE(assertion.empty());
-  EXPECT_EQ(sign_future.Get<1>(), std::nullopt);
+  EXPECT_TRUE(sign_future.Get().empty());
   histogram_tester().ExpectUniqueSample(
       kGenerateAssertionResultHistogram,
       TokenBindingHelper::Error::kLoadKeyFailure,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoEphemeralKey) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  helper().SetBindingKey(account_id, wrapped_key);
+
+  GenerateAssertionFuture sign_future;
+  helper().GenerateBindingKeyAssertion(
+      account_id, "challenge", /*ephemeral_public_key=*/"",
+      GURL("https://oauth.example.com/IssueToken"), sign_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_FALSE(sign_future.Get().empty());
+
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      sign_future.Get(), *unexportable_key_service().GetAlgorithm(key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+  histogram_tester().ExpectUniqueSample(kGenerateAssertionResultHistogram,
+                                        TokenBindingHelper::kNoErrorForMetrics,
+                                        /*expected_bucket_count=*/1);
 }

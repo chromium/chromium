@@ -134,7 +134,8 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // Used for getting tokens to send to Gaia Multilogin endpoint.
   void StartRequestForMultilogin(
       signin::OAuthMultiloginTokenRequest& request,
-      const std::string& token_binding_challenge = std::string());
+      const std::string& token_binding_challenge = std::string(),
+      const std::string& ephemeral_public_key = std::string());
 
   // This method does the same as |StartRequest| except it uses |client_id| and
   // |client_secret| to identify OAuth client app instead of using

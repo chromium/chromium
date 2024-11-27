@@ -167,7 +167,8 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
       GURL("https://accounts.google.com/VerifyKey"), "test_namespace",
-      base::OptionalToPtr(ephemeral_key));
+      ephemeral_key.has_value() ? ephemeral_key->ExportPublicKey()
+                                : std::string_view());
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(

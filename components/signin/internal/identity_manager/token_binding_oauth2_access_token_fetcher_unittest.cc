@@ -88,7 +88,7 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, StartThenSetAssertion) {
         *mock_internal_fetcher(),
         Start(kClientId, kClientSecret, std::vector<std::string>({kScope})));
   }
-  fetcher()->SetBindingKeyAssertion(kAssertion, /*ephemeral_key=*/std::nullopt);
+  fetcher()->SetBindingKeyAssertion(/*ephemeral_key=*/std::nullopt, kAssertion);
 }
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, EmptyAssertion) {
@@ -106,14 +106,14 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, EmptyAssertion) {
         *mock_internal_fetcher(),
         Start(kClientId, kClientSecret, std::vector<std::string>({kScope})));
   }
-  fetcher()->SetBindingKeyAssertion(std::string(),
-                                    /*ephemeral_key=*/std::nullopt);
+  fetcher()->SetBindingKeyAssertion(/*ephemeral_key=*/std::nullopt,
+                                    std::string());
 }
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionThenStart) {
   EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
   EXPECT_CALL(*mock_internal_fetcher(), Start).Times(0);
-  fetcher()->SetBindingKeyAssertion(kAssertion, /*ephemeral_key=*/std::nullopt);
+  fetcher()->SetBindingKeyAssertion(/*ephemeral_key=*/std::nullopt, kAssertion);
   testing::Mock::VerifyAndClearExpectations(mock_internal_fetcher());
 
   EXPECT_CALL(
@@ -141,7 +141,7 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionWithEphemeralKey) {
   EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
   EXPECT_CALL(*mock_internal_fetcher(), SetTokenDecryptor)
       .WillOnce(testing::SaveArg<0>(&decryptor));
-  fetcher()->SetBindingKeyAssertion(kAssertion, std::move(ephemeral_key));
+  fetcher()->SetBindingKeyAssertion(std::move(ephemeral_key), kAssertion);
 
   ASSERT_TRUE(!decryptor.is_null());
   // `decryptor` should transform `base64_encrypted_data` back to `plaintext`.
@@ -155,8 +155,8 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest,
               SetBindingKeyAssertion(testing::Not(testing::IsEmpty())));
   // Ephemeral key should be ignored if the assertion is empty.
   EXPECT_CALL(*mock_internal_fetcher(), SetTokenDecryptor).Times(0);
-  fetcher()->SetBindingKeyAssertion(std::string(),
-                                    CreateHybridEncryptionKeyForTesting());
+  fetcher()->SetBindingKeyAssertion(CreateHybridEncryptionKeyForTesting(),
+                                    std::string());
 }
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, TokenDecryptorFails) {
@@ -166,7 +166,7 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, TokenDecryptorFails) {
   EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
   EXPECT_CALL(*mock_internal_fetcher(), SetTokenDecryptor)
       .WillOnce(testing::SaveArg<0>(&decryptor));
-  fetcher()->SetBindingKeyAssertion(kAssertion, std::move(ephemeral_key));
+  fetcher()->SetBindingKeyAssertion(std::move(ephemeral_key), kAssertion);
 
   ASSERT_TRUE(!decryptor.is_null());
   // `decryptor` should return an empty string if decryption fails.
@@ -184,7 +184,7 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, TokenDecryptorFailsNoBase64) {
   EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
   EXPECT_CALL(*mock_internal_fetcher(), SetTokenDecryptor)
       .WillOnce(testing::SaveArg<0>(&decryptor));
-  fetcher()->SetBindingKeyAssertion(kAssertion, std::move(ephemeral_key));
+  fetcher()->SetBindingKeyAssertion(std::move(ephemeral_key), kAssertion);
 
   ASSERT_TRUE(!decryptor.is_null());
   // Data is correctly encrypted but not base64 encoded.

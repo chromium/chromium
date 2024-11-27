@@ -1839,11 +1839,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       kFakeWrappedBindingKey);
 
-  base::test::TestFuture<std::string, std::optional<HybridEncryptionKey>>
-      future;
+  base::test::TestFuture<std::string> future;
   oauth2_service_delegate_
       ->GenerateRefreshTokenBindingKeyAssertionForMultilogin(
-          kAccountId, "challenge", future.GetCallback());
+          kAccountId, "challenge", "ephemeral_pubkey", future.GetCallback());
   // The test uses fake binding keys, so we cannot verify assertion contents.
   // TODO(alexilin): convert this test file to use the real unexportable key
   // service with `ScopedMockUnexportableKeyProvider` to increase coverage.
