@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_DEFAULT_PINNED_APPS_DEFAULT_PINNED_APPS_H_
-#define CHROME_BROWSER_UI_ASH_DEFAULT_PINNED_APPS_DEFAULT_PINNED_APPS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DEFAULT_PINNED_APPS_DEFAULT_PINNED_APPS_H_
+#define CHROMEOS_ASH_COMPONENTS_DEFAULT_PINNED_APPS_DEFAULT_PINNED_APPS_H_
 
 #include <vector>
 
@@ -14,4 +14,4 @@ using StaticAppId = const char*;
 std::vector<StaticAppId> GetDefaultPinnedAppsForFormFactor(
     content::BrowserContext* browser_context);
 
-#endif  // CHROME_BROWSER_UI_ASH_DEFAULT_PINNED_APPS_DEFAULT_PINNED_APPS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DEFAULT_PINNED_APPS_DEFAULT_PINNED_APPS_H_
