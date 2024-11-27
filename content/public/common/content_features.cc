@@ -1314,6 +1314,16 @@ BASE_FEATURE(kWebUICodeCache,
              "WebUICodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Reports WebUI Javascript errors to the crash server on all desktop platforms.
+// Previously, this was only supported on ChromeOS and Linux.
+// Intentionally enabled by default and will be used as a kill switch in case
+// of regressions.
+BASE_FEATURE(kWebUIJSErrorReportingExtended,
+            "WebUIJSErrorReportingExtended",
+            base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Controls whether the WebUSB API is enabled:
 // https://wicg.github.io/webusb
 BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);

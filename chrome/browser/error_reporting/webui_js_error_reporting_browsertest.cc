@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
@@ -24,6 +25,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -129,6 +131,8 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
  public:
   WebUIJSErrorReportingTest() : error_url_(chrome::kChromeUIWebUIJsErrorURL) {
     CHECK(error_url_.is_valid());
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebUIJSErrorReportingExtended);
   }
 
   void SetUpOnMainThread() override {
@@ -140,6 +144,7 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   // NoErrorsAfterNavigation needs a second embedded test server to serve up
   // its error page, since embedded_test_server() is in use by the
   // MockCrashEndpoint.

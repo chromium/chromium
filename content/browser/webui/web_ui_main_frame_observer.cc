@@ -17,7 +17,6 @@
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
-#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
