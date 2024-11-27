@@ -735,9 +735,8 @@ class CrossbenchTest(object):
       return self._create_fileserver_network(_arg)
     if self._get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
-    if (self.is_android
-        and self.options.benchmarks in self.BENCHMARK_FILESERVERS):
-      # --fileserver is required in this case. Supply it.
+    if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
+      # Use file server when it is available.
       arg = '--fileserver'
       args.append(arg)
       return self._create_fileserver_network(arg)
