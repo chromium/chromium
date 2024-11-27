@@ -23481,6 +23481,26 @@
             ]
         }
     ],
+    "ThrottleFrameRateOnManyDidNotProduceFrame": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleFrameRateOnManyDidNotProduceFrame"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThrottleUnimportantFrameTimers": [
         {
             "platforms": [
