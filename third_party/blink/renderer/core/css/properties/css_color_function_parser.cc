@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -534,6 +535,44 @@ bool ColorFunctionParser::IsRelativeColor() const {
   return !!unresolved_origin_color_;
 }
 
+static bool ChannelIsResolvable(const CSSValue* channel) {
+  if (IsA<CSSIdentifierValue>(channel)) {
+    // Channel identifiers for relative colors (e.g. “r”).
+    return true;
+  }
+
+  const CSSPrimitiveValue* color = DynamicTo<CSSPrimitiveValue>(channel);
+  if (color && color->IsNumericLiteralValue()) {
+    // Numeric literals.
+    return true;
+  }
+
+  const CSSMathFunctionValue* calc = DynamicTo<CSSMathFunctionValue>(channel);
+  if (calc && calc->ExpressionNode()->IsNumericLiteral()) {
+    // calc() of a single value. We wouldn't technically need
+    // to accept this as a special case, but it _is_ resolvable,
+    // and doing this allows us to hit the less-compliant code
+    // in CSSUnresolvedColorValue::CustomCSSText() much less often.
+    return true;
+  }
+
+  return false;
+}
+
+bool ColorFunctionParser::AllChannelsAreResolvable() const {
+  for (int i = 0; i < 3; i++) {
+    if (!ChannelIsResolvable(unresolved_channels_[i])) {
+      return false;
+    }
+  }
+
+  if (unresolved_alpha_) {
+    return ChannelIsResolvable(unresolved_alpha_);
+  }
+
+  return true;
+}
+
 CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
@@ -660,9 +699,10 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   // - (Legacy behavior) Resolve channel values at parse time if the origin
   //   color is resolvable at parse time.
   // - (WPT-compliant behavior) Always defer resolution until used-value time.
-  if (!IsRelativeColor() ||
-      (origin_color_.has_value() &&
-       !RuntimeEnabledFeatures::CSSRelativeColorLateResolveAlwaysEnabled())) {
+  if (AllChannelsAreResolvable() &&
+      (!IsRelativeColor() ||
+       (origin_color_.has_value() &&
+        !RuntimeEnabledFeatures::CSSRelativeColorLateResolveAlwaysEnabled()))) {
     // Resolve channel values.
     std::array<std::optional<double>, 3> channels;
     for (int i = 0; i < 3; i++) {
@@ -735,10 +775,22 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
   if (resolved_color.has_value()) {
     return cssvalue::CSSColor::Create(*resolved_color);
-  } else {
+  } else if (unresolved_origin_color_) {
     return MakeGarbageCollected<cssvalue::CSSRelativeColorValue>(
         *unresolved_origin_color_, color_space_, *unresolved_channels_[0],
         *unresolved_channels_[1], *unresolved_channels_[2], unresolved_alpha_);
+  } else {
+    if (!has_alpha) {
+      unresolved_alpha_ = CSSNumericLiteralValue::Create(
+          1.0, CSSNumericLiteralValue::UnitType::kNumber);
+      alpha_channel_type_ = ChannelType::kNumber;
+    }
+
+    return MakeGarbageCollected<cssvalue::CSSUnresolvedColorValue>(
+        color_space_, DynamicTo<CSSPrimitiveValue>(*unresolved_channels_[0]),
+        DynamicTo<CSSPrimitiveValue>(*unresolved_channels_[1]),
+        DynamicTo<CSSPrimitiveValue>(*unresolved_channels_[2]), channel_types_,
+        DynamicTo<CSSPrimitiveValue>(unresolved_alpha_), alpha_channel_type_);
   }
 }
 

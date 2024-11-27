@@ -219,6 +219,12 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kRelativeColorClass;
   }
 
+  // NOTE: Relative colors can also be unresolved; this is about
+  // the specific case of unresolved absolute colors.
+  bool IsUnresolvedColorValue() const {
+    return class_type_ == kUnresolvedColorClass;
+  }
+
   bool IsRepeatValue() const { return class_type_ == kRepeatClass; }
 
   bool HasFailedOrCanceledSubresources() const;
@@ -257,6 +263,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kIdentifierClass,
     kScopedKeywordClass,
     kColorClass,
+    kUnresolvedColorClass,
     kColorMixClass,
     kCounterClass,
     kQuadClass,

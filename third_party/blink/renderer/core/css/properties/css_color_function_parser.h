@@ -28,6 +28,7 @@ class CORE_EXPORT ColorFunctionParser {
 
   // These are exposed so that StyleColor::UnresolvedRelativeColor
   // or similar can reuse our logic.
+  enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
   static void MakePerColorSpaceAdjustments(
       bool is_relative_color,
       bool is_legacy_syntax,
@@ -36,7 +37,6 @@ class CORE_EXPORT ColorFunctionParser {
       std::optional<double>& alpha);
 
  private:
-  enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
   bool ConsumeColorSpaceAndOriginColor(CSSParserTokenStream& stream,
                                        CSSValueID function_id,
                                        const CSSParserContext& context);
@@ -62,6 +62,7 @@ class CORE_EXPORT ColorFunctionParser {
       const CSSColorChannelMap& color_channel_map);
 
   bool IsRelativeColor() const;
+  bool AllChannelsAreResolvable() const;
 
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
   std::array<const CSSValue*, 3> unresolved_channels_;
