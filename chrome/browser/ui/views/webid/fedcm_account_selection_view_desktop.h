@@ -39,9 +39,17 @@ class TabInterface;
 // is scoped to that of FederatedAuthRequestImpl. However, the lifetime must be
 // manually scoped to the tabs::TabInterface. This is done by:
 //  * Registering callbacks on tabs::TabInterface for relevant changes.
-//  * If the tab goes away, Close() is called. However destruction may be
-//  asynchronous.
+//  * If the tab goes away, Close() is called.
 //  * All methods to show UI early exit if the tab no longer exists.
+//
+// At a high level this class has 3 states:
+//   * No dialog widget exists.
+//   * The dialog widget exists and is showing.
+//   * The dialog widget exists and is not showing (because the tab is in
+//     the background, or because the browser window is too small, etc.).
+// Construction and destruction of the widget/view are simultaneous and
+// synchronous. There are no other states or edge cases with regards to
+// dialog widget/view existence.
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
@@ -187,36 +195,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Otherwise, return a nullptr.
   views::Widget* GetDialogWidget();
 
-  // Creates and sets the appropriate dialog widget, depending on whether the
-  // dialog is bubble or modal.
-  // Public for testing.
-  void CreateDialogWidget();
-
   // Called when the tab will be removed from the window.
   // Public for testing.
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
-  // Synchronously closes dialog_widget_.
-  // This method can result in synchronous destruction of `this`.
-  // Public for testing.
-  // TODO(https://crbug.com/377803489): Make private again.
-  void CloseWidget(views::Widget::ClosedReason reason);
-
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
-
-  // Creates and sets account_selection_view_ (different subclasses for
-  // bubble/modal) and the corresponding widget. Virtual for testing purposes.
-  virtual void CreateAccountSelectionView(
-      const std::u16string& rp_for_display,
-      const std::optional<std::u16string>& idp_title,
-      blink::mojom::RpContext rp_context,
-      blink::mojom::RpMode rp_mode,
-      bool has_modal_support);
-
-  // Gets the type of dialog shown. Virtual for testing purposes.
-  virtual DialogType GetDialogType();
 
   // Virtual for testing.
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
@@ -224,17 +209,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns the anchor view used by the bubble. Virtual for testing.
   virtual views::View* GetAnchorView();
 
-  // Widget to control the dialog i.e. hide, show, add observer etc.
-  // TODO(https://crbug.com/377803489): Make private again.
-  // Protected for testing.
-  std::unique_ptr<views::Widget> dialog_widget_;
+  // Creates the appropriate dialog view, depending on whether the
+  // dialog is bubble or modal. `out_dialog_type` is an output parameter.
+  // Virtual for testing.
+  virtual AccountSelectionViewBase* CreateDialogView(
+      bool has_modal_support,
+      const std::u16string& rp_for_display,
+      const std::optional<std::u16string>& idp_title,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
+      DialogType* out_dialog_type);
 
-  // This view controls the contents of the dialog_widget_. Conceptually there
-  // is a view if and only if there is a widget. The two are constructed
-  // together and destroyed together. `dialog_widget_` owns
-  // `account_selection_view_`.
-  // Protected for testing.
-  raw_ptr<AccountSelectionViewBase> account_selection_view_;
+  // Creates the appropriate dialog widget, depending on whether the
+  // dialog is bubble or modal.
+  // Virtual for testing.
+  virtual std::unique_ptr<views::Widget> CreateDialogWidget();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -411,6 +400,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   using DismissReason = content::IdentityRequestDialogController::DismissReason;
   void LogDialogDismissal(DismissReason dismiss_reason);
 
+  // Creates account_selection_view_ (different subclasses for
+  // bubble/modal) and dialog_widget_.
+  void CreateViewAndWidget(const std::u16string& rp_for_display,
+                           const std::optional<std::u16string>& idp_title,
+                           blink::mojom::RpContext rp_context,
+                           blink::mojom::RpMode rp_mode,
+                           bool has_modal_support);
+
+  // Synchronously closes dialog_widet_. This method can result in synchronous
+  // destruction of `this`.
+  void CloseWidget(views::Widget::ClosedReason reason);
+
   std::vector<IdentityProviderDataPtr> idp_list_;
 
   std::vector<IdentityRequestAccountPtr> accounts_;
@@ -505,6 +506,15 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // showing.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
+
+  // Widget that owns the view.
+  std::unique_ptr<views::Widget> dialog_widget_;
+
+  // This view controls the contents of the dialog_widget_. Conceptually there
+  // is a view if and only if there is a widget. The two are constructed
+  // together and destroyed together. `dialog_widget_` owns
+  // `account_selection_view_` via DialogDelegate.
+  raw_ptr<AccountSelectionViewBase> account_selection_view_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
