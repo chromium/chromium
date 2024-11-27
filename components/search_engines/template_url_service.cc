@@ -1471,8 +1471,8 @@ void TemplateURLService::OnWebDataServiceRequestDone(
     ChangeToLoadedState();
 
     // Index any visits that occurred before we finished loading.
-    for (size_t i = 0; i < visits_to_add_.size(); ++i) {
-      UpdateKeywordSearchTermsForURL(visits_to_add_[i]);
+    for (const auto& visit_to_add : visits_to_add_) {
+      UpdateKeywordSearchTermsForURL(visit_to_add);
     }
     visits_to_add_.clear();
 
@@ -1745,8 +1745,8 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
       // This entry was deleted before the initial sync began (possibly through
       // preprocessing in TemplateURLService's loading code). Ignore it and send
       // an ACTION_DELETE up to the server.
-      new_changes.push_back(syncer::SyncChange(
-          FROM_HERE, syncer::SyncChange::ACTION_DELETE, iter->second));
+      new_changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+                               iter->second);
       UMA_HISTOGRAM_ENUMERATION(kDeleteSyncedEngineHistogramName,
                                 DELETE_ENGINE_PRE_SYNC, DELETE_ENGINE_MAX);
       continue;
@@ -1767,9 +1767,8 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
       } else if (sync_turl->last_modified() < local_turl->last_modified()) {
         // Otherwise, we know we have newer data, so update Sync with our
         // data fields.
-        new_changes.push_back(
-            syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
-                               local_data_map[local_turl->sync_guid()]));
+        new_changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+                                 local_data_map[local_turl->sync_guid()]);
       }
       local_data_map.erase(iter->first);
     } else {
@@ -1786,8 +1785,8 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   // be pushed as ADDs to sync.
   for (SyncDataMap::const_iterator iter = local_data_map.begin();
        iter != local_data_map.end(); ++iter) {
-    new_changes.push_back(syncer::SyncChange(
-        FROM_HERE, syncer::SyncChange::ACTION_ADD, iter->second));
+    new_changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_ADD,
+                             iter->second);
   }
 
   // Do some post-processing on the change list to ensure that we are sending
@@ -1935,8 +1934,8 @@ syncer::SyncData TemplateURLService::CreateSyncDataFromTemplateURL(
   }
   se_specifics->set_last_modified(turl.last_modified().ToInternalValue());
   se_specifics->set_sync_guid(turl.sync_guid());
-  for (size_t i = 0; i < turl.alternate_urls().size(); ++i) {
-    se_specifics->add_alternate_urls(turl.alternate_urls()[i]);
+  for (const std::string& alternate_url : turl.alternate_urls()) {
+    se_specifics->add_alternate_urls(alternate_url);
   }
   se_specifics->set_is_active(ActiveStatusToSync(turl.is_active()));
   se_specifics->set_starter_pack_id(turl.starter_pack_id());
@@ -2049,8 +2048,8 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
 SyncDataMap TemplateURLService::CreateGUIDToSyncDataMap(
     const syncer::SyncDataList& sync_data) {
   SyncDataMap data_map;
-  for (auto i(sync_data.begin()); i != sync_data.end(); ++i) {
-    data_map[i->GetSpecifics().search_engine().sync_guid()] = *i;
+  for (const auto& i : sync_data) {
+    data_map[i.GetSpecifics().search_engine().sync_guid()] = i;
   }
   return data_map;
 }
