@@ -28,6 +28,11 @@ bool HasEqualColor(const tab_groups::SavedTabGroup& a,
   return a.color() == b.color();
 }
 
+bool IsTabConsideredUpdated(const tab_groups::SavedTabGroupTab& a,
+                            const tab_groups::SavedTabGroupTab& b) {
+  return a.url() != b.url();
+}
+
 std::vector<tab_groups::SavedTabGroupTab> GetAddedTabs(
     const tab_groups::SavedTabGroup& before,
     const tab_groups::SavedTabGroup& after) {
@@ -50,6 +55,30 @@ std::vector<tab_groups::SavedTabGroupTab> GetRemovedTabs(
     }
   }
   return removed_tabs;
+}
+
+std::vector<tab_groups::SavedTabGroupTab> GetUpdatedTabs(
+    const tab_groups::SavedTabGroup& before,
+    const tab_groups::SavedTabGroup& after) {
+  std::vector<tab_groups::SavedTabGroupTab> updated_tabs;
+  for (const auto& old_tab : before.saved_tabs()) {
+    if (!after.ContainsTab(old_tab.saved_tab_guid())) {
+      // Skip if the tab has been removed.
+      continue;
+    }
+
+    // The tab was contained in the after-version of the group, so we should
+    // always be able to retrieve it.
+    const tab_groups::SavedTabGroupTab* new_tab =
+        after.GetTab(old_tab.saved_tab_guid());
+    CHECK(new_tab);
+
+    // This tab has potentially been updated.
+    if (IsTabConsideredUpdated(old_tab, *new_tab)) {
+      updated_tabs.emplace_back(*new_tab);
+    }
+  }
+  return updated_tabs;
 }
 }  // namespace
 
@@ -249,9 +278,6 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
 
   std::vector<tab_groups::SavedTabGroupTab> added_tabs =
       GetAddedTabs(before, after);
-  std::vector<tab_groups::SavedTabGroupTab> removed_tabs =
-      GetRemovedTabs(before, after);
-
   if (added_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : added_tabs) {
@@ -260,6 +286,8 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
     }
   }
 
+  std::vector<tab_groups::SavedTabGroupTab> removed_tabs =
+      GetRemovedTabs(before, after);
   if (removed_tabs.size() > 0) {
     for (auto& observer : observers_) {
       for (auto& tab : removed_tabs) {
@@ -268,7 +296,15 @@ void TabGroupChangeNotifierImpl::ProcessTabGroupUpdates(
     }
   }
 
-  // TODO(crbug.com/378421557): Handle updated group tabs.
+  std::vector<tab_groups::SavedTabGroupTab> updated_tabs =
+      GetUpdatedTabs(before, after);
+  if (updated_tabs.size() > 0) {
+    for (auto& observer : observers_) {
+      for (auto& tab : updated_tabs) {
+        observer.OnTabUpdated(tab);
+      }
+    }
+  }
 }
 
 std::unordered_map<base::Uuid, tab_groups::SavedTabGroup, base::UuidHash>

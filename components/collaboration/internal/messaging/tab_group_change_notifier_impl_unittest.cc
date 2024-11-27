@@ -10,7 +10,9 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -128,13 +130,40 @@ class TabGroupChangeNotifierImplTest : public testing::Test {
     notifier_->RemoveObserver(notifier_observer_.get());
   }
 
+  // For tab updates that should be considered updates, this returns the updated
+  // tab received from an observer.
+  tab_groups::SavedTabGroupTab GetUpdatedTab(
+      const tab_groups::SavedTabGroup& old_group,
+      tab_groups::SavedTabGroupTab updated_tab) {
+    tab_groups::SavedTabGroup updated_tab_group = old_group;
+    updated_tab_group.UpdateTab(updated_tab);
+    // This tab will be overridden by the callback.
+    tab_groups::SavedTabGroupTab tab_update_received =
+        tab_groups::test::CreateSavedTabGroupTab(
+            "N/A", u"N/A", updated_tab_group.saved_guid());
+    EXPECT_CALL(*notifier_observer_, OnTabUpdated(TabGuidEq(updated_tab)))
+        .WillOnce(SaveArg<0>(&tab_update_received));
+    tgss_observer_->OnTabGroupUpdated(updated_tab_group,
+                                      tab_groups::TriggerSource::REMOTE);
+    return tab_update_received;
+  }
+
+  void VerifyTabNotUpdated(const tab_groups::SavedTabGroup& old_group,
+                           tab_groups::SavedTabGroupTab changed_tab) {
+    tab_groups::SavedTabGroup updated_tab_group = old_group;
+    updated_tab_group.UpdateTab(changed_tab);
+    EXPECT_CALL(*notifier_observer_, OnTabUpdated(TabGuidEq(changed_tab)))
+        .Times(0);
+  }
+
   void TearDown() override {
     EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(_)).Times(1);
     MaybeRemoveNotifierObserver();
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<tab_groups::MockTabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<TabGroupChangeNotifierImpl> notifier_;
@@ -539,26 +568,37 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtStartup) {
   tab_groups::SavedTabGroupTab tab1 = tab_groups::test::CreateSavedTabGroupTab(
       "url1", u"title1", tab_group_startup.saved_guid());
   tab_groups::SavedTabGroupTab tab2 = tab_groups::test::CreateSavedTabGroupTab(
-      "url2", u"title2", tab_group_startup.saved_guid());
+      "https://example.com/", u"title2", tab_group_startup.saved_guid());
+  tab_groups::SavedTabGroupTab tab3 = tab_groups::test::CreateSavedTabGroupTab(
+      "url3", u"title3", tab_group_startup.saved_guid());
   tab_group_startup.AddTabFromSync(tab1);
   tab_group_startup.AddTabFromSync(tab2);
+  tab_group_startup.AddTabFromSync(tab3);
 
-  // At init one tab was added and one removed.
+  // At init tab4 was added, tab2 was updated, and tab1 was removed.
   tab_groups::SavedTabGroup tab_group_init = tab_group_startup;
-  tab_groups::SavedTabGroupTab tab3 = tab_groups::test::CreateSavedTabGroupTab(
-      "url3", u"title3", tab_group_init.saved_guid());
   tab_group_init.RemoveTabFromSync(tab1.saved_tab_guid());
-  tab_group_init.AddTabFromSync(tab3);
+  tab_groups::SavedTabGroupTab tab2_updated = tab2;
+  tab2_updated.SetURL(GURL("https://example.com/subpage/"));
+  tab_group_init.UpdateTab(tab2_updated);
+  tab_groups::SavedTabGroupTab tab4 = tab_groups::test::CreateSavedTabGroupTab(
+      "url4", u"title4", tab_group_init.saved_guid());
+  tab_group_init.AddTabFromSync(tab4);
 
-  // This tab will be overridden by the callback.
+  // These tabs will be overridden by the callback.
   tab_groups::SavedTabGroupTab tab_received_added =
+      tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
+                                               tab_group_startup.saved_guid());
+  tab_groups::SavedTabGroupTab tab_received_updated =
       tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
                                                tab_group_startup.saved_guid());
   tab_groups::SavedTabGroupTab tab_received_removed =
       tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
                                                tab_group_startup.saved_guid());
-  EXPECT_CALL(*notifier_observer_, OnTabAdded(TabGuidEq(tab3)))
+  EXPECT_CALL(*notifier_observer_, OnTabAdded(TabGuidEq(tab4)))
       .WillOnce(SaveArg<0>(&tab_received_added));
+  EXPECT_CALL(*notifier_observer_, OnTabUpdated(TabGuidEq(tab2_updated)))
+      .WillOnce(SaveArg<0>(&tab_received_updated));
   EXPECT_CALL(*notifier_observer_, OnTabRemoved(TabGuidEq(tab1)))
       .WillOnce(SaveArg<0>(&tab_received_removed));
 
@@ -567,6 +607,16 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtStartup) {
           {tab_group_startup}),
       /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(
           {tab_group_init}));
+
+  EXPECT_EQ(tab2_updated.url(), tab_received_updated.url());
+
+  // Now, ensure that the latest update of the tab is used and that going back
+  // to the original URL is considered an update again.
+  tab_groups::SavedTabGroupTab tab2_restored = tab2_updated;
+  tab2_restored.SetURL(GURL("https://www.example.com/"));
+  tab_groups::SavedTabGroupTab tab2_restored_received =
+      GetUpdatedTab(tab_group_init, tab2_restored);
+  EXPECT_EQ(tab2_restored.url(), tab2_restored_received.url());
 }
 
 TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
@@ -580,7 +630,7 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
   tab_groups::SavedTabGroupTab tab1 = tab_groups::test::CreateSavedTabGroupTab(
       "url1", u"title1", tab_group.saved_guid());
   tab_groups::SavedTabGroupTab tab2 = tab_groups::test::CreateSavedTabGroupTab(
-      "url2", u"title2", tab_group.saved_guid());
+      "https://www.example.com/", u"title2", tab_group.saved_guid());
   tab_group.AddTabFromSync(tab1);
   tab_group.AddTabFromSync(tab2);
 
@@ -607,6 +657,66 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabGroupTabUpdatesAtRuntime) {
       .WillOnce(SaveArg<0>(&tab_received));
   tgss_observer_->OnTabGroupUpdated(tab_group,
                                     tab_groups::TriggerSource::REMOTE);
+
+  // Create an update of tab 2.
+  tab_groups::SavedTabGroup updated_tab_group = tab_group;
+  tab_groups::SavedTabGroupTab tab2_updated = tab2;
+  tab2_updated.SetURL(GURL("https://www.example.com/subpage/"));
+  updated_tab_group.UpdateTab(tab2_updated);
+  // This tab will be overridden by the callback.
+  tab_groups::SavedTabGroupTab tab2_updated_received =
+      tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
+                                               tab_group.saved_guid());
+  EXPECT_CALL(*notifier_observer_, OnTabUpdated(TabGuidEq(tab2_updated)))
+      .WillOnce(SaveArg<0>(&tab2_updated_received));
+  tgss_observer_->OnTabGroupUpdated(updated_tab_group,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab2_updated.url(), tab2_updated_received.url());
+
+  // Verify that we have stored the updated tab by restoring tab 2 to its
+  // original and it should be considered an updated.
+  tab_groups::SavedTabGroup restored_tab_group = tab_group;
+  tab_groups::SavedTabGroupTab tab2_restored = tab2_updated;
+  tab2_restored.SetURL(GURL("https://www.example.com/"));
+  updated_tab_group.UpdateTab(tab2_restored);
+  // This tab will be overridden by the callback.
+  tab_groups::SavedTabGroupTab tab2_restored_received =
+      tab_groups::test::CreateSavedTabGroupTab("N/A", u"N/A",
+                                               tab_group.saved_guid());
+  EXPECT_CALL(*notifier_observer_, OnTabUpdated(TabGuidEq(tab2_restored)))
+      .WillOnce(SaveArg<0>(&tab2_restored_received));
+  tgss_observer_->OnTabGroupUpdated(restored_tab_group,
+                                    tab_groups::TriggerSource::REMOTE);
+  EXPECT_EQ(tab2_restored.url(), tab2_restored_received.url());
+}
+
+TEST_F(TabGroupChangeNotifierImplTest, TestTabUpdatedBasedOnSpecificFields) {
+  // Initialize the notifier with an empty set of tab groups available on
+  // startup and on init.
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab = tab_groups::test::CreateSavedTabGroupTab(
+      "https://www.example.com/", u"title", tab_group.saved_guid());
+  tab_group.AddTabFromSync(tab);
+
+  // First add the group.
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(_));
+  tgss_observer_->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
+
+  // Updating the URL should result in an update.
+  tab_groups::SavedTabGroupTab tab_url_updated = tab;
+  tab_url_updated.SetURL(GURL("https://www.example.com/subpage/"));
+  tab_groups::SavedTabGroupTab updated_tab_received =
+      GetUpdatedTab(tab_group, tab_url_updated);
+  EXPECT_EQ(tab_url_updated.url(), updated_tab_received.url());
+
+  // Updating the title should NOT result in an update.
+  tab_groups::SavedTabGroupTab tab_title_updated = updated_tab_received;
+  tab_title_updated.SetTitle(u"new title");
+  VerifyTabNotUpdated(tab_group, tab_title_updated);
 }
 
 }  // namespace collaboration::messaging
