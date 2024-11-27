@@ -306,6 +306,17 @@ export class SettingsSyncAccountControlElement extends
   }
 
   /**
+   * Determines if the signout button should be hidden.
+   */
+  private shouldHideSignoutButton_(): boolean {
+    if (this.hideButtons ||
+        !loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return true;
+    }
+    return this.syncStatus.signedInState !== SignedInState.SIGNED_IN;
+  }
+
+  /**
    * Determines if the sync button should be disabled in response to
    * either a first setup flow or chrome sign-in being disabled.
    */

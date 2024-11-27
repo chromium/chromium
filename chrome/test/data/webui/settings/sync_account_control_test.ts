@@ -234,7 +234,7 @@ suite('SyncAccountControl', function() {
   });
 
   test(
-      'account selection dropdown hidden when sync off kImprovedSettingsUIOnDesktop enabled',
+      'Updated UI shown when sync off, kImprovedSettingsUIOnDesktop enabled',
       function() {
         loadTimeData.overrideValues(
             {isImprovedSettingsUIOnDesktopEnabled: true});
@@ -247,11 +247,12 @@ suite('SyncAccountControl', function() {
 
         assertTrue(isChildVisible(testElement, '#sync-button'));
         assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+        assertTrue(isChildVisible(testElement, '#signout-button'));
       });
 
 
   test(
-      'account selection dropdown shown when sync off kImprovedSettingsUIOnDesktop disabled',
+      'Updated UI hidden when sync off, kImprovedSettingsUIOnDesktop disabled',
       function() {
         loadTimeData.overrideValues(
             {isImprovedSettingsUIOnDesktopEnabled: false});
@@ -264,6 +265,7 @@ suite('SyncAccountControl', function() {
 
         assertTrue(isChildVisible(testElement, '#sync-button'));
         assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+        assertFalse(isChildVisible(testElement, '#signout-button'));
       });
 
 

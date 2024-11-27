@@ -178,6 +178,11 @@
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]">
         </div>
+        <cr-button id="signout-button" class="cancel-button cr-button-gap"
+            hidden="[[shouldHideSignoutButton_(syncStatus.signedInState)]]"
+            on-click="onSignoutClick_">
+            $i18n{signOutOfChrome}
+        </cr-button>
         <cr-button id="sync-button" class="action-button cr-button-gap"
             hidden="[[shouldHideSyncButton_(syncStatus.signedInState,
                 syncStatus.signinPaused)]]"
