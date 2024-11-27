@@ -57,13 +57,13 @@ class AppNetWorker : public App {
     // If running as root, drop down to "nobody".
     if (getuid() == 0) {
       if (setgid(kNobodyGid)) {
-        PLOG(ERROR) << "Failed to set gid " << kNobodyGid;
+        VPLOG(1) << "Failed to set gid " << kNobodyGid;
         Shutdown(EnterpriseCompanionStatus::FromPosixErrno(errno));
         return;
       }
 
       if (setuid(kNobodyUid)) {
-        PLOG(ERROR) << "Failed to set uid " << kNobodyUid;
+        VPLOG(1) << "Failed to set uid " << kNobodyUid;
         Shutdown(EnterpriseCompanionStatus::FromPosixErrno(errno));
         return;
       }
@@ -73,7 +73,7 @@ class AppNetWorker : public App {
         mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
             *base::CommandLine::ForCurrentProcess());
     if (!endpoint.is_valid()) {
-      LOG(ERROR)
+      VLOG(1)
           << "Failed to start net worker: Received an invalid mojo endpoint.";
       Shutdown(
           EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
@@ -83,8 +83,8 @@ class AppNetWorker : public App {
     mojo::ScopedMessagePipeHandle pipe =
         mojo::IncomingInvitation::AcceptIsolated(std::move(endpoint));
     if (!pipe->is_valid()) {
-      LOG(ERROR) << "Failed to start net worker: Mojo invitation does not "
-                    "include a valid pipe.";
+      VLOG(1) << "Failed to start net worker: Mojo invitation does not "
+                 "include a valid pipe.";
       Shutdown(
           EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
       return;

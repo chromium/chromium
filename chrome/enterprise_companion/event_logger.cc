@@ -152,8 +152,8 @@ class EventUploader {
       std::optional<std::string> response_body) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (url_loader->NetError() != net::OK) {
-      LOG(ERROR) << "Logging request failed "
-                 << net::ErrorToString(url_loader->NetError());
+      VLOG(1) << "Logging request failed "
+              << net::ErrorToString(url_loader->NetError());
     }
 
     network::mojom::URLResponseHeadPtr response_head =
@@ -287,8 +287,8 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
                 << "Failed to set logging cookie: " << result.status;
           }).Then(std::move(callback)));
     } else {
-      LOG(ERROR) << "Failed to initialize logging cookie. Not canonical: "
-                 << cookie->DebugString();
+      VLOG(1) << "Failed to initialize logging cookie. Not canonical: "
+              << cookie->DebugString();
       std::move(callback).Run();
     }
   }
@@ -300,8 +300,8 @@ class EventLoggerCookieHandlerImpl : public EventLoggerCookieHandler,
       if (!cookie_file_.WriteAndCheck(
               0, base::as_byte_span(change.cookie.Value())) ||
           !cookie_file_.SetLength(change.cookie.Value().length())) {
-        LOG(ERROR) << "Failed to write logging cookie: "
-                   << change.cookie.DebugString();
+        VLOG(1) << "Failed to write logging cookie: "
+                << change.cookie.DebugString();
       }
     }
   }

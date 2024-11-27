@@ -31,7 +31,7 @@ int TestCrashpadEmbedderMain(int argc, const char* const* argv) {
   }
 
   if (!command_line->HasSwitch(kCrashDatabaseSwitch)) {
-    LOG(ERROR) << "Missing switch: " << kCrashDatabaseSwitch;
+    VLOG(1) << "Missing switch: " << kCrashDatabaseSwitch;
     return 1;
   }
 

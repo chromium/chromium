@@ -64,7 +64,7 @@ void InitLogging() {
   logging::LoggingSettings settings{.logging_dest = logging::LOG_TO_STDERR};
   std::optional<base::FilePath> log_file_path = GetLogFilePath();
   if (!log_file_path) {
-    LOG(ERROR) << "Error getting log file path.";
+    VLOG(1) << "Error getting log file path.";
   } else {
     base::CreateDirectory(log_file_path->DirName());
 

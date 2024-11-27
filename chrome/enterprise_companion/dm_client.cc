@@ -319,10 +319,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
               cached_policy_info_->timestamp(), response);
       CHECK(validation_result) << "Policy validation result cannot be null";
       if (validation_result->status != FetchedPolicyValidator::VALIDATION_OK) {
-        LOG(ERROR) << "Policy validation failed for " << key.first
-                   << " response: "
-                   << FetchedPolicyValidator::StatusToString(
-                          validation_result->status);
+        VLOG(1) << "Policy validation failed for " << key.first << " response: "
+                << FetchedPolicyValidator::StatusToString(
+                       validation_result->status);
         last_result = validation_result->status;
       }
     }
