@@ -128,7 +128,6 @@ source_set("app_service_browser_tests") {
     "web_app_badging_browsertest.cc",
     "web_app_protocol_handling_browsertest.cc",
     "web_app_tab_restore_browsertest.cc",
-    "web_app_url_handling_browsertest.cc",
     "web_app_window_controls_overlay_browsertest.cc",
   ]
 

@@ -9422,7 +9422,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3848" label="V8ScreenDetailed_PointerTypes_AttributeGetter"/>
   <int value="3849" label="V8ScreenDetailed_Label_AttributeGetter"/>
   <int value="3850" label="PermissionsPolicyHeader"/>
-  <int value="3851" label="WebAppManifestUrlHandlers"/>
+  <int value="3851" label="OBSOLETE_WebAppManifestUrlHandlers"/>
   <int value="3852" label="LaxAllowingUnsafeCookies"/>
   <int value="3853" label="V8MediaSession_SetMicrophoneActive_Method"/>
   <int value="3854" label="V8MediaSession_SetCameraActive_Method"/>
@@ -21570,7 +21570,6 @@ from previous Chrome versions.
   <int value="503722868" label="CrosBlockWarnings:disabled"/>
   <int value="504549229" label="WebViewDisplayCutout:disabled"/>
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
-  <int value="504946061" label="WebAppEnableUrlHandlers:disabled"/>
   <int value="504994663" label="GenericSensor:disabled"/>
   <int value="505381354" label="FastCheckout:enabled"/>
   <int value="505561325" label="OpenXR:disabled"/>
@@ -22045,7 +22044,6 @@ from previous Chrome versions.
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="700926106" label="OmniboxPedalsBatch3NonEnglish:enabled"/>
   <int value="701766325" label="PerNavigationMojoInterface:enabled"/>
-  <int value="701795774" label="WebAppEnableUrlHandlers:enabled"/>
   <int value="702060507" label="SafetyCheckWeakPasswords:disabled"/>
   <int value="702117246" label="OmniboxSiteSearchStarterPack:disabled"/>
   <int value="703122112" label="ShoppingList:enabled"/>

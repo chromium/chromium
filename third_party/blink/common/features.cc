@@ -2747,13 +2747,6 @@ BASE_FEATURE(kWebAppEnableScopeExtensions,
              "WebAppEnableScopeExtensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls URL handling feature in web apps. Controls parsing of "url_handlers"
-// field in web app manifests. See explainer for more information:
-// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-BASE_FEATURE(kWebAppEnableUrlHandlers,
-             "WebAppEnableUrlHandlers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls parsing of the "lock_screen" dictionary field and its "start_url"
 // entry in web app manifests.  See explainer for more information:
 // https://github.com/WICG/lock-screen/

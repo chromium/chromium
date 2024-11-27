@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -316,9 +315,6 @@ class WebAppRegistrar {
       const webapps::AppId& app_id) const;
   std::vector<DisplayMode> GetAppDisplayModeOverride(
       const webapps::AppId& app_id) const;
-
-  // Returns the "url_handlers" field from the app manifest.
-  apps::UrlHandlers GetAppUrlHandlers(const webapps::AppId& app_id) const;
 
   // Returns the `scope_extensions` field from the app manifest, ignoring
   // validation.

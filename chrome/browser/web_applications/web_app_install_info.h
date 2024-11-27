@@ -26,7 +26,6 @@
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -387,10 +386,6 @@ struct WebAppInstallInfo {
 
   // The URL protocols/schemes that the app can handle.
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
-
-  // The app intends to act as a URL handler for URLs described by this
-  // information.
-  apps::UrlHandlers url_handlers;
 
   // The app intends to have an extended scope containing URLs described by this
   // information.

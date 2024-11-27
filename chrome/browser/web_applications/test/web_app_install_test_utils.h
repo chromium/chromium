@@ -17,10 +17,6 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/services/app_service/public/cpp/url_handler_info.h"
-#endif
-
 class GURL;
 class Profile;
 

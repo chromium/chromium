@@ -575,10 +575,6 @@ void WebApp::SetDisallowedLaunchProtocols(
   disallowed_launch_protocols_ = std::move(disallowed_launch_protocols);
 }
 
-void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
-  url_handlers_ = std::move(url_handlers);
-}
-
 void WebApp::SetScopeExtensions(
     base::flat_set<ScopeExtensionInfo> scope_extensions) {
   scope_extensions_ = std::move(scope_extensions);
@@ -917,7 +913,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.protocol_handlers_,
         app.allowed_launch_protocols_,
         app.disallowed_launch_protocols_,
-        app.url_handlers_,
         app.scope_extensions_,
         app.validated_scope_extensions_,
         app.lock_screen_start_url_,
@@ -1132,8 +1127,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("theme_color", ColorToString(theme_color_));
 
   root.Set("manifest_id", manifest_id_.spec());
-
-  root.Set("url_handlers", ConvertDebugValueList(url_handlers_));
 
   root.Set("scope_extensions", ConvertDebugValueList(scope_extensions_));
 

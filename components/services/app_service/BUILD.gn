@@ -15,7 +15,6 @@ source_set("app_service") {
     "//components/services/app_service/public/cpp:app_shortcut_image",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:crosapi_utils",
     "//components/services/app_service/public/cpp:icon_loader",
     "//components/services/app_service/public/cpp:intents",

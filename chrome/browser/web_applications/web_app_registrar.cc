@@ -1535,13 +1535,6 @@ std::vector<DisplayMode> WebAppRegistrar::GetAppDisplayModeOverride(
                  : std::vector<DisplayMode>();
 }
 
-apps::UrlHandlers WebAppRegistrar::GetAppUrlHandlers(
-    const webapps::AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->url_handlers()
-                 : std::vector<apps::UrlHandlerInfo>();
-}
-
 base::flat_set<ScopeExtensionInfo> WebAppRegistrar::GetScopeExtensions(
     const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
