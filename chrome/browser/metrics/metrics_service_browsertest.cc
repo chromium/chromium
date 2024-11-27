@@ -225,13 +225,10 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
 // TerminateWithHeapCorruption() isn't expected to work there.
 // See: https://crbug.com/1054423
 #if BUILDFLAG(IS_WIN)
-#if defined(ARCH_CPU_ARM64)
-#define MAYBE_HeapCorruptionInRenderer DISABLED_HeapCorruptionInRenderer
-#else
-#define MAYBE_HeapCorruptionInRenderer HeapCorruptionInRenderer
-#endif
+// TODO(crbug.com/380550755): Unfortuntely, it's flaky on non-arm64.
+// Previously, this was turned off only if defined(ARCH_CPU_ARM64).
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
-                       MAYBE_HeapCorruptionInRenderer) {
+                       DISABLED_HeapCorruptionInRenderer) {
   base::HistogramTester histogram_tester;
 
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIHeapCorruptionCrashURL);
