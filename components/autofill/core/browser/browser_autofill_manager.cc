@@ -2371,7 +2371,6 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
   const AutofillProfile* original_profile =
       client().GetPersonalDataManager().address_data_manager().GetProfileByGUID(
           filled_profile->guid());
-
   if (!original_profile) {
     return;
   }
@@ -2382,9 +2381,8 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
                                     return field->Type().GetStorableType();
                                   });
       it != safe_filled_autofill_fields.end()) {
-    email_autofill_field = &**it;
-  }
-  if (!email_autofill_field) {
+    email_autofill_field = *it;
+  } else {
     return;
   }
 
@@ -2396,8 +2394,7 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
                                   &FormFieldData::global_id);
       it != safe_filled_fields.end()) {
     email_field = *it;
-  }
-  if (!email_field) {
+  } else {
     return;
   }
 
