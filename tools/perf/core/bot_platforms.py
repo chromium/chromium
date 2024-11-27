@@ -608,6 +608,14 @@ _WIN_11_EXECUTABLE_CONFIGS = frozenset([
     _tint_benchmark(),
     _views_perftests(),
 ])
+_WIN_ARM64_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
+    _GetBenchmarkConfig('rendering.desktop', abridged=True),
+    _GetBenchmarkConfig('rendering.desktop.notracing'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('system_health.common_desktop', abridged=True),
+])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -862,7 +870,7 @@ WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
 WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
     'win-arm64-snapdragon-plus-perf',
     'Windows Dell Snapdragon Plus',
-    _WIN_10_BENCHMARK_CONFIGS,
+    _WIN_ARM64_BENCHMARK_CONFIGS,
     1,
     'win',
     executables=_WIN_10_EXECUTABLE_CONFIGS,
@@ -871,7 +879,7 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
 WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
     'win-arm64-snapdragon-elite-perf',
     'Windows Dell Snapdragon Elite',
-    _WIN_10_BENCHMARK_CONFIGS,
+    _WIN_ARM64_BENCHMARK_CONFIGS,
     1,
     'win',
     executables=_WIN_10_EXECUTABLE_CONFIGS,
