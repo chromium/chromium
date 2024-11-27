@@ -211,7 +211,10 @@
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
         Customize and control Google Chrome
       </message>
-         <message name="IDS_ACCESSIBILITY_LIST_MENU_BUTTON" desc="Content description for the button that shows option menu for a list item.">
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button in the Tab Switcher Toolbar.">
+        Manage open tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_LIST_MENU_BUTTON" desc="Content description for the button that shows option menu for a list item.">
         <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Options
       </message>
     </messages>

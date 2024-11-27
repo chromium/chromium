@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 
@@ -44,6 +45,10 @@ public class HubToolbarCoordinator {
         mHubToolbarView = hubToolbarView;
 
         MenuButton menuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
+        ImageButton imageButton = menuButton.getImageButton();
+        imageButton.setContentDescription(
+                activity.getString(R.string.accessibility_tab_switcher_toolbar_btn_menu));
+
         menuButtonCoordinator.setMenuButton(menuButton);
     }
 
