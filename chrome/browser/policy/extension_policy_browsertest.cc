@@ -84,6 +84,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1029,6 +1030,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   extensions::ExtensionHostTestHelper extension_ready_observer(
       browser()->profile(), kGoodCrxId);
 
+  extensions::ExtensionHostTestHelper background_loaded_observer(
+      browser()->profile(), kGoodCrxId);
+  background_loaded_observer.RestrictToType(
+      extensions::mojom::ViewType::kExtensionBackgroundPage);
+
   // Updating the force-installed extension.
   extensions::ExtensionUpdater* updater = service->updater();
   extensions::ExtensionUpdater::CheckParams params;
@@ -1049,27 +1055,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   // Wait for the new extension process to launch.
   extension_ready_observer.WaitForRenderProcessReady();
 
-  // Wait until any background pages belonging to force-installed extensions
-  // have been loaded.
-  extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(browser()->profile());
-  extensions::ProcessManager::FrameSet all_frames = manager->GetAllFrames();
-  for (auto iter = all_frames.begin(); iter != all_frames.end();) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(*iter);
-    ASSERT_TRUE(web_contents);
-    if (!web_contents->IsLoading()) {
-      ++iter;
-    } else {
-      base::RunLoop().RunUntilIdle();
-
-      // Test activity may have modified the set of extension processes during
-      // message processing, so re-start the iteration to catch added/removed
-      // processes.
-      all_frames = manager->GetAllFrames();
-      iter = all_frames.begin();
-    }
-  }
+  // Wait until the background page for the new extension has properly loaded.
+  ASSERT_TRUE(background_loaded_observer.WaitForHostCompletedFirstLoad());
 
   // Test policy-installed extensions are reloaded when killed.
   {

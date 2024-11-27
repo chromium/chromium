@@ -119,6 +119,7 @@ class ProcessManager : public KeyedService,
   // extension with non-cross-origin-isolated contexts).
   // TODO(aa): This only returns correct results for extensions and packaged
   // apps, not hosted apps.
+  // TODO(https://crbug.com/334991035): Remove this method.
   virtual scoped_refptr<content::SiteInstance> GetSiteInstanceForURL(
       const GURL& url);
 
@@ -379,9 +380,11 @@ class ProcessManager : public KeyedService,
   // A SiteInstance related to the SiteInstance for all extensions in
   // this profile.  We create it in such a way that a new
   // browsing instance is created.  This controls process grouping.
+  // TODO(https://crbug.com/334991035): Remove this member. The //content
+  // layer will properly isolate new extension processes.
   scoped_refptr<content::SiteInstance> site_instance_;
 
-  // The browser context associated with the |site_instance_|.
+  // The browser context associated with the ProcessManager.
   raw_ptr<content::BrowserContext> browser_context_;
 
   // Contains all active extension-related RenderFrameHost instances for all

@@ -26,6 +26,7 @@ class ExtensionSidePanelViewHost : public ExtensionViewHost {
   ExtensionSidePanelViewHost(const Extension* extension,
                              content::SiteInstance* site_instance,
                              const GURL& url,
+                             content::BrowserContext* browser_context,
                              Browser* browser,
                              content::WebContents* web_contents);
 

@@ -142,47 +142,4 @@ TEST_F(ProcessManagerTest, IsBackgroundHostAllowed) {
   EXPECT_FALSE(manager.startup_background_hosts_created_for_test());
 }
 
-// TODO(https://crbug.com/356905053):Strict site isolation is not enabled on
-// Android, so this test is disabled on desktop android.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-#define MAYBE_ProcessGrouping DISABLED_ProcessGrouping
-#else
-#define MAYBE_ProcessGrouping ProcessGrouping
-#endif
-// Test that extensions get grouped in the right SiteInstance (and therefore
-// process) based on their URLs.
-TEST_F(ProcessManagerTest, MAYBE_ProcessGrouping) {
-  // Extensions in different browser contexts should always be different
-  // SiteInstances.
-  ProcessManager manager1(original_context(), extension_registry());
-  // NOTE: This context is not associated with the TestExtensionsBrowserClient.
-  // That's OK because we're not testing regular vs. incognito behavior.
-  TestBrowserContext another_context;
-  ExtensionRegistry another_registry(&another_context);
-  ProcessManager manager2(&another_context, &another_registry);
-
-  // Extensions with common origins ("scheme://id/") should be grouped in the
-  // same SiteInstance.
-  GURL ext1_url1("chrome-extension://ext1_id/index.html");
-  GURL ext1_url2("chrome-extension://ext1_id/monkey/monkey.html");
-  GURL ext2_url1("chrome-extension://ext2_id/index.html");
-
-  scoped_refptr<SiteInstance> site11 =
-      manager1.GetSiteInstanceForURL(ext1_url1);
-  scoped_refptr<SiteInstance> site12 =
-      manager1.GetSiteInstanceForURL(ext1_url2);
-  EXPECT_EQ(site11, site12);
-
-  scoped_refptr<SiteInstance> site21 =
-      manager1.GetSiteInstanceForURL(ext2_url1);
-  EXPECT_NE(site11, site21);
-
-  scoped_refptr<SiteInstance> other_profile_site =
-      manager2.GetSiteInstanceForURL(ext1_url1);
-  EXPECT_NE(site11, other_profile_site);
-
-  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
-      &another_context);
-}
-
 }  // namespace extensions

@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
@@ -265,6 +266,7 @@ bool IsExtensionIdle(const std::string& extension_id,
   }
 
   ProcessManager* process_manager = ProcessManager::Get(context);
+  ProcessMap* process_map = ProcessMap::Get(context);
   for (std::vector<std::string>::const_iterator i = ids_to_check.begin();
        i != ids_to_check.end();
        i++) {
@@ -273,14 +275,16 @@ bool IsExtensionIdle(const std::string& extension_id,
     if (host)
       return false;
 
-    scoped_refptr<content::SiteInstance> site_instance =
-        process_manager->GetSiteInstanceForURL(
-            Extension::GetBaseURLFromExtensionId(id));
-    if (site_instance && site_instance->HasProcess())
+    if (!process_manager->GetRenderFrameHostsForExtension(id).empty()) {
       return false;
+    }
 
-    if (!process_manager->GetRenderFrameHostsForExtension(id).empty())
+    // TODO(devlin): We can probably remove the checks above (for background
+    // hosts and frame hosts). If an extension has any active frames, it should
+    // have a dedicated process.
+    if (process_map->ExtensionHasProcess(id)) {
       return false;
+    }
   }
   return true;
 }
