@@ -229,7 +229,7 @@ void SqlDatabase::Close() {
   db_init_status_.reset();
 }
 
-bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
+bool SqlDatabase::InsertOrReplacePassages(const UrlData& url_passages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit()) {
     return false;
@@ -278,8 +278,7 @@ bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
   return result;
 }
 
-bool SqlDatabase::InsertOrReplaceEmbeddings(
-    const UrlEmbeddings& url_embeddings) {
+bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (url_embeddings.embeddings.size() == 0) {
@@ -339,8 +338,7 @@ std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
   return std::nullopt;
 }
 
-std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
-    history::URLID url_id) {
+std::optional<UrlData> SqlDatabase::GetUrlData(history::URLID url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
@@ -369,8 +367,8 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
     return {};
   }
 
-  UrlPassagesEmbeddings url_data(url_id, visit_id, visit_time);
-  url_data.url_passages.passages = std::move(passages.value());
+  UrlData url_data(url_id, visit_id, visit_time);
+  url_data.passages = std::move(passages.value());
   bool loaded_missized_embedding = false;
   {
     constexpr char kSqlSelectEmbeddings[] =
@@ -389,12 +387,12 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
         return url_data;
       }
       for (const proto::EmbeddingVector& vector : value.vectors()) {
-        url_data.url_embeddings.embeddings.emplace_back(
+        url_data.embeddings.emplace_back(
             std::vector(vector.floats().cbegin(), vector.floats().cend()),
             vector.passage_word_count());
-        if (url_data.url_embeddings.embeddings.back().Dimensions() !=
+        if (url_data.embeddings.back().Dimensions() !=
             GetEmbeddingDimensions()) {
-          url_data.url_embeddings.embeddings.clear();
+          url_data.embeddings.clear();
           loaded_missized_embedding = true;
           break;
         }
@@ -406,11 +404,10 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
   return url_data;
 }
 
-std::vector<UrlPassagesEmbeddings> SqlDatabase::GetUrlDataInTimeRange(
-    base::Time from_time,
-    base::Time to_time,
-    size_t limit,
-    size_t offset) {
+std::vector<UrlData> SqlDatabase::GetUrlDataInTimeRange(base::Time from_time,
+                                                        base::Time to_time,
+                                                        size_t limit,
+                                                        size_t offset) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
@@ -432,25 +429,24 @@ std::vector<UrlPassagesEmbeddings> SqlDatabase::GetUrlDataInTimeRange(
   statement.BindInt(2, static_cast<int>(limit));
   statement.BindInt(3, static_cast<int>(offset));
 
-  std::vector<UrlPassagesEmbeddings> url_datas;
+  std::vector<UrlData> url_datas;
   while (statement.Step()) {
     history::URLID url_id = statement.ColumnInt64(0);
     history::VisitID visit_id = statement.ColumnInt64(1);
     base::Time visit_time = statement.ColumnTime(2);
-    UrlPassagesEmbeddings& url_data =
-        url_datas.emplace_back(url_id, visit_id, visit_time);
+    UrlData& url_data = url_datas.emplace_back(url_id, visit_id, visit_time);
 
     std::optional<proto::PassagesValue> passages =
         PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
     if (passages.has_value()) {
-      url_data.url_passages.passages = std::move(passages.value());
+      url_data.passages = std::move(passages.value());
     }
 
     proto::EmbeddingsValue value;
     base::span<const uint8_t> embeddings_blob = statement.ColumnBlob(4);
     if (value.ParseFromArray(embeddings_blob.data(), embeddings_blob.size())) {
       for (const proto::EmbeddingVector& vector : value.vectors()) {
-        url_data.url_embeddings.embeddings.emplace_back(
+        url_data.embeddings.emplace_back(
             std::vector(vector.floats().cbegin(), vector.floats().cend()),
             vector.passage_word_count());
       }
@@ -460,7 +456,7 @@ std::vector<UrlPassagesEmbeddings> SqlDatabase::GetUrlDataInTimeRange(
   return url_datas;
 }
 
-std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
+std::vector<UrlData> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
@@ -474,12 +470,12 @@ std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, kSqlSelectPassagesWithoutEmbeddings));
 
-  std::vector<UrlPassages> all_url_passages;
+  std::vector<UrlData> all_url_passages;
   while (statement.Step()) {
     std::optional<proto::PassagesValue> passages_value =
         PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
     if (passages_value.has_value()) {
-      UrlPassages& url_passages = all_url_passages.emplace_back(
+      UrlData& url_passages = all_url_passages.emplace_back(
           statement.ColumnInt64(0), statement.ColumnInt64(1),
           statement.ColumnTime(2));
       url_passages.passages = std::move(passages_value.value());
@@ -492,9 +488,9 @@ size_t SqlDatabase::GetEmbeddingDimensions() const {
   return embedder_metadata_->output_size;
 }
 
-bool SqlDatabase::AddUrlData(UrlPassagesEmbeddings url_data) {
-  return InsertOrReplacePassages(url_data.url_passages) &&
-         InsertOrReplaceEmbeddings(url_data.url_embeddings);
+bool SqlDatabase::AddUrlData(UrlData url_data) {
+  return InsertOrReplacePassages(url_data) &&
+         InsertOrReplaceEmbeddings(url_data);
 }
 
 constexpr char kSqlSelectPassagesAndEmbeddings[] =
@@ -557,7 +553,7 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
           "History.Embeddings.DatabaseIterationYielded", yielded);
     }
 
-    const UrlPassagesEmbeddings* Next() override {
+    const UrlData* Next() override {
       if (!sql_database) {
         return nullptr;
       }
@@ -565,9 +561,9 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
       CHECK(statement);
       // Don't expect perfect data; step until we find valid data.
       while (statement->Step()) {
-        data = UrlPassagesEmbeddings(/*url_id=*/statement->ColumnInt64(0),
-                                     /*visit_id=*/statement->ColumnInt64(1),
-                                     /*visit_time=*/statement->ColumnTime(2));
+        data = UrlData(/*url_id=*/statement->ColumnInt64(0),
+                       /*visit_id=*/statement->ColumnInt64(1),
+                       /*visit_time=*/statement->ColumnTime(2));
         // Passages
         std::optional<proto::PassagesValue> passages_value =
             PassagesBlobToProto(statement->ColumnBlob(3),
@@ -576,7 +572,7 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
           skipped_passages++;
           continue;
         }
-        data.url_passages.passages = std::move(passages_value.value());
+        data.passages = std::move(passages_value.value());
 
         // Embeddings
         base::span<const uint8_t> blob = statement->ColumnBlob(4);
@@ -586,13 +582,13 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
           continue;
         }
         for (const proto::EmbeddingVector& vector : value.vectors()) {
-          data.url_embeddings.embeddings.emplace_back(
+          data.embeddings.emplace_back(
               std::vector(vector.floats().cbegin(), vector.floats().cend()),
               vector.passage_word_count());
         }
         const size_t expected_dimensions =
             sql_database->GetEmbeddingDimensions();
-        if (std::ranges::any_of(data.url_embeddings.embeddings,
+        if (std::ranges::any_of(data.embeddings,
                                 [=](const Embedding& embedding) {
                                   return embedding.Dimensions() !=
                                          expected_dimensions;
@@ -602,10 +598,9 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
         }
 
         // Confirm embeddings and passages are 1:1.
-        if (data.url_embeddings.embeddings.empty() ||
-            data.url_embeddings.embeddings.size() !=
-                static_cast<size_t>(
-                    data.url_passages.passages.passages_size())) {
+        if (data.embeddings.empty() ||
+            data.embeddings.size() !=
+                static_cast<size_t>(data.passages.passages_size())) {
           skipped_mismatches++;
           continue;
         }
@@ -617,7 +612,7 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
     }
 
     base::WeakPtr<SqlDatabase> sql_database;
-    UrlPassagesEmbeddings data;
+    UrlData data;
     // Keep stats on any data loading failures, and report histogram in dtor.
     int skipped_passages = 0;
     int skipped_embeddings = 0;

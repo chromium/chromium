@@ -109,23 +109,6 @@ struct SearchInfo {
   base::TimeDelta passage_scanning_time;
 };
 
-struct UrlPassages {
-  UrlPassages(history::URLID url_id,
-              history::VisitID visit_id,
-              base::Time visit_time);
-  ~UrlPassages();
-  UrlPassages(const UrlPassages&);
-  UrlPassages& operator=(const UrlPassages&);
-  UrlPassages(UrlPassages&&);
-  UrlPassages& operator=(UrlPassages&&);
-  bool operator==(const UrlPassages&) const;
-
-  history::URLID url_id;
-  history::VisitID visit_id;
-  base::Time visit_time;
-  proto::PassagesValue passages;
-};
-
 class Embedding {
  public:
   explicit Embedding(std::vector<float> data);
@@ -164,18 +147,17 @@ class Embedding {
   size_t passage_word_count_ = 0;
 };
 
-struct UrlEmbeddings {
-  UrlEmbeddings();
-  UrlEmbeddings(history::URLID url_id,
-                history::VisitID visit_id,
-                base::Time visit_time);
-  explicit UrlEmbeddings(const UrlPassages& url_passages);
-  ~UrlEmbeddings();
-  UrlEmbeddings(UrlEmbeddings&&);
-  UrlEmbeddings& operator=(UrlEmbeddings&&);
-  UrlEmbeddings(const UrlEmbeddings&);
-  UrlEmbeddings& operator=(const UrlEmbeddings&);
-  bool operator==(const UrlEmbeddings&) const;
+struct UrlData {
+  UrlData(history::URLID url_id,
+          history::VisitID visit_id,
+          base::Time visit_time);
+  UrlData(const UrlData&);
+  UrlData(UrlData&&);
+  UrlData& operator=(const UrlData&);
+  UrlData& operator=(UrlData&&);
+  ~UrlData();
+
+  bool operator==(const UrlData&) const;
 
   // Finds score of embedding nearest to query, also taking passages
   // into consideration since some should be skipped. The passages
@@ -183,29 +165,13 @@ struct UrlEmbeddings {
   float BestScoreWith(SearchInfo& search_info,
                       const SearchParams& search_params,
                       const Embedding& query_embedding,
-                      const proto::PassagesValue& passages,
                       size_t search_minimum_word_count) const;
 
   history::URLID url_id;
   history::VisitID visit_id;
   base::Time visit_time;
+  proto::PassagesValue passages;
   std::vector<Embedding> embeddings;
-};
-
-struct UrlPassagesEmbeddings {
-  UrlPassagesEmbeddings(history::URLID url_id,
-                        history::VisitID visit_id,
-                        base::Time visit_time);
-  UrlPassagesEmbeddings(const UrlPassagesEmbeddings&);
-  UrlPassagesEmbeddings(UrlPassagesEmbeddings&&);
-  UrlPassagesEmbeddings& operator=(const UrlPassagesEmbeddings&);
-  UrlPassagesEmbeddings& operator=(UrlPassagesEmbeddings&&);
-  ~UrlPassagesEmbeddings();
-
-  bool operator==(const UrlPassagesEmbeddings&) const;
-
-  UrlPassages url_passages;
-  UrlEmbeddings url_embeddings;
 };
 
 // This base class decouples storage classes and inverts the dependency so that
@@ -219,7 +185,7 @@ class VectorDatabase {
     // Returns nullptr if none remain; otherwise advances the iterator
     // and returns a pointer to the next instance (which may be owned
     // by the iterator itself).
-    virtual const UrlPassagesEmbeddings* Next() = 0;
+    virtual const UrlData* Next() = 0;
   };
 
   virtual ~VectorDatabase() = default;
@@ -229,7 +195,7 @@ class VectorDatabase {
 
   // Insert or update all embeddings for a URL's full set of passages.
   // Returns true on success.
-  virtual bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) = 0;
+  virtual bool AddUrlData(UrlData url_data) = 0;
 
   // Create an iterator that steps through database items.
   // Null may be returned if there are none.
@@ -259,12 +225,12 @@ class VectorDatabaseInMemory : public VectorDatabase {
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) override;
+  bool AddUrlData(UrlData url_data) override;
   std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 
  private:
-  std::vector<UrlPassagesEmbeddings> data_;
+  std::vector<UrlData> data_;
 };
 
 // Utility method to split a query into separate query terms for search.

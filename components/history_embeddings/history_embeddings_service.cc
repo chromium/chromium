@@ -159,12 +159,11 @@ ScoredUrlRow& ScoredUrlRow::operator=(const ScoredUrlRow&) = default;
 ScoredUrlRow& ScoredUrlRow::operator=(ScoredUrlRow&&) = default;
 
 std::string ScoredUrlRow::GetBestPassage() const {
-  CHECK(passages_embeddings.url_passages.passages.passages_size() != 0);
+  CHECK(passages_embeddings.passages.passages_size() != 0);
   size_t best_index = GetBestScoreIndices(1, 0).front();
   CHECK_LT(best_index,
-           static_cast<size_t>(
-               passages_embeddings.url_passages.passages.passages_size()));
-  return passages_embeddings.url_passages.passages.passages(best_index);
+           static_cast<size_t>(passages_embeddings.passages.passages_size()));
+  return passages_embeddings.passages.passages(best_index);
 }
 
 std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
@@ -179,9 +178,7 @@ std::vector<size_t> ScoredUrlRow::GetBestScoreIndices(
     // since it has already been calculated before, use the value stored
     // with the embedding for efficiency.
     data.emplace_back(
-        scores[i],
-        passages_embeddings.url_embeddings.embeddings[i].GetPassageWordCount(),
-        i);
+        scores[i], passages_embeddings.embeddings[i].GetPassageWordCount(), i);
   }
 
   // Sort tuples naturally, descending, so that highest scores come first.
@@ -313,7 +310,7 @@ bool HistoryEmbeddingsService::IsEligible(const GURL& url) {
   }
 
   if (!eligible) {
-    callback_for_tests_.Run(UrlPassages(0, 0, base::Time()));
+    callback_for_tests_.Run(UrlData(0, 0, base::Time()));
   }
 
   return eligible;
@@ -545,12 +542,11 @@ void HistoryEmbeddingsService::SendQualityLog(
         optimization_guide::proto::PassageData* passage_data =
             document_shown->add_passages();
         passage_data->set_text(
-            scored_url_row.passages_embeddings.url_passages.passages.passages(
+            scored_url_row.passages_embeddings.passages.passages(
                 passage_index));
         passage_data->set_score(scored_url_row.scores[passage_index]);
         const std::vector<float>& embedding =
-            scored_url_row.passages_embeddings.url_embeddings
-                .embeddings[passage_index]
+            scored_url_row.passages_embeddings.embeddings[passage_index]
                 .GetData();
         passage_data->mutable_embedding()
             ->mutable_floats()
@@ -614,19 +610,19 @@ void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
 }
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
-    UrlPassages url_passages,
+    UrlData url_passages,
     std::vector<Embedding> embeddings) {
-  UrlPassagesEmbeddings url_data(url_passages.url_id, url_passages.visit_id,
-                                 url_passages.visit_time);
+  UrlData url_data(url_passages.url_id, url_passages.visit_id,
+                   url_passages.visit_time);
   // Construct embeddings, including some information from passages.
-  url_data.url_embeddings.embeddings = std::move(embeddings);
+  url_data.embeddings = std::move(embeddings);
   CHECK_EQ(url_passages.passages.passages_size(),
-           static_cast<int>(url_data.url_embeddings.embeddings.size()));
+           static_cast<int>(url_data.embeddings.size()));
   for (int i = 0; i < url_passages.passages.passages_size(); i++) {
-    url_data.url_embeddings.embeddings[i].SetPassageWordCount(
+    url_data.embeddings[i].SetPassageWordCount(
         CountWords(url_passages.passages.passages(i)));
   }
-  url_data.url_passages = std::move(url_passages);
+  url_data.passages = std::move(url_passages.passages);
 
   // Store all embeddings and passages.
   vector_database.AddUrlData(std::move(url_data));
@@ -693,26 +689,23 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     scored_url_row.passages_embeddings =
         sql_database.GetUrlData(scored_url_row.scored_url.url_id).value();
     // Save scores for logging.
-    size_t n =
-        scored_url_row.passages_embeddings.url_embeddings.embeddings.size();
+    size_t n = scored_url_row.passages_embeddings.embeddings.size();
     scored_url_row.scores.reserve(n);
     for (size_t i = 0; i < n; i++) {
       SearchInfo discard_recount;
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
-          scored_url_row.passages_embeddings.url_embeddings.embeddings[i]));
+          scored_url_row.passages_embeddings.embeddings[i]));
     }
   }
 
   for (const auto& sr : scored_url_rows) {
     VLOG(3) << "URL: " << sr.row.url().spec()
             << " Score: " << sr.scored_url.score;
-    VLOG(3) << "# passages: "
-            << sr.passages_embeddings.url_passages.passages.passages_size()
+    VLOG(3) << "# passages: " << sr.passages_embeddings.passages.passages_size()
             << " # scores: " << sr.scores.size();
     for (size_t i = 0; i < sr.scores.size(); i++) {
       VLOG(3) << "score: " << sr.scores[i];
-      VLOG(3) << "passage: "
-              << sr.passages_embeddings.url_passages.passages.passages(i);
+      VLOG(3) << "passage: " << sr.passages_embeddings.passages.passages(i);
     }
   }
 
@@ -743,23 +736,23 @@ void HistoryEmbeddingsService::Storage::DeleteDataForTesting(
   sql_database.DeleteAllData(delete_passages, delete_embeddings);
 }
 
-std::vector<UrlPassages>
+std::vector<UrlData>
 HistoryEmbeddingsService::Storage::CollectPassagesWithoutEmbeddings() {
   return sql_database.GetUrlPassagesWithoutEmbeddings();
 }
 
-std::optional<UrlPassagesEmbeddings>
-HistoryEmbeddingsService::Storage::GetUrlData(history::URLID url_id) {
+std::optional<UrlData> HistoryEmbeddingsService::Storage::GetUrlData(
+    history::URLID url_id) {
   base::ScopedUmaHistogramTimer timer(
       "History.Embeddings.DatabaseAsCacheAccessTime.StorageRead");
   return sql_database.GetUrlData(url_id);
 }
 
-std::vector<UrlPassagesEmbeddings>
-HistoryEmbeddingsService::Storage::GetUrlDataInTimeRange(base::Time from_time,
-                                                         base::Time to_time,
-                                                         size_t limit,
-                                                         size_t offset) {
+std::vector<UrlData> HistoryEmbeddingsService::Storage::GetUrlDataInTimeRange(
+    base::Time from_time,
+    base::Time to_time,
+    size_t limit,
+    size_t offset) {
   return sql_database.GetUrlDataInTimeRange(from_time, to_time, limit, offset);
 }
 
@@ -769,8 +762,7 @@ bool HistoryEmbeddingsService::IsAnswererUseAllowed() const {
 
 void HistoryEmbeddingsService::GetUrlData(
     history::URLID url_id,
-    base::OnceCallback<void(std::optional<UrlPassagesEmbeddings>)> callback)
-    const {
+    base::OnceCallback<void(std::optional<UrlData>)> callback) const {
   storage_.AsyncCall(&Storage::GetUrlData)
       .WithArgs(url_id)
       .Then(std::move(callback));
@@ -781,8 +773,7 @@ void HistoryEmbeddingsService::GetUrlDataInTimeRange(
     base::Time to_time,
     size_t limit,
     size_t offset,
-    base::OnceCallback<void(std::vector<UrlPassagesEmbeddings>)> callback)
-    const {
+    base::OnceCallback<void(std::vector<UrlData>)> callback) const {
   storage_.AsyncCall(&Storage::GetUrlDataInTimeRange)
       .WithArgs(from_time, to_time, limit, offset)
       .Then(std::move(callback));
@@ -795,8 +786,8 @@ QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
 }
 
 void HistoryEmbeddingsService::OnPassagesRetrieved(
-    std::optional<UrlPassagesEmbeddings> existing_url_data,
-    UrlPassages url_passages,
+    std::optional<UrlData> existing_url_data,
+    UrlData url_passages,
     std::vector<std::string> passages) {
   VLOG(4) << "All " << passages.size() << " passages for url_id "
           << url_passages.url_id << ":";
@@ -808,14 +799,13 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
   // hash-based lookup instead of many string comparisons.
   std::unordered_map<std::string, Embedding> embedding_cache;
   if (existing_url_data.has_value()) {
-    size_t n = existing_url_data.value().url_passages.passages.passages_size();
+    size_t n = existing_url_data.value().passages.passages_size();
     // It's possible to get passages but no embeddings if the model version
     // changed and caused embeddings to be deleted, and they're not rebuilt yet.
-    if (n == existing_url_data.value().url_embeddings.embeddings.size()) {
+    if (n == existing_url_data.value().embeddings.size()) {
       auto passages_iter =
-          existing_url_data.value().url_passages.passages.passages().begin();
-      auto embeddings_iter =
-          existing_url_data.value().url_embeddings.embeddings.begin();
+          existing_url_data.value().passages.passages().begin();
+      auto embeddings_iter = existing_url_data.value().embeddings.begin();
       for (size_t i = 0; i < n; i++) {
         embedding_cache.emplace(std::move(*passages_iter),
                                 std::move(*embeddings_iter));
@@ -874,7 +864,7 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
 
 void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     std::unordered_map<std::string, Embedding> embedding_cache,
-    UrlPassages url_passages,
+    UrlData url_passages,
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
     ComputeEmbeddingsStatus status) {
@@ -1086,8 +1076,7 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
     best_passages.reserve(best_indices.size());
     for (size_t index : best_indices) {
       best_passages.push_back(
-          scored_url_row.passages_embeddings.url_passages.passages.passages(
-              index));
+          scored_url_row.passages_embeddings.passages.passages(index));
     }
   }
   std::string query = result.query;
@@ -1154,9 +1143,9 @@ void HistoryEmbeddingsService::OnAnswerComputed(
 }
 
 void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
-    std::vector<UrlPassages> all_url_passages) {
+    std::vector<UrlData> all_url_passages) {
   VLOG(3) << "Rebuilding embeddings for " << all_url_passages.size() << " rows";
-  for (UrlPassages& url_passages : all_url_passages) {
+  for (UrlData& url_passages : all_url_passages) {
     std::vector<std::string> passages(url_passages.passages.passages().begin(),
                                       url_passages.passages.passages().end());
     VLOG(3) << "Rebuild scheduled for url_id " << url_passages.url_id
@@ -1176,7 +1165,7 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
     base::Time visit_time,
     content::WeakDocumentPtr weak_render_frame_host,
     base::Time time_before_database_access,
-    std::optional<UrlPassagesEmbeddings> existing_url_data) {
+    std::optional<UrlData> existing_url_data) {
   content::RenderFrameHost* render_frame_host =
       weak_render_frame_host.AsRenderFrameHostIfValid();
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
@@ -1213,7 +1202,7 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
               base::BindOnce(&HistoryEmbeddingsService::OnPassagesRetrieved,
                              weak_ptr_factory_.GetWeakPtr(),
                              std::move(existing_url_data),
-                             UrlPassages(url_id, visit_id, visit_time))),
+                             UrlData(url_id, visit_id, visit_time))),
           nullptr));
 }
 

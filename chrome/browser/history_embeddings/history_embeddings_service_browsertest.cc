@@ -86,7 +86,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
         browser()->profile());
   }
 
-  base::RepeatingCallback<void(UrlPassages)>& callback_for_tests() {
+  base::RepeatingCallback<void(UrlData)>& callback_for_tests() {
     return service()->callback_for_tests_;
   }
 
@@ -159,16 +159,16 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/inner_text/test1.html")));
 
-  base::test::TestFuture<UrlPassages> future;
+  base::test::TestFuture<UrlData> future;
   callback_for_tests() = future.GetRepeatingCallback();
   service()->RetrievePassages(
       1, 1, base::Time::Now(),
       web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
 
-  UrlPassages url_passages = future.Take();
+  UrlData url_data = future.Take();
 
-  ASSERT_EQ(url_passages.passages.passages_size(), 1);
-  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+  ASSERT_EQ(url_data.passages.passages_size(), 1);
+  ASSERT_EQ(url_data.passages.passages(0), "A a B C b a 2 D");
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   });
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithLowAggregationBrowserTest,
   });
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   // This HTML has <br> tags to separate the passages with known word counts.
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(
   OverrideVisibilityScoresForTesting({{"A B C D e f g", 0.00}});
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
                        SearchReturnsNoResultsVisibilityModelNotAvailable) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
@@ -372,15 +372,15 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/inner_text/test1.html")));
 
-  base::test::TestFuture<UrlPassages> future;
+  base::test::TestFuture<UrlData> future;
   callback_for_tests() = future.GetRepeatingCallback();
   service()->RetrievePassages(
       1, 1, base::Time::Now(),
       web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
 
-  UrlPassages url_passages = future.Take();
-  ASSERT_EQ(url_passages.passages.passages_size(), 1);
-  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+  UrlData url_data = future.Take();
+  ASSERT_EQ(url_data.passages.passages_size(), 1);
+  ASSERT_EQ(url_data.passages.passages(0), "A a B C b a 2 D");
 
   // First time, the cache isn't used because there's no data yet.
   histogram_tester.ExpectTotalCount(
@@ -394,9 +394,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
   service()->RetrievePassages(
       1, 2, base::Time::Now(),
       web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
-  url_passages = future.Take();
-  ASSERT_EQ(url_passages.passages.passages_size(), 1);
-  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+  url_data = future.Take();
+  ASSERT_EQ(url_data.passages.passages_size(), 1);
+  ASSERT_EQ(url_data.passages.passages(0), "A a B C b a 2 D");
 
   // This time all the passages were found in existing data. So the
   // zero bucket stays the same while the 100 bucket increments.
@@ -419,9 +419,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
   service()->RetrievePassages(
       1, 3, base::Time::Now(),
       web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
-  url_passages = future.Take();
-  ASSERT_EQ(url_passages.passages.passages_size(), 1);
-  ASSERT_EQ(url_passages.passages.passages(0), "A a B C b a 2 D");
+  url_data = future.Take();
+  ASSERT_EQ(url_data.passages.passages_size(), 1);
+  ASSERT_EQ(url_data.passages.passages(0), "A a B C b a 2 D");
 
   // This time the passages were found in existing data but there were no
   // corresponding embeddings so they weren't used. So the 100 bucket stays
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
   });
   const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
 
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
       ->AddHintForTesting(url, optimization_guide::proto::HISTORY_EMBEDDINGS,
                           std::nullopt);
 
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   });
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsRestrictedSigninBrowserTest,
   });
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  base::test::TestFuture<UrlPassages> store_future;
+  base::test::TestFuture<UrlData> store_future;
   callback_for_tests() = store_future.GetRepeatingCallback();
 
   const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");

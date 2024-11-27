@@ -91,7 +91,7 @@ struct ScoredUrlRow {
   history::URLRow row;
 
   // All passages and embeddings for this URL (i.e. not a partial set).
-  UrlPassagesEmbeddings passages_embeddings;
+  UrlData passages_embeddings;
 
   // All scores against the query for `passages_embeddings`.
   std::vector<float> scores;
@@ -220,9 +220,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // Asynchronously gets passages and embeddings from storage for given
   // `url_id`. Calls `callback` with the data or nullopt if no data is found in
   // the HistoryEmbeddings database.
-  void GetUrlData(history::URLID url_id,
-                  base::OnceCallback<void(std::optional<UrlPassagesEmbeddings>)>
-                      callback) const;
+  void GetUrlData(
+      history::URLID url_id,
+      base::OnceCallback<void(std::optional<UrlData>)> callback) const;
 
   // Asynchronously gets passages and embeddings from storage where visits
   // are within a given time range. Calls `callback` with the data.
@@ -233,8 +233,7 @@ class HistoryEmbeddingsService : public KeyedService,
       base::Time to_time,
       size_t limit,
       size_t offset,
-      base::OnceCallback<void(std::vector<UrlPassagesEmbeddings>)> callback)
-      const;
+      base::OnceCallback<void(std::vector<UrlData>)> callback) const;
 
  private:
   friend class HistoryEmbeddingsBrowserTest;
@@ -252,7 +251,7 @@ class HistoryEmbeddingsService : public KeyedService,
                              os_crypt_async::Encryptor encryptor);
 
     // Called on the worker sequence to persist passages and embeddings.
-    void ProcessAndStorePassages(UrlPassages url_passages,
+    void ProcessAndStorePassages(UrlData url_passages,
                                  std::vector<Embedding> passages_embeddings);
 
     // Runs search on worker sequence.
@@ -275,19 +274,18 @@ class HistoryEmbeddingsService : public KeyedService,
     // Gathers URL and passage data from the database where corresponding
     // embeddings are absent. This is used to rebuild the embeddings table
     // when the model changes.
-    std::vector<UrlPassages> CollectPassagesWithoutEmbeddings();
+    std::vector<UrlData> CollectPassagesWithoutEmbeddings();
 
     // Retrieves passages and embeddings from the database for use as a cache
     // to avoid recomputing embeddings that exist for identical passages.
-    std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
+    std::optional<UrlData> GetUrlData(history::URLID url_id);
 
     // Retrieves passages and embeddings from the database that have visit times
     // within specified range.
-    std::vector<UrlPassagesEmbeddings> GetUrlDataInTimeRange(
-        base::Time from_time,
-        base::Time to_time,
-        size_t limit,
-        size_t offset);
+    std::vector<UrlData> GetUrlDataInTimeRange(base::Time from_time,
+                                               base::Time to_time,
+                                               size_t limit,
+                                               size_t offset);
 
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;
@@ -310,15 +308,14 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Called indirectly via `RetrievePassagesWithUrlData` when passage extraction
   // completes.
-  void OnPassagesRetrieved(
-      std::optional<UrlPassagesEmbeddings> existing_url_data,
-      UrlPassages url_passages,
-      std::vector<std::string> passages);
+  void OnPassagesRetrieved(std::optional<UrlData> existing_url_data,
+                           UrlData url_passages,
+                           std::vector<std::string> passages);
 
   // Invoked after the embeddings for `passages` has been computed.
   void OnPassagesEmbeddingsComputed(
       std::unordered_map<std::string, Embedding> embedding_cache,
-      UrlPassages url_passages,
+      UrlData url_passages,
       std::vector<std::string> passages,
       std::vector<Embedding> embeddings,
       ComputeEmbeddingsStatus status);
@@ -377,7 +374,7 @@ class HistoryEmbeddingsService : public KeyedService,
                         AnswererResult answerer_result);
 
   // Rebuild absent embeddings from source passages.
-  void RebuildAbsentEmbeddings(std::vector<UrlPassages> all_url_passages);
+  void RebuildAbsentEmbeddings(std::vector<UrlData> all_url_passages);
 
   // This continues with passage extraction after any existing data is fetched
   // for the same `url_id`.
@@ -387,7 +384,7 @@ class HistoryEmbeddingsService : public KeyedService,
       base::Time visit_time,
       content::WeakDocumentPtr weak_render_frame_host,
       base::Time time_before_database_access,
-      std::optional<UrlPassagesEmbeddings> existing_url_data);
+      std::optional<UrlData> existing_url_data);
 
   // Returns true if query should be filtered. If false, then `search_params`
   // will have its query_terms set.
@@ -438,7 +435,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to
   // complete' mechanism.
-  base::RepeatingCallback<void(UrlPassages)> callback_for_tests_ =
+  base::RepeatingCallback<void(UrlData)> callback_for_tests_ =
       base::DoNothing();
 
   // A thread-safe invalidation mechanism to halt searches for stale queries:
