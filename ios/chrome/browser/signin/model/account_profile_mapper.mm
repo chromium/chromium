@@ -263,23 +263,36 @@ void AccountProfileMapper::Assigner::OnIdentityListChanged() {
       std::ref(processed_gaia_ids)));
 
   // Check if any of the previously-assigned Gaia IDs have been removed.
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    ProfileAttributesStorageIOS* attributes_storage =
-        GetProfileAttributesStorage();
-    std::vector<std::string> profiles_to_delete;
+  ProfileAttributesStorageIOS* attributes_storage =
+      GetProfileAttributesStorage();
+  if (AreSeparateProfilesForManagedAccountsEnabled() && attributes_storage) {
     for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
       for (const std::string& gaia_id : gaia_ids) {
-        if (!processed_gaia_ids.contains(gaia_id)) {
+        if (processed_gaia_ids.contains(gaia_id)) {
+          // `gaia_id` still exists, nothing to be done.
+          continue;
+        }
+        // `gaia_id` was removed from the device. Handle the removal, depending
+        // on whether it was in the personal or in a managed profile.
+        if (profile_name == attributes_storage->GetPersonalProfileName()) {
+          // A personal identity was removed; clean it up from the mapping.
           DetachGaiaIdFromProfile(attributes_storage, profile_name, gaia_id);
-          if (attributes_storage &&
-              profile_name != attributes_storage->GetPersonalProfileName()) {
-            profiles_to_delete.push_back(profile_name);
+        } else {
+          // A managed identity was removed, so its corresponding profile
+          // should be deleted. This is only possible if the profile isn't
+          // currently loaded
+          CHECK(profile_manager_);
+          if (!profile_manager_->GetProfileWithName(profile_name)) {
+            attributes_storage->RemoveProfile(profile_name);
+            // TODO(crbug.com/331783685): Also delete the actual profile
+            // folder from disk, once an API for that exists.
           }
+          // Else: If the profile is currently loaded, do nothing. Deletion
+          // will be attempted again the next time account-profile mappings
+          // are processed (e.g. on the next browser restart).
         }
       }
     }
-    // TODO(crbug.com/331783685): Delete the no-longer-needed managed profiles
-    // in `profiles_to_delete`.
   }
 
   // If any mappings were added/changed, let the observers know.

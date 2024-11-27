@@ -622,10 +622,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
     run_loop.Run();
   }
 
-  // Verify the assignments of identities to profiles.
+  // The identity should've been removed from the personal profile.
+  ASSERT_TRUE(profile_manager_->HasProfileWithName(kPersonalProfileName));
   NSArray* expected_identities_personal = @[ gmail_identity1 ];
   EXPECT_NSEQ(expected_identities_personal,
               GetIdentitiesForProfile(kPersonalProfileName));
+  // The managed profile should be unaffected.
+  ASSERT_TRUE(profile_manager_->HasProfileWithName(managed_profile_name));
   NSArray* expected_identities_managed = @[ google_identity ];
   EXPECT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(managed_profile_name));
@@ -644,14 +647,13 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
     run_loop.Run();
   }
 
-  // Verify the assignments of identities to profiles.
+  // The personal profile should not have been affected.
+  ASSERT_TRUE(profile_manager_->HasProfileWithName(kPersonalProfileName));
   expected_identities_personal = @[ gmail_identity1 ];
   EXPECT_NSEQ(expected_identities_personal,
               GetIdentitiesForProfile(kPersonalProfileName));
-  // TODO(crbug.com/331783685): The managed profile should get deleted here.
-  expected_identities_managed = @[];
-  EXPECT_NSEQ(expected_identities_managed,
-              GetIdentitiesForProfile(managed_profile_name));
+  // The managed profile should have been deleted.
+  EXPECT_FALSE(profile_manager_->HasProfileWithName(managed_profile_name));
 
   account_profile_mapper_->RemoveObserver(&mock_observer_personal,
                                           kPersonalProfileName);
