@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_ELEMENTS_SUPERVISED_USER_INFO_POPOVER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_ELEMENTS_SUPERVISED_USER_INFO_POPOVER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_ELEMENTS_SUPERVISED_USER_INFO_POPOVER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_ELEMENTS_SUPERVISED_USER_INFO_POPOVER_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"
 
 // Static popover presenting the parental control information.
 @interface SupervisedUserInfoPopoverViewController : InfoPopoverViewController
@@ -35,4 +35,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_ELEMENTS_SUPERVISED_USER_INFO_POPOVER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_ELEMENTS_SUPERVISED_USER_INFO_POPOVER_VIEW_CONTROLLER_H_

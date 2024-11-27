@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
