@@ -556,7 +556,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        mUiType = verifiedUiType(requestedUiType);
+        mUiType = getCustomTabsUiType(requestedUiType);
 
         mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
 
@@ -790,11 +790,19 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Get the verified UI type, according to the intent extras, and whether the intent is trusted.
+     * Get the verified custom tabs UI type, according to the intent extras, and whether
+     * the intent is trusted.
+     *
+     * If the intent extras include a valid EXTRA_NETWORK, consider that the custom tab is
+     * used for captive portal scenarios especially and the UI hides the "Open in Chrome browser"
+     * menu item accordingly.
+     *
      * @param requestedUiType requested UI type in the intent, unqualified
      * @return verified UI type
      */
-    private int verifiedUiType(int requestedUiType) {
+    @BrowserServicesIntentDataProvider.CustomTabsUiType
+    private int getCustomTabsUiType(int requestedUiType) {
+        if (mNetwork != null) return CustomTabsUiType.NETWORK_BOUND_TAB;
         if (!isTrustedIntent()) {
             if (VersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
             return CustomTabsUiType.DEFAULT;
