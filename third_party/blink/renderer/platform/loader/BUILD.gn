@@ -284,7 +284,10 @@ test("identity_digest_fuzzer") {
     "//third_party/blink/renderer:inside_blink",
   ]
 
-  fuzztests = [ "IdentityDigest.CreateFuzzer" ]
+  fuzztests = [
+    "IdentityDigest.CreateFuzzer",
+    "IdentityDigest.MatchFuzzer",
+  ]
 }
 
 source_set("test_support") {

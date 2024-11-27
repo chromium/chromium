@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
+namespace WTF {
+class SegmentedBuffer;
+}  // namespace WTF
+
 namespace blink {
 
 class HTTPHeaderMap;
@@ -27,6 +31,10 @@ class PLATFORM_EXPORT IdentityDigest {
   static std::optional<IdentityDigest> Create(const HTTPHeaderMap&);
 
   const IntegrityMetadataSet& digests() const { return digests_; }
+
+  // Validates |data| against all parsed digests, returning `true` if all match,
+  // and `false` otherwise.
+  bool DoesMatch(WTF::SegmentedBuffer* data);
 
  private:
   IdentityDigest() = default;

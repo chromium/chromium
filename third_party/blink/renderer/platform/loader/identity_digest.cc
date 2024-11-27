@@ -5,18 +5,35 @@
 #include "third_party/blink/renderer/platform/loader/identity_digest.h"
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "net/http/structured_headers.h"
+#include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 namespace blink {
 
 namespace {
+
 const char kSHA256Token[] = "sha-256";
 const char kSHA384Token[] = "sha-384";
 const char kSHA512Token[] = "sha-512";
+
+HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
+  switch (integrity) {
+    case IntegrityAlgorithm::kSha256:
+      return kHashAlgorithmSha256;
+    case IntegrityAlgorithm::kSha384:
+      return kHashAlgorithmSha384;
+    case IntegrityAlgorithm::kSha512:
+      return kHashAlgorithmSha512;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 IdentityDigest::IdentityDigest(IntegrityMetadataSet digests)
@@ -81,6 +98,33 @@ std::optional<IdentityDigest> IdentityDigest::Create(
     return std::nullopt;
   }
   return IdentityDigest(digests);
+}
+
+bool IdentityDigest::DoesMatch(WTF::SegmentedBuffer* data) {
+  for (const IntegrityMetadata& digest : digests_) {
+    HashAlgorithm algorithm = GetHashAlgorithm(digest.Algorithm());
+    DigestValue computed_digest;
+    if (!ComputeDigest(algorithm, data, computed_digest)) {
+      // TODO(https://crbug.com/381044049): Emit errors.
+      return false;
+    }
+
+    // Convert the stored digest into a `DigestValue`
+    Vector<char> digest_bytes;
+    Base64Decode(digest.Digest(), digest_bytes);
+    DigestValue expected_digest(base::as_byte_span(digest_bytes));
+
+    // If any specified digest doesn't match the digest computed over |data|,
+    // matching fails.
+    if (computed_digest != expected_digest) {
+      // TODO(https://crbug.com/381044049): Emit errors.
+      return false;
+    }
+  }
+
+  // If no digest failed to match (or if we didn't have any digests in the
+  // first place), matching succeeded.
+  return true;
 }
 
 }  // namespace blink
