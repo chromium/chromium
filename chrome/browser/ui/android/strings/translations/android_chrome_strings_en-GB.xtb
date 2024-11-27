@@ -1335,7 +1335,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7140829094791862589">Sort by manual order</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Get more information<ph name="END_LINK" /> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
-<translation id="7149893636342594995">Last 24 Hours</translation>
+<translation id="7149893636342594995">Last 24 hours</translation>
 <translation id="71503698506017927">Passphrase encryption doesn't include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>

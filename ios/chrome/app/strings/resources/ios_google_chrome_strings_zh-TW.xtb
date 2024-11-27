@@ -80,7 +80,7 @@
 <translation id="292371311537977079">Chrome 設定</translation>
 <translation id="2923827943290349720">關閉 Chrome 時鎖定無痕分頁</translation>
 <translation id="2940565985148833945">Chrome 提示：使用智慧鏡頭搜尋</translation>
-<translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
+<translation id="2957447865124070833">選取「Chrome」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">將書籤新增至 Chrome</translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
 <translation id="3051521853355903257">在 Chrome 中管理密碼</translation>
@@ -126,13 +126,13 @@
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4798859546468762093">如要享有個人化服務和其他功能，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中納入 Chrome</translation>
-<translation id="4819268619367838612">為協助改善應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">為協助改良應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="484033449593719797">Chrome Beta 版不支援這項功能</translation>
 <translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以在新分頁上追蹤這個包裹。}other{Chrome 可以在新分頁上追蹤這些包裹。}}</translation>
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
-<translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。系統管理員可以設定或限制特定功能。</translation>
+<translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。管理員可以設定或限制特定功能。</translation>
 <translation id="4925322001044117929">在 iPad 上預設使用 Chrome</translation>
 <translation id="498985224078955265">如要將這個分頁傳送到另一部裝置，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可防範資料侵害事件、封鎖不安全的網站或採取其他措施，協助提升網路安全。</translation>
@@ -151,7 +151,7 @@
 <translation id="5404252374083197467">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="5439191312780166229">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
 <translation id="5442013002200339429">如果隱藏「<ph name="MODULE_NAME" />」，Chrome 將不會再自動追蹤之後的包裹，而且會刪除先前的所有包裹追蹤資料。</translation>
-<translation id="5460571915754665838">4. 選取 [Chrome]</translation>
+<translation id="5460571915754665838">4. 選取「Chrome」</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome 會在新分頁上追蹤這個包裹。}other{Chrome 會在新分頁上追蹤這些包裹。}}</translation>
 <translation id="5492504007368565877">Google 密碼管理工具無法檢查你的密碼。</translation>
 <translation id="5525095647255982834">如要將這個分頁傳送到另一部裝置，請在該裝置上登入 Chrome。</translation>
