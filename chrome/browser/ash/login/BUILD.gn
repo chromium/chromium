@@ -375,6 +375,7 @@ source_set("browser_tests") {
     "oobe_localization_browsertest.cc",
     "oobe_metrics_browsertest.cc",
     "password_change_browsertest.cc",
+    "post_login_deferred_task_browsertest.cc",
     "proxy_auth_dialog_browsertest.cc",
     "reset_browsertest.cc",
     "security_token_login_browsertest.cc",

@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
@@ -36,6 +37,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -63,6 +65,23 @@ constexpr auto kEligileUserSessionTypesForMantaService = base::MakeFixedFlatSet<
 BASE_FEATURE(kScalableIphTest,
              "ScalableIphTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// One off helper that waits for refresh token loading with nestable tasks
+// allowed so that it could be used under nested `RunLoops`.
+void EnsureRefreshTokensLoaded(signin::IdentityManager* identity_manager) {
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  signin::TestIdentityManagerObserver load_credentials_observer(
+      identity_manager);
+  load_credentials_observer.SetOnRefreshTokensLoadedCallback(
+      run_loop.QuitClosure());
+
+  if (identity_manager->AreRefreshTokensLoaded()) {
+    return;
+  }
+
+  run_loop.Run();
+  ASSERT_TRUE(identity_manager->AreRefreshTokensLoaded());
+}
 
 }  // namespace
 
@@ -503,6 +522,7 @@ void ScalableIphBrowserTestBase::SetCanUseMantaService(
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
   CHECK(identity_manager);
+  EnsureRefreshTokensLoaded(identity_manager);
 
   const user_manager::User* user =
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(

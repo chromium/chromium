@@ -22,7 +22,6 @@
 #include "base/observer_list_types.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -176,6 +175,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   void SetLoginFinishedReportedForTesting();
 
  private:
+  // Starts the deferred task runner.
+  void StartDeferredTaskRunner();
+
   void OnCompositorAnimationFinished(
       const cc::FrameSequenceMetrics::CustomReportData& data,
       base::TimeTicks first_animation_started_at,
@@ -186,8 +188,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   void OnAllExpectedShelfIconsLoaded();
 
   void MaybeReportLoginFinished();
-
-  void OnPostLoginDeferredTaskTimerFired();
 
   void OnAllWindowsCreated(base::TimeTicks time);
   void OnAllWindowsShown(base::TimeTicks time);
@@ -221,9 +221,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
       ui::TotalAnimationThroughputReporter::ScopedThroughputReporterBlocker>
       scoped_throughput_reporter_blocker_;
 
-  // Timer that triggers post-login tasks in case the login animation is taking
-  // longer time than expected.
-  base::OneShotTimer post_login_deferred_task_timer_;
   // Deferred task runner for the post-login tasks.
   scoped_refptr<base::DeferredSequencedTaskRunner>
       post_login_deferred_task_runner_;
