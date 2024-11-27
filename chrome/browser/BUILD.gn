@@ -6651,6 +6651,10 @@ static_library("browser") {
     ]
   }
 
+  if (enterprise_watermark) {
+    deps += [ "//components/enterprise/watermarking/content" ]
+  }
+
   if (enterprise_data_controls) {
     sources += [
       "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
