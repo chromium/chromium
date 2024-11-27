@@ -115,6 +115,7 @@ source_set("scene") {
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intents:user_activity_browser_agent",
+    "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
     "//ios/chrome/browser/main/model",
