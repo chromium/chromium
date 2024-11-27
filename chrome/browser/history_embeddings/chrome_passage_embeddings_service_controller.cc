@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/process/process.h"
-#include "components/history_embeddings/cpu_histogram_logger.h"
+#include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
@@ -53,6 +53,11 @@ void ChromePassageEmbeddingsServiceController::LaunchService() {
               &ChromePassageEmbeddingsServiceController::OnServiceLaunched,
               weak_ptr_factory_.GetWeakPtr()))
           .Pass());
+}
+
+void ChromePassageEmbeddingsServiceController::ResetRemotes() {
+  PassageEmbeddingsServiceController::ResetRemotes();
+  cpu_logger_.reset();
 }
 
 void ChromePassageEmbeddingsServiceController::OnServiceLaunched(

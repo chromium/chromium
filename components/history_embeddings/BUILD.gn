@@ -8,8 +8,6 @@ static_library("history_embeddings") {
   sources = [
     "answerer.cc",
     "answerer.h",
-    "cpu_histogram_logger.cc",
-    "cpu_histogram_logger.h",
     "embedder.h",
     "history_embeddings_features.cc",
     "history_embeddings_features.h",

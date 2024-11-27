@@ -17,6 +17,8 @@ class Process;
 
 namespace history_embeddings {
 
+class CpuHistogramLogger;
+
 // Chrome uses a single instance of PassageEmbeddingsServiceController. We only
 // want to load the model once, not once per Profile. To do otherwise would
 // consume a significant amount of memory.
@@ -36,6 +38,7 @@ class ChromePassageEmbeddingsServiceController
 
   // PassageEmbeddingsServiceController implementation:
   void LaunchService() override;
+  void ResetRemotes() override;
 
   // Initializes `cpu_logger_`; can only be called when the service process is
   // launched and connected.
@@ -43,6 +46,10 @@ class ChromePassageEmbeddingsServiceController
 
   // Called after service is launched.
   void OnServiceLaunched(const base::Process& process);
+
+  // When the embeddings service is running, the logger will periodically sample
+  // and log the CPU time used by the service process.
+  std::unique_ptr<CpuHistogramLogger> cpu_logger_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<ChromePassageEmbeddingsServiceController>

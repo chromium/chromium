@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
+#ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
+#define CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
 
 #include "base/scoped_observation.h"
 #include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
@@ -34,4 +34,4 @@ class CpuHistogramLogger : public resource_attribution::QueryResultObserver {
 
 }  // namespace history_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
+#endif  // CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_

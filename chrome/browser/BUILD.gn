@@ -590,6 +590,8 @@ static_library("browser") {
     "history_embeddings/chrome_history_embeddings_service.h",
     "history_embeddings/chrome_passage_embeddings_service_controller.cc",
     "history_embeddings/chrome_passage_embeddings_service_controller.h",
+    "history_embeddings/cpu_histogram_logger.cc",
+    "history_embeddings/cpu_histogram_logger.h",
     "history_embeddings/history_embeddings_service_factory.cc",
     "history_embeddings/history_embeddings_service_factory.h",
     "history_embeddings/history_embeddings_tab_helper.cc",
