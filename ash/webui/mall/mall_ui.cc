@@ -44,7 +44,8 @@ MallUI::MallUI(content::WebUI* web_ui, std::unique_ptr<MallUIDelegate> delegate)
   // We need a CSP override to be able to embed the Mall website, and to handle
   // cros-apps:// links to install apps.
   std::string csp = base::StrCat({"frame-src ", GetMallBaseUrl().spec(), " ",
-                                  chromeos::kAppInstallUriScheme, ":;"});
+                                  chromeos::kAppInstallUriScheme, ": ",
+                                  chromeos::kLegacyAppInstallUriScheme, ":;"});
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
 }

@@ -237,6 +237,34 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, NonSpecialUrl) {
       .BeginListeningAndWait({app_id});
 }
 
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
+  base::HistogramTester histograms;
+
+  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
+
+  // Make install prompts auto accept.
+  AutoAcceptInstallDialogScope auto_accept_scope;
+
+  // Open install-app URI.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      base::StringPrintf("window.open('almanac://install-app?package_id=%s');",
+                         package_id.ToString().c_str())));
+
+  // This should trigger the sequence:
+  // - AppInstallNavigationThrottle
+  // - AppInstallServiceAsh
+  // - NavigateAndTriggerInstallDialogCommand
+
+  // Await install to complete.
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
+}
+
 using AppInstallNavigationThrottleUserGestureBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleUserGestureBrowserTest,
