@@ -48,11 +48,27 @@
     }];
     request(fields);
   }
+  async function create() {
+    const response = await navigator.credentials.create({
+      digital: {
+          protocol: "openid4vci",
+          data: {
+            creation_definition: {
+              id: "mDL-request-demo",
+            }
+          }
+      }
+    });
+   const token = response.data;
+   document.getElementById("log").textContent += `${token}`;
+  }
+
 </script>
 
 <body>
   <button id="request_age_only_button" onclick="requestAgeOnly()">Request Age Only</button>
   <button id="request_age_and_name_button" onclick="requestAgeAndName()">Request Age and Name</button>
+  <button id="create_button" onclick="create()">Create a digital credential</button>
   <textarea id="log"></textarea>
 </body>
 

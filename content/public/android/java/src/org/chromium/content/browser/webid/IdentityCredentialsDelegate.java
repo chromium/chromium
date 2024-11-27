@@ -24,6 +24,7 @@ import com.google.android.gms.identitycredentials.IntentHelper;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
+import org.chromium.base.ServiceLoaderUtil;
 
 import java.util.Arrays;
 
@@ -112,5 +113,14 @@ public class IdentityCredentialsDelegate {
                         });
 
         return result;
+    }
+
+    public Promise<String> create(Activity window, String origin, String request) {
+        DigitalCredentialsCreationDelegate delegateImpl =
+                ServiceLoaderUtil.maybeCreate(DigitalCredentialsCreationDelegate.class);
+        if (delegateImpl != null) {
+            return delegateImpl.create(window, origin, request);
+        }
+        return Promise.rejected();
     }
 }
