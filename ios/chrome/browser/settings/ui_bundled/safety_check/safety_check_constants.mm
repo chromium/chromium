@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h"
 
 NSString* const kSafeBrowsingSafetyCheckStringURL =
     @"chrome://settings/syncSetup";

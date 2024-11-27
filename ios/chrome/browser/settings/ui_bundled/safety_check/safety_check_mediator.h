@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_service_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_service_delegate.h"
 
 // Webpage with safe browsing toggle.
 extern const char kSafeBrowsingStringURL[];
@@ -70,4 +70,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_H_

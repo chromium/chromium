@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -32,6 +32,12 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_consumer.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator+Testing.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_navigation_commands.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -43,12 +49,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
@@ -380,8 +380,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 }
 
 - (void)setConsumer:(id<SafetyCheckConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
   NSArray* checkItems = @[
     self.updateCheckItem, self.passwordCheckItem, self.safeBrowsingCheckItem
@@ -461,13 +462,13 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     // i tap: tap on the info i handled by infoButtonWasTapped.
     case UpdateItemType: {
       switch (self.updateCheckRowState) {
-        case UpdateCheckRowStateDefault:       // No tap action.
-        case UpdateCheckRowStateRunning:       // No tap action.
-        case UpdateCheckRowStateUpToDate:      // No tap action.
-        case UpdateCheckRowStateChannel:       // No tap action.
-        case UpdateCheckRowStateManaged:       // i tap: Managed state popover.
-        case UpdateCheckRowStateOmahaError:    // i tap: Show error popover.
-        case UpdateCheckRowStateNetError:      // i tap: Show error popover.
+        case UpdateCheckRowStateDefault:     // No tap action.
+        case UpdateCheckRowStateRunning:     // No tap action.
+        case UpdateCheckRowStateUpToDate:    // No tap action.
+        case UpdateCheckRowStateChannel:     // No tap action.
+        case UpdateCheckRowStateManaged:     // i tap: Managed state popover.
+        case UpdateCheckRowStateOmahaError:  // i tap: Show error popover.
+        case UpdateCheckRowStateNetError:    // i tap: Show error popover.
           break;
         case UpdateCheckRowStateOutOfDate: {  // i tap: Go to app store.
           PrefService* prefService = GetApplicationContext()->GetLocalState();
@@ -574,11 +575,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     return;
   }
 
-    if (itemType == SafeBrowsingItemType) {
-      // Directly open Safe Browsing settings instead of showing a popover.
-      [self.handler showSafeBrowsingPreferencePage];
-      return;
-    }
+  if (itemType == SafeBrowsingItemType) {
+    // Directly open Safe Browsing settings instead of showing a popover.
+    [self.handler showSafeBrowsingPreferencePage];
+    return;
+  }
 
   if (itemType == UpdateItemType &&
       self.updateCheckRowState == UpdateCheckRowStateManaged) {
@@ -590,8 +591,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   NSAttributedString* info = [self popoverInfoForType:itemType];
 
   // If `info` is empty there is no popover to display.
-  if (!info)
+  if (!info) {
     return;
+  }
 
   // Push popover to coordinator.
   [self.handler showErrorInfoFrom:buttonView withText:info];
@@ -929,8 +931,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         dispatch_get_main_queue(), ^{
           // Check if the check was cancelled while waiting, we do not want to
           // push a completed state to the UI if the check was cancelled.
-          if (weakSelf.checksRemaining)
+          if (weakSelf.checksRemaining) {
             [weakSelf checkAndReconfigureSafeBrowsingState];
+          }
 
           NSString* announcement = weakSelf.updateCheckItem.detailText;
           announcement = [announcement

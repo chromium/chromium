@@ -10,7 +10,7 @@ include_rules = [
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled/notifications",
-  "+ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h",
+  "+ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
   "+ios/chrome/browser/start_surface/ui_bundled",

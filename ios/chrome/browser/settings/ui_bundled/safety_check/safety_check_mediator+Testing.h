@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_TESTING_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_TESTING_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_TESTING_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_TESTING_H_
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 
 // Testing category to expose private properties and methods used for tests.
@@ -22,7 +22,8 @@
 @property(nonatomic, assign) UpdateCheckRowStates updateCheckRowState;
 
 // Previous on load or finished check state of the update check.
-@property(nonatomic, assign, readonly) UpdateCheckRowStates previousUpdateCheckRowState;
+@property(nonatomic, assign, readonly)
+    UpdateCheckRowStates previousUpdateCheckRowState;
 
 // SettingsCheckItem used to display the state of the password check.
 @property(nonatomic, strong, readonly) SettingsCheckItem* passwordCheckItem;
@@ -80,4 +81,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_TESTING_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_MEDIATOR_TESTING_H_

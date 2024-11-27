@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
@@ -23,6 +23,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_navigation_commands.h"
+#import "ios/chrome/browser/settings/ui_bundled/safety_check/ui_swift.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -35,11 +40,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"

@@ -4,7 +4,7 @@
 
 import("//build/config/apple/swift_source_set.gni")
 
-source_set("safety_check_ui") {
+source_set("ui") {
   sources = [
     "safety_check_bridge.h",
     "safety_check_consumer.h",
@@ -28,11 +28,11 @@ source_set("safety_check_ui") {
   ]
 }
 
-swift_source_set("safety_check_ui_swift") {
+swift_source_set("ui_swift") {
   bridge_header = "safety_check_bridge.h"
   sources = [ "safety_check_table_view_controller.swift" ]
   deps = [
-    ":safety_check_ui",
+    ":ui",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
@@ -52,8 +52,8 @@ source_set("safety_check") {
   ]
   deps = [
     ":constants",
-    ":safety_check_ui",
-    ":safety_check_ui_swift",
+    ":ui",
+    ":ui_swift",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/safe_browsing/core/common",
@@ -119,7 +119,7 @@ source_set("unit_tests") {
   deps = [
     ":constants",
     ":safety_check",
-    ":safety_check_ui",
+    ":ui",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser",
