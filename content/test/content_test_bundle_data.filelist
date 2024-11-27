@@ -2098,8 +2098,6 @@ data/accessibility/css/pseudo-elements-ignored-parent.html
 data/accessibility/css/pseudo-elements-separated-by-whitespace-expected-blink.txt
 data/accessibility/css/pseudo-elements-separated-by-whitespace.html
 data/accessibility/css/pseudo-elements.html
-data/accessibility/css/pseudo-with-code-expected-uia-win.txt
-data/accessibility/css/pseudo-with-code.html
 data/accessibility/css/reading-flow-display-contents-mixed-siblings-expected-blink.txt
 data/accessibility/css/reading-flow-display-contents-mixed-siblings.html
 data/accessibility/css/reading-flow-display-contents-shadow-host-expected-blink.txt
@@ -2557,8 +2555,6 @@ data/accessibility/event/input-type-text-value-changed-expected-mac.txt
 data/accessibility/event/input-type-text-value-changed-expected-uia-win.txt
 data/accessibility/event/input-type-text-value-changed-expected-win.txt
 data/accessibility/event/input-type-text-value-changed.html
-data/accessibility/event/lang-changed-expected-auralinux.txt
-data/accessibility/event/lang-changed.html
 data/accessibility/event/listbox-focus-expected-auralinux.txt
 data/accessibility/event/listbox-focus-expected-mac.txt
 data/accessibility/event/listbox-focus-expected-uia-win.txt
@@ -4553,11 +4549,6 @@ data/accessibility/html/modal-dialog-closed-expected-mac.txt
 data/accessibility/html/modal-dialog-closed-expected-uia-win.txt
 data/accessibility/html/modal-dialog-closed-expected-win.txt
 data/accessibility/html/modal-dialog-closed.html
-data/accessibility/html/modal-dialog-in-iframe-closed-expected-android.txt
-data/accessibility/html/modal-dialog-in-iframe-closed-expected-blink.txt
-data/accessibility/html/modal-dialog-in-iframe-closed-expected-mac.txt
-data/accessibility/html/modal-dialog-in-iframe-closed-expected-win.txt
-data/accessibility/html/modal-dialog-in-iframe-closed.html
 data/accessibility/html/modal-dialog-in-iframe-opened-expected-android.txt
 data/accessibility/html/modal-dialog-in-iframe-opened-expected-blink.txt
 data/accessibility/html/modal-dialog-in-iframe-opened-expected-mac.txt
@@ -5631,8 +5622,6 @@ data/accessibility/mac/methods/is-accessibility-expanded-expected.txt
 data/accessibility/mac/methods/is-accessibility-expanded.html
 data/accessibility/mac/methods/is-accessibility-focused-expected.txt
 data/accessibility/mac/methods/is-accessibility-focused.html
-data/accessibility/mac/methods/is-accessibility-selector-allowed-expected.txt
-data/accessibility/mac/methods/is-accessibility-selector-allowed.html
 data/accessibility/mac/methods/set-accessibility-focused-expected.txt
 data/accessibility/mac/methods/set-accessibility-focused.html
 data/accessibility/mac/parameterized-attributes/ax-attributed-string-for-range-expected.txt
