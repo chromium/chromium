@@ -6359,11 +6359,6 @@ const char kEnableFakeMouseHeuristicDescription[] =
     "to be mice. Primarily assists in preventing fake entries "
     "appearing in the input settings menu.";
 
-const char kEnableRuntimeCountersTelemetryName[] =
-    "Enable Runtime Counters Telemetry";
-const char kEnableRuntimeCountersTelemetryDescription[] =
-    "Allow admins to collect runtime counters telemetry (Intel Gen 14+ only).";
-
 const char kFastPairDebugMetadataName[] = "Enable Fast Pair Debug Metadata";
 const char kFastPairDebugMetadataDescription[] =
     "Enables Fast Pair to use Debug metadata when checking device "
