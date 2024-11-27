@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/language/language_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_app_interface.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/language/core/browser/pref_names.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_mediator.h"
 
 #import <memory>
 #import <string>
@@ -22,11 +22,11 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/cells/language_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_consumer.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -36,8 +36,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using language::prefs::kAcceptLanguages;
 using sync_preferences::PrefServiceMockFactory;
 using sync_preferences::PrefServiceSyncable;
-using user_prefs::PrefRegistrySyncable;
 using ::testing::ElementsAreArray;
+using user_prefs::PrefRegistrySyncable;
 
 namespace {
 

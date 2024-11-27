@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/language/add_language_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/add_language_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/cells/language_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_data_source.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_histograms.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_data_source.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_histograms.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"

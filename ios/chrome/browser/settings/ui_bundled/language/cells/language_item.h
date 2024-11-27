@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_CELLS_LANGUAGE_ITEM_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_CELLS_LANGUAGE_ITEM_H_
-
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_LANGUAGE_CELLS_LANGUAGE_ITEM_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_LANGUAGE_CELLS_LANGUAGE_ITEM_H_
 
 #include <string>
+
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 
 // Contains the model data for a language in the Language Settings page.
 @interface LanguageItem : TableViewMultiDetailTextItem
@@ -31,4 +31,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_CELLS_LANGUAGE_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_LANGUAGE_CELLS_LANGUAGE_ITEM_H_

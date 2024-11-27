@@ -8,22 +8,22 @@ source_set("language") {
     "language_settings_mediator.mm",
   ]
   deps = [
-    ":language_ui",
+    ":ui",
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/language/cells",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/ui/settings/language/cells",
     "//ios/chrome/browser/ui/settings/utils",
     "//ui/base",
   ]
 }
 
-source_set("language_ui") {
+source_set("ui") {
   sources = [
     "add_language_table_view_controller.h",
     "add_language_table_view_controller.mm",
@@ -46,6 +46,7 @@ source_set("language_ui") {
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells:public",
     "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/settings/ui_bundled/language/cells",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -54,17 +55,16 @@ source_set("language_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/language/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//net",
     "//ui/base",
   ]
-  public_deps = [ ":language_ui_constants" ]
+  public_deps = [ ":ui_constants" ]
 }
 
-source_set("language_ui_constants") {
+source_set("ui_constants") {
   sources = [
     "language_settings_ui_constants.h",
     "language_settings_ui_constants.mm",
@@ -75,7 +75,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "language_settings_mediator_unittest.mm" ]
   deps = [
-    ":language_ui",
+    ":ui",
     "//base/test:test_support",
     "//components/language/core/browser",
     "//components/pref_registry",
@@ -84,11 +84,11 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
     "//ios/chrome/browser/language/model",
+    "//ios/chrome/browser/settings/ui_bundled/language",
+    "//ios/chrome/browser/settings/ui_bundled/language/cells",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/ui/settings/language",
-    "//ios/chrome/browser/ui/settings/language/cells",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:base",
@@ -125,13 +125,13 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "language_settings_egtest.mm" ]
   deps = [
-    ":language_ui_constants",
+    ":eg_test_support+eg2",
+    ":ui_constants",
     "//base/test:test_support",
     "//components/translate/core/browser:translate_pref_names",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
-    "//ios/chrome/browser/ui/settings/language:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/strings:ui_strings_grit",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -16,6 +16,13 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/add_language_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/cells/language_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_details_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_commands.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_data_source.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_histograms.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
@@ -26,13 +33,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/settings/language/add_language_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
-#import "ios/chrome/browser/ui/settings/language/language_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_commands.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_data_source.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_histograms.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -219,8 +219,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Only language items are removable.
   TableViewItem* item = [model itemAtIndexPath:indexPath];
-  if (item.type != ItemTypeLanguage)
+  if (item.type != ItemTypeLanguage) {
     return UITableViewCellEditingStyleNone;
+  }
 
   // The last Translate-blocked language cannot be deleted.
   LanguageItem* languageItem = base::apple::ObjCCastStrict<LanguageItem>(item);
@@ -231,8 +232,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (![super tableView:tableView willSelectRowAtIndexPath:indexPath])
+  if (![super tableView:tableView willSelectRowAtIndexPath:indexPath]) {
     return nil;
+  }
 
   // Ignore selection of language items when Translate is disabled.
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
@@ -439,8 +441,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)translateEnabled:(BOOL)enabled {
   // Ignore pref changes while in edit mode.
-  if (self.isEditing)
+  if (self.isEditing) {
     return;
+  }
 
   // Update the model and the table view.
   [self setTranslateSwitchItemOn:enabled];
@@ -449,8 +452,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)languagePrefsChanged {
   // Ignore pref changes while in edit mode.
-  if (self.isEditing)
+  if (self.isEditing) {
     return;
+  }
 
   // Inform the presented AddLanguageTableViewController to update itself.
   [self.addLanguageTableViewController supportedLanguagesListChanged];
@@ -536,8 +540,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // unblocked).
 - (BOOL)canOfferTranslateForLanguage:(LanguageItem*)languageItem {
   // Cannot offer Translate for languages not supported by the Translate server.
-  if (!languageItem.supportsTranslate)
+  if (!languageItem.supportsTranslate) {
     return NO;
+  }
 
   // Cannot offer Translate for the last Translate-blocked language.
   if ([languageItem isBlocked] && [self numberOfBlockedLanguages] <= 1) {
@@ -555,12 +560,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       itemsInSectionWithIdentifier:SectionIdentifierLanguages];
   [languageItems enumerateObjectsUsingBlock:^(TableViewItem* item,
                                               NSUInteger idx, BOOL* stop) {
-    if (item.type != ItemTypeLanguage)
+    if (item.type != ItemTypeLanguage) {
       return;
+    }
     LanguageItem* languageItem =
         base::apple::ObjCCastStrict<LanguageItem>(item);
-    if ([languageItem isBlocked])
+    if ([languageItem isBlocked]) {
       numberOfBlockedLanguages++;
+    }
   }];
   return numberOfBlockedLanguages;
 }

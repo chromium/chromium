@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_mediator.h"
 
 #import <memory>
 
@@ -20,12 +20,12 @@
 #import "components/prefs/pref_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/cells/language_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_consumer.h"
+#import "ios/chrome/browser/settings/ui_bundled/language/language_settings_histograms.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
-#import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_consumer.h"
-#import "ios/chrome/browser/ui/settings/language/language_settings_histograms.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
