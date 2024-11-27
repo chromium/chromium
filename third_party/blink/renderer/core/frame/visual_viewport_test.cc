@@ -2624,13 +2624,15 @@ TEST_P(VisualViewportTest, DirectPinchZoomPropertyUpdate) {
   EXPECT_VECTOR2DF_EQ(ScrollOffset(150, 10), visual_viewport.GetScrollOffset());
   EXPECT_EQ(2.f, visual_viewport.Scale());
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   // Update the scale and location and ensure that a PaintArtifactCompositor
   // update is not required.
   visual_viewport.SetScaleAndLocation(3.f, true, gfx::PointF(120, 10));
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_EQ(paint_artifact_compositor()->NeedsUpdate(),
+            PaintArtifactCompositor::UpdateType::kNone);
 
   EXPECT_VECTOR2DF_EQ(ScrollOffset(120, 10), visual_viewport.GetScrollOffset());
   EXPECT_EQ(3.f, visual_viewport.Scale());

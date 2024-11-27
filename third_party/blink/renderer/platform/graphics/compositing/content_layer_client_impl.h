@@ -46,6 +46,8 @@ class PLATFORM_EXPORT ContentLayerClientImpl
 
   void UpdateCcPictureLayer(const PendingLayer&);
 
+  bool HasRasterInducingScroll() const;
+
   RasterInvalidator& GetRasterInvalidator() { return *raster_invalidator_; }
 
   size_t ApproximateUnsharedMemoryUsage() const;

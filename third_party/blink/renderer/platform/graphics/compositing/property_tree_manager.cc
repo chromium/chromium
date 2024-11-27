@@ -278,6 +278,17 @@ bool PropertyTreeManager::UsesCompositedScrolling(
   return cc_scroll && cc_scroll->is_composited;
 }
 
+bool PropertyTreeManager::UsesRasterInducingScroll(
+    const cc::LayerTreeHost& host,
+    const ScrollPaintPropertyNode& scroll) {
+  const auto* property_trees = host.property_trees();
+  const auto* cc_scroll = property_trees->scroll_tree().Node(
+      scroll.CcNodeId(property_trees->sequence_number()));
+  return cc_scroll &&
+         property_trees->scroll_tree().CanRealizeScrollsOnPendingTree(
+             *cc_scroll);
+}
+
 void PropertyTreeManager::SetupRootTransformNode() {
   // cc is hardcoded to use transform node index 1 for device scale and
   // transform.
