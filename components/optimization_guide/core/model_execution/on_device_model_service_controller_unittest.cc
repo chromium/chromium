@@ -22,6 +22,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -3388,7 +3389,15 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(CreateSession());
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelValidationNewModelVersion) {
+// TODO(crbug.com/380229867): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ModelValidationNewModelVersion \
+  DISABLED_ModelValidationNewModelVersion
+#else
+#define MAYBE_ModelValidationNewModelVersion ModelValidationNewModelVersion
+#endif
+TEST_F(OnDeviceModelServiceControllerTest,
+       MAYBE_ModelValidationNewModelVersion) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kOnDeviceModelValidation,
