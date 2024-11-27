@@ -2201,29 +2201,22 @@ const FeatureEntry::FeatureVariation kRichAutocompletionAndroidVariations[] = {
 
 const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
     {"jump_start_min_away_time_minutes", "1"}};
-const FeatureEntry::FeatureParam kJumpStartOmnibox120Minutes[] = {
-    {"jump_start_min_away_time_minutes", "120"}};
-const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited[] = {
-    {"jump_start_cover_recently_visited_page", "true"}};
-const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited1Minute[] = {
-    {"jump_start_cover_recently_visited_page", "true"},
-    {"jump_start_min_away_time_minutes", "1"}};
-const FeatureEntry::FeatureParam kJumpStartOmniboxRecentlyVisited120Minutes[] =
-    {{"jump_start_cover_recently_visited_page", "true"},
-     {"jump_start_min_away_time_minutes", "120"}};
+const FeatureEntry::FeatureParam kJumpStartOmnibox15Minutes[] = {
+    {"jump_start_min_away_time_minutes", "15"}};
+const FeatureEntry::FeatureParam kJumpStartOmnibox30Minutes[] = {
+    {"jump_start_min_away_time_minutes", "30"}};
+const FeatureEntry::FeatureParam kJumpStartOmnibox60Minutes[] = {
+    {"jump_start_min_away_time_minutes", "60"}};
 
 const FeatureEntry::FeatureVariation kJumpStartOmniboxVariations[] = {
     {"(after 1min)", kJumpStartOmnibox1Minute,
      std::size(kJumpStartOmnibox1Minute)},
-    {"(after 120min)", kJumpStartOmnibox120Minutes,
-     std::size(kJumpStartOmnibox120Minutes)},
-    {"(recent page)", kJumpStartOmniboxRecentlyVisited,
-     std::size(kJumpStartOmniboxRecentlyVisited)},
-    {"(recent page, 1min)", kJumpStartOmniboxRecentlyVisited1Minute,
-     std::size(kJumpStartOmniboxRecentlyVisited1Minute)},
-    {"(recent page, 120min)", kJumpStartOmniboxRecentlyVisited120Minutes,
-     std::size(kJumpStartOmniboxRecentlyVisited120Minutes)},
-};
+    {"(after 15min)", kJumpStartOmnibox15Minutes,
+     std::size(kJumpStartOmnibox15Minutes)},
+    {"(after 30min)", kJumpStartOmnibox30Minutes,
+     std::size(kJumpStartOmnibox30Minutes)},
+    {"(after 60min)", kJumpStartOmnibox60Minutes,
+     std::size(kJumpStartOmnibox60Minutes)}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
