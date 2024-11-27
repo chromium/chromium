@@ -61,7 +61,7 @@ class TestSearchResult : public ChromeSearchResult {
   TestSearchResult(const TestSearchResult&) = delete;
   TestSearchResult& operator=(const TestSearchResult&) = delete;
 
-  ~TestSearchResult() override {}
+  ~TestSearchResult() override = default;
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override {}

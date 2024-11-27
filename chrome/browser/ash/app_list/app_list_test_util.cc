@@ -25,9 +25,9 @@ const char AppListTestBase::kPackagedApp1Id[] =
 const char AppListTestBase::kPackagedApp2Id[] =
     "jlklkagmeajbjiobondfhiekepofmljl";
 
-AppListTestBase::AppListTestBase() {}
+AppListTestBase::AppListTestBase() = default;
 
-AppListTestBase::~AppListTestBase() {}
+AppListTestBase::~AppListTestBase() = default;
 
 void AppListTestBase::SetUp() {
   SetUp(/*guest_mode=*/false);

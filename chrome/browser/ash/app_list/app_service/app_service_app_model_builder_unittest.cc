@@ -648,7 +648,7 @@ TEST_F(WebAppBuilderDemoModeTest, WebAppListOffline) {
 class CrostiniAppTest : public AppServiceAppModelBuilderTest {
  public:
   CrostiniAppTest() = default;
-  ~CrostiniAppTest() override {}
+  ~CrostiniAppTest() override = default;
 
   CrostiniAppTest(const CrostiniAppTest&) = delete;
   CrostiniAppTest& operator=(const CrostiniAppTest&) = delete;

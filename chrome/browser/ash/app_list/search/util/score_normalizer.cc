@@ -69,7 +69,7 @@ ScoreNormalizer::ScoreNormalizer(ScoreNormalizer::Proto proto,
   proto_.Init();
 }
 
-ScoreNormalizer::~ScoreNormalizer() {}
+ScoreNormalizer::~ScoreNormalizer() = default;
 
 double ScoreNormalizer::Normalize(const std::string& name, double score) const {
   // If we haven't finished initializing, return a default score.

@@ -67,7 +67,7 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
   controller_->AddObserver(this);
 }
 
-OmniboxProvider::~OmniboxProvider() {}
+OmniboxProvider::~OmniboxProvider() = default;
 
 void OmniboxProvider::Start(const std::u16string& query) {
   last_query_ = query;

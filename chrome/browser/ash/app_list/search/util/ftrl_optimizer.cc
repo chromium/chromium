@@ -49,7 +49,7 @@ FtrlOptimizer::FtrlOptimizer(FtrlOptimizer::Proto proto, const Params& params)
   proto_.Init();
 }
 
-FtrlOptimizer::~FtrlOptimizer() {}
+FtrlOptimizer::~FtrlOptimizer() = default;
 
 void FtrlOptimizer::Clear() {
   last_expert_scores_.clear();

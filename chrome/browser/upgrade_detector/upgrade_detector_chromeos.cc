@@ -58,7 +58,7 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
       initialized_(false),
       update_in_progress_(false) {}
 
-UpgradeDetectorChromeos::~UpgradeDetectorChromeos() {}
+UpgradeDetectorChromeos::~UpgradeDetectorChromeos() = default;
 
 // static
 void UpgradeDetectorChromeos::RegisterPrefs(PrefRegistrySimple* registry) {
