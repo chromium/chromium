@@ -72,17 +72,20 @@ suite('DeclutterPageTest', () => {
   });
 
   test('Closes tabs', async () => {
-    await declutterPageSetup();
+    await declutterPageSetup(3, 4);
     assertEquals(0, testApiProxy.getCallCount('declutterTabs'));
 
     const staleTabElements = declutterPage.shadowRoot!.querySelectorAll(
         '#staleTabList > tab-search-item');
+    const duplicateTabElements = declutterPage.shadowRoot!.querySelectorAll(
+        '#duplicateTabList > tab-search-item');
     const closeButton = declutterPage.shadowRoot!.querySelector('cr-button');
     assertTrue(!!closeButton);
     closeButton.click();
 
-    const [tabIds] = await testApiProxy.whenCalled('declutterTabs');
+    const [tabIds, urls] = await testApiProxy.whenCalled('declutterTabs');
     assertEquals(staleTabElements.length, tabIds.length);
+    assertEquals(duplicateTabElements.length, urls.length);
   });
 
   test('Excludes from stale tabs', async () => {

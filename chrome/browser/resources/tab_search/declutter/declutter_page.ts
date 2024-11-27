@@ -179,7 +179,8 @@ export class DeclutterPageElement extends CrLitElement {
 
   protected onCloseTabsClick_() {
     const tabIds = this.staleTabDatas_.map((tabData) => tabData.tab.tabId);
-    this.apiProxy_.declutterTabs(tabIds);
+    const urls = this.duplicateTabDatas_.map((tabData) => tabData.tab.url);
+    this.apiProxy_.declutterTabs(tabIds, urls);
     this.logCtrValue(DeclutterCTREvent.kCloseTabsClicked);
   }
 

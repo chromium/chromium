@@ -20,7 +20,7 @@ export enum RecentlyClosedItemOpenAction {
 export interface TabSearchApiProxy {
   closeTab(tabId: number): void;
 
-  declutterTabs(tabIds: number[]): void;
+  declutterTabs(tabIds: number[], urls: Url[]): void;
 
   acceptTabOrganization(sessionId: number, organizationId: number, tabs: Tab[]):
       void;
@@ -102,8 +102,8 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.closeTab(tabId);
   }
 
-  declutterTabs(tabIds: number[]) {
-    this.handler.declutterTabs(tabIds);
+  declutterTabs(tabIds: number[], urls: Url[]) {
+    this.handler.declutterTabs(tabIds, urls);
   }
 
   acceptTabOrganization(

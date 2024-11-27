@@ -209,7 +209,8 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
 }
 
 void TabDeclutterController::DeclutterTabs(
-    std::vector<tabs::TabInterface*> tabs) {
+    std::vector<tabs::TabInterface*> tabs,
+    const std::vector<GURL>& urls) {
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.DeclutterTabCount",
                             tabs.size());
   UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Declutter.TotalTabCount",
@@ -235,6 +236,11 @@ void TabDeclutterController::DeclutterTabs(
     tab_strip_model_->CloseWebContentsAt(
         tab_strip_model_->GetIndexOfWebContents(tab->GetContents()),
         TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  }
+
+  for (GURL url : urls) {
+    // TODO(crbug.com/376880738): Close all tabs with the given URL except for
+    // the oldest.
   }
 
   excluded_tabs_.clear();

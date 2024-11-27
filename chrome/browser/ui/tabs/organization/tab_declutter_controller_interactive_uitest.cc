@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
 
   int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
   int stale_tab_count = stale_tabs.size();
-  tab_declutter_controller()->DeclutterTabs(stale_tabs);
+  tab_declutter_controller()->DeclutterTabs(stale_tabs, {});
 
   // Verify that the number of tabs has decreased by the number of stale tabs.
   int remaining_tab_count = browser()->tab_strip_model()->GetTabCount();
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
   browser_two->browser_window_features()
       ->tab_declutter_controller()
-      ->DeclutterTabs(stale_tabs);
+      ->DeclutterTabs(stale_tabs, {});
 
   // Verify that the number of tabs has not decreased in second browser.
   EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);

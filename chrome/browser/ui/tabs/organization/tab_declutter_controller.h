@@ -97,7 +97,8 @@ class TabDeclutterController {
   void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
 
   // Closes the tabs from the tabstrip if they are present.
-  void DeclutterTabs(std::vector<tabs::TabInterface*> tabs);
+  void DeclutterTabs(std::vector<tabs::TabInterface*> tabs,
+                     const std::vector<GURL>& urls);
 
  private:
   void StartDeclutterTimer();

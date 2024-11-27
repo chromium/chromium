@@ -286,7 +286,8 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // Do not add code past this point.
 }
 
-void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
+void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids,
+                                         const std::vector<GURL>& urls) {
   // TODO(crbug.com/358382903): Add metrics logging.
   // Potentially also invoke IPH pending UX.
   if (!tab_declutter_controller_) {
@@ -306,7 +307,7 @@ void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
 
     tabs.push_back(details->tab);
   }
-  tab_declutter_controller_->DeclutterTabs(tabs);
+  tab_declutter_controller_->DeclutterTabs(tabs, urls);
 
   auto embedder = webui_controller_->embedder();
   if (embedder) {

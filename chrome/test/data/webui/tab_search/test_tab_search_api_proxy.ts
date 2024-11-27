@@ -59,8 +59,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('closeTab', [tabId]);
   }
 
-  declutterTabs(tabIds: number[]) {
-    this.methodCalled('declutterTabs', [tabIds]);
+  declutterTabs(tabIds: number[], urls: Url[]) {
+    this.methodCalled('declutterTabs', [tabIds, urls]);
   }
 
   acceptTabOrganization(
