@@ -345,7 +345,7 @@ void PWAHandler::InstallFromInstallInfo(
 
 void PWAHandler::Install(
     const std::string& in_manifest_id,
-    protocol::Maybe<std::string> in_install_url_or_bundle_url,
+    std::optional<std::string> in_install_url_or_bundle_url,
     std::unique_ptr<InstallCallback> callback) {
   if (in_install_url_or_bundle_url) {
     InstallFromUrl(in_manifest_id,
@@ -384,7 +384,7 @@ void PWAHandler::Uninstall(const std::string& in_manifest_id,
 }
 
 void PWAHandler::Launch(const std::string& in_manifest_id,
-                        protocol::Maybe<std::string> in_url,
+                        std::optional<std::string> in_url,
                         std::unique_ptr<LaunchCallback> callback) {
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
@@ -570,8 +570,8 @@ protocol::Response PWAHandler::OpenCurrentPageInApp(
 
 void PWAHandler::ChangeAppUserSettings(
     const std::string& in_manifest_id,
-    protocol::Maybe<bool> in_link_capturing,
-    protocol::Maybe<protocol::PWA::DisplayMode> in_display_mode,
+    std::optional<bool> in_link_capturing,
+    std::optional<protocol::PWA::DisplayMode> in_display_mode,
     std::unique_ptr<ChangeAppUserSettingsCallback> callback) {
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});

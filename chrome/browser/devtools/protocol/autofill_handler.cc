@@ -86,7 +86,7 @@ AutofillHandler::~AutofillHandler() {
 
 protocol::Response AutofillHandler::Trigger(
     int field_id,
-    Maybe<String> frame_id,
+    std::optional<String> frame_id,
     std::unique_ptr<protocol::Autofill::CreditCard> card) {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
   if (!host) {

@@ -41,7 +41,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
   protocol::Response Disable() override;
   protocol::Response Trigger(
       int field_id,
-      Maybe<String> frame_id,
+      std::optional<String> frame_id,
       std::unique_ptr<protocol::Autofill::CreditCard> card) override;
   // Sets a list of addresses inside `AutofillManager`, used to provide
   // developers addresses from different countries so that they can be used for

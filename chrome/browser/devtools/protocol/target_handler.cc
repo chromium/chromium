@@ -73,13 +73,13 @@ protocol::Response TargetHandler::SetRemoteLocations(
 
 protocol::Response TargetHandler::CreateTarget(
     const std::string& url,
-    protocol::Maybe<int> width,
-    protocol::Maybe<int> height,
-    protocol::Maybe<std::string> browser_context_id,
-    protocol::Maybe<bool> enable_begin_frame_control,
-    protocol::Maybe<bool> new_window,
-    protocol::Maybe<bool> background,
-    protocol::Maybe<bool> for_tab,
+    std::optional<int> width,
+    std::optional<int> height,
+    std::optional<std::string> browser_context_id,
+    std::optional<bool> enable_begin_frame_control,
+    std::optional<bool> new_window,
+    std::optional<bool> background,
+    std::optional<bool> for_tab,
     std::string* out_target_id) {
   Profile* profile = nullptr;
   if (browser_context_id.has_value()) {
