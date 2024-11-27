@@ -53,10 +53,6 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
     return PROCEED;
   }
 
-  if (!navigation_handle()->HasUserGesture()) {
-    return PROCEED;
-  }
-
   DataSharingService* data_sharing_service =
       DataSharingServiceFactory::GetForProfile(Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext()));

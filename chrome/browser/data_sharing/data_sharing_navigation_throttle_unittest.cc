@@ -43,17 +43,12 @@ TEST_F(DataSharingNavigationThrottleUnitTest, TestCheckIfShouldIntercept) {
   EXPECT_CALL(mock_data_sharing_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(test_handle, HasUserGesture()).WillRepeatedly(Return(true));
   EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
             throttle->WillStartRequest());
 
   EXPECT_CALL(mock_data_sharing_service_,
               ShouldInterceptNavigationForShareURL(_))
       .WillOnce(Return(false));
-  EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
-            throttle->WillStartRequest());
-
-  EXPECT_CALL(test_handle, HasUserGesture()).WillOnce(Return(false));
   EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
             throttle->WillStartRequest());
 }
