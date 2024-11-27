@@ -199,7 +199,7 @@ bool TimelineOffset::IsStyleDependent(const CSSValue* value) {
 
 /* static */
 Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+  if (auto* primitive_value = DynamicTo<CSSNumericLiteralValue>(value)) {
     if (primitive_value->IsPercentage()) {
       return Length::Percent(primitive_value->GetDoubleValue());
     }
