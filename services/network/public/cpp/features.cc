@@ -271,10 +271,6 @@ BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
              "PrivateNetworkAccessPermissionPrompt",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant,
-             "AccessControlAllowMethodsInCORSPreflightSpecConformant",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

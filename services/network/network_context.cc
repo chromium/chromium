@@ -856,10 +856,6 @@ NetworkContext::NetworkContext(
     cors_exempt_header_list_.insert(key);
   }
 
-  acam_preflight_spec_conformant_ = base::FeatureList::IsEnabled(
-      network::features::
-          kAccessControlAllowMethodsInCORSPreflightSpecConformant);
-
   if (prefetch_enabled_) {
     InitializePrefetchURLLoaderFactory();
   }
@@ -3180,11 +3176,7 @@ void NetworkContext::InitializeCorsParams() {
     cors_exempt_header_list_.insert(key);
   }
 
-  acam_preflight_spec_conformant_ =
-      base::FeatureList::IsEnabled(
-          network::features::
-              kAccessControlAllowMethodsInCORSPreflightSpecConformant) &&
-      params_->acam_preflight_spec_conformant;
+  acam_preflight_spec_conformant_ = params_->acam_preflight_spec_conformant;
 }
 
 void NetworkContext::FinishConstructingTrustTokenStore(

@@ -934,10 +934,7 @@ SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
   // CertVerifierServiceUpdater.
   network_context_params->cert_verifier_params =
       content::GetCertVerifierParams(std::move(cert_verifier_creation_params));
-  network_context_params->acam_preflight_spec_conformant =
-      base::FeatureList::IsEnabled(
-          network::features::
-              kAccessControlAllowMethodsInCORSPreflightSpecConformant);
+  network_context_params->acam_preflight_spec_conformant = true;
   return network_context_params;
 }
 
