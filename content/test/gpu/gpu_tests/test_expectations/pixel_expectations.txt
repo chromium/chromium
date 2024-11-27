@@ -349,6 +349,9 @@ crbug.com/364179193 [ linux ] Pixel_Video_Media_Stream_Incompatible_Stride [ Ski
 # Long-running test, can flakily time out on old/slow hardware.
 [ mac amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
 
+# Hitting timeout with graphite
+crbug.com/381211724 [ mac amd-0x679e release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
+
 # Mac Asan timeouts
 crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUDisplayP3 [ Slow ]
 crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUToDataURL [ Slow ]
