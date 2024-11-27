@@ -144,10 +144,6 @@ BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 extern const char kTabScrollingButtonPositionParameterName[];
 
-#if !defined(ANDROID)
-BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
-#endif
-
 BASE_DECLARE_FEATURE(kSidePanelResizing);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 

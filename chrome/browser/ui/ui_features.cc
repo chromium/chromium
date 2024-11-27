@@ -195,12 +195,6 @@ BASE_FEATURE(kResponsiveToolbar,
              "ResponsiveToolbar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !defined(ANDROID)
-BASE_FEATURE(kSidePanelCompanionDefaultPinned,
-             "SidePanelCompanionDefaultPinned",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kSidePanelResizing,
              "SidePanelResizing",
              base::FEATURE_DISABLED_BY_DEFAULT);
