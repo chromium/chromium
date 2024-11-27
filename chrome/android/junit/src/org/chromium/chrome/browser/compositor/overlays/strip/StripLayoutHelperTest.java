@@ -30,7 +30,6 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -48,6 +47,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.core.app.ApplicationProvider;
@@ -100,12 +101,14 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.PassthroughTabRemover;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterInternal;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -150,6 +153,7 @@ public class StripLayoutHelperTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterInternal mTabGroupModelFilterInternal;
     @Mock private View mToolbarContainerView;
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
@@ -214,13 +218,31 @@ public class StripLayoutHelperTest {
     public void beforeTest() {
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        doCallback(
-                        (TabClosureParams tabClosureParams) -> {
-                            mModel.closeTabs(tabClosureParams);
-                        })
-                .when(mTabGroupModelFilter)
-                .closeTabs(any());
-        mModel.setTabRemover(new PassthroughTabRemover(() -> mTabGroupModelFilter));
+
+        TabRemover tabRemover =
+                new TabRemover() {
+                    @Override
+                    public void closeTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        forceCloseTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+                        mModel.closeTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void removeTab(
+                            @NonNull Tab tab,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        assert false : "Not reached.";
+                    }
+                };
+        mModel.setTabRemover(tabRemover);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

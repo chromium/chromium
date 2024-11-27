@@ -82,7 +82,7 @@ public class TabRemoverImpl implements TabRemover {
     }
 
     private static class CloseTabsHandler implements TabModelRemoverFlowHandler {
-        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final TabGroupModelFilterInternal mTabGroupModelFilter;
         private final ActionConfirmationManager mActionConfirmationManager;
         private final TabClosureParams mOriginalTabClosureParams;
         private @Nullable TabModelActionListener mListener;
@@ -90,7 +90,7 @@ public class TabRemoverImpl implements TabRemover {
         private boolean mPreventUndo;
 
         CloseTabsHandler(
-                @NonNull TabGroupModelFilter tabGroupModelFilter,
+                @NonNull TabGroupModelFilterInternal tabGroupModelFilter,
                 @NonNull ActionConfirmationManager actionConfirmationManager,
                 @NonNull TabClosureParams originalTabClosureParams,
                 @Nullable TabModelActionListener listener) {

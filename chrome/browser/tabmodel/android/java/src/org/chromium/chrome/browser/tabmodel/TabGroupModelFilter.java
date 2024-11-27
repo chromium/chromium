@@ -53,15 +53,6 @@ public interface TabGroupModelFilter extends TabList {
     @NonNull
     TabModel getTabModel();
 
-    /**
-     * A wrapper around {@link TabModel#closeTabs} that sets hiding state for tab groups correctly.
-     *
-     * @param tabClosureParams The params to use when closing tabs.
-     * @deprecated Use {@link TabRemover#closeTabs(TabClosureParams, boolean)} instead.
-     */
-    @Deprecated
-    boolean closeTabs(TabClosureParams tabClosureParams);
-
     /** Returns the total tab count in the underlying {@link TabModel}. */
     int getTotalTabCount();
 

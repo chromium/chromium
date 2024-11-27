@@ -43,23 +43,32 @@ public class PassthroughTabRemover implements TabRemover {
 
     @Override
     public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
-        assert mTabGroupModelFilterSupplier.hasValue();
-        doCloseTabs(mTabGroupModelFilterSupplier.get(), tabClosureParams);
+        TabGroupModelFilterInternal tabGroupModelFilter = getTabGroupModelFilter();
+        doCloseTabs(tabGroupModelFilter, tabClosureParams);
     }
 
     @Override
     public void removeTab(
             @NonNull Tab tab, boolean allowDialog, @Nullable TabModelActionListener listener) {
-        assert mTabGroupModelFilterSupplier.hasValue();
-        doRemoveTab(mTabGroupModelFilterSupplier.get().getTabModel(), tab);
+        TabGroupModelFilterInternal tabGroupModelFilter = getTabGroupModelFilter();
+        doRemoveTab(tabGroupModelFilter.getTabModel(), tab);
         if (listener != null) {
             listener.onConfirmationDialogResult(
                     DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 
+    private @NonNull TabGroupModelFilterInternal getTabGroupModelFilter() {
+        @Nullable
+        TabGroupModelFilterInternal tabGroupModelFilter =
+                (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
+        assert tabGroupModelFilter != null;
+        return tabGroupModelFilter;
+    }
+
     static boolean doCloseTabs(
-            @NonNull TabGroupModelFilter filter, @NonNull TabClosureParams tabClosureParams) {
+            @NonNull TabGroupModelFilterInternal filter,
+            @NonNull TabClosureParams tabClosureParams) {
         return filter.closeTabs(tabClosureParams);
     }
 

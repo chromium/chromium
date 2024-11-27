@@ -187,7 +187,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
                                     .build());
@@ -227,7 +227,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
                                     .hideTabGroups(true)
@@ -271,7 +271,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
                                     .build());
@@ -309,7 +309,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(
                                                     mTabModel.getTabAt(0),
@@ -352,7 +352,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(
                                                     mTabModel.getTabAt(0),
@@ -399,7 +399,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
                                     .build());
@@ -437,7 +437,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
                                     .build());
@@ -475,7 +475,7 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeTabs(
+                    closeTabs(
                             TabClosureParams.closeTabs(
                                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
                                     .hideTabGroups(true)
@@ -563,5 +563,9 @@ public class UndoBarControllerTest {
                         return mSnackbarManager.getCurrentSnackbarForTesting();
                     }
                 });
+    }
+
+    private void closeTabs(TabClosureParams params) {
+        mTabModel.getTabRemover().closeTabs(params, /* allowDialog= */ false);
     }
 }

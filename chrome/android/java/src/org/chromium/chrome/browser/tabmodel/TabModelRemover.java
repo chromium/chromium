@@ -124,10 +124,11 @@ class TabModelRemover {
         return mActionConfirmationManager;
     }
 
-    /** Returns the {@link TabGroupModelFilter} for the regular tab model. */
+    /** Returns the {@link TabGroupModelFilterInternal} for the regular tab model. */
     /*package*/ @NonNull
-    TabGroupModelFilter getTabGroupModelFilter() {
-        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+    TabGroupModelFilterInternal getTabGroupModelFilter() {
+        TabGroupModelFilterInternal filter =
+                (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
         assert filter != null && !filter.isIncognitoBranded();
         return filter;
     }

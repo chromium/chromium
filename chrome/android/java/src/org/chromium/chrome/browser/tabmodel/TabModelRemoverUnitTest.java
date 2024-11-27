@@ -75,7 +75,7 @@ public class TabModelRemoverUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private CoreAccountInfo mCoreAccountInfo;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemoverFlowHandler mHandler;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;

@@ -62,7 +62,7 @@ public class TabRemoverImplUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemover mTabModelRemover;
     @Mock private Runnable mUndoRunnable;
     @Mock private TabRemover mMockTabRemover;
