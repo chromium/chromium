@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpCallbackBoundaryInterface;
+import org.chromium.support_lib_boundary.WebViewStartUpConfigBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
 
@@ -585,6 +586,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             /* WebViewStartUpCallback */ InvocationHandler callbackInvoHandler) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.START_UP_WEBVIEW")) {
             recordApiCall(ApiCall.START_UP_WEBVIEW);
+            final WebViewStartUpConfigBoundaryInterface webViewStartUpConfig =
+                    BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                            WebViewStartUpConfigBoundaryInterface.class, configInvoHandler);
             final WebViewStartUpCallbackBoundaryInterface webViewStartUpCallback =
                     BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                             WebViewStartUpCallbackBoundaryInterface.class, callbackInvoHandler);
@@ -616,7 +620,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                             supportLibResult));
                         }
                     };
-            mAwInit.startUpWebView(callback);
+            mAwInit.startUpWebView(callback, webViewStartUpConfig.shouldRunUiThreadStartUpTasks());
         }
     }
 }

@@ -20,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebViewDatabase;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -82,49 +83,74 @@ public class WebViewChromiumAwInit {
     private static final String HTTP_AUTH_DATABASE_FILE = "http_auth.db";
 
     public static class WebViewStartUpDiagnostics {
+        private final Object mLock = new Object();
+
+        @GuardedBy("mLock")
         private Long mTotalTimeUiThreadChromiumInitMillis;
+
+        @GuardedBy("mLock")
         private Long mMaxTimePerTaskUiThreadChromiumInitMillis;
+
+        @GuardedBy("mLock")
         private Throwable mSynchronousChromiumInitLocation;
+
+        @GuardedBy("mLock")
         private Throwable mProviderInitOnMainLooperLocation;
 
         public Long getTotalTimeUiThreadChromiumInitMillis() {
-            return mTotalTimeUiThreadChromiumInitMillis;
+            synchronized (mLock) {
+                return mTotalTimeUiThreadChromiumInitMillis;
+            }
         }
 
         public Long getMaxTimePerTaskUiThreadChromiumInitMillis() {
-            return mMaxTimePerTaskUiThreadChromiumInitMillis;
+            synchronized (mLock) {
+                return mMaxTimePerTaskUiThreadChromiumInitMillis;
+            }
         }
 
         public @Nullable Throwable getSynchronousChromiumInitLocationOrNull() {
-            return mSynchronousChromiumInitLocation;
+            synchronized (mLock) {
+                return mSynchronousChromiumInitLocation;
+            }
         }
 
         public @Nullable Throwable getProviderInitOnMainLooperLocationOrNull() {
-            return mProviderInitOnMainLooperLocation;
+            synchronized (mLock) {
+                return mProviderInitOnMainLooperLocation;
+            }
         }
 
         void setTotalTimeUiThreadChromiumInitMillis(Long time) {
-            // The setter should only be called once.
-            assert (mTotalTimeUiThreadChromiumInitMillis == null);
-            mTotalTimeUiThreadChromiumInitMillis = time;
+            synchronized (mLock) {
+                // The setter should only be called once.
+                assert (mTotalTimeUiThreadChromiumInitMillis == null);
+                mTotalTimeUiThreadChromiumInitMillis = time;
+            }
         }
 
         void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
-            // The setter should only be called once.
-            assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
-            mMaxTimePerTaskUiThreadChromiumInitMillis = time;
+            synchronized (mLock) {
+                // The setter should only be called once.
+                assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
+                mMaxTimePerTaskUiThreadChromiumInitMillis = time;
+            }
         }
 
         void setSynchronousChromiumInitLocation(Throwable t) {
-            // The setter should only be called once.
-            assert (mSynchronousChromiumInitLocation == null);
-            mSynchronousChromiumInitLocation = t;
+            synchronized (mLock) {
+                // The setter should only be called once.
+                assert (mSynchronousChromiumInitLocation == null);
+                mSynchronousChromiumInitLocation = t;
+            }
         }
 
         void setProviderInitOnMainLooperLocation(Throwable t) {
-            // The setter should only be called once.
-            assert (mProviderInitOnMainLooperLocation == null);
-            mProviderInitOnMainLooperLocation = t;
+            synchronized (mLock) {
+                // The setter should only be called once.
+                assert (mProviderInitOnMainLooperLocation == null);
+                mProviderInitOnMainLooperLocation = t;
+            }
         }
     }
 
@@ -719,10 +745,15 @@ public class WebViewChromiumAwInit {
     // Starts up WebView asynchronously.
     // MUST NOT be called on the UI thread.
     // The callback can either be called synchronously or on the UI thread.
-    public void startUpWebView(@NonNull WebViewStartUpCallback callback) {
+    public void startUpWebView(
+            @NonNull WebViewStartUpCallback callback, boolean shouldRunUiThreadStartUpTasks) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException(
                     "startUpWebView should not be called on the Android main looper");
+        }
+        if (!shouldRunUiThreadStartUpTasks) {
+            callback.onSuccess(mWebViewStartUpDiagnostics);
+            return;
         }
         synchronized (mLock) {
             if (mInitState == INIT_FINISHED) {

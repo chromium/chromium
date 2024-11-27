@@ -9,4 +9,6 @@ import java.util.concurrent.Executor;
 /** Boundary interface for WebViewStartUpConfig. */
 public interface WebViewStartUpConfigBoundaryInterface {
     Executor getBackgroundExecutor();
+
+    boolean shouldRunUiThreadStartUpTasks();
 }
