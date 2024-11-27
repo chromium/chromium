@@ -42,7 +42,7 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
   j_history_service_obj_.Reset(env, obj);
 }
 
-BrowsingHistoryBridge::~BrowsingHistoryBridge() {}
+BrowsingHistoryBridge::~BrowsingHistoryBridge() = default;
 
 void BrowsingHistoryBridge::Destroy(JNIEnv*, const JavaParamRef<jobject>&) {
   delete this;

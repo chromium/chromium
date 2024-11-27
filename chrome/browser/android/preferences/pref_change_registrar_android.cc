@@ -26,7 +26,7 @@ PrefChangeRegistrarAndroid::PrefChangeRegistrarAndroid(
   pref_change_registrar_jobject_.Reset(env, obj);
 }
 
-PrefChangeRegistrarAndroid::~PrefChangeRegistrarAndroid() {}
+PrefChangeRegistrarAndroid::~PrefChangeRegistrarAndroid() = default;
 
 void PrefChangeRegistrarAndroid::Destroy(JNIEnv*,
                                          const JavaParamRef<jobject>&) {
