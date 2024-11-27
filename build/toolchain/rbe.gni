@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/toolchain/siso.gni")
-
 # Defines the configuration of Remote Build Execution (RBE).
 
 declare_args() {
@@ -58,16 +56,11 @@ declare_args() {
 if (use_reclient) {
   assert(use_remoteexec, "Can't enable Reclient when use_remoteexec is false")
 }
-if (use_remoteexec) {
-  assert(
-      use_reclient || use_siso,
-      "Either use_reclient or use_siso needs to be true to enable remote executions")
-}
 
 # Siso native also uses rewrapper cfg file
 # to get remote platform property.
-use_reclient_cfgs = use_reclient || (use_siso && use_remoteexec &&
-                                     (host_os == "win" || host_os == "mac"))
+use_reclient_cfgs =
+    use_reclient || (use_remoteexec && (host_os == "win" || host_os == "mac"))
 
 declare_args() {
   # Set to the path of the RBE reclient configuration files.
