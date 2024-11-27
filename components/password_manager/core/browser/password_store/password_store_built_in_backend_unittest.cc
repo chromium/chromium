@@ -213,9 +213,8 @@ class PasswordStoreBuiltInBackendTest
  public:
   PasswordStoreBuiltInBackendTest() = default;
 
-  PasswordStoreBackend* Initialize(
-      std::unique_ptr<LoginDatabase> database = nullptr,
-      AffiliatedMatchHelper* affiliated_match_helper = nullptr) {
+  PasswordStoreBackend* CreateBackend(
+      std::unique_ptr<LoginDatabase> database = nullptr) {
     if (!database) {
       database = std::make_unique<LoginDatabase>(
           test_login_db_file_path(),
@@ -225,18 +224,23 @@ class PasswordStoreBuiltInBackendTest
     store_ = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(database), syncer::WipeModelUponSyncDisabledBehavior::kNever,
         pref_service());
-    PasswordStoreBackend* backend = store_.get();
+    return store_.get();
+  }
+
+  void InitializeBackend(
+      PasswordStoreBackend* backend,
+      AffiliatedMatchHelper* affiliated_match_helper = nullptr) {
     backend->InitBackend(affiliated_match_helper,
                          /*remote_form_changes_received=*/base::DoNothing(),
                          /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
                          /*completion=*/base::DoNothing());
     RunUntilIdle();
-    return backend;
   }
 };
 
 TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
 
   // Some non-ASCII password form data.
   static const PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
@@ -263,7 +267,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -279,7 +284,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -299,7 +305,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -318,7 +325,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
 
   // Populate store with test credentials.
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -352,7 +360,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncMetrics) {
       "PasswordManager.PasswordStoreBuiltInBackend.GetAllLoginsAsync.Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
 
   // Fill the store
   PasswordForm form =
@@ -385,9 +394,9 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncFailsMetrics) {
   const char kSuccessMetric[] =
       "PasswordManager.PasswordStoreBuiltInBackend.GetAllLoginsAsync.Success";
   base::HistogramTester histogram_tester;
-
   PasswordStoreBackend* bad_backend =
-      Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
+      CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
+  InitializeBackend(bad_backend);
 
   bad_backend->GetAllLoginsAsync(base::DoNothing());
 
@@ -413,7 +422,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
       "PasswordManager.PasswordStoreBuiltInBackend.AddLoginAsync.Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
 
   // Fill the store
   PasswordForm form =
@@ -463,7 +473,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* bad_backend =
-      Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
+      CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
+  InitializeBackend(bad_backend);
 
   // Fill the store
   PasswordForm form =
@@ -497,7 +508,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
       "PasswordManager.PasswordStoreBuiltInBackend.UpdateLoginAsync.Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -531,7 +543,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncFailsMetrics) {
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* bad_backend =
-      Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
+      CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
+  InitializeBackend(bad_backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -553,7 +566,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncMetrics) {
       "PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginAsync.Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -580,7 +594,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginAsyncFailsMetrics) {
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* bad_backend =
-      Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
+      CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
+  InitializeBackend(bad_backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
 
@@ -611,7 +626,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       "Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   form.date_created = base::Time::FromTimeT(1500);
@@ -642,7 +658,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       "Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   form.date_created = base::Time::FromTimeT(300);
@@ -674,7 +691,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   base::HistogramTester histogram_tester;
 
   PasswordStoreBackend* bad_backend =
-      Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
+      CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
+  InitializeBackend(bad_backend);
 
   bad_backend->RemoveLoginsCreatedBetweenAsync(
       FROM_HERE, kStart, kEnd, base::DoNothing(), base::DoNothing());
@@ -699,7 +717,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, RemoveLoginsByURLAndTimeAsyncMetrics) {
       "Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   form.date_created = kStart + base::Milliseconds(500);
@@ -731,8 +750,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       "RemoveLoginsByURLAndTimeAsync."
       "Success";
   base::HistogramTester histogram_tester;
-
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   form.date_created = kStart - base::Milliseconds(500);
@@ -763,7 +782,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, FillMatchingLoginsAsyncMetrics) {
       "Success";
   base::HistogramTester histogram_tester;
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   PasswordForm form =
       *FillPasswordFormWithData(CreateTestPasswordFormData(), GetParam());
   const std::string kTestPasswordFormURL = form.signon_realm;
@@ -799,7 +819,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   base::HistogramTester histogram_tester;
   std::string kTestPasswordFormURL("http://foo.example.com");
 
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
 
   std::vector<PasswordFormDigest> forms;
   forms.emplace_back(PasswordFormDigest(PasswordForm::Scheme::kHtml,
@@ -821,8 +842,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   affiliations::FakeAffiliationService fake_affiliation_service;
   MockAffiliatedMatchHelper mock_affiliated_match_helper(
       &fake_affiliation_service);
-  PasswordStoreBackend* backend =
-      Initialize(nullptr, &mock_affiliated_match_helper);
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend, &mock_affiliated_match_helper);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
@@ -869,8 +890,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   affiliations::FakeAffiliationService fake_affiliation_service;
   MockAffiliatedMatchHelper mock_affiliated_match_helper(
       &fake_affiliation_service);
-  PasswordStoreBackend* backend =
-      Initialize(nullptr, &mock_affiliated_match_helper);
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend, &mock_affiliated_match_helper);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
@@ -920,7 +941,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
 TEST_P(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   EXPECT_FALSE(backend->IsAbleToSavePasswords());
 }
 
@@ -931,7 +953,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       password_manager::features::kLoginDbDeprecationAndroid);
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   EXPECT_TRUE(backend->IsAbleToSavePasswords());
 }
 
@@ -944,7 +967,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   // empty login DB has already been disallowed before.
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  PasswordStoreBackend* backend = Initialize();
+  PasswordStoreBackend* backend = CreateBackend();
+  InitializeBackend(backend);
   EXPECT_FALSE(backend->IsAbleToSavePasswords());
 }
 
@@ -952,7 +976,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
 
 TEST_P(PasswordStoreBuiltInBackendTest, NotAbleSavePasswordsWhenDatabaseIsBad) {
   PasswordStoreBackend* bad_backend =
-      Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
+      CreateBackend(std::make_unique<BadLoginDatabase>(GetParam()));
+  InitializeBackend(bad_backend);
 
   EXPECT_FALSE(bad_backend->IsAbleToSavePasswords());
 }
