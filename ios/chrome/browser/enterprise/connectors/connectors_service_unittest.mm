@@ -138,6 +138,9 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck) {
       /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kPolicyDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 
@@ -167,6 +170,9 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
       /*user_cloud_policy_client=*/profile()->GetUserCloudPolicyManager());
 
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kConnectorsDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 
@@ -176,12 +182,18 @@ TEST_F(ConnectorsServiceTest, RealTimeUrlCheck_OffTheRecord) {
   prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                       policy::POLICY_SCOPE_MACHINE);
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kConnectorsDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 
   prefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
                       policy::POLICY_SCOPE_USER);
   ASSERT_FALSE(service.GetDMTokenForRealTimeUrlCheck().has_value());
+  ASSERT_EQ(service.GetDMTokenForRealTimeUrlCheck().error(),
+            ConnectorsServiceBase::NoDMTokenForRealTimeUrlCheckReason::
+                kConnectorsDisabled);
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_DISABLED);
 }

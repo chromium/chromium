@@ -171,7 +171,13 @@ void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
 std::optional<std::string>
 ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
   DCHECK(connectors_service_);
-  return connectors_service_->GetDMTokenForRealTimeUrlCheck();
+  base::expected<std::string, enterprise_connectors::ConnectorsServiceBase::
+                                  NoDMTokenForRealTimeUrlCheckReason>
+      dm_token = connectors_service_->GetDMTokenForRealTimeUrlCheck();
+  if (dm_token.has_value()) {
+    return dm_token.value();
+  }
+  return std::nullopt;
 }
 
 GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {

@@ -2326,6 +2326,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.EnterpriseRealTimePolicyEnabled.HasDmToken"
+    enum="BooleanHasToken" expires_after="2025-05-26">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    When the EnterpriseRealTimeUrlCheckMode policy is enabled, logs whether a DM
+    token is available. If the token is unavailable, the enterprise real time
+    URL check will not be performed. This histogram reflects how often an admin
+    has enabled the policy, but Chrome fails to apply it due to lack of DM
+    token. Logged if the policy is enabled when a browser URL loader throttle is
+    created.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.RT.EventUrlReferrerChainFetchSucceeded{UserCategory}"
     enum="BooleanSuccess" expires_after="2025-02-23">

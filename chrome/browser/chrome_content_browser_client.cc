@@ -5984,9 +5984,22 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           browser_context);
-  bool has_valid_dm_token =
-      connectors_service &&
-      connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
+  bool has_valid_dm_token = false;
+  if (connectors_service) {
+    base::expected<std::string, enterprise_connectors::ConnectorsServiceBase::
+                                    NoDMTokenForRealTimeUrlCheckReason>
+        dm_token = connectors_service->GetDMTokenForRealTimeUrlCheck();
+    has_valid_dm_token = dm_token.has_value();
+    if (dm_token.has_value()) {
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.RT.EnterpriseRealTimePolicyEnabled.HasDmToken", true);
+    } else if (dm_token.error() ==
+               enterprise_connectors::ConnectorsServiceBase::
+                   NoDMTokenForRealTimeUrlCheckReason::kNoDmToken) {
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.RT.EnterpriseRealTimePolicyEnabled.HasDmToken", false);
+    }
+  }
   bool is_enterprise_lookup_enabled =
       safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
           profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
