@@ -93,10 +93,12 @@ void WolvicContents::DidFinishLoad(content::RenderFrameHost* render_frame_host,
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents_.get());
 
-  webapps::InstallableParams params;
-  installable_manager->GetData(
-      params, base::BindOnce(&WolvicContents::OnDidGetInstallableData,
-                             weak_ptr_factory_.GetWeakPtr()));
+  if (installable_manager) {
+    webapps::InstallableParams params;
+    installable_manager->GetData(
+        params, base::BindOnce(&WolvicContents::OnDidGetInstallableData,
+                              weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void WolvicContents::OnDidGetInstallableData(
