@@ -282,28 +282,24 @@ TEST(StreamingUtf8ValidatorTest, NothingIsValid) {
 // test.
 TEST(StreamingUtf8ValidatorTest, NulIsValid) {
   static const char kNul[] = "\x00";
-  EXPECT_EQ(VALID_ENDPOINT, StreamingUtf8Validator().AddBytes(
-                                base::as_bytes(base::make_span(kNul, 1u))));
+  EXPECT_EQ(VALID_ENDPOINT,
+            StreamingUtf8Validator().AddBytes(byte_span_from_cstring(kNul)));
 }
 
 // Just a basic sanity test before we start getting fancy.
 TEST(StreamingUtf8ValidatorTest, HelloWorld) {
   static const char kHelloWorld[] = "Hello, World!";
-  EXPECT_EQ(VALID_ENDPOINT,
-            StreamingUtf8Validator().AddBytes(base::as_bytes(
-                base::make_span(kHelloWorld, strlen(kHelloWorld)))));
+  EXPECT_EQ(VALID_ENDPOINT, StreamingUtf8Validator().AddBytes(
+                                byte_span_from_cstring(kHelloWorld)));
 }
 
 // Check that the Reset() method works.
 TEST(StreamingUtf8ValidatorTest, ResetWorks) {
   StreamingUtf8Validator validator;
-  EXPECT_EQ(INVALID,
-            validator.AddBytes(base::as_bytes(base::make_span("\xC0", 1u))));
-  EXPECT_EQ(INVALID,
-            validator.AddBytes(base::as_bytes(base::make_span("a", 1u))));
+  EXPECT_EQ(INVALID, validator.AddBytes(byte_span_from_cstring("\xC0")));
+  EXPECT_EQ(INVALID, validator.AddBytes(byte_span_from_cstring("a")));
   validator.Reset();
-  EXPECT_EQ(VALID_ENDPOINT,
-            validator.AddBytes(base::as_bytes(base::make_span("a", 1u))));
+  EXPECT_EQ(VALID_ENDPOINT, validator.AddBytes(byte_span_from_cstring("a")));
 }
 
 TEST_F(StreamingUtf8ValidatorSingleSequenceTest, Valid) {

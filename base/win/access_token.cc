@@ -630,9 +630,8 @@ bool AccessToken::RemoveAllPrivileges() {
     return false;
   }
 
-  for (auto privileges = base::make_span(&token_privileges->Privileges[0],
-                                         token_privileges->PrivilegeCount);
-       auto& privilege : privileges) {
+  for (auto& privilege : span(&token_privileges->Privileges[0],
+                              token_privileges->PrivilegeCount)) {
     privilege.Attributes = SE_PRIVILEGE_REMOVED;
   }
   return ::AdjustTokenPrivileges(

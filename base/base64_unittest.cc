@@ -144,7 +144,7 @@ TEST(Base64Test, Overflow) {
   // crash. This test is only meaningful because `EXPECT_CHECK_DEATH` looks for
   // a `CHECK`-based failure.
   uint8_t b;
-  auto large_span = base::make_span(&b, MODP_B64_MAX_INPUT_LEN + 1);
+  auto large_span = span(&b, MODP_B64_MAX_INPUT_LEN + 1);
   EXPECT_CHECK_DEATH(Base64Encode(large_span));
 
   std::string output = "PREFIX";

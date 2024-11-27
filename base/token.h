@@ -48,9 +48,7 @@ class BASE_EXPORT Token {
 
   constexpr bool is_zero() const { return words_[0] == 0 && words_[1] == 0; }
 
-  span<const uint8_t, 16> AsBytes() const {
-    return as_bytes(make_span(words_));
-  }
+  span<const uint8_t, 16> AsBytes() const { return as_byte_span(words_); }
 
   friend constexpr auto operator<=>(const Token& lhs,
                                     const Token& rhs) = default;

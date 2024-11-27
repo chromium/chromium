@@ -107,7 +107,7 @@ const IMAGE_FILE_HEADER* PeImageReader::GetCoffFileHeader() {
 }
 
 span<const uint8_t> PeImageReader::GetOptionalHeaderData() {
-  return make_span(GetOptionalHeaderStart(), GetOptionalHeaderSize());
+  return span(GetOptionalHeaderStart(), GetOptionalHeaderSize());
 }
 
 size_t PeImageReader::GetNumberOfSections() {
@@ -155,7 +155,7 @@ const IMAGE_DEBUG_DIRECTORY* PeImageReader::GetDebugEntry(
           debug_directory_data[index * sizeof(IMAGE_DEBUG_DIRECTORY)]);
   const uint8_t* debug_data = nullptr;
   if (GetStructureAt(entry.PointerToRawData, entry.SizeOfData, &debug_data)) {
-    raw_data = make_span(debug_data, entry.SizeOfData);
+    raw_data = span(debug_data, entry.SizeOfData);
   }
   return &entry;
 }

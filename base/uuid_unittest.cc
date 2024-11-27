@@ -198,13 +198,11 @@ TEST(UuidTest, FormatRandomDataAsV4) {
                                         0xfffffffffffffffcull};
 
   const Uuid guid1a =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1a)));
+      Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes1a));
   const Uuid guid1b =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes1b)));
-  const Uuid guid2 =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes2)));
-  const Uuid guid3 =
-      Uuid::FormatRandomDataAsV4ForTesting(as_bytes(make_span(bytes3)));
+      Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes1b));
+  const Uuid guid2 = Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes2));
+  const Uuid guid3 = Uuid::FormatRandomDataAsV4ForTesting(as_byte_span(bytes3));
 
   EXPECT_TRUE(guid1a.is_valid());
   EXPECT_TRUE(guid1b.is_valid());

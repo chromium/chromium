@@ -284,8 +284,7 @@ UNSAFE_BUFFER_USAGE void InitGoogleTestWChar(int* argc, wchar_t** argv) {
   // Fuzztest requires a narrow command-line.
   CHECK(*argc >= 0);
   const auto argc_s = static_cast<size_t>(*argc);
-  base::span<wchar_t*> wide_command_line =
-      UNSAFE_BUFFERS(base::make_span(argv, argc_s));
+  span<wchar_t*> wide_command_line = UNSAFE_BUFFERS(span(argv, argc_s));
   std::vector<std::string> narrow_command_line;
   std::vector<char*> narrow_command_line_pointers;
   narrow_command_line.reserve(argc_s);

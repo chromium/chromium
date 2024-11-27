@@ -225,8 +225,8 @@ PersistentSparseHistogramDataManager::LoadRecords(
   // |sample_map_records|, up until |until_value| (if applicable).
   std::vector<PersistentMemoryAllocator::Reference> new_references;
   CHECK_GE(found_records.size(), sample_map_records->seen_);
-  auto new_found_records = base::make_span(found_records)
-                               .subspan(/*offset=*/sample_map_records->seen_);
+  auto new_found_records =
+      span(found_records).subspan(/*offset=*/sample_map_records->seen_);
   new_references.reserve(new_found_records.size());
   for (const auto& new_record : new_found_records) {
     new_references.push_back(new_record.reference);

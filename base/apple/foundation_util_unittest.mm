@@ -521,17 +521,17 @@ TEST(FoundationUtilTest, CFDataToSpan) {
   {
     ScopedCFTypeRef<CFDataRef> data(
         CFDataCreate(nullptr, buffer, sizeof(buffer)));
-    span<const uint8_t> span = CFDataToSpan(data.get());
-    EXPECT_EQ(make_span(buffer), span);
-    EXPECT_THAT(span, ElementsAreArray(buffer));
+    span<const uint8_t> data_span = CFDataToSpan(data.get());
+    EXPECT_EQ(span(buffer), data_span);
+    EXPECT_THAT(data_span, ElementsAreArray(buffer));
   }
 
   {
     ScopedCFTypeRef<CFMutableDataRef> data(CFDataCreateMutable(nullptr, 0));
     CFDataAppendBytes(data.get(), buffer, sizeof(buffer));
-    span<uint8_t> span = CFMutableDataToSpan(data.get());
-    EXPECT_EQ(make_span(buffer), span);
-    span[0] = 123;
+    span<uint8_t> data_span = CFMutableDataToSpan(data.get());
+    EXPECT_EQ(span(buffer), data_span);
+    data_span[0] = 123;
     EXPECT_EQ(CFDataGetBytePtr(data.get())[0], 123);
   }
 }

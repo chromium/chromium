@@ -1317,7 +1317,7 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
     DUMP_WILL_BE_NOTREACHED();
     return span<uint8_t>();
   }
-  return make_span(mem + offset_, size_ - offset_);
+  return span(mem + offset_, size_ - offset_);
 }
 
 }  // namespace base

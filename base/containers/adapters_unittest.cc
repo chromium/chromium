@@ -72,12 +72,12 @@ class UnsizedVector {
     static_assert(std::ranges::sized_range<decltype(base::Reversed(s))>);
     static_assert(std::ranges::borrowed_range<decltype(base::Reversed(s))>);
 
-    auto make_span = [] { return base::span<int>(); };
-    static_assert(std::ranges::range<decltype(base::Reversed(make_span()))>);
+    auto rvalue_span = [] { return base::span<int>(); };
+    static_assert(std::ranges::range<decltype(base::Reversed(rvalue_span()))>);
     static_assert(
-        std::ranges::sized_range<decltype(base::Reversed(make_span()))>);
+        std::ranges::sized_range<decltype(base::Reversed(rvalue_span()))>);
     static_assert(
-        std::ranges::borrowed_range<decltype(base::Reversed(make_span()))>);
+        std::ranges::borrowed_range<decltype(base::Reversed(rvalue_span()))>);
   }
 
   {

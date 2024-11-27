@@ -946,8 +946,8 @@ class BASE_EXPORT DelayedPersistentAllocation {
     // will result.
     CHECK_EQ(offset_ % alignof(T), 0u);
     span<uint8_t> untyped = GetUntyped();
-    return make_span(reinterpret_cast<T*>(untyped.data()),
-                     untyped.size() / sizeof(T));
+    return span(reinterpret_cast<T*>(untyped.data()),
+                untyped.size() / sizeof(T));
   }
 
   // Gets the internal reference value. If this returns a non-zero value then

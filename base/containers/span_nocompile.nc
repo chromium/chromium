@@ -136,12 +136,12 @@ void SwapWithDifferentExtentsDisallowed() {
 // as_writable_bytes should not be possible for a const container.
 void AsWritableBytesWithConstContainerDisallowed() {
   const std::vector<int> v = {1, 2, 3};
-  span<uint8_t> bytes = as_writable_bytes(make_span(v));  // expected-error {{no matching function for call to 'as_writable_bytes'}}
+  span<uint8_t> bytes = as_writable_bytes(span(v));  // expected-error {{no matching function for call to 'as_writable_bytes'}}
 }
 
 void ConstVectorDeducesAsConstSpan() {
   const std::vector<int> v;
-  span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
+  span<int> s = span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
 // A span can only be constructed from a range rvalue when the element type is

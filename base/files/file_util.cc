@@ -331,7 +331,7 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   bool read_successs = ReadStreamToSpanWithMaxSize(
       stream, max_size, [&content_string](size_t size) {
         content_string.resize(size);
-        return as_writable_bytes(make_span(content_string));
+        return as_writable_byte_span(content_string);
       });
 
   if (contents) {
@@ -355,7 +355,7 @@ std::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
                                    std::numeric_limits<size_t>::max(),
                                    [&bytes](size_t size) {
                                      bytes.resize(size);
-                                     return make_span(bytes);
+                                     return span(bytes);
                                    })) {
     return std::nullopt;
   }
@@ -486,7 +486,7 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
     return -1;
   }
   std::optional<uint64_t> result =
-      ReadFile(filename, make_span(data, static_cast<uint32_t>(max_size)));
+      ReadFile(filename, span(data, static_cast<uint32_t>(max_size)));
   if (!result) {
     return -1;
   }
@@ -494,7 +494,7 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
 }
 
 bool WriteFile(const FilePath& filename, std::string_view data) {
-  return WriteFile(filename, as_bytes(make_span(data)));
+  return WriteFile(filename, as_byte_span(data));
 }
 
 FilePath GetUniquePath(const FilePath& path) {
