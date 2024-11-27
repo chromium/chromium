@@ -319,7 +319,7 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableCardArtImage)) {
     card_art_image =
-        personal_data.payments_data_manager().GetCreditCardArtImageForUrl(
+        personal_data.payments_data_manager().GetCachedCardArtImageForUrl(
             credit_card.card_art_url());
   }
   card.image_src =

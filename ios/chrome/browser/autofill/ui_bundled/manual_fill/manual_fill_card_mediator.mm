@@ -297,7 +297,7 @@ std::vector<CreditCard> FetchCards(
   if (IsKeyboardAccessoryUpgradeEnabled() && !cardArtURL.is_empty() &&
       cardArtURL.is_valid()) {
     gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCreditCardArtImageForUrl(cardArtURL);
+                            .GetCachedCardArtImageForUrl(cardArtURL);
     if (image) {
       return image->ToUIImage();
     }

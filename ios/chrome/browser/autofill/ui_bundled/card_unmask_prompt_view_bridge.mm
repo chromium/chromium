@@ -103,7 +103,7 @@ UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {
   const CreditCard& credit_card = GetController()->GetCreditCard();
   gfx::Image* image =
       personal_data_manager_->payments_data_manager()
-          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
+          .GetCachedCardArtImageForUrl(credit_card.card_art_url());
   if (image) {
     return image->ToUIImage();
   }

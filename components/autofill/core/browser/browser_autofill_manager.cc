@@ -2134,7 +2134,7 @@ const gfx::Image& BrowserAutofillManager::GetCardImage(
       client()
           .GetPersonalDataManager()
           .payments_data_manager()
-          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
+          .GetCachedCardArtImageForUrl(credit_card.card_art_url());
   return card_art_image
              ? *card_art_image
              : ui::ResourceBundle::GetSharedInstance().GetImageNamed(

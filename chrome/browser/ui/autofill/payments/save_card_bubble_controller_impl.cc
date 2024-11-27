@@ -439,7 +439,7 @@ bool SaveCardBubbleControllerImpl::ShouldRequestExpirationDateFromUser() const {
 ui::ImageModel SaveCardBubbleControllerImpl::GetCreditCardImage() const {
   gfx::Image* card_art_image =
       personal_data_manager_->payments_data_manager()
-          .GetCreditCardArtImageForUrl(card_.card_art_url());
+          .GetCachedCardArtImageForUrl(card_.card_art_url());
   return ui::ImageModel::FromImage(
       card_art_image ? *card_art_image
                      : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
