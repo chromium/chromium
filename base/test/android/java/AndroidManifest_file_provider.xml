@@ -8,7 +8,7 @@
     <application>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.chromium.native_test.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -16,13 +16,13 @@
                 android:resource="@xml/file_paths_file_provider" />
         </provider>
         <provider android:name="org.chromium.base.InMemoryContentProvider"
-            android:authorities="org.chromium.native_test.inmemory"
+            android:authorities="${applicationId}.inmemory"
             android:exported="false"
             android:grantUriPermissions="true">
         </provider>
         <provider
             android:name="org.chromium.base.TestDocumentsProvider"
-            android:authorities="org.chromium.native_test.docprov"
+            android:authorities="${applicationId}.docprov"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS">
