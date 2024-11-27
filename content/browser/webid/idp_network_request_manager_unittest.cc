@@ -1267,8 +1267,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequest) {
 // Tests the ID assertion request implementation when CORS is enforced on the
 // endpoint.
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestWithCORS) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdAssertionCORS);
   bool called = false;
   auto interceptor =
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {

@@ -35,11 +35,6 @@ bool IsFedCmMetricsEndpointEnabled();
 // Whether the Selective Disclosure API is enabled.
 bool IsFedCmSelectiveDisclosureEnabled();
 
-// Whether we should only send SameSite=None cookies for credentialed requests.
-// (only affects non-CORS requests, because CORS already only sends
-// SameSite=None)
-bool IsFedCmSameSiteNoneEnabled();
-
 // Whether the IdP Registration API is enabled.
 bool IsFedCmIdPRegistrationEnabled();
 
