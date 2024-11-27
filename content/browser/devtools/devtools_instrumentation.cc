@@ -1675,6 +1675,9 @@ bool HandleCertificateError(WebContents* web_contents,
                             int cert_error,
                             const GURL& request_url,
                             CertErrorCallback callback) {
+  if (!DevToolsAgentHost::HasFor(web_contents)) {
+    return false;
+  }
   scoped_refptr<DevToolsAgentHost> agent_host =
       DevToolsAgentHost::GetOrCreateFor(web_contents).get();
   if (NotifyCertificateError(agent_host.get(), cert_error, request_url,
