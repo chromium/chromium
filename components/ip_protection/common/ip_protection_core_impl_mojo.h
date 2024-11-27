@@ -16,6 +16,10 @@
 
 namespace ip_protection {
 
+class IpProtectionConfigGetter;
+class IpProtectionProxyConfigManaager;
+class IpProtectionTokenManaager;
+
 // The Mojo implementation of IpProtectionCore, providing methods for CoreHost
 // to call on the core, and supporting initialization.
 class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
@@ -37,12 +41,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
           ip_protection_proxy_config_manager,
       std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
           ip_protection_token_managers,
-      bool is_ip_protection_enabled) {
-    return IpProtectionCoreImplMojo(
-        masked_domain_list_manager,
-        std::move(ip_protection_proxy_config_manager),
-        std::move(ip_protection_token_managers), is_ip_protection_enabled);
-  }
+      bool is_ip_protection_enabled);
 
   // `CoreControl` implementation.
   void VerifyIpProtectionCoreHostForTesting(

@@ -7,10 +7,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -181,6 +178,14 @@ base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
 bool IpProtectionProxyConfigManagerImpl::IsProxyListOlderThanMinAge() const {
   return base::Time::Now() - last_successful_proxy_list_refresh_ >=
          proxy_list_min_age_;
+}
+
+void IpProtectionProxyConfigManagerImpl::SetProxyListForTesting(
+    std::optional<std::vector<net::ProxyChain>> proxy_list,
+    std::optional<GeoHint> geo_hint) {
+  current_geo_id_ = GetGeoIdFromGeoHint(geo_hint);
+  proxy_list_ = *proxy_list;
+  have_fetched_proxy_list_ = true;
 }
 
 void IpProtectionProxyConfigManagerImpl::

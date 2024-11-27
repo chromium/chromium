@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
 
-#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,26 +12,29 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "components/ip_protection/common/ip_protection_token_manager.h"
-#include "components/ip_protection/common/masked_domain_list_manager.h"
-#include "net/base/features.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/proxy_chain.h"
+
+namespace net {
+
+class NetworkAnonymizationKey;
+class ProxyChain;
+
+}  // namespace net
 
 namespace ip_protection {
+
+class IpProtectionProxyConfigManager;
+class IpProtectionTokenManager;
+class MaskedDomainListManager;
+enum class ProxyLayer;
 
 // The generic implementation of IpProtectionCore. Subclasses provide additional
 // functionality for specific circumstances, such as interaction with other
 // processes via IPC.
-class IpProtectionCoreImpl : public IpProtectionCore,
-                             net::NetworkChangeNotifier::NetworkChangeObserver {
+class IpProtectionCoreImpl
+    : public IpProtectionCore,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   IpProtectionCoreImpl(
       MaskedDomainListManager* masked_domain_list_manager,

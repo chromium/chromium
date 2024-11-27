@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "components/ip_protection/mojom/data_types.mojom.h"

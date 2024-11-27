@@ -8,10 +8,13 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/proxy_chain.h"
 
 namespace ip_protection {
+
+enum class TryGetAuthTokensResult;
+enum class TryGetAuthTokensAndroidResult;
+enum class ProxyLayer;
 
 // An enumeration of the eligibility finding for use with
 // `UmaHistogramEnumeration`. These values are persisted to logs. Entries should

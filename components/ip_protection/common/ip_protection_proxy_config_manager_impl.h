@@ -9,16 +9,21 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "net/base/proxy_chain.h"
+
+namespace net {
+
+class ProxyChain;
+
+}  // namespace net
 
 namespace ip_protection {
+
+class IpProtectionProxyConfigFetcher;
+class IpProtectionCore;
+struct GeoHint;
 
 // The production implementation of IpProtectionProxyConfigManager.
 class IpProtectionProxyConfigManagerImpl
@@ -56,11 +61,7 @@ class IpProtectionProxyConfigManagerImpl
 
   void SetProxyListForTesting(
       std::optional<std::vector<net::ProxyChain>> proxy_list,
-      std::optional<GeoHint> geo_hint) {
-    current_geo_id_ = GetGeoIdFromGeoHint(geo_hint);
-    proxy_list_ = *proxy_list;
-    have_fetched_proxy_list_ = true;
-  }
+      std::optional<GeoHint> geo_hint);
 
   void EnableProxyListFetchIntervalFuzzingForTesting(bool enable);
 

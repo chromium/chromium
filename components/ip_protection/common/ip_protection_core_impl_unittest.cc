@@ -22,6 +22,7 @@
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/proxy_chain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {

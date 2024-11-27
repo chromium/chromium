@@ -4,11 +4,7 @@
 
 #include "components/ip_protection/common/ip_protection_proxy_config_mojo_fetcher.h"
 
-#include <string>
-#include <vector>
-
 #include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"

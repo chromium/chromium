@@ -8,10 +8,13 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 
 namespace ip_protection {
+
+enum class TryGetAuthTokensResult;
+enum class TryGetAuthTokensAndroidResult;
+enum class ProxyLayer;
 
 // Implementation of IpProtectionTelemetry using UMA.
 class IpProtectionTelemetryUma final : public IpProtectionTelemetry {

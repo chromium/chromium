@@ -15,19 +15,23 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace network {
+
 class SimpleURLLoader;
+
 }  // namespace network
 
 namespace ip_protection {
+
+struct GeoHint;
 
 // Manages fetching the proxy configuration from the server that is
 // necessary for IP Protection.

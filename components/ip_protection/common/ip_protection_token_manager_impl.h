@@ -15,13 +15,13 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 
 namespace ip_protection {
+
+class IpProtectionTokenFetcher;
+class IpProtectionCore;
+enum class ProxyLayer;
 
 // An implementation of IpProtectionTokenManager that populates itself
 // using a passed in IpProtectionTokenFetcher pointer from the cache.

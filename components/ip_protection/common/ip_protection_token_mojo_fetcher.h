@@ -7,11 +7,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 
 namespace ip_protection {
+
+class IpProtectionConfigGetter;
+enum class ProxyLayer;
 
 // Manages fetching tokens via Mojo. This is a simple wrapper around a config
 // getter.

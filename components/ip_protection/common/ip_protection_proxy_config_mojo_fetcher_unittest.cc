@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"

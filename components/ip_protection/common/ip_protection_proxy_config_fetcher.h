@@ -7,13 +7,18 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/functional/callback.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "net/base/proxy_chain.h"
+
+namespace net {
+
+class ProxyChain;
+
+}  // namespace net
 
 namespace ip_protection {
+
+struct GeoHint;
 
 // Manages fetching the proxy configuration.
 //

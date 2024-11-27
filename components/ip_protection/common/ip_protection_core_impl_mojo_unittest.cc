@@ -4,16 +4,13 @@
 
 #include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
+#include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "net/base/features.h"
-#include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {

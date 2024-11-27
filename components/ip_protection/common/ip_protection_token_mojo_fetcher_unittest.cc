@@ -8,9 +8,8 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "base/types/expected.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

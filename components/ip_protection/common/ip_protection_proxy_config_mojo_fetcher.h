@@ -6,10 +6,11 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MOJO_FETCHER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 
 namespace ip_protection {
+
+class IpProtectionConfigGetter;
 
 // Manages fetching the proxy configuration via Mojo. This is a simple wrapper
 // around a config getter, which wraps the `Remote<CoreHost>`.

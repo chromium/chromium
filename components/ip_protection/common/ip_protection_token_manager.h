@@ -8,10 +8,9 @@
 #include <optional>
 #include <string>
 
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-
 namespace ip_protection {
+
+struct BlindSignedAuthToken;
 
 // Manages the cache of blind-signed auth tokens.
 //

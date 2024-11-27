@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
@@ -81,6 +81,19 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
       receiver_(this) {}
 
 IpProtectionCoreImplMojo::~IpProtectionCoreImplMojo() = default;
+
+// static
+IpProtectionCoreImplMojo IpProtectionCoreImplMojo::CreateForTesting(
+    MaskedDomainListManager* masked_domain_list_manager,
+    std::unique_ptr<IpProtectionProxyConfigManager>
+        ip_protection_proxy_config_manager,
+    std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
+        ip_protection_token_managers,
+    bool is_ip_protection_enabled) {
+  return IpProtectionCoreImplMojo(
+      masked_domain_list_manager, std::move(ip_protection_proxy_config_manager),
+      std::move(ip_protection_token_managers), is_ip_protection_enabled);
+}
 
 void IpProtectionCoreImplMojo::VerifyIpProtectionCoreHostForTesting(
     ip_protection::mojom::CoreControl::

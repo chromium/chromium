@@ -11,12 +11,19 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
-#include "components/ip_protection/common/ip_protection_token_manager.h"
-#include "net/base/network_anonymization_key.h"
+
+class GURL;
+
+namespace net {
+
+class ProxyChain;
+class NetworkAnonymizationKey;
+
+}  // namespace net
 
 namespace ip_protection {
+
+struct BlindSignedAuthToken;
 
 // Core business logic for IP Protection.
 class IpProtectionCore {

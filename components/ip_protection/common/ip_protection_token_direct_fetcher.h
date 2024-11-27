@@ -17,14 +17,14 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "components/ip_protection/common/ip_protection_config_http.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ip_protection {
+
+class IpProtectionConfigHttp;
 
 // An implementation of IpProtectionTokenFetcher that uses HTTP fetching in
 // the `quiche::BlindSignAuth` library for retrieving blind-signed
