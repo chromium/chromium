@@ -65,9 +65,9 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
   void SendResponseHeaders(HttpStatusCode status,
                            const std::string& status_reason,
                            const base::StringPairs& headers) override {
-    connection_->adapter()->SubmitResponse(
-        stream_id_, GenerateHeaders(status, headers), nullptr,
-        /*end_stream=*/false);
+    connection_->adapter()->SubmitResponse(stream_id_,
+                                           GenerateHeaders(status, headers),
+                                           /*end_stream=*/false);
     connection_->SendIfNotProcessing();
   }
 
@@ -113,9 +113,9 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
                                    const std::string& contents) override {
     chunks_.push(std::move(contents));
     last_frame_ = true;
-    connection_->adapter()->SubmitResponse(
-        stream_id_, GenerateHeaders(status, headers), nullptr,
-        /*end_stream=*/false);
+    connection_->adapter()->SubmitResponse(stream_id_,
+                                           GenerateHeaders(status, headers),
+                                           /*end_stream=*/false);
     connection_->SendIfNotProcessing();
   }
   base::WeakPtr<ResponseDelegate> GetWeakPtr() {
