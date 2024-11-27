@@ -977,11 +977,11 @@ std::pair<CSSValueID, double> GetTimelineRangePercent(
     name = To<CSSIdentifierValue>(list->Item(0)).GetValueID();
     if (list->length() == 2u) {
       const auto& offset = To<CSSPrimitiveValue>(list->Item(1));
-      offset_percent = offset.IsPercentage() ? offset.GetValue<double>() : -1.0;
+      offset_percent = offset.IsPercentage() ? offset.GetDoubleValue() : -1.0;
     }
   } else {
     const auto& offset = To<CSSPrimitiveValue>(list->Item(0));
-    offset_percent = offset.IsPercentage() ? offset.GetValue<double>() : -1.0;
+    offset_percent = offset.IsPercentage() ? offset.GetDoubleValue() : -1.0;
   }
 
   return {name, offset_percent};
@@ -1683,8 +1683,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             numeric_value->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
           omit_value = true;
         }
-      } else if (property->IDEquals(
-                     CSSPropertyID::kTransitionTimingFunction)) {
+      } else if (property->IDEquals(CSSPropertyID::kTransitionTimingFunction)) {
         if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
           if (ident->GetValueID() == CSSValueID::kEase) {
             omit_value = true;

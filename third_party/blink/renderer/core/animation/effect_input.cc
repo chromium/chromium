@@ -151,7 +151,7 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
         stream, *context, CSSPrimitiveValue::ValueRange::kAll);
     if (primitive && stream.AtEnd()) {
       return ParsedOffset(
-          {TimelineOffset::NamedRange::kNone, primitive->GetValue<double>()});
+          {TimelineOffset::NamedRange::kNone, primitive->GetDoubleValue()});
     }
     stream.Restore(savepoint);
   }
@@ -163,7 +163,7 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
         stream, *context, CSSPrimitiveValue::ValueRange::kAll);
     if (primitive && stream.AtEnd()) {
       return ParsedOffset({TimelineOffset::NamedRange::kNone,
-                           primitive->GetValue<double>() / 100});
+                           primitive->GetDoubleValue() / 100});
     }
     stream.Restore(savepoint);
   }

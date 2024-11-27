@@ -4205,9 +4205,8 @@ CSSValue* ConsumeAnimationRange(CSSParserTokenStream& stream,
   }
   CSSPrimitiveValue* percentage = ConsumeLengthOrPercent(
       stream, context, CSSPrimitiveValue::ValueRange::kAll);
-  if (percentage &&
-      !(range_name && percentage->IsPercentage() &&
-        percentage->GetValue<double>() == default_offset_percent)) {
+  if (percentage && !(range_name && percentage->IsPercentage() &&
+                      percentage->GetDoubleValue() == default_offset_percent)) {
     list->Append(*percentage);
   } else if (!range_name) {
     return nullptr;
