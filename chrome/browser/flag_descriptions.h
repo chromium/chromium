@@ -3482,12 +3482,6 @@ extern const char kAudioA2DPAdvancedCodecsDescription[];
 extern const char kAudioHFPMicSRToggleName[];
 extern const char kAudioHFPMicSRToggleDescription[];
 
-extern const char kAudioHFPOffloadName[];
-extern const char kAudioHFPOffloadDescription[];
-
-extern const char kAudioOffloadCrasDSPToSOFName[];
-extern const char kAudioOffloadCrasDSPToSOFDescription[];
-
 extern const char kAudioStyleTransferName[];
 extern const char kAudioStyleTransferDescription[];
 

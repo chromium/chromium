@@ -6006,18 +6006,6 @@ const char kAudioHFPMicSRToggleName[] = "Audio toggle for hfp-mic-sr";
 const char kAudioHFPMicSRToggleDescription[] =
     "Enable the ui to show the toggle for controlling hfp-mic-sr.";
 
-const char kAudioHFPOffloadName[] =
-    "Audio Bluetooth HFP offloaded to DSP if supported";
-const char kAudioHFPOffloadDescription[] =
-    "While enabled, HFP Audio data is transmitted via the offloaded path "
-    "in DSP if supported by device.";
-
-const char kAudioOffloadCrasDSPToSOFName[] =
-    "Offload CRAS DSP modules to Audio FW if supported";
-const char kAudioOffloadCrasDSPToSOFDescription[] =
-    "While enabled, CRAS DSP modules are offloaded to Audio Firmware (SOF) "
-    "if supported by device.";
-
 const char kAudioStyleTransferName[] = "Audio style transfer";
 const char kAudioStyleTransferDescription[] = "Enable audio style transfer";
 

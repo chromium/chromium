@@ -515,16 +515,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "audio-hfp-offload",
-    "owners": [ "johnylin@chromium.org", "jrwu@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "audio-offload-cras-dsp-to-sof",
-    "owners": [ "johnylin@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "audio-selection-improvement",
     "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 135
