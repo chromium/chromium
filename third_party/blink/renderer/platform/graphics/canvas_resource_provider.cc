@@ -876,16 +876,19 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
 class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
  public:
   CanvasResourceProviderSwapChain(
-      const SkImageInfo& info,
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSwapChain,
-                               gfx::Size(info.width(), info.height()),
-                               info.colorType(),
-                               info.alphaType(),
-                               info.refColorSpace(),
+                               size,
+                               sk_color_type,
+                               alpha_type,
+                               std::move(sk_color_space),
                                filter_quality,
                                std::move(context_provider_wrapper),
                                resource_host),
@@ -894,11 +897,8 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    .GetCapabilities()
                                    .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
-        gfx::Size(info.width(), info.height()),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(
-            info.colorInfo().colorType()),
-        info.colorInfo().alphaType(),
-        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
+        size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+        alpha_type, SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
         ContextProviderWrapper(), CreateWeakPtr(), FilterQuality());
     // CanvasResourceProviderSwapChain can only operate in a single buffered
     // mode so enable it as soon as possible.
@@ -1268,7 +1268,9 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      info, filter_quality, context_provider_wrapper, resource_host);
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), info.refColorSpace(), filter_quality,
+      context_provider_wrapper, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
