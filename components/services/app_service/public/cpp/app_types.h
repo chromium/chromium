@@ -17,9 +17,11 @@ namespace apps {
 // When updating the enum below, update the ApplicationType enum in
 // //components/services/app_service/public/protos/app_types.proto.
 //
-// This is used for metrics and should not be reordered or removed and email
-// chromeos-data-team@google.com to request a corresponding change to backend
-// enums.
+// This is used for metrics and we should not
+//   - change the assigned value, nor
+//   - reuse the value which was used (even in past historically)
+// Email chromeos-data-team@google.com to request a corresponding change to
+// backend enums.
 enum class AppType {
   kUnknown = 0,
   kArc = 1,                // Android app.
@@ -63,8 +65,10 @@ COMPONENT_EXPORT(APP_TYPES)
 std::ostream& operator<<(std::ostream& os, PackageType v);
 
 // Whether an app is ready to launch, i.e. installed.
-// Note the enumeration is used in UMA histogram so entries should not be
-// re-ordered or removed. New entries should be added at the bottom.
+//
+// This is used for metrics and we should not
+//   - change the assigned value, nor
+//   - reuse the value which was used (even in past historically)
 enum class Readiness {
   kUnknown = 0,
   kReady = 1,                // Installed and launchable.
@@ -94,11 +98,11 @@ std::ostream& operator<<(std::ostream& os, Readiness v);
 // enums.xml as well as ApplicationInstallReason in
 // //components/services/app_service/public/protos/app_types.proto.
 //
+// This is used for metrics and we should not
+//   - change the assigned value, nor
+//   - reuse the value which was used (even in past historically)
 // Email chromeos-data-team@google.com to request a corresponding change to
 // backend enums.
-//
-// Note the enumeration is used in UMA histogram so entries should not be
-// re-ordered or removed. New entries should be added at the bottom.
 enum class InstallReason {
   kUnknown = 0,
   kSystem = 1,  // Installed with the system and is considered a part of the OS.
@@ -123,11 +127,11 @@ std::ostream& operator<<(std::ostream& os, InstallReason v);
 // enums.xml as well as ApplicationInstallSource in
 // //components/services/app_service/public/protos/app_types.proto.
 //
+// This is used for metrics and we should not
+//   - change the assigned value, nor
+//   - reuse the value which was used (even in past historically)
 // Email chromeos-data-team@google.com to request a corresponding change to
 // backend enums.
-//
-// Note the enumeration is used in UMA histogram so entries should not be
-// re-ordered or removed. New entries should be added at the bottom.
 enum class InstallSource {
   kUnknown = 0,
   kSystem = 1,          // Installed as part of Chrome OS.
@@ -146,10 +150,11 @@ std::ostream& operator<<(std::ostream& os, InstallSource v);
 // What caused the app to be uninstalled.
 // This should be kept in sync with UninstallSource in enums.xml as well as
 // ApplicationUninstallSource in
-// //components/services/app_service/public/protos/app_types.proto, so entries
-// should not be re-ordered or removed. New entries should be added at the
-// bottom.
+// //components/services/app_service/public/protos/app_types.proto.
 //
+// This is used for metrics and we should not
+//   - change the assigned value, nor
+//   - reuse the value which was used (even in past historically)
 // Email chromeos-data-team@google.com to request a corresponding change to
 // backend enums.
 enum class UninstallSource {
@@ -164,6 +169,10 @@ enum class UninstallSource {
 };
 
 // The window mode that each app will open in.
+//
+// This is used for metrics and we should not
+//   - change the assigned value, nor
+//   - reuse the value which was used (even in past historically)
 enum class WindowMode {
   kUnknown,
   // Opens in a standalone window
