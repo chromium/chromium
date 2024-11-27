@@ -59,6 +59,7 @@ source_set("impl") {
   ]
   deps = [
     ":ai",
+    "//components/optimization_guide/content/browser",
     "//components/site_engagement/content:content",
     "//pdf:buildflags",
     "//skia",

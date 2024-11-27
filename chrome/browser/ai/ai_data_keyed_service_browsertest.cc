@@ -207,6 +207,38 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
   EXPECT_GE(ai_data()->site_engagement().entries()[0].score(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
+  constexpr gfx::Size kWindowBounds{800, 1000};
+  browser()->tab_strip_model()->GetActiveWebContents()->Resize(
+      gfx::Rect(kWindowBounds));
+  LoadSimplePageAndData();
+
+  const auto& page_content = ai_data()->page_context().annotated_page_content();
+  EXPECT_TRUE(page_content.root_node().children_nodes().empty());
+
+  const auto& content_attributes =
+      page_content.root_node().content_attributes();
+  EXPECT_EQ(content_attributes.attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  EXPECT_EQ(content_attributes.text_info().size(), 1);
+  EXPECT_EQ(content_attributes.text_info().at(0).text_content(),
+            "Non empty simple page\n\n");
+
+  const auto& root_geometry = content_attributes.geometry();
+  EXPECT_EQ(root_geometry.outer_bounding_box().x(), 0);
+  EXPECT_EQ(root_geometry.outer_bounding_box().y(), 0);
+  EXPECT_EQ(root_geometry.outer_bounding_box().width(), kWindowBounds.width());
+  EXPECT_EQ(root_geometry.outer_bounding_box().height(),
+            kWindowBounds.height());
+
+  EXPECT_EQ(root_geometry.visible_bounding_box().x(), 0);
+  EXPECT_EQ(root_geometry.visible_bounding_box().y(), 0);
+  EXPECT_EQ(root_geometry.visible_bounding_box().width(),
+            kWindowBounds.width());
+  EXPECT_EQ(root_geometry.visible_bounding_box().height(),
+            kWindowBounds.height());
+}
+
 class AiDataKeyedServiceBrowserTestWithBlocklistedExtensions
     : public AiDataKeyedServiceBrowserTest {
  public:

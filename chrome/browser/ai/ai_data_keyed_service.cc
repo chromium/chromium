@@ -23,6 +23,7 @@
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/compose/buildflags.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
@@ -32,6 +33,8 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "pdf/buildflags.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -57,6 +60,39 @@ namespace {
 constexpr size_t kBytesPerMegabyte = 1'000'000;
 constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+void OnGotAIPageContentForModelPrototyping(
+    mojo::Remote<blink::mojom::AIPageContentAgent> remote_interface,
+    AiDataKeyedService::AiDataCallback continue_callback,
+    blink::mojom::AIPageContentPtr result) {
+  TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
+
+  AiDataKeyedService::AiData data;
+  if (result && result->root_node) {
+    data = std::make_optional<AiDataKeyedService::BrowserData>();
+    optimization_guide::ConvertAIPageContentToProto(
+        *result,
+        data->mutable_page_context()->mutable_annotated_page_content());
+  }
+  std::move(continue_callback).Run(std::move(data));
+}
+
+void GetAIPageContentForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT("browser", "GetAIPageContentForModelPrototyping");
+  DCHECK(web_contents);
+  DCHECK(web_contents->GetPrimaryMainFrame());
+
+  mojo::Remote<blink::mojom::AIPageContentAgent> agent;
+  web_contents->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
+      agent.BindNewPipeAndPassReceiver());
+  auto* agent_ptr = agent.get();
+  agent_ptr->GetAIPageContent(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&OnGotAIPageContentForModelPrototyping, std::move(agent),
+                     std::move(continue_callback)),
+      nullptr));
+}
 
 // Fills an AiData proto with information from GetInnerText. If no result,
 // returns an empty AiDAta.
@@ -395,6 +431,8 @@ void GetModelPrototypingAiData(int tabs_for_inner_text,
       base::UTF16ToUTF8(web_contents->GetTitle()));
 
   base::ConcurrentCallbacks<AiDataKeyedService::AiData> concurrent;
+  GetAIPageContentForModelPrototyping(web_contents,
+                                      concurrent.CreateCallback());
   RequestAxTreeSnapshotForModelPrototyping(web_contents,
                                            concurrent.CreateCallback());
   GetInnerTextForModelPrototyping(dom_node_id, web_contents,

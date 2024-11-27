@@ -1,0 +1,94 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This is a mojom representation of the corresponding AnnotatedPageContent
+// proto.
+// See components/optimization_guide/proto/features/common_quality_data.proto
+// for details.
+//
+// Note: The proto representation needs to remain backwards compatible with
+// older client versions but there's no such limitation on the mojom
+// representation.
+
+enum AIPageContentAttributeType {
+  kRoot,
+  kIframe,
+
+  // Text chunks.
+  kParagraph,
+  kHeading,
+
+  // Structured chunks.
+  kList,
+  kForm,
+  kFigure,
+};
+
+struct AIPageContentGeometry {
+  // The bounding box of the content node, in the page coordinate system.
+  gfx.mojom.Rect outer_bounding_box;
+
+  // Subset of this node visible on the page. Empty if offscreen.
+  gfx.mojom.Rect visible_bounding_box;
+};
+
+struct AIPageContentTextInfo {
+  string text_content;
+  gfx.mojom.Rect text_bounding_box;
+};
+
+struct AIPageContentImageInfo {
+  gfx.mojom.Rect image_bounding_box;
+  string? image_caption;
+};
+
+struct AIPageContentAttributes {
+  // The IDs of the DOM nodes whose content is represented by this ContentNode.
+  array<int32> dom_node_ids;
+
+  // If this content node represents an entire subtree, this is the ID of the
+  // common ancestor of all the nodes in the subtree.
+  int32? common_ancestor_dom_node_id;
+
+  AIPageContentAttributeType attribute_type;
+
+  // Geometry of the common_ancestor_dom_node_id.
+  AIPageContentGeometry? geometry;
+
+  // Text chunks in this node.
+  array<AIPageContentTextInfo> text_info;
+
+  // Images in this node.
+  array<AIPageContentImageInfo> image_info;
+
+  // TODO(crbug.com/380493777): Add FormData if attribute_type is FORM.
+};
+
+// A semantic chunk of information on a page. It can represent text, structured
+// content, or containers for other ContentNodes.
+struct AIPageContentNode {
+  array<AIPageContentNode> children_nodes;
+  AIPageContentAttributes content_attributes;
+};
+
+// Represents the parsed content of a page.
+struct AIPageContent {
+  AIPageContentNode root_node;
+};
+
+
+// Used to obtain the AIPageContent representation for Documents. Lives in the
+// renderer process and called by the browser process to pull data for a
+// Document.
+// The interface is only available for the outermost main frame.
+interface AIPageContentAgent {
+  // Provides the AIPageContent representation for this LocalFrame and all
+  // LocalFrames accessible from the LocalFrameRoot that are same-origin with
+  // the LocalFrame.
+  GetAIPageContent() => (AIPageContent page_content);
+};
