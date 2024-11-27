@@ -48,6 +48,14 @@ export let GeneralZramType;
  *   usage: number,
  * }}
  */
+export let GeneralGpuType;
+
+/**
+ * For info page.
+ * @typedef {{
+ *   usage: number,
+ * }}
+ */
 export let GeneralNpuType;
 
 /**
@@ -55,6 +63,7 @@ export let GeneralNpuType;
  *   cpu: !GeneralCpuType,
  *   memory: !GeneralMemoryType,
  *   zram: !GeneralZramType,
+ *   gpu: ?GeneralGpuType,
  *   npu: ?GeneralNpuType,
  * }}
  */

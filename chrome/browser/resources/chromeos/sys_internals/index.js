@@ -11,7 +11,7 @@ import {UnitLabelAlign} from './line_chart/constants.js';
 import {DataSeries} from './line_chart/data_series.js';
 import {LineChart} from './line_chart/line_chart.js';
 import {UnitLabel} from './line_chart/unit_label.js';
-import {CounterType, DataSeriesSet, GeneralCpuType, GeneralInfoType, GeneralMemoryType, GeneralNpuType, GeneralZramType, MemoryDataSeriesSet, ZramDataSeriesSet} from './types.js';
+import {CounterType, DataSeriesSet, GeneralCpuType, GeneralGpuType, GeneralInfoType, GeneralMemoryType, GeneralNpuType, GeneralZramType, MemoryDataSeriesSet, ZramDataSeriesSet} from './types.js';
 
 /** @type {!DataSeriesSet} */
 const dataSeries = initDataSeries();
@@ -152,6 +152,7 @@ function initGeneralInfo() {
       orig: 0,
       total: 0,
     },
+    gpu: null,
     npu: null,
   };
 }
@@ -192,6 +193,7 @@ export function handleUpdateData(data, timestamp) {
   updateCpuData(data.cpus, timestamp);
   updateMemoryData(data.memory, timestamp);
   updateZramData(data.zram, timestamp);
+  updateGpuData(data.gpu, timestamp);
   updateNpuData(data.npu, timestamp);
 
   if (isInfoPage()) {
@@ -320,6 +322,27 @@ function updateZramData(zram, timestamp) {
 }
 
 /**
+ * Handle the new gpu data.
+ * @param {?SysInfoApiGpuResult} gpu
+ * @param {number} timestamp
+ */
+function updateGpuData(gpu, timestamp) {
+  if (gpu === null) {
+    generalInfo.gpu = null;
+    return;
+  }
+
+  const busyMsPerSec =
+      getDiffPerSecAndUpdateCounter('gpuBusy', gpu.busy, timestamp);
+
+  // When the system is busy, the time drift between sampling in C++ and calling
+  // Data.now() in JS may make the value slightly over 1.0.
+  const usage = Math.min(busyMsPerSec / 1000, 1.0);
+  generalInfo.gpu = {usage};
+}
+
+
+/**
  * Handle the new npu data.
  * @param {?SysInfoApiNpuResult} npu
  * @param {number} timestamp
@@ -425,6 +448,12 @@ export function updateInfoPage() {
   setMemoryById('infopage-zram-orig', zram.orig);
   setMemoryById('infopage-zram-compr', zram.compr);
   setPercentageById('infopage-zram-compr-ratio', zram.comprRatio);
+
+  const gpu = generalInfo.gpu;
+  $('infopage-panel-gpu').classList.toggle('hidden', gpu === null);
+  if (gpu !== null) {
+    setPercentageById('infopage-gpu-usage', gpu.usage)
+  }
 
   const npu = generalInfo.npu;
   $('infopage-panel-npu').classList.toggle('hidden', npu === null);

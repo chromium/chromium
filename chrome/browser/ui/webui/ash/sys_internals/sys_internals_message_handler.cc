@@ -18,6 +18,8 @@
 #include "base/logging.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,6 +33,10 @@ struct CpuInfo {
   int user;
   int idle;
   int total;
+};
+
+struct GpuInfo {
+  base::TimeDelta busy_time;
 };
 
 struct NpuInfo {
@@ -177,6 +183,85 @@ void SetZramValue(const base::SwapInfo& info, base::Value::Dict* result) {
   result->Set("zram", std::move(zram_result));
 }
 
+constexpr char kI915EngineInfoPath[] = "/run/debugfs_gpu/i915_engine_info";
+
+std::optional<GpuInfo> GetGpuInfoFromI915EngineInfo() {
+  // Cumulative runtime information has been available on ChromeOS since Kernel
+  // v5.10. In earlier versions, the engine info file may exist, but it will not
+  // include the "Runtime:" stat.
+  //
+  // The implementation can be found in intel_engine_dump() at
+  // drivers/gpu/drm/i915/gt/intel_engine_cs.c.
+  std::string content;
+  if (!base::ReadFileToStringNonBlocking(base::FilePath(kI915EngineInfoPath),
+                                         &content)) {
+    return std::nullopt;
+  }
+
+  base::TimeDelta busy_time;
+  bool found_runtime = false;
+  for (auto line : base::SplitStringPiece(content, "\n", base::KEEP_WHITESPACE,
+                                          base::SPLIT_WANT_NONEMPTY)) {
+    if (!line.starts_with("\tRuntime: ")) {
+      continue;
+    }
+
+    // Multiple engines can run concurrently, causing the busy time to increase
+    // faster than wall-clock time. For simplicity, we aggregate them and clamp
+    // the usage percentage to 100% in the frontend. If needed, we can consider
+    // exposing the per-engine breakdown.
+    int64_t engine_runtime_ms = 0;
+    if (sscanf(line.data(), "\tRuntime: %" PRId64 "ms", &engine_runtime_ms) !=
+        1) {
+      continue;
+    }
+
+    busy_time += base::Milliseconds(engine_runtime_ms);
+    found_runtime = true;
+  }
+
+  if (!found_runtime) {
+    return std::nullopt;
+  }
+
+  return GpuInfo{.busy_time = busy_time};
+}
+
+// Checks if GPU information is available and cache the result for future calls.
+bool IsGpuInfoAvailable() {
+  static bool avail = [&] {
+    std::optional<GpuInfo> avail = GetGpuInfoFromI915EngineInfo();
+    // Assuming zero busy time means the info is unavailable as an educated
+    // heuristic. It's unlikely that gpu is never used before.
+    if (!avail.has_value() || avail->busy_time.is_zero()) {
+      VLOG(1) << "GPU info is not available";
+      return false;
+    }
+    return true;
+  }();
+  return avail;
+}
+
+std::optional<GpuInfo> GetGpuInfo() {
+  if (!IsGpuInfoAvailable()) {
+    return std::nullopt;
+  }
+
+  // TODO: b/380808338 - Support Mali and AMD GPU drivers.
+  return GetGpuInfoFromI915EngineInfo();
+}
+
+void SetGpuValue(const std::optional<GpuInfo>& info,
+                 base::Value::Dict* result) {
+  if (!info.has_value()) {
+    result->Set("gpu", base::Value(base::Value::Type::NONE));
+    return;
+  }
+
+  int busy = ToCounter(info->busy_time.InMilliseconds());
+  result->Set("gpu", base::Value::Dict().Set("busy", busy));
+}
+
 // TODO: b/380808338 - Resolve this dynamically from driver or udev instead of
 // hard-coding it statically.
 static constexpr char kIntelNpuBusyTimePath[] =
@@ -247,6 +332,7 @@ base::Value::Dict GetSysInfo() {
   if (!GetSwapInfo(&swap_info)) {
     DLOG(WARNING) << "Failed to get system zram info.";
   }
+  std::optional<GpuInfo> gpu_info = GetGpuInfo();
   std::optional<NpuInfo> npu_info = GetNpuInfo();
 
   base::Value::Dict result;
@@ -254,6 +340,7 @@ base::Value::Dict GetSysInfo() {
   SetCpusValue(cpu_infos, &result);
   SetMemValue(mem_info, vmstat_info, &result);
   SetZramValue(swap_info, &result);
+  SetGpuValue(gpu_info, &result);
   SetNpuValue(npu_info, &result);
 
   return result;
