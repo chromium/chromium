@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -176,6 +177,9 @@ bool AccessiblePaneView::AcceleratorPressed(
   if (!ContainsForFocusSearch(this, focused_view))
     return false;
 
+  // "Previous" and "Next" directions depend on UI direction.
+  bool rtl = base::i18n::IsRTL();
+
   using FocusChangeReason = views::FocusManager::FocusChangeReason;
   switch (accelerator.key_code()) {
     case ui::VKEY_ESCAPE: {
@@ -193,10 +197,10 @@ bool AccessiblePaneView::AcceleratorPressed(
       return true;
     }
     case ui::VKEY_LEFT:
-      focus_manager_->AdvanceFocus(true);
+      focus_manager_->AdvanceFocus(!rtl);
       return true;
     case ui::VKEY_RIGHT:
-      focus_manager_->AdvanceFocus(false);
+      focus_manager_->AdvanceFocus(rtl);
       return true;
     case ui::VKEY_HOME:
       focus_manager_->SetFocusedViewWithReason(
