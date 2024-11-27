@@ -853,35 +853,51 @@ const UChar StringImpl::kLatin1CaseFoldTable[256] = {
     0x00fc, 0x00fd, 0x00fe, 0x00ff,
 };
 
-bool DeprecatedEqualIgnoringCase(const LChar* a,
-                                 const LChar* b,
-                                 wtf_size_t length) {
+bool DeprecatedEqualIgnoringCase(base::span<const LChar> a,
+                                 base::span<const LChar> b) {
+  CHECK_EQ(a.size(), b.size());
+  size_t length = b.size();
   DCHECK_GE(length, 0u);
-  if (a == b)
+  const LChar* a_data = a.data();
+  const LChar* b_data = b.data();
+  if (a_data == b_data) {
     return true;
+  }
   while (length--) {
-    if (StringImpl::kLatin1CaseFoldTable[*a++] !=
-        StringImpl::kLatin1CaseFoldTable[*b++])
+    // SAFETY: The above `CHECK_EQ()` and `while (length--)` guarantees that
+    // `a_data` moves inside `a`, and `b_data` moves inside `b`.
+    if (UNSAFE_BUFFERS(StringImpl::kLatin1CaseFoldTable[*a_data++] !=
+                       StringImpl::kLatin1CaseFoldTable[*b_data++])) {
       return false;
+    }
   }
   return true;
 }
 
-bool DeprecatedEqualIgnoringCase(const UChar* a,
-                                 const UChar* b,
-                                 wtf_size_t length) {
+bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
+                                 base::span<const UChar> b) {
+  CHECK_EQ(a.size(), b.size());
+  size_t length = b.size();
   DCHECK_GE(length, 0u);
-  if (a == b)
+  if (a.data() == b.data()) {
     return true;
-  return !unicode::Umemcasecmp(a, b, length);
+  }
+  return !unicode::Umemcasecmp(a.data(), b.data(), length);
 }
 
-bool DeprecatedEqualIgnoringCase(const UChar* a,
-                                 const LChar* b,
-                                 wtf_size_t length) {
+bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
+                                 base::span<const LChar> b) {
+  CHECK_EQ(a.size(), b.size());
+  const UChar* a_data = a.data();
+  const LChar* b_data = b.data();
+  size_t length = b.size();
   while (length--) {
-    if (unicode::FoldCase(*a++) != StringImpl::kLatin1CaseFoldTable[*b++])
+    // SAFETY: The above `CHECK_EQ()` and `while (length--)` guarantees that
+    // `a_data` moves inside `a`, and `b_data` moves inside `b`.
+    if (UNSAFE_BUFFERS(unicode::FoldCase(*a_data++) !=
+                       StringImpl::kLatin1CaseFoldTable[*b_data++])) {
       return false;
+    }
   }
   return true;
 }
@@ -992,19 +1008,21 @@ wtf_size_t StringImpl::Find(const StringView& match_string,
 
 template <typename SearchCharacterType, typename MatchCharacterType>
 ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
-    const SearchCharacterType* search_characters,
-    const MatchCharacterType* match_characters,
-    wtf_size_t index,
-    wtf_size_t search_length,
-    wtf_size_t match_length) {
+    base::span<const SearchCharacterType> search,
+    base::span<const MatchCharacterType> match,
+    wtf_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = search_length - match_length;
+  wtf_size_t delta = search.size() - match.size();
 
   wtf_size_t i = 0;
-  // keep looping until we match
-  while (!DeprecatedEqualIgnoringCase(search_characters + i, match_characters,
-                                      match_length)) {
+  const SearchCharacterType* search_data = search.data();
+  // Keep looping until we match.
+  // SAFETY: The `i == delta` check below guarantees the span is in `search`.
+  while (!DeprecatedEqualIgnoringCase(
+      UNSAFE_BUFFERS(
+          base::span(search_data + i, search_data + i + match.size())),
+      match)) {
     if (i == delta)
       return kNotFound;
     ++i;
@@ -1030,22 +1048,14 @@ wtf_size_t StringImpl::DeprecatedFindIgnoringCase(
   if (match_length > search_length)
     return kNotFound;
 
-  if (Is8Bit()) {
-    if (match_string.Is8Bit())
-      return FindIgnoringCaseInternal(Characters8() + index,
-                                      match_string.Characters8(), index,
-                                      search_length, match_length);
-    return FindIgnoringCaseInternal(Characters8() + index,
-                                    match_string.Characters16(), index,
-                                    search_length, match_length);
-  }
-  if (match_string.Is8Bit())
-    return FindIgnoringCaseInternal(Characters16() + index,
-                                    match_string.Characters8(), index,
-                                    search_length, match_length);
-  return FindIgnoringCaseInternal(Characters16() + index,
-                                  match_string.Characters16(), index,
-                                  search_length, match_length);
+  return VisitCharacters(*this, [&](auto chars) {
+    auto split_chars = chars.subspan(index);
+    return match_string.Is8Bit()
+               ? FindIgnoringCaseInternal(split_chars, match_string.Span8(),
+                                          index)
+               : FindIgnoringCaseInternal(split_chars, match_string.Span16(),
+                                          index);
+  });
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
@@ -1202,20 +1212,12 @@ bool StringImpl::DeprecatedStartsWithIgnoringCase(
     const StringView& prefix) const {
   if (prefix.length() > length())
     return false;
-  if (Is8Bit()) {
-    if (prefix.Is8Bit()) {
-      return DeprecatedEqualIgnoringCase(Characters8(), prefix.Characters8(),
-                                         prefix.length());
-    }
-    return DeprecatedEqualIgnoringCase(Characters8(), prefix.Characters16(),
-                                       prefix.length());
-  }
-  if (prefix.Is8Bit()) {
-    return DeprecatedEqualIgnoringCase(Characters16(), prefix.Characters8(),
-                                       prefix.length());
-  }
-  return DeprecatedEqualIgnoringCase(Characters16(), prefix.Characters16(),
-                                     prefix.length());
+  return VisitCharacters(*this, [&prefix](auto chars) {
+    auto split_chars = chars.first(prefix.length());
+    return prefix.Is8Bit()
+               ? DeprecatedEqualIgnoringCase(split_chars, prefix.Span8())
+               : DeprecatedEqualIgnoringCase(split_chars, prefix.Span16());
+  });
 }
 
 bool StringImpl::StartsWithIgnoringCaseAndAccents(
@@ -1274,20 +1276,12 @@ bool StringImpl::DeprecatedEndsWithIgnoringCase(
   if (suffix.length() > length())
     return false;
   wtf_size_t start_offset = length() - suffix.length();
-  if (Is8Bit()) {
-    if (suffix.Is8Bit()) {
-      return DeprecatedEqualIgnoringCase(Characters8() + start_offset,
-                                         suffix.Characters8(), suffix.length());
-    }
-    return DeprecatedEqualIgnoringCase(Characters8() + start_offset,
-                                       suffix.Characters16(), suffix.length());
-  }
-  if (suffix.Is8Bit()) {
-    return DeprecatedEqualIgnoringCase(Characters16() + start_offset,
-                                       suffix.Characters8(), suffix.length());
-  }
-  return DeprecatedEqualIgnoringCase(Characters16() + start_offset,
-                                     suffix.Characters16(), suffix.length());
+  return VisitCharacters(*this, [&](auto chars) {
+    auto split_chars = chars.subspan(start_offset);
+    return suffix.Is8Bit()
+               ? DeprecatedEqualIgnoringCase(split_chars, suffix.Span8())
+               : DeprecatedEqualIgnoringCase(split_chars, suffix.Span16());
+  });
 }
 
 bool StringImpl::EndsWithIgnoringASCIICase(const StringView& suffix) const {

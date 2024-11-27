@@ -258,20 +258,10 @@ bool DeprecatedEqualIgnoringCaseAndNullity(const StringView& a,
                                            const StringView& b) {
   if (a.length() != b.length())
     return false;
-  if (a.Is8Bit()) {
-    if (b.Is8Bit()) {
-      return DeprecatedEqualIgnoringCase(a.Characters8(), b.Characters8(),
-                                         a.length());
-    }
-    return DeprecatedEqualIgnoringCase(a.Characters8(), b.Characters16(),
-                                       a.length());
-  }
-  if (b.Is8Bit()) {
-    return DeprecatedEqualIgnoringCase(a.Characters16(), b.Characters8(),
-                                       a.length());
-  }
-  return DeprecatedEqualIgnoringCase(a.Characters16(), b.Characters16(),
-                                     a.length());
+  return VisitCharacters(a, [b](auto chars) {
+    return b.Is8Bit() ? DeprecatedEqualIgnoringCase(chars, b.Span8())
+                      : DeprecatedEqualIgnoringCase(chars, b.Span16());
+  });
 }
 
 bool DeprecatedEqualIgnoringCase(const StringView& a, const StringView& b) {

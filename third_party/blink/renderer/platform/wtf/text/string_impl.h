@@ -682,20 +682,16 @@ ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
 // platform features.
 // These functions are deprecated. Use EqualIgnoringASCIICase(), or introduce
 // EqualIgnoringUnicodeCase(). See crbug.com/627682
-WTF_EXPORT bool DeprecatedEqualIgnoringCase(const LChar*,
-                                            const LChar*,
-                                            wtf_size_t length);
-WTF_EXPORT bool DeprecatedEqualIgnoringCase(const UChar*,
-                                            const LChar*,
-                                            wtf_size_t length);
-inline bool DeprecatedEqualIgnoringCase(const LChar* a,
-                                        const UChar* b,
-                                        wtf_size_t length) {
-  return DeprecatedEqualIgnoringCase(b, a, length);
+WTF_EXPORT bool DeprecatedEqualIgnoringCase(base::span<const LChar>,
+                                            base::span<const LChar>);
+WTF_EXPORT bool DeprecatedEqualIgnoringCase(base::span<const UChar>,
+                                            base::span<const LChar>);
+inline bool DeprecatedEqualIgnoringCase(base::span<const LChar> a,
+                                        base::span<const UChar> b) {
+  return DeprecatedEqualIgnoringCase(b, a);
 }
-WTF_EXPORT bool DeprecatedEqualIgnoringCase(const UChar*,
-                                            const UChar*,
-                                            wtf_size_t length);
+WTF_EXPORT bool DeprecatedEqualIgnoringCase(base::span<const UChar>,
+                                            base::span<const UChar>);
 
 WTF_EXPORT bool EqualIgnoringNullity(StringImpl*, StringImpl*);
 

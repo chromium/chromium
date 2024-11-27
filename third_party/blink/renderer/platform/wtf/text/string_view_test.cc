@@ -536,7 +536,9 @@ TEST(StringViewTest, DeprecatedEqualIgnoringCase) {
 
   constexpr UChar kLigatureFFIAndSSSS[] = {0xFB03, 's', 's', 's', 's', 0};
   constexpr UChar kFFIAndSharpSs[] = {'f', 'f', 'i', 0x00DF, 0x00DF, 0};
-  EXPECT_TRUE(DeprecatedEqualIgnoringCase(kLigatureFFIAndSSSS, kFFIAndSharpSs));
+  EXPECT_TRUE(
+      DeprecatedEqualIgnoringCase(base::span_from_cstring(kLigatureFFIAndSSSS),
+                                  base::span_from_cstring(kFFIAndSharpSs)));
 }
 
 TEST(StringViewTest, NextCodePointOffset) {
