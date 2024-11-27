@@ -79,8 +79,8 @@ export declare interface GlicBrowserHost {
   // the respective data is not being requested.
   // If innerText is true, an innerText representation of the page will be
   // included in the response.
-  // If viewportScreenshot is provided, a screenshot of the user visible
-  // viewport will be included in the response, following any settings it holds.
+  // If viewportScreenshot is true, a screenshot of the user visible viewport
+  // will be included in the response.
   // Responses may be throttled by the browser as a precaution, in which case
   // the promise will be rejected. If a tab is navigated or closed during
   // context gathering, the promise will be rejected.
@@ -108,11 +108,11 @@ export declare interface GlicBrowserHost {
 /**
  * Data class holding information and contents extracted from a web page.
  */
-// TODO(crbug.com/380323608): Rename this to TabPageContent
 export declare interface TabContextResult {
   // Metadata about the tab that holds the page. Always provided.
   tabData: TabData;
-  // The innerText of a page at its current state. Provided only if requested.
+  // Information about a web page rendered in the tab at its current state.
+  // Provided only if requested.
   webPageData?: WebPageData;
   // A screenshot of the user-visible portion of the page. Provided only if
   // requested.
@@ -132,9 +132,9 @@ export declare interface WebPageData {
 export declare interface DocumentData {
   // Origin of the document.
   origin: string;
-  // The innerText of the document at its current state.
-  // Currently includes embedded same-origin iframes.
-  innerText: string;
+  // The innerText of the document at its current state. Currently includes
+  // embedded same-origin iframes.
+  innerText?: string;
 }
 
 /**
@@ -155,7 +155,8 @@ export declare interface TabData {
 /**
  * Annotates an image, providing security relevant information about the origins
  * from which image is composed.
- * TODO(crbug.com/380495633): Finalize and implement image annotations.
+ * Note: This will be updated in the future when we have a solution worked out
+ * for annotating the captured screenshots.
  */
 export declare interface ImageOriginAnnotations {}
 
@@ -175,28 +176,4 @@ export declare interface Screenshot {
   mimeType: string;
   // Image annotations for this screenshot.
   originAnnotations: ImageOriginAnnotations;
-}
-
-// Creates the GlicHostRegistry. Must be called by the web client on its page
-// load event.
-export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
-  const {promise, resolve} = Promise.withResolvers<GlicHostRegistry>();
-  const messageHandler = async (event: MessageEvent) => {
-    if (event.origin !== 'chrome://glic') {
-      return;
-    }
-    const {type, glicApiSource} = event.data;
-    if (type !== 'glic-bootstrap' || typeof glicApiSource !== 'string') {
-      console.warn(
-          'glic_api: unexpected message while waiting for bootstrap message.');
-      return;
-    }
-    const apiSourceUrl = URL.createObjectURL(
-        new Blob([glicApiSource], {type: 'text/javascript'}));
-    const apiModule = await import(apiSourceUrl);
-    resolve(await apiModule.boot(event.source));
-    window.removeEventListener('message', messageHandler);
-  };
-  window.addEventListener('message', messageHandler);
-  return promise;
 }
