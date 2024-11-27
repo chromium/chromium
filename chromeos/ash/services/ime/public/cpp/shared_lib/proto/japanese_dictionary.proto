@@ -45,6 +45,11 @@ message ExportJapaneseDictionaryRequest {
   optional int64 dictionary_id = 1;
 }
 
+message ImportJapaneseDictionaryRequest {
+  optional int64 dictionary_id = 1;
+  optional string tsv_data = 2;
+}
+
 // Based on:
 // https://github.com/google/mozc/blob/master/src/protocol/user_dictionary_storage.proto
 message JapaneseDictionary {

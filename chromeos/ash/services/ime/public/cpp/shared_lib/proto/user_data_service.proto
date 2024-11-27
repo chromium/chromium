@@ -30,6 +30,8 @@ message UserDataRequest {
     DeleteJapaneseDictionaryRequest delete_japanese_dictionary = 8;
     // Returns the TSV string that represents a japanese dictionary.
     ExportJapaneseDictionaryRequest export_japanese_dictionary = 9;
+    // Imports TSV into the current dictionary.
+    ImportJapaneseDictionaryRequest import_japanese_dictionary = 10;
   }
 }
 
