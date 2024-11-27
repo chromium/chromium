@@ -791,6 +791,25 @@ TEST_P(AppManagementPageHandlerTestBase, UseCase_AEnabledBEnabled) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+TEST_P(AppManagementPageHandlerTestBase, NavigationCapturingUserChoice) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
+  web_app_info->title = u"app_name";
+  web_app_info->scope = GURL("https://example.com/");
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  base::test::TestFuture<app_management::mojom::AppPtr> app_future;
+  handler()->GetApp(app_id, app_future.GetCallback());
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  EXPECT_FALSE(app_future.Get()->disable_user_choice_navigation_capturing);
+#else
+  EXPECT_TRUE(app_future.Get()->disable_user_choice_navigation_capturing);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class AppManagementPageHandlerArcTest
     : public AppManagementPageHandlerTestBase {
