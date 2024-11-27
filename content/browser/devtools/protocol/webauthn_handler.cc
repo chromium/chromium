@@ -37,6 +37,8 @@
 namespace content::protocol {
 
 namespace {
+static constexpr char kAlreadyHasInternalAuthenticator[] =
+    "Chrome only supports one internal authenticator per environment";
 static constexpr char kAuthenticatorNotFound[] =
     "Could not find a Virtual Authenticator matching the ID";
 static constexpr char kCableNotSupportedOnU2f[] =
@@ -231,6 +233,15 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
        ctap2_version < device::Ctap2Version::kCtap2_1) &&
       (has_large_blob || has_cred_blob || has_min_pin_length)) {
     return Response::InvalidParams(kRequiresCtap2_1);
+  }
+
+  if (transport == device::FidoTransportProtocol::kInternal &&
+      std::ranges::any_of(authenticator_manager->GetAuthenticators(),
+                          [](const auto& authenticator) {
+                            return authenticator->transport() ==
+                                   device::FidoTransportProtocol::kInternal;
+                          })) {
+    return Response::InvalidParams(kAlreadyHasInternalAuthenticator);
   }
 
   VirtualAuthenticator::Options virt_auth_options;
