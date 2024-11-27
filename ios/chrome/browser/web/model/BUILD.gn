@@ -341,6 +341,11 @@ source_set("web_internal") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (use_allocator_shim) {
+    deps += [ "//components/heap_profiling/in_process" ]
+  }
+
   frameworks = [
     "UIKit.framework",
     "Foundation.framework",

@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+
 #import "base/allocator/partition_alloc_support.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
@@ -45,6 +47,7 @@
 #import "components/variations/field_trial_config/field_trial_util.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/synthetic_trial_registry.h"
+#import "components/variations/synthetic_trials.h"
 #import "components/variations/synthetic_trials_active_group_id_provider.h"
 #import "components/variations/variations_crash_keys.h"
 #import "components/variations/variations_ids_provider.h"
@@ -81,6 +84,10 @@
 
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
+#endif
+
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#import "components/heap_profiling/in_process/heap_profiler_controller.h"
 #endif
 
 namespace {
@@ -415,6 +422,22 @@ void IOSChromeMainParts::SetupMetrics() {
 }
 
 void IOSChromeMainParts::StartMetricsRecording() {
+  // Register synthetic field trial for the sampling profiler configuration
+  // that was already chosen.
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  // HeapProfilerController is only built when the allocator shim is enabled.
+  std::string trial_name, group_name;
+  auto* heap_profiler_controller =
+      heap_profiling::HeapProfilerController::GetInstance();
+  if (heap_profiler_controller &&
+      heap_profiler_controller->GetSyntheticFieldTrial(trial_name,
+                                                       group_name)) {
+    IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        trial_name, group_name,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
+#endif
+
   // TODO(crbug.com/40894426) Add an EG2 test for cloned install detection.
   application_context_->GetMetricsService()->CheckForClonedInstall();
   application_context_->GetMetricsServicesManager()->UpdateUploadPermissions(
