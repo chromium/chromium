@@ -6067,6 +6067,47 @@ TEST_P(PasswordManagerTest, ProcessModelPredictionBeforeFormIsParsed) {
             password_field.renderer_id);
 }
 
+// Checks that a password form can be parsed using model predictions even if
+// it's not recognized by the renderer.
+TEST_P(PasswordManagerTest,
+       ProcessingModelPredictions_NonRendererRecognizedForm) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  ASSERT_TRUE(manager()->form_managers().empty());
+
+  FormData form_data = MakeSingleUsernameFormData();
+  const FieldGlobalId username_field = form_data.fields()[0].global_id();
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form_data, {{username_field, FieldType::USERNAME}});
+
+  // Check that a form manager is created.
+  ASSERT_EQ(manager()->form_managers().size(), 1u);
+
+  // Check that the form is parsed according to the model predictions.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager()->GetParsedObservedForm(
+               &driver_, username_field.renderer_id) != nullptr;
+  }));
+  const PasswordForm* parsed_form =
+      manager()->GetParsedObservedForm(&driver_, username_field.renderer_id);
+  EXPECT_EQ(parsed_form->username_element_renderer_id,
+            username_field.renderer_id);
+}
+
+// Checks that a form manager is not created for the form if the model
+// predictions indicate it's not related to passwords.
+TEST_P(PasswordManagerTest, ProcessingModelPredictions_IrrelevantForm) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  ASSERT_TRUE(manager()->form_managers().empty());
+
+  FormData form_data = MakeSingleUsernameFormData();
+  const FieldGlobalId username_field = form_data.fields()[0].global_id();
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form_data, {{username_field, FieldType::UNKNOWN_TYPE}});
+
+  // Check that a form manager was not created.
+  ASSERT_TRUE(manager()->form_managers().empty());
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Check that a happiness surney is triggered after the user has submitted
 // a manually filled form and logged in.

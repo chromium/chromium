@@ -76,7 +76,9 @@
 using autofill::ACCOUNT_CREATION_PASSWORD;
 using autofill::CalculateFormSignature;
 using autofill::FieldDataManager;
+using autofill::FieldGlobalId;
 using autofill::FieldRendererId;
+using autofill::FieldType;
 using autofill::FormData;
 using autofill::FormRendererId;
 using autofill::NEW_PASSWORD;
@@ -255,6 +257,18 @@ bool StoreResultFilterAllowsSaving(PasswordFormManager* form_manager,
   return form_manager->IsPasswordUpdate() ||
          client->GetStoreResultFilter()->ShouldSave(
              *form_manager->GetSubmittedForm());
+}
+
+bool ModelPredictionsContainCredentialTypes(
+    const base::flat_map<FieldGlobalId, FieldType>& predictions) {
+  return base::ranges::any_of(
+      predictions,
+      [](const std::pair<FieldGlobalId, FieldType>& field_prediction) {
+        autofill::FieldTypeGroup type_category =
+            GroupTypeOfFieldType(field_prediction.second);
+        return (type_category == autofill::FieldTypeGroup::kUsernameField) ||
+               (type_category == autofill::FieldTypeGroup::kPasswordField);
+      });
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1460,7 +1474,7 @@ void PasswordManager::OnLoginFailed(BrowserSavePasswordProgressLogger* logger) {
 void PasswordManager::ProcessAutofillPredictions(
     PasswordManagerDriver* driver,
     const autofill::FormData& form,
-    const base::flat_map<autofill::FieldGlobalId,
+    const base::flat_map<FieldGlobalId,
                          autofill::AutofillType::ServerPrediction>&
         predictions) {
   // Don't do anything if Password store is not available.
@@ -1530,8 +1544,7 @@ void PasswordManager::ProcessAutofillPredictions(
 void PasswordManager::ProcessClassificationModelPredictions(
     PasswordManagerDriver* driver,
     const autofill::FormData& form,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
-        field_predictions) {
+    const base::flat_map<FieldGlobalId, FieldType>& field_predictions) {
   auto& predictions_for_form = classifier_model_predictions_[std::make_pair(
       driver, form.renderer_id())] = std::move(field_predictions);
 
@@ -1544,11 +1557,14 @@ void PasswordManager::ProcessClassificationModelPredictions(
 
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form.renderer_id());
-  if (manager) {
-    manager->ProcessModelPredictions(predictions_for_form);
+  if (!manager) {
+    if (ModelPredictionsContainCredentialTypes(predictions_for_form)) {
+      manager = CreateFormManager(driver, form);
+    } else {
+      return;
+    }
   }
-  // TODO(crbug.com/371933424): Handle the case of forms not recognized by the
-  // renderer (that don't have a form manager created).
+  manager->ProcessModelPredictions(predictions_for_form);
 }
 
 PasswordFormManager* PasswordManager::GetSubmittedManager() const {
