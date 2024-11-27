@@ -586,4 +586,41 @@ TEST(MimeUtilTest, TestAddMultipartValueForUploadWithFileName) {
   AddMultipartFinalDelimiterForUpload("boundary", &post_data);
   EXPECT_STREQ(ref_output, post_data.c_str());
 }
+
+TEST(MimeUtilTest, ScopedOverrideGetMimeTypeForTesting) {
+  // Checks the behavior for a png file.
+  auto verify_expectations = [](const std::string& expected_mime_type) {
+    std::string mime_type;
+    EXPECT_TRUE(GetWellKnownMimeTypeFromExtension(FILE_PATH_LITERAL("png"),
+                                                  &mime_type));
+    EXPECT_EQ(mime_type, expected_mime_type);
+    EXPECT_TRUE(GetMimeTypeFromExtension(FILE_PATH_LITERAL("png"), &mime_type));
+    EXPECT_EQ(mime_type, expected_mime_type);
+    EXPECT_TRUE(GetMimeTypeFromFile(
+        base::FilePath(FILE_PATH_LITERAL("c:\\foo\\bar.png")), &mime_type));
+    EXPECT_EQ(mime_type, expected_mime_type);
+
+    // Behavior other than "get a mime type" should be unaffected by the
+    // override.
+    base::FilePath::StringType extension;
+    EXPECT_TRUE(
+        GetPreferredExtensionForMimeType("text/javascript", &extension));
+    EXPECT_EQ(extension, FILE_PATH_LITERAL("js"));
+
+    EXPECT_EQ("text/html", ExtractMimeTypeFromMediaType("text/html", true));
+  };
+
+  // Normal state, without override.
+  verify_expectations("image/png");
+
+  {
+    std::string overriding_mime_type = "text/not-a-real-mime-type";
+    ScopedOverrideGetMimeTypeForTesting override(overriding_mime_type);
+    verify_expectations(overriding_mime_type);
+  }
+
+  // Reset after override is destroyed.
+  verify_expectations("image/png");
+}
+
 }  // namespace net

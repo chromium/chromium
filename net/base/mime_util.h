@@ -152,6 +152,17 @@ NET_EXPORT void AddMultipartFinalDelimiterForUpload(
     const std::string& mime_boundary,
     std::string* post_data);
 
+// A test-only helper that overrides the functionality above while it is in
+// scope, causing any query for a mime type to return the supplied
+// `overriding_mime_type`. Functionality other than "get a mime type" is
+// unaffected. Does not support nesting.
+class NET_EXPORT ScopedOverrideGetMimeTypeForTesting {
+ public:
+  explicit ScopedOverrideGetMimeTypeForTesting(
+      std::string_view overriding_mime_type);
+  ~ScopedOverrideGetMimeTypeForTesting();
+};
+
 }  // namespace net
 
 #endif  // NET_BASE_MIME_UTIL_H__
