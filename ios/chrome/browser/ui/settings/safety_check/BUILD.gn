@@ -17,12 +17,12 @@ source_set("safety_check_ui") {
     "//ios/chrome/app/strings",
   ]
   deps = [
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/cells:public",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model:list_model",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/utils",
     "//ui/base",
   ]
@@ -33,8 +33,8 @@ swift_source_set("safety_check_ui_swift") {
   sources = [ "safety_check_table_view_controller.swift" ]
   deps = [
     ":safety_check_ui",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/cells",
     "//ui/base",
   ]
 }
@@ -68,6 +68,8 @@ source_set("safety_check") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/ui_bundled:opt_in_alert_coordinator",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/cells:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -85,8 +87,6 @@ source_set("safety_check") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/password/password_checkup",
     "//ios/chrome/browser/ui/settings/password/password_issues",
@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs",
@@ -148,7 +149,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
-    "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common:string_util",

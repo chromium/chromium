@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/cells/settings_search_engine_item.h"
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

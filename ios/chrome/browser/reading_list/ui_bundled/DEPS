@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",

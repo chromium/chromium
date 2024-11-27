@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/table_view_pop_up_cell.h"
 
+#import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/pop_up_menu_control.h"
-#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @implementation TableViewPopUpCell {
