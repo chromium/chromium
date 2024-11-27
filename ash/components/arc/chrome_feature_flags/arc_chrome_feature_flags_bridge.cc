@@ -93,8 +93,8 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
   flags->ignore_hover_event_anr =
       base::FeatureList::IsEnabled(arc::kIgnoreHoverEventAnr);
-  flags->extend_input_anr_timeout =
-      base::FeatureList::IsEnabled(arc::kExtendInputAnrTimeout);
+  // TODO(yunfanc): Remove this flag together with ARC++ side removal.
+  flags->extend_input_anr_timeout = true;
   flags->extend_intent_anr_timeout =
       base::FeatureList::IsEnabled(arc::kExtendIntentAnrTimeout);
   flags->extend_service_anr_timeout =

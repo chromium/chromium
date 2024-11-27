@@ -40,7 +40,6 @@ BASE_DECLARE_FEATURE(kEnableLazyWebViewInit);
 BASE_DECLARE_FEATURE(kEnablePerVmCoreScheduling);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkForData);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkMultipleWorkers);
-BASE_DECLARE_FEATURE(kExtendInputAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendIntentAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendServiceAnrTimeout);
 BASE_DECLARE_FEATURE(kExternalStorageAccess);

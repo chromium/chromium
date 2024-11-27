@@ -160,18 +160,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyIgnoreHoverEventAnrDisabled) {
   EXPECT_FALSE(instance()->flags_called_value()->ignore_hover_event_anr);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeoutEnabled) {
-  scoped_feature_list()->InitAndEnableFeature(arc::kExtendInputAnrTimeout);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->extend_input_anr_timeout);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeoutDisabled) {
-  scoped_feature_list()->InitAndDisableFeature(arc::kExtendInputAnrTimeout);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->extend_input_anr_timeout);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeoutEnabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendIntentAnrTimeout);
   Connect();
