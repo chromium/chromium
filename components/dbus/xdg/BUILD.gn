@@ -16,3 +16,17 @@ source_set("xdg") {
     "//dbus",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "systemd_unittest.cc" ]
+  deps = [
+    ":xdg",
+    "//base",
+    "//base/test:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

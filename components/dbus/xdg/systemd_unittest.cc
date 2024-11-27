@@ -1,0 +1,189 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/dbus/xdg/systemd.h"
+
+#include <optional>
+
+#include "base/environment.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/scoped_environment_variable_override.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/test/bind.h"
+#include "components/dbus/xdg/request.h"
+#include "dbus/message.h"
+#include "dbus/mock_bus.h"
+#include "dbus/mock_object_proxy.h"
+#include "dbus/object_proxy.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
+
+namespace dbus_xdg {
+
+namespace {
+
+constexpr char kServiceNameSystemd[] = "org.freedesktop.systemd1";
+constexpr char kObjectPathSystemd[] = "/org/freedesktop/systemd1";
+constexpr char kInterfaceSystemdManager[] = "org.freedesktop.systemd1.Manager";
+constexpr char kMethodStartTransientUnit[] = "StartTransientUnit";
+
+TEST(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
+  scoped_refptr<dbus::MockBus> bus =
+      base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  base::ScopedEnvironmentVariableOverride env_override("FLATPAK_SANDBOX_DIR",
+                                                       "/");
+
+  std::optional<SystemdUnitStatus> status;
+
+  SetSystemdScopeUnitNameForXdgPortal(
+      bus.get(), base::BindLambdaForTesting(
+                     [&](SystemdUnitStatus result) { status = result; }));
+
+  EXPECT_EQ(status, SystemdUnitStatus::kUnitNotNecessary);
+}
+
+TEST(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
+  scoped_refptr<dbus::MockBus> bus =
+      base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  base::ScopedEnvironmentVariableOverride env_override("SNAP", "/");
+
+  std::optional<SystemdUnitStatus> status;
+
+  SetSystemdScopeUnitNameForXdgPortal(
+      bus.get(), base::BindLambdaForTesting(
+                     [&](SystemdUnitStatus result) { status = result; }));
+
+  EXPECT_EQ(status, SystemdUnitStatus::kUnitNotNecessary);
+}
+
+TEST(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
+  scoped_refptr<dbus::MockBus> bus =
+      base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
+
+  EXPECT_CALL(*bus, GetObjectProxy(kServiceNameSystemd,
+                                   dbus::ObjectPath(kObjectPathSystemd)))
+      .WillOnce(Return(mock_systemd_proxy.get()));
+
+  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
+        EXPECT_EQ(method_call->GetMember(), kMethodStartTransientUnit);
+
+        // Simulate a successful response
+        auto response = dbus::Response::CreateEmpty();
+        std::move(*callback).Run(response.get());
+      }));
+
+  std::optional<SystemdUnitStatus> status;
+
+  SetSystemdScopeUnitNameForXdgPortal(
+      bus.get(), base::BindLambdaForTesting(
+                     [&](SystemdUnitStatus result) { status = result; }));
+
+  EXPECT_EQ(status, SystemdUnitStatus::kUnitStarted);
+}
+
+TEST(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
+  scoped_refptr<dbus::MockBus> bus =
+      base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
+
+  EXPECT_CALL(*bus, GetObjectProxy(kServiceNameSystemd,
+                                   dbus::ObjectPath(kObjectPathSystemd)))
+      .WillOnce(Return(mock_systemd_proxy.get()));
+
+  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseCallback* callback) {
+        // Simulate a failure by invoking the callback with nullptr
+        std::move(*callback).Run(nullptr);
+      }));
+
+  std::optional<SystemdUnitStatus> status;
+
+  SetSystemdScopeUnitNameForXdgPortal(
+      bus.get(), base::BindLambdaForTesting(
+                     [&](SystemdUnitStatus result) { status = result; }));
+
+  EXPECT_EQ(status, SystemdUnitStatus::kFailedToStart);
+}
+
+TEST(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
+  scoped_refptr<dbus::MockBus> bus =
+      base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  base::ScopedEnvironmentVariableOverride env_override("CHROME_VERSION_EXTRA",
+                                                       "beta");
+
+  auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
+
+  constexpr std::string_view kAppPrefix = "app-";
+  constexpr std::string_view kScopeSuffix = ".scope";
+
+  EXPECT_CALL(*bus, GetObjectProxy(kServiceNameSystemd,
+                                   dbus::ObjectPath(kObjectPathSystemd)))
+      .WillOnce(Return(mock_systemd_proxy.get()));
+
+  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
+      .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
+                           dbus::ObjectProxy::ResponseCallback* callback) {
+        dbus::MessageReader reader(method_call);
+        std::string unit_name;
+        EXPECT_TRUE(reader.PopString(&unit_name));
+
+        // Check that the unit_name matches the expected format
+        // Format: app-<ApplicationID>-<RANDOM>.scope
+        EXPECT_TRUE(base::StartsWith(unit_name, kAppPrefix));
+        EXPECT_TRUE(base::EndsWith(unit_name, kScopeSuffix));
+
+        // Remove "app-" prefix and ".scope" suffix
+        std::string name_body = unit_name.substr(
+            kAppPrefix.size(),
+            unit_name.size() - kAppPrefix.size() - kScopeSuffix.size());
+
+        auto id_random = base::SplitString(
+            name_body, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        ASSERT_EQ(id_random.size(), 2U);
+
+        std::string application_id = id_random[0];
+        EXPECT_FALSE(application_id.empty());
+        EXPECT_TRUE(
+            std::all_of(application_id.begin(), application_id.end(),
+                        [](char c) { return std::isalnum(c) || c == '.'; }));
+
+        std::string random_part = id_random[1];
+        EXPECT_FALSE(random_part.empty());
+        EXPECT_TRUE(std::all_of(random_part.begin(), random_part.end(),
+                                [](char c) { return std::isalnum(c); }));
+
+        auto response = dbus::Response::CreateEmpty();
+        std::move(*callback).Run(response.get());
+      }));
+
+  std::optional<SystemdUnitStatus> status;
+
+  SetSystemdScopeUnitNameForXdgPortal(
+      bus.get(), base::BindLambdaForTesting(
+                     [&](SystemdUnitStatus result) { status = result; }));
+
+  EXPECT_EQ(status, SystemdUnitStatus::kUnitStarted);
+}
+
+}  // namespace
+
+}  // namespace dbus_xdg
