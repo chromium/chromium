@@ -3323,9 +3323,10 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PageLoadedSnapshotResult" enum="PageLoadedSnapshotResult"
-    expires_after="2024-07-07">
+    expires_after="2025-05-22">
   <owner>edchin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Tracks the result of snapshotting when the page has been loaded.
   </summary>
@@ -4616,6 +4617,27 @@ the generic promo launch. -->
   <summary>
     The overall size of snapshots cache. Recorded when new snapshot is cached.
   </summary>
+</histogram>
+
+<histogram name="IOS.Snapshots.RetrieveColorSnapshotTime" units="ms"
+    expires_after="2025-05-22">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>bling-kiwi-pod@google.com</owner>
+  <summary>Records the time to retrieve a color snapshot.</summary>
+</histogram>
+
+<histogram name="IOS.Snapshots.RetrieveGreySnapshotTime" units="ms"
+    expires_after="2025-05-22">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>bling-kiwi-pod@google.com</owner>
+  <summary>Records the time to retrieve a grey snapshot.</summary>
+</histogram>
+
+<histogram name="IOS.Snapshots.UpdateSnapshotTime" units="ms"
+    expires_after="2025-05-22">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>bling-kiwi-pod@google.com</owner>
+  <summary>Records the time to update a snapshot.</summary>
 </histogram>
 
 <histogram name="IOS.SpeechInput.CountryCodeNotDetected" enum="BooleanHit"
