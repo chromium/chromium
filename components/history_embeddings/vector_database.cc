@@ -12,8 +12,13 @@
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "third_party/farmhash/src/src/farmhash.h"
 
 namespace history_embeddings {
+
+uint32_t HashString(std::string_view str) {
+  return util::Fingerprint32(str);
+}
 
 // Standard normalized magnitude for all embeddings.
 constexpr float kUnitLength = 1.0f;
@@ -436,7 +441,6 @@ std::vector<std::string> SplitQueryToTerms(
     const std::unordered_set<uint32_t>& stop_words_hashes,
     std::string_view raw_query,
     size_t min_term_length) {
-  extern uint32_t HashString(std::string_view str);
   std::string query = base::ToLowerASCII(raw_query);
   std::string_view query_view(query);
   std::vector<std::string> query_terms;

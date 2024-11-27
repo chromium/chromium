@@ -32,10 +32,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/weak_document_ptr.h"
-
-class HistoryEmbeddingsInteractiveTest;
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -137,6 +133,10 @@ struct SearchResult {
   AnswererResult answerer_result;
 };
 
+using UrlDataCallback = base::OnceCallback<void(std::optional<UrlData>)>;
+
+using PassagesStoredCallback = base::RepeatingCallback<void(UrlData)>;
+
 using SearchResultCallback = base::RepeatingCallback<void(SearchResult)>;
 
 using QualityLogEntry =
@@ -168,14 +168,10 @@ class HistoryEmbeddingsService : public KeyedService,
   // Identify if the given URL is eligible for history embeddings.
   bool IsEligible(const GURL& url);
 
-  // Initiate async passage extraction from given host's main frame.
-  // When extraction completes, the passages will be stored in the database
-  // and then given to the callback.
-  // Note: A `WeakDocumentPtr` is essentially a `WeakPtr<RenderFrameHost>`.
-  void RetrievePassages(history::URLID url_id,
-                        history::VisitID visit_id,
-                        base::Time visit_time,
-                        content::WeakDocumentPtr weak_render_frame_host);
+  // Called by `HistoryEmbeddingsTabHelper` when passage extraction completes.
+  void OnPassagesRetrieved(std::optional<UrlData> existing_url_data,
+                           UrlData url_passages,
+                           std::vector<std::string> passages);
 
   // Find top `count` URL visit info entries nearest given `query`. Pass results
   // to given `callback` when search completes. Search will be narrowed to a
@@ -220,9 +216,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // Asynchronously gets passages and embeddings from storage for given
   // `url_id`. Calls `callback` with the data or nullopt if no data is found in
   // the HistoryEmbeddings database.
-  void GetUrlData(
-      history::URLID url_id,
-      base::OnceCallback<void(std::optional<UrlData>)> callback) const;
+  void GetUrlData(history::URLID url_id, UrlDataCallback callback) const;
 
   // Asynchronously gets passages and embeddings from storage where visits
   // are within a given time range. Calls `callback` with the data.
@@ -235,10 +229,16 @@ class HistoryEmbeddingsService : public KeyedService,
       size_t offset,
       base::OnceCallback<void(std::vector<UrlData>)> callback) const;
 
+  // Targeted deletion for testing scenarios like model version change.
+  void DeleteDataForTesting(bool delete_passages,
+                            bool delete_embeddings,
+                            base::OnceClosure callback);
+
+  // Set a callback to be called when `ProcessAndStorePassages` completes.
+  void SetPassagesStoredCallbackForTesting(PassagesStoredCallback callback);
+
  private:
-  friend class HistoryEmbeddingsBrowserTest;
   friend class HistoryEmbeddingsServicePublic;
-  friend class ::HistoryEmbeddingsInteractiveTest;
 
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.
@@ -306,12 +306,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // with data and sent on destruction. Default implementation returns null.
   virtual QualityLogEntry PrepareQualityLogEntry();
 
-  // Called indirectly via `RetrievePassagesWithUrlData` when passage extraction
-  // completes.
-  void OnPassagesRetrieved(std::optional<UrlData> existing_url_data,
-                           UrlData url_passages,
-                           std::vector<std::string> passages);
-
   // Invoked after the embeddings for `passages` has been computed.
   void OnPassagesEmbeddingsComputed(
       std::unordered_map<std::string, Embedding> embedding_cache,
@@ -376,16 +370,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // Rebuild absent embeddings from source passages.
   void RebuildAbsentEmbeddings(std::vector<UrlData> all_url_passages);
 
-  // This continues with passage extraction after any existing data is fetched
-  // for the same `url_id`.
-  void RetrievePassagesWithUrlData(
-      history::URLID url_id,
-      history::VisitID visit_id,
-      base::Time visit_time,
-      content::WeakDocumentPtr weak_render_frame_host,
-      base::Time time_before_database_access,
-      std::optional<UrlData> existing_url_data);
-
   // Returns true if query should be filtered. If false, then `search_params`
   // will have its query_terms set.
   bool QueryIsFiltered(const std::string& raw_query,
@@ -435,7 +419,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to
   // complete' mechanism.
-  base::RepeatingCallback<void(UrlData)> callback_for_tests_ =
+  PassagesStoredCallback passages_stored_callback_for_tests_ =
       base::DoNothing();
 
   // A thread-safe invalidation mechanism to halt searches for stale queries:
@@ -451,49 +435,6 @@ class HistoryEmbeddingsService : public KeyedService,
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };
-
-// This corresponds to UMA histogram enum `EmbeddingsQueryFiltered`
-// in tools/metrics/histograms/metadata/history/enums.xml
-enum class QueryFiltered {
-  NOT_FILTERED,
-  FILTERED_NOT_ASCII,
-  FILTERED_PHRASE_MATCH,
-  FILTERED_TERM_MATCH,
-  FILTERED_ONE_WORD_HASH_MATCH,
-  FILTERED_TWO_WORD_HASH_MATCH,
-
-  // These enum values are logged in UMA. Do not reuse or skip any values.
-  // The order doesn't need to be chronological, but keep identities stable.
-  ENUM_COUNT,
-};
-
-// Record UMA histogram with query filter status.
-void RecordQueryFiltered(QueryFiltered status);
-
-// This corresponds to UMA histogram enum `EmbeddingsExtractionCancelled`
-// in tools/metrics/histograms/metadata/history/enums.xml
-enum class ExtractionCancelled {
-  UNKNOWN = 0,
-  TAB_HELPER_DID_FINISH_LOAD = 1,
-  TAB_HELPER_EXTRACT_PASSAGES_URL = 2,
-  TAB_HELPER_EXTRACT_PASSAGES_RESCHEDULE = 3,
-  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_RESULTS = 4,
-  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_TIME = 5,
-  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_GUID = 6,
-  SERVICE_RETRIEVE_PASSAGES = 7,
-  SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA = 8,
-
-  // These enum values are logged in UMA. Do not reuse or skip any values.
-  // The order doesn't need to be chronological, but keep identities stable.
-  ENUM_COUNT,
-};
-
-// Record UMA histogram with cancellation reason when extraction,
-// embedding, etc. is cancelled before completion and storage.
-void RecordExtractionCancelled(ExtractionCancelled reason);
-
-// Hash function used for query filtering.
-uint32_t HashString(std::string_view str);
 
 }  // namespace history_embeddings
 

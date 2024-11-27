@@ -16,6 +16,9 @@
 
 namespace history_embeddings {
 
+// Hash function used for query filtering.
+uint32_t HashString(std::string_view str);
+
 struct ScoredUrl {
   ScoredUrl(history::URLID url_id,
             history::VisitID visit_id,
