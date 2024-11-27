@@ -228,9 +228,10 @@ public class QuickDeleteController {
             mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         }
         boolean isTabModelEmpty = mTabModel.getCount() == 0;
-
         if (isQuickDeleteFollowupEnabled() && !isTabModelEmpty) {
-            List<Tab> tabs = mDeleteRegularTabsFilter.getListOfTabsFilteredToBeClosed();
+            List<Tab> tabs =
+                    mDeleteRegularTabsFilter
+                            .getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups();
             mDelegate.showQuickDeleteAnimation(
                     () -> closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock), tabs);
         } else {
