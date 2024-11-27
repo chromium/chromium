@@ -9779,6 +9779,24 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="Tracing.ElevatedTracingService.LaunchResult.{Stage}"
+    enum="Hresult" expires_after="2025-03-31">
+  <owner>etiennep@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    The HRESULT from the {Stage} stage while launching the elevated tracing
+    service on Windows. A value is recorded for each stage while processing a
+    launch of the service until either a failure is reached, or the final stage
+    succeeds. Typically, the service is started at most once per browser
+    process.
+  </summary>
+  <token key="Stage">
+    <variant name="AcceptInvitation"/>
+    <variant name="CoCreateInstance"/>
+    <variant name="CoSetProxyBlanket"/>
+  </token>
+</histogram>
+
 <histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
     expires_after="2024-07-28">
   <owner>eseckler@chromium.org</owner>

@@ -3119,6 +3119,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldDispatchPagehideDuringCommit(
       BrowserContext* browser_context,
       const GURL& destination_url);
+
+  // Called when the tracing service is started.
+  virtual void OnTracingServiceStarted() {}
+
+  // Called when the tracing service has stopped.
+  virtual void OnTracingServiceStopped() {}
 };
 
 }  // namespace content

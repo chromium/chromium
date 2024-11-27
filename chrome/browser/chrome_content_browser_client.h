@@ -127,6 +127,7 @@ class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
 class HttpAuthCoordinator;
 class MainThreadStackSamplingProfiler;
+class WindowsSystemTracingClient;
 struct NavigateParams;
 
 #if BUILDFLAG(ENABLE_VR)
@@ -1111,6 +1112,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& destination_url) override;
 
+#if BUILDFLAG(IS_WIN)
+  void OnTracingServiceStarted() override;
+  void OnTracingServiceStopped() override;
+#endif
+
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
 
@@ -1329,6 +1335,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
 #if BUILDFLAG(IS_WIN)
   bool handled_uia_provider_request_ = false;
+
+  std::unique_ptr<WindowsSystemTracingClient> windows_system_tracing_client_;
 #endif
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
