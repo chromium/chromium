@@ -44,23 +44,23 @@ enum class AppType {
 COMPONENT_EXPORT(APP_TYPES)
 std::ostream& operator<<(std::ostream& os, AppType v);
 
-// When updating the enum below, update
-// //components/services/app_service/public/cpp/macros.h
-// macros if necessary.
-//
 // Used by PackageId mapping closely to corresponding values in AppType but
 // can contain other non-app values e.g. app shortcuts.
-ENUM(PackageType,
-     kUnknown,
-     kArc,
-     kBorealis,
-     kChromeApp,
-     kGeForceNow,
-     kSystem,
-     kWeb,
-     // A shortcut to a particular website that's intended to open in a browser,
-     // not install as an app.
-     kWebsite)
+enum class PackageType {
+  kUnknown,
+  kArc,
+  kBorealis,
+  kChromeApp,
+  kGeForceNow,
+  kSystem,
+  kWeb,
+  // A shortcut to a particular website that's intended to open in a browser,
+  // not install as an app.
+  kWebsite,
+};
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& os, PackageType v);
 
 // Whether an app is ready to launch, i.e. installed.
 // Note the enumeration is used in UMA histogram so entries should not be

@@ -45,15 +45,31 @@ std::ostream& operator<<(std::ostream& os, AppType v) {
   return os << "(unknown: " << static_cast<int>(v) << ")";
 }
 
-APP_ENUM_TO_STRING(PackageType,
-                   kUnknown,
-                   kArc,
-                   kBorealis,
-                   kChromeApp,
-                   kGeForceNow,
-                   kSystem,
-                   kWeb,
-                   kWebsite)
+std::ostream& operator<<(std::ostream& os, PackageType v) {
+  switch (v) {
+    case PackageType::kUnknown:
+      return os << "PackageType::kUnknown";
+    case PackageType::kArc:
+      return os << "PackageType::kArc";
+    case PackageType::kBorealis:
+      return os << "PackageType::kBorealis";
+    case PackageType::kChromeApp:
+      return os << "PackageType::kChromeApp";
+    case PackageType::kGeForceNow:
+      return os << "PackageType::kGeForceNow";
+    case PackageType::kSystem:
+      return os << "PackageType::kSystem";
+    case PackageType::kWeb:
+      return os << "PackageType::kWeb";
+    case PackageType::kWebsite:
+      return os << "PackageType::kWebsite";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
+
 APP_ENUM_TO_STRING(Readiness,
                    kUnknown,
                    kReady,
