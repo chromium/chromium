@@ -7954,11 +7954,6 @@ IN_PROC_BROWSER_TEST_F(
 class InterestGroupAuctionReportBuyersEnableDebugModeTest
     : public InterestGroupBrowserTest {
  public:
-  explicit InterestGroupAuctionReportBuyersEnableDebugModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
-  }
-
   void SetUpOnMainThread() override {
     InterestGroupBrowserTest::SetUpOnMainThread();
 
@@ -8086,16 +8081,6 @@ class InterestGroupAuctionReportBuyersEnableDebugModeTest
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-class InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest
-    : public InterestGroupAuctionReportBuyersEnableDebugModeTest {
- public:
-  InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kPrivateAggregationAuctionReportBuyerDebugModeConfig);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
@@ -8406,56 +8391,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionReportBuyersEnableDebugModeTest,
   EXPECT_EQ(request_returned->shared_info().debug_mode,
             AggregatableReportSharedInfo::DebugMode::kEnabled);
   EXPECT_EQ(request_returned->debug_key(), 1234);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest,
-    DebugMode_Ignored) {
-  SetUpTestWithOneInterestGroup();
-  ExpectPrivateAggregationCall(
-      /*bucket=*/101, /*value=*/10,
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
-  RunAuctionAndWaitForURLAndNavigateIframe(
-      JsReplace(
-          R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionReportBuyerKeys: [1n],
-    auctionReportBuyers: {
-      bidCount: { bucket: 100n, scale: 10 },
-    },
-    auctionReportBuyerDebugModeConfig: { enabled: true, debugKey: 1234n }
-                         })",
-          test_origin_,
-          embedded_https_test_server().GetURL(
-              "a.test", "/interest_group/decision_logic.js")),
-      /*expected_url=*/ad_url_);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupAuctionReportBuyersEnableDebugModeFeatureDisabledTest,
-    InvalidInput_Ignored) {
-  SetUpTestWithOneInterestGroup();
-  ExpectPrivateAggregationCall(
-      /*bucket=*/101, /*value=*/10,
-      AggregatableReportSharedInfo::DebugMode::kDisabled);
-  RunAuctionAndWaitForURLAndNavigateIframe(
-      JsReplace(
-          R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionReportBuyerKeys: [1n],
-    auctionReportBuyers: {
-      bidCount: { bucket: 100n, scale: 10 },
-    },
-    auctionReportBuyerDebugModeConfig: 1
-                         })",
-          test_origin_,
-          embedded_https_test_server().GetURL(
-              "a.test", "/interest_group/decision_logic.js")),
-      /*expected_url=*/ad_url_);
 }
 
 // Run an auction with 2 interest groups. One of the interest groups will

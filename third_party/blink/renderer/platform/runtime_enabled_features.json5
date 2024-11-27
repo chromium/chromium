@@ -3325,10 +3325,6 @@
       status: "stable"
     },
     {
-      name: "PrivateAggregationAuctionReportBuyerDebugModeConfig",
-      status: "stable",
-    },
-    {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_feature_name: "PrivateNetworkAccessNonSecureContextsAllowed",
       origin_trial_type: "deprecation",

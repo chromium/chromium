@@ -4001,14 +4001,8 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
 
   std::optional<
       blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig>
-      debug_mode_config;
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::
-              kPrivateAggregationAuctionReportBuyerDebugModeConfig)) {
-    debug_mode_config =
-        config_->non_shared_params.auction_report_buyer_debug_mode_config;
-  }
+      debug_mode_config =
+          config_->non_shared_params.auction_report_buyer_debug_mode_config;
 
   blink::mojom::DebugModeDetailsPtr debug_mode_details;
   if (debug_mode_config) {

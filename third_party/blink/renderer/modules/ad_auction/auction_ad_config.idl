@@ -87,7 +87,6 @@ dictionary AuctionAdConfig {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
   sequence<bigint> auctionReportBuyerKeys;
   record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
-  [RuntimeEnabled=PrivateAggregationAuctionReportBuyerDebugModeConfig]
   AuctionReportBuyerDebugModeConfig auctionReportBuyerDebugModeConfig;
   sequence<DOMString> requiredSellerCapabilities;
 

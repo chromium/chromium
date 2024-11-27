@@ -1649,7 +1649,7 @@
     ],
     "args": [
       "--enable-privacy-sandbox-ads-apis",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationAuctionReportBuyerDebugModeConfig,PrivateAggregationApiContributionMerging"
+      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationApiContributionMerging"
     ],
     "owners": ["alexmt@chromium.org", "dmcardle@chromium.org"],
     "expires": "Jan 1, 2025"
@@ -1666,7 +1666,7 @@
     "args": [
       "--enable-privacy-sandbox-ads-apis",
       "--private-aggregation-developer-mode",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationAuctionReportBuyerDebugModeConfig,PrivateAggregationApiContributionMerging,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting"
+      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationApiContributionMerging,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting"
     ],
     "owners": ["alexmt@chromium.org", "dmcardle@chromium.org"],
     "expires": "Jan 1, 2025"
