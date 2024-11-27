@@ -58,13 +58,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
-#include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
-#include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -197,33 +195,12 @@ BrowserManager::BrowserManager(
     session_manager::SessionManager::Get()->AddObserver(this);
   }
 
-  if (CrosapiManager::IsInitialized()) {
-    CrosapiManager::Get()
-        ->crosapi_ash()
-        ->browser_service_host_ash()
-        ->AddObserver(this);
-  } else {
+  if (!CrosapiManager::IsInitialized()) {
     CHECK_IS_TEST();
-  }
-
-  std::string socket_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kLacrosMojoSocketForTesting);
-  if (!socket_path.empty()) {
-    test_mojo_connection_manager_ =
-        std::make_unique<crosapi::TestMojoConnectionManager>(
-            base::FilePath(socket_path));
   }
 }
 
 BrowserManager::~BrowserManager() {
-  if (CrosapiManager::IsInitialized()) {
-    CrosapiManager::Get()
-        ->crosapi_ash()
-        ->browser_service_host_ash()
-        ->RemoveObserver(this);
-  }
-
   // Unregister, just in case the manager is destroyed before
   // OnUserSessionStarted() is called.
   if (session_manager::SessionManager::Get()) {
@@ -350,24 +327,6 @@ void BrowserManager::OnLacrosUserDataDirRemoved(bool cleared) {
   // some users who intentionally uninstalled these apps on Lacros will find
   // these apps reappear until they unistall them again.
   web_app::UserUninstalledPreinstalledWebAppPrefs(pref_service).ClearAllApps();
-}
-
-void BrowserManager::OnBrowserServiceConnected(
-    CrosapiId id,
-    mojo::RemoteSetElementId mojo_id,
-    mojom::BrowserService* browser_service,
-    uint32_t browser_service_version) {
-  NOTREACHED();
-}
-
-void BrowserManager::OnBrowserServiceDisconnected(
-    CrosapiId id,
-    mojo::RemoteSetElementId mojo_id) {
-  NOTREACHED();
-}
-
-void BrowserManager::OnBrowserRelaunchRequested(CrosapiId id) {
-  NOTREACHED();
 }
 
 void BrowserManager::OnCoreConnected(policy::CloudPolicyCore* core) {}

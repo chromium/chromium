@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/crosapi/browser_action_queue.h"
 #include "chrome/browser/ash/crosapi/browser_manager_feature.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
-#include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -40,6 +39,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/base/ui_base_types.h"
 
 namespace component_updater {
@@ -54,12 +54,10 @@ namespace crosapi {
 
 namespace mojom {
 enum class CreationResult;
-class Crosapi;
 }  // namespace mojom
 
 class BrowserAction;
 class BrowserLoader;
-class TestMojoConnectionManager;
 
 using ash::standalone_browser::LacrosSelection;
 using component_updater::ComponentUpdateService;
@@ -67,7 +65,6 @@ using component_updater::ComponentUpdateService;
 // Manages the lifetime of lacros-chrome, and its loading status. Observes the
 // component updater for future updates. This class is a part of ash-chrome.
 class BrowserManager : public session_manager::SessionManagerObserver,
-                       public BrowserServiceHostObserver,
                        public policy::CloudPolicyCore::Observer,
                        public policy::CloudPolicyStore::Observer,
                        public policy::ComponentCloudPolicyServiceObserver,
@@ -110,8 +107,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);
-
-  const base::FilePath& lacros_path() const { return lacros_path_; }
 
   // Set the data of device account policy. It is the serialized blob of
   // PolicyFetchResponse received from the server, or parsed from the file after
@@ -172,18 +167,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Changes |state| value and potentially notify observers of the change.
   void SetState(State state);
 
-  // BrowserServiceHostObserver:
-  void OnBrowserServiceConnected(CrosapiId id,
-                                 mojo::RemoteSetElementId mojo_id,
-                                 mojom::BrowserService* browser_service,
-                                 uint32_t browser_service_version) override;
-  void OnBrowserServiceDisconnected(CrosapiId id,
-                                    mojo::RemoteSetElementId mojo_id) override;
-
-  // ID for the current Crosapi connection.
-  // Available only when lacros-chrome is running.
-  std::optional<CrosapiId> crosapi_id_;
-
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available only when lacros-chrome is running.
   struct BrowserServiceInfo {
@@ -231,9 +214,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
-
-  // BrowserServiceHostObserver:
-  void OnBrowserRelaunchRequested(CrosapiId id) override;
 
   // CloudPolicyCore::Observer:
   void OnCoreConnected(policy::CloudPolicyCore* core) override;
@@ -288,20 +268,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
-  // Path to the lacros-chrome disk image directory.
-  base::FilePath lacros_path_;
-
-  // Time when the lacros process was launched.
-  base::TimeTicks lacros_launch_time_;
-
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
-
-  // Helps set up and manage the mojo connections between lacros-chrome and
-  // ash-chrome in testing environment. Only applicable when
-  // '--lacros-mojo-socket-for-testing' is present in the command line.
-  std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
 
   // The queue of actions to be performed when Lacros becomes ready.
   BrowserActionQueue pending_actions_;
