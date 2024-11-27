@@ -122,7 +122,7 @@ class TtsUtteranceClientImpl : public ax::mojom::TtsUtteranceClient {
 
   TtsUtteranceClientImpl(const TtsUtteranceClientImpl&) = delete;
   TtsUtteranceClientImpl& operator=(const TtsUtteranceClientImpl&) = delete;
-  ~TtsUtteranceClientImpl() override {}
+  ~TtsUtteranceClientImpl() override = default;
 
   void OnEvent(ax::mojom::TtsEventPtr event) override {
     callback_.Run(std::move(event));
