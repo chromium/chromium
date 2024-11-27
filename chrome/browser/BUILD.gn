@@ -5324,8 +5324,6 @@ static_library("browser") {
       "//chromeos/ash/components/policy",
       "//chromeos/ash/components/report",
       "//chromeos/ash/components/scalable_iph",
-      "//chromeos/ash/components/scalable_iph:logger",
-      "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
       "//chromeos/ash/components/settings",
       "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/sync_wifi",
