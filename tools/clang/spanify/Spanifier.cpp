@@ -1519,13 +1519,17 @@ class Spanifier {
     // Functions that are annotated with UNSAFE_BUFFER_USAGE also get this
     // treatment because the annotation means it was left there intentionally.
     // And since they emit warnings we can easily find and spanify them later.
+    // Functions that are known to accept both c-style arrays and std::array,
+    // like std::size() are excluded.
     auto passing_a_c_array_to_external_functions_etc = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         callExpr(callee(functionDecl(
                      anyOf(isExpansionInSystemHeader(),
                            raw_ptr_plugin::isInExternCContext(),
                            raw_ptr_plugin::isInThirdPartyLocation(),
-                           hasAttr(clang::attr::UnsafeBufferUsage)))),
+                           hasAttr(clang::attr::UnsafeBufferUsage)),
+                     unless(matchesName(
+                         "^::std::(size|begin|end|empty|swap|ranges::)")))),
                  forEachArgumentWithParam(
                      expr(declRefExpr(
                               to(c_style_array_var.bind("array_variable_rhs")))

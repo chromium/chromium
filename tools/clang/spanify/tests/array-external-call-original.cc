@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 
 void fct() {
   // Expected rewrite:
@@ -39,4 +40,19 @@ void fct2() {
   // Expected rewrite:
   // f.ReadAtCurrentPos(data.data(), 10);
   f.ReadAtCurrentPos(data, 10);
+}
+
+void fct3() {
+  // Expected rewrite:
+  // std::array<char, 10> data;
+  char data[10];
+  data[1] = 'a';
+  // No rewrite expected. This is because std::size() etc. accepts std::array.
+  std::ignore = std::size(data);
+  std::ignore = std::begin(data);
+  std::ignore = std::end(data);
+  std::ignore = std::empty(data);
+  std::swap(data, data);
+  std::ranges::find(data, 'a');
+  std::ignore = std::ranges::min(data);
 }
