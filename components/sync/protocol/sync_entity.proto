@@ -4,15 +4,16 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
 package sync_pb;
 
 import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
-
-option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
-option optimize_for = LITE_RUNTIME;
 
 message SyncEntity {
   // This item's identifier.  In a commit of a new item, this will be a
