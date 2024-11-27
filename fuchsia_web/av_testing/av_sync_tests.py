@@ -44,9 +44,6 @@ VIDEOS = {
     '720p24fpsH264_gangnam_sync.mp4': {
         'length': 252
     },
-    '720p24fpsAV1_gangnam_sync.mp4': {
-        'length': 252
-    },
     '720p24fpsVP9_gangnam_sync.webm': {
         'length': 252
     },
@@ -74,13 +71,10 @@ class StartProcess(AbstractContextManager):
 def parameters_of(file: str) -> camera.Parameters:
     result = camera.Parameters()
     result.file = file
-    if version.is_try_build():
-        result.output_path = LOG_DIR
-    else:
-        # Recorded videos are huge, instead of placing them into the LOG_DIR
-        # which will be uploaded to CAS output, use TEMP_DIR provided by
-        # luci-swarming to be cleaned up automatically after the test run.
-        result.output_path = TEMP_DIR
+    # Recorded videos are huge, instead of placing them into the LOG_DIR
+    # which will be uploaded to CAS output, use TEMP_DIR provided by
+    # luci-swarming to be cleaned up automatically after the test run.
+    result.output_path = TEMP_DIR
     # max_frames controls the maximum number of umcompressed frames in the
     # memory. And if the number of uncompressed frames reaches the max_frames,
     # the basler camera recorder will fail. The camera being used may use up to
@@ -113,7 +107,7 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     # network laggy and buffering.
     # TODO(crbug.com/40935291): May need to adjust the strategy here, the
     # final frame / barcode is considered laggy and drops the score.
-    with monitors.time_consumption('video_perf', 'playback', 'laggy', file):
+    with monitors.time_consumption(file, 'video_perf', 'playback', 'laggy'):
         while not driver.execute_script('return arguments[0].ended;', video):
             time.sleep(1)
     logging.warning('Video %s finished', file)
@@ -135,10 +129,9 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     record('dropped_frame_percentage')
     logging.warning('Video analysis result of %s: %s', file, results)
 
-    if not version.is_try_build():
-        # Move the info csv to the cas-output for debugging purpose. Video files
-        # are huge and will be ignored.
-        shutil.move(camera_params.info_file, LOG_DIR)
+    # Move the info csv to the cas-output for debugging purpose. Video files
+    # are huge and will be ignored.
+    shutil.move(camera_params.info_file, LOG_DIR)
 
 
 def run_test(proc: subprocess.Popen) -> None:
@@ -169,6 +162,11 @@ def main() -> int:
     try:
         run_test(proc)
         return 0
+    except:
+        # Do not dump the results unless the tests were passed successfully to
+        # avoid polluting the metrics.
+        monitors.clear()
+        raise
     finally:
         proc.terminate()
         proc.wait()
