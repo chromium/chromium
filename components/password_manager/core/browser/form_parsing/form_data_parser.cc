@@ -428,30 +428,24 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
   const FormFieldData* second_username = nullptr;
 
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
-    ProcessedField* processed_field = nullptr;
-
+    ProcessedField* processed_field = FindField(processed_fields, prediction);
+    if (!processed_field) {
+      continue;
+    }
     CredentialFieldType field_type = DeriveFromFieldType(prediction.type);
 
     switch (field_type) {
       case CredentialFieldType::kUsername:
         if (!result->username) {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            result->username = processed_field->field;
-          }
+          result->username = processed_field->field;
         } else if (!second_username) {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            second_username = processed_field->field;
-          }
+          second_username = processed_field->field;
         } else {
           prevent_handling_two_usernames = true;
         }
         break;
       case CredentialFieldType::kSingleUsername:
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field &&
-            CanBeConsideredAsSingleUsernameField(processed_field->field)) {
+        if (CanBeConsideredAsSingleUsernameField(processed_field->field)) {
           result->username = processed_field->field;
           result->is_single_username = true;
           base::UmaHistogramBoolean(
@@ -464,13 +458,10 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
         if (result->password) {
           prevent_handling_two_usernames = true;
         } else {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            if (!processed_field->is_password) {
-              continue;
-            }
-            result->password = processed_field->field;
+          if (!processed_field->is_password) {
+            continue;
           }
+          result->password = processed_field->field;
         }
         break;
       case CredentialFieldType::kNewPassword:
@@ -486,26 +477,21 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
         // before the user has thought of and typed their new password
         // elsewhere. See https://crbug.com/902700 for more details.
         if (!result->new_password) {
-          processed_field = FindField(processed_fields, prediction);
-          if (processed_field) {
-            if (processed_field->is_password || prediction.is_override) {
-              // Overrides ignore field type since the overrides are curated by
-              // developers.
-              result->new_password = processed_field->field;
-              processed_field->is_predicted_as_password = true;
-            } else {
-              // Don't show automatic password generation suggestion, but allow
-              // the manual generation.
-              result->manual_generation_enabled_fields.push_back(
-                  processed_field->field->renderer_id());
-            }
+          if (processed_field->is_password || prediction.is_override) {
+            // Overrides ignore field type since the overrides are curated by
+            // developers.
+            result->new_password = processed_field->field;
+            processed_field->is_predicted_as_password = true;
+          } else {
+            // Don't show automatic password generation suggestion, but allow
+            // the manual generation.
+            result->manual_generation_enabled_fields.push_back(
+                processed_field->field->renderer_id());
           }
         }
         break;
       case CredentialFieldType::kConfirmationPassword:
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field &&
-            (processed_field->is_password || prediction.is_override)) {
+        if (processed_field->is_password || prediction.is_override) {
           result->confirmation_password = processed_field->field;
           processed_field->is_predicted_as_password = true;
         }
@@ -513,10 +499,7 @@ void ParseUsingServerPredictions(std::vector<ProcessedField>& processed_fields,
       case CredentialFieldType::kNonCredential:
         // Fields with non credential fields predictions do not participate in
         // filling/saving.
-        processed_field = FindField(processed_fields, prediction);
-        if (processed_field) {
-          processed_field->server_hints_non_credential_field = true;
-        }
+        processed_field->server_hints_non_credential_field = true;
         break;
       case CredentialFieldType::kNone:
         break;
