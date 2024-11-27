@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,11 +51,19 @@ mojom::BabelOrcaMessagePtr CreateMessage(
       std::move(previous_transcript), std::move(current_transcript));
 }
 
-void VerifyBuilderResult(TranscriptBuilder::Result lhs,
-                         TranscriptBuilder::Result rhs) {
-  EXPECT_EQ(lhs.text, rhs.text);
-  EXPECT_EQ(lhs.is_final, rhs.is_final);
-  EXPECT_EQ(lhs.language, rhs.language);
+MATCHER_P(BuilderResultEq, expected, "") {
+  if (arg == expected) {
+    return true;
+  }
+  constexpr char kResultTemplate[] =
+      R"({text: "%s", is_final: %d, language: "%s"})";
+  *result_listener << "\nExpected Equality of\n "
+                   << base::StringPrintf(kResultTemplate, arg.text,
+                                         arg.is_final, arg.language)
+                   << "\nand\n"
+                   << base::StringPrintf(kResultTemplate, expected.text,
+                                         expected.is_final, expected.language);
+  return false;
 }
 
 struct TranscriptBuilderDiscardTestCase {
@@ -167,14 +176,14 @@ TEST_P(TranscriptBuilderUpdateTest, CurrentTranscript) {
       builder.GetTranscripts(std::move(message2));
 
   ASSERT_THAT(results1, testing::SizeIs(1));
-  VerifyBuilderResult(results1[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results1[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/false, kLanguageEn)));
 
   ASSERT_THAT(results2, testing::SizeIs(1));
-  VerifyBuilderResult(results2[0], TranscriptBuilder::Result(
-                                       GetParam().expcted_full_text,
-                                       /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results2[0], BuilderResultEq(TranscriptBuilder::Result(
+                               GetParam().expcted_full_text,
+                               /*is_final_param=*/false, kLanguageEn)));
 }
 
 TEST_P(TranscriptBuilderUpdateTest, PreviousTranscript) {
@@ -218,22 +227,22 @@ TEST_P(TranscriptBuilderUpdateTest, PreviousTranscript) {
       builder.GetTranscripts(std::move(message3));
 
   ASSERT_THAT(results1, testing::SizeIs(1));
-  VerifyBuilderResult(results1[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results1[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/false, kLanguageEn)));
 
   ASSERT_THAT(results2, testing::SizeIs(2));
-  VerifyBuilderResult(results2[0], TranscriptBuilder::Result(
-                                       GetParam().expcted_full_text,
-                                       /*is_final_param=*/true, kLanguageEn));
-  VerifyBuilderResult(results2[1], TranscriptBuilder::Result(
-                                       kNewTextPart1,
-                                       /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results2[0], BuilderResultEq(TranscriptBuilder::Result(
+                               GetParam().expcted_full_text,
+                               /*is_final_param=*/true, kLanguageEn)));
+  EXPECT_THAT(results2[1], BuilderResultEq(TranscriptBuilder::Result(
+                               kNewTextPart1,
+                               /*is_final_param=*/false, kLanguageEn)));
 
   ASSERT_THAT(results3, testing::SizeIs(1));
-  VerifyBuilderResult(
-      results3[0], TranscriptBuilder::Result(
-                       kNewTextPart2, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results3[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kNewTextPart2, /*is_final_param=*/false, kLanguageEn)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -270,14 +279,14 @@ TEST(TranscriptBuilderTest, ChangeInitTimestampAfterFinalTranscript) {
       builder.GetTranscripts(std::move(message2));
 
   ASSERT_THAT(results1, testing::SizeIs(1));
-  VerifyBuilderResult(results1[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/true, kLanguageEn));
+  EXPECT_THAT(results1[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/true, kLanguageEn)));
 
   ASSERT_THAT(results2, testing::SizeIs(1));
-  VerifyBuilderResult(results2[0],
-                      TranscriptBuilder::Result(
-                          kTextPart2, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results2[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart2, /*is_final_param=*/false, kLanguageEn)));
 }
 
 TEST(TranscriptBuilderTest, ChangeInitTimestamp) {
@@ -303,17 +312,17 @@ TEST(TranscriptBuilderTest, ChangeInitTimestamp) {
       builder.GetTranscripts(std::move(message2));
 
   ASSERT_THAT(results1, testing::SizeIs(1));
-  VerifyBuilderResult(results1[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results1[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/false, kLanguageEn)));
 
   ASSERT_THAT(results2, testing::SizeIs(2));
-  VerifyBuilderResult(results2[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/true, kLanguageEn));
-  VerifyBuilderResult(results2[1],
-                      TranscriptBuilder::Result(
-                          kTextPart2, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results2[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/true, kLanguageEn)));
+  EXPECT_THAT(results2[1],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart2, /*is_final_param=*/false, kLanguageEn)));
 }
 
 TEST(TranscriptBuilderTest, MissingTextCurrent) {
@@ -339,17 +348,17 @@ TEST(TranscriptBuilderTest, MissingTextCurrent) {
       builder.GetTranscripts(std::move(message2));
 
   ASSERT_THAT(results1, testing::SizeIs(1));
-  VerifyBuilderResult(results1[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results1[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/false, kLanguageEn)));
 
   ASSERT_THAT(results2, testing::SizeIs(2));
-  VerifyBuilderResult(results2[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/true, kLanguageEn));
-  VerifyBuilderResult(results2[1],
-                      TranscriptBuilder::Result(
-                          kTextPart2, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results2[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/true, kLanguageEn)));
+  EXPECT_THAT(results2[1],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart2, /*is_final_param=*/false, kLanguageEn)));
 }
 
 TEST(TranscriptBuilderTest, MissingTextPrevious) {
@@ -378,20 +387,20 @@ TEST(TranscriptBuilderTest, MissingTextPrevious) {
       builder.GetTranscripts(std::move(message2));
 
   ASSERT_THAT(results1, testing::SizeIs(1));
-  VerifyBuilderResult(results1[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results1[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/false, kLanguageEn)));
 
   ASSERT_THAT(results2, testing::SizeIs(3));
-  VerifyBuilderResult(results2[0],
-                      TranscriptBuilder::Result(
-                          kTextPart1, /*is_final_param=*/true, kLanguageEn));
-  VerifyBuilderResult(results2[1],
-                      TranscriptBuilder::Result(
-                          kTextPart2, /*is_final_param=*/true, kLanguageEn));
-  VerifyBuilderResult(results2[2],
-                      TranscriptBuilder::Result(
-                          kTextPart3, /*is_final_param=*/false, kLanguageEn));
+  EXPECT_THAT(results2[0],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart1, /*is_final_param=*/true, kLanguageEn)));
+  EXPECT_THAT(results2[1],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart2, /*is_final_param=*/true, kLanguageEn)));
+  EXPECT_THAT(results2[2],
+              BuilderResultEq(TranscriptBuilder::Result(
+                  kTextPart3, /*is_final_param=*/false, kLanguageEn)));
 }
 
 }  // namespace
