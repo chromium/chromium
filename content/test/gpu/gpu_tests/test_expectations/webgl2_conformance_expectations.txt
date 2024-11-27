@@ -574,8 +574,6 @@ crbug.com/1473838 [ android angle-opengles passthrough ] conformance2/extensions
 
 # Failing on some platforms.
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ amd-0x7340 angle-metal mac-x86_64 no-asan oop-c sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/366502831 [ mac angle-metal intel-0x3e9b passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
@@ -645,7 +643,6 @@ crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles
 crbug.com/1523323 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/reading/format-r11f-g11f-b10f.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
-crbug.com/338008895 [ win11 angle-d3d11 qualcomm-0x41333430 passthrough release ] conformance2/textures/image_bitmap_from_video/tex-3d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderindexing/varying.html [ Failure ]
 crbug.com/1523401 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shadertexturefunction/texelfetchoffset.html [ Failure ]
@@ -653,9 +650,6 @@ crbug.com/41496352 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gle
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_int.html [ Failure ]
 crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/shaderprecision_uint.html [ Failure ]
 crbug.com/338348432 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # Graphite
@@ -983,7 +977,6 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
@@ -1026,10 +1019,8 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/*
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ RetryOnFailure ]
 
 ## Volteer ##
-crbug.com/1507164 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
 
 #####################
 # Lacros failures #
@@ -1145,7 +1136,6 @@ crbug.com/332743717 [ android android-pixel-4 ] conformance2/canvas/drawingbuffe
 crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ mac intel angle-opengl ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ chromeos chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
