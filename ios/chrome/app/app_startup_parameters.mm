@@ -28,7 +28,6 @@
   NSMutableArray<AppModeRequestBlock>* _pendingBlocks;
 }
 
-@synthesize externalURLParams = _externalURLParams;
 @synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
 // TODO(crbug.com/40106317): Remove this stub.

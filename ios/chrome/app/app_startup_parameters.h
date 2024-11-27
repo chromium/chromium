@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <map>
-#include <string>
 #include <vector>
 
 // Input format for the `TabOpening` protocol.
@@ -83,12 +81,6 @@ class GURL;
 // The list of URLs to open. First URL in the vector is the same
 // as `externalURL`.
 @property(nonatomic, readonly, assign) const std::vector<GURL>& URLs;
-
-// The URL query string parameters in the case that the app was launched as a
-// result of Universal Link navigation. The map associates query string
-// parameters with their corresponding value.
-@property(nonatomic, assign) std::map<std::string, std::string>
-    externalURLParams;
 
 // The list of inputted URLs to process. These URLs aren't automatically opened.
 // Used in the context of Siri shortcuts that allow URL inputs that are not
