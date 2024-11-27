@@ -652,7 +652,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableDiscountInfoApi =
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false);
     public static final CachedFlag sEnableXAxisActivityTransition =
-            newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, true);
+            newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sEsbAiStringUpdate =
             newCachedFlag(
                     ESB_AI_STRING_UPDATE,
