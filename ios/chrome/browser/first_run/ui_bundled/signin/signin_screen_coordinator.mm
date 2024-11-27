@@ -76,7 +76,6 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    DCHECK(!browser->GetProfile()->IsOffTheRecord());
     _baseNavigationController = navigationController;
     _delegate = delegate;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
@@ -96,7 +95,8 @@
   self.viewController.TOSHandler = TOSHandler;
   self.viewController.delegate = self;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+
   self.authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   if (self.authenticationService->GetPrimaryIdentity(
@@ -108,7 +108,7 @@
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+      IdentityManagerFactory::GetForProfile(profile);
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);

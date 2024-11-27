@@ -546,6 +546,41 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   [SigninEarlGrey verifySignedOut];
 }
 
+// Tests that incognito can be forced with the FRE.
+- (void)testIncognitoForcedByPolicy {
+  // Configure the policy to force sign-in.
+  [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
+                  xmlPolicyValue:"<integer>2</integer>"];
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
+
+  // Verify 2 steps FRE.
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentSigninWithPolicy];
+  // Accept sign-in.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept sync.
+  [self acceptSyncOrHistory];
+  // Check that UMA is on.
+  GREYAssertTrue(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
+  // Check signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  // Check sync is on.
+  [[self class] dismissDefaultBrowser];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [self verifySyncOrHistoryEnabled:YES];
+}
+
 // Tests that the UMA link does not appear in  FRE when UMA is disabled by
 // enterprise policy.
 - (void)testUMADisabledByPolicy {

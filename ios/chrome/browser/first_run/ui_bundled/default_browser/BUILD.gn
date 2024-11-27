@@ -21,6 +21,7 @@ source_set("default_browser") {
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/promo_style",
   ]
