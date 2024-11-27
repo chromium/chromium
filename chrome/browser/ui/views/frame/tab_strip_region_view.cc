@@ -217,7 +217,10 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
   if (ShouldShowNewTabButton(browser)) {
     if (features::IsTabstripComboButtonEnabled()) {
-      tab_strip_combo_button_ = AddChildView(std::move(tab_strip_combo_button));
+      if (tab_strip_combo_button) {
+        tab_strip_combo_button_ =
+            AddChildView(std::move(tab_strip_combo_button));
+      }
     } else {
       std::unique_ptr<TabStripControlButton> tab_strip_control_button =
           std::make_unique<TabStripControlButton>(
