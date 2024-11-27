@@ -12,12 +12,6 @@
 #include <map>
 #include <sstream>
 
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/av1-ctrls.h>
-#endif
-
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
