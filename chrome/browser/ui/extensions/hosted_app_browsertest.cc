@@ -552,10 +552,7 @@ using HostedAppTest = HostedOrWebAppTest;
 // Tests that hosted apps are not web apps.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   SetupApp("app");
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id_, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id_));
   const Extension* app =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(app_id_);
   EXPECT_TRUE(app->is_hosted_app());
@@ -1491,10 +1488,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        AppRegistrarExcludesPackaged) {
   SetupApp("https_app");
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id_, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id_));
 }
 
 // Check that we can successfully complete a navigation to an app URL with a
