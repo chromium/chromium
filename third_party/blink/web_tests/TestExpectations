@@ -8674,7 +8674,6 @@ crbug.com/364338810 http/tests/inspector-protocol/issues/gpulimit-deprecation.js
 crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
 crbug.com/377815400 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?high-6.2 [ Pass Timeout ]
 crbug.com/379335371 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.worker.html?baseline [ Pass Timeout ]
-crbug.com/379418978 [ Debug Linux ] virtual/soft-navigation-fp-fcp/external/wpt/soft-navigation-heuristics/navigation-api.tentative.html [ Failure Pass ]
 
 # Gardener 2024-11-21
 crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass Timeout ]

@@ -2142,18 +2142,6 @@
     "expires": "Jan 1, 2026"
   },
   {
-    "owners": [
-      "haoliuk@chromium.org"
-    ],
-    "prefix": "soft-navigation-fp-fcp",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/soft-navigation-heuristics"
-    ],
-    "args": ["--enable-blink-features=SoftNavigationHeuristicsExposeFPAndFCP"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "produce-compile-hints",
     "owners": ["marja@chromium.org"],
     "platforms": ["Linux"],
