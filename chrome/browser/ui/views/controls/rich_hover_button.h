@@ -63,6 +63,14 @@ class RichHoverButton : public HoverButton {
 
   void SetSubtitleMultiline(bool is_multiline);
 
+  // Add custom view under the |title_text|.
+  // ...
+  // |-------------------------------------------------------------------------|
+  // |      | |custom_view|                                                    |
+  // *-------------------------------------------------------------------------*
+  template <typename T>
+  T* AddCustomSubtitle(std::unique_ptr<T> custom_view);
+
   views::Label* title() { return title_; }
   views::Label* secondary_label() { return secondary_label_; }
   views::Label* subtitle() { return subtitle_; }

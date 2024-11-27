@@ -212,6 +212,17 @@ void RichHoverButton::SetSubtitleMultiline(bool is_multiline) {
   subtitle_->SetMultiLine(is_multiline);
 }
 
+template <typename T>
+T* RichHoverButton::AddCustomSubtitle(std::unique_ptr<T> custom_view) {
+  static_cast<views::TableLayout*>(GetLayoutManager())
+      ->AddRows(1, views::TableLayout::kFixedSize);
+  AddChildView(std::make_unique<views::View>());
+  auto* view = AddChildView(std::move(custom_view));
+  AddChildView(std::make_unique<views::View>());
+  AddChildView(std::make_unique<views::View>());
+  return view;
+}
+
 const views::Label* RichHoverButton::GetTitleViewForTesting() const {
   return title_;
 }
