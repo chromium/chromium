@@ -161,6 +161,7 @@ KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
     'ninja://:blink_wpt_tests/',
     'ninja://:chrome_wpt_tests/',
+    'ninja://:headless_shell_wpt/',
     'ninja://:webgpu_blink_web_tests/',
 ]
 
@@ -260,9 +261,7 @@ WITH
 
     def _StripPrefixFromTestId(self, test_id: str) -> str:
         # Web test IDs provided by ResultDB are the test name known by the test
-        # runner prefixed by one of the following:
-        #   "ninja://:blink_web_tests/"
-        #   "ninja://:webgpu_blink_web_tests/"
+        # runner prefixed by one of the known prefixes.
         for prefix in KNOWN_TEST_ID_PREFIXES:
             if test_id.startswith(prefix):
                 return test_id.replace(prefix, '')
