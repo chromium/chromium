@@ -244,6 +244,12 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
     NotifyOfChange(std::move(relative_path), false, std::move(change_info));
   }
 
+  void SignalUsageChange(size_t old_usage, size_t new_usage) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    NotifyOfUsageChange(old_usage, new_usage);
+  }
+
   void SignalError() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     NotifyOfChange(base::FilePath(), true, ChangeInfo());
@@ -347,10 +353,16 @@ class FileSystemAccessObserverObservationTest
 
   std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
       const storage::FileSystemURL& file_url) {
+    return CreateFileHandle(kTestOrigin, file_url);
+  }
+
+  std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
+      const std::string& origin,
+      const storage::FileSystemURL& file_url) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return std::make_unique<FileSystemAccessFileHandleImpl>(
-        manager_.get(), GetBindingContext(), file_url,
+        manager_.get(), GetBindingContext(origin), file_url,
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
   }
@@ -377,15 +389,23 @@ class FileSystemAccessObserverObservationTest
 
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateDirectoryHandle(
       const storage::FileSystemURL& dir_url) {
+    return CreateDirectoryHandle(kTestOrigin, dir_url);
+  }
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateDirectoryHandle(
+      const std::string& origin,
+      const storage::FileSystemURL& dir_url) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
-        manager_.get(), GetBindingContext(), dir_url,
+        manager_.get(), GetBindingContext(origin), dir_url,
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
   }
 
-  FakeObserver CreateObserver() {
+  FakeObserver CreateObserver() { return CreateObserver(kTestOrigin); }
+
+  FakeObserver CreateObserver(const std::string& origin) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     mojo::Remote<blink::mojom::FileSystemAccessObserverHost> observer;
 
@@ -394,26 +414,43 @@ class FileSystemAccessObserverObservationTest
 
     FakeObserver fake_observer(std::move(observer));
 
-    manager_->watcher_manager().BindObserverHost(GetBindingContext(),
+    manager_->watcher_manager().BindObserverHost(GetBindingContext(origin),
                                                  std::move(host_receiver));
     return fake_observer;
   }
 
+  bool SetQuotaLimit(const std::string& origin, size_t quota_limit) {
+    blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting(origin);
+
+    FileSystemAccessObserverQuotaManager* quota_manager =
+        manager_->watcher_manager().GetQuotaManagerForTesting(storage_key);
+    if (!quota_manager) {
+      return false;
+    }
+
+    quota_manager->SetQuotaLimitForTesting(quota_limit);
+    return true;
+  }
+
  private:
-  FileSystemAccessManagerImpl::BindingContext GetBindingContext() {
+  FileSystemAccessManagerImpl::BindingContext GetBindingContext(
+      const std::string& origin) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    GURL url = GURL(origin);
+    blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting(origin);
 
     RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
 
-    return FileSystemAccessManagerImpl::BindingContext(
-        kTestStorageKey, kTestURL, rfh->GetGlobalId());
+    return FileSystemAccessManagerImpl::BindingContext(storage_key, url,
+                                                       rfh->GetGlobalId());
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const GURL kTestURL = GURL("https://example.com/test");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
+  std::string kTestOrigin = "https://example.com/test";
 
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -641,6 +678,87 @@ TEST_F(FileSystemAccessObserverObservationTest,
       ChangeInfo(FilePathType::kDirectory, ChangeType::kModified, dir_path));
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kModified, MojoFilePathType::kDirectory, {}}}));
+}
+
+TEST_F(FileSystemAccessObserverObservationTest,
+       ObservationDestroyedOnQuotaExceeded) {
+  base::FilePath favorites_path = CreateDirectory();
+  base::FilePath documents_path = CreateDirectory();
+  storage::FileSystemURL favorites_url = CreateFileSystemURL(favorites_path);
+  storage::FileSystemURL documents_url = CreateFileSystemURL(documents_path);
+  FakeChangeSource favorites_source =
+      CreateDirectoryChangeSource(favorites_url, /*is_recursive=*/false);
+  FakeChangeSource documents_source =
+      CreateDirectoryChangeSource(documents_url, /*is_recursive=*/false);
+
+  std::string foo_origin = "https://foo.com";
+  std::string bar_origin = "https://bar.com";
+
+  FakeObserver foo_observer = CreateObserver(foo_origin);
+  FakeObserver bar_observer = CreateObserver(bar_origin);
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> foo_favorites_handle =
+      CreateDirectoryHandle(foo_origin, favorites_url);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> bar_favorites_handle =
+      CreateDirectoryHandle(bar_origin, favorites_url);
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> foo_documents_handle =
+      CreateDirectoryHandle(foo_origin, documents_url);
+
+  FakeObservation foo_favorites_observation =
+      foo_observer.Observe(foo_favorites_handle.get(), /*recursive=*/false);
+  FakeObservation bar_favorites_observation =
+      bar_observer.Observe(bar_favorites_handle.get(), /*recursive=*/false);
+  FakeObservation foo_documents_observation =
+      foo_observer.Observe(foo_documents_handle.get(), /*recursive=*/false);
+
+  ASSERT_TRUE(SetQuotaLimit(foo_origin, 100));
+  ASSERT_TRUE(SetQuotaLimit(bar_origin, 100));
+
+  // Only foo is observing documents, so only its usage should rise. It is still
+  // under the quota limit though.
+  // - foo: (favorites usage = 0) + (documents usage = 50) = 50
+  //   - 50 < 100 so no quota error
+  // - bar: (favorites usage = 0) = 0
+  //   - 0 < 100 so no quota error
+  documents_source.SignalUsageChange(0, 50);
+  EXPECT_TRUE(foo_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(foo_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(bar_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(bar_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(foo_documents_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(foo_documents_observation.RemoteObservationDisconnected());
+
+  // Both origins are observing favorites, so both usages should rise. This
+  // sends foo over the quota limit but not bar. Foo's favorites observation
+  // should receive an error and be disconnected.
+  // - foo: (favorites usage = 60) + (documents usage = 50) = 110
+  //   - 110 > 100 so quota error
+  // - bar: (favorites usage = 60) = 60
+  //   - 60 < 100 so no quota error
+  favorites_source.SignalUsageChange(0, 60);
+  EXPECT_TRUE(foo_favorites_observation.EventsReceivedMatches(
+      {{MojoChangeType::kErrored, MojoFilePathType::kDirectory, {}}}));
+  EXPECT_TRUE(foo_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(bar_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(bar_favorites_observation.RemoteObservationDisconnected());
+  EXPECT_TRUE(foo_documents_observation.EventsReceivedMatches({}));
+  EXPECT_FALSE(foo_documents_observation.RemoteObservationDisconnected());
+
+  // Only bar should now receive events for favorites now.
+  std::string file_name = "file.txt";
+  favorites_source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated,
+                 favorites_path.AppendASCII(file_name)));
+  EXPECT_TRUE(foo_favorites_observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(bar_favorites_observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {file_name}}}));
+
+  // Foo can still receive events for documents.
+  documents_source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated,
+                 documents_path.AppendASCII(file_name)));
+  EXPECT_TRUE(foo_documents_observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {file_name}}}));
 }
 
 TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {

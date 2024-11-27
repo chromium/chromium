@@ -51,12 +51,14 @@ void FileSystemAccessObservationGroup::Observer::NotifyOfChanges(
 }
 
 FileSystemAccessObservationGroup::FileSystemAccessObservationGroup(
+    scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager,
     FileSystemAccessWatcherManager& watcher_manager,
     blink::StorageKey storage_key,
     FileSystemAccessWatchScope scope,
     base::PassKey<FileSystemAccessWatcherManager> pass_key)
     : storage_key_(std::move(storage_key)),
       scope_(std::move(scope)),
+      quota_manager_(std::move(quota_manager)),
       watcher_manager_(watcher_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -106,10 +108,25 @@ void FileSystemAccessObservationGroup::NotifyOfUsageChange(size_t old_usage,
                                                            size_t new_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (received_quota_error_) {
+    return;
+  }
+
   if (on_usage_change_callback_) {
     on_usage_change_callback_.Run(old_usage, new_usage);
   }
-  // TODO(crbug.com/338457523): Notify the quota manager.
+
+  UsageChangeResult quota_result =
+      quota_manager_->OnUsageChange(old_usage, new_usage);
+
+  if (quota_result == UsageChangeResult::kQuotaUnavailable) {
+    received_quota_error_ = true;
+
+    // Send error to all observations by passing std::nullopt.
+    for (auto& observation : observations_) {
+      observation.NotifyOfChanges(/*changes_or_error=*/std::nullopt);
+    }
+  }
 }
 
 void FileSystemAccessObservationGroup::SetOnUsageCallbackForTesting(

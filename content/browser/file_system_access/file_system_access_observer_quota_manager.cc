@@ -26,10 +26,15 @@ FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
   base::UmaHistogramBoolean(
       "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
       reached_quota_limit_);
+
+  // TODO(crbug.com/338457523): Make this unconditional once `watcher_manager_`
+  // is raw_ref.
+  if (watcher_manager_) {
+    watcher_manager_->RemoveQuotaManager(storage_key_);
+  }
 }
 
 FileSystemAccessObserverQuotaManager::UsageChangeResult
-
 FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
                                                     size_t new_usage) {
   // The caller should have reported this `old_usage` in its last call, so that

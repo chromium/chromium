@@ -11,6 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -19,6 +20,7 @@
 #include "content/browser/file_system_access/file_system_access_bucket_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_observation_group.h"
+#include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
@@ -99,6 +101,9 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     return observation_groups_.HasObserver(observation_group);
   }
 
+  FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting(
+      const blink::StorageKey& storage_key);
+
   bool HasSourceForTesting(FileSystemAccessChangeSource* source) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source_observations_.IsObservingSource(source);
@@ -108,6 +113,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
 
  private:
   friend FileSystemAccessObservationGroup;
+  friend FileSystemAccessObserverQuotaManager;
   // Called by `FileSystemAccessObservationGroup` to receive raw change events.
   //
   // TODO(crbug.com/376134535): Remove this once observation groups directly
@@ -124,6 +130,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Called by `FileSystemAccessObservationGroup` to destroy itself.
   void RemoveObservationGroup(const blink::StorageKey& storage_key,
                               const FileSystemAccessWatchScope& scope);
+
+  // Called by `FileSystemAccessObserverQuotaManager` remove it from
+  // `quota_managers_` when it is destroyed.
+  void RemoveQuotaManager(const blink::StorageKey& storage_key);
 
   // FileSystemAccessChangeSource::RawChangeObserver:
   void OnRawChange(const storage::FileSystemURL& changed_url,
@@ -148,6 +158,9 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           on_source_initialized,
       blink::mojom::FileSystemAccessErrorPtr result);
+
+  scoped_refptr<FileSystemAccessObserverQuotaManager> GetOrCreateQuotaManager(
+      blink::StorageKey storage_key);
 
   FileSystemAccessObservationGroup& GetOrCreateObservationGroup(
       blink::StorageKey storage_key,
@@ -180,6 +193,11 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
 
   // TODO(crbug.com/321980367): Make more efficient mappings to observers
   // and sources. For now, most actions requires iterating through lists.
+
+  // `raw_ref` safe because `FileSystemAccessObserverQuotaManager` removes
+  // itself from this map on destruction.
+  std::map<blink::StorageKey, raw_ref<FileSystemAccessObserverQuotaManager>>
+      quota_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::map<std::pair<blink::StorageKey, FileSystemAccessWatchScope>,
            FileSystemAccessObservationGroup>

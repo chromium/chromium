@@ -315,6 +315,13 @@ void FileSystemAccessWatcherManager::RemoveObservationGroup(
   watch_scope_obs_groups_map_.erase({storage_key, scope});
 }
 
+void FileSystemAccessWatcherManager::RemoveQuotaManager(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  quota_managers_.erase(storage_key);
+}
+
 bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
     const FileSystemAccessWatchScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -323,6 +330,19 @@ bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
       [&scope](const raw_ref<FileSystemAccessChangeSource> source) {
         return source->scope().Contains(scope);
       });
+}
+
+FileSystemAccessObserverQuotaManager*
+FileSystemAccessWatcherManager::GetQuotaManagerForTesting(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto quota_manager_iter = quota_managers_.find(storage_key);
+  if (quota_manager_iter == quota_managers_.end()) {
+    return nullptr;
+  }
+
+  return &quota_manager_iter->second.get();
 }
 
 void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
@@ -397,6 +417,27 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
   std::move(on_source_initialized).Run(std::move(result));
 }
 
+scoped_refptr<FileSystemAccessObserverQuotaManager>
+FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
+    blink::StorageKey storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto quota_manager_iter = quota_managers_.find(storage_key);
+  if (quota_manager_iter != quota_managers_.end()) {
+    return base::WrapRefCounted<FileSystemAccessObserverQuotaManager>(
+        &quota_manager_iter->second.get());
+  }
+
+  scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager =
+      base::MakeRefCounted<FileSystemAccessObserverQuotaManager>(storage_key,
+                                                                 this);
+  quota_managers_.emplace(std::piecewise_construct,
+                          std::forward_as_tuple(std::move(storage_key)),
+                          std::forward_as_tuple(*quota_manager.get()));
+
+  return quota_manager;
+}
+
 FileSystemAccessObservationGroup&
 FileSystemAccessWatcherManager::GetOrCreateObservationGroup(
     blink::StorageKey storage_key,
@@ -411,11 +452,15 @@ FileSystemAccessWatcherManager::GetOrCreateObservationGroup(
     return observation_group_iter->second;
   }
 
+  scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager =
+      GetOrCreateQuotaManager(storage_key);
+
   auto [created_observation_group_iter, inserted] =
       watch_scope_obs_groups_map_.emplace(
           std::piecewise_construct, std::forward_as_tuple(key),
           std::forward_as_tuple(
-              *this, std::move(storage_key), std::move(scope),
+              std::move(quota_manager), *this, std::move(storage_key),
+              std::move(scope),
               base::PassKey<FileSystemAccessWatcherManager>()));
   CHECK(inserted);
 

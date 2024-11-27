@@ -22,6 +22,7 @@
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_observation_group.h"
+#include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1297,6 +1298,174 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObservationGroupGetsUsageChange) {
 
   EXPECT_THAT(accumulator.usage_changes(),
               testing::ContainerEq(expected_changes));
+}
+
+TEST_F(FileSystemAccessWatcherManagerTest,
+       QuotaManagersAreSharedByAllObservationGroupsWithSameStorageKey) {
+  blink::StorageKey foo_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com/");
+  blink::StorageKey bar_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://bar.com/");
+
+  base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
+  FakeChangeSource file_source(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(&file_source);
+
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("bar");
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
+  FakeChangeSource dir_source(
+      FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
+          dir_url, /*is_recursive=*/false),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(&dir_source);
+
+  auto foo_file_observation_or_error = ObserveFile(foo_storage_key, file_url);
+  auto foo_dir_observation_or_error =
+      ObserveDirectory(foo_storage_key, dir_url, /*is_recursive=*/false);
+  auto bar_file_observation_or_error = ObserveFile(bar_storage_key, file_url);
+  auto bar_dir_observation_or_error =
+      ObserveDirectory(bar_storage_key, dir_url, /*is_recursive=*/false);
+
+  FileSystemAccessObservationGroup* foo_file_observation_group =
+      foo_file_observation_or_error->get()->GetObservationGroupForTesting();
+  FileSystemAccessObservationGroup* foo_dir_observation_group =
+      foo_dir_observation_or_error->get()->GetObservationGroupForTesting();
+  FileSystemAccessObservationGroup* bar_file_observation_group =
+      bar_file_observation_or_error->get()->GetObservationGroupForTesting();
+  FileSystemAccessObservationGroup* bar_dir_observation_group =
+      bar_file_observation_or_error->get()->GetObservationGroupForTesting();
+
+  FileSystemAccessObserverQuotaManager* foo_file_quota_manager =
+      foo_file_observation_group->GetQuotaManagerForTesting();
+  FileSystemAccessObserverQuotaManager* foo_dir_quota_manager =
+      foo_dir_observation_group->GetQuotaManagerForTesting();
+  FileSystemAccessObserverQuotaManager* bar_file_quota_manager =
+      bar_file_observation_group->GetQuotaManagerForTesting();
+  FileSystemAccessObserverQuotaManager* bar_dir_quota_manager =
+      bar_dir_observation_group->GetQuotaManagerForTesting();
+
+  // Observation groups of the same origin have the same quota manager.
+  EXPECT_EQ(foo_file_quota_manager, foo_dir_quota_manager);
+  EXPECT_EQ(bar_file_quota_manager, bar_dir_quota_manager);
+
+  // Observations of different origins have different quota managers.
+  EXPECT_NE(bar_file_quota_manager, foo_file_quota_manager);
+
+  // Each observations quota manager should equal what the watcher manager has
+  // for the observation's storage key.
+  EXPECT_EQ(foo_file_quota_manager,
+            watcher_manager().GetQuotaManagerForTesting(foo_storage_key));
+  EXPECT_EQ(bar_file_quota_manager,
+            watcher_manager().GetQuotaManagerForTesting(bar_storage_key));
+}
+
+TEST_F(FileSystemAccessWatcherManagerTest,
+       ObservationGroupSendsErrorsOnQuotaError) {
+  blink::StorageKey foo_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com/");
+  blink::StorageKey bar_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://bar.com/");
+
+  base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
+  FakeChangeSource file_source(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(&file_source);
+
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("bar");
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
+  FakeChangeSource dir_source(
+      FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
+          dir_url, /*is_recursive=*/false),
+      file_system_context_);
+  watcher_manager().RegisterSourceForTesting(&dir_source);
+
+  auto foo_file_observation_or_error1 = ObserveFile(foo_storage_key, file_url);
+  auto foo_file_observation_or_error2 = ObserveFile(foo_storage_key, file_url);
+  auto bar_file_observation_or_error = ObserveFile(bar_storage_key, file_url);
+  auto bar_dir_observation_or_error =
+      ObserveDirectory(bar_storage_key, dir_url, /*is_recursive=*/false);
+
+  FileSystemAccessObservationGroup* foo_file_observation_group =
+      foo_file_observation_or_error1->get()->GetObservationGroupForTesting();
+  FileSystemAccessObservationGroup* bar_file_observation_group =
+      bar_file_observation_or_error->get()->GetObservationGroupForTesting();
+
+  FileSystemAccessObserverQuotaManager* foo_quota_manager =
+      foo_file_observation_group->GetQuotaManagerForTesting();
+  FileSystemAccessObserverQuotaManager* bar_quota_manager =
+      bar_file_observation_group->GetQuotaManagerForTesting();
+
+  foo_quota_manager->SetQuotaLimitForTesting(100);
+  bar_quota_manager->SetQuotaLimitForTesting(100);
+
+  ChangeAccumulator foo_file_accumulator1(
+      std::move(foo_file_observation_or_error1));
+  ChangeAccumulator foo_file_accumulator2(
+      std::move(foo_file_observation_or_error2));
+  ChangeAccumulator bar_file_accumulator(
+      std::move(bar_file_observation_or_error));
+  ChangeAccumulator bar_dir_accumulator(
+      std::move(bar_dir_observation_or_error));
+
+  file_source.SignalUsageChange(0, 90);
+
+  // Both storage keys are observing the file so they both should have its usage
+  // added to their quota manager.
+  EXPECT_EQ(foo_quota_manager->GetTotalUsageForTesting(), 90u);
+  EXPECT_EQ(bar_quota_manager->GetTotalUsageForTesting(), 90u);
+
+  // Both storage keys are still below their quota limit so shouldn't receive an
+  // error.
+  EXPECT_FALSE(foo_file_accumulator1.has_error());
+  EXPECT_FALSE(foo_file_accumulator2.has_error());
+  EXPECT_FALSE(bar_file_accumulator.has_error());
+  EXPECT_FALSE(bar_dir_accumulator.has_error());
+
+  dir_source.SignalUsageChange(0, 5);
+
+  // Only the bar storage key is observing the directory, so only the directory
+  // usage should only be added to its quota manager.
+  EXPECT_EQ(foo_quota_manager->GetTotalUsageForTesting(), 90u);
+  EXPECT_EQ(bar_quota_manager->GetTotalUsageForTesting(), 95u);
+
+  // Both storage keys are still below their quota limit so shouldn't receive an
+  // error.
+  EXPECT_FALSE(foo_file_accumulator1.has_error());
+  EXPECT_FALSE(foo_file_accumulator2.has_error());
+  EXPECT_FALSE(bar_file_accumulator.has_error());
+  EXPECT_FALSE(bar_dir_accumulator.has_error());
+
+  dir_source.SignalUsageChange(5, 20);
+
+  // The bar storage key's dir observation exceeded the quota so its usage
+  // should be removed.
+  EXPECT_EQ(foo_quota_manager->GetTotalUsageForTesting(), 90u);
+  EXPECT_EQ(bar_quota_manager->GetTotalUsageForTesting(), 90u);
+
+  // The bar's dir observations should receive error since it caused bar to
+  // exceed the quota limit.
+  EXPECT_FALSE(foo_file_accumulator1.has_error());
+  EXPECT_FALSE(foo_file_accumulator2.has_error());
+  EXPECT_FALSE(bar_file_accumulator.has_error());
+  EXPECT_TRUE(bar_dir_accumulator.has_error());
+
+  file_source.SignalUsageChange(90, 110);
+
+  // Both storage keys should have exceeded the quota limit now that the file
+  // their both watching exceeded the quota limit.
+  EXPECT_EQ(foo_quota_manager->GetTotalUsageForTesting(), 0u);
+  EXPECT_EQ(bar_quota_manager->GetTotalUsageForTesting(), 0u);
+
+  // The file observations should now also receive an error.
+  EXPECT_TRUE(foo_file_accumulator1.has_error());
+  EXPECT_TRUE(foo_file_accumulator2.has_error());
+  EXPECT_TRUE(bar_file_accumulator.has_error());
+  EXPECT_TRUE(bar_dir_accumulator.has_error());
 }
 
 }  // namespace content

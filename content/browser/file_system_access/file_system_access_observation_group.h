@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
+#include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 
 namespace content {
@@ -108,6 +109,7 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
   using OnUsageChangeCallback = FilePathWatcher::UsageChangeCallback;
 
   explicit FileSystemAccessObservationGroup(
+      scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager,
       FileSystemAccessWatcherManager& watcher_manager,
       blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope,
@@ -128,10 +130,17 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
   void SetOnUsageCallbackForTesting(
       OnUsageChangeCallback on_usage_change_callback);
 
+  FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting() {
+    return quota_manager_.get();
+  }
+
  private:
   friend FileSystemAccessWatcherManager;
   friend base::ScopedObservationTraits<FileSystemAccessObservationGroup,
                                        Observer>;
+
+  using UsageChangeResult =
+      FileSystemAccessObserverQuotaManager::UsageChangeResult;
 
   std::unique_ptr<Observer> CreateObserver();
 
@@ -157,6 +166,9 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
 
   OnUsageChangeCallback on_usage_change_callback_;
 
+  // The quota manager for our storage key.
+  scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager_;
+
   // The `FileSystemAccessWatcherManager` that we're observing. Safe because
   // `watcher_manager_` owns this.
   //
@@ -166,6 +178,8 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
   // defining a custom `ScopedObservationTraits` for the minimum value
   // `ScopedObservation` brings.
   base::raw_ref<FileSystemAccessWatcherManager> watcher_manager_;
+
+  bool received_quota_error_ = false;
 };
 
 }  // namespace content
