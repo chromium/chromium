@@ -73,6 +73,7 @@ public class HubPaneHostViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/380785491")
     public void test() throws Exception {
         testImpl("base_color");
     }
