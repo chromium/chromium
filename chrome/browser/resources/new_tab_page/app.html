@@ -1,4 +1,7 @@
 <div id="content">
+  ${this.lazyRender_ && this.microsoftAuthEnabled_ ? html`
+    <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
+  ` : ''}
   ${this.lazyRender_ && this.oneGoogleBarEnabled_ ? html`
     <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
         ?fixed="${this.scrolledToTop_}"></div>

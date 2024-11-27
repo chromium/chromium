@@ -34713,6 +34713,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2040878656" label="chrome://bluetooth-internals/"/>
   <int value="2052019697" label="chrome://userimage/"/>
   <int value="2108016874" label="chrome-untrusted://projector/"/>
+  <int value="2110022659" label="chrome-untrusted://ntp-microsoft-auth/"/>
   <int value="2111953935" label="chrome://topics-internals/"/>
   <int value="2114840772" label="chrome://drive-internals/"/>
   <int value="2120829362" label="chrome://account-manager-welcome/"/>

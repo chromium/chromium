@@ -178,6 +178,10 @@ inline constexpr char kChromeUINewTabPageThirdPartyURL[] =
     "chrome://new-tab-page-third-party/";
 inline constexpr char kChromeUINewTabPageURL[] = "chrome://new-tab-page/";
 inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
+inline constexpr char kChromeUIUntrustedNtpMicrosoftAuthHost[] =
+    "ntp-microsoft-auth";
+inline constexpr char kChromeUIUntrustedNtpMicrosoftAuthURL[] =
+    "chrome-untrusted://ntp-microsoft-auth/";
 inline constexpr char kChromeUINTPTilesInternalsHost[] = "ntp-tiles-internals";
 inline constexpr char kChromeUIOmniboxHost[] = "omnibox";
 inline constexpr char kChromeUIOmniboxPopupHost[] = "omnibox-popup.top-chrome";

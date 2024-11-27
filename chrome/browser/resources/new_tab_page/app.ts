@@ -95,6 +95,7 @@ enum NtpWallpaperSearchButtonHideCondition {
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
 const OGB_IFRAME_ORIGIN = 'chrome-untrusted://new-tab-page';
+const MSAL_IFRAME_ORIGIN = 'chrome-untrusted://ntp-microsoft-auth';
 
 export const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =
     'NewTabPageUI::kCustomizeChromeButtonElementId';
@@ -209,6 +210,9 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
+      microsoftAuthEnabled_: {type: Boolean},
+      microsoftAuthIframePath_: {type: String},
+
       /**
        * In order to avoid flicker, the promo and modules are hidden until both
        * are loaded. If modules are disabled, the promo is shown as soon as it
@@ -276,6 +280,9 @@ export class AppElement extends AppElementBase {
   private middleSlotPromoLoaded_: boolean = false;
   private modulesLoaded_: boolean = false;
   protected modulesShownToUser: boolean;
+  protected microsoftAuthEnabled_: boolean =
+      loadTimeData.getBoolean('microsoftAuthEnabled');
+  protected microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
   protected promoAndModulesLoaded_: boolean = false;
   protected lazyRender_: boolean;
   protected scrolledToTop_: boolean = document.documentElement.scrollTop <= 0;

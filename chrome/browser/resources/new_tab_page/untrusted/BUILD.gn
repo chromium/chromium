@@ -12,6 +12,7 @@ build_webui("build") {
   static_files = [
     "background_image.html",
     "image.html",
+    "microsoft_auth.html",
     "one_google_bar.html",
   ]
 

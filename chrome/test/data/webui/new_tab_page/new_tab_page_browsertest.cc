@@ -210,6 +210,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, WallpaperSearch) {
           "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MicrosoftAuth) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest MicrosoftAuth')");
+}
+
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
     : public NewTabPageBrowserTest {
  protected:

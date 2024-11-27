@@ -30,6 +30,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -449,6 +450,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::NumberToString(
           ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get().InHours()));
 
+  // TODO(crbug.com/372722777): Add equivalent to IsOutlookCalendarModuleEnabled
+  // call for Sharepoint, once created.
+  source->AddBoolean(
+      "microsoftAuthEnabled",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpMicrosoftAuthenticationModule) &&
+          (IsOutlookCalendarModuleEnabled(
+               NewTabPageUI::IsManagedProfile(profile)) ||
+           base::FeatureList::IsEnabled(ntp_features::kNtpSharepointModule)));
+
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
       /*enable_voice_search=*/true,
@@ -465,9 +476,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   // lead to subtle security bugs such as https://crbug.com/1251541.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      base::StringPrintf("child-src https: %s %s;",
+      base::StringPrintf("child-src https: %s %s %s;",
                          google_util::CommandLineGoogleBaseURL().spec().c_str(),
-                         chrome::kChromeUIUntrustedNewTabPageUrl));
+                         chrome::kChromeUIUntrustedNewTabPageUrl,
+                         chrome::kChromeUIUntrustedNtpMicrosoftAuthURL));
 
   return source;
 }
