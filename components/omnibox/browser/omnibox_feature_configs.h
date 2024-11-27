@@ -120,8 +120,6 @@ struct DocumentProvider : Config<DocumentProvider> {
   // Whether to ignore the state of the document provider when deciding to
   // finish debouncing.
   bool ignore_when_debouncing;
-  // Whether to treat an HTTP 401 response code as a backoff signal.
-  bool backoff_on_401;
 };
 
 // If enabled, pretends all matches are allowed to be default. This is very
