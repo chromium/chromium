@@ -28,7 +28,7 @@ class KioskSessionPluginHandlerDelegate {
   virtual void OnPluginHung(const std::set<int>& hung_plugins) = 0;
 
  protected:
-  virtual ~KioskSessionPluginHandlerDelegate() {}
+  virtual ~KioskSessionPluginHandlerDelegate() = default;
 };
 
 }  // namespace chromeos

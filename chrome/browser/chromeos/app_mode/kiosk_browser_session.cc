@@ -107,7 +107,7 @@ class KioskBrowserSession::AppWindowHandler
       : kiosk_browser_session_(session) {}
   AppWindowHandler(const AppWindowHandler&) = delete;
   AppWindowHandler& operator=(const AppWindowHandler&) = delete;
-  ~AppWindowHandler() override {}
+  ~AppWindowHandler() override = default;
 
   void Init(Profile* profile, const std::string& app_id) {
     DCHECK(!window_registry_);
