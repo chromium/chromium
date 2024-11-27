@@ -904,7 +904,6 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   if (ShadowHost(context) == element &&
       (!selector.IsHostPseudoClass() && !selector.SelectorListOrParent() &&
        selector.GetPseudoType() != CSSSelector::kPseudoScope &&
-       !context.treat_shadow_host_as_normal_scope &&
        selector.Match() != CSSSelector::kPseudoElement)) {
     return false;
   }
@@ -2433,7 +2432,6 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       sub_context.is_sub_selector = true;
       sub_context.scope = nullptr;
       sub_context.tree_scope = nullptr;
-      sub_context.treat_shadow_host_as_normal_scope = false;
 
       for (sub_context.selector = selector.SelectorList()->First();
            sub_context.selector; sub_context.selector = CSSSelectorList::Next(
@@ -2481,7 +2479,6 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       sub_context.is_sub_selector = true;
       sub_context.scope = nullptr;
       sub_context.tree_scope = nullptr;
-      sub_context.treat_shadow_host_as_normal_scope = false;
 
       // ::slotted() only allows one compound selector.
       DCHECK(selector.SelectorList()->First());
@@ -2647,9 +2644,21 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
   sub_context.selector = selector.SelectorList()->First();
-  sub_context.treat_shadow_host_as_normal_scope = true;
-  sub_context.scope = context.scope;
-  sub_context.tree_scope = context.tree_scope;
+
+  // "When evaluated in the context of a shadow tree, it matches the shadow
+  //  tree’s shadow host if the shadow host, **in its normal context**,
+  //  matches the selector argument." [1]
+  //
+  // This means that the host element should not match in the context of
+  // the shadow root it's holding, but rather in the tree scope that's holding
+  // that element. This effectively makes the host non-featureless for the
+  // following MatchSelector call, since we are no longer matching in *its*
+  // shadow-tree-context.
+  //
+  // [1] https://drafts.csswg.org/css-scoping-1/#host-selector
+  sub_context.tree_scope = &context.element->GetTreeScope();
+  sub_context.scope = &sub_context.tree_scope->RootNode();
+
   // Use FlatTreeTraversal to traverse a composed ancestor list of a given
   // element.
   Element* next_element = &element;
@@ -2660,7 +2669,9 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
     if (MatchSelector(host_context, sub_result) == kSelectorMatches) {
       return true;
     }
-    host_context.treat_shadow_host_as_normal_scope = false;
+    // TODO(andruud): This does not look correct, (although may not cause
+    // any observable problem at the time of writing). I would expect this
+    // to match in the context of context.element->GetTreeScope().
     host_context.scope = nullptr;
     host_context.tree_scope = nullptr;
 
