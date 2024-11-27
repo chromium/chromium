@@ -171,8 +171,6 @@ public class EducationalTipModuleMediator {
     InputContext createInputContext() {
         InputContext inputContext = new InputContext();
         inputContext.addEntry(
-                "is_default_browser_chrome", ProcessedValue.fromFloat(isDefaultBrowserChrome()));
-        inputContext.addEntry(
                 "should_show_non_role_manager_default_browser_promo",
                 ProcessedValue.fromFloat(shouldShowNonRoleManagerDefaultBrowserPromo()));
         inputContext.addEntry(
@@ -198,11 +196,6 @@ public class EducationalTipModuleMediator {
                     EducationalTipCardProvider.convertLabelToCardType(result.orderedLabels.get(0));
             return cardType;
         }
-    }
-
-    private float isDefaultBrowserChrome() {
-        // TODO(crbug.com/355015904): add trigger scenarios here for default browser promo card.
-        return 0.0f;
     }
 
     /**
@@ -263,7 +256,10 @@ public class EducationalTipModuleMediator {
 
     /** Called when user clicks the card. */
     private void onCardClicked() {
-        // TODO(crbug.com/355015904): Records metrics for clicking the card.
+        // TODO(crbug.com/355015904): Notifies the segmentation platform and records metrics for
+        // clicking the card.
+        @EducationalTipCardType int cardType = mEducationalTipCardProvider.getCardType();
+        EducationalTipModuleMediatorJni.get().notifyCardInteracted(mProfile, cardType);
     }
 
     /** Gets the regular profile if exists. */
@@ -280,5 +276,7 @@ public class EducationalTipModuleMediator {
     @NativeMethods
     public interface Natives {
         void notifyCardShown(@JniType("Profile*") Profile profile, int cardType);
+
+        void notifyCardInteracted(@JniType("Profile*") Profile profile, int cardType);
     }
 }

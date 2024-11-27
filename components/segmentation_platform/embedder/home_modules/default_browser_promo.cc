@@ -13,8 +13,8 @@
 
 namespace segmentation_platform::home_modules {
 
-DefaultBrowserPromo::DefaultBrowserPromo()
-    : CardSelectionInfo(kDefaultBrowserPromo) {}
+DefaultBrowserPromo::DefaultBrowserPromo(PrefService* profile_prefs)
+    : CardSelectionInfo(kDefaultBrowserPromo), profile_prefs_(profile_prefs) {}
 
 std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
@@ -23,11 +23,6 @@ std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kHasDefaultBrowserPromoShownInOtherSurface})},
-      {kIsDefaultBrowserChrome,
-       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
-           .tensor_length = 1,
-           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kIsDefaultBrowserChrome})},
       {kShouldShowNonRoleManagerDefaultBrowserPromo,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
@@ -41,22 +36,25 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
   CardSelectionInfo::ShowResult result;
   result.result_label = kDefaultBrowserPromo;
 
-  std::optional<float> resultForIsDefaultBrowserChrome =
-      signals.GetSignal(kIsDefaultBrowserChrome);
+  bool has_been_interacted_with =
+      profile_prefs_->GetBoolean(kDefaultBrowserPromoInteractedPref);
+  if (has_been_interacted_with) {
+    result.position = EphemeralHomeModuleRank::kNotShown;
+    return result;
+  }
+
   std::optional<float> resultForShouldShowNonRoleManagerDefaultBrowserPromo =
       signals.GetSignal(kShouldShowNonRoleManagerDefaultBrowserPromo);
   std::optional<float> resultForHasDefaultBrowserPromoShownInOtherSurface =
       signals.GetSignal(kHasDefaultBrowserPromoShownInOtherSurface);
 
-  if (!resultForIsDefaultBrowserChrome.has_value() ||
-      !resultForShouldShowNonRoleManagerDefaultBrowserPromo.has_value() ||
+  if (!resultForShouldShowNonRoleManagerDefaultBrowserPromo.has_value() ||
       !resultForHasDefaultBrowserPromoShownInOtherSurface.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
-  if (!*resultForIsDefaultBrowserChrome &&
-      *resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
+  if (*resultForShouldShowNonRoleManagerDefaultBrowserPromo &&
       !*resultForHasDefaultBrowserPromoShownInOtherSurface) {
     result.position = EphemeralHomeModuleRank::kTop;
     return result;

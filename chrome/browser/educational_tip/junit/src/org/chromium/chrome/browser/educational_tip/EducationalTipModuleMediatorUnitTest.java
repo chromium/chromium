@@ -144,11 +144,7 @@ public class EducationalTipModuleMediatorUnitTest {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
         InputContext inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(3, inputContext.getSizeForTesting());
-
-        // Test signal "is_default_browser_chrome".
-        assertEquals(
-                0, inputContext.getEntryForTesting("is_default_browser_chrome").floatValue, 0.01);
+        assertEquals(2, inputContext.getSizeForTesting());
 
         // Test signal "should_show_non_role_manager_default_browser_promo".
         when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))

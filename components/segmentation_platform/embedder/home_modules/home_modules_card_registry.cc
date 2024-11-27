@@ -30,6 +30,8 @@ namespace segmentation_platform::home_modules {
 #if BUILDFLAG(IS_ANDROID)
 const char kDefaultBrowserPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.default_browser_promo_counter";
+const char kDefaultBrowserPromoInteractedPref[] =
+    "ephemeral_pref_interacted.default_browser_promo_interacted";
 #endif
 
 namespace {
@@ -165,6 +167,7 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kDefaultBrowserPromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kDefaultBrowserPromoInteractedPref, false);
 #endif
 }
 
@@ -266,6 +269,12 @@ void HomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {
         kLensEphemeralModuleTranslateVariationInteractedPref, true);
   }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
+    profile_prefs_->SetBoolean(kDefaultBrowserPromoInteractedPref, true);
+  }
+#endif
 }
 
 void HomeModulesCardRegistry::CreateAllCards() {
@@ -323,7 +332,8 @@ void HomeModulesCardRegistry::CreateAllCards() {
   int default_browser_promo_count =
       profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
   if (DefaultBrowserPromo::IsEnabled(default_browser_promo_count)) {
-    all_cards_by_priority_.push_back(std::make_unique<DefaultBrowserPromo>());
+    all_cards_by_priority_.push_back(
+        std::make_unique<DefaultBrowserPromo>(profile_prefs_));
   }
 #endif
   InitializeAfterAddingCards();
