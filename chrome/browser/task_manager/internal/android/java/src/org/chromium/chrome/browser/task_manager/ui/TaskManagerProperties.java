@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -33,7 +34,7 @@ class TaskManagerProperties {
             new WritableObjectPropertyKey<>();
 
     /** Property key for task id. */
-    static final WritableLongPropertyKey TASK_ID = new WritableLongPropertyKey();
+    static final ReadableLongPropertyKey TASK_ID = new ReadableLongPropertyKey();
 
     /** Property key for task name. */
     static final WritableObjectPropertyKey<String> TASK_NAME = new WritableObjectPropertyKey<>();

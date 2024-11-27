@@ -62,14 +62,15 @@ public class TaskManagerActivityTest {
     @Test
     @SmallTest
     public void testTaskManagerActivity() {
-        PropertyKey[] propertyKeys =
-                new PropertyKey[] {TASK_ID, TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
+        PropertyKey[] columnKeys = new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
+        PropertyKey[] taskModelKeys =
+                PropertyModel.concatKeys(columnKeys, new PropertyKey[] {TASK_ID});
 
-        mHeaderModel.set(COLUMNS, propertyKeys);
+        mHeaderModel.set(COLUMNS, columnKeys);
         mTasksModel.add(
                 new ListItem(
                         RowType.TASK,
-                        new PropertyModel.Builder(propertyKeys)
+                        new PropertyModel.Builder(taskModelKeys)
                                 .with(TASK_ID, 1)
                                 .with(TASK_NAME, "foo")
                                 .with(MEMORY_FOOTPRINT, 1_000_000)

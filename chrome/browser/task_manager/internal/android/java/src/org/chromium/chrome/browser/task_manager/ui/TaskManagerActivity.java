@@ -35,7 +35,6 @@ public class TaskManagerActivity extends AppCompatActivity {
                     REFRESH_TIME_MS,
                     mHeaderModel,
                     mTasksModel,
-                    TaskManagerProperties.TASK_ID,
                     TaskManagerProperties.TASK_NAME,
                     TaskManagerProperties.MEMORY_FOOTPRINT,
                     TaskManagerProperties.CPU,
@@ -95,9 +94,7 @@ public class TaskManagerActivity extends AppCompatActivity {
         }
         for (PropertyKey columnKey : model.get(TaskManagerProperties.COLUMNS)) {
             TextView textView;
-            if (columnKey == TaskManagerProperties.TASK_ID) {
-                continue;
-            } else if (columnKey == TaskManagerProperties.TASK_NAME) {
+            if (columnKey == TaskManagerProperties.TASK_NAME) {
                 textView = view.findViewById(R.id.task_name);
                 textView.setText(view.getContext().getString(R.string.task_manager_task_column));
             } else if (columnKey == TaskManagerProperties.MEMORY_FOOTPRINT) {
@@ -112,7 +109,7 @@ public class TaskManagerActivity extends AppCompatActivity {
                 textView.setText(
                         view.getContext().getString(R.string.task_manager_process_id_column));
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("column key " + columnKey + " not supported");
             }
             textView.setTypeface(null, Typeface.BOLD);
         }

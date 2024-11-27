@@ -48,11 +48,7 @@ public class TaskManagerMediatorTest {
         mTasks = new ModelList();
         mMediator =
                 new TaskManagerMediator(
-                        1000,
-                        mHeader,
-                        mTasks,
-                        TaskManagerProperties.TASK_ID,
-                        TaskManagerProperties.MEMORY_FOOTPRINT);
+                        1000, mHeader, mTasks, TaskManagerProperties.MEMORY_FOOTPRINT);
         mMediator.startObserving();
 
         ArgumentCaptor<TaskManagerObserver> observerCaptor =
@@ -75,9 +71,7 @@ public class TaskManagerMediatorTest {
 
         assertArrayEquals(
                 mHeader.get(TaskManagerProperties.COLUMNS),
-                new PropertyKey[] {
-                    TaskManagerProperties.TASK_ID, TaskManagerProperties.MEMORY_FOOTPRINT
-                });
+                new PropertyKey[] {TaskManagerProperties.MEMORY_FOOTPRINT});
 
         assertEquals(mTasks.get(0).type, TaskManagerProperties.RowType.TASK);
         assertEquals(mTasks.get(0).model.get(TaskManagerProperties.TASK_ID), 1);

@@ -20,7 +20,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 /**
@@ -31,7 +30,7 @@ class TaskManagerMediator {
     private final int mRefreshTimeMillis;
     private final TaskManagerServiceBridge mBridge = new TaskManagerServiceBridge();
     private TaskManagerServiceBridge.ObserverHandle mObserverHandle;
-    private final ArrayList<PropertyKey> mColumnKeys = new ArrayList<>();
+    private final PropertyKey[] mColumnKeys;
 
     private final PropertyModel mHeader;
     // The list containing the properties representing tasks. Sorted by task id.
@@ -44,8 +43,7 @@ class TaskManagerMediator {
      * @param refreshTimeMillis How often the model should be refreshed.
      * @param header The model for the header. The model must accept COLUMNS as a key.
      * @param tasks The model for tasks.
-     * @param columnKeys The properties to be updated. TASK_ID must be set even if it's not used in
-     *     UI.
+     * @param columnKeys The columns to be updated. TASK_ID must not be set.
      */
     TaskManagerMediator(
             int refreshTimeMillis,
@@ -55,7 +53,7 @@ class TaskManagerMediator {
         mRefreshTimeMillis = refreshTimeMillis;
         mHeader = header;
         mTasks = tasks;
-        for (PropertyKey columnKey : columnKeys) mColumnKeys.add(columnKey);
+        mColumnKeys = columnKeys;
 
         mHeader.set(COLUMNS, columnKeys);
     }
@@ -85,9 +83,7 @@ class TaskManagerMediator {
     }
 
     private @RefreshType int getRequiredRefreshType(PropertyKey columnKey) {
-        if (columnKey == TASK_ID) {
-            return 0;
-        } else if (columnKey == TASK_NAME) {
+        if (columnKey == TASK_NAME) {
             return 0;
         } else if (columnKey == MEMORY_FOOTPRINT) {
             return RefreshType.MEMORY_FOOTPRINT;
@@ -99,19 +95,27 @@ class TaskManagerMediator {
         throw new IllegalArgumentException();
     }
 
-    private void updateProperty(ListItem item, long taskId, PropertyKey columnKey) {
-        if (columnKey == TASK_ID) {
-            item.model.set(TASK_ID, taskId);
-        } else if (columnKey == TASK_NAME) {
-            item.model.set(TASK_NAME, mBridge.getTitle(taskId));
-        } else if (columnKey == MEMORY_FOOTPRINT) {
-            item.model.set(MEMORY_FOOTPRINT, mBridge.getMemoryFootprintUsage(taskId));
-        } else if (columnKey == CPU) {
-            item.model.set(CPU, (float) mBridge.getPlatformIndependentCpuUsage(taskId));
-        } else if (columnKey == PROCESS_ID) {
-            item.model.set(PROCESS_ID, mBridge.getProcessId(taskId));
-        } else {
-            throw new IllegalArgumentException();
+    private ListItem createTaskModel(long taskId) {
+        PropertyKey[] keys = PropertyModel.concatKeys(mColumnKeys, new PropertyKey[] {TASK_ID});
+        return new ListItem(
+                RowType.TASK, new PropertyModel.Builder(keys).with(TASK_ID, taskId).build());
+    }
+
+    // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
+    // refreshing them.
+    private void updateTaskModel(ListItem task, long taskId) {
+        for (PropertyKey columnKey : mColumnKeys) {
+            if (columnKey == TASK_NAME) {
+                task.model.set(TASK_NAME, mBridge.getTitle(taskId));
+            } else if (columnKey == MEMORY_FOOTPRINT) {
+                task.model.set(MEMORY_FOOTPRINT, mBridge.getMemoryFootprintUsage(taskId));
+            } else if (columnKey == CPU) {
+                task.model.set(CPU, (float) mBridge.getPlatformIndependentCpuUsage(taskId));
+            } else if (columnKey == PROCESS_ID) {
+                task.model.set(PROCESS_ID, mBridge.getProcessId(taskId));
+            } else {
+                throw new IllegalArgumentException("column key " + columnKey + " not supported");
+            }
         }
     }
 
@@ -119,16 +123,14 @@ class TaskManagerMediator {
         return new TaskManagerObserver() {
             @Override
             public void onTaskAdded(long taskId) {
-                ListItem taskItem = new ListItem(RowType.TASK, new PropertyModel(mColumnKeys));
-                for (PropertyKey columnKey : mColumnKeys) {
-                    updateProperty(taskItem, taskId, columnKey);
-                }
+                ListItem task = createTaskModel(taskId);
+                updateTaskModel(task, taskId);
 
                 int insertPos = 0;
                 for (; insertPos < mTasks.size(); insertPos++) {
                     if (mTasks.get(insertPos).model.get(TASK_ID) > taskId) break;
                 }
-                mTasks.add(insertPos, taskItem);
+                mTasks.add(insertPos, task);
             }
 
             @Override
@@ -143,16 +145,9 @@ class TaskManagerMediator {
                 // TODO(crbug.com/380165957): Confirm task ids are always sorted, and utilize this
                 // to speed up the computation when the model is sorted by task id.
                 for (long taskId : taskIds) {
-                    ListItem taskItem = mTasks.get(getIndexForTaskId(taskId));
+                    ListItem task = mTasks.get(getIndexForTaskId(taskId));
 
-                    // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
-                    // refreshing them.
-                    for (PropertyKey columnKey : mColumnKeys) {
-                        if (columnKey == TASK_ID) {
-                            continue; // already populated in onTaskAdded
-                        }
-                        updateProperty(taskItem, taskId, columnKey);
-                    }
+                    updateTaskModel(task, taskId);
                 }
             }
 
