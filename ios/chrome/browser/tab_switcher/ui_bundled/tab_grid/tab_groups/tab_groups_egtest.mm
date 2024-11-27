@@ -50,6 +50,7 @@ using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridEditAddToButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TabGridEditMenuCloseAllButton;
+using chrome_test_util::TabGridEditSelectAllButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridGroupCellWithName;
 using chrome_test_util::TabGridNewTabButton;
@@ -1018,6 +1019,64 @@ UIViewController* TopPresentedViewController() {
                                           l10n_util::GetPluralNSStringF(
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 2),
                                           2)] assertWithMatcher:grey_notNil()];
+}
+
+// Tests the creation of a new group by selecting another group in the selection
+// mode.
+- (void)testGroupCreationFromAnotherGroupInSelectionMode {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+
+  // Create a group with title `1group`.
+  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+  SetTabGroupCreationName(kGroup1Name);
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+
+  // Enter the selection mode.
+  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+
+  // Select the group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      performAction:grey_tap()];
+
+  // Create a new group from the selected group.
+  [[EarlGrey selectElementWithMatcher:TabGridEditAddToButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
+                                       1))] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AddTabToGroupSubMenuButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
+  SetTabGroupCreationName(kGroup2Name);
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+
+  // Check that no tabs are selected anymore.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // The group with title `1group` is not present and title `2group` is present
+  // in the grid.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Checks that all the options are displayed in the group's overflow menu.

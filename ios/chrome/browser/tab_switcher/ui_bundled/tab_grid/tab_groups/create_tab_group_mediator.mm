@@ -197,6 +197,8 @@
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
+    WebStateList::ScopedBatchOperation lock =
+        _webStateList->StartBatchOperation();
     std::set<int> tabIndexes;
     for (web::WebStateID identifier : _identifiers) {
       int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
