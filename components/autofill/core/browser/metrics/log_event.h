@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
-#include "components/autofill/core/browser/filling/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"

@@ -35,7 +35,6 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"

@@ -1793,15 +1793,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
-<enum name="AutofillFillingMethodMetric">
-  <int value="0" label="Full form"/>
-  <int value="1" label="Group filling name fields"/>
-  <int value="2" label="Group filling address fields"/>
-  <int value="3" label="Group filling email fields"/>
-  <int value="4" label="Group filling phone fields"/>
-  <int value="5" label="Field by field filling"/>
-</enum>
-
 <enum name="AutofillFormEvent">
   <int value="0" label="Interacted (once)"/>
   <int value="1" label="Suggestions shown"/>

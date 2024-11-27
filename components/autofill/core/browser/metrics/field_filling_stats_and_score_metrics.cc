@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/field_type_utils.h"
-#include "components/autofill/core/browser/filling/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"

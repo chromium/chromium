@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"

@@ -198,8 +198,6 @@ static_library("browser") {
     "field_types.h",
     "filling/addresses/field_filling_address_util.cc",
     "filling/addresses/field_filling_address_util.h",
-    "filling/autofill_granular_filling_utils.cc",
-    "filling/autofill_granular_filling_utils.h",
     "filling/field_filling_skip_reason.cc",
     "filling/field_filling_skip_reason.h",
     "filling/form_autofill_history.cc",
