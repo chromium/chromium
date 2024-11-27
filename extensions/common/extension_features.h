@@ -168,6 +168,10 @@ BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
+// Controls whether omnibox extensions can use the new capability to intercept
+// input without needing keyword mode.
+BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
+
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
 

@@ -26,6 +26,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiPermissionsHostAccessRequests,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiOdfsConfigPrivate,
+    &extensions_features::kExperimentalOmniboxLabs,
     &extensions_features::kExtensionIconVariants,
     &extensions_features::kTelemetryExtensionPendingApprovalApi,
     &extensions_features::kApiEnterpriseReportingPrivateReportDataMaskingEvent,

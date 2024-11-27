@@ -171,6 +171,10 @@ BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
              "DeclarativeNetRequestSafeDynamicRules",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExperimentalOmniboxLabs,
+             "ExperimentalOmniboxLabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
              "DeclarativeNetRequestResponseHeaderMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);

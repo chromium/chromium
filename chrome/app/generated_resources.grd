@@ -5771,6 +5771,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION" desc="Permission string for accessing network information.">
             Read ChromeOS network information
           </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_OMNIBOX_DIRECT_INPUT" desc="Permission string for omnibox labs.">
+            Always read keyboard input in the address bar
+        </message>
         </if>
       </if>
 

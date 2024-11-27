@@ -3166,6 +3166,7 @@ Called by update_extension_permission.py.-->
   <int value="258" label="kChromeOSDiagnosticsNetworkInfoForMlab"/>
   <int value="259" label="kAILanguageModelOriginTrial"/>
   <int value="260" label="kExperimentalAiData"/>
+  <int value="261" label="kOmniboxDirectInput"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">
