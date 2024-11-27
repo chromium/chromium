@@ -71,6 +71,8 @@ void GlicKeyedService::GetContextFromFocusedTab(
     glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   content::WebContents* web_contents = GetWebContentsForContext();
   if (!web_contents) {
+    // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
+    LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
     std::move(callback).Run(nullptr);
     return;
   }

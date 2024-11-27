@@ -133,6 +133,9 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
       !primary_page_changed_) {
     result = glic::mojom::TabContextResult::New();
     result->tab_data = GetTabData(web_contents());
+    // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
+    LOG(WARNING) << "GlicPageContextFetcher: Returning context for "
+                 << result->tab_data->url;
     if (inner_text_result_) {
       result->web_page_data =
           glic::mojom::WebPageData::New(glic::mojom::DocumentData::New(
