@@ -66,7 +66,8 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                        const WorkletOptions* options,
                        ExceptionState&,
                        bool resolve_to_worklet,
-                       SharedStorageDataOrigin data_origin_type);
+                       SharedStorageDataOrigin data_origin_type,
+                       scoped_refptr<SecurityOrigin> custom_data_origin);
 
  private:
   // Set when addModule() was called and passed early renderer checks.

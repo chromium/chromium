@@ -95,7 +95,7 @@ ScriptPromise<IDLUndefined> SharedStorageWorklet::addModule(
   auto promise = resolver->Promise();
   AddModuleHelper(script_state, resolver, module_url, options, exception_state,
                   /*resolve_to_worklet=*/false,
-                  SharedStorageDataOrigin::kContextOrigin);
+                  SharedStorageDataOrigin::kContextOrigin, nullptr);
   return promise;
 }
 
@@ -106,7 +106,8 @@ void SharedStorageWorklet::AddModuleHelper(
     const WorkletOptions* options,
     ExceptionState& exception_state,
     bool resolve_to_worklet,
-    SharedStorageDataOrigin data_origin_type) {
+    SharedStorageDataOrigin data_origin_type,
+    scoped_refptr<SecurityOrigin> custom_data_origin) {
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
@@ -116,21 +117,9 @@ void SharedStorageWorklet::AddModuleHelper(
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
-
-  // An opaque data origin is not allowed. Here we reject the case where the
-  // context origin is opaque and used as the data origin. Below we will address
-  // the case where the script origin is opaque and used as the data origin.
-  bool use_script_origin_as_data_origin =
-      resolve_to_worklet &&
-      data_origin_type == SharedStorageDataOrigin::kScriptOrigin;
-
-  if (!use_script_origin_as_data_origin &&
-      execution_context->GetSecurityOrigin()->IsOpaque()) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        kOpaqueContextOriginCheckErrorMessage));
-    return;
-  }
+  CHECK_NE(data_origin_type, SharedStorageDataOrigin::kInvalid);
+  CHECK_EQ(data_origin_type == SharedStorageDataOrigin::kCustomOrigin,
+           !!custom_data_origin);
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
 
@@ -177,16 +166,26 @@ void SharedStorageWorklet::AddModuleHelper(
             kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin);
   }
 
-  scoped_refptr<SecurityOrigin> shared_storage_security_origin =
-      use_script_origin_as_data_origin
-          ? script_security_origin->IsolatedCopy()
-          : execution_context->GetSecurityOrigin()->IsolatedCopy();
+  bool use_script_origin_as_data_origin =
+      resolve_to_worklet &&
+      data_origin_type == SharedStorageDataOrigin::kScriptOrigin;
 
-  // Opaque data origins are not allowed. Earlier we rejected the case where the
-  // context origin was both opaque and used as the data origin. Here we reject
-  // the case where the script origin is opaque and used as the data origin.
-  if (use_script_origin_as_data_origin &&
-      shared_storage_security_origin->IsOpaque()) {
+  bool use_custom_data_origin =
+      resolve_to_worklet &&
+      base::FeatureList::IsEnabled(
+          features::kSharedStorageCreateWorkletCustomDataOrigin) &&
+      data_origin_type == SharedStorageDataOrigin::kCustomOrigin;
+
+  scoped_refptr<SecurityOrigin> shared_storage_security_origin =
+      use_custom_data_origin
+          ? std::move(custom_data_origin)
+          : (use_script_origin_as_data_origin
+                 ? script_security_origin->IsolatedCopy()
+                 : execution_context->GetSecurityOrigin()->IsolatedCopy());
+  CHECK(shared_storage_security_origin);
+
+  // Opaque data origins are not allowed.
+  if (shared_storage_security_origin->IsOpaque()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
         kOpaqueDataOriginCheckErrorMessage));

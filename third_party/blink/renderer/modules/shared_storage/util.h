@@ -29,11 +29,13 @@ static constexpr char kOpaqueContextOriginCheckErrorMessage[] =
 static constexpr char kOpaqueDataOriginCheckErrorMessage[] =
     "the method on sharedStorage is not allowed to have an opaque data origin";
 
-// This enum corresponds to the IDL enum `SharedStorageDataOrigin` in
+// This enum classifies the value of `dataOrigin` in
 // shared_storage_worklet_options.idl.
 enum class SharedStorageDataOrigin {
   kContextOrigin = 0,
   kScriptOrigin = 1,
+  kCustomOrigin = 2,
+  kInvalid = 3,
 };
 
 // Helper method to convert v8 string to WTF::String.

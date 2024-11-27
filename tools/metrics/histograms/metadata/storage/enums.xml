@@ -437,13 +437,12 @@ chromium-metrics-reviews@google.com.
     browser received message from renderer trying to cross-origin worklet when
     &quot;SharedStorageAPIM125&quot; feature disabled.
   </int>
-  <int value="9"
-      label="kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
+  <int value="9" label="AddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     cross-origin worklet cannot be created because shared storage is disabled
     for the origin's site.
   </int>
-  <int value="10" label="kAddModuleNonWebVisibleOther">
+  <int value="10" label="AddModuleNonWebVisibleOther">
     Other errors in `addModule()` or `createWorklet()` not visible to the
     document.
   </int>
@@ -552,6 +551,11 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="SelectURLNonWebVisibleInvalidFilteringIdMaxBytes">
     Error in `selectURL()` not visible to the document: browser received message
     from renderer with invalid filtering ID byte size.
+  </int>
+  <int value="38" label="AddModuleNonWebVisibleCustomDataOriginDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    custom data origin worklet cannot be created because
+    SharedStorageCreateWorkletCustomDataOrigin is disabled.
   </int>
 </enum>
 

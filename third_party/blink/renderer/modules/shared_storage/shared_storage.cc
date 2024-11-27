@@ -26,7 +26,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_modifier_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
@@ -156,15 +155,21 @@ bool CanGetOutsideWorklet(ScriptState* script_state) {
   return frame->IsInFencedFrameTree();
 }
 
-SharedStorageDataOrigin EnumToDataOrigin(
-    V8SharedStorageDataOrigin::Enum data_origin_value) {
-  switch (data_origin_value) {
-    case V8SharedStorageDataOrigin::Enum::kContextOrigin:
-      return SharedStorageDataOrigin::kContextOrigin;
-    case V8SharedStorageDataOrigin::Enum::kScriptOrigin:
-      return SharedStorageDataOrigin::kScriptOrigin;
+std::tuple<SharedStorageDataOrigin, scoped_refptr<SecurityOrigin>>
+ParseDataOrigin(const String& data_origin_value) {
+  String data_origin_value_lower = data_origin_value.LowerASCII();
+  if (data_origin_value_lower == "context-origin") {
+    return std::make_tuple(SharedStorageDataOrigin::kContextOrigin, nullptr);
   }
-  NOTREACHED();
+  if (data_origin_value_lower == "script-origin") {
+    return std::make_tuple(SharedStorageDataOrigin::kScriptOrigin, nullptr);
+  }
+  KURL data_origin_url(data_origin_value);
+  if (!data_origin_url.IsValid()) {
+    return std::make_tuple(SharedStorageDataOrigin::kInvalid, nullptr);
+  }
+  return std::make_tuple(SharedStorageDataOrigin::kCustomOrigin,
+                         SecurityOrigin::Create(data_origin_url));
 }
 
 }  // namespace
@@ -967,8 +972,15 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
       MakeGarbageCollected<ScriptPromiseResolver<SharedStorageWorklet>>(
           script_state);
   auto promise = resolver->Promise();
-  SharedStorageDataOrigin data_origin_type =
-      EnumToDataOrigin(options->dataOrigin().AsEnum());
+  std::tuple<SharedStorageDataOrigin, scoped_refptr<SecurityOrigin>>
+      parse_results = ParseDataOrigin(options->dataOrigin());
+  SharedStorageDataOrigin data_origin_type = std::get<0>(parse_results);
+  if (data_origin_type == SharedStorageDataOrigin::kInvalid) {
+    resolver->Reject(v8::Exception::TypeError(V8String(
+        script_state->GetIsolate(),
+        "The \"dataOrigin\" parameter is not a valid keyword or URL.")));
+    return promise;
+  }
 
   // We intentionally allow the implicit downcast of `options` to a
   // `WorkletOptions*` here.
@@ -978,7 +990,8 @@ ScriptPromise<SharedStorageWorklet> SharedStorage::createWorklet(
   // `SharedStorageWorklet::AddModuleHelper()`.
   worklet->AddModuleHelper(script_state, resolver, module_url, options,
                            exception_state, /*resolve_to_worklet=*/true,
-                           data_origin_type);
+                           data_origin_type,
+                           std::move(std::get<1>(parse_results)));
   return promise;
 }
 

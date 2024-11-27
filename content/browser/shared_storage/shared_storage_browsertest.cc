@@ -115,6 +115,9 @@ constexpr char kPageWithBlankIframePath[] = "/page_with_blank_iframe.html";
 
 constexpr char kPngPath[] = "/shared_storage/pixel.png";
 
+constexpr char kSharedStorageTrustedOriginsPath[] =
+    "/.well-known/shared-storage/trusted-origins";
+
 constexpr char kDestroyedStatusHistogram[] =
     "Storage.SharedStorage.Worklet.DestroyedStatus";
 
@@ -248,6 +251,16 @@ bool IsErrorMessage(const content::WebContentsConsoleObserver::Message& msg) {
   return msg.log_level == blink::mojom::ConsoleMessageLevel::kError;
 }
 
+std::string ReplacePortInString(std::string str, uint16_t port) {
+  const std::string kToReplace("{{port}}");
+  size_t index = str.find(kToReplace);
+  while (index != std::string::npos) {
+    str = str.replace(index, kToReplace.size(), base::NumberToString(port));
+    index = str.find(kToReplace);
+  }
+  return str;
+}
+
 auto describe_param = [](const auto& info) {
   return base::StrCat({"ResolveSelectURLTo", info.param ? "Config" : "URN"});
 };
@@ -359,31 +372,27 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
   }
 
  private:
-  void OnAddModuleOnWorkletFinished(
-      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
-          callback,
+  void OnCreateWorkletScriptLoadingFinished(
       bool success,
       const std::string& error_message) override {
-    OnAddModuleOnWorkletFinishedHelper(std::move(callback), success,
-                                       error_message,
-                                       /*initial_message=*/true);
+    OnCreateWorkletScriptLoadingFinishedHelper(success, error_message,
+                                               /*initial_message=*/true);
   }
 
-  void OnAddModuleOnWorkletFinishedHelper(
-      blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
-          callback,
+  void OnCreateWorkletScriptLoadingFinishedHelper(
       bool success,
       const std::string& error_message,
       bool initial_message) {
     bool in_keep_alive = IsInKeepAlivePhase();
     if (should_defer_worklet_messages_ && initial_message) {
-      pending_worklet_messages_.push_back(base::BindOnce(
-          &TestSharedStorageWorkletHost::OnAddModuleOnWorkletFinishedHelper,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), success,
-          error_message, /*initial_message=*/false));
+      pending_worklet_messages_.push_back(
+          base::BindOnce(&TestSharedStorageWorkletHost::
+                             OnCreateWorkletScriptLoadingFinishedHelper,
+                         weak_ptr_factory_.GetWeakPtr(), success, error_message,
+                         /*initial_message=*/false));
     } else {
-      SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
-          std::move(callback), success, error_message);
+      SharedStorageWorkletHost::OnCreateWorkletScriptLoadingFinished(
+          success, error_message);
     }
 
     if (initial_message) {
@@ -944,15 +953,21 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   // other set up steps.
   virtual void FinishSetup() {
     https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    RegisterCustomRequestHandlers();
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     SetupCrossSiteRedirector(https_server());
     ASSERT_TRUE(https_server()->Start());
   }
 
+  // Virtual so that derived classes can register custom request handlers.
+  virtual void RegisterCustomRequestHandlers() {}
+
   void ExpectAccessObserved(
       const std::vector<TestSharedStorageObserver::Access>& expected_accesses) {
     observer_->ExpectAccessObserved(expected_accesses);
   }
+
+  uint16_t port() { return https_server()->port(); }
 
   double GetRemainingBudget(const url::Origin& origin) {
     base::test::TestFuture<SharedStorageWorkletHost::BudgetResult> future;
@@ -1270,12 +1285,61 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
       browser_client_;
 };
 
+class SharedStorageTrustedOriginsResponse
+    : public net::test_server::BasicHttpResponse {
+ public:
+  SharedStorageTrustedOriginsResponse(
+      const base::Value* json_trusted_origins_list,
+      uint16_t port,
+      bool force_server_error)
+      : force_server_error_(force_server_error) {
+    if (json_trusted_origins_list) {
+      json_trusted_origins_list_str_ =
+          base::WriteJson(*json_trusted_origins_list);
+      if (json_trusted_origins_list_str_) {
+        json_trusted_origins_list_str_ =
+            ReplacePortInString(*json_trusted_origins_list_str_, port);
+      }
+    }
+  }
+
+  SharedStorageTrustedOriginsResponse(
+      const SharedStorageTrustedOriginsResponse&) = delete;
+  SharedStorageTrustedOriginsResponse& operator=(
+      const SharedStorageTrustedOriginsResponse&) = delete;
+
+  ~SharedStorageTrustedOriginsResponse() override = default;
+
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    if (!json_trusted_origins_list_str_ || force_server_error_) {
+      set_code(net::HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR);
+      set_content_type("text/plain");
+      set_content("");
+    } else {
+      set_code(net::HttpStatusCode::HTTP_OK);
+      set_content_type("application/json");
+      AddCustomHeader("Access-Control-Allow-Origin", "*");
+      set_content(*json_trusted_origins_list_str_);
+    }
+    delegate->SendResponseHeaders(code(), GetHttpReasonPhrase(code()),
+                                  BuildHeaders());
+    delegate->SendContents(content(), base::DoNothing());
+  }
+
+ private:
+  bool force_server_error_;
+  std::optional<std::string> json_trusted_origins_list_str_;
+};
+
 class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
                                  public testing::WithParamInterface<bool> {
  public:
   SharedStorageBrowserTest() {
     fenced_frame_api_change_feature_.InitWithFeatureState(
         blink::features::kFencedFramesAPIChanges, ResolveSelectURLToConfig());
+    custom_data_origin_feature_.InitAndEnableFeature(
+        blink::features::kSharedStorageCreateWorkletCustomDataOrigin);
   }
 
   bool ResolveSelectURLToConfig() override { return GetParam(); }
@@ -1300,8 +1364,63 @@ class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
 
   ~SharedStorageBrowserTest() override = default;
 
+  void set_trusted_origins_list_index(size_t trusted_origins_list_index) {
+    trusted_origins_list_index_ = trusted_origins_list_index;
+  }
+
+  void set_force_server_error(bool force_server_error) {
+    force_server_error_ = force_server_error;
+  }
+
+  void RegisterCustomRequestHandlers() override {
+    RegisterSharedStorageTrustedOriginsRequestHandler();
+  }
+
+  void RegisterSharedStorageTrustedOriginsRequestHandler() {
+    https_server()->RegisterRequestHandler(base::BindRepeating(
+        &SharedStorageBrowserTest::HandleSharedStorageTrustedOriginsRequest,
+        base::Unretained(this), BuildWellKnownTrustedOriginsLists()));
+  }
+
+  // Virtual so that a derived class can build more a realistic vector of
+  // values. We use base::Value instead of base::Value::List, even though a
+  // correctly formatted entry would be a base::Value::List, so that a derived
+  // class can test the parse error that would happen if the JSON returned isn't
+  // a list.
+  //
+  // SharedStorageBrowserTest::BuildWellKnownTrustedOriginsLists builds a vector
+  // with a single list entry that simply allowlists all combinations of script
+  // and context origins.
+  virtual std::vector<base::Value> BuildWellKnownTrustedOriginsLists() {
+    std::vector<base::Value> trusted_origins_lists;
+    trusted_origins_lists.push_back(static_cast<base::Value>(
+        base::Value::List().Append(base::Value::Dict()
+                                       .Set("scriptOrigin", "*")
+                                       .Set("contextOrigin", "*"))));
+    return trusted_origins_lists;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleSharedStorageTrustedOriginsRequest(
+      const std::vector<base::Value>& json_well_known_trusted_origin_lists,
+      const net::test_server::HttpRequest& request) {
+    const auto& path = request.GetURL().path();
+    if (path != kSharedStorageTrustedOriginsPath ||
+        json_well_known_trusted_origin_lists.empty()) {
+      return nullptr;
+    }
+    size_t index = trusted_origins_list_index_ %
+                   json_well_known_trusted_origin_lists.size();
+    return std::make_unique<SharedStorageTrustedOriginsResponse>(
+        &json_well_known_trusted_origin_lists[index], port(),
+        force_server_error_);
+  }
+
  private:
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
+  base::test::ScopedFeatureList custom_data_origin_feature_;
+  size_t trusted_origins_list_index_ = 0;
+  bool force_server_error_ = false;
 };
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_Success) {
@@ -4856,6 +4975,30 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(
     SharedStorageBrowserTest,
+    CreateWorklet_CrossOriginScript_CustomDataOrigin_FailedCors) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+                        kEmptyAccessControlAllowOriginReplacement,
+                        kEmptySharedStorageCrossOriginAllowedReplacement)));
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(result.error, testing::HasSubstr("Failed to load"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
     CreateWorklet_CrossOriginScript_ScriptDataOrigin_FailedSharedStorageWorkletAllowedResponseHeaderCheck) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -4953,6 +5096,40 @@ IN_PROC_BROWSER_TEST_P(
       JsReplace(
           "sharedStorage.createWorklet($1, {dataOrigin: 'script-origin'})",
           module_script_url.spec())));
+
+  TestSharedStorageWorkletHost* worklet_host =
+      test_runtime_manager().GetAttachedWorkletHost();
+
+  // The worklet host should reuse the main frame's process on Android without
+  // strict site isolation; otherwise, it should use a new process.
+  bool expected_use_new_process = AreAllSitesIsolatedForTesting();
+  bool actual_use_new_process =
+      (shell()->web_contents()->GetPrimaryMainFrame()->GetProcess() !=
+       worklet_host->GetProcessHost());
+
+  EXPECT_EQ(expected_use_new_process, actual_use_new_process);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageBrowserTest,
+    CreateWorklet_CrossOriginScript_CustomDataOrigin_Success) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        kEmptySharedStorageCrossOriginAllowedReplacement)));
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
 
   TestSharedStorageWorkletHost* worklet_host =
       test_runtime_manager().GetAttachedWorkletHost();
@@ -5234,6 +5411,71 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL iframe_url = https_server()->GetURL("a.test", "/empty.thml");
   FrameTreeNode* iframe_node =
       CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node->current_frame_host(), R"(
+      console.log(await sharedStorage.get('key0'));
+    )",
+                         &out_script_url, /*expected_total_host_count=*/2);
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+}
+
+// Start a worklet with b.test script in a.test's context with data origin
+// c.test via createWorklet(), and then start a worklet with same-origin script
+// in c.test's context. Assert that the data stored in the first worklet can be
+// retrieved in the second worklet.
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       CrossOriginScript_CustomDataOrigin_VerifyDataOrigin) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/shared_storage/module_with_custom_header.js",
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+                        "Access-Control-Allow-Origin: *",
+                        kEmptySharedStorageCrossOriginAllowedReplacement)));
+
+  GURL custom_data_origin_url =
+      https_server()->GetURL("c.test", kSimplePagePath);
+  url::Origin custom_data_origin = url::Origin::Create(custom_data_origin_url);
+
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(R"(
+      new Promise((resolve, reject) => {
+        sharedStorage.createWorklet($1, {dataOrigin: $2})
+        .then((worklet) => {
+          window.testWorklet = worklet;
+          resolve();
+        });
+      })
+    )",
+                                        module_script_url.spec(),
+                                        custom_data_origin.Serialize())));
+
+  // Expect the run() operation.
+  test_runtime_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      window.testWorklet.run('test-operation', {
+        data: {
+          'set-key': 'key0',
+          'set-value': 'value0'
+        },
+        keepAlive: true
+      });
+    )"));
+
+  test_runtime_manager().GetAttachedWorkletHost()->WaitForWorkletResponses();
+
+  FrameTreeNode* iframe_node =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), custom_data_origin_url);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -10557,8 +10799,6 @@ class SharedStorageHeaderObserverBrowserTest
         ->OverrideSharedStorageHeaderObserverForTesting(std::move(observer));
   }
 
-  uint16_t port() { return https_server()->port(); }
-
   bool NavigateToURLWithResponse(
       Shell* window,
       const GURL& url,
@@ -10610,13 +10850,7 @@ class SharedStorageHeaderObserverBrowserTest
   }
 
   std::string ReplacePortInString(std::string str) {
-    const std::string kToReplace("{{port}}");
-    size_t index = str.find(kToReplace);
-    while (index != std::string::npos) {
-      str = str.replace(index, kToReplace.size(), base::NumberToString(port()));
-      index = str.find(kToReplace);
-    }
-    return str;
+    return ::content::ReplacePortInString(str, port());
   }
 
   void SetUpResponsesAndNavigateMainPage(
@@ -14046,6 +14280,419 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   ASSERT_TRUE(observer_);
   EXPECT_TRUE(observer_->header_results().empty());
   EXPECT_TRUE(observer_->operations().empty());
+}
+
+class SharedStorageCreateWorkletCustomDataOriginBrowserTest
+    : public SharedStorageBrowserTest {
+ public:
+  ~SharedStorageCreateWorkletCustomDataOriginBrowserTest() override = default;
+
+  std::vector<base::Value> BuildWellKnownTrustedOriginsLists() override {
+    std::vector<base::Value> trusted_origins_lists;
+    // We expect failure for script with origin "https://b.test:{{port}}" and
+    // context origin "https://a.test:{{port}}" when one of the following values
+    // is served.
+    trusted_origins_lists.push_back(static_cast<base::Value>(
+        base::Value::Dict()
+            .Set("scriptOrigin", "https://b.test:{{port}}")
+            .Set("contextOrigin", "https://a.test:{{port}}")));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List()));
+    trusted_origins_lists.push_back(static_cast<base::Value>(
+        base::Value::List().Append(base::Value::List()
+                                       .Append("https://b.test:{{port}}")
+                                       .Append("https://a.test:{{port}}"))));
+    trusted_origins_lists.push_back(static_cast<base::Value>(
+        base::Value::List().Append(base::Value::Dict().Set(
+            "contextOrigin", "https://a.test:{{port}}"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", base::Value::List())
+                .Set("contextOrigin", "https://a.test:{{port}}"))));
+    trusted_origins_lists.push_back(static_cast<base::Value>(
+        base::Value::List().Append(base::Value::Dict().Set(
+            "scriptOrigin", "https://b.test:{{port}}"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", "https://b.test:{{port}}")
+                .Set("contextOrigin", base::Value::List()))));
+    trusted_origins_lists.push_back(static_cast<base::Value>(
+        base::Value::List()
+            .Append(base::Value::Dict()
+                        .Set("scriptOrigin", "https://a.test:{{port}}")
+                        .Set("contextOrigin", "*"))
+            .Append(base::Value::Dict()
+                        .Set("scriptOrigin", "*")
+                        .Set("contextOrigin", "https://b.test:{{port}}"))));
+    // We expect success for script with origin "https://b.test:{{port}}" and
+    // context origin "https://a.test:{{port}}" when one of the following values
+    // is served.
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", "https://b.test:{{port}}")
+                .Set("contextOrigin", "https://a.test:{{port}}"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", "https://b.test:{{port}}")
+                .Set("contextOrigin", "*"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", "*")
+                .Set("contextOrigin", "https://a.test:{{port}}"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", base::Value::List()
+                                         .Append("https://x.test:{{port}}")
+                                         .Append("https://b.test:{{port}}"))
+                .Set("contextOrigin",
+                     base::Value::List()
+                         .Append("https://a.test:{{port}}")
+                         .Append("https://y.test:{{port}}")))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", base::Value::List()
+                                         .Append("https://b.test:{{port}}")
+                                         .Append("https://y.test:{{port}}")
+                                         .Append("https://x.test:{{port}}"))
+                .Set("contextOrigin",
+                     base::Value::List()
+                         .Append("https://y.test:{{port}}")
+                         .Append("*")
+                         .Append("https://z.test:{{port}}")))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::Value::List().Append(
+            base::Value::Dict()
+                .Set("scriptOrigin", base::Value::List()
+                                         .Append("https://x.test:{{port}}")
+                                         .Append("https://y.test:{{port}}")
+                                         .Append("*"))
+                .Set("contextOrigin",
+                     base::Value::List()
+                         .Append("https://y.test:{{port}}")
+                         .Append("https://a.test:{{port}}")))));
+    return trusted_origins_lists;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                         testing::Bool(),
+                         describe_param);
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_ServerError) {
+  set_force_server_error(true);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "no response, an invalid response, or an unexpected mime type"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_NotAList) {
+  set_trusted_origins_list_index(0);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "because there was no parse result or the result was not a list"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_EmptyList) {
+  set_trusted_origins_list_index(1);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(result.error, testing::HasSubstr("is an empty list"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_NonDictItem) {
+  set_trusted_origins_list_index(2);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("non-dictionary item was encountered"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_ScriptOriginKeyNotFound) {
+  set_trusted_origins_list_index(3);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("dictionary item's `scriptOrigin` key was not found"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_ScriptOriginValueEmptyList) {
+  set_trusted_origins_list_index(4);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "`scriptOrigin` key was not found, or its value was an empty list"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_ContextOriginKeyNotFound) {
+  set_trusted_origins_list_index(5);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(
+                  "dictionary item's `contextOrigin` key was not found"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_ContextOriginValueEmptyList) {
+  set_trusted_origins_list_index(6);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "`contextOrigin` key was not found, or its value was an empty list"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Failure_NotAllowed) {
+  set_trusted_origins_list_index(7);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EvalJsResult result = EvalJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize()));
+
+  EXPECT_THAT(result.error, testing::HasSubstr("has not been allowed"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Success_FullySpecified) {
+  set_trusted_origins_list_index(8);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+    CrossOriginScript_Success_SpecifiedScriptOrigin_WildcardContextOrigin) {
+  set_trusted_origins_list_index(9);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+    CrossOriginScript_Success_WildcardScriptOrigin_SpecifiedContextOrigin) {
+  set_trusted_origins_list_index(10);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+                       CrossOriginScript_Success_Lists_FullySpecified) {
+  set_trusted_origins_list_index(11);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+    CrossOriginScript_Success_Lists_SpecifiedScriptOrigin_WildcardContextOrigin) {
+  set_trusted_origins_list_index(12);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageCreateWorkletCustomDataOriginBrowserTest,
+    CrossOriginScript_Success_Lists_WildcardScriptOrigin_SpecifiedContextOrigin) {
+  set_trusted_origins_list_index(13);
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL module_script_url = https_server()->GetURL(
+      "b.test", "/shared_storage/module_with_cors_header.js");
+
+  url::Origin custom_data_origin =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
+                module_script_url.spec(), custom_data_origin.Serialize())));
 }
 
 }  // namespace content

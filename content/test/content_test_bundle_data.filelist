@@ -7892,6 +7892,8 @@ data/shared_storage/erroneous_module.js
 data/shared_storage/getter_module.js
 data/shared_storage/large_cacheable_script.js
 data/shared_storage/large_cacheable_script.js.mock-http-headers
+data/shared_storage/module_with_cors_header.js
+data/shared_storage/module_with_cors_header.js.mock-http-headers
 data/shared_storage/module_with_custom_header.js
 data/shared_storage/module_with_custom_header.js.mock-http-headers
 data/shared_storage/page-with-non-shared-storage-writable-iframe.html

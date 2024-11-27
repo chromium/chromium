@@ -498,4 +498,5 @@ Refer to README.md for content description and update process.
  <item id="demo_login_controller_account_clean_up" added_in_milestone="132" content_hash_code="0034c2c2" os_list="chromeos" file_path="chrome/browser/ash/login/demo_mode/demo_login_controller.cc" />
  <item id="chromeos_quick_insert_gif_media_fetcher" added_in_milestone="133" content_hash_code="05d03088" os_list="chromeos" file_path="ash/quick_insert/quick_insert_asset_fetcher_impl.cc" />
  <item id="chromeos_feedback_report_hpke_public_key_fetch_for_variations" added_in_milestone="133" content_hash_code="03357d0e" os_list="chromeos,linux,windows" file_path="extensions/browser/api/feedback_private/feedback_service.cc" />
+ <item id="shared_storage_worklet_host" added_in_milestone="133" content_hash_code="04cb9ff5" os_list="linux,windows,android,chromeos" file_path="content/browser/shared_storage/shared_storage_worklet_host.cc" />
 </annotations>
