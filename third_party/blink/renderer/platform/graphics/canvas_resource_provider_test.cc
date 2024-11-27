@@ -17,7 +17,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
@@ -38,15 +37,6 @@ namespace blink {
 namespace {
 
 constexpr int kMaxTextureSize = 1024;
-
-class MockCanvasResourceDispatcherClient
-    : public CanvasResourceDispatcherClient {
- public:
-  MockCanvasResourceDispatcherClient() = default;
-
-  MOCK_METHOD0(BeginFrame, bool());
-  MOCK_METHOD1(SetFilterQualityInResource, void(cc::PaintFlags::FilterQuality));
-};
 
 class ImageTrackingDecodeCache : public cc::StubDecodeCache {
  public:
@@ -608,17 +598,10 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedBitmap_GPUCompositing) {
-  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
-
-  MockCanvasResourceDispatcherClient client;
-  CanvasResourceDispatcher resource_dispatcher(
-      &client, scheduler::GetSingleThreadTaskRunnerForTesting(),
-      scheduler::GetSingleThreadTaskRunnerForTesting(), 1 /* client_id */,
-      1 /* sink_id */, 1 /* placeholder_canvas_id */, kSize);
 
   EXPECT_FALSE(CanvasResourceProvider::CreateSharedBitmapProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
@@ -635,12 +618,6 @@ TEST_F(CanvasResourceProviderTest,
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
-
-  MockCanvasResourceDispatcherClient client;
-  CanvasResourceDispatcher resource_dispatcher(
-      &client, scheduler::GetSingleThreadTaskRunnerForTesting(),
-      scheduler::GetSingleThreadTaskRunnerForTesting(), 1 /* client_id */,
-      1 /* sink_id */, 1 /* placeholder_canvas_id */, kSize);
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow,
