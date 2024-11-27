@@ -6214,8 +6214,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_SUBTITLE" desc="This string is the body of a message promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to passwords, etc.). We want users to understand why signing in is beneficial, and click 'Sign in' to sign in to their Google Account. The tone should be informative and lightweight.">
               Sign in to get your passwords and more on all your devices
             </message>
-      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_TITLE" desc="This string is the title of a message promotion about signing in to Chrome with the user's Google Account. It indicates that the current Activity may use Chrome data (the rest of the app may not be).">
-        Running in Chrome
+      <message name="IDS_CUSTOM_TABS_SIGNED_OUT_MESSAGE_TITLE" desc="This string is the title of a message promotion about signing in to Chrome with the user's Google Account.">
+        Sign in to Chrome
       </message>
 
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
