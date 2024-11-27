@@ -118,8 +118,8 @@ const CSSValue* ConvertFontMetricOverrideValue(const CSSValue* parsed_value) {
 
 const CSSValue* ConvertSizeAdjustValue(const CSSValue* parsed_value) {
   // We store the initial value 100% as nullptr
-  if (parsed_value && To<CSSPrimitiveValue>(parsed_value)->IsHundred() ==
-                          CSSPrimitiveValue::BoolStatus::kTrue) {
+  if (parsed_value &&
+      To<CSSPrimitiveValue>(parsed_value)->GetValueIfKnown() == 100.0) {
     return nullptr;
   }
   return parsed_value;

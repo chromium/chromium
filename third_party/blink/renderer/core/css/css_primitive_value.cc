@@ -418,6 +418,11 @@ double CSSPrimitiveValue::ComputeValueInCanonicalUnit(
                    length_resolver);
 }
 
+std::optional<double> CSSPrimitiveValue::GetValueIfKnown() const {
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->GetValueIfKnown()
+                        : To<CSSNumericLiteralValue>(this)->GetValueIfKnown();
+}
+
 double CSSPrimitiveValue::ComputeLengthDouble(
     const CSSLengthResolver& length_resolver) const {
   if (IsCalculated()) {
@@ -573,26 +578,6 @@ double CSSPrimitiveValue::GetDoubleValue() const {
 double CSSPrimitiveValue::GetDoubleValueWithoutClamping() const {
   return IsCalculated() ? To<CSSMathFunctionValue>(this)->DoubleValue()
                         : To<CSSNumericLiteralValue>(this)->DoubleValue();
-}
-
-CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsZero() const {
-  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsZero()
-                        : To<CSSNumericLiteralValue>(this)->IsZero();
-}
-
-CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsOne() const {
-  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsOne()
-                        : To<CSSNumericLiteralValue>(this)->IsOne();
-}
-
-CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsHundred() const {
-  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsHundred()
-                        : To<CSSNumericLiteralValue>(this)->IsHundred();
-}
-
-CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsNegative() const {
-  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsNegative()
-                        : To<CSSNumericLiteralValue>(this)->IsNegative();
 }
 
 CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(

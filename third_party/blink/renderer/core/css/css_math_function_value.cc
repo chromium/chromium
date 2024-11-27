@@ -211,46 +211,6 @@ double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
   }
 }
 
-CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsZero() const {
-  if (!IsResolvableBeforeLayout()) {
-    return BoolStatus::kUnresolvable;
-  }
-  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
-    return BoolStatus::kUnresolvable;
-  }
-  return expression_->IsZero();
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsOne() const {
-  if (!IsResolvableBeforeLayout()) {
-    return BoolStatus::kUnresolvable;
-  }
-  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
-    return BoolStatus::kUnresolvable;
-  }
-  return expression_->IsOne();
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsHundred() const {
-  if (!IsResolvableBeforeLayout()) {
-    return BoolStatus::kUnresolvable;
-  }
-  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
-    return BoolStatus::kUnresolvable;
-  }
-  return expression_->IsHundred();
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsNegative() const {
-  if (!IsResolvableBeforeLayout()) {
-    return BoolStatus::kUnresolvable;
-  }
-  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
-    return BoolStatus::kUnresolvable;
-  }
-  return expression_->IsNegative();
-}
-
 bool CSSMathFunctionValue::IsPx() const {
   // TODO(crbug.com/979895): This is the result of refactoring, which might be
   // an existing bug. Fix it if necessary.

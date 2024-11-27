@@ -795,26 +795,6 @@ CSSMathExpressionNumericLiteral::ConvertLiteralsFromPercentageToNumber() const {
       value_->DoubleValue() / 100, CSSPrimitiveValue::UnitType::kNumber);
 }
 
-CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::ResolvesTo(
-    double value) const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() == value ? CSSPrimitiveValue::BoolStatus::kTrue
-                                      : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsNegative()
-    const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() < 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                   : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
 String CSSMathExpressionNumericLiteral::CustomCSSText() const {
   return value_->CssText();
 }
@@ -1910,8 +1890,7 @@ bool BasisIsCanonical(const CSSMathExpressionNode* basis) {
   if (const auto* numeric_literal =
           DynamicTo<CSSMathExpressionNumericLiteral>(basis)) {
     const CSSNumericLiteralValue& value = numeric_literal->GetValue();
-    return value.IsPercentage() &&
-           value.IsHundred() == CSSMathFunctionValue::BoolStatus::kTrue;
+    return value.IsPercentage() && value.GetValueIfKnown() == 100.0;
   }
 
   if (const auto* keyword_literal =
@@ -2198,25 +2177,6 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
                             false /*has_anchor_functions*/,
                             false),
       operator_(op) {}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::ResolvesTo(
-    double value) const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() == value ? CSSPrimitiveValue::BoolStatus::kTrue
-                                      : CSSPrimitiveValue::BoolStatus::kFalse;
-}
-
-CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsNegative() const {
-  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  if (!maybe_value.has_value()) {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
-  return maybe_value.value() < 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
-                                   : CSSPrimitiveValue::BoolStatus::kFalse;
-}
 
 std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     const CSSLengthResolver& length_resolver) const {

@@ -383,17 +383,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // Converts to a Length (Fixed, Percent or Calculated)
   Length ConvertToLength(const CSSLengthResolver&) const;
 
-  enum class BoolStatus {
-    kTrue,
-    kFalse,
-    kUnresolvable,
-  };
-
-  BoolStatus IsZero() const;
-  BoolStatus IsOne() const;
-  BoolStatus IsHundred() const;
-  BoolStatus IsNegative() const;
-
   // this + value
   CSSPrimitiveValue* Add(double value, UnitType unit_type) const;
   // value + this
@@ -464,6 +453,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   double ComputeNumber(const CSSLengthResolver&) const;
   double ComputePercentage(const CSSLengthResolver&) const;
   double ComputeValueInCanonicalUnit(const CSSLengthResolver&) const;
+
+  std::optional<double> GetValueIfKnown() const;
 
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {

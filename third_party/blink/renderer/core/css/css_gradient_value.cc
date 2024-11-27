@@ -1340,11 +1340,11 @@ void CSSGradientValue::AppendCSSTextForDeprecatedColorStops(
   for (unsigned i = 0; i < stops_.size(); i++) {
     const CSSGradientColorStop& stop = stops_[i];
     result.Append(", ");
-    if (stop.offset_->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
+    if (stop.offset_->GetValueIfKnown() == 0.0) {
       result.Append("from(");
       result.Append(stop.color_->CssText());
       result.Append(')');
-    } else if (stop.offset_->IsOne() == CSSPrimitiveValue::BoolStatus::kTrue) {
+    } else if (stop.offset_->GetValueIfKnown() == 1.0) {
       result.Append("to(");
       result.Append(stop.color_->CssText());
       result.Append(')');

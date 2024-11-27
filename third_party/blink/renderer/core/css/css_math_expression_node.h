@@ -131,10 +131,7 @@ class CORE_EXPORT CSSMathExpressionNode
 
   virtual bool IsMathFunction() const { return false; }
 
-  CSSPrimitiveValue::BoolStatus IsZero() const { return ResolvesTo(0.0); }
-  CSSPrimitiveValue::BoolStatus IsOne() const { return ResolvesTo(1.0); }
-  CSSPrimitiveValue::BoolStatus IsHundred() const { return ResolvesTo(100.0); }
-  virtual CSSPrimitiveValue::BoolStatus IsNegative() const = 0;
+  virtual std::optional<double> GetValueIfKnown() const = 0;
 
   // Resolves the expression into one value *without doing any type conversion*.
   // Hits DCHECK if type conversion is required.
@@ -265,7 +262,6 @@ class CORE_EXPORT CSSMathExpressionNode
                               const CSSLengthResolver& length_resolver) {
     return operand->ComputeDouble(length_resolver);
   }
-  virtual CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const = 0;
 
   CalculationResultCategory category_;
   bool is_nested_calc_ = false;
@@ -308,7 +304,6 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
-  CSSPrimitiveValue::BoolStatus IsNegative() const final;
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -334,7 +329,9 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final;
+  std::optional<double> GetValueIfKnown() const final {
+    return ComputeValueInCanonicalUnit();
+  }
 
  private:
   Member<const CSSNumericLiteralValue> value_;
@@ -384,9 +381,6 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
       const final {
     return this;
   }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
   String CustomCSSText() const final { return identifier_; }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -432,9 +426,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED();
   }
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   AtomicString identifier_;
@@ -491,9 +483,6 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
       const final {
     return this;
   }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
   String CustomCSSText() const final {
     return GetCSSValueNameAs<AtomicString>(keyword_);
   }
@@ -537,9 +526,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   CSSValueID keyword_;
@@ -678,7 +665,6 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
-  CSSPrimitiveValue::BoolStatus IsNegative() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
@@ -711,7 +697,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final;
+  std::optional<double> GetValueIfKnown() const final {
+    return ComputeValueInCanonicalUnit();
+  }
 
  private:
   static const CSSMathExpressionNode* GetNumericLiteralSide(
@@ -780,9 +768,6 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
       const final {
     return this;
   }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -829,9 +814,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   Member<const CSSIdentifierValue> size_feature_;
@@ -872,9 +855,6 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final {
     return this;
-  }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
   }
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kUnknown;
@@ -924,9 +904,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 
  protected:
   double ComputeDouble(const CSSLengthResolver&) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   std::optional<LayoutUnit> EvaluateQuery(const AnchorQuery& query,
@@ -972,9 +950,6 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final {
     return this;
-  }
-  CSSPrimitiveValue::BoolStatus IsNegative() const final {
-    return CSSPrimitiveValue::BoolStatus::kFalse;
   }
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kNumber;
@@ -1028,9 +1003,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
 
  protected:
   double ComputeDouble(const CSSLengthResolver&) const final;
-  CSSPrimitiveValue::BoolStatus ResolvesTo(double value) const final {
-    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
-  }
+  std::optional<double> GetValueIfKnown() const final { return std::nullopt; }
 
  private:
   std::optional<LayoutUnit> EvaluateQuery(const AnchorQuery& query,

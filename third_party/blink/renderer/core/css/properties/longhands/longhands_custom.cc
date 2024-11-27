@@ -6812,8 +6812,7 @@ const CSSValue* OverflowClipMargin::ParseSingleValue(
     if (!length) {
       length = CSSPrimitiveValue::CreateFromLength(Length::Fixed(0), 1.f);
     }
-  } else if (reference_box && length &&
-             length->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
+  } else if (reference_box && length && length->GetValueIfKnown() == 0.0) {
     length = nullptr;
   }
 
@@ -9602,11 +9601,10 @@ const CSSValue* Translate::ParseSingleValue(
     CSSPrimitiveValue* translate_z = css_parsing_utils::ConsumeLength(
         stream, context, CSSPrimitiveValue::ValueRange::kAll);
 
-    if (translate_z &&
-        translate_z->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
+    if (translate_z && translate_z->GetValueIfKnown() == 0.0) {
       translate_z = nullptr;
     }
-    if (translate_y->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue &&
+    if (translate_y->GetValueIfKnown() == 0.0 &&
         !translate_y->HasPercentage() && !translate_z) {
       return list;
     }
@@ -11413,11 +11411,9 @@ const CSSValue* Zoom::ParseSingleValue(CSSParserTokenStream& stream,
   if (zoom) {
     if (!(token.Id() == CSSValueID::kNormal ||
           (token.GetType() == kNumberToken &&
-           To<CSSPrimitiveValue>(zoom)->IsOne() ==
-               CSSPrimitiveValue::BoolStatus::kTrue) ||
+           To<CSSPrimitiveValue>(zoom)->GetValueIfKnown() == 1.0) ||
           (token.GetType() == kPercentageToken &&
-           To<CSSPrimitiveValue>(zoom)->IsHundred() ==
-               CSSPrimitiveValue::BoolStatus::kTrue))) {
+           To<CSSPrimitiveValue>(zoom)->GetValueIfKnown() == 100.0))) {
       context.Count(WebFeature::kCSSZoomNotEqualToOne);
     }
   }
