@@ -394,12 +394,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 // Kill-switch for a deprecation trial that unpartitions storage in third-party
 // contexts under the registered top-level site. If
-// `kDisableThirdPartyStoragePartitioningDeprecationTrial2` is enabled, the
+// `kDisableThirdPartyStoragePartitioning3DeprecationTrial` is enabled, the
 // deprecation trial information can be sent to and enabled in the browser
 // process (i.e. when the base::Feature is enabled, the deprecation trial
 // extension is enabled in the browser process too).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kDisableThirdPartyStoragePartitioningDeprecationTrial2);
+    kDisableThirdPartyStoragePartitioning3DeprecationTrial);
 
 // These values are used to implement a browser intervention: if a cross-origin
 // iframe has moved more than {param:distance} device independent pixels

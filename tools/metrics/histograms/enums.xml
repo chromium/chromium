@@ -10655,7 +10655,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4972" label="MaximumHTMLParserDOMTreeDepthHit"/>
   <int value="4973" label="V8ModelGenericSession_Destroy_Method"/>
   <int value="4974" label="UsedDeviceScaleAdjustment"/>
-  <int value="4975" label="DisableThirdPartyStoragePartitioning2"/>
+  <int value="4975" label="OBSOLETE_DisableThirdPartyStoragePartitioning2"/>
   <int value="4976" label="LinkRelPayment"/>
   <int value="4977" label="OBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method"/>
   <int value="4978" label="OBSOLETE_V8ModelGenericSession_Destroy_Method"/>
@@ -10906,6 +10906,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5201" label="GeolocationSucceeded"/>
   <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
   <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
+  <int value="5204" label="DisableThirdPartyStoragePartitioning3"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

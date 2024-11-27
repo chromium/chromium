@@ -4346,7 +4346,7 @@ enum WebFeature {
 
   kV8ModelGenericSession_Destroy_Method = 4973,
   kUsedDeviceScaleAdjustment = 4974,
-  kDisableThirdPartyStoragePartitioning2 = 4975,
+  kOBSOLETE_DisableThirdPartyStoragePartitioning2 = 4975,
   kLinkRelPayment = 4976,
   kOBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method = 4977,
   kOBSOLETE_V8ModelGenericSession_Destroy_Method = 4978,
@@ -4575,6 +4575,7 @@ enum WebFeature {
   kGeolocationSucceeded = 5201,
   kGeolocationSucceededWithoutInjectionMitigation = 5202,
   kSharedWorkerScriptUnderServiceWorkerControlIsBlob = 5203,
+  kDisableThirdPartyStoragePartitioning3 = 5204,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -20,6 +20,8 @@ async_test(t => {
     // tools/origin_trials/generate_token.py https://web-platform.test:8444 TopLevelTpcd --expire-timestamp=2000000000
     cpMeta.content = 'A8dIE1ukOU+CHbE9kWOFDlzXcvo/65mB4rxIM5heHDScFt1bh7ySaTmBsyBradumURU9rir8QZD7cKtAbrJk8AQAAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiVG9wTGV2ZWxUcGNkIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9';
     document.head.append(cpMeta);
+    // The token in the header was generated via the following command:
+    // tools/origin_trials/generate_token.py https://web-platform.test:8444 DisableThirdPartyStoragePartitioning3 --expire-timestamp=2000000000
 
     // Step 1
     window.addEventListener("message", t.step_func(e => {

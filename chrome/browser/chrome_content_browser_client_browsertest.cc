@@ -2229,14 +2229,13 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyStoragePartitioningOriginTrialTest,
                        ThirdPartyCookieSettingOverridesDeprecationTrial) {
   // Generated with:
   // tools/origin_trials/generate_token.py https://127.0.0.1:44445
-  // DisableThirdPartyStoragePartitioning2 --expire-timestamp=2000000000
+  // DisableThirdPartyStoragePartitioning3 --expire-timestamp=2000000000
   // --is-third-party
   const char kValidThirdPartyToken[] =
-      "A1HN+j5dGwYe307k+"
-      "ljKWOpwMh6rXnk3mFDsOs0TG2ibF9tOnChGQCrhjn6oJXxmZxeU91hgMBfI48Cm+"
-      "iswgg8AAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdHVyZ"
-      "SI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6I"
-      "DIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+      "A7BpVOcOsvw3FiZnc4wIJ9pfGSrhUqMyV8GmGkZrm6emdOW5hBe9YN8XKoFa+"
+      "YQkVUxdNR22quD3oCJvuIX2cAoAAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6N"
+      "DQ0NDUiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pb"
+      "mczIiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
 
   SetOriginTrialToken(kValidThirdPartyToken);
 

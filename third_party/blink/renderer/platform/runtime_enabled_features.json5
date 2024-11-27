@@ -1475,10 +1475,11 @@
     // This feature will represent the extension of a deprecation trial that
     // allows first parties to temporarily use unpartitioned storage in embeds
     // loaded on their site. It replaces an old DT named
-    // DisableThirdPartyStoragePartitioning which expired in M126.
+    // DisableThirdPartyStoragePartitioning which expired in M126 and
+    // DisableThirdPartyStoragePartitioning2 which expired in M132.
     {
-      name: "DisableThirdPartyStoragePartitioning2",
-      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning2",
+      name: "DisableThirdPartyStoragePartitioning3",
+      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning3",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,

@@ -4886,7 +4886,7 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
     // If the deprecation trial is enabled, we have directive to override the
     // current value of net::features::ThirdPartyStoragePartitioning.
     if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
-            .IsDisableThirdPartyStoragePartitioning2Enabled()) {
+            .IsDisableThirdPartyStoragePartitioning3Enabled()) {
       return false;
     }
     // Compile the list of third-party origins we need to check in addition to
@@ -4902,7 +4902,7 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
     // frame we have directive to override the current value of
     // net::features::ThirdPartyStoragePartitioning.
     if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
-            .IsDisableThirdPartyStoragePartitioning2EnabledForThirdParty(
+            .IsDisableThirdPartyStoragePartitioning3EnabledForThirdParty(
                 third_party_origins)) {
       return false;
     }

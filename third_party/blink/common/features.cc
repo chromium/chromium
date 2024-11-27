@@ -707,8 +707,8 @@ BASE_FEATURE(kDiscardInputEventsToRecentlyMovedFrames,
              "DiscardInputEventsToRecentlyMovedFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial2,
-             "DisableThirdPartyStoragePartitioningDeprecationTrial2",
+BASE_FEATURE(kDisableThirdPartyStoragePartitioning3DeprecationTrial,
+             "DisableThirdPartyStoragePartitioning3DeprecationTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Drop input events before user sees first paint https://crbug.com/1255485
