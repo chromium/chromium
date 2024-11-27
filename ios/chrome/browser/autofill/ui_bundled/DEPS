@@ -12,7 +12,7 @@ include_rules = [
   "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_constants.h",
   "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h",
-  "+ios/chrome/browser/ui/settings/password",
+  "+ios/chrome/browser/settings/ui_bundled/password",
   "+ios/chrome/browser/ui/alert_view",
   "+ios/chrome/browser/webdata_services/model/web_data_service_factory.h",
 ]

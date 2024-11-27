@@ -18,11 +18,11 @@ source_set("utils") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_settings:common",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/settings/password/password_settings:common",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
