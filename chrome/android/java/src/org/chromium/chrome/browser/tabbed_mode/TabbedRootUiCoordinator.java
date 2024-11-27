@@ -441,6 +441,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
+                        mTabModelSelectorSupplier,
                         dataSharingTabSwitcherDelegate,
                         this::getBottomSheetController,
                         mShareDelegateSupplier,

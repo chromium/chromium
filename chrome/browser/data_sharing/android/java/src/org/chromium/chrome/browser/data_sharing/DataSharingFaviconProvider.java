@@ -35,10 +35,12 @@ public class DataSharingFaviconProvider implements RecentActivityListCoordinator
      *
      * @param context The associated context.
      * @param profile The associated profile.
+     * @param faviconHelper The backend that provides favicons.
      */
-    public DataSharingFaviconProvider(Context context, Profile profile) {
+    public DataSharingFaviconProvider(
+            Context context, Profile profile, FaviconHelper faviconHelper) {
         mContext = context;
-        mFaviconHelper = new FaviconHelper();
+        mFaviconHelper = faviconHelper;
         mDefaultFaviconHelper = new DefaultFaviconHelper();
         mRounedIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
         mFaviconSize =

@@ -27,7 +27,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -74,6 +81,7 @@ import java.util.Map;
 public class DataSharingTabManager {
     private static final String TAG = "DataSharing";
 
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
@@ -133,12 +141,14 @@ public class DataSharingTabManager {
      *     locally.
      */
     public DataSharingTabManager(
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             DataSharingTabSwitcherDelegate tabSwitcherDelegate,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Resources resources,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mDataSharingTabSwitcherDelegate = tabSwitcherDelegate;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -819,15 +829,51 @@ public class DataSharingTabManager {
         assert mProfile != null;
         assert mMessagingBackendService != null;
 
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        SavedTabGroup existingGroup =
+                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                        collaborationId, tabGroupSyncService);
+        if (existingGroup == null) return;
+
         DataSharingAvatarProvider avatarProvider =
                 new DataSharingAvatarProvider(activity, mDataSharingService.getUiDelegate());
+
+        Callback<Integer> focusTabCallback =
+                (tabId) -> {
+                    TabModel tabModel =
+                            mTabModelSelectorSupplier.get().getModel(/* incognito= */ false);
+                    int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
+                    assert tabIndex != TabModel.INVALID_TAB_INDEX;
+                    mTabModelSelectorSupplier.get().selectModel(/* incognito= */ false);
+                    tabModel.setIndex(tabIndex, TabSelectionType.FROM_USER);
+                };
+        Callback<String> reopenTabCallback =
+                (url) -> {
+                    TabGroupModelFilter tabGroupModelFilter =
+                            mTabModelSelectorSupplier
+                                    .get()
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(/* incognito= */ false);
+                    int rootId =
+                            tabGroupModelFilter.getRootIdFromStableId(
+                                    existingGroup.localId.tabGroupId);
+                    TabGroupUtils.openUrlInGroup(
+                            tabGroupModelFilter, url, rootId, TabLaunchType.FROM_TAB_GROUP_UI);
+                };
+        Runnable openTabGroupEditDialogCallback = () -> switchToTabGroup(existingGroup);
+        Runnable manageSharingCallback = () -> showManageSharing(activity, collaborationId);
         RecentActivityListCoordinator recentActivityListCoordinator =
                 new RecentActivityListCoordinator(
                         activity,
                         mBottomSheetControllerSupplier.get(),
                         mMessagingBackendService,
-                        new DataSharingFaviconProvider(activity, mProfile),
-                        avatarProvider);
+                        new DataSharingFaviconProvider(activity, mProfile, mFaviconHelper),
+                        avatarProvider,
+                        focusTabCallback,
+                        reopenTabCallback,
+                        openTabGroupEditDialogCallback,
+                        manageSharingCallback);
         recentActivityListCoordinator.requestShowUI(collaborationId);
     }
 

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
  */
 public class TabMessageMetadata {
     /** Should match Tab.INVALID_TAB_ID. Cannot have a true dependency. */
-    /*package*/ static final int INVALID_TAB_ID = -1;
+    public static final int INVALID_TAB_ID = -1;
 
     public int localTabId = INVALID_TAB_ID;
     @Nullable public String syncTabId;

@@ -15,7 +15,9 @@ import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivit
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.ActivityLogQueryParams;
+import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
+import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -34,6 +36,10 @@ class RecentActivityListMediator {
     private final MessagingBackendService mMessagingBackendService;
     private final FaviconProvider mFaviconProvider;
     private final AvatarProvider mAvatarProvider;
+    private final Callback<Integer> mFocusTabCallback;
+    private final Callback<String> mReopenTabCallback;
+    private final Runnable mOpenTabGroupEditDialogCallback;
+    private final Runnable mManageSharingCallback;
     private final Runnable mCloseBottomSheetCallback;
 
     /**
@@ -44,6 +50,11 @@ class RecentActivityListMediator {
      * @param messagingBackendService The backed to query for the list of recent activities.
      * @param faviconProvider The backend for providing favicon for URLs.
      * @param avatarProvider The backend for providing avatars for users.
+     * @param focusTabCallback Callback to invoke to switch to a tab.
+     * @param reopenTabCallback Callback to invoke to reopen a removed tab from group.
+     * @param openTabGroupEditDialogCallback Callback to invoke to open the tab group title / color
+     *     editor dialog.
+     * @param manageSharingCallback Callback to invoke to open the people group management screen.
      */
     public RecentActivityListMediator(
             @NonNull Context context,
@@ -51,12 +62,20 @@ class RecentActivityListMediator {
             MessagingBackendService messagingBackendService,
             FaviconProvider faviconProvider,
             AvatarProvider avatarProvider,
+            Callback<Integer> focusTabCallback,
+            Callback<String> reopenTabCallback,
+            Runnable openTabGroupEditDialogCallback,
+            Runnable manageSharingCallback,
             Runnable closeBottomSheetCallback) {
         mContext = context;
         mModelList = modelList;
         mMessagingBackendService = messagingBackendService;
         mFaviconProvider = faviconProvider;
         mAvatarProvider = avatarProvider;
+        mFocusTabCallback = focusTabCallback;
+        mReopenTabCallback = reopenTabCallback;
+        mOpenTabGroupEditDialogCallback = openTabGroupEditDialogCallback;
+        mManageSharingCallback = manageSharingCallback;
         mCloseBottomSheetCallback = closeBottomSheetCallback;
         assert mContext != null;
         assert mMessagingBackendService != null;
@@ -102,11 +121,7 @@ class RecentActivityListMediator {
                     createActivityLogItemOnClickListener(logItem));
 
             // Set favicon provider.
-            assert logItem.activityMetadata != null : "ActivityMetadata is null";
-            assert logItem.activityMetadata.tabMetadata != null : "TabMetadata is null";
-            assert logItem.activityMetadata.tabMetadata.lastKnownUrl != null
-                    : "Last known URL is null";
-            GURL tabUrl = new GURL(logItem.activityMetadata.tabMetadata.lastKnownUrl);
+            GURL tabUrl = new GURL(getTabLastKnownUrl(logItem));
             Callback<ImageView> faviconCallback =
                     faviconView -> {
                         mFaviconProvider.fetchFavicon(tabUrl, faviconView::setImageDrawable);
@@ -114,10 +129,10 @@ class RecentActivityListMediator {
             propertyModel.set(RecentActivityListProperties.FAVICON_PROVIDER, faviconCallback);
 
             // Set avatar provider.
-            GroupMember groupMember = logItem.activityMetadata.triggeringUser;
             Callback<ImageView> avatarCallback =
                     avatarView -> {
-                        mAvatarProvider.getAvatarBitmap(groupMember, avatarView::setImageDrawable);
+                        mAvatarProvider.getAvatarBitmap(
+                                getTriggeringUser(logItem), avatarView::setImageDrawable);
                     };
             propertyModel.set(RecentActivityListProperties.AVATAR_PROVIDER, avatarCallback);
 
@@ -129,8 +144,46 @@ class RecentActivityListMediator {
     private OnClickListener createActivityLogItemOnClickListener(ActivityLogItem logItem) {
         return view -> {
             assert logItem != null;
-            // TODO(crbug.com/380962101): Invoke backend to switch to take action.
+            // TODO(crbug.com/380962101): Move this switch case to native and provide an action enum
+            // in the ActivityLogItem itself.
+            switch (logItem.collaborationEvent) {
+                case CollaborationEvent.TAB_ADDED:
+                case CollaborationEvent.TAB_UPDATED:
+                    int tabId = getTabMetadata(logItem).localTabId;
+                    mFocusTabCallback.onResult(tabId);
+                    break;
+                case CollaborationEvent.TAB_REMOVED:
+                    mReopenTabCallback.onResult(getTabLastKnownUrl(logItem));
+                    break;
+                case CollaborationEvent.TAB_GROUP_NAME_UPDATED:
+                case CollaborationEvent.TAB_GROUP_COLOR_UPDATED:
+                    mOpenTabGroupEditDialogCallback.run();
+                    break;
+                case CollaborationEvent.COLLABORATION_MEMBER_ADDED:
+                case CollaborationEvent.COLLABORATION_MEMBER_REMOVED:
+                    mManageSharingCallback.run();
+                    break;
+                default:
+                    assert false
+                            : "No handler for collaboration event " + logItem.collaborationEvent;
+            }
             mCloseBottomSheetCallback.run();
         };
+    }
+
+    private @NonNull TabMessageMetadata getTabMetadata(ActivityLogItem logItem) {
+        assert logItem.activityMetadata != null : "ActivityMetadata is null";
+        assert logItem.activityMetadata.tabMetadata != null : "TabMetadata is null";
+        return logItem.activityMetadata.tabMetadata;
+    }
+
+    private @NonNull String getTabLastKnownUrl(ActivityLogItem logItem) {
+        return getTabMetadata(logItem).lastKnownUrl;
+    }
+
+    private @NonNull GroupMember getTriggeringUser(ActivityLogItem logItem) {
+        assert logItem.activityMetadata != null : "ActivityMetadata is null";
+        assert logItem.activityMetadata.triggeringUser != null : "Triggering user is null";
+        return logItem.activityMetadata.triggeringUser;
     }
 }

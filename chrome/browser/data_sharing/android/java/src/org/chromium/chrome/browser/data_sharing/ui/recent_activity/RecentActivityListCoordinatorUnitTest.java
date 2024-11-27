@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
@@ -47,6 +48,10 @@ public class RecentActivityListCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private FaviconProvider mFaviconProvider;
     @Mock private AvatarProvider mAvatarProvider;
+    @Mock private Callback<Integer> mFocusTabCallback;
+    @Mock private Callback<String> mReopenTabCallback;
+    @Mock private Runnable mOpenTabGroupEditDialogCallback;
+    @Mock private Runnable mManageSharingCallback;
     private Activity mActivity;
     private RecentActivityListCoordinator mCoordinator;
 
@@ -60,7 +65,11 @@ public class RecentActivityListCoordinatorUnitTest {
                         mBottomSheetController,
                         mMessagingBackendService,
                         mFaviconProvider,
-                        mAvatarProvider);
+                        mAvatarProvider,
+                        mFocusTabCallback,
+                        mReopenTabCallback,
+                        mOpenTabGroupEditDialogCallback,
+                        mManageSharingCallback);
         verify(mBottomSheetController).addObserver(any());
     }
 
