@@ -234,6 +234,7 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   CHECK(index.has_value());
   SavedTabGroup& group = groups_[index.value()];
   group.SetCollaborationId(CollaborationId(std::string(collaboration_id)));
+  NotifyObserversOfTabGroupShared(group);
 }
 
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
@@ -432,6 +433,14 @@ void FakeTabGroupSyncService::NotifyObserversOfTabGroupUpdated(
     SavedTabGroup& group) {
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(group, TriggerSource::LOCAL);
+  }
+}
+
+void FakeTabGroupSyncService::NotifyObserversOfTabGroupShared(
+    SavedTabGroup& group) {
+  for (auto& observer : observers_) {
+    observer.OnTabGroupMigrated(group, group.saved_guid(),
+                                tab_groups::TriggerSource::LOCAL);
   }
 }
 

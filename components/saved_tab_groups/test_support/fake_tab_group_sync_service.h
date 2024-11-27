@@ -100,7 +100,10 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   std::optional<int> GetIndexOf(const base::Uuid& guid) const;
   std::optional<int> GetIndexOf(const LocalTabGroupID& local_id) const;
 
+  // Notifies observers when `group` is updated.
   void NotifyObserversOfTabGroupUpdated(SavedTabGroup& group);
+  // Notifies observers when `group` is shared.
+  void NotifyObserversOfTabGroupShared(SavedTabGroup& group);
 
   base::ObserverList<TabGroupSyncService::Observer> observers_;
   std::vector<SavedTabGroup> groups_;

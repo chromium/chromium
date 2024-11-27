@@ -317,31 +317,13 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
   OCMReject([tab_group_consumer_ setGroupShared:OCMOCK_ANY]);
   OCMReject([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
 
-  SavedTabGroup saved_group(std::u16string(u"title"),
-                            tab_groups::TabGroupColorId::kGrey, {});
-  [mediator_ collaborationIDChangedForGroup:saved_group];
-
-  EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
-}
-
-// Tests that CollaborationIDChangedForGroup correctly updates the facePile UI
-// when the group is not shared.
-TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupNotShared) {
-  // Simulate user successfully completes authentication. This is needed because
-  // the group is not shared.
-  collaboration::ServiceStatus status;
-  status.collaboration_status =
-      collaboration::CollaborationStatus::kEnabledCreateAndJoin;
-  status.sync_status = collaboration::SyncStatus::kSyncEnabled;
-  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
-      .WillOnce(Return(status));
-
-  OCMExpect([tab_group_consumer_ setGroupShared:NO]);
-  OCMExpect([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
-
-  const SavedTabGroup saved_group =
-      tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
-  [mediator_ collaborationIDChangedForGroup:saved_group];
+  SavedTabGroup other_saved_group(
+      u"other group", tab_groups::TabGroupColorId::kOrange, {},
+      /*position=*/std::nullopt, base::Uuid::GenerateRandomV4(),
+      tab_groups::TabGroupId::GenerateNew());
+  tab_group_sync_service_->AddGroup(other_saved_group);
+  tab_group_sync_service_->MakeTabGroupShared(
+      other_saved_group.local_group_id().value(), "collaboration");
 
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }
@@ -356,7 +338,6 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
       tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();
   tab_group_sync_service_->MakeTabGroupShared(
       saved_group.local_group_id().value(), "collaboration");
-  [mediator_ collaborationIDChangedForGroup:saved_group];
 
   EXPECT_OCMOCK_VERIFY((id)tab_group_consumer_);
 }

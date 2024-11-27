@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -49,6 +50,9 @@ namespace {
 constexpr CGFloat kFacePileAvatarSize = 24;
 }  // namespace
 
+@interface TabGroupMediator () <TabGroupSyncServiceObserverDelegate>
+@end
+
 @implementation TabGroupMediator {
   // The service to observe.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
@@ -56,8 +60,8 @@ constexpr CGFloat kFacePileAvatarSize = 24;
   raw_ptr<ShareKitService> _shareKitService;
   // The collaboration service.
   raw_ptr<collaboration::CollaborationService> _collaborationService;
-  // The notifier for the collaboration id observer.
-  std::unique_ptr<CollaborationGroupIDNotifier> _collaborationIDNotifier;
+  // The bridge between the service C++ observer and this Objective-C class.
+  std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
   // Tab group consumer.
   __weak id<TabGroupConsumer> _groupConsumer;
@@ -85,14 +89,14 @@ constexpr CGFloat kFacePileAvatarSize = 24;
     _tabGroupSyncService = tabGroupSyncService;
     _shareKitService = shareKitService;
     _collaborationService = collaborationService;
-    _collaborationIDNotifier =
-        std::make_unique<CollaborationGroupIDNotifier>(self);
+    _syncServiceObserver =
+        std::make_unique<TabGroupSyncServiceObserverBridge>(self);
 
     // The `_tabGroupSyncService` is nil in incognito.
     if (_tabGroupSyncService) {
       _scopedSyncServiceObservation =
           std::make_unique<ScopedTabGroupSyncObservation>(
-              _collaborationIDNotifier.get());
+              _syncServiceObserver.get());
       _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
     }
 
@@ -161,7 +165,7 @@ constexpr CGFloat kFacePileAvatarSize = 24;
 
 - (void)disconnect {
   _scopedSyncServiceObservation.reset();
-  _collaborationIDNotifier.reset();
+  _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
   _collaborationService = nullptr;
   _shareKitService = nullptr;
@@ -497,10 +501,12 @@ constexpr CGFloat kFacePileAvatarSize = 24;
   }
 }
 
-#pragma mark - CollaborationGroupIDNotifierObserver
+#pragma mark - TabGroupSyncServiceObserverDelegate
 
-- (void)collaborationIDChangedForGroup:
-    (const tab_groups::SavedTabGroup&)newGroup {
+- (void)tabGroupSyncServiceTabGroupMigrated:
+            (const tab_groups::SavedTabGroup&)newGroup
+                                  oldSyncID:(const base::Uuid&)oldSyncId
+                                 fromSource:(tab_groups::TriggerSource)source {
   if (newGroup.local_group_id() != _tabGroup->tab_group_id()) {
     return;
   }

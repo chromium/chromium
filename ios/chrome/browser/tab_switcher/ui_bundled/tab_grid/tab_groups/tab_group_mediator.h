@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/share_kit/model/collaboration_group_id_notifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_mutator.h"
 
@@ -29,8 +28,7 @@ class TabGroup;
 class WebStateList;
 
 // Tab group mediator in charge to handle model update for one group.
-@interface TabGroupMediator
-    : BaseGridMediator <CollaborationGroupIDNotifierObserver, TabGroupMutator>
+@interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                  tabGroupSyncService:
