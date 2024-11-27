@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_hub_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -64,7 +65,8 @@ PersonalizationSection::~PersonalizationSection() = default;
 
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  const bool kIsGuest = IsGuestModeActive();
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+  const bool kIsGuest = IsGuestModeActive(user);
 
   webui::LocalizedString kWallpaperLocalizedStrings[] = {
       {"personalizationPageTitle", isRevampEnabled_

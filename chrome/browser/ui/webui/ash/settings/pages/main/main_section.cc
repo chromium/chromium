@@ -36,6 +36,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -188,11 +189,12 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("chromeRefresh2023Attribute",
                          kIsRevampEnabled ? "chrome-refresh-2023" : "");
 
-  html_source->AddBoolean("isGuest", IsGuestModeActive());
-  html_source->AddBoolean(
-      "isKioskModeActive",
-      user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
-  html_source->AddBoolean("isChild", IsChildUser());
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+  html_source->AddBoolean("isGuest", IsGuestModeActive(user));
+  html_source->AddBoolean("isKioskModeActive", IsKioskModeActive(user));
+  html_source->AddBoolean("isKioskOldA11ySettingsRedirectionEnabled",
+                          IsKioskOldA11ySettingsRedirectionEnabled(user));
+  html_source->AddBoolean("isChild", IsChildUser(user));
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
