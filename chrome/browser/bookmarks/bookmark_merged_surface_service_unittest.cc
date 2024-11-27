@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -16,6 +17,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,11 +147,11 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetChildrenCount) {
   const BookmarkNode* folder_f1 =
       model().bookmark_bar_node()->children()[3].get();
   EXPECT_EQ(service().GetChildrenCount(
-                BookmarkParentFolder::FromNonPermanentNode(folder_f1)),
+                BookmarkParentFolder::FromFolderNode(folder_f1)),
             3u);
   const BookmarkNode* folder_f2 = folder_f1->children()[2].get();
   EXPECT_EQ(service().GetChildrenCount(
-                BookmarkParentFolder::FromNonPermanentNode(folder_f2)),
+                BookmarkParentFolder::FromFolderNode(folder_f2)),
             1u);
 
   AddNodesFromModelString(&model(), model().other_node(), "1 2 3 ");
@@ -199,8 +201,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetNodeAtIndex) {
 
   {
     const BookmarkNode* f1 = model().bookmark_bar_node()->children()[3].get();
-    BookmarkParentFolder folder =
-        BookmarkParentFolder::FromNonPermanentNode(f1);
+    BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(f1);
     EXPECT_EQ(service().GetNodeAtIndex(folder, 0), f1->children()[0].get());
     EXPECT_EQ(service().GetNodeAtIndex(folder, 1), f1->children()[1].get());
   }
@@ -220,15 +221,15 @@ TEST_F(BookmarkMergedSurfaceServiceTest, IsParentFolderManaged) {
 
   EXPECT_FALSE(service().IsParentFolderManaged(
       BookmarkParentFolder::BookmarkBarFolder()));
-  EXPECT_FALSE(service().IsParentFolderManaged(
-      BookmarkParentFolder::FromNonPermanentNode(
+  EXPECT_FALSE(
+      service().IsParentFolderManaged(BookmarkParentFolder::FromFolderNode(
           model().bookmark_bar_node()->children()[0].get())));
 
   EXPECT_TRUE(
       service().IsParentFolderManaged(BookmarkParentFolder::ManagedFolder()));
   const BookmarkNode* root_managed_node = managed_node();
-  EXPECT_TRUE(service().IsParentFolderManaged(
-      BookmarkParentFolder::FromNonPermanentNode(
+  EXPECT_TRUE(
+      service().IsParentFolderManaged(BookmarkParentFolder::FromFolderNode(
           root_managed_node->children()[0].get())));
 }
 
@@ -236,8 +237,8 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
        IsParentFolderManagedNoManagedService) {
   LoadBookmarkModel();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "f1:[ 4 5 ]");
-  EXPECT_FALSE(service().IsParentFolderManaged(
-      BookmarkParentFolder::FromNonPermanentNode(
+  EXPECT_FALSE(
+      service().IsParentFolderManaged(BookmarkParentFolder::FromFolderNode(
           model().bookmark_bar_node()->children()[0].get())));
 }
 
@@ -264,7 +265,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
   const BookmarkNode* destination =
       model().bookmark_bar_node()->children()[3].get();
   service().Move(node_to_move,
-                 BookmarkParentFolder::FromNonPermanentNode(destination), 1);
+                 BookmarkParentFolder::FromFolderNode(destination), 1);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 8 5 ] ");
@@ -283,7 +284,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataElement) {
   const bookmarks::BookmarkNodeData::Element node_data(node_to_copy);
   const BookmarkNode* destination = model().other_node()->children()[3].get();
   service().CopyBookmarkNodeDataElement(
-      node_data, BookmarkParentFolder::FromNonPermanentNode(destination), 1);
+      node_data, BookmarkParentFolder::FromFolderNode(destination), 1);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 5 ] ");
@@ -297,8 +298,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   const BookmarkNode* node = model().bookmark_bar_node()->children()[3].get();
-  BookmarkParentFolder folder =
-      BookmarkParentFolder::FromNonPermanentNode(node);
+  BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(node);
   EXPECT_THAT(service().GetUnderlyingNodes(folder), testing::ElementsAre(node));
 }
 
@@ -314,8 +314,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
   {
     // Non permanent managed node.
     const BookmarkNode* node = managed_node()->children()[0].get();
-    BookmarkParentFolder folder =
-        BookmarkParentFolder::FromNonPermanentNode(node);
+    BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(node);
     EXPECT_THAT(service().GetUnderlyingNodes(folder),
                 testing::ElementsAre(node));
   }
@@ -342,38 +341,78 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetUnderlyingNodesPermanentNode) {
 
 // Tests for `BookmarkParentFolder`
 
-TEST(BookmarkParentFolder, FromPermanentFolderType) {
-  const size_t kPermanentFolderTypes = 4;
-  std::array<BookmarkParentFolder, kPermanentFolderTypes> bookmark_folder = {
-      BookmarkParentFolder::BookmarkBarFolder(),
-      BookmarkParentFolder::OtherFolder(), BookmarkParentFolder::MobileFolder(),
-      BookmarkParentFolder::ManagedFolder()};
+TEST(BookmarkParentFolderTest, FromPermanentFolderType) {
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
+    EXPECT_FALSE(folder.HoldsNonPermanentFolder());
+    EXPECT_FALSE(folder.as_non_permanent_folder());
 
-  std::array<PermanentFolderType, kPermanentFolderTypes> folder_type = {
-      PermanentFolderType::kBookmarkBarNode, PermanentFolderType::kOtherNode,
-      PermanentFolderType::kMobileNode, PermanentFolderType::kManagedNode};
+    ASSERT_TRUE(folder.as_permanent_folder());
+    EXPECT_EQ(*folder.as_permanent_folder(),
+              PermanentFolderType::kBookmarkBarNode);
+  }
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::OtherFolder();
+    EXPECT_FALSE(folder.HoldsNonPermanentFolder());
+    EXPECT_FALSE(folder.as_non_permanent_folder());
 
-  for (size_t i = 0; i < kPermanentFolderTypes; i++) {
-    EXPECT_FALSE(bookmark_folder[i].HoldsNonPermanentFolder());
-    EXPECT_FALSE(bookmark_folder[i].as_non_permanent_folder());
+    ASSERT_TRUE(folder.as_permanent_folder());
+    EXPECT_EQ(*folder.as_permanent_folder(), PermanentFolderType::kOtherNode);
+  }
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::MobileFolder();
+    EXPECT_FALSE(folder.HoldsNonPermanentFolder());
+    EXPECT_FALSE(folder.as_non_permanent_folder());
 
-    ASSERT_TRUE(bookmark_folder[i].as_permanent_folder());
-    EXPECT_EQ(*bookmark_folder[i].as_permanent_folder(), folder_type[i]);
+    ASSERT_TRUE(folder.as_permanent_folder());
+    EXPECT_EQ(*folder.as_permanent_folder(), PermanentFolderType::kMobileNode);
+  }
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::ManagedFolder();
+    EXPECT_FALSE(folder.HoldsNonPermanentFolder());
+    EXPECT_FALSE(folder.as_non_permanent_folder());
+
+    ASSERT_TRUE(folder.as_permanent_folder());
+    EXPECT_EQ(*folder.as_permanent_folder(), PermanentFolderType::kManagedNode);
   }
 }
 
-TEST(BookmarkParentFolder, FromNonPermanentBookmarkFolder) {
-  BookmarkNode node(2, base::Uuid::GenerateRandomV4(), GURL());
-  ASSERT_TRUE(node.is_folder());
+TEST(BookmarkParentFolderTest, FromFolderNode) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableBookmarksInTransportMode};
+  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+  bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* folder_node =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
+
+  EXPECT_EQ(BookmarkParentFolder::FromFolderNode(model->bookmark_bar_node()),
+            BookmarkParentFolder::BookmarkBarFolder());
+  EXPECT_EQ(BookmarkParentFolder::FromFolderNode(model->other_node()),
+            BookmarkParentFolder::OtherFolder());
+  EXPECT_EQ(BookmarkParentFolder::FromFolderNode(model->mobile_node()),
+            BookmarkParentFolder::MobileFolder());
+  EXPECT_EQ(BookmarkParentFolder::FromFolderNode(managed_node),
+            BookmarkParentFolder::ManagedFolder());
+
+  EXPECT_EQ(
+      BookmarkParentFolder::FromFolderNode(model->account_bookmark_bar_node()),
+      BookmarkParentFolder::BookmarkBarFolder());
+  EXPECT_EQ(BookmarkParentFolder::FromFolderNode(model->account_other_node()),
+            BookmarkParentFolder::OtherFolder());
+  EXPECT_EQ(BookmarkParentFolder::FromFolderNode(model->account_mobile_node()),
+            BookmarkParentFolder::MobileFolder());
 
   BookmarkParentFolder folder =
-      BookmarkParentFolder::FromNonPermanentNode(&node);
+      BookmarkParentFolder::FromFolderNode(folder_node);
   EXPECT_TRUE(folder.HoldsNonPermanentFolder());
-  EXPECT_EQ(folder.as_non_permanent_folder(), &node);
+  EXPECT_EQ(folder.as_non_permanent_folder(), folder_node);
   EXPECT_FALSE(folder.as_permanent_folder());
 }
 
-TEST(BookmarkParentFolder, HasDirectChildNode) {
+TEST(BookmarkParentFolderTest, HasDirectChildNode) {
   std::unique_ptr<bookmarks::BookmarkModel> model =
       std::make_unique<bookmarks::BookmarkModel>(
           std::make_unique<bookmarks::TestBookmarkClient>());
@@ -395,8 +434,7 @@ TEST(BookmarkParentFolder, HasDirectChildNode) {
   }
 
   {
-    BookmarkParentFolder folder =
-        BookmarkParentFolder::FromNonPermanentNode(f1);
+    BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(f1);
     for (const auto& node : f1->children()) {
       EXPECT_TRUE(folder.HasDirectChildNode(node.get()));
     }

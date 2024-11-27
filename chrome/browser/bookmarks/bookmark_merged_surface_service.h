@@ -34,18 +34,22 @@ struct BookmarkParentFolder {
     kManagedNode
   };
 
-  static BookmarkParentFolder FromNonPermanentNode(
-      const bookmarks::BookmarkNode* parent_node);
-
   static BookmarkParentFolder BookmarkBarFolder();
   static BookmarkParentFolder OtherFolder();
   static BookmarkParentFolder MobileFolder();
   static BookmarkParentFolder ManagedFolder();
 
+  // `node` must be not null, not root node and it must be a folder.
+  static BookmarkParentFolder FromFolderNode(
+      const bookmarks::BookmarkNode* node);
+
   ~BookmarkParentFolder();
 
   BookmarkParentFolder(const BookmarkParentFolder& other);
   BookmarkParentFolder& operator=(const BookmarkParentFolder& other);
+
+  friend bool operator==(const BookmarkParentFolder&,
+                         const BookmarkParentFolder&) = default;
 
   // Returns `true` if `this` hols a non-permanent folder.
   bool HoldsNonPermanentFolder() const;
@@ -92,7 +96,9 @@ class BookmarkMergedSurfaceService : public KeyedService {
   // Returns underlying nodes in `folder`. This is either:
   // - a single bookmark folder node or
   // - two permanent folder nodes representing local and account bookmark nodes
-  //   of `*folder.as_permanent_folder()`.
+  //   of `*folder.as_permanent_folder()` in the following order:
+  //   (1) the account node if one exists
+  //   (2) then the local or syncable node.
   std::vector<const bookmarks::BookmarkNode*> GetUnderlyingNodes(
       const BookmarkParentFolder& folder) const;
 

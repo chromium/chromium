@@ -1944,7 +1944,7 @@ void BookmarkBarView::CalculateDropLocation(
       }
       const BookmarkNode* const node = bookmark_merged_service->GetNodeAtIndex(
           BookmarkParentFolder::BookmarkBarFolder(), location->index.value());
-      return BookmarkParentFolder::FromNonPermanentNode(node);
+      return BookmarkParentFolder::FromFolderNode(node);
     }();
 
     location->operation = GetBookmarkDropOperation(

@@ -45,28 +45,6 @@ using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-BookmarkParentFolder NodeToBookmarkParentFolder(const BookmarkNode* node) {
-  CHECK(node);
-  CHECK(node->is_folder());
-  if (!node->is_permanent_node()) {
-    return BookmarkParentFolder::FromNonPermanentNode(node);
-  }
-
-  switch (node->type()) {
-    case bookmarks::BookmarkNode::URL:
-      NOTREACHED();
-    case bookmarks::BookmarkNode::FOLDER:
-      return BookmarkParentFolder::ManagedFolder();
-    case bookmarks::BookmarkNode::BOOKMARK_BAR:
-      return BookmarkParentFolder::BookmarkBarFolder();
-    case bookmarks::BookmarkNode::OTHER_NODE:
-      return BookmarkParentFolder::OtherFolder();
-    case bookmarks::BookmarkNode::MOBILE:
-      return BookmarkParentFolder::MobileFolder();
-  }
-  NOTREACHED();
-}
-
 template <class T>
 class BookmarkUIOperationsHelperTest : public testing::Test {
  public:
@@ -118,7 +96,7 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
           model_.get(), parent);
     } else if (std::is_same<T,
                             BookmarkUIOperationsHelperMergedSurfaces>::value) {
-      parent_folder_ = NodeToBookmarkParentFolder(parent);
+      parent_folder_ = BookmarkParentFolder::FromFolderNode(parent);
       helper_ = std::make_unique<BookmarkUIOperationsHelperMergedSurfaces>(
           bookmark_merged_surface_service_.get(), &parent_folder_.value());
     }
@@ -459,8 +437,7 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
     // Test regular non permanent node.
     const BookmarkNode* node =
         model.AddFolder(model.bookmark_bar_node(), 0, u"folder");
-    BookmarkParentFolder folder =
-        BookmarkParentFolder::FromNonPermanentNode(node);
+    BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(node);
     EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
                   .GetDefaultParentForNonMergedSurfaces(),
               node);
@@ -471,8 +448,7 @@ TEST(BookmarkUIOperationsHelperMergedSurfacesTest,
     ASSERT_TRUE(model.account_bookmark_bar_node());
     const BookmarkNode* node =
         model.AddFolder(model.account_bookmark_bar_node(), 0, u"folder");
-    BookmarkParentFolder folder =
-        BookmarkParentFolder::FromNonPermanentNode(node);
+    BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(node);
     EXPECT_EQ(BookmarkUIOperationsHelperMergedSurfaces(&service, &folder)
                   .GetDefaultParentForNonMergedSurfaces(),
               node);
