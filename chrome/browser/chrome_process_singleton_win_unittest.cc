@@ -10,7 +10,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -89,4 +91,17 @@ TEST(ChromeProcessSingletonTest, Lock) {
 
   EXPECT_TRUE(ps1.IsSingletonInstanceForTesting());
   EXPECT_FALSE(ps2.IsSingletonInstanceForTesting());
+}
+
+TEST(ChromeProcessSingletonTest, OverridePrefetch) {
+  base::test::ScopedFeatureList scoped_feature(
+      features::kOverridePrefetchOnSingleton);
+  base::ScopedTempDir profile_dir;
+  ASSERT_TRUE(profile_dir.CreateUniqueTempDir());
+  ChromeProcessSingleton ps(profile_dir.GetPath());
+
+  ProcessSingleton::NotifyResult result = ps.NotifyOtherProcessOrCreate();
+  ASSERT_EQ(ProcessSingleton::PROCESS_NONE, result);
+
+  ps.ChromeProcessSingleton::InitializeFeatures();
 }

@@ -15950,6 +15950,21 @@
             ]
         }
     ],
+    "OverridePrefetchOnSingleton": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OverridePrefetchOnSingleton"
+                    ]
+                }
+            ]
+        }
+    ],
     "OverviewSessionInitOptimizations": [
         {
             "platforms": [

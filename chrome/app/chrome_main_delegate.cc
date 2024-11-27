@@ -958,6 +958,11 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_WIN)
+  ChromeProcessSingleton::GetInstance()
+      ->ChromeProcessSingleton::InitializeFeatures();
+#endif
+
   CommonEarlyInitialization(invoked_in);
 
   // Initializes the resource bundle and determines the locale.
