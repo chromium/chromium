@@ -380,11 +380,27 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
           return SelectorPreMatch::kNeverMatches;
         }
         found_host_pseudo = true;
-        // We fall through here to reach the "default" case. Entering the cases
-        // for kPseudoIs/Where has no effect, since :host[-context]() can't
-        // produce empty argument lists.
-        DCHECK(!current->SelectorList() || current->SelectorList()->IsValid());
-        [[fallthrough]];
+        CollectMetadataFromSelectorList(current->SelectorListOrParent(),
+                                        max_direct_adjacent_selectors,
+                                        metadata);
+        break;
+      case CSSSelector::kPseudoParent:
+        if (const CSSSelector* selector_list = current->SelectorListOrParent();
+            selector_list &&
+            !CSSSelectorList::IsAnyAllowedInParentPseudo(selector_list)) {
+          // A rule like `::before { & {} }` is valid parse-time,
+          // but can never match anything.
+          //
+          // Note that cases with mixed allowed/disallowed selectors
+          // can not be handled here. This is instead handled per argument
+          // in SelectorChecker::CheckPseudoElement, via the check on
+          // context.in_nested_complex_selector.
+          return SelectorPreMatch::kNeverMatches;
+        }
+        CollectMetadataFromSelectorList(current->SelectorListOrParent(),
+                                        max_direct_adjacent_selectors,
+                                        metadata);
+        break;
       case CSSSelector::kPseudoIs:
       case CSSSelector::kPseudoWhere:
         if (const CSSSelectorList* selector_list = current->SelectorList()) {
@@ -400,14 +416,10 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
           }
         }
         [[fallthrough]];
-      case CSSSelector::kPseudoParent:
       default:
-        for (const CSSSelector* sub_selector = current->SelectorListOrParent();
-             sub_selector;
-             sub_selector = CSSSelectorList::Next(*sub_selector)) {
-          CollectMetadataFromSelector(*sub_selector,
-                                      max_direct_adjacent_selectors, metadata);
-        }
+        CollectMetadataFromSelectorList(current->SelectorListOrParent(),
+                                        max_direct_adjacent_selectors,
+                                        metadata);
         break;
     }
 
@@ -432,6 +444,16 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
 
   DCHECK(!max_direct_adjacent_selectors);
   return SelectorPreMatch::kMayMatch;
+}
+
+template <RuleInvalidationDataVisitorType VisitorType>
+void RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelectorList(
+    const CSSSelector* selector_list,
+    unsigned max_direct_adjacent_selectors,
+    FeatureMetadata& metadata) {
+  for (const CSSSelector* s = selector_list; s; s = CSSSelectorList::Next(*s)) {
+    CollectMetadataFromSelector(*s, max_direct_adjacent_selectors, metadata);
+  }
 }
 
 // Update all invalidation sets for a given selector (potentially in the

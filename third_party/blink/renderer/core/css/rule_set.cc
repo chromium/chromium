@@ -329,6 +329,15 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           //
           // Note that `selector_list` may be nullptr for top-level '&'
           // selectors.
+          //
+          // Note also that FindBestRuleSetAndAdd assumes that you cannot
+          // reach a pseudo-element via a '&' selector (crbug.com/380107557).
+          // We ensure that this cannot happen by never adding rules
+          // like '::before { & {} }' to the RuleSet in the first place,
+          // see CollectMetadataFromSelector. Rules with mixed
+          // allowed/disallowed selectors, e.g. '::before, .foo { & {} }',
+          // *are* added to the RuleSet, but fail the IsSingleComplexSelector
+          // check below, satisfying the assumptions of FindBestRuleSetAndAdd.
           if (selector_list &&
               CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
             ExtractSelectorValues(selector_list, style_scope, id, class_name,
@@ -563,6 +572,7 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     // TODO(dbaron): This needs further work to support multiple
     // pseudo-elements after ::slotted().  This likely requires reorganization
     // of how MatchSlottedRules interacts with MatchOuterScopeRules.
+    CHECK(it);
     if (it->FollowsSlotted()) {
       AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
     } else {

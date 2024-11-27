@@ -137,6 +137,16 @@ String CSSSelectorList::SelectorsText(const CSSSelector* first) {
   return result.ReleaseString();
 }
 
+bool CSSSelectorList::IsAnyAllowedInParentPseudo(
+    const CSSSelector* selector_list) {
+  for (const CSSSelector* s = selector_list; s; s = Next(*s)) {
+    if (s->IsAllowedInParentPseudo()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void CSSSelectorList::Trace(Visitor* visitor) const {
   if (!IsValid()) {
     return;

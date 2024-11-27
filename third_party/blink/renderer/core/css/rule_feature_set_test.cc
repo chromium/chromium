@@ -2961,4 +2961,35 @@ TEST_F(RuleFeatureSetTest, NestingSelectorPointingToScopeInsideHas) {
   }
 }
 
+TEST_F(RuleFeatureSetTest, PseudoElementInParentPseudoPreMatch) {
+  Document* document =
+      Document::CreateForTest(execution_context_.GetExecutionContext());
+
+  auto collect_nested_features = [&](String outer_rule) {
+    auto* parent_rule_for_nesting = DynamicTo<StyleRule>(
+        css_test_helpers::ParseRule(*document, outer_rule));
+    CHECK(parent_rule_for_nesting);
+    return CollectFeatures("&", CSSNestingType::kNesting,
+                           parent_rule_for_nesting);
+  };
+
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::after {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::placeholder {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before, ::after {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before, ::after {}"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            collect_nested_features("::before, ::placeholder {}"));
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            collect_nested_features("::before, .a {}"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            collect_nested_features(".a, ::before {}"));
+}
+
 }  // namespace blink
