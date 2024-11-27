@@ -1653,6 +1653,13 @@
       depends_on: ["DynamicSafeAreaInsets"]
     },
     {
+      // Fix for https://crbug.com/40821646. When enabled, it prevents
+      // returning empty position when the position's anchor node is not
+      // a descendant of the anchor's highest editable root.
+      name: "EditableBoundaryAdjustment",
+      status: "stable",
+    },
+    {
       name: "ElementCapture",
       status: {"Android": "", "default": "stable"},
     },

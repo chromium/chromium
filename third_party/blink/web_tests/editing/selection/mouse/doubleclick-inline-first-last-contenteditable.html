@@ -86,7 +86,7 @@ selection_test(
 selection_test(
     '<span contenteditable id="target">xyz</span> abc',
     selection => singleClickAndModify(selection),
-    '<span contenteditable id="target">|xyz</span> abc',
+    '<span contenteditable id="target">^xyz|</span> abc',
     'single-click-modify-1 first word');
 
 selection_test(
@@ -98,7 +98,7 @@ selection_test(
 selection_test(
     'abc <span contenteditable id="target">xyz</span> def',
     selection => singleClickAndModify(selection),
-    'abc <span contenteditable id="target">|xyz</span> def',
+    'abc <span contenteditable id="target">^xyz|</span> def',
     'single-click-modify-3 middle word');
 
 selection_test(
