@@ -6746,7 +6746,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <!-- Data Sharing Owner Manage Flow -->
       <message name ="IDS_COLLABORATION_MANAGE_GROUP_DESCRIPTION" desc="The description of how link sharing works for manage screen.">
-        Anyone with the link can edit all tabs. Learn about shared tab groups
+        Anyone with the link can edit all tabs.
       </message>
       <message name ="IDS_COLLABORATION_MANAGE_SHARE_WISELY" desc="The description of how link sharing works.">
         Always share wisely. Links expire in 48 hours.

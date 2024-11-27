@@ -381,6 +381,9 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.TABS_COUNT_TITLE,
                                 R.plurals.collaboration_preview_dialog_tabs)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
+                                R.string.collaboration_learn_about_shared_groups)
                         .build();
         DataSharingUiConfig commonConfig =
                 new DataSharingUiConfig.Builder()
@@ -623,6 +626,9 @@ public class DataSharingTabManager {
                             .setResourceId(
                                     DataSharingStringConfig.StringKey.CREATE_DESCRIPTION,
                                     R.string.collaboration_share_group_body)
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
+                                    R.string.collaboration_learn_about_shared_groups)
                             .build();
             DataSharingUiConfig commonConfig =
                     new DataSharingUiConfig.Builder()
@@ -768,6 +774,9 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.LET_ANYONE_JOIN_DESCRIPTION,
                                 R.string.collaboration_manage_share_wisely)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
+                                R.string.collaboration_learn_about_shared_groups)
                         .build();
         DataSharingUiConfig commonConfig =
                 new DataSharingUiConfig.Builder()
