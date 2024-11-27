@@ -3473,6 +3473,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3421387094817716717">Эллиптикалык ийри сызыктын жалпыга ачык ачкычы</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Эскертүү<ph name="END_BOLD" />: Үнү сиздикине окшош же аны жаздырып алган адамга Жардамчыңыз жана ал аткарган нерселер жеткиликтүү болушу мүмкүн.</translation>
 <translation id="3421835120203732951">Жаңы профилди кошуу</translation>
+<translation id="3422989558057853751">Акыркы нерсе тандалды. Аны тандоодон чыгарсаңыз, тандоо режиминен чыгасыз</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> папкасында табылган нерселер</translation>
 <translation id="3423226218833787854">ЖИ функциясы жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="3423275441470187644">Ишенимдүүлүк</translation>
@@ -4969,6 +4970,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4461483878391246134">Котормосу сунушталбасын деген тилдерди кошуңуз</translation>
 <translation id="4462159676511157176">Жалпы ат серверлери</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> үчүн коюлган чектөө: <ph name="TIME" /></translation>
+<translation id="4467373268340082204">PIN код туура эмес</translation>
 <translation id="4467561276409486506">Жыйнактуу режимди өчүрүү/күйгүзүү</translation>
 <translation id="4469324811108161144">Эскертүүлөр <ph name="CHARACTER_LIMIT" /> символго чейин сактай алат.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> сайты <ph name="FOLDERNAME" /> папкасындагы файлдары түзөтө алат</translation>

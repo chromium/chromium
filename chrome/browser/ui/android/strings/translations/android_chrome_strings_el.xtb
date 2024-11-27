@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">Διαγράφηκε</translation>
 <translation id="6918398787259831832">Εάν αυτό το πρόβλημα δεν επιλυθεί, <ph name="BEGIN_LINK" />λάβετε περισσότερες πληροφορίες<ph name="END_LINK" /> από το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή δεν έχετε επισκεφτεί τον ιστότοπο πρόσφατα</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 καρτέλα}other{<ph name="NUMBER_OF_TABS" /> καρτέλες}}</translation>
 <translation id="6929224077895306814">Όλοι οι κωδικοί ασφαλείας που είναι αποθηκευμένοι στη συσκευή σας και στον Λογαριασμό σας Google θα διαγραφούν</translation>
 <translation id="6937524809504266803">Εξατομίκευση και σύνδεση</translation>
 <translation id="6937876069006524083">Ψευδώνυμο (προαιρετικά)</translation>

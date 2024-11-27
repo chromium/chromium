@@ -3458,6 +3458,7 @@
 <translation id="3421387094817716717">Օվալաձև կորի հանրային բանալին</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Նկատի ունեցեք<ph name="END_BOLD" />, որ ձեր ձայնին նման ձայն կամ դրա ձայնագրությունն ունեցող օգտատերերը հնարավոր է՝ նույնպես կարողանան օգտվել ձեր Օգնականից և բացել անհատականացված արդյունքները։</translation>
 <translation id="3421835120203732951">Ավելացնել նոր պրոֆիլ</translation>
+<translation id="3422989558057853751">Ընտրված է վերջին տարրը։ Ընտրությունը չեղարկելու դեպքում ընտրության ռեժիմը կփակվի</translation>
 <translation id="3423111258700187173">Արդյունքներ են գտնվել «<ph name="FOLDER_TITLE" />» պանակում</translation>
 <translation id="3423226218833787854">Իմանալ ավելին այս AI գործառույթի մասին</translation>
 <translation id="3423275441470187644">Հավաստագիր</translation>
@@ -4954,6 +4955,7 @@
 <translation id="4461483878391246134">Ավելացրեք լեզուներ, որոնց համար թարգմանություն երբեք չպետք է առաջարկվի</translation>
 <translation id="4462159676511157176">Անունների այլ սերվերներ</translation>
 <translation id="4465236939126352372">Նշված է <ph name="TIME" /> սահմանաչափ <ph name="APP_NAME" /> հավելվածի համար</translation>
+<translation id="4467373268340082204">PIN կոդը սխալ է</translation>
 <translation id="4467561276409486506">&amp;Միացնել/անջատել կոմպակտ ռեժիմը</translation>
 <translation id="4469324811108161144">Նշումները կարող են պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> կայքը կարող է փոփոխել <ph name="FOLDERNAME" /> պանակի ֆայլերը</translation>
@@ -6989,6 +6991,7 @@
 <translation id="5943127421590245687">Ձեր հաշիվը հաստատվել է։ Տվյալներն ապակողպելու և վերականգնելու համար մուտքագրեք <ph name="DEVICE_TYPE" />-ի ձեր հին գաղտնաբառը։</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> ծառայությունը կառավարում է ձեր նոր ներդիրի էջը</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ֆայլը կարող է վտանգավոր լինել։ Ուղարկե՞լ ֆայլը «Google Ապահով դիտարկում» ծառայությանը ստուգման։</translation>
+<translation id="5945192511027649793">Անջատել հպահարթակը</translation>
 <translation id="5945363896952315544">Ձեր անվտանգության բանալու տարածքը բավարար չէ։ Նոր մատնահետք ավելացնելու համար ջնջեք եղածներից մեկը։</translation>
 <translation id="5946591249682680882">Հաշվետվության ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Կրկնակի սեղմել մկնիկի ձախ կոճակը</translation>
@@ -8490,6 +8493,7 @@
 <translation id="7025190659207909717">Բջջային ցանցերում տվյալների փոխանցման կառավարում</translation>
 <translation id="7025895441903756761">Ապահովություն և գաղտնիություն</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Բացել բոլորը &amp;ինկոգնիտո պատուհանում}=1{Բացել &amp;ինկոգնիտո պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;ինկոգնիտո պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;ինկոգնիտո պատուհանում}}</translation>
+<translation id="7027432471322992835">Անջատել հպահարթակը</translation>
 <translation id="7029307918966275733">Crostini-ն տեղադրված չէ։ Տեղադրեք Crostini-ն՝ բոնուսները տեսնելու համար։</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030304022046916278">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։</translation>
@@ -10022,6 +10026,7 @@
 <translation id="8119438628456698432">Մատյանների ֆայլերը ստեղծվում են…</translation>
 <translation id="811994229154425014">Սեղմել կրկնակի բացատ՝ կետ մուտքագրելու համար</translation>
 <translation id="8120505434908124087">Տեղադրել eSIM պրոֆիլը</translation>
+<translation id="8121537075864592453">Լիաէկրան ռեժիմն անջատված է</translation>
 <translation id="8121750884985440809">Այս պահին դուք հեռարձակում եք ձեր էկրանը</translation>
 <translation id="8122898034710982882">Հեռախոսի կառավարման կենտրոն, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Դեղին ու սպիտակ ծաղիկ</translation>
@@ -10243,6 +10248,7 @@
 <translation id="8276560076771292512">Դատարկել քեշը և նորից ներբեռնել սերվերից</translation>
 <translation id="8276850948802942358">Իմանալ ավելին որևէ կայքի երրորդ կողմի քուքիներ օգտագործելու ժամանակավոր թույլտվություն տալու մասին</translation>
 <translation id="8277907305629781277">Դուք մուտքի այս կոդը ստացել եք հետևյալ ամսաթվին՝ <ph name="DATE" /></translation>
+<translation id="827966378414194229">Կառավարեք ձեր Chromebook-ը գլխի շարժումների և դեմքի արտահայտությունների միջոցով <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Ձեր լեզվով վեբ կայքեր</translation>
 <translation id="8280848878018088610">Ալեկոծված ծովի ալիքները՝ մռայլ ու ֆանտաստիկ քաղաքի և ամրոցի ֆոնին։</translation>
 <translation id="828180235270931531">Այլ հասանելի տպիչներ</translation>

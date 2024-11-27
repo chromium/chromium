@@ -3470,6 +3470,7 @@
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。</translation>
 <translation id="3421835120203732951">新增個人檔案</translation>
+<translation id="3422989558057853751">呢個係最後一個揀選嘅項目，取消揀選之後就會結束揀選模式</translation>
 <translation id="3423111258700187173">在「<ph name="FOLDER_TITLE" />」中找到的結果</translation>
 <translation id="3423226218833787854">進一步了解呢項 AI 功能</translation>
 <translation id="3423275441470187644">信任</translation>
@@ -4959,6 +4960,7 @@
 <translation id="4461483878391246134">加一律唔翻譯嘅語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
+<translation id="4467373268340082204">PIN 錯誤</translation>
 <translation id="4467561276409486506">切換最密模式(&amp;T)</translation>
 <translation id="4469324811108161144">筆記可以儲存最多 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可編輯「<ph name="FOLDERNAME" />」中的檔案</translation>

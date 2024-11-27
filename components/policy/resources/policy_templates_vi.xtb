@@ -950,6 +950,9 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> có t
 <translation id="165769015320654523">Tự động cấp quyền cho những trang web này để kết nối với các thiết bị HID bằng mã nhà cung cấp và mã sản phẩm cụ thể.</translation>
 <translation id="1659406551862245683">Thao tác đổi kích thước bàn phím ảo mặc định được thay đổi thành đổi kích thước khung nhìn bố cục</translation>
 <translation id="166427968280387991">Máy chủ proxy</translation>
+<translation id="1665033825018489686">Nếu bạn đặt chính sách này thành Bật hoặc không định cấu hình thì <ph name="PRODUCT_NAME" /> sẽ chấp nhận phiên khách đăng nhập. Phiên khách đăng nhập là hồ sơ <ph name="PRODUCT_NAME" />, trong đó tất cả cửa sổ đều ở chế độ ẩn danh.
+
+Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ không cho phép khởi động hồ sơ khách.</translation>
 <translation id="1666001345366986837">Chế độ cài đặt tính năng Nền AI tạo sinh cho hội nghị truyền hình</translation>
 <translation id="1670638264428789878">Bật tính năng Nhóm trang web có liên quan</translation>
 <translation id="1671405606278443620">Chế độ cài đặt cho tính năng Tìm nhật ký dựa trên AI</translation>
@@ -1518,6 +1521,15 @@ Thông thường, chính sách này bị Disabled (Tắt) để chống lừa đ
         Nếu bạn đặt chính sách này thành Bật hoặc chưa đặt, thì hệ thống sẽ cho phép cập nhật các ứng dụng Kiosk Chrome ngay trong phiên.
         </translation>
 <translation id="2082205219176343977">Định cấu hình phiên bản Chrome tối thiểu được phép cho thiết bị.</translation>
+<translation id="2083016623552073519">Bật tính năng dịch phụ đề trực tiếp. Phụ đề sẽ được gửi đến Google để dịch.
+
+Nếu bạn đặt chính sách này thành Bật, thì tính năng Dịch trực tiếp sẽ luôn bật.
+
+Nếu bạn đặt chính sách này thành Tắt, thì tính năng Dịch trực tiếp sẽ luôn tắt.
+
+Nếu bạn đặt chính sách này thành bắt buộc, thì người dùng sẽ không thể thay đổi hoặc ghi đè chính sách này.
+
+Nếu bạn không đặt chính sách này, thì ban đầu, tính năng Dịch trực tiếp sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="2083696311760456171">Không cho phép Cụm từ gợi ý của tính năng tự động điền.</translation>
 <translation id="20838788335877967">Tắt chính sách báo cáo thông tin nhận dạng người dùng</translation>
 <translation id="208566302163036794">Chặn các tính năng đã tắt</translation>
@@ -6683,6 +6695,7 @@ Nếu bạn chưa đặt cả hai chính sách này thì mọi trạng thái xá
 <translation id="588135807064822874">Bật tính năng Chạm để tìm kiếm</translation>
 <translation id="5882345429632338713">Hoãn lại trước khi chạy trình duyệt thay thế (mili giây)</translation>
 <translation id="5883015257301027298">Cài đặt cookie mặc định</translation>
+<translation id="5883631290631802010">Bật tính năng Dịch trực tiếp</translation>
 <translation id="5883754873839596178">Nếu bạn đặt chính sách này, số lượng tối đa lượt kết nối đồng thời đến máy chủ proxy sẽ được chỉ định. Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn. Bạn nên đặt giá trị cao hơn 6 và thấp hơn 100. Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 32 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở. Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định.
 
       Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 32.</translation>
@@ -8210,6 +8223,7 @@ tức là chặn những yêu cầu này, sẽ được áp dụng.</translation
 <translation id="6938424179790370595">Nếu bạn đặt chính sách này thành Không có, thì trình phóng to màn hình sẽ tắt.
 
 Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì ban đầu, trình phóng to màn hình sẽ tắt, nhưng người dùng có thể bật tính năng này bất cứ lúc nào.</translation>
+<translation id="6938524853892166974">Tắt tính năng Dịch trực tiếp</translation>
 <translation id="6940243892299228102">Không cho phép người dùng sử dụng các mẫu không gian làm việc</translation>
 <translation id="6943577887654905793">Tên tùy chọn Mac/Linux:</translation>
 <translation id="694602410134474029">Kiểm soát việc <ph name="PRODUCT_NAME" /> có tương tác với trình điều khiển máy in qua một quy trình dịch vụ riêng biệt hay không. Lệnh gọi in trên nền tảng để truy vấn máy in hiện có, lấy chế độ cài đặt trình điều khiển in và gửi tài liệu cần in tới máy in cục bộ sẽ được đưa ra từ một quy trình dịch vụ. Việc chuyển các lệnh gọi này ra khỏi quy trình của trình duyệt giúp cải thiện độ ổn định và giảm hành vi giao diện người dùng bị treo trong chế độ Xem trước bản in.

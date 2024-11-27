@@ -250,6 +250,7 @@
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
 <translation id="4434353761996769206">خطأ في أداة التثبيت: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">‏تدير "<ph name="MANAGER" />" متصفِّح Chromium</translation>
+<translation id="444069871276811466">‏إضافة ملف شخصي على Chromium</translation>
 <translation id="4447409407328223819">‏لمحة عن الإصدار Chrome for Testing</translation>
 <translation id="4470974262661801543">‏عليك إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك على Google</translation>
 <translation id="4493028449971051158">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مشرفًا.</translation>
@@ -580,6 +581,7 @@
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> سجلّ تصفّحك، وهو سجل يشمل المواقع الإلكترونية التي زرتها باستخدام Chromium على هذا الجهاز.</translation>
 <translation id="8852026904190808918">‏تُستخدم هذه اللغة لعرض القوائم والإعدادات والتنبيهات والنصوص الأخرى في Chromium</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
+<translation id="8876044221123442390">‏إضافة ملف شخصي على Chromium</translation>
 <translation id="8880203542552872219">‏في هذه الحالة، يُرجى تعديل كلمة المرور المحفوظة في Chromium لتتطابق مع كلمة المرور الجديدة.</translation>
 <translation id="8891709362986793894">‏تطلُب المؤسسة منك تسجيل الدخول إلى Chromium</translation>
 <translation id="8907580949721785412">‏يحاول Chromium عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>

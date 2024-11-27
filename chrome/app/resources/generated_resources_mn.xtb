@@ -3469,6 +3469,7 @@
 <translation id="3421387094817716717">Зууван муруй нийтийн түлхүүр</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" /> Төстэй дуу хоолой эсвэл бичлэгээр таны хувийн илэрц эсвэл Туслахад хандах боломжтой байж магадгүй.</translation>
 <translation id="3421835120203732951">Шинэ профайл нэмэх</translation>
+<translation id="3422989558057853751">Сүүлийн зүйлийг сонгосон. Зүйлийн сонголтыг болиулах нь сонголтын горимоос гаргана</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-с олдсон илэрцүүд</translation>
 <translation id="3423226218833787854">Энэ ХОУ-ы онцлогийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="3423275441470187644">Итгэмжлэл</translation>
@@ -3808,7 +3809,7 @@
 <translation id="3654045516529121250">Өөрийн нэвтрэх боломжит байдлын тохиргоонуудыг унш</translation>
 <translation id="3654682977761834281">Оруулсан сайтуудын өгөгдөл</translation>
 <translation id="3656328935986149999">Курсорын хурд</translation>
-<translation id="3656701180077048004">Таныг товч дарахад болон тухайн товчийг идэвхжих хооронд саатал нэмнэ</translation>
+<translation id="3656701180077048004">Таныг товч дарах болон тухайн товчийг идэвхжих хооронд саатал нэмнэ</translation>
 <translation id="3658871634334445293">TrackPoint хурдасгуур</translation>
 <translation id="3659929705630080526">Та нэвтрэх кодыг хэт олон удаа буруу оруулсан байна. Дараа дахин оролдоно уу</translation>
 <translation id="3660234220361471169">Найдваргүй</translation>
@@ -4964,6 +4965,7 @@
 <translation id="4461483878391246134">Хэзээ ч орчуулга санал болгохгүй хэл нэмнэ үү</translation>
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-д <ph name="TIME" />-н цагийн хязгаар тохируулсан</translation>
+<translation id="4467373268340082204">ПИН буруу байна</translation>
 <translation id="4467561276409486506">&amp;Товч тодорхой горимыг асаах/унтраах</translation>
 <translation id="4469324811108161144">Тэмдэглэл нь <ph name="CHARACTER_LIMIT" /> хүртэлх тэмдэгт хадгалах боломжтой.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> нь <ph name="FOLDERNAME" />-н файлыг засах боломжтой</translation>

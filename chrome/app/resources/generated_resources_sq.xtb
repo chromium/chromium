@@ -6988,6 +6988,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5943127421590245687">Verifikimi u krye me sukses. Për të shkyçur dhe rivendosur të dhënat lokale, fut fjalëkalimin e vjetër të <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> po menaxhon faqen e skedës së re</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te "Shfletimi i sigurt i Google" për skanim?</translation>
+<translation id="5945192511027649793">Çaktivizo bllokun me prekje</translation>
 <translation id="5945363896952315544">Çelësi yt i sigurisë nuk mund të ruajë më gjurmë gishtash. Për të shtuar të re, fshij përpara një gjurmë ekzistuese gishti.</translation>
 <translation id="5946591249682680882">ID-ja e raportimit <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Kliko dy herë butonin majtas të miut</translation>
@@ -8488,6 +8489,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7025190659207909717">Menaxhimi i shërbimit të të dhënave celulare</translation>
 <translation id="7025895441903756761">Siguria dhe privatësia</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare "të fshehtë"}=1{Hape në &amp;dritare "të fshehtë"}other{Hapi të gjitha ({COUNT}) në &amp;dritare "të fshehtë"}}</translation>
+<translation id="7027432471322992835">Çaktivizo bllokun e prekjes</translation>
 <translation id="7029307918966275733">Crostini nuk është instaluar. Instalo Crostini për të parë kreditet.</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7030304022046916278">I dërgon URL-të te "Shfletimi i sigurt" për t'i kontrolluar</translation>
@@ -10020,6 +10022,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8119438628456698432">Po krijohen skedarët e evidencave...</translation>
 <translation id="811994229154425014">Hapësirë e dyfishtë për të shkruar pikë</translation>
 <translation id="8120505434908124087">Instalo profilin e kartës eSIM</translation>
+<translation id="8121537075864592453">Ekrani i plotë u çaktivizua</translation>
 <translation id="8121750884985440809">Po transmeton aktualisht ekranin tënd</translation>
 <translation id="8122898034710982882">Phone Hub, "<ph name="FEATURE_NAME" />"</translation>
 <translation id="81238879832906896">Lule e verdhë dhe e bardhë</translation>
@@ -10241,6 +10244,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8276560076771292512">Memorie specifike e boshatisur dhe ringarkim i detyruar</translation>
 <translation id="8276850948802942358">Mëso më shumë rreth dhënies së lejes së përkohshme që një sajt të përdorë kuki të palëve të treta</translation>
 <translation id="8277907305629781277">Krijove këtë çelës kalimi më <ph name="DATE" /></translation>
+<translation id="827966378414194229">Përdor lëvizjet e kokës dhe shprehjet e fytyrës për të kontrolluar Chromebook. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Uebsajtet në gjuhët e tua</translation>
 <translation id="8280848878018088610">Dallgë që përplasen në det, me një qytet dhe kështjellë imagjinare në sfond, me atmosferë të errët.</translation>
 <translation id="828180235270931531">Printerë të tjerë të disponueshëm</translation>
