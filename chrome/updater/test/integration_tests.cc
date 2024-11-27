@@ -4803,7 +4803,7 @@ INSTANTIATE_TEST_SUITE_P(
                 "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
                 UpdateService::ErrorCategory::kInstaller,
                 1603,
-                {},
+                "Installer error: Fatal error during installation. ",
                 {},
                 {},
             },
@@ -4826,7 +4826,7 @@ INSTANTIATE_TEST_SUITE_P(
                 "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
                 UpdateService::ErrorCategory::kInstaller,
                 99,
-                {},
+                "Installer error: 0x63",
                 {},
                 {},
             },
@@ -4864,7 +4864,9 @@ INSTANTIATE_TEST_SUITE_P(
                      base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
                 UpdateService::ErrorCategory::kInstaller,
                 ERROR_SUCCESS_REBOOT_REQUIRED,
-                {},
+                "Reboot required: The requested operation is successful. "
+                "Changes "
+                "will not be effective until the system is rebooted. ",
                 {},
                 {},
             },
@@ -4877,7 +4879,9 @@ INSTANTIATE_TEST_SUITE_P(
                      base::NumberToString(ERROR_INSTALL_ALREADY_RUNNING)}),
                 UpdateService::ErrorCategory::kInstall,
                 GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING,
-                {},
+                "Installer error: Another installation is already in progress. "
+                "Complete that installation before proceeding with this "
+                "install. ",
                 {},
                 {},
             },

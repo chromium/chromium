@@ -10,11 +10,6 @@
 
 namespace updater {
 
-[[nodiscard]] std::string GetInstallerText(
-    UpdateService::ErrorCategory error_category,
-    int error_code,
-    int extra_code);
-
 [[nodiscard]] ObserverCompletionInfo HandleInstallResult(
     const UpdateService::UpdateState& update_state);
 

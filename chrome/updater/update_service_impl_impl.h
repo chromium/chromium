@@ -164,6 +164,11 @@ void GetComponents(
         void(const std::vector<std::optional<update_client::CrxComponent>>&)>
         callback);
 
+#if BUILDFLAG(IS_WIN)
+std::string GetInstallerText(UpdateService::ErrorCategory error_category,
+                             int error_code,
+                             int extra_code);
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace internal
 
 }  // namespace updater
