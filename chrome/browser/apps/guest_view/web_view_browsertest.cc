@@ -4506,17 +4506,20 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestZoomBeforeNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, HttpAuth) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
+  // This listener is only used for the non-mparch case.
   content::TestNavigationObserver nav_observer(GetGuestWebContents(), 2);
   nav_observer.set_wait_event(
       content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  // We add a frame navigation observer for the MPArch case.
+  content::TestFrameNavigationObserver frame_nav_observer(
+      GetGuestRenderFrameHost());
 
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
@@ -4527,12 +4530,16 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, HttpAuth) {
   LoginHandler* login_handler =
       LoginHandler::GetAllLoginHandlersForTest().front();
   login_handler->SetAuth(u"basicuser", u"secret");
-  nav_observer.WaitForNavigationFinished();
+
+  frame_nav_observer.Wait();
+  if (!GetParam()) {
+    nav_observer.Wait();
+  }
+  EXPECT_TRUE(frame_nav_observer.last_navigation_succeeded());
+  EXPECT_FALSE(GetGuestRenderFrameHost()->IsErrorDocument());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, HttpAuthIdentical) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
   LoadAppWithGuest("web_view/simple");
 
@@ -4541,9 +4548,14 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, HttpAuthIdentical) {
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
+  // This listener is only used for the non-mparch case.
   content::TestNavigationObserver guest_nav_observer(GetGuestWebContents(), 2);
   guest_nav_observer.set_wait_event(
       content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  // We add a frame navigation observer for the MPArch case.
+  content::TestFrameNavigationObserver frame_nav_observer(
+      GetGuestRenderFrameHost());
 
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
@@ -4574,7 +4586,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, HttpAuthIdentical) {
       tab_login_handler->auth_info()));
 
   guest_login_handler->SetAuth(u"basicuser", u"secret");
-  guest_nav_observer.WaitForNavigationFinished();
+  frame_nav_observer.Wait();
+  if (!GetParam()) {
+    guest_nav_observer.WaitForNavigationFinished();
+  }
 
   // The tab should still be prompting for credentials.
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());

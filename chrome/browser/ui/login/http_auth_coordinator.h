@@ -16,6 +16,7 @@
 
 namespace content {
 class BrowserContext;
+class GuestPageHolder;
 class WebContents;
 }  // namespace content
 
@@ -66,6 +67,7 @@ class HttpAuthCoordinator {
       bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
+      content::GuestPageHolder* guest,
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
   // Exposed for testing.
@@ -106,7 +108,8 @@ class HttpAuthCoordinator {
 
     // Gives the extension subsystem the chance to respond to http auth. Returns
     // true if the extension subsystem is responding.
-    bool ForwardToExtension(content::BrowserContext* browser_context);
+    bool ForwardToExtension(content::GuestPageHolder* guest,
+                            content::BrowserContext* browser_context);
 
     // Show a dialog to the user.
     void ShowDialog();
