@@ -59,7 +59,7 @@ const double kTestDownloadEndTimeMs = 1413514824057;
 // GetDownloadDetailsCallback.
 class DownloadDetailsGetter {
  public:
-  virtual ~DownloadDetailsGetter() {}
+  virtual ~DownloadDetailsGetter() = default;
   virtual void OnDownloadDetails(
       ClientIncidentReport_DownloadDetails* details) = 0;
   DownloadMetadataManager::GetDownloadDetailsCallback GetCallback() {
