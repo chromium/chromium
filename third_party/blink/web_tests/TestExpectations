@@ -7990,7 +7990,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure Pass ]
 [ Mac14 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 [ Mac14 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Skip Timeout ]
-[ Mac14 ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Timeout ]
 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-allowed-for-all.https.sub.html [ Crash ]
 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-disallowed-for-all.https.sub.html [ Crash ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-exit.html [ Failure Pass ]
@@ -8230,8 +8229,6 @@ crbug.com/350075019 external/wpt/svg/struct/reftests/use-external-html-resource.
 # Gardener 2024-06-05
 crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.py [ Failure ]
 
-crbug.com/331836147 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html [ Failure Pass ]
-
 # Not working tests at the timing of adding virtual/prerender2-fallback-prefetch-spec-rules
 crbug.com/346751886 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure ]
 
@@ -8282,7 +8279,6 @@ crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https
 
 # Gardener 2024-07-11
 crbug.com/352455679 [ Linux ] external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Failure Pass Timeout ]
-crbug.com/352455679 [ Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Failure Pass Timeout ]
 crbug.com/41490706 [ Linux ] external/wpt/touch-events/multi-touch-interfaces.html [ Failure Pass ]
 
 # Flaky on Linux and Windows
@@ -8324,8 +8320,6 @@ crbug.com/40899458 fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass Tim
 
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-pause-when-hidden.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-playback-while-not-visible-permission-policy-cant-play-if-hidden.html [ Failure Skip ]
-
-crbug.com/352831220 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html [ Failure Pass ]
 
 # Gardener 2024-07-30
 crbug.com/356177815 [ Win11-arm64 ] http/tests/cookies/partitioned-cookies/partitioned-cookies-in-parallel-frames.https.html [ Failure Pass Timeout ]

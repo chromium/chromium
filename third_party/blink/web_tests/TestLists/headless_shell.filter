@@ -1181,8 +1181,6 @@
 -virtual/threaded/external/wpt/css/css-backgrounds/border-top-right-radius-010.xht
 -virtual/threaded/external/wpt/css/css-backgrounds/css3-border-image-repeat-repeat.html
 -virtual/threaded/external/wpt/css/css-backgrounds/table-cell-background-local-003.html
--virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html
--virtual/threaded/external/wpt/css/css-scroll-snap/selection-target.html
 -virtual/threaded/external/wpt/css/css-view-transitions/*
 -virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html
 -virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-visibility.html

@@ -141,7 +141,6 @@
               "compositing/webgl",
               "external/wpt/animation-worklet",
               "external/wpt/css/css-backgrounds",
-              "external/wpt/css/css-scroll-snap",
               "external/wpt/css/css-view-transitions",
               "external/wpt/css/cssom-view/overflow-hidden-smooth-scroll-crash.html",
               "external/wpt/feature-policy/experimental-features",
