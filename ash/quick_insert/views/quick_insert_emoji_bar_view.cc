@@ -185,7 +185,8 @@ class GifsButton : public views::LabelButton {
     SetBackground(views::CreateThemedRoundedRectBackground(
         GetState() == views::Button::ButtonState::STATE_HOVERED
             ? cros_tokens::kCrosSysHoverOnSubtle
-            : cros_tokens::kCrosSysSystemOnBase,
+            : (is_checked_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                           : cros_tokens::kCrosSysSystemOnBase),
         kGifsButtonCornerRadius));
   }
 
@@ -199,7 +200,8 @@ class GifsButton : public views::LabelButton {
     SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                   is_checked_
                       ? std::make_optional(ui::ImageModel::FromVectorIcon(
-                            kCheckIcon, cros_tokens::kCrosSysOnSurface, 16))
+                            kCheckIcon,
+                            cros_tokens::kCrosSysSystemOnPrimaryContainer, 16))
                       : std::nullopt);
     PreferredSizeChanged();
     return is_checked_;
