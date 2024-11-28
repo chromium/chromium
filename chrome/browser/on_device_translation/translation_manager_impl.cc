@@ -63,7 +63,8 @@ void TranslationManagerImpl::Create(
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {
   TranslationManagerImpl* translation_manager =
       TranslationManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
-  translation_manager->receiver_.Bind(std::move(receiver));
+  translation_manager->receiver_set_.Add(translation_manager,
+                                         std::move(receiver));
 }
 
 void TranslationManagerImpl::CanCreateTranslator(

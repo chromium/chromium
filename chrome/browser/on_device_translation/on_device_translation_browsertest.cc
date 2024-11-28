@@ -1211,6 +1211,37 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       "en", "ko", CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
 }
 
+// Test that calling both the legacy and new API works.
+// This is a regression test for https://crbug.com/381344025.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, UseBothLegacyAndNewAPI) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Test that Translator legacy API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await translation.createTranslator({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await translator.translate('hello');
+    )"),
+            "en to ja: hello");
+
+  // Test that Translator new API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await ai.translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await translator.translate('hello');
+    )"),
+            "en to ja: hello");
+}
+
 // Test the behavior of canTranslate() when PassAcceptLanguagesCheck() checks
 // is skipped.
 class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
