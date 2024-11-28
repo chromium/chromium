@@ -104,6 +104,11 @@
       "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Builder/targets"
     }
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
   "$build/siso": {
     "configs": [
       "builder",

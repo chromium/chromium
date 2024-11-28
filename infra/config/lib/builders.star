@@ -365,7 +365,6 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
-    reclient_enabled = True,
     siso_enabled = None,
     siso_project = None,
     siso_configs = ["builder"],
@@ -467,7 +466,6 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
-        reclient_enabled = args.DEFAULT,
         siso_enabled = args.DEFAULT,
         siso_project = args.DEFAULT,
         siso_configs = args.DEFAULT,
@@ -676,8 +674,6 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
-        reclient_enabled: If True, $build/reclient properties will be set.
-            Otherwise, Siso's builtin RBE client will be used.
         siso_enabled: If True, $build/siso properties will be set, and Siso will
             be used at compile step.
         siso_project: a string indicating the GCP project hosting the RBE
@@ -869,32 +865,35 @@ def builder(
     if code_coverage != None:
         properties["$build/code_coverage"] = code_coverage
 
-    # Properties for build system and remote exeuction.
+    reclient_scandeps_server = defaults.get_value(
+        "reclient_scandeps_server",
+        reclient_scandeps_server,
+    )
+
+    # Enable scandeps_server by default for Chromium.
+    if reclient_scandeps_server == args.COMPUTE:
+        reclient_scandeps_server = settings.project.startswith("chromium") or (os and os.category == os_category.MAC)
+
     rbe_project = defaults.get_value("siso_project", siso_project)
     shadow_rbe_project = defaults.get_value("shadow_siso_project", shadow_siso_project)
-    use_siso = defaults.get_value("siso_enabled", siso_enabled) and rbe_project
-    use_siso_remote_linking = use_siso and defaults.get_value("siso_remote_linking", siso_remote_linking)
-
-    # When remote linking is enabled, Siso needs to use the builtin-RBE client
-    # instead of Reclient.
-    if use_siso_remote_linking:
-        use_reclient = False
-    else:
-        use_reclient = defaults.get_value("reclient_enabled", reclient_enabled)
-    use_siso_rbe_client = not use_reclient
-
-    if use_reclient:
-        reclient_scandeps_server = defaults.get_value(
-            "reclient_scandeps_server",
-            reclient_scandeps_server,
-        )
-
-        # Enable scandeps_server by default for Chromium.
-        if reclient_scandeps_server == args.COMPUTE:
-            reclient_scandeps_server = settings.project.startswith("chromium") or (os and os.category == os_category.MAC)
-
-        reclient = _reclient_property(
-            instance = rbe_project,
+    reclient = _reclient_property(
+        instance = rbe_project,
+        service = reclient_service,
+        jobs = reclient_jobs,
+        rewrapper_env = reclient_rewrapper_env,
+        bootstrap_env = reclient_bootstrap_env,
+        profiler_service = reclient_profiler_service,
+        publish_trace = reclient_publish_trace,
+        scandeps_server = reclient_scandeps_server,
+        cache_silo = reclient_cache_silo,
+        ensure_verified = reclient_ensure_verified,
+        disable_bq_upload = reclient_disable_bq_upload,
+    )
+    if reclient != None:
+        properties["$build/reclient"] = reclient
+        shadow_reclient_instance = shadow_rbe_project
+        shadow_reclient = _reclient_property(
+            instance = shadow_reclient_instance,
             service = reclient_service,
             jobs = reclient_jobs,
             rewrapper_env = reclient_rewrapper_env,
@@ -906,25 +905,11 @@ def builder(
             ensure_verified = reclient_ensure_verified,
             disable_bq_upload = reclient_disable_bq_upload,
         )
-        if reclient != None:
-            properties["$build/reclient"] = reclient
-            shadow_reclient_instance = shadow_rbe_project
-            shadow_reclient = _reclient_property(
-                instance = shadow_reclient_instance,
-                service = reclient_service,
-                jobs = reclient_jobs,
-                rewrapper_env = reclient_rewrapper_env,
-                bootstrap_env = reclient_bootstrap_env,
-                profiler_service = reclient_profiler_service,
-                publish_trace = reclient_publish_trace,
-                scandeps_server = reclient_scandeps_server,
-                cache_silo = reclient_cache_silo,
-                ensure_verified = reclient_ensure_verified,
-                disable_bq_upload = reclient_disable_bq_upload,
-            )
-            if shadow_reclient:
-                shadow_properties["$build/reclient"] = shadow_reclient
-                shadow_rbe_project = shadow_reclient["instance"]
+        if shadow_reclient:
+            shadow_properties["$build/reclient"] = shadow_reclient
+            shadow_rbe_project = shadow_reclient["instance"]
+    use_siso = defaults.get_value("siso_enabled", siso_enabled) and rbe_project
+    use_siso_remote_linking = use_siso and defaults.get_value("siso_remote_linking", siso_remote_linking)
     if use_siso:
         siso = {
             "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
@@ -952,7 +937,7 @@ def builder(
 
         # Since Siso's remote linking doesn't use Reclient, it needs to enable
         # Cloud Monitoring for monitoring and alerts.
-        if defaults.get_value("siso_enable_cloud_monitoring", siso_enable_cloud_monitoring) and use_siso_rbe_client:
+        if defaults.get_value("siso_enable_cloud_monitoring", siso_enable_cloud_monitoring) and use_siso_remote_linking:
             siso["enable_cloud_monitoring"] = True
 
             # TODO: crbug.com/368518993 - It uses the same GCP project with
@@ -1090,6 +1075,7 @@ def builder(
 
     # When Siso enables remote linking, it must use the builtin RBE client
     # instead of Reclient. Modify GN args inside register_gn_args().
+    use_siso_rbe_client = use_siso_remote_linking
     additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args, use_siso, use_siso_rbe_client)
 
     builder_config_settings = defaults.get_value(

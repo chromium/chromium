@@ -48,6 +48,11 @@
   "$build/code_coverage": {
     "use_javascript_coverage": true
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
   "$build/siso": {
     "configs": [
       "builder",
