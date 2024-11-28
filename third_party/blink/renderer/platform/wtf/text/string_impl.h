@@ -709,12 +709,18 @@ WTF_EXPORT bool DeprecatedEqualIgnoringCase(base::span<const UChar>,
 WTF_EXPORT bool EqualIgnoringNullity(StringImpl*, StringImpl*);
 
 template <typename CharacterTypeA, typename CharacterTypeB>
-inline bool EqualIgnoringASCIICase(const CharacterTypeA* a,
-                                   const CharacterTypeB* b,
-                                   wtf_size_t length) {
-  for (wtf_size_t i = 0; i < length; ++i) {
-    if (ToASCIILower(a[i]) != ToASCIILower(b[i]))
+inline bool EqualIgnoringASCIICase(base::span<const CharacterTypeA> a,
+                                   base::span<const CharacterTypeB> b) {
+  CHECK_EQ(a.size(), b.size());
+  size_t length = a.size();
+  const CharacterTypeA* a_data = a.data();
+  const CharacterTypeB* b_data = b.data();
+  while (length--) {
+    // Avoid base::span::operator[] for better performance.
+    // SAFETY: This function ensures a_data and b_data move inside their spans.
+    if (UNSAFE_BUFFERS(ToASCIILower(*a_data++) != ToASCIILower(*b_data++))) {
       return false;
+    }
   }
   return true;
 }

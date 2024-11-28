@@ -383,8 +383,9 @@ inline bool EqualIgnoringASCIICase(const StringView& a,
                                    const char (&literal)[N]) {
   if (a.length() != N - 1 || (N == 1 && a.IsNull()))
     return false;
-  return a.Is8Bit() ? EqualIgnoringASCIICase(a.Characters8(), literal, N - 1)
-                    : EqualIgnoringASCIICase(a.Characters16(), literal, N - 1);
+  base::span<const char> span = base::span(literal).template first<N - 1>();
+  return a.Is8Bit() ? EqualIgnoringASCIICase(a.Span8(), span)
+                    : EqualIgnoringASCIICase(a.Span16(), span);
 }
 
 // TODO(esprehn): Can't make this an overload of WTF::equal since that makes

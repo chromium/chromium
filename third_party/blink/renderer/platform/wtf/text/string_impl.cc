@@ -1051,19 +1051,21 @@ wtf_size_t StringImpl::DeprecatedFindIgnoringCase(
 
 template <typename SearchCharacterType, typename MatchCharacterType>
 ALWAYS_INLINE static wtf_size_t FindIgnoringASCIICaseInternal(
-    const SearchCharacterType* search_characters,
-    const MatchCharacterType* match_characters,
-    wtf_size_t index,
-    wtf_size_t search_length,
-    wtf_size_t match_length) {
+    base::span<const SearchCharacterType> search,
+    base::span<const MatchCharacterType> match,
+    wtf_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = search_length - match_length;
+  wtf_size_t delta = search.size() - match.size();
 
   wtf_size_t i = 0;
-  // keep looping until we match
-  while (!EqualIgnoringASCIICase(search_characters + i, match_characters,
-                                 match_length)) {
+  const SearchCharacterType* search_data = search.data();
+  // Keep looping until we match.
+  // SAFETY: The `i == delta` check below guarantees the span is in `search`.
+  while (!EqualIgnoringASCIICase(
+      UNSAFE_BUFFERS(
+          base::span(search_data + i, search_data + i + match.size())),
+      match)) {
     if (i == delta)
       return kNotFound;
     ++i;
@@ -1088,22 +1090,13 @@ wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
   if (match_length > search_length)
     return kNotFound;
 
-  if (Is8Bit()) {
-    if (match_string.Is8Bit())
-      return FindIgnoringASCIICaseInternal(Characters8() + index,
-                                           match_string.Characters8(), index,
-                                           search_length, match_length);
-    return FindIgnoringASCIICaseInternal(Characters8() + index,
-                                         match_string.Characters16(), index,
-                                         search_length, match_length);
-  }
-  if (match_string.Is8Bit())
-    return FindIgnoringASCIICaseInternal(Characters16() + index,
-                                         match_string.Characters8(), index,
-                                         search_length, match_length);
-  return FindIgnoringASCIICaseInternal(Characters16() + index,
-                                       match_string.Characters16(), index,
-                                       search_length, match_length);
+  return VisitCharacters(*this, [&](auto chars) {
+    auto sub_span = chars.subspan(index);
+    return match_string.Is8Bit() ? FindIgnoringASCIICaseInternal(
+                                       sub_span, match_string.Span8(), index)
+                                 : FindIgnoringASCIICaseInternal(
+                                       sub_span, match_string.Span16(), index);
+  });
 }
 
 wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) const {
@@ -1233,18 +1226,11 @@ std::u16string StringImpl::ToU16String() const {
 bool StringImpl::StartsWithIgnoringASCIICase(const StringView& prefix) const {
   if (prefix.length() > length())
     return false;
-  if (Is8Bit()) {
-    if (prefix.Is8Bit())
-      return EqualIgnoringASCIICase(Characters8(), prefix.Characters8(),
-                                    prefix.length());
-    return EqualIgnoringASCIICase(Characters8(), prefix.Characters16(),
-                                  prefix.length());
-  }
-  if (prefix.Is8Bit())
-    return EqualIgnoringASCIICase(Characters16(), prefix.Characters8(),
-                                  prefix.length());
-  return EqualIgnoringASCIICase(Characters16(), prefix.Characters16(),
-                                prefix.length());
+  return VisitCharacters(*this, [&prefix](auto chars) {
+    auto sub_span = chars.first(prefix.length());
+    return prefix.Is8Bit() ? EqualIgnoringASCIICase(sub_span, prefix.Span8())
+                           : EqualIgnoringASCIICase(sub_span, prefix.Span16());
+  });
 }
 
 bool StringImpl::EndsWith(UChar character) const {
@@ -1279,18 +1265,11 @@ bool StringImpl::EndsWithIgnoringASCIICase(const StringView& suffix) const {
   if (suffix.length() > length())
     return false;
   wtf_size_t start_offset = length() - suffix.length();
-  if (Is8Bit()) {
-    if (suffix.Is8Bit())
-      return EqualIgnoringASCIICase(Characters8() + start_offset,
-                                    suffix.Characters8(), suffix.length());
-    return EqualIgnoringASCIICase(Characters8() + start_offset,
-                                  suffix.Characters16(), suffix.length());
-  }
-  if (suffix.Is8Bit())
-    return EqualIgnoringASCIICase(Characters16() + start_offset,
-                                  suffix.Characters8(), suffix.length());
-  return EqualIgnoringASCIICase(Characters16() + start_offset,
-                                suffix.Characters16(), suffix.length());
+  return VisitCharacters(*this, [&](auto chars) {
+    auto sub_span = chars.subspan(start_offset);
+    return suffix.Is8Bit() ? EqualIgnoringASCIICase(sub_span, suffix.Span8())
+                           : EqualIgnoringASCIICase(sub_span, suffix.Span16());
+  });
 }
 
 scoped_refptr<StringImpl> StringImpl::Replace(UChar old_c, UChar new_c) {

@@ -277,17 +277,10 @@ bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
     return false;
   if (a.Bytes() == b.Bytes() && a.Is8Bit() == b.Is8Bit())
     return true;
-  if (a.Is8Bit()) {
-    if (b.Is8Bit())
-      return EqualIgnoringASCIICase(a.Characters8(), b.Characters8(),
-                                    a.length());
-    return EqualIgnoringASCIICase(a.Characters8(), b.Characters16(),
-                                  a.length());
-  }
-  if (b.Is8Bit())
-    return EqualIgnoringASCIICase(a.Characters16(), b.Characters8(),
-                                  a.length());
-  return EqualIgnoringASCIICase(a.Characters16(), b.Characters16(), a.length());
+  return VisitCharacters(a, [b](auto chars) {
+    return b.Is8Bit() ? EqualIgnoringASCIICase(chars, b.Span8())
+                      : EqualIgnoringASCIICase(chars, b.Span16());
+  });
 }
 
 StringView StringView::LowerASCIIMaybeUsingBuffer(
