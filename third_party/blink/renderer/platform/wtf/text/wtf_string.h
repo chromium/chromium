@@ -230,10 +230,12 @@ class WTF_EXPORT String {
                   wtf_size_t index = 0) const;
 
   // Find substrings.
-  wtf_size_t Find(
-      const StringView& value,
-      wtf_size_t start = 0,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  wtf_size_t Find(const StringView& value, wtf_size_t start = 0) const {
+    return impl_ ? impl_->Find(value, start) : kNotFound;
+  }
+  wtf_size_t Find(const StringView& value,
+                  wtf_size_t start,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))
                : kNotFound;
@@ -274,9 +276,11 @@ class WTF_EXPORT String {
   // 0.
   UChar32 CharacterStartingAt(unsigned) const;
 
-  bool StartsWith(
-      const StringView& prefix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool StartsWith(const StringView& prefix) const {
+    return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
+  }
+  bool StartsWith(const StringView& prefix,
+                  TextCaseSensitivity case_sensitivity) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->StartsWith, (prefix))
                : prefix.empty();
@@ -299,9 +303,11 @@ class WTF_EXPORT String {
     return impl_ ? impl_->StartsWith(character) : false;
   }
 
-  bool EndsWith(
-      const StringView& suffix,
-      TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
+  bool EndsWith(const StringView& suffix) const {
+    return impl_ ? impl_->EndsWith(suffix) : suffix.empty();
+  }
+  bool EndsWith(const StringView& suffix,
+                TextCaseSensitivity case_sensitivity) const {
     return impl_ ? DISPATCH_CASE_OP(case_sensitivity, impl_->EndsWith, (suffix))
                  : suffix.empty();
   }
