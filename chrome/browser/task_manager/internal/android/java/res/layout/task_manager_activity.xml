@@ -25,6 +25,16 @@ found in the LICENSE file.
         app:layout_constraintTop_toBottomOf="@+id/header_linear_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@+id/kill_button"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/kill_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/FilledButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

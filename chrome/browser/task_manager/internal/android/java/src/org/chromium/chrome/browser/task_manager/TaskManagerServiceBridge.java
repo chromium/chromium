@@ -53,6 +53,10 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getProcessId(taskId);
     }
 
+    public void killTask(long taskId) {
+        TaskManagerServiceBridgeJni.get().killTask(taskId);
+    }
+
     public static class ObserverHandle {
         private long mPointer;
 
@@ -79,5 +83,7 @@ public class TaskManagerServiceBridge {
         double getPlatformIndependentCpuUsage(long taskId);
 
         long getProcessId(long taskId);
+
+        void killTask(long taskId);
     }
 }

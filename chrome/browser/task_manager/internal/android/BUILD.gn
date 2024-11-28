@@ -19,14 +19,17 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/task_manager/TaskManagerObserver.java",
     "java/src/org/chromium/chrome/browser/task_manager/TaskManagerServiceBridge.java",
     "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerActivity.java",
+    "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerCoordinator.java",
     "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerMediator.java",
     "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerProperties.java",
   ]
 
   deps = [
     ":java_resources",
+    "//base:callback_java",
     "//base:log_java",
     "//chrome/browser/task_manager/android:java",
+    "//components/browser_ui/styles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -48,18 +51,22 @@ android_resources("java_resources") {
     "java/res/layout/task_item.xml",
     "java/res/layout/task_manager_activity.xml",
   ]
-  deps = [ "//chrome/app:java_strings_grd" ]
+  deps = [
+    "//chrome/app:java_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
 }
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerActivityTest.java",
+    "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/task_manager/ui/TaskManagerMediatorTest.java",
   ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_junit_test_support",
+    "//base:callback_java",
     "//base:log_java",
     "//chrome/android:chrome_app_java_resources",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

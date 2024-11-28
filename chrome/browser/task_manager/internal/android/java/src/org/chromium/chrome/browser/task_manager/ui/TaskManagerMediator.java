@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.task_manager.RefreshType;
 import org.chromium.chrome.browser.task_manager.TaskManagerObserver;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge;
@@ -36,6 +40,9 @@ class TaskManagerMediator {
     // The list containing the properties representing tasks. Sorted by task id.
     // TODO(crbug.com/380154224): Enable sorting by other attributes.
     private final ModelList mTasks;
+    private boolean mHasSelectedTask;
+
+    private @Nullable Callback<Boolean> mHasSelectedTaskChangedCallback;
 
     /**
      * Constructs the mediator backed by the modelList.
@@ -79,7 +86,39 @@ class TaskManagerMediator {
             mObserverHandle = null;
 
             mTasks.clear();
+            mHasSelectedTask = false;
         }
+    }
+
+    /** Kill the currently selected tasks. */
+    void killSelectedTasks() {
+        for (ListItem task : mTasks) {
+            if (task.model.get(IS_SELECTED)) {
+                mBridge.killTask(task.model.get(TASK_ID));
+            }
+        }
+    }
+
+    /**
+     * Toggle the selection of the task. If the task is selected, clear the selection of other
+     * tasks.
+     */
+    void toggleSelection(PropertyModel taskModel) {
+        boolean select = !taskModel.get(IS_SELECTED);
+        taskModel.set(IS_SELECTED, select);
+        if (select) {
+            for (ListItem task : mTasks) {
+                if (task.model != taskModel && task.model.get(IS_SELECTED)) {
+                    task.model.set(IS_SELECTED, false);
+                }
+            }
+        }
+        checkAndNotifyIfTaskSelectionChanged();
+    }
+
+    /** Set a callback called when the existence of a selected task changes. */
+    void onHasSelectedTaskChanged(Callback<Boolean> callback) {
+        mHasSelectedTaskChangedCallback = callback;
     }
 
     private @RefreshType int getRequiredRefreshType(PropertyKey columnKey) {
@@ -96,9 +135,14 @@ class TaskManagerMediator {
     }
 
     private ListItem createTaskModel(long taskId) {
-        PropertyKey[] keys = PropertyModel.concatKeys(mColumnKeys, new PropertyKey[] {TASK_ID});
+        PropertyKey[] keys =
+                PropertyModel.concatKeys(mColumnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED});
         return new ListItem(
-                RowType.TASK, new PropertyModel.Builder(keys).with(TASK_ID, taskId).build());
+                RowType.TASK,
+                new PropertyModel.Builder(keys)
+                        .with(TASK_ID, taskId)
+                        .with(IS_SELECTED, false)
+                        .build());
     }
 
     // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
@@ -136,6 +180,7 @@ class TaskManagerMediator {
             @Override
             public void onTaskToBeRemoved(long taskId) {
                 mTasks.removeAt(getIndexForTaskId(taskId));
+                checkAndNotifyIfTaskSelectionChanged();
             }
 
             @Override
@@ -169,5 +214,21 @@ class TaskManagerMediator {
             }
         }
         throw new NoSuchElementException("Task id " + taskId + " not found");
+    }
+
+    private void checkAndNotifyIfTaskSelectionChanged() {
+        boolean hasSelectedTask = false;
+        for (ListItem task : mTasks) {
+            if (task.model.get(IS_SELECTED)) {
+                hasSelectedTask = true;
+                break;
+            }
+        }
+        if (mHasSelectedTask != hasSelectedTask) {
+            mHasSelectedTask = hasSelectedTask;
+            if (mHasSelectedTaskChangedCallback != null) {
+                mHasSelectedTaskChangedCallback.onResult(hasSelectedTask);
+            }
+        }
     }
 }

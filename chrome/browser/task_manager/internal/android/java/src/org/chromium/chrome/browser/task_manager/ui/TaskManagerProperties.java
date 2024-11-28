@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableLongPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -47,4 +48,7 @@ class TaskManagerProperties {
 
     /** Property key for process id. */
     static final WritableLongPropertyKey PROCESS_ID = new WritableLongPropertyKey();
+
+    /** Property key for whether the task is selected. */
+    static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
 }

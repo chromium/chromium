@@ -6,9 +6,16 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 
 import androidx.test.filters.SmallTest;
 
@@ -21,11 +28,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.task_manager.RefreshType;
 import org.chromium.chrome.browser.task_manager.TaskManagerObserver;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge;
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridgeJni;
+import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.RowType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,6 +43,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TaskManagerMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TaskManagerServiceBridge.Natives mBridge;
+    @Mock private Callback<Boolean> mOnHasTaskSelectionChanged;
 
     private PropertyModel mHeader;
     private ModelList mTasks;
@@ -44,11 +54,10 @@ public class TaskManagerMediatorTest {
     public void setUp() {
         TaskManagerServiceBridgeJni.setInstanceForTesting(mBridge);
 
-        mHeader = new PropertyModel(TaskManagerProperties.COLUMNS);
+        mHeader = new PropertyModel(COLUMNS);
         mTasks = new ModelList();
-        mMediator =
-                new TaskManagerMediator(
-                        1000, mHeader, mTasks, TaskManagerProperties.MEMORY_FOOTPRINT);
+        mMediator = new TaskManagerMediator(1000, mHeader, mTasks, MEMORY_FOOTPRINT);
+        mMediator.onHasSelectedTaskChanged(mOnHasTaskSelectionChanged);
         mMediator.startObserving();
 
         ArgumentCaptor<TaskManagerObserver> observerCaptor =
@@ -69,17 +78,15 @@ public class TaskManagerMediatorTest {
         mObserver.onTaskAdded(2);
         mObserver.onTaskAdded(1);
 
-        assertArrayEquals(
-                mHeader.get(TaskManagerProperties.COLUMNS),
-                new PropertyKey[] {TaskManagerProperties.MEMORY_FOOTPRINT});
+        assertArrayEquals(mHeader.get(COLUMNS), new PropertyKey[] {MEMORY_FOOTPRINT});
 
-        assertEquals(mTasks.get(0).type, TaskManagerProperties.RowType.TASK);
-        assertEquals(mTasks.get(0).model.get(TaskManagerProperties.TASK_ID), 1);
-        assertEquals(mTasks.get(0).model.get(TaskManagerProperties.MEMORY_FOOTPRINT), 1_000_000);
+        assertEquals(mTasks.get(0).type, RowType.TASK);
+        assertEquals(mTasks.get(0).model.get(TASK_ID), 1);
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 1_000_000);
 
-        assertEquals(mTasks.get(1).type, TaskManagerProperties.RowType.TASK);
-        assertEquals(mTasks.get(1).model.get(TaskManagerProperties.TASK_ID), 2);
-        assertEquals(mTasks.get(1).model.get(TaskManagerProperties.MEMORY_FOOTPRINT), 2_000_000);
+        assertEquals(mTasks.get(1).type, RowType.TASK);
+        assertEquals(mTasks.get(1).model.get(TASK_ID), 2);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000);
     }
 
     @Test
@@ -91,7 +98,7 @@ public class TaskManagerMediatorTest {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(3_000_000L);
         mObserver.onTasksRefreshed(new long[] {1});
 
-        assertEquals(mTasks.get(0).model.get(TaskManagerProperties.MEMORY_FOOTPRINT), 3_000_000);
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 3_000_000);
     }
 
     @Test
@@ -104,6 +111,29 @@ public class TaskManagerMediatorTest {
         mObserver.onTaskAdded(1);
         // Task 1 gets removed.
         mObserver.onTaskToBeRemoved(1);
-        assertEquals(mTasks.get(0).model.get(TaskManagerProperties.TASK_ID), 2);
+        assertEquals(mTasks.get(0).model.get(TASK_ID), 2);
+    }
+
+    @Test
+    @SmallTest
+    public void testTaskSelectionChange() {
+        mObserver.onTaskAdded(1);
+        mObserver.onTaskAdded(2);
+
+        assertFalse(mTasks.get(0).model.get(IS_SELECTED));
+
+        mMediator.toggleSelection(mTasks.get(0).model);
+
+        assertTrue(mTasks.get(0).model.get(IS_SELECTED));
+        verify(mOnHasTaskSelectionChanged).onResult(true);
+
+        mMediator.toggleSelection(mTasks.get(1).model);
+
+        assertTrue(mTasks.get(1).model.get(IS_SELECTED));
+        assertFalse(mTasks.get(0).model.get(IS_SELECTED));
+
+        mMediator.toggleSelection(mTasks.get(1).model);
+
+        verify(mOnHasTaskSelectionChanged).onResult(false);
     }
 }

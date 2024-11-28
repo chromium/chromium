@@ -4849,7 +4849,7 @@ are declared in tools/grit/grit_rule.gni.
 
       <!-- Task Manager Window -->
       <if expr="not use_titlecase">
-        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
+        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
           End process
         </message>
         <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
@@ -4923,7 +4923,7 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button">
+        <message name="IDS_TASK_MANAGER_KILL" desc="The caption of the Task Manager kill button" formatter_data="android_java">
           End Process
         </message>
         <message name="IDS_TASK_MANAGER_PROCESS_ID_COLUMN" desc="The title for Task Manager process ID column." formatter_data="android_java">
