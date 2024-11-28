@@ -742,6 +742,10 @@ void StyleAdjuster::AdjustStyleForDisplay(
     }
   }
 
+  if (builder.StyleType() == kPseudoIdScrollMarkerGroup) {
+    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
+  }
+
   if (builder.Display() == EDisplay::kBlock) {
     return;
   }
