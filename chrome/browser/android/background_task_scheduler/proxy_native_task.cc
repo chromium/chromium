@@ -49,7 +49,7 @@ ProxyNativeTask::ProxyNativeTask(
       task_params_(std::move(task_params)),
       finish_callback_(std::move(finish_callback)) {}
 
-ProxyNativeTask::~ProxyNativeTask() {}
+ProxyNativeTask::~ProxyNativeTask() = default;
 
 void ProxyNativeTask::Destroy(JNIEnv* env,
                               const JavaParamRef<jobject>& jcaller) {
