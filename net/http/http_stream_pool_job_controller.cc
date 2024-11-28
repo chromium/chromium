@@ -171,11 +171,11 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     alternative_job_ =
         pool_
             ->GetOrCreateGroup(alternative_->stream_key, alternative_->quic_key)
-            .CreateJob(this, respect_limits_, alternative_->protocol,
+            .CreateJob(this, respect_limits_, enable_ip_based_pooling_,
+                       enable_alternative_services_, alternative_->protocol,
                        is_http1_allowed_, proxy_info_);
-    alternative_job_->Start(
-        priority, allowed_bad_certs, enable_ip_based_pooling_,
-        enable_alternative_services_, alternative_->quic_version, net_log);
+    alternative_job_->Start(priority, allowed_bad_certs,
+                            alternative_->quic_version, net_log);
   } else {
     alternative_job_result_ = OK;
   }
@@ -186,10 +186,10 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   if (!alternative_job_succeeded) {
     origin_job_ =
         pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
-            .CreateJob(this, respect_limits_, NextProto::kProtoUnknown,
+            .CreateJob(this, respect_limits_, enable_ip_based_pooling_,
+                       enable_alternative_services_, NextProto::kProtoUnknown,
                        is_http1_allowed_, proxy_info_);
-    origin_job_->Start(priority, allowed_bad_certs, enable_ip_based_pooling_,
-                       enable_alternative_services_, origin_quic_version_,
+    origin_job_->Start(priority, allowed_bad_certs, origin_quic_version_,
                        net_log);
   }
 
@@ -325,6 +325,7 @@ void HttpStreamPool::JobController::OnRequestComplete() {
   MaybeMarkAlternativeServiceBroken();
 
   pool_->OnJobControllerComplete(this);
+  // `this` is deleted.
 }
 
 int HttpStreamPool::JobController::RestartTunnelWithProxyAuth() {

@@ -79,6 +79,8 @@ class HttpStreamPool::Group {
   // calls one of the delegate's methods.
   std::unique_ptr<Job> CreateJob(Job::Delegate* delegate,
                                  RespectLimits respect_limits,
+                                 bool enable_ip_based_pooling,
+                                 bool enable_alternative_services,
                                  NextProto expected_protocol,
                                  bool is_http1_allowed,
                                  ProxyInfo proxy_info);

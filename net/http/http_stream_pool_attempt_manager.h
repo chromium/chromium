@@ -87,8 +87,6 @@ class HttpStreamPool::AttemptManager
   void StartJob(Job* job,
                 RequestPriority priority,
                 const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                bool enable_ip_based_pooling,
-                bool enable_alternative_services,
                 quic::ParsedQuicVersion quic_version,
                 const NetLogWithSource& net_log);
 
@@ -261,9 +259,15 @@ class HttpStreamPool::AttemptManager
   // effects.
   CanAttemptResult CanAttemptConnection();
 
-  // Returns true only when there is no job that ignore the pool and group
+  // Returns true only when there are no jobs that ignore the pool and group
   // limits.
   bool ShouldRespectLimits() const;
+
+  // Returns true only when there are no jobs that disable IP based pooling.
+  bool IsIpBasedPoolingEnabled() const;
+
+  // Returns true only when there are no jobs that disable alternative services.
+  bool IsAlternativeServiceEnabled() const;
 
   // Returns true when connection attempts should be throttled because there is
   // an in-flight attempt and the destination is known to support HTTP/2.
@@ -367,12 +371,6 @@ class HttpStreamPool::AttemptManager
 
   const NetLogWithSource net_log_;
 
-  base::flat_set<raw_ptr<Job>> limit_ignoring_jobs_;
-
-  bool enable_ip_based_pooling_ = true;
-
-  bool enable_alternative_services_ = true;
-
   NextProtoSet allowed_alpns_ = NextProtoSet::All();
 
   // Holds jobs that are waiting for notifications.
@@ -380,6 +378,12 @@ class HttpStreamPool::AttemptManager
   // Holds jobs that are already notified results. We need to keep them to avoid
   // dangling pointers.
   std::set<raw_ptr<Job>> notified_jobs_;
+
+  base::flat_set<raw_ptr<Job>> limit_ignoring_jobs_;
+
+  base::flat_set<raw_ptr<Job>> ip_based_pooling_disabling_jobs_;
+
+  base::flat_set<raw_ptr<Job>> alternative_service_disabling_jobs_;
 
   // Holds preconnect requests.
   std::set<std::unique_ptr<PreconnectEntry>, base::UniquePtrComparator>

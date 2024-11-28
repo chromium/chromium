@@ -482,15 +482,15 @@ class TestJobDelegate : public Job::Delegate {
 
   void CreateAndStartJob(HttpStreamPool& pool) {
     CHECK(!job_);
-    job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
-               .CreateJob(this, HttpStreamPool::RespectLimits::kRespect,
-                          expected_protocol_,
-                          /*is_http1_allowed=*/true, ProxyInfo::Direct());
+    job_ =
+        pool.GetOrCreateGroupForTesting(GetStreamKey())
+            .CreateJob(this, HttpStreamPool::RespectLimits::kRespect,
+                       /*enable_ip_based_pooling=*/true,
+                       /*enable_alternative_services=*/true, expected_protocol_,
+                       /*is_http1_allowed=*/true, ProxyInfo::Direct());
 
     job_->Start(RequestPriority::DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
-                /*enable_ip_based_pooling=*/true,
-                /*enable_alternative_services=*/true, quic_version_,
-                NetLogWithSource());
+                quic_version_, NetLogWithSource());
   }
 
   int GetResult() { return result_future_.Get(); }
@@ -2760,6 +2760,56 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionDisabled) {
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SpdyMatchingIpSessionDisabledThenEnabled) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("192.0.2.1", 443);
+
+  // Preparation: Create a SPDY session for www.example.org.
+  StreamRequester requester1;
+  requester1.set_destination("https://www.example.org");
+  CreateFakeSpdySession(requester1.GetStreamKey(), kCommonEndPoint);
+  requester1.RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+
+  // The first request for example.test disables IP-based pooling. Set up mock
+  // data to fail the request.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester2;
+  requester2.set_destination("https://example.test")
+      .set_enable_ip_based_pooling(false)
+      .RequestStream(pool());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_FAILED)));
+  requester2.ResetRequest();
+
+  // The second request for example.test enables IP-based pooling. The request
+  // should use the existing SPDY session.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester3;
+  requester3.set_destination("https://example.test")
+      .set_enable_ip_based_pooling(true)
+      .RequestStream(pool());
+  requester3.WaitForResult();
+  EXPECT_THAT(requester3.result(), Optional(IsOk()));
+
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionKeyMismatch) {
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("192.0.2.1", 443);
 
@@ -3982,6 +4032,44 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
                    .GetAttemptManagerForTesting()
                    ->GetQuicTaskResultForTesting()
                    .has_value());
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       AlternativeServicesDisabledThenEnabled) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData tcp_data;
+  // Stall forever.
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  // Start a request that disables alternative services and cancel it
+  // immediately.
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_enable_alternative_services(false)
+      .RequestStream(pool());
+  requester1.ResetRequest();
+
+  AddQuicData();
+
+  // Start another request that enables alternative services. It should complete
+  // with a new QUIC session.
+  StreamRequester requester2;
+  requester2.set_destination(kDefaultDestination)
+      .set_enable_alternative_services(true)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_THAT(pool()
+                  .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+                  .GetAttemptManagerForTesting()
+                  ->GetQuicTaskResultForTesting(),
+              Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,

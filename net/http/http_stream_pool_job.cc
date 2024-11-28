@@ -48,12 +48,16 @@ NextProtoSet CalculateAllowedAlpns(NextProto expected_protocol,
 HttpStreamPool::Job::Job(Delegate* delegate,
                          AttemptManager* attempt_manager,
                          RespectLimits respect_limits,
+                         bool enable_ip_based_pooling,
+                         bool enable_alternative_services,
                          NextProto expected_protocol,
                          bool is_http1_allowed,
                          ProxyInfo proxy_info)
     : delegate_(delegate),
       attempt_manager_(attempt_manager),
       respect_limits_(respect_limits),
+      enable_ip_based_pooling_(enable_ip_based_pooling),
+      enable_alternative_services_(enable_alternative_services),
       allowed_alpns_(
           CalculateAllowedAlpns(expected_protocol, is_http1_allowed)),
       is_h2_or_h3_required_(!is_http1_allowed),
@@ -70,8 +74,6 @@ HttpStreamPool::Job::~Job() {
 void HttpStreamPool::Job::Start(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-    bool enable_ip_based_pooling,
-    bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   const url::SchemeHostPort& destination =
@@ -84,9 +86,8 @@ void HttpStreamPool::Job::Start(
     return;
   }
 
-  attempt_manager_->StartJob(
-      this, priority, allowed_bad_certs, enable_ip_based_pooling,
-      enable_alternative_services, quic_version, net_log);
+  attempt_manager_->StartJob(this, priority, allowed_bad_certs, quic_version,
+                             net_log);
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
