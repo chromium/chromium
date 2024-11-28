@@ -20081,6 +20081,7 @@
                     },
                     "enable_features": [
                         "SafetyHub",
+                        "SafetyHubAndroidOrganicSurvey",
                         "SafetyHubAndroidSurvey",
                         "SafetyHubFollowup"
                     ]
