@@ -57,6 +57,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutoDarkUserEducationMessageOptIn"
       summary="message educating users about enabling auto dark web contents
                feature globally"/>
+  <variant name="IPH_AutofillCardInfoRetrievalSuggestion"
+      summary="message shown in the Autofill dropdown to educate users that a
+               card info retrieval card appears because their account with
+               their issuer was linked to their Google Pay account."/>
   <variant name="IPH_AutofillCreditCardBenefit"
       summary="message shown in the Autofill dropdown to educate users on the
                existence of credit card benefits."/>

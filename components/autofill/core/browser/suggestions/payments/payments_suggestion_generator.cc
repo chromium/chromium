@@ -709,6 +709,14 @@ bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
   return true;
 }
 
+// Returns display name based on `issuer_id` in a vector.
+std::u16string GetDisplayNameForIssuerId(const std::string& issuer_id) {
+  if (issuer_id == "paypay") {
+    return u"PayPay";
+  }
+  return u"";
+}
+
 // Helper function to decide whether to show the virtual card option for
 // `candidate_card`.
 // TODO(crbug.com/326950201): Pass the argument by reference.
@@ -841,6 +849,16 @@ Suggestion CreateCreditCardSuggestion(
   SetCardArtURL(suggestion, credit_card,
                 client.GetPersonalDataManager().payments_data_manager(),
                 virtual_card_option);
+
+  // For server card, show card info retrieval enrolled suggestion for card info
+  // retrieval enrolled card.
+  if (credit_card.card_info_retrieval_enrollment_state() ==
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHAutofillCardInfoRetrievalSuggestionFeature);
+    suggestion.iph_metadata.iph_params = {
+        GetDisplayNameForIssuerId(credit_card.issuer_id())};
+  }
 
   // For virtual cards, make some adjustments for the suggestion contents.
   if (virtual_card_option) {

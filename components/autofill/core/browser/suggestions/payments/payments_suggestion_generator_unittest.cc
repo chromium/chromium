@@ -2660,6 +2660,57 @@ TEST_F(
           EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
 }
 
+// Params of SuggestionIphBubbleTest:
+// -- CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state:
+class SuggestionIphBubbleTest
+    : public PaymentsSuggestionGeneratorTest,
+      public testing::WithParamInterface<
+          CreditCard::CardInfoRetrievalEnrollmentState> {
+ public:
+  CreditCard::CardInfoRetrievalEnrollmentState
+  card_info_retrieval_enrollment_state() {
+    return GetParam();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    PaymentsSuggestionGeneratorTest,
+    SuggestionIphBubbleTest,
+    testing::Values(
+        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified,
+        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+        CreditCard::CardInfoRetrievalEnrollmentState::
+            kRetrievalUnenrolledAndNotEligible,
+        CreditCard::CardInfoRetrievalEnrollmentState::
+            kRetrievalUnenrolledAndEligible));
+
+// Verify that the card info retrieval enrolled suggestion `feature` and
+// `iph_params` are set when card info retrieval enrollment state is enrolled.
+TEST_P(SuggestionIphBubbleTest,
+       CreateCreditCardSuggestion_CardInfoRetrievalSuggestion) {
+  CreditCard server_card = CreateServerCard();
+  std::string kIssuerId = {"paypay"};
+  std::vector<std::u16string> kDiplayName = {u"PayPay"};
+  server_card.set_issuer_id(kIssuerId);
+  server_card.set_card_info_retrieval_enrollment_state(
+      card_info_retrieval_enrollment_state());
+
+  Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
+      server_card, *autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+
+  EXPECT_EQ(
+      card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+      card_number_field_suggestion.iph_metadata.feature ==
+          &feature_engagement::kIPHAutofillCardInfoRetrievalSuggestionFeature);
+  EXPECT_EQ(
+      card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+      card_number_field_suggestion.iph_metadata.iph_params == kDiplayName);
+}
+
 // Params of GetFilteredCardsToSuggestTest:
 // -- bool IsCvcStorageEnhancementEnabled: Indicates if the flag is enabled.
 // -- FieldType get_trigger_field_type: Indicates triggered field type.

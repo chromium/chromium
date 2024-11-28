@@ -167,6 +167,9 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
              &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
              "autofill_virtual_card_suggestion_accepted"},
          IphEventPair{&feature_engagement::
+                          kIPHAutofillCardInfoRetrievalSuggestionFeature,
+                      "autofill_card_info_retrieval_suggestion_accepted"},
+         IphEventPair{&feature_engagement::
                           kIPHAutofillDisabledVirtualCardSuggestionFeature,
                       "autofill_disabled_virtual_card_suggestion_accepted"},
          IphEventPair{
