@@ -10421,10 +10421,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"flex-firmware-update", flag_descriptions::kFlexFirmwareUpdateName,
      flag_descriptions::kFlexFirmwareUpdateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFlexFirmwareUpdate)},
-    {"upstream-trusted-reports-firmware",
-     flag_descriptions::kUpstreamTrustedReportsFirmwareName,
-     flag_descriptions::kUpstreamTrustedReportsFirmwareDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kUpstreamTrustedReportsFirmware)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

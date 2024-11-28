@@ -45,14 +45,12 @@
       [[computeTitle(update.*)]]
     </div>
     <div slot="body" class="firmware-dialog-body-font">
-      <template is="dom-if" if="[[shouldShowDisclaimer]]" restamp>
-        <div id="disclaimer">
-          <div id="disclaimer-icon" aria-label="[[i18n('confirmationDisclaimerIconAriaLabel')]]">
-            <iron-icon icon="firmware-updates:warning" aria-hidden="true"></iron-icon>
-          </div>
-          <div id="disclaimer-text">[[computeDisclaimer()]]</div>
+      <div id="disclaimer">
+        <div id="disclaimer-icon" aria-label="[[i18n('confirmationDisclaimerIconAriaLabel')]]">
+          <iron-icon icon="firmware-updates:warning" aria-hidden="true"></iron-icon>
         </div>
-      </template>
+        <div id="disclaimer-text">[[computeDisclaimer()]]</div>
+      </div>
       <div id="updateDialogBody">
         [[computeDialog()]]
       </div>

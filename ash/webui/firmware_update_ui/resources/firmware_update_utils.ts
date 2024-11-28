@@ -9,11 +9,6 @@ export const isAppV2Enabled = (): boolean => {
   return loadTimeData.getBoolean('isFirmwareUpdateUIV2Enabled');
 };
 
-// Return whether trusted reports firmware is enabled (fwupd scaling project)
-export const isTrustedReportsFirmwareEnabled = (): boolean => {
-  return loadTimeData.getBoolean('isUpstreamTrustedReportsFirmwareEnabled');
-};
-
 // Return whether Flex firmware updates are enabled.
 export const IsFlexFirmwareUpdateEnabled = (): boolean => {
   return loadTimeData.getBoolean('IsFlexFirmwareUpdateEnabled');

@@ -385,10 +385,7 @@ class FwupdClientImpl : public FwupdClient {
       can_parse = false;
     }
 
-    const bool needs_trusted_report =
-        base::FeatureList::IsEnabled(
-            features::kUpstreamTrustedReportsFirmware) &&
-        !features::IsFlexFirmwareUpdateEnabled();
+    const bool needs_trusted_report = !features::IsFlexFirmwareUpdateEnabled();
     FIRMWARE_LOG(DEBUG) << "Trusted reports required: " << needs_trusted_report;
 
     FwupdUpdateList updates;
@@ -406,20 +403,12 @@ class FwupdClientImpl : public FwupdClient {
       std::optional<int> priority = dict.FindInt("Urgency");
       const base::FilePath filepath = GetUpdatePathFromDict(dict);
       const std::string* checksum = dict.FindString("Checksum");
-      const std::string* remote_id = dict.FindString("RemoteId");
       std::optional<bool> trusted_report = dict.FindBool(kHasTrustedReportKey);
       const bool has_trusted_report =
           trusted_report.has_value() && trusted_report.value();
       FIRMWARE_LOG(DEBUG) << "Trusted Reports: " << has_trusted_report;
       const bool missing_trusted_report =
           needs_trusted_report && !has_trusted_report;
-
-      // Skip release if its coming from LVFS and feature flag not enabled
-      if (remote_id && *remote_id == "lvfs" &&
-          !base::FeatureList::IsEnabled(
-              features::kUpstreamTrustedReportsFirmware)) {
-        continue;
-      }
 
       std::string sha_checksum;
       if (checksum) {

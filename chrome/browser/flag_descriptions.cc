@@ -7394,12 +7394,6 @@ const char kUploadOfficeToCloudDescription[] =
     "Some file handlers for Microsoft Office files are only available on the "
     "the cloud. Enables the cloud upload workflow for Office file handling.";
 
-const char kUpstreamTrustedReportsFirmwareName[] =
-    "Enable firmware updates from upstream";
-const char kUpstreamTrustedReportsFirmwareDescription[] =
-    "Enables firmware updates for firmwares that have been uploaded to LVFS "
-    "and have been tested with ChromeOS.";
-
 const char kUseAnnotatedAccountIdName[] =
     "Use AccountId based mapping between User and BrowserContext";
 const char kUseAnnotatedAccountIdDescription[] =
