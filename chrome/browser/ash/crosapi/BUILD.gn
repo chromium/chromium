@@ -521,7 +521,6 @@ static_library("crosapi") {
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install:implementation",
-    "//chrome/browser/apps/app_preload_service",
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
