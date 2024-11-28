@@ -348,7 +348,7 @@ class Task:
   def __eq__(self, other):
     return self.key == other.key and self.build_id == other.build_id
 
-  def schedule_delete_stampfile(self):
+  def schedule_delete_stampfile(self, wait_for_seconds=2):
     """Delete stamp file on a timer.
 
     Make sure the stamp file is deleted for new queued tasks in case the server
@@ -358,16 +358,19 @@ class Task:
     def _helper(created_timestamp):
       # Time since thread was created.
       time_in_stasis = datetime.datetime.now() - created_timestamp
-      if time_in_stasis > datetime.timedelta(seconds=1):
-        # We wait for 1 second before actually deleting the file to ensure the
+      remaining_delta = datetime.timedelta(
+          seconds=wait_for_seconds) - time_in_stasis
+      remaining_seconds = remaining_delta.total_seconds()
+      if remaining_seconds > 0:
+        # We wait for some time before actually deleting the file to ensure the
         # original siso/ninja build action has returned since siso expects the
         # file to exist when the original action completes. However since the
         # action has yet to be *actually* run by the build server, we delete the
         # stamp file in case the server dies before running it.
         #
-        # Technically this is a race condition if the calling action does not
-        # immediately return.
-        time.sleep(1)
+        # Technically this is a race condition with siso checking for the
+        # existence of the file.
+        time.sleep(remaining_seconds)
       try:
         os.unlink(os.path.join(self.cwd, self.stamp_file))
       except FileNotFoundError:
@@ -447,8 +450,8 @@ class Task:
       stamp_deletion_thread = self._delete_stamp_thread
 
     # Make sure stamp file is deleted if terminating. Use the thread (instead of
-    # deleting directly) to ensure we wait at least 1 second before deleting
-    # (see schedule_stamp_delete for why this is needed.)
+    # deleting directly) to ensure we wait some time before deleting (see
+    # schedule_stamp_delete for why this is needed.)
     if stamp_deletion_thread:
       stamp_deletion_thread.join()
     else:
