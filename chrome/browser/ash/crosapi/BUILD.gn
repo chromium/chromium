@@ -54,9 +54,6 @@ static_library("crosapi") {
     "browser_manager.h",
     "browser_manager_feature.h",
     "browser_manager_observer.h",
-    "browser_service_host_ash.cc",
-    "browser_service_host_ash.h",
-    "browser_service_host_observer.h",
     "cec_private_ash.cc",
     "cec_private_ash.h",
     "cert_database_ash.cc",
@@ -218,8 +215,6 @@ static_library("crosapi") {
     "suggestion_service_ash.h",
     "task_manager_ash.cc",
     "task_manager_ash.h",
-    "test_mojo_connection_manager.cc",
-    "test_mojo_connection_manager.h",
     "time_zone_service_ash.cc",
     "time_zone_service_ash.h",
     "translate_crosapi_to_proxy_config.cc",
@@ -679,7 +674,6 @@ source_set("unit_tests") {
     "screen_ai_downloader_ash_unittest.cc",
     "search_controller_ash_unittest.cc",
     "stateful_lacros_loader_unittest.cc",
-    "test_mojo_connection_manager_unittest.cc",
     "wallpaper_ash_unittest.cc",
   ]
 

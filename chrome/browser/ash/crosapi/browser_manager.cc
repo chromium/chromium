@@ -254,21 +254,6 @@ void BrowserManager::SetState(State state) {
   }
 }
 
-BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
-    mojo::RemoteSetElementId mojo_id,
-    mojom::BrowserService* service,
-    uint32_t interface_version)
-    : mojo_id(mojo_id),
-      service(service),
-      interface_version(interface_version) {}
-
-BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
-    const BrowserServiceInfo&) = default;
-BrowserManager::BrowserServiceInfo&
-BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
-    default;
-BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
-
 void BrowserManager::ClearLacrosData() {
   // Check that Lacros is not running.
   CHECK_EQ(state_, State::UNAVAILABLE);
@@ -353,10 +338,6 @@ void BrowserManager::OnSessionStateChanged() {
 
 void BrowserManager::OnComponentPolicyUpdated(
     const policy::ComponentPolicyMap& component_policy) {
-  if (browser_service_.has_value()) {
-    browser_service_->service->UpdateComponentPolicy(
-        policy::CopyComponentPolicyMap(component_policy));
-  }
 }
 
 void BrowserManager::OnComponentPolicyServiceDestruction(
@@ -366,9 +347,6 @@ void BrowserManager::OnComponentPolicyServiceDestruction(
 
 void BrowserManager::OnFetchAttempt(
     policy::CloudPolicyRefreshScheduler* scheduler) {
-  if (browser_service_.has_value()) {
-    browser_service_->service->NotifyPolicyFetchAttempt();
-  }
 }
 
 void BrowserManager::OnRefreshSchedulerDestruction(
@@ -376,12 +354,7 @@ void BrowserManager::OnRefreshSchedulerDestruction(
   scheduler->RemoveObserver(this);
 }
 
-void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
-  if (browser_service_.has_value()) {
-    browser_service_->service->UpdateDeviceAccountPolicy(
-        std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
-  }
-}
+void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {}
 
 void BrowserManager::SetLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;

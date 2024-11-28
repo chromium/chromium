@@ -166,25 +166,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Changes |state| value and potentially notify observers of the change.
   void SetState(State state);
 
-  // Proxy to BrowserService mojo service in lacros-chrome.
-  // Available only when lacros-chrome is running.
-  struct BrowserServiceInfo {
-    BrowserServiceInfo(mojo::RemoteSetElementId mojo_id,
-                       mojom::BrowserService* service,
-                       uint32_t interface_version);
-    BrowserServiceInfo(const BrowserServiceInfo&);
-    BrowserServiceInfo& operator=(const BrowserServiceInfo&);
-    ~BrowserServiceInfo();
-
-    // ID managed in BrowserServiceHostAsh, which is tied to the |service|.
-    mojo::RemoteSetElementId mojo_id;
-    // BrowserService proxy connected to lacros-chrome.
-    raw_ptr<mojom::BrowserService, DanglingUntriaged> service;
-    // Supported interface version of the BrowserService in Lacros-chrome.
-    uint32_t interface_version;
-  };
-  std::optional<BrowserServiceInfo> browser_service_;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,

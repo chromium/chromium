@@ -57,7 +57,6 @@ namespace crosapi {
 class ArcAsh;
 class AudioServiceAsh;
 class AutomationAsh;
-class BrowserServiceHostAsh;
 class CecPrivateAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
@@ -167,8 +166,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver)
       override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
-  void BindBrowserServiceHost(
-      mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
   void BindCecPrivate(
       mojo::PendingReceiver<mojom::CecPrivate> receiver) override;
   void BindCertDatabase(
@@ -415,10 +412,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   AutomationAsh* automation_ash() { return automation_ash_.get(); }
 
-  BrowserServiceHostAsh* browser_service_host_ash() {
-    return browser_service_host_ash_.get();
-  }
-
   CecPrivateAsh* cec_private_ash() { return cec_private_ash_.get(); }
 
   CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
@@ -606,7 +599,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ArcAsh> arc_ash_;
   std::unique_ptr<AudioServiceAsh> audio_service_ash_;
   std::unique_ptr<AutomationAsh> automation_ash_;
-  std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<CecPrivateAsh> cec_private_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;

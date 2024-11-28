@@ -199,19 +199,8 @@ interface Crosapi {
   [MinVersion=50] BindBrowserAppInstanceRegistry@54(
       pending_receiver<BrowserAppInstanceRegistry> receiver);
 
+  // BindBrowserServiceHost@20 was removed.
   // BindBrowserVersionService@50 was removed.
-
-  // Binds the BrowserServiceHost interface to prepare registering
-  // a BrowserService to crosapi.
-  // This is a part of lacros-chrome bootstrap sequence. First, Crosapi
-  // interface is bound, and then lacros-chrome calls this so that it
-  // obtains BrowserServiceHost proxy. Finally, lacros-chrome calls
-  // BrowserServiceHost::AddBrowserService to register its BrowserService
-  // so that ash-chrome can call it to ask browser operations to lacros-chrome.
-  // Added in M90.
-  [MinVersion=15]
-  BindBrowserServiceHost@20(pending_receiver<BrowserServiceHost> receiver);
-
   // BindBrowserShortcutPublisher@125 was removed.
 
   // Binds the BrowserCdmFactory interface for proxying communication to the
