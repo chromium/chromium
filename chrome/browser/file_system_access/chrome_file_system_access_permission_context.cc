@@ -2404,9 +2404,8 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
   const auto& registrar = provider->registrar_unsafe();
   // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
   // correctness.
-  if (!registrar.IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (registrar.GetInstallState(app_id) !=
+      web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
     return;
   }
 
@@ -2996,9 +2995,8 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
   // correctness.
   auto has_actively_installed_app =
       app_id.has_value() &&
-      web_app_provider->registrar_unsafe().IsInstallState(
-          app_id.value(),
-          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+      web_app_provider->registrar_unsafe().GetInstallState(app_id.value()) ==
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
   // Update the cached value.
   origin_state.web_app_install_status = has_actively_installed_app
                                             ? WebAppInstallStatus::kInstalled
