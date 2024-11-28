@@ -884,8 +884,7 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       send_button_->SetEnabled(true);
       return;
     case MahiUiUpdateType::kContentsRefreshInitiated: {
-      content_source_button_->RefreshContentSourceInfo(
-          /*elucidation_in_use=*/false);
+      content_source_button_->RefreshContentSourceInfo();
 
       // Reset feedback buttons when new content is requested.
       thumbs_up_button_->SetToggled(false);
@@ -893,8 +892,7 @@ void MahiPanelView::OnUpdated(const MahiUiUpdate& update) {
       return;
     }
     case MahiUiUpdateType::kElucidationRequested: {
-      content_source_button_->RefreshContentSourceInfo(
-          /*elucidation_in_use=*/true);
+      content_source_button_->RefreshContentSourceInfo();
       return;
     }
     case MahiUiUpdateType::kErrorReceived:

@@ -35,6 +35,8 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   };
 
   struct ButtonStatus {
+    SelectedTextState summary_of_selection_eligibility =
+        SelectedTextState::kUnknown;
     SelectedTextState elucidation_eligiblity = SelectedTextState::kUnknown;
   };
 

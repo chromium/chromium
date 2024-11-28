@@ -69,6 +69,8 @@ namespace chromeos::mahi {
 
 namespace {
 
+using ::chromeos::mahi::ButtonType;
+
 constexpr char kWidgetName[] = "MahiMenuViewWidget";
 
 constexpr gfx::Insets kMenuPadding = gfx::Insets::TLBR(12, 16, 12, 14);
@@ -236,12 +238,27 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
       header_row->AddChildView(views::ImageButton::CreateIconButton(
           base::BindRepeating(&MahiMenuView::OnButtonPressed,
                               weak_ptr_factory_.GetWeakPtr(),
-                              ::chromeos::mahi::ButtonType::kSettings),
+                              ButtonType::kSettings),
           vector_icons::kSettingsOutlineIcon,
           l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
   settings_button_->SetID(ViewID::kSettingsButton);
 
   AddChildView(std::move(header_row));
+
+  // Keeps this logic a separate block instead of inline to make it clear.
+  // The summary button can be used for summarizing the whole document ( when
+  // text_state = kEmpty), or summarizing the selected text.
+  // If the selected text is non empty but too short to summarize, we show a
+  // disabled summary button with proper tooltip.
+  const auto text_state = button_status.summary_of_selection_eligibility;
+  CHECK(text_state == SelectedTextState::kEmpty ||
+        text_state == SelectedTextState::kTooShort ||
+        text_state == SelectedTextState::kEligible);
+  const bool summary_button_enabled =
+      text_state != SelectedTextState::kTooShort;
+  const ButtonType summary_button_type = text_state == SelectedTextState::kEmpty
+                                             ? ButtonType::kSummary
+                                             : ButtonType::kSummaryOfSelection;
 
   // Create row containing the `summary_button_` and `outline_button_`.
   AddChildView(
@@ -255,19 +272,18 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
                   .CopyAddressTo(&summary_button_)
                   .SetCallback(base::BindRepeating(
                       &MahiMenuView::OnButtonPressed,
-                      weak_ptr_factory_.GetWeakPtr(),
-                      ::chromeos::mahi::ButtonType::kSummary))
+                      weak_ptr_factory_.GetWeakPtr(), summary_button_type))
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT))
                   .SetProperty(views::kMarginsKey,
-                               gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing)),
+                               gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing))
+                  .SetEnabled(summary_button_enabled),
               views::Builder<views::LabelButton>()
                   .SetID(ViewID::kElucidationButton)
                   .CopyAddressTo(&elucidation_button_)
                   .SetCallback(base::BindRepeating(
                       &MahiMenuView::OnButtonPressed,
-                      weak_ptr_factory_.GetWeakPtr(),
-                      ::chromeos::mahi::ButtonType::kElucidation))
+                      weak_ptr_factory_.GetWeakPtr(), ButtonType::kElucidation))
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_MAHI_SIMPLIFY_BUTTON_LABEL_TEXT))
                   .SetProperty(views::kMarginsKey,
@@ -286,6 +302,7 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
     elucidation_button_->SetTooltipText(elucidation_button_tooltip);
   }
 
+  // TODO(b:374629795): set tooltip for summary button accordingly.
   summary_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
 
@@ -356,7 +373,7 @@ void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
       anchor_view_bounds, this, editor_menu::CardType::kMahiDefaultMenu));
 }
 
-void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {
+void MahiMenuView::OnButtonPressed(ButtonType button_type) {
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   if (surface_ == Surface::kBrowser) {
@@ -375,19 +392,22 @@ void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {
 
   MahiMenuButton histogram_button_type;
   switch (button_type) {
-    case ::chromeos::mahi::ButtonType::kSummary:
+    case ButtonType::kSummary:
       histogram_button_type = MahiMenuButton::kSummaryButton;
       break;
-    case ::chromeos::mahi::ButtonType::kElucidation:
+    case ButtonType::kSummaryOfSelection:
+      histogram_button_type = MahiMenuButton::kSummaryOfSelectionButton;
+      break;
+    case ButtonType::kElucidation:
       histogram_button_type = MahiMenuButton::kElucidationButton;
       break;
-    case ::chromeos::mahi::ButtonType::kOutline:
+    case ButtonType::kOutline:
       // TODO(b/330643995): Remove CHECK_IS_TEST when outlines are
       // ready.
       CHECK_IS_TEST();
       histogram_button_type = MahiMenuButton::kOutlineButton;
       break;
-    case ::chromeos::mahi::ButtonType::kSettings:
+    case ButtonType::kSettings:
       histogram_button_type = MahiMenuButton::kSettingsButton;
       break;
     default:
@@ -405,14 +425,14 @@ void MahiMenuView::OnQuestionSubmitted() {
       GetWidget()->GetNativeWindow());
   if (surface_ == Surface::kBrowser) {
     chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(
-        display.id(), /*button_type=*/::chromeos::mahi::ButtonType::kQA,
-        textfield_->GetText(), GetBoundsInScreen());
+        display.id(), /*button_type=*/ButtonType::kQA, textfield_->GetText(),
+        GetBoundsInScreen());
   } else if (surface_ == Surface::kMediaApp) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Only ash chrome has `surface_` = kMediaApp
     CHECK(chromeos::MahiMediaAppContentManager::Get());
     chromeos::MahiMediaAppContentManager::Get()->OnMahiContextMenuClicked(
-        display.id(), ::chromeos::mahi::ButtonType::kQA, textfield_->GetText(),
+        display.id(), ButtonType::kQA, textfield_->GetText(),
         GetBoundsInScreen());
 #endif
   }
