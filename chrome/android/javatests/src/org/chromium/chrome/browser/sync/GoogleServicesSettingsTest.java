@@ -31,7 +31,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,7 +43,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -54,7 +52,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -122,61 +119,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void signOutUserWithoutShowingSignOutDialog() {
-        mSigninTestRule.addTestAccountThenSignin();
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-        ChromeSwitchPreference allowChromeSignin =
-                (ChromeSwitchPreference)
-                        googleServicesSettings.findPreference(
-                                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
-        Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
-
-        onView(withText(R.string.allow_chrome_signin_title)).perform(click());
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        Assert.assertFalse(
-                                "Account should be signed out!",
-                                IdentityServicesProvider.get()
-                                        .getIdentityManager(
-                                                ProfileManager.getLastUsedRegularProfile())
-                                        .hasPrimaryAccount(ConsentLevel.SIGNIN)));
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        Assert.assertFalse(
-                                "SIGNIN_ALLOWED pref should be unset",
-                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                        .getBoolean(Pref.SIGNIN_ALLOWED)));
-        Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void showSignOutDialogBeforeSigningUserOutLegacy() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-        ChromeSwitchPreference allowChromeSignin =
-                (ChromeSwitchPreference)
-                        googleServicesSettings.findPreference(
-                                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
-        Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
-
-        onView(withText(R.string.allow_chrome_signin_title)).perform(click());
-        // Accept the sign out Dialog
-        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        Assert.assertFalse(
-                                "Accepting the sign-out dialog should set SIGNIN_ALLOWED to false",
-                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                        .getBoolean(Pref.SIGNIN_ALLOWED)));
-        Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void showSignOutDialogBeforeSigningUserOut() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
