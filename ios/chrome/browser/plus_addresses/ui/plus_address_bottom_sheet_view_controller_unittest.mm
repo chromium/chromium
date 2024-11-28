@@ -263,6 +263,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
 // Ensure that when reservation error occurs, user can tap cancel button to
 // dismiss the bottom sheet and metric for the reservation error is collected.
 TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
+  base::UserActionTester user_action_tester;
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
   [view_controller_ loadViewIfNeeded];
@@ -290,6 +291,9 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
           PlusAddressModalCompletionStatus::kReservePlusAddressError,
           /*notice_shown=*/false),
       /*refresh_count=*/0, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("PlusAddresses.ReserveErrorCanceled"),
+      1);
 }
 
 // Ensure that when confirmation error occurs, user swipe to dismiss the bottom

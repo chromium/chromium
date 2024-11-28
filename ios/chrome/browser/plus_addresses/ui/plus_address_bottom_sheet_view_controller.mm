@@ -227,6 +227,7 @@ UIImageView* BrandingImageView() {
           [_delegate shouldShowNotice]);
     }
   _reservedPlusAddress = plusAddress;
+  _bottomSheetErrorStatus.reset();
   [_reservedPlusAddressTableView reloadData];
 }
 
@@ -445,6 +446,12 @@ UIImageView* BrandingImageView() {
           PlusAddressModalCompletionStatus::kModalCanceled),
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, was_notice_shown);
+  if (_bottomSheetErrorStatus &&
+      *_bottomSheetErrorStatus ==
+          PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+  }
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
