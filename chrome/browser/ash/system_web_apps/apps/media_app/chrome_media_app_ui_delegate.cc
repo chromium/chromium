@@ -212,8 +212,9 @@ void ChromeMediaAppUIDelegate::SubmitForm(const GURL& url,
                                 ui::PAGE_TRANSITION_FROM_API |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  navigate_params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      reinterpret_cast<const char*>(payload.data()), payload.size());
+  navigate_params.post_data =
+      network::ResourceRequestBody::CreateFromCopyOfBytes(
+          base::as_byte_span(payload));
   navigate_params.extra_headers = header;
 
   navigate_params.browser = chrome::FindTabbedBrowser(profile, false);
