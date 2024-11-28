@@ -173,7 +173,7 @@ const int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
 
 class OmniboxViewTest : public InProcessBrowserTest {
  public:
-  OmniboxViewTest() {}
+  OmniboxViewTest() = default;
 
   OmniboxViewTest(const OmniboxViewTest&) = delete;
   OmniboxViewTest& operator=(const OmniboxViewTest&) = delete;
