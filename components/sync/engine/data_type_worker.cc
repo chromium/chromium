@@ -24,6 +24,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -94,6 +95,12 @@ void LogCrossUserSharingDecryptionResult(
     CrossUserSharingDecryptionResult result) {
   base::UmaHistogramEnumeration("Sync.CrossUserSharingDecryptionResult",
                                 result);
+}
+
+void LogNudgedUpdateLatency(DataType type, base::TimeDelta latency) {
+  base::UmaHistogramLongTimes(base::StrCat({"Sync.NudgedUpdateLatency.",
+                                            DataTypeToHistogramSuffix(type)}),
+                              latency);
 }
 
 // A proxy which can be called from any sequence and delegates the work to the
@@ -333,6 +340,8 @@ DataTypeWorker::DataTypeWorker(DataType type,
     // cycle has to be triggered right after we loaded persisted
     // invalidations.
     for (int i = 0; i < data_type_state_.invalidations_size(); ++i) {
+      // Do not populate `received_time` on load from the disk because it is not
+      // persisted.
       pending_invalidations_.emplace_back(
           std::make_unique<SyncInvalidationAdapter>(
               data_type_state_.invalidations(i).hint(),
@@ -340,7 +349,8 @@ DataTypeWorker::DataTypeWorker(DataType type,
                   ? std::optional<int64_t>(
                         data_type_state_.invalidations(i).version())
                   : std::nullopt),
-          false);
+          /*is_processed=*/false,
+          /*received_time=*/std::nullopt);
     }
 
     bool is_version_order_correct = true;
@@ -363,16 +373,17 @@ DataTypeWorker::DataTypeWorker(DataType type,
   }
 }
 
-DataTypeWorker::PendingInvalidation::PendingInvalidation() = default;
 DataTypeWorker::PendingInvalidation::PendingInvalidation(
     PendingInvalidation&&) = default;
 DataTypeWorker::PendingInvalidation&
 DataTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) = default;
 DataTypeWorker::PendingInvalidation::PendingInvalidation(
     std::unique_ptr<SyncInvalidation> invalidation,
-    bool is_processed)
+    bool is_processed,
+    std::optional<base::TimeTicks> received_time)
     : pending_invalidation(std::move(invalidation)),
-      is_processed(is_processed) {}
+      is_processed(is_processed),
+      received_time(received_time) {}
 DataTypeWorker::PendingInvalidation::~PendingInvalidation() = default;
 
 DataTypeWorker::~DataTypeWorker() {
@@ -756,10 +767,18 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   if (cycle_done) {
     // Processed pending invalidations are deleted, and unprocessed
     // invalidations will be used again in the next sync cycle.
+    std::optional<base::TimeTicks> oldest_processed_invalidation_received_time;
     auto it = pending_invalidations_.begin();
     while (it != pending_invalidations_.end()) {
       if (it->is_processed) {
         LogPendingInvalidationStatus(PendingInvalidationStatus::kAcknowledged);
+
+        if (it->received_time.has_value()) {
+          if (!oldest_processed_invalidation_received_time.has_value() ||
+              oldest_processed_invalidation_received_time > it->received_time) {
+            oldest_processed_invalidation_received_time = it->received_time;
+          }
+        }
         it->pending_invalidation->Acknowledge();
         it = pending_invalidations_.erase(it);
       } else {
@@ -768,6 +787,13 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
     }
     UpdateDataTypeStateInvalidations();
 
+    if (oldest_processed_invalidation_received_time.has_value()) {
+      // Record the latency between applying updates and the very first
+      // invalidation received for this datatype.
+      LogNudgedUpdateLatency(
+          type_, base::TimeTicks::Now() -
+                     oldest_processed_invalidation_received_time.value());
+    }
     has_dropped_invalidation_ = false;
 
     nudge_handler_->SetHasPendingInvalidations(type_,
@@ -1241,6 +1267,8 @@ void DataTypeWorker::RecordRemoteInvalidation(
   // Overlaps should be extremely rare for most invalidations.  They can happen
   // for unknown version invalidations, though.
 
+  // TODO(crbug.com/363104067): simplify the logic below to just ignore the same
+  // invalidations (there are no unknown version invalidations anymore).
   auto it = pending_invalidations_.begin();
 
   // Find the lower bound.
@@ -1260,7 +1288,9 @@ void DataTypeWorker::RecordRemoteInvalidation(
     // Acknowledge and overwrite existing.
 
     // Insert before the existing and get iterator to inserted.
-    auto it2 = pending_invalidations_.insert(it, {std::move(incoming), false});
+    auto it2 = pending_invalidations_.insert(
+        it, {std::move(incoming), /*is_processed=*/false,
+             /*received_time=*/base::TimeTicks::Now()});
 
     // Increment that iterator to the old one, then acknowledge and remove it.
     LogPendingInvalidationStatus(
@@ -1273,7 +1303,9 @@ void DataTypeWorker::RecordRemoteInvalidation(
   } else {
     // The incoming has a version not in the pending_invalidations_ list.
     // Add it to the list at the proper position.
-    pending_invalidations_.insert(it, {std::move(incoming), false});
+    pending_invalidations_.insert(it,
+                                  {std::move(incoming), /*is_processed=*/false,
+                                   /*received_time=*/base::TimeTicks::Now()});
   }
 
   // The incoming invalidation may have caused us to exceed our buffer size.

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -219,20 +221,25 @@ class DataTypeWorker : public UpdateHandler,
     // (cf. Cryptographer::CanEncrypt()).
     int get_updates_while_should_have_been_known = 0;
   };
+
   struct PendingInvalidation {
-    PendingInvalidation();
     PendingInvalidation(const PendingInvalidation&) = delete;
     PendingInvalidation& operator=(const PendingInvalidation&) = delete;
     PendingInvalidation(PendingInvalidation&&);
     PendingInvalidation& operator=(PendingInvalidation&&);
     PendingInvalidation(std::unique_ptr<SyncInvalidation> invalidation,
-                        bool is_processed);
+                        bool is_processed,
+                        std::optional<base::TimeTicks> received_time);
     ~PendingInvalidation();
 
     std::unique_ptr<SyncInvalidation> pending_invalidation;
     // `is_processed` is true, if the invalidation included to GetUpdates
     // trigger message.
     bool is_processed = false;
+
+    // The time when the invalidation was received. Available only during the
+    // browser session, not persisted.
+    std::optional<base::TimeTicks> received_time;
   };
 
   // Sends `pending_updates_` and `data_type_state_` to the processor if there

@@ -1316,6 +1316,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.NudgedUpdateLatency{SyncDataType}" units="ms"
+    expires_after="2025-11-05">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the time between receiving invalidations and applying updates
+    (including empty) per datatype. Recorded once per sync cycle for each
+    datatype which had invalidations triggered GetUpdates.
+
+    Note that only invalidations received during the current browser session are
+    considered.
+  </summary>
+</histogram>
+
 <histogram name="Sync.OutgoingPassordSharingInvitation.CommitError"
     enum="OutgoingPasswordSharingInvitationCommitError"
     expires_after="2025-11-05">

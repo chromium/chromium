@@ -51,6 +51,7 @@ using sync_pb::DataTypeState;
 using sync_pb::EntitySpecifics;
 using sync_pb::SyncEntity;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
 using testing::SizeIs;
@@ -535,6 +536,10 @@ class DataTypeWorkerTest : public ::testing::Test {
     worker_.reset();
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
   FakeCryptographer* cryptographer() { return &cryptographer_; }
   MockDataTypeProcessor* processor() { return mock_type_processor_; }
   DataTypeWorker* worker() { return worker_.get(); }
@@ -546,7 +551,8 @@ class DataTypeWorkerTest : public ::testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   const DataType data_type_;
 
@@ -2837,14 +2843,13 @@ TEST_F(DataTypeWorkerPasswordsTest,
       entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
-// Verifies persisting invalidations load from the DataTypeProcessor.
-TEST_F(DataTypeWorkerTest, LoadInvalidations) {
+TEST_F(DataTypeWorkerTest, LoadPersistedInvalidations) {
   InitializeWithInvalidations();
 
   sync_pb::GetUpdateTriggers gu_trigger_1;
   worker()->CollectPendingInvalidations(&gu_trigger_1);
   ASSERT_EQ(1, gu_trigger_1.notification_hint_size());
-  EXPECT_THAT(gu_trigger_1.notification_hint(), Not(testing::IsEmpty()));
+  EXPECT_THAT(gu_trigger_1.notification_hint(), Not(IsEmpty()));
 }
 
 // Verifies StorePendingInvalidations() calls for every incoming invalidation.
@@ -2913,6 +2918,8 @@ TEST_F(DataTypeWorkerTest, DataTypeStateAfterApplyUpdates) {
 
   // The GetUpdates request finishes. This should delete the processed
   // invalidations.
+  base::HistogramTester histogram_tester;
+  FastForwardBy(base::Seconds(1));
   worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
 
   // Unprocessed invalidations after ApplyUpdates are in DataTypeState.
@@ -2921,6 +2928,10 @@ TEST_F(DataTypeWorkerTest, DataTypeStateAfterApplyUpdates) {
             processor()->GetNthUpdateState(0).invalidations(0).hint());
   EXPECT_EQ("unprocessed_hint_5",
             processor()->GetNthUpdateState(0).invalidations(1).hint());
+
+  histogram_tester.ExpectTimeBucketCount("Sync.NudgedUpdateLatency.PREFERENCE",
+                                         base::Seconds(1),
+                                         /*expected_count=*/1);
 }
 
 // Test the dropping of invalidation hints.  Receives invalidations one by one.
@@ -3551,10 +3562,10 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
 
   sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata_proto;
   collaboration_metadata_proto.set_collaboration_id(kCollaborationId);
-  collaboration_metadata_proto.mutable_creation_attribution()->set_obfuscated_gaia_id(
-      kCreatorUserId);
-  collaboration_metadata_proto.mutable_last_update_attribution()->set_obfuscated_gaia_id(
-      kUpdaterUserId);
+  collaboration_metadata_proto.mutable_creation_attribution()
+      ->set_obfuscated_gaia_id(kCreatorUserId);
+  collaboration_metadata_proto.mutable_last_update_attribution()
+      ->set_obfuscated_gaia_id(kUpdaterUserId);
 
   EntitySpecifics specifics;
   specifics.mutable_shared_tab_group_data()->set_guid("guid");
