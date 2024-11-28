@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
+#import "ios/chrome/browser/browser_container/edit_menu_builder.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -309,6 +310,7 @@ enum class ToolbarKind {
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     DriveFilePickerCommands,
+    EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
     MiniMapCommands,
@@ -1609,6 +1611,7 @@ enum class ToolbarKind {
   tabLifecycleMediator.snapshotGeneratorDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
   tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
+  tabLifecycleMediator.editMenuBuilder = self;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }
@@ -3254,6 +3257,13 @@ enum class ToolbarKind {
                                  completion:(void (^)())completion {
   [self.nonModalPromoCoordinator dismissInfobarBannerAnimated:animated
                                                    completion:completion];
+}
+
+#pragma mark - EditMenuBuilder
+
+- (void)buildEditMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  return [self.browserContainerCoordinator.editMenuBuilder
+      buildEditMenuWithBuilder:builder];
 }
 
 #pragma mark - EnterprisePromptCoordinatorDelegate

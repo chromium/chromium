@@ -157,6 +157,10 @@
   [super stop];
 }
 
+- (id<EditMenuBuilder>)editMenuBuilder {
+  return self.browserEditMenuHandler;
+}
+
 #pragma mark - EditMenuAlertDelegate
 
 - (void)showAlertWithTitle:(NSString*)title

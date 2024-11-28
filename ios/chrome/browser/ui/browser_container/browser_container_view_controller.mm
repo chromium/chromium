@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface BrowserContainerViewController ()
@@ -71,8 +72,11 @@
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   [super buildMenuWithBuilder:builder];
 
-  DCHECK(self.browserEditMenuHandler);
-  [self.browserEditMenuHandler buildMenuWithBuilder:builder];
+  if (base::FeatureList::IsEnabled(
+          web::features::kRestoreWKWebViewEditMenuHandler)) {
+    DCHECK(self.browserEditMenuHandler);
+    [self.browserEditMenuHandler buildEditMenuWithBuilder:builder];
+  }
 }
 
 #pragma mark - Public

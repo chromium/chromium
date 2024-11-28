@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_container") {
+  sources = [
+    "edit_menu_builder.h",
+    "edit_menu_tab_helper.h",
+    "edit_menu_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}

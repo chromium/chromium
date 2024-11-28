@@ -43,7 +43,8 @@ WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state,
                           UserAgentType user_agent_type,
-                          id<CRWInputViewProvider> input_view_provider) {
+                          id<CRWInputViewProvider> input_view_provider,
+                          id<CRWEditMenuBuilder> edit_menu_builder) {
   VerifyWKWebViewCreationPreConditions(browser_state, configuration);
 
   GetWebClient()->PreWebViewCreation();
@@ -51,6 +52,7 @@ WKWebView* BuildWKWebView(CGRect frame,
   CRWWebView* web_view = [[CRWWebView alloc] initWithFrame:frame
                                              configuration:configuration];
   web_view.inputViewProvider = input_view_provider;
+  web_view.editMenuBuilder = edit_menu_builder;
 
   // Set the user agent type.
   if (user_agent_type != web::UserAgentType::NONE) {
@@ -74,7 +76,7 @@ WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state) {
   return BuildWKWebView(frame, configuration, browser_state,
-                        UserAgentType::MOBILE, nil);
+                        UserAgentType::MOBILE, nil, nil);
 }
 
 }  // namespace web
