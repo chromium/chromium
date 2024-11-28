@@ -108,8 +108,6 @@ class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {
         extension_misc::kChromeVoxExtensionId,
         "ChromeVox.earcons.playEarcon = function() {};");
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
@@ -407,6 +405,63 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("GIF");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+class QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest
+    : public QuickInsertAccessibilityBrowserTest {
+ public:
+  QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest()
+      : scoped_feature_list_(ash::features::kPickerGifs) {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
+                       FocusingGifsToggleAnnouncesPressedState) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
+          /*delegate=*/nullptr, /*quick_insert_width=*/100,
+          /*is_gifs_enabled=*/true));
+
+  sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("GIF");
+  sm_.ExpectSpeechPattern("Toggle Button");
+  sm_.ExpectSpeechPattern("Not pressed");
+  sm_.ExpectSpeechPattern("Press * to toggle");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityWithGifsFlagEnabledBrowserTest,
+                       TogglingGifsToggleAnnouncesPressedState) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::QuickInsertEmojiBarView>(
+          /*delegate=*/nullptr, /*quick_insert_width=*/100,
+          /*is_gifs_enabled=*/true));
+  sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
+  sm_.ExpectSpeechPattern("Not pressed");
+  sm_.ExpectSpeechPattern("Press * to toggle");
+
+  sm_.Call([]() {
+    ui::test::EventGenerator event_generator(
+        ash::Shell::Get()->GetPrimaryRootWindow());
+    event_generator.PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  });
+
+  sm_.ExpectSpeechPattern("GIF");
+  sm_.ExpectSpeechPattern("Toggle Button");
+  sm_.ExpectSpeechPattern("Pressed");
+  sm_.ExpectSpeechPattern("Press * to toggle");
   sm_.Replay();
 }
 

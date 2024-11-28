@@ -170,6 +170,11 @@ class GifsButton : public views::LabelButton {
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
     UpdateBackground();
     SetProperty(views::kElementIdentifierKey, kQuickInsertGifElementId);
+
+    if (base::FeatureList::IsEnabled(features::kPickerGifs)) {
+      GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+      GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
+    }
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
@@ -204,6 +209,9 @@ class GifsButton : public views::LabelButton {
                             cros_tokens::kCrosSysSystemOnPrimaryContainer, 16))
                       : std::nullopt);
     PreferredSizeChanged();
+    GetViewAccessibility().SetCheckedState(
+        is_checked_ ? ax::mojom::CheckedState::kTrue
+                    : ax::mojom::CheckedState::kFalse);
     return is_checked_;
   }
 
@@ -381,7 +389,10 @@ void QuickInsertEmojiBarView::OpenMoreEmojis() {
 }
 
 void QuickInsertEmojiBarView::ToggleGifs(bool is_checked) {
-  delegate_->ToggleGifs(is_checked);
+  // `delegate_` might be null in tests.
+  if (delegate_ != nullptr) {
+    delegate_->ToggleGifs(is_checked);
+  }
 }
 
 int QuickInsertEmojiBarView::CalculateAvailableWidthForItemRow() {
