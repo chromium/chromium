@@ -72,6 +72,10 @@ public class ReorderDelegate {
 
     private StripLayoutTab mInteractingTab;
 
+    private ReorderStrategy mActiveStrategy;
+    private final ReorderTabStrategy mTabStrategy = new ReorderTabStrategy();
+    private final ReorderGroupStrategy mGroupStrategy = new ReorderGroupStrategy();
+
     // Auto-scroll State.
     private long mLastReorderScrollTime;
     private int mReorderScrollState = REORDER_SCROLL_NONE;
@@ -93,7 +97,10 @@ public class ReorderDelegate {
     }
 
     void setReorderingForTabDrop(boolean reorderingForTabDrop) {
-        mReorderingForTabDrop = reorderingForTabDrop;
+        if (mReorderingForTabDrop != reorderingForTabDrop) {
+            mReorderingForTabDrop = reorderingForTabDrop;
+            if (mReorderingForTabDrop) onReorderingForTabDrop();
+        }
     }
 
     float getLastReorderX() {
@@ -156,151 +163,44 @@ public class ReorderDelegate {
     // ============================================================================================
 
     /**
-     * Begin reordering the interacting tab.
+     * Begin reordering the interacting view.
      *
      * @param stripTabs The list of {@link StripLayoutTab}.
-     * @param interactingTab The interacting {@link StripLayoutTab}.
+     * @param interactingView The interacting {@link StripLayoutView}.
      * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param x The x coordinate that the reorder action began at.
      */
-    void startReorderTab(
+    void startReorder(
             StripLayoutTab[] stripTabs,
-            StripLayoutTab interactingTab,
+            @NonNull StripLayoutView interactingView,
             float effectiveTabWidth,
             float x) {
-        RecordUserAction.record("MobileToolbarStartReorderTab");
-        setInteractingTab(interactingTab);
-
-        // 1. Set reorder mode to true before selecting this tab to prevent unnecessary triggering
-        // of #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
-        setInReorderMode(true);
-
-        // 2. Select this tab so that it is always in the foreground.
-        TabModelUtils.setIndex(
-                mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getTabId()));
-
-        // 3. Set initial state.
-        prepareStripForReorder(stripTabs, effectiveTabWidth, x);
-
-        // 4. Lift the container off the toolbar and perform haptic feedback.
-        ArrayList<Animator> animationList = new ArrayList<>();
-        updateTabAttachState(mInteractingTab, /* attached= */ false, animationList);
-        StripLayoutUtils.performHapticFeedback(mContainerView);
-
-        // 5. Kick-off animations and request an update.
-        mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        if (interactingView instanceof StripLayoutTab interactingTab) {
+            mTabStrategy.startReorderTab(stripTabs, interactingTab, effectiveTabWidth, x);
+            mActiveStrategy = mTabStrategy;
+        } else if (interactingView instanceof StripLayoutGroupTitle) {
+            mGroupStrategy.startReorderGroup();
+            mActiveStrategy = mGroupStrategy;
+        } else {
+            assert false : "Attempted to start reorder on an unexpected view type.";
+        }
     }
 
-    /**
-     * Updates the location of the reordering tab. This 1. visually offsets the tab (clamped to the
-     * bounds of the strip) and 2. triggers a reorder (with animations) if the threshold is reached.
-     *
-     * @param stripViews The list of {@link StripLayoutView}.
-     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
-     * @param stripTabs The list of {@link StripLayoutTab}.
-     * @param deltaX The change in position for the reordering tab based on dragging and scrolling.
-     */
+    /** See {@link ReorderStrategy#updateReorderPosition} */
     void updateReorderPosition(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             float deltaX) {
-        if (!getInReorderMode() || mInteractingTab == null || mReorderingForTabDrop) return;
-
-        int curIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
-        if (curIndex == TabModel.INVALID_TAB_INDEX) return;
-
-        // 1. Compute drag position.
-        float oldIdealX = mInteractingTab.getIdealX();
-        float oldScrollOffset = mScrollDelegate.getScrollOffset();
-        float offset = mInteractingTab.getOffsetX() + deltaX;
-
-        // 2. Attempt to move the tab. If successful, update other relevant properties.
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        if (reorderTabIfThresholdReached(groupTitles, stripTabs, offset, curIndex)) {
-            // 2.a. We may have exited reorder mode to display the confirmation dialog. If so, we
-            // should not set the new offset here, and instead let the tab slide back to its idealX.
-            if (!getInReorderMode()) return;
-            // 2.b. Since we just moved the tab we're dragging, adjust its offset so it stays in
-            // the same apparent position.
-            offset += oldIdealX - mInteractingTab.getIdealX();
-            // 2.c. When the strip is scrolling, deltaX is already accounted for by idealX. This is
-            // because idealX uses the scroll offset which has already been adjusted by deltaX.
-            if (mLastReorderScrollTime != 0) offset -= deltaX;
-            // 2.d. Group titles can affect minScrollOffset. When scrolled near the end of the
-            // strip, the scrollOffset being clamped can affect the apparent position.
-            offset -=
-                    MathUtils.flipSignIf(
-                            (mScrollDelegate.getScrollOffset() - oldScrollOffset), isRtl);
-        }
-
-        // 3. Limit offset based on tab position. First tab can't drag left, last tab can't drag
-        // right. If either is grouped, we allot additional drag distance to allow for dragging out
-        // of a group toward the edge of the strip.
-        // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
-        //  tab's trailing margin.
-        int newIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
-        if (newIndex == 0) {
-            float limit =
-                    (stripViews[0] instanceof StripLayoutGroupTitle groupTitle)
-                            ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
-                            : mScrollDelegate.getReorderStartMargin();
-            offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
-        }
-        if (newIndex == stripTabs.length - 1) {
-            float limit = stripTabs[newIndex].getTrailingMargin();
-            offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
-        }
-        mInteractingTab.setOffsetX(offset);
+        assert mActiveStrategy != null : "Attempted to update reorder without an active Strategy.";
+        mActiveStrategy.updateReorderPosition(stripViews, groupTitles, stripTabs, deltaX);
     }
 
-    /**
-     * Stop reorder mode and clear any relevant state. Don't call if not in reorder mode.
-     *
-     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
-     * @param stripTabs The list of {@link StripLayoutTab}.
-     */
+    /** See {@link ReorderStrategy#stopReorderMode} */
     void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
-        assert getInReorderMode()
-                : "Tried to stop reorder mode, without first starting reorder mode.";
-        ArrayList<Animator> animationList = new ArrayList<>();
-
-        // 1. Reset the state variables.
-        mReorderScrollState = REORDER_SCROLL_NONE;
-        setInReorderMode(false);
-
-        // 2. Reset the interacting view (clear any offset and reattach the container).
-        mAnimationHost.finishAnimationsAndPushTabUpdates();
-        if (mInteractingTab != null) {
-            // TODO(crbug.com/372546700): mInteractingTab may be null if reordering for tab drop.
-            animationList.add(
-                    CompositorAnimator.ofFloatProperty(
-                            mAnimationHost.getAnimationHandler(),
-                            mInteractingTab,
-                            StripLayoutView.X_OFFSET,
-                            mInteractingTab.getOffsetX(),
-                            0f,
-                            ANIM_TAB_MOVE_MS));
-
-            // Skip reattachment for tab drop to avoid exposing bottom indicator underneath the tab
-            // container.
-            if (!mReorderingForTabDrop || !mInteractingTab.getFolioAttached()) {
-                updateTabAttachState(mInteractingTab, true, animationList);
-            }
-        }
-
-        // 3. Clear any tab group margins.
-        resetTabGroupMargins(groupTitles, stripTabs, animationList);
-
-        // 4. Clear the interacting view.
-        setInteractingTab(null);
-
-        // 5. Reset the tab drop state. Must occur after the rest of the state is reset, since some
-        // logic depends on these values.
-        mReorderingForTabDrop = false;
-
-        // 6. Start animations.
-        mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        assert mActiveStrategy != null : "Attempted to stop reorder without an active Strategy.";
+        mActiveStrategy.stopReorderMode(groupTitles, stripTabs);
+        mActiveStrategy = null;
     }
 
     void addInReorderModeObserver(Callback<Boolean> observer) {
@@ -442,6 +342,146 @@ public class ReorderDelegate {
     // ============================================================================================
     // Tab reorder helpers
     // ============================================================================================
+
+    private class ReorderTabStrategy implements ReorderStrategy {
+        /**
+         * Begin reordering the interacting tab.
+         *
+         * @param stripTabs The list of {@link StripLayoutTab}.
+         * @param interactingTab The interacting {@link StripLayoutTab}.
+         * @param effectiveTabWidth The width of a tab, accounting for overlap.
+         * @param x The x coordinate that the reorder action began at.
+         */
+        void startReorderTab(
+                StripLayoutTab[] stripTabs,
+                StripLayoutTab interactingTab,
+                float effectiveTabWidth,
+                float x) {
+            RecordUserAction.record("MobileToolbarStartReorderTab");
+            setInteractingTab(interactingTab);
+
+            // 1. Set reorder mode to true before selecting this tab to prevent unnecessarily
+            // triggering #bringSelectedTabToVisibleArea for edge tabs when the tab strip is full.
+            setInReorderMode(true);
+
+            // 2. Select this tab so that it is always in the foreground.
+            TabModelUtils.setIndex(
+                    mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getTabId()));
+
+            // 3. Set initial state.
+            prepareStripForReorder(stripTabs, effectiveTabWidth, x);
+
+            // 4. Lift the container off the toolbar and perform haptic feedback.
+            ArrayList<Animator> animationList = new ArrayList<>();
+            updateTabAttachState(mInteractingTab, /* attached= */ false, animationList);
+            StripLayoutUtils.performHapticFeedback(mContainerView);
+
+            // 5. Kick-off animations and request an update.
+            mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        }
+
+        @Override
+        public void updateReorderPosition(
+                StripLayoutView[] stripViews,
+                StripLayoutGroupTitle[] groupTitles,
+                StripLayoutTab[] stripTabs,
+                float deltaX) {
+            if (!getInReorderMode() || mInteractingTab == null || mReorderingForTabDrop) return;
+
+            int curIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
+            if (curIndex == TabModel.INVALID_TAB_INDEX) return;
+
+            // 1. Compute drag position.
+            float oldIdealX = mInteractingTab.getIdealX();
+            float oldScrollOffset = mScrollDelegate.getScrollOffset();
+            float offset = mInteractingTab.getOffsetX() + deltaX;
+
+            // 2. Attempt to move the tab. If successful, update other relevant properties.
+            boolean isRtl = LocalizationUtils.isLayoutRtl();
+            if (reorderTabIfThresholdReached(groupTitles, stripTabs, offset, curIndex)) {
+                // 2.a. We may have exited reorder mode to display the confirmation dialog. If so,
+                // we should not set the new offset here, and instead let the tab slide back to its
+                // idealX.
+                if (!getInReorderMode()) return;
+                // 2.b. Since we just moved the tab we're dragging, adjust its offset so it stays in
+                // the same apparent position.
+                offset += oldIdealX - mInteractingTab.getIdealX();
+                // 2.c. When the strip is scrolling, deltaX is already accounted for by idealX. This
+                // is because it uses the scroll offset which has already been adjusted by deltaX.
+                if (mLastReorderScrollTime != 0) offset -= deltaX;
+                // 2.d. Group titles can affect minScrollOffset. When scrolled near the end of the
+                // strip, the scrollOffset being clamped can affect the apparent position.
+                offset -=
+                        MathUtils.flipSignIf(
+                                (mScrollDelegate.getScrollOffset() - oldScrollOffset), isRtl);
+            }
+
+            // 3. Limit offset based on tab position. First tab can't drag left, last tab can't drag
+            // right. If either is grouped, we allot additional drag distance to allow for dragging
+            // out of a group toward the edge of the strip.
+            // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
+            //  tab's trailing margin.
+            int newIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
+            if (newIndex == 0) {
+                float limit =
+                        (stripViews[0] instanceof StripLayoutGroupTitle groupTitle)
+                                ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
+                                : mScrollDelegate.getReorderStartMargin();
+                offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
+            }
+            if (newIndex == stripTabs.length - 1) {
+                float limit = stripTabs[newIndex].getTrailingMargin();
+                offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
+            }
+            mInteractingTab.setOffsetX(offset);
+        }
+
+        @Override
+        public void stopReorderMode(
+                StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+            assert getInReorderMode()
+                    : "Tried to stop reorder mode, without first starting reorder mode.";
+            ArrayList<Animator> animationList = new ArrayList<>();
+
+            // 1. Reset the state variables.
+            mReorderScrollState = REORDER_SCROLL_NONE;
+            setInReorderMode(false);
+
+            // 2. Reset the interacting view (clear any offset and reattach the container).
+            mAnimationHost.finishAnimationsAndPushTabUpdates();
+            if (mInteractingTab != null) {
+                // TODO(crbug.com/372546700): mInteractingTab may be null if reordering for tab
+                // drop.
+                animationList.add(
+                        CompositorAnimator.ofFloatProperty(
+                                mAnimationHost.getAnimationHandler(),
+                                mInteractingTab,
+                                StripLayoutView.X_OFFSET,
+                                mInteractingTab.getOffsetX(),
+                                0f,
+                                ANIM_TAB_MOVE_MS));
+
+                // Skip reattachment for tab drop to avoid exposing bottom indicator underneath the
+                // tab container.
+                if (!mReorderingForTabDrop || !mInteractingTab.getFolioAttached()) {
+                    updateTabAttachState(mInteractingTab, true, animationList);
+                }
+            }
+
+            // 3. Clear any tab group margins.
+            resetTabGroupMargins(groupTitles, stripTabs, animationList);
+
+            // 4. Clear the interacting view.
+            setInteractingTab(null);
+
+            // 5. Reset the tab drop state. Must occur after the rest of the state is reset, since
+            // some logic depends on these values.
+            mReorderingForTabDrop = false;
+
+            // 6. Start animations.
+            mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        }
+    }
 
     void prepareStripForReorder(StripLayoutTab[] stripTabs, float effectiveTabWidth, float startX) {
         // 1. Set initial state parameters.
@@ -673,6 +713,42 @@ public class ReorderDelegate {
      */
     private float getHalfTabWidth() {
         return mEffectiveTabWidth / 2;
+    }
+
+    // ============================================================================================
+    // Group reorder helpers
+    // ============================================================================================
+
+    private static class ReorderGroupStrategy implements ReorderStrategy {
+        void startReorderGroup() {
+            // TODO(crbug.com/376069497): Implement.
+        }
+
+        @Override
+        public void updateReorderPosition(
+                StripLayoutView[] stripViews,
+                StripLayoutGroupTitle[] groupTitles,
+                StripLayoutTab[] stripTabs,
+                float deltaX) {
+            // TODO(crbug.com/376069497): Implement.
+        }
+
+        @Override
+        public void stopReorderMode(
+                StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+            // TODO(crbug.com/376069497): Implement.
+        }
+    }
+
+    // ============================================================================================
+    // Drag and drop reorder helpers
+    // ============================================================================================
+
+    void onReorderingForTabDrop() {
+        // TODO(crbug.com/381285152): Implement separate strategy for Drag and Drop on destination
+        //  tab strip. This is only needed because we reuse the TabReorderStrategy#stopReorder for
+        //  DnD, but can likely be replaced by implementing a DnD-specific ReorderStrategy.
+        mActiveStrategy = mTabStrategy;
     }
 
     // ============================================================================================

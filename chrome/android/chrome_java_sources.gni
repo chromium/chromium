@@ -377,6 +377,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ActionConfirmationDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/AnimationHost.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ReorderDelegate.java",
+  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ReorderStrategy.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollingStripStacker.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutGroupTitle.java",

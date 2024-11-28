@@ -3799,20 +3799,16 @@ public class StripLayoutHelper
     private void startReorderMode(float x, StripLayoutView interactingView) {
         if (mReorderDelegate.getInReorderMode() || interactingView == null) return;
 
-        // Attempt to start reordering.
-        if (interactingView instanceof StripLayoutTab interactingTab) {
-            // Only start reorder mode if we have a valid (non-null, non-dying, non-placeholder) tab
-            // and if the tab state is initialized.
-            if (interactingTab.isDying()
-                    || interactingTab.getTabId() == Tab.INVALID_TAB_ID
-                    || !mTabStateInitialized) {
-                return;
-            }
-
-            mReorderDelegate.startReorderTab(mStripTabs, interactingTab, getEffectiveTabWidth(), x);
+        // Attempt to start reordering. If the interacting view is a StripLayoutTab, only continue
+        // if it is valid (non-null, non-dying, non-placeholder) and the tab state is initialized.
+        if (interactingView instanceof StripLayoutTab interactingTab
+                && (interactingTab.isDying()
+                        || interactingTab.getTabId() == Tab.INVALID_TAB_ID
+                        || !mTabStateInitialized)) {
+            return;
         }
 
-        // TODO(crbug.com/354707060): Support reordering tab groups.
+        mReorderDelegate.startReorder(mStripTabs, interactingView, getEffectiveTabWidth(), x);
     }
 
     void updateStripForExternalTabDrop(float startX) {
