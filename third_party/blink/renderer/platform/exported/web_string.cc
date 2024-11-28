@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/platform/web_string.h"
 
+#include "base/strings/latin1_string_conversions.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
@@ -76,14 +72,6 @@ bool WebString::Is8Bit() const {
   return impl_->Is8Bit();
 }
 
-const WebLChar* WebString::Data8() const {
-  return impl_ && Is8Bit() ? impl_->Characters8() : nullptr;
-}
-
-const WebUChar* WebString::Data16() const {
-  return impl_ && !Is8Bit() ? impl_->Characters16() : nullptr;
-}
-
 std::string WebString::Utf8(UTF8ConversionMode mode) const {
   return String(impl_).Utf8(static_cast<WTF::UTF8ConversionMode>(mode));
 }
@@ -95,6 +83,16 @@ WebString WebString::Substring(size_t pos, size_t len) const {
 
 WebString WebString::FromUTF8(std::string_view s) {
   return String::FromUTF8(s);
+}
+
+std::u16string WebString::Utf16() const {
+  if (!impl_) {
+    return std::u16string();
+  }
+  const bool is_8bit = impl_->Is8Bit();
+  const LChar* latin1_chars = is_8bit ? impl_->Characters8() : nullptr;
+  const UChar* utf16_chars = !is_8bit ? impl_->Characters16() : nullptr;
+  return base::Latin1OrUTF16ToUTF16(impl_->length(), latin1_chars, utf16_chars);
 }
 
 WebString WebString::FromUTF16(std::optional<std::u16string_view> s) {
@@ -119,12 +117,12 @@ std::string WebString::Ascii() const {
     return std::string();
 
   if (impl_->Is8Bit()) {
-    return std::string(reinterpret_cast<const char*>(impl_->Characters8()),
-                       impl_->length());
+    auto latin1 = base::as_chars(impl_->Span8());
+    return std::string(base::as_string_view(latin1));
   }
 
-  return std::string(impl_->Characters16(),
-                     impl_->Characters16() + impl_->length());
+  auto utf16 = impl_->Span16();
+  return std::string(utf16.begin(), utf16.end());
 }
 
 bool WebString::ContainsOnlyASCII() const {
