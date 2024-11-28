@@ -102,6 +102,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
 
   // Update to display the latest data.
   update() {
+    this.controller.updateDataTime();
     this.updateScrollBar();
     this.updateCanvas();
   }
