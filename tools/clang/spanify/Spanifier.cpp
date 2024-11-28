@@ -835,6 +835,39 @@ std::string GetStringViewType(const clang::QualType element_type,
       .str();
 }
 
+// If needed, insert a trailing comma in the `init_list_expr` to make the code
+// more readable. This makes clang-format to put each elements in a new line.
+// Everything is aligned nicely, and the output is more readable. This is
+// particularly helpful when the original code is not formatted with
+// clang-format, and isn't using a trailing comma, but was originally formatted
+// on multiple lines.
+void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
+                         clang::Rewriter& rewriter,
+                         const clang::SourceManager& source_manager) {
+  // To allow for one-liner, we don't add the trailing comma when the size is
+  // below 3 or the content length is below 40.
+  const int length =
+      source_manager.getFileOffset(init_list_expr->getRBraceLoc()) -
+      source_manager.getFileOffset(init_list_expr->getLBraceLoc());
+  if (init_list_expr->getNumInits() < 3 || length < 40) {
+    return;
+  }
+
+  const clang::Expr* last_element =
+      init_list_expr->getInit(init_list_expr->getNumInits() - 1);
+
+  // Conservatively search for the trailing comma. If it's already there, we do
+  // not need to insert another one.
+  for (auto loc = last_element->getEndLoc().getLocWithOffset(1);
+       loc != init_list_expr->getRBraceLoc(); loc = loc.getLocWithOffset(1)) {
+    if (source_manager.getCharacterData(loc)[0] == ',') {
+      return;
+    }
+  }
+
+  rewriter.InsertTextAfterToken(last_element->getEndLoc(), ",");
+}
+
 // Creates a replacement node for c-style arrays on which we invoke operator[].
 // These arrays are rewritten to std::array<Type, Size>.
 Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
@@ -950,6 +983,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
     include_path = kStringViewIncludePath;
   } else if (init_list_expr) {
     clang::Rewriter rw(source_manager, ast_context.getLangOpts());
+    InsertTrailingComma(init_list_expr, rw, source_manager);
     std::string init_expr_as_string =
         rw.getRewrittenText(init_list_expr->getSourceRange());
 

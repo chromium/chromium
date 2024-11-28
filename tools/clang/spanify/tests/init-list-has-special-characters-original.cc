@@ -4,8 +4,14 @@
 
 void fct() {
   // Expected rewrite:
-  // auto buf = std::to_array<const char*>(
-  //     {"\\,", "+++", "%%%2C", "@", "<empty>", ":::"});
+  // auto buf = std::to_array<const char*>({
+  //     "\\,",
+  //     "+++",
+  //     "%%%2C",
+  //     "@",
+  //     "<empty>",
+  //     ":::",
+  // });
   const char* buf[] = {"\\,", "+++", "%%%2C", "@", "<empty>", ":::"};
   int index = 0;
   buf[index] = nullptr;
