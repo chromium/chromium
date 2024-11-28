@@ -11652,6 +11652,39 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Lens.Overlay.ContextualSearchBox.Shown">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the contextual searchbox is shown to the user. Measures
+    if it was shown and the document type it was shown on.
+  </summary>
+  <metric name="DocumentType" enum="MimeType">
+    <summary>
+      The type of document the contextual searchbox was shown on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WasShown" enum="Boolean">
+    <summary>
+      Whether the search box was shown.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Lens.Overlay.ContextualSuggest.QueryIssuedInSession">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>

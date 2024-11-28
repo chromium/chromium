@@ -1966,9 +1966,12 @@ void LensOverlayController::InitializeOverlayUI(
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
 
-  // UMA invocation.
+  // Record the UMA and UKM for whether the contextual search box was shown.
+  ukm::SourceId source_id =
+      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   lens::RecordInvocation(invocation_source_, initial_document_type_);
-  MaybeRecordContextualSearchBoxShown(should_show_contextual_search_box,
+  MaybeRecordContextualSearchBoxShown(source_id,
+                                      should_show_contextual_search_box,
                                       init_data.page_content_type_);
 }
 

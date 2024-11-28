@@ -101,9 +101,9 @@ void RecordLensResponseTime(base::TimeDelta response_time);
 
 // Records whether the contextual search box is shown when the contextual search
 // box feature is enabled.
-void MaybeRecordContextualSearchBoxShown(
-    bool shown,
-    lens::MimeType page_content_type);
+void MaybeRecordContextualSearchBoxShown(ukm::SourceId source_id,
+                                         bool shown,
+                                         lens::MimeType page_content_type);
 
 // Records the time from the time the user navigates the document to when the
 // contextual search box is interacted with, sliced by content type.

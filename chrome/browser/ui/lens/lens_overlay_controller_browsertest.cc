@@ -4457,6 +4457,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                        Histograms) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
 
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -4488,6 +4489,20 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ByPageContentType.Pdf.PageCount", /*sample*/ 1,
       /*expected_bucket_count=*/1);
+
+  // Verify UKM metrics were recorded.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kWasShownName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kDocumentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPdf));
 }
 
 // TODO(crbug.com/378810677): Flaky on all platforms.
@@ -4922,6 +4937,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        WebDocumentTypeHistograms) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
 
   WaitForPaint(kDocumentWithNonAsciiCharacters);
@@ -4953,6 +4969,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByPageContentType.Html.DocumentSize",
       /*expected_count=*/1);
+
+  // Verify UKM metrics were recorded.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kWasShownName,
+      true);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::Lens_Overlay_ContextualSearchBox_Shown::kDocumentTypeName,
+      static_cast<int64_t>(lens::MimeType::kPlainText));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
