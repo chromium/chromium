@@ -10,8 +10,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("permissions") {
   sources = [
-    "adaptive_quiet_notification_permission_ui_enabler.cc",
-    "adaptive_quiet_notification_permission_ui_enabler.h",
     "chrome_permissions_client.cc",
     "chrome_permissions_client.h",
     "contextual_notification_permission_ui_selector.cc",
@@ -177,7 +175,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "adaptive_quiet_notification_permission_ui_enabler_unittest.cc",
     "chrome_permission_manager_unittest.cc",
     "chrome_permission_request_manager_unittest.cc",
     "contextual_notification_permission_ui_selector_unittest.cc",

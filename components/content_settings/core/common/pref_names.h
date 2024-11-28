@@ -217,13 +217,6 @@ inline constexpr char kEnableNotificationCPSS[] =
 inline constexpr char kEnableGeolocationCPSS[] =
     "profile.content_settings.enable_cpss.geolocation";
 
-// Enum indicating by which method the quiet UI has been enabled for
-// notification permission requests. This is stored as of M88 and will be
-// backfilled if the quiet UI is enabled but this preference has no value.
-inline constexpr char kQuietNotificationPermissionUiEnablingMethod[] =
-    "profile.content_settings.enable_quiet_permission_ui_enabling_method."
-    "notifications";
-
 // Time value indicating when the quiet notification UI was last disabled by the
 // user. Only permission action history after this point is taken into account
 // for adaptive quiet UI activation.

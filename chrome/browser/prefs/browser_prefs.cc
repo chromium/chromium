@@ -1166,6 +1166,9 @@ constexpr char kQuietNotificationPermissionPromoWasShown[] =
 constexpr char kQuietNotificationPermissionShouldShowPromo[] =
     "profile.content_settings.quiet_permission_ui_promo.should_show."
     "notifications";
+inline constexpr char kQuietNotificationPermissionUiEnablingMethod[] =
+    "profile.content_settings.enable_quiet_permission_ui_enabling_method."
+    "notifications";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 11/2024
@@ -1663,6 +1666,9 @@ void RegisterProfilePrefsForMigration(
                                 true);
   registry->RegisterBooleanPref(kQuietNotificationPermissionShouldShowPromo,
                                 true);
+  registry->RegisterIntegerPref(kQuietNotificationPermissionUiEnablingMethod,
+                                0);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 11/2024
   registry->RegisterBooleanPref(kHatsPrivacyHubPostLaunchIsSelected, false);
@@ -3030,6 +3036,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 11/2024
   profile_prefs->ClearPref(kQuietNotificationPermissionPromoWasShown);
   profile_prefs->ClearPref(kQuietNotificationPermissionShouldShowPromo);
+  profile_prefs->ClearPref(kQuietNotificationPermissionUiEnablingMethod);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 11/2024

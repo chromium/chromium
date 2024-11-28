@@ -23,7 +23,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
-#include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/origin_keyed_permission_action_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
@@ -394,8 +393,6 @@ void ChromePermissionsClient::OnPromptResolved(
       action, request_type, prompt_disposition);
 
   if (request_type == permissions::RequestType::kNotifications) {
-    AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile)
-        ->PermissionPromptResolved();
     if (action == permissions::PermissionAction::GRANTED &&
         quiet_ui_reason.has_value() &&
         (quiet_ui_reason.value() ==
