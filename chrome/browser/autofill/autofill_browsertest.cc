@@ -108,7 +108,7 @@ class AutofillTest : public InProcessBrowserTest {
         {AutofillManagerEvent::kFormsSeen}};
   };
 
-  AutofillTest() {}
+  AutofillTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

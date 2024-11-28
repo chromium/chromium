@@ -801,7 +801,7 @@ ServerUrlLoader::ServerUrlLoader(
   CHECK(cache_replayer_);
 }
 
-ServerUrlLoader::~ServerUrlLoader() {}
+ServerUrlLoader::~ServerUrlLoader() = default;
 
 bool WriteNotFoundResponse(
     content::URLLoaderInterceptor::RequestParams* params) {

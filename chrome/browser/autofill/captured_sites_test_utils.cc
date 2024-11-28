@@ -521,7 +521,7 @@ IFrameWaiter::IFrameWaiter(content::WebContents* web_contents)
       query_type_(URL),
       target_frame_(nullptr) {}
 
-IFrameWaiter::~IFrameWaiter() {}
+IFrameWaiter::~IFrameWaiter() = default;
 
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
     const std::string& name,
@@ -2395,9 +2395,9 @@ bool TestRecipeReplayer::SetupSavedPasswords(
 
 // TestRecipeReplayChromeFeatureActionExecutor --------------------------------
 TestRecipeReplayChromeFeatureActionExecutor::
-    TestRecipeReplayChromeFeatureActionExecutor() {}
+    TestRecipeReplayChromeFeatureActionExecutor() = default;
 TestRecipeReplayChromeFeatureActionExecutor::
-    ~TestRecipeReplayChromeFeatureActionExecutor() {}
+    ~TestRecipeReplayChromeFeatureActionExecutor() = default;
 
 bool TestRecipeReplayChromeFeatureActionExecutor::AutofillForm(
     const std::string& focus_element_css_selector,
