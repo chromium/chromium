@@ -246,6 +246,7 @@ ci.builder(
         short_name = "linux-rel-cft",
     ),
     contact_team_email = "browser-automation-staff@google.com",
+    siso_remote_linking = True,
 )
 
 ci.builder(
