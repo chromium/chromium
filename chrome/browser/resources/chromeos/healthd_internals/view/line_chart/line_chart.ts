@@ -126,6 +126,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
         (acc, val) => acc.concat(val.dataList), [] as DataSeries[]);
     const isCustomCategory = category === CategoryTypeEnum.CUSTOM;
     this.$.chartMenu.setupDataSeriesList(flatDataList, isCustomCategory);
+    this.$.summaryTable.setIsCustomCategory(isCustomCategory);
 
     this.resizeCanvas();
     this.update();

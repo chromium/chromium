@@ -156,7 +156,7 @@ export class LineChartController {
           context, visibleStartTime, visibleEndTime, stepSize, timeScale);
     }
 
-    this.updateSummaryTable(visibleStartTime, visibleEndTime);
+    this.updateSummaryTable(visibleStartTime, visibleEndTime, stepSize);
   }
 
   /**
@@ -267,7 +267,8 @@ export class LineChartController {
   }
 
   // Get the required info for summary table.
-  private updateSummaryTable(visibleStartTime: number, visibleEndTime: number) {
+  private updateSummaryTable(
+      visibleStartTime: number, visibleEndTime: number, stepSize: number) {
     const output: DisplayedLineInfo[] = [];
     let colorIndex = 0
     for (const data of this.displayedDataSeriesLists) {
@@ -276,18 +277,25 @@ export class LineChartController {
       for (const dataSeries of data.dataList) {
         const statistics =
             dataSeries.getLatestStatistics(visibleStartTime, visibleEndTime);
-        output.push({
+        const info: DisplayedLineInfo = {
           legendColor: getLineChartColor(colorIndex),
-          name: this.displayedCategory === CategoryTypeEnum.CUSTOM ?
-              dataSeries.getTitleForCustom() :
-              dataSeries.getTitle(),
+          name: dataSeries.getTitle(),
           isVisible: dataSeries.getVisible(),
           displayedUnit: unitString,
           latestValue: statistics.latest / unitScale,
           minValue: statistics.min / unitScale,
           maxValue: statistics.max / unitScale,
           averageValue: statistics.average / unitScale,
-        })
+        };
+        if (this.displayedCategory === CategoryTypeEnum.CUSTOM) {
+          info.name = dataSeries.getTitleForCustom();
+          const maxValue = this.getVisibleMaxValue(
+              data.dataList, visibleStartTime, visibleEndTime, stepSize);
+          const normalizationScale = this.getNormalizationScale(maxValue);
+          info.normalizationWeight = unitScale / normalizationScale;
+          info.normalizedValue = statistics.latest / normalizationScale;
+        }
+        output.push(info)
         colorIndex += 1;
       }
     }

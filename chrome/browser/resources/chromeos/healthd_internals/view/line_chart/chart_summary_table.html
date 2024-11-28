@@ -52,6 +52,10 @@
         <th></th>
         <th>Name</th>
         <th>Latest</th>
+        <template is="dom-if" if="[[isCustomCategory]]">
+          <th>Weight</th>
+          <th>Normalized Value</th>
+        </template>
         <th>Min.</th>
         <th>Max.</th>
         <th>Avg.</th>
@@ -68,6 +72,10 @@
           </td>
           <td>[[item.name]]</td>
           <td>[[item.latestValue]] [[item.displayedUnit]]</td>
+          <template is="dom-if" if="[[isCustomCategory]]">
+            <td>[[item.normalizationWeight]]</td>
+            <td>[[item.normalizedValue]]</td>
+          </template>
           <td>[[item.minValue]] [[item.displayedUnit]]</td>
           <td>[[item.maxValue]] [[item.displayedUnit]]</td>
           <td>[[item.averageValue]] [[item.displayedUnit]]</td>

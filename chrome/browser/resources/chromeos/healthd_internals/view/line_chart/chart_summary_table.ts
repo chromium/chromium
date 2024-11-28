@@ -34,6 +34,10 @@ export interface DisplayedLineInfo {
   maxValue: number;
   // The average value of line.
   averageValue: number;
+  // The normalization weight for custom category.
+  normalizationWeight?: number;
+  // The normalized value displayed for custom category.
+  normalizedValue?: number;
 }
 
 export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
@@ -48,11 +52,22 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
   static get properties() {
     return {
       displayedData: {type: Array},
+      isCustomCategory: {type: Boolean},
     };
   }
 
   // Data displayed in the chart summary table.
   private displayedData: DisplayedLineInfo[] = [];
+
+  // Whether the current category is custom.
+  private isCustomCategory: boolean = true;
+
+  /**
+   * Sets whether the current category is custom.
+   */
+  setIsCustomCategory(isCustomCategory: boolean) {
+    this.isCustomCategory = isCustomCategory;
+  }
 
   /**
    * Update displayed data.
@@ -64,6 +79,14 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
       info.minValue = parseFloat(toFixedFloat(info.minValue, 3));
       info.maxValue = parseFloat(toFixedFloat(info.maxValue, 3));
       info.averageValue = parseFloat(toFixedFloat(info.averageValue, 3));
+      if (info.normalizationWeight !== undefined) {
+        info.normalizationWeight =
+            parseFloat(toFixedFloat(info.normalizationWeight, 3));
+      }
+      if (info.normalizedValue !== undefined) {
+        info.normalizedValue =
+            parseFloat(toFixedFloat(info.normalizedValue, 2));
+      }
       this.displayedData.push(info);
     }
 
