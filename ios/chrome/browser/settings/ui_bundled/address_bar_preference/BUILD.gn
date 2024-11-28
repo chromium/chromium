@@ -14,6 +14,7 @@ source_set("address_bar_preference") {
     "//components/prefs",
     "//ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -21,7 +22,6 @@ source_set("address_bar_preference") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/ui/settings/utils",
   ]
 }
 

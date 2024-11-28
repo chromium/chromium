@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_mediator.h"
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_consumer.h"
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_observer.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 

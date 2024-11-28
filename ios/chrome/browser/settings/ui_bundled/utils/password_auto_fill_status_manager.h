@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_UTILS_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_UTILS_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
 
 #import <Foundation/Foundation.h>
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
+
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_observer.h"
 
 // Singleton that listens to password autofill status changes and notifies
 // observers on change.
@@ -29,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_UTILS_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_

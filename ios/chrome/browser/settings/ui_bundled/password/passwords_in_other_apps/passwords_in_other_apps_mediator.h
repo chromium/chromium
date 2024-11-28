@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_observer.h"
 
 // This mediator fetches and organises passwords autofill status for its
 // consumer, as well as implementing its delegate methods to responding to its

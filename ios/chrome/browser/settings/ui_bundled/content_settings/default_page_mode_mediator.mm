@@ -10,7 +10,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/default_page_mode_consumer.h"
-#import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/content_setting_backed_boolean.h"
 
 @interface DefaultPageModeMediator () <BooleanObserver>
 

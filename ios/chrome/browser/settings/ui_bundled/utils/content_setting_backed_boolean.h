@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_
 
 #import <Foundation/Foundation.h>
 
@@ -13,7 +13,7 @@
 class HostContentSettingsMap;
 
 // An observable boolean backed by a setting from a HostContentSettingsMap.
-@interface ContentSettingBackedBoolean : NSObject<ObservableBoolean>
+@interface ContentSettingBackedBoolean : NSObject <ObservableBoolean>
 
 // Returns a ContentSettingBackedBoolean backed by `settingID` from
 // `settingsMap`. `inverted` specifies that the ON state of the boolean value
@@ -36,4 +36,4 @@ class HostContentSettingsMap;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_UTILS_CONTENT_SETTING_BACKED_BOOLEAN_H_

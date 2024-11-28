@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <UIKit/UIKit.h>
+
 #import "base/check.h"
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_observer.h"
 
 @interface PasswordAutoFillStatusManager ()
 
