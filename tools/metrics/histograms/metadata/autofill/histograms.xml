@@ -1936,6 +1936,18 @@ AutofillSaveCreditCardPromptDestination.
     possible types. This metric is recorded for every possible type.
   </summary>
   <token key="FieldState">
+    <variant name="AutocompleteOffHadPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns a
+                 known type and the autocomplete value is off."/>
+    <variant name="AutocompleteOffNoPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns an
+                 unknown type and the autocomplete value is off."/>
+    <variant name="GarbageHadPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns a
+                 known type and the autocomplete value is unrecognized."/>
+    <variant name="GarbageNoPrediction"
+        summary="Metrics are recorded if AutofillField::Type() returns an
+                 unknown type and the autocomplete value is unrecognized."/>
     <variant name="HadPrediction"
         summary="Metrics are recorded if AutofillField::Type() returns a
                  known type."/>
