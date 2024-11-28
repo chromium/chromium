@@ -910,6 +910,7 @@ void WindowPerformance::ReportEvent(
 
 void WindowPerformance::NotifyAndAddEventTimingBuffer(
     PerformanceEventTiming* entry) {
+  CHECK(entry->HasKnownInteractionID());
   if (HasObserverFor(PerformanceEntry::kEvent)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kEventTimingExplicitlyRequested);
@@ -1034,6 +1035,9 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     PerformanceEventTiming* entry,
     ResponsivenessMetrics::EventTimestamps event_timestamps) {
   if (!IsEventTypeForInteractionId(entry->name())) {
+    // Set 0 interaction id for event timings that do not go into state
+    // machine.
+    entry->SetInteractionId(0);
     return true;
   }
   // We set the interactionId and record the metric in the
@@ -1043,7 +1047,9 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     return responsiveness_metrics_->SetPointerIdAndRecordLatency(
         entry, event_timestamps);
   }
+
   responsiveness_metrics_->SetKeyIdAndRecordLatency(entry, event_timestamps);
+
   return true;
 }
 

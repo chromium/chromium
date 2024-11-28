@@ -104,7 +104,8 @@ uint32_t PerformanceEventTiming::interactionId() const {
   if (reporting_info_.prevent_counting_as_interaction) {
     return 0u;
   }
-  return interaction_id_.value_or(0);
+  CHECK(interaction_id_.has_value());
+  return interaction_id_.value();
 }
 
 void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {

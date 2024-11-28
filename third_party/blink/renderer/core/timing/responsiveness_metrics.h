@@ -228,10 +228,10 @@ class CORE_EXPORT ResponsivenessMetrics
   // Used to flush any entries in |pointer_id_entry_map_| which already have
   // pointerup. We either know there is no click happening or waited long enough
   // for a click to occur.
-  void FlushPointerup();
+  void FlushAllPointerdownWithMeasuredPointerup();
 
   // Used to flush all entries in |pointer_id_entry_map_|.
-  void FlushPointerdownAndPointerup();
+  void FlushAllPointerdown();
 
   // Method called when |composition_end_| fires. Ensures that the last
   // interaction of compositoin events is reported, even if
