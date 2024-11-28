@@ -96,6 +96,14 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         ShoppingServiceFactory.getForProfile(getProfile()).fetchPriceEmailPref();
     }
 
+    @Override
+    public void onDestroy() {
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.destroy();
+        }
+        super.onDestroy();
+    }
+
     /** Handle preference changes from any of the toggles in this UI. */
     private boolean onPreferenceChange(Preference preference, Object newValue) {
         if (PREF_EMAIL_NOTIFICATIONS.equals(preference.getKey())) {
