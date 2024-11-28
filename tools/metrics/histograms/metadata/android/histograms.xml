@@ -2128,6 +2128,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Browser.EventsAfterTransfer"
+    enum="MotionEventAction" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is only recorded when touch sequence is successfully transferred
+    from Browser to Viz(when InputOnViz feature flag is enabled). The histogram
+    is emitted for discrete events seen between inital DOWN on which transfer
+    was requested, and the CANCEL received corresponding to DOWN from Android,
+    excluding both of these events.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputOnViz.Browser.TouchMovesSeenAfterTransfer"
+    units="counts" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is only recorded when touch sequence is successfully transferred
+    from Browser to Viz(when InputOnViz feature flag is enabled). It records the
+    number of touch moves received on Browser before receiving a TOUCH_CANCEL,
+    which would be the last event Browser sees for that sequence after a
+    successful transfer.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.InputReceiverCreationResult"
     enum="CreateAndroidInputReceiverResult" expires_after="2025-06-30">
   <owner>kartarsingh@google.com</owner>

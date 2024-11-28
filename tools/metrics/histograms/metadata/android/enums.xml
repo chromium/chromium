@@ -1224,6 +1224,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device lock restored"/>
 </enum>
 
+<enum name="MotionEventAction">
+  <int value="0" label="NONE"/>
+  <int value="1" label="DOWN"/>
+  <int value="2" label="UP"/>
+  <int value="3" label="MOVE"/>
+  <int value="4" label="CANCEL"/>
+  <int value="5" label="POINTER_DOWN"/>
+  <int value="6" label="POINTER_UP"/>
+  <int value="7" label="HOVER_ENTER"/>
+  <int value="8" label="HOVER_EXIT"/>
+  <int value="9" label="HOVER_MOVE"/>
+  <int value="10" label="BUTTON_PRESS"/>
+  <int value="11" label="BUTTON_RELEASE"/>
+</enum>
+
 <enum name="MultipleUserProfilesState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Single user profile"/>

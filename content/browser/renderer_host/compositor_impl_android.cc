@@ -650,6 +650,10 @@ viz::FrameSinkId CompositorImpl::GetFrameSinkId() {
   return frame_sink_id_;
 }
 
+gpu::SurfaceHandle CompositorImpl::GetSurfaceHandle() {
+  return surface_handle_;
+}
+
 void CompositorImpl::AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
   if (GetHostFrameSinkManager()->IsFrameSinkIdRegistered(frame_sink_id_)) {
     bool result = GetHostFrameSinkManager()->RegisterFrameSinkHierarchy(

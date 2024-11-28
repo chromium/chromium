@@ -3260,6 +3260,8 @@ source_set("browser") {
       "renderer_host/delegated_frame_host_client_android.h",
       "renderer_host/input/fling_scheduler_android.cc",
       "renderer_host/input/fling_scheduler_android.h",
+      "renderer_host/input/input_transfer_handler_android.cc",
+      "renderer_host/input/input_transfer_handler_android.h",
       "renderer_host/input/synthetic_gesture_target_android.cc",
       "renderer_host/input/synthetic_gesture_target_android.h",
       "renderer_host/input/touch_selection_controller_client_manager_android.cc",

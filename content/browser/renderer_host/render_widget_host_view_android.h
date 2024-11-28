@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/selection.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/device_posture/device_posture_platform_provider.h"
+#include "content/browser/renderer_host/input/input_transfer_handler_android.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/input/stylus_text_selector.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -96,7 +97,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       public ui::ViewAndroidObserver,
       public ui::WindowAndroidObserver,
       public DevicePosturePlatformProvider::Observer,
-      public input::AndroidInputHelper::Delegate {
+      public input::AndroidInputHelper::Delegate,
+      public InputTransferHandlerAndroidClient {
  public:
   static RenderWidgetHostViewAndroid* FromRenderWidgetHostView(
       RenderWidgetHostView* view);
@@ -399,6 +401,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // InputTransferHandlerAndroidClient implementation.
+  gpu::SurfaceHandle GetRootSurfaceHandle() override;
+
   // Methods called from Java
   bool IsReady(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
@@ -639,6 +644,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   std::unique_ptr<ui::DelegatedFrameHostAndroid::Client>
       delegated_frame_host_client_;
+
+  std::unique_ptr<InputTransferHandlerAndroid> input_transfer_handler_;
 
   // Manages the Compositor Frames received from the renderer.
   std::unique_ptr<ui::DelegatedFrameHostAndroid> delegated_frame_host_;

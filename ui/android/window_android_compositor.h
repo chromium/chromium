@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/compositor/compositor_lock.h"
 
@@ -46,6 +47,7 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
   virtual void SetNeedsAnimate() = 0;
   virtual ResourceManager& GetResourceManager() = 0;
   virtual viz::FrameSinkId GetFrameSinkId() = 0;
+  virtual gpu::SurfaceHandle GetSurfaceHandle() = 0;
   virtual void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) = 0;
   virtual void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) = 0;
   virtual bool IsDrawingFirstVisibleFrame() const = 0;
