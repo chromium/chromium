@@ -34382,6 +34382,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.AutofillAIEntryPointClick">
+  <owner>brunobraga@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Reported when user clicks on the Auofill AI row in the chrome://settings/ai
+    page.
+  </description>
+</action>
+
 <action name="Settings.AiPage.Compare.FeatureLinkClicked">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
