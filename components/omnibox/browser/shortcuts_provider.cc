@@ -153,8 +153,10 @@ void PopulateScoringSignals(const ShortcutMatch& shortcut_match,
       shortcut_match.shortest_text_length);
   match->scoring_signals->set_elapsed_time_last_shortcut_visit_sec(
       (base::Time::Now() - shortcut_match.most_recent_access_time).InSeconds());
-  match->scoring_signals->set_length_of_url(
-      match->destination_url.spec().length());
+  if (match->destination_url.is_valid()) {
+    match->scoring_signals->set_length_of_url(
+        match->destination_url.spec().length());
+  }
 
   // Populate history signals in case the shortcut isn't in the history
   // in-memory index or doesn't have a history entry (e.g. bookmark shortcuts
