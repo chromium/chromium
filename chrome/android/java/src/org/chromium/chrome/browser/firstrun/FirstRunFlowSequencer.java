@@ -22,7 +22,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -37,16 +36,13 @@ import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
- * A helper to determine what should be the sequence of First Run Experience screens, and whether
- * it should be run.
+ * A helper to determine what should be the sequence of First Run Experience screens, and whether it
+ * should be run.
  *
- * Usage:
- * new FirstRunFlowSequencer(activity, launcherProvidedProperties) {
- *     override onFlowIsKnown
- * }.start();
+ * <p>Usage: new FirstRunFlowSequencer(activity, launcherProvidedProperties) { override
+ * onFlowIsKnown }.start();
  */
 public abstract class FirstRunFlowSequencer {
     private static final String TAG = "firstrun";
@@ -61,24 +57,6 @@ public abstract class FirstRunFlowSequencer {
 
         public FirstRunFlowSequencerDelegate(OneshotSupplier<ProfileProvider> profileSupplier) {
             mProfileSupplier = profileSupplier;
-        }
-
-        /** Returns true if the sync consent promo page should be shown. */
-        boolean shouldShowSyncConsentPage(boolean isChild) {
-            if (isChild) {
-                // Always show the sync consent page for child account.
-                return true;
-            }
-            assert mProfileSupplier.get() != null;
-            Profile profile = mProfileSupplier.get().getOriginalProfile();
-            final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
-            if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
-                // No need to show the sync consent page if users already consented to sync.
-                return false;
-            }
-            // Show the sync consent page only to the signed-in users.
-            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
         boolean shouldShowHistorySyncOptIn(boolean isChild) {
@@ -175,10 +153,6 @@ public abstract class FirstRunFlowSequencer {
         return mDelegate.shouldShowSearchEnginePage();
     }
 
-    private boolean shouldShowSyncConsentPage() {
-        return mDelegate.shouldShowSyncConsentPage(mIsChild);
-    }
-
     private boolean shouldShowHistorySyncOptIn() {
         return mDelegate.shouldShowHistorySyncOptIn(mIsChild);
     }
@@ -209,18 +183,8 @@ public abstract class FirstRunFlowSequencer {
      */
     public void updateFirstRunProperties(Bundle freProperties) {
         assert freProperties != null;
-        boolean isHistorySyncEnabled =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-        if (isHistorySyncEnabled) {
-            freProperties.putBoolean(FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, false);
-            freProperties.putBoolean(
-                    FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, shouldShowHistorySyncOptIn());
-        } else {
-            freProperties.putBoolean(
-                    FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
-            freProperties.putBoolean(FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, false);
-        }
+        freProperties.putBoolean(
+                FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, shouldShowHistorySyncOptIn());
 
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());

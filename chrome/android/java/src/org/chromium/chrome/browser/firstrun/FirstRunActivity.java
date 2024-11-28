@@ -255,24 +255,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         // An optional history sync opt-in page, the visibility of this page will be decided on the
         // fly according to the situation.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            BooleanSupplier showHistorySync =
-                    () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
-            if (!showHistorySync.getAsBoolean()) {
-                HistorySyncHelper historySyncHelper =
-                        HistorySyncHelper.getForProfile(
-                                getProfileProviderSupplier().get().getOriginalProfile());
-                historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.START_PAGE);
-            }
-            mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
-            mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
-        } else {
-            BooleanSupplier showSyncConsent =
-                    () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
-            mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
-            mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
+        BooleanSupplier showHistorySync = () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
+        if (!showHistorySync.getAsBoolean()) {
+            HistorySyncHelper historySyncHelper =
+                    HistorySyncHelper.getForProfile(
+                            getProfileProviderSupplier().get().getOriginalProfile());
+            historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.START_PAGE);
         }
+        mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
+        mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
 
         if (mPagerAdapter != null) {
             mPagerAdapter.notifyDataSetChanged();
