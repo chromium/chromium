@@ -7973,9 +7973,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
     InSequence s;
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
         .WillOnce(Return(global_ids));
-    EXPECT_CALL(plus_address_delegate(),
-                DidFillPlusAddress(/*did_show_email_suggestion=*/false,
-                                   /*is_manual_fallback=*/false));
+    EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
     EXPECT_CALL(autofill_client_,
                 ShowPlusAddressEmailOverrideNotification(gaia_email, _))
         .WillOnce(MoveArg<1>(&undo_callback));

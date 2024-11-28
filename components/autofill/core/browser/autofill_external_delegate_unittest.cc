@@ -231,6 +231,10 @@ class MockAutofillClient : public TestAutofillClient {
               (AutofillClient::PlusAddressErrorDialogType, base::OnceClosure),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
+              (override));
 
 #if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.
@@ -1424,9 +1428,11 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
               RecordAutofillSuggestionEvent(
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen));
-  EXPECT_CALL(plus_address_delegate(),
-              DidFillPlusAddress(/*did_show_email_suggestion=*/true,
-                                 /*is_manual_fallback=*/false));
+  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
+  EXPECT_CALL(
+      client(),
+      TriggerPlusAddressUserPerceptionSurvey(
+          plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail));
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -1477,7 +1483,10 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen))
       .Times(0);
-  EXPECT_CALL(plus_address_delegate(), DidChooseEmailOverPlusAddress());
+  EXPECT_CALL(
+      client(),
+      TriggerPlusAddressUserPerceptionSurvey(
+          plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress));
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
                              mojom::ActionPersistence::kFill,
                              HasQueriedFormId(), IsQueriedFieldId(), _, _));
@@ -1524,9 +1533,10 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
               RecordAutofillSuggestionEvent(
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen));
-  EXPECT_CALL(plus_address_delegate(),
-              DidFillPlusAddress(/*did_show_email_suggestion=*/false,
-                                 /*is_manual_fallback=*/true));
+  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
+  EXPECT_CALL(client(), TriggerPlusAddressUserPerceptionSurvey(
+                            plus_addresses::hats::SurveyType::
+                                kFilledPlusAddressViaManualFallack));
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -1564,6 +1574,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kCreateNewPlusAddressChosen));
   EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress).Times(0);
+  EXPECT_CALL(client(), TriggerPlusAddressUserPerceptionSurvey).Times(0);
 
   // Mock out the plus address creation logic to ensure it is deterministic and
   // independent of the client implementations in //chrome or //ios.
@@ -1619,6 +1630,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kCreateNewPlusAddressChosen));
   EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress).Times(0);
+  EXPECT_CALL(client(), TriggerPlusAddressUserPerceptionSurvey).Times(0);
 
   // Mock out the plus address creation logic to ensure it is deterministic and
   // independent of the client implementations in //chrome or //ios.

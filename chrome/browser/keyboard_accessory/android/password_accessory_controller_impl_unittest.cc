@@ -232,6 +232,10 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
               OfferPlusAddressCreation,
               (const url::Origin&, bool, autofill::PlusAddressCallback),
               (override));
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
+              (override));
 };
 
 std::u16string password_for_str(const std::u16string& user) {
@@ -1752,6 +1756,9 @@ TEST_F(PasswordAccessoryControllerTest, FillsPlusAddressSuggestion) {
       FocusedFieldType::kFillableUsernameField,
       /*is_field_eligible_for_manual_generation=*/false);
 
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
+                                     plus_addresses::hats::SurveyType::
+                                         kFilledPlusAddressViaManualFallack));
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(
                   false, Eq(plus_addresses::test::kFakePlusAddressU16)));

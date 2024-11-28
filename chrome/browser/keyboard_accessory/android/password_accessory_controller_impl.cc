@@ -878,8 +878,13 @@ void PasswordAccessoryControllerImpl::FillSelection(
   if (selection.suggestion_type() ==
           autofill::AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
-    plus_address_service_->DidFillPlusAddress(
-        /*did_shown_email_suggestion=*/false, /*is_manual_fallback=*/true);
+    plus_address_service_->DidFillPlusAddress();
+    if (autofill::ContentAutofillClient* autofill_client =
+            autofill::ContentAutofillClient::FromWebContents(
+                &GetWebContents())) {
+      autofill_client->TriggerPlusAddressUserPerceptionSurvey(
+          plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack);
+    }
   }
   if (base::FeatureList::IsEnabled(
           password_manager::features::

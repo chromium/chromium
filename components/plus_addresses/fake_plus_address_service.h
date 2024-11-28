@@ -52,9 +52,7 @@ class FakePlusAddressService : public PlusAddressService {
       SuggestionContext suggestion_context,
       autofill::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
-  void DidFillPlusAddress(bool did_show_email_suggestion,
-                          bool is_manual_fallback) override;
-  void DidChooseEmailOverPlusAddress() override;
+  void DidFillPlusAddress() override;
   void OnClickedRefreshInlineSuggestion(
       const url::Origin& last_committed_primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,

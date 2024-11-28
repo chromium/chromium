@@ -629,20 +629,8 @@ void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
       /*plus_address_count=*/plus_address_cache_.Size());
 }
 
-void PlusAddressServiceImpl::DidFillPlusAddress(bool did_show_email_suggestion,
-                                                bool is_manual_fallback) {
+void PlusAddressServiceImpl::DidFillPlusAddress() {
   pref_service_->SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
-  if (is_manual_fallback) {
-    TriggerUserPerceptionSurvey(
-        hats::SurveyType::kFilledPlusAddressViaManualFallack);
-  } else if (did_show_email_suggestion) {
-    TriggerUserPerceptionSurvey(
-        hats::SurveyType::kDidChoosePlusAddressOverEmail);
-  }
-}
-
-void PlusAddressServiceImpl::DidChooseEmailOverPlusAddress() {
-  TriggerUserPerceptionSurvey(hats::SurveyType::kDidChooseEmailOverPlusAddress);
 }
 
 void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(

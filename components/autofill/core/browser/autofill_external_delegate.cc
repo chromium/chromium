@@ -793,10 +793,16 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                  base::Contains(shown_suggestion_types_,
                                 SuggestionType::kAddressEntry);
         }();
-        plus_address_delegate->DidFillPlusAddress(
-            did_show_email_suggestion,
-            trigger_source_ ==
-                AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+        plus_address_delegate->DidFillPlusAddress();
+        if (trigger_source_ ==
+            AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
+          manager_->client().TriggerPlusAddressUserPerceptionSurvey(
+              plus_addresses::hats::SurveyType::
+                  kFilledPlusAddressViaManualFallack);
+        } else if (did_show_email_suggestion) {
+          manager_->client().TriggerPlusAddressUserPerceptionSurvey(
+              plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail);
+        }
       }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
@@ -1287,7 +1293,8 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       if (AutofillPlusAddressDelegate* plus_address_delegate =
               manager_->client().GetPlusAddressDelegate();
           plus_address_delegate && email_and_plus_address_shown) {
-        plus_address_delegate->DidChooseEmailOverPlusAddress();
+        manager_->client().TriggerPlusAddressUserPerceptionSurvey(
+            plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress);
       }
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
