@@ -147,7 +147,7 @@ class WTF_EXPORT StringImpl {
 
   static void InitStatics();
 
-  static StringImpl* CreateStatic(const char* string, wtf_size_t length);
+  static StringImpl* CreateStatic(base::span<const char> string);
   static void ReserveStaticStringsCapacityForSize(wtf_size_t size);
   static void FreezeStaticStrings();
   static const StaticStringsTable& AllStaticStrings();

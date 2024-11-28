@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -105,22 +107,19 @@ void AtomicString::Init() {
   new (NotNullTag::kNotNull, (void*)&g_empty_atom) AtomicString("");
 }
 
-template <unsigned charactersCount>
 scoped_refptr<StringImpl> AddStaticASCIILiteral(
-    const char (&characters)[charactersCount]) {
-  unsigned length = charactersCount - 1;
-  return base::AdoptRef(StringImpl::CreateStatic(characters, length));
+    base::span<const char> literal) {
+  return base::AdoptRef(StringImpl::CreateStatic(literal));
 }
 
 void NewlineThenWhitespaceStringsTable::Init() {
-  LChar whitespace_buffer[kTableSize + 1] = {'\n'};
-  std::fill(std::next(std::begin(whitespace_buffer), 1),
-            std::end(whitespace_buffer), ' ');
+  char whitespace_buffer[kTableSize + 1] = {'\n'};
+  std::ranges::fill(base::span(whitespace_buffer).subspan<1u>(), ' ');
 
   // Keep g_table_[0] uninitialized.
   for (size_t length = 1; length < kTableSize; ++length) {
-    auto* string_impl = StringImpl::CreateStatic(
-        reinterpret_cast<const char*>(whitespace_buffer), length);
+    auto* string_impl =
+        StringImpl::CreateStatic(base::span(whitespace_buffer).first(length));
     new (NotNullTag::kNotNull, (void*)(&g_table_[length]))
         String(AtomicString(string_impl).GetString());
   }
@@ -155,16 +154,16 @@ void StringStatics::Init() {
   // FIXME: These should be allocated at compile time.
   new (NotNullTag::kNotNull, (void*)&g_star_atom) AtomicString("*");
   new (NotNullTag::kNotNull, (void*)&g_xml_atom)
-      AtomicString(AddStaticASCIILiteral("xml"));
+      AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xml")));
   new (NotNullTag::kNotNull, (void*)&g_xmlns_atom)
-      AtomicString(AddStaticASCIILiteral("xmlns"));
+      AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xmlns")));
   new (NotNullTag::kNotNull, (void*)&g_xlink_atom)
-      AtomicString(AddStaticASCIILiteral("xlink"));
+      AtomicString(AddStaticASCIILiteral(base::span_from_cstring("xlink")));
   new (NotNullTag::kNotNull, (void*)&g_xmlns_with_colon) String("xmlns:");
   new (NotNullTag::kNotNull, (void*)&g_http_atom)
-      AtomicString(AddStaticASCIILiteral("http"));
+      AtomicString(AddStaticASCIILiteral(base::span_from_cstring("http")));
   new (NotNullTag::kNotNull, (void*)&g_https_atom)
-      AtomicString(AddStaticASCIILiteral("https"));
+      AtomicString(AddStaticASCIILiteral(base::span_from_cstring("https")));
 
   NewlineThenWhitespaceStringsTable::Init();
 }

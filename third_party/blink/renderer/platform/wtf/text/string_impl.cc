@@ -265,38 +265,39 @@ void StringImpl::InitStatics() {
                            "string created by StringImpl::empty16Bit");
 }
 
-StringImpl* StringImpl::CreateStatic(const char* string, wtf_size_t length) {
+StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
 #if DCHECK_IS_ON()
   DCHECK(g_allow_creation_of_static_strings);
 #endif
-  DCHECK(string);
-  DCHECK(length);
+  DCHECK(!string.empty());
+  DCHECK(string.data());
 
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(string, length);
+  unsigned hash =
+      StringHasher::ComputeHashAndMaskTop8Bits(string.data(), string.size());
 
   StaticStringsTable::const_iterator it = StaticStrings().find(hash);
   if (it != StaticStrings().end()) {
-    DCHECK_EQ(it->value->Span8(), base::as_bytes(base::span(string, length)));
+    DCHECK_EQ(it->value->Span8(), base::as_bytes(string));
     return it->value;
   }
+  const wtf_size_t narrowed_length = static_cast<wtf_size_t>(string.size());
 
   // Allocate a single buffer large enough to contain the StringImpl
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
   WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE;
   StringImpl* impl = new (Partitions::BufferMalloc(
-      AllocationSize<LChar>(length), "WTF::StringImpl"))
-      StringImpl(length, hash, kStaticString);
+      AllocationSize<LChar>(narrowed_length), "WTF::StringImpl"))
+      StringImpl(narrowed_length, hash, kStaticString);
 
-  impl->CharacterBuffer<LChar>().copy_from(
-      base::as_bytes(base::span(string, length)));
+  impl->CharacterBuffer<LChar>().copy_from(base::as_bytes(string));
 #if DCHECK_IS_ON()
   impl->AssertHashIsCorrect();
 #endif
 
   DCHECK(IsMainThread());
   highest_static_string_length_ =
-      std::max(highest_static_string_length_, length);
+      std::max(highest_static_string_length_, narrowed_length);
   StaticStrings().insert(hash, impl);
   WTF_ANNOTATE_BENIGN_RACE(impl,
                            "Benign race on the reference counter of a static "
