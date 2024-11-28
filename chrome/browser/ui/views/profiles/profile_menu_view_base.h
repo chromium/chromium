@@ -174,8 +174,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void AddProfileManagementShortcutFeatureButton(const gfx::VectorIcon& icon,
                                                  const std::u16string& text,
                                                  base::RepeatingClosure action);
-  void AddProfileManagementManagedHint(const gfx::VectorIcon& icon,
-                                       const std::u16string& text);
   void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,

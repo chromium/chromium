@@ -217,16 +217,6 @@ ui::ImageModel SizeImageModel(const ui::ImageModel& image_model, int size) {
                                         size);
 }
 
-const ui::ImageModel ProfileManagementImageFromIcon(
-    const gfx::VectorIcon& icon,
-    const ui::ColorProvider* color_provider) {
-  constexpr float kIconToImageRatio = 0.75f;
-  constexpr int kIconSize = 20;
-  const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
-  gfx::ImageSkia image = ImageForMenu(icon, kIconToImageRatio, icon_color);
-  return ui::ImageModel::FromImageSkia(SizeImage(image, kIconSize));
-}
-
 // TODO(crbug.com/40156444): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
   METADATA_HEADER(CircularImageButton, views::ImageButton)
@@ -327,49 +317,6 @@ class FeatureButtonIconView : public views::ImageView {
   const raw_ref<const gfx::VectorIcon> icon_;
   const float icon_to_image_ratio_;
 };
-
-class ProfileManagementFeatureButton : public HoverButton {
-  METADATA_HEADER(ProfileManagementFeatureButton, HoverButton)
-
- public:
-  ProfileManagementFeatureButton(PressedCallback callback,
-                                 const gfx::VectorIcon& icon,
-                                 const std::u16string& clickable_text)
-      : HoverButton(std::move(callback), clickable_text), icon_(icon) {}
-
-  // HoverButton:
-  void OnThemeChanged() override {
-    HoverButton::OnThemeChanged();
-    SetImageModel(Button::STATE_NORMAL,
-                  ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
-  }
-
- private:
-  const raw_ref<const gfx::VectorIcon> icon_;
-};
-BEGIN_METADATA(ProfileManagementFeatureButton)
-END_METADATA
-
-class ProfileManagementIconView : public views::ImageView {
-  METADATA_HEADER(ProfileManagementIconView, views::ImageView)
-
- public:
-  explicit ProfileManagementIconView(const gfx::VectorIcon& icon)
-      : icon_(icon) {}
-  ~ProfileManagementIconView() override = default;
-
-  // views::ImageView:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    SetImage(ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
-  }
-
- private:
-  const raw_ref<const gfx::VectorIcon> icon_;
-};
-
-BEGIN_METADATA(ProfileManagementIconView)
-END_METADATA
 
 // AvatarImageView is used to ensure avatar adornments are kept in sync with
 // current theme colors.
@@ -1176,23 +1123,6 @@ void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
           icon, text, CircularImageButton::MaterialIconStyle::kSmall));
 }
 
-void ProfileMenuViewBase::AddProfileManagementManagedHint(
-    const gfx::VectorIcon& icon,
-    const std::u16string& text) {
-  // Initialize layout if this is the first time a button is added.
-  if (!profile_mgmt_shortcut_features_container_->GetLayoutManager()) {
-    profile_mgmt_shortcut_features_container_->SetLayoutManager(
-        CreateBoxLayout(views::BoxLayout::Orientation::kHorizontal,
-                        views::BoxLayout::CrossAxisAlignment::kCenter,
-                        gfx::Insets::TLBR(0, 0, 0, kMenuEdgeMargin)));
-  }
-
-  views::ImageView* icon_button =
-      profile_mgmt_shortcut_features_container_->AddChildView(
-          std::make_unique<ProfileManagementIconView>(icon));
-  icon_button->SetTooltipText(text);
-}
-
 void ProfileMenuViewBase::AddProfileManagementFeaturesSeparator() {
   // Add separator before profile management features.
   profile_mgmt_features_separator_container_->RemoveAllChildViews();
@@ -1217,11 +1147,12 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
         views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kDefaultMargin, 0)));
   }
 
-  profile_mgmt_features_container_->AddChildView(
-      std::make_unique<ProfileManagementFeatureButton>(
-          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                              base::Unretained(this), std::move(action)),
-          icon, text));
+  auto icon_view =
+      std::make_unique<FeatureButtonIconView>(icon, /*icon_to_image_ratio=*/1);
+  profile_mgmt_features_container_->AddChildView(std::make_unique<HoverButton>(
+      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                          base::Unretained(this), std::move(action)),
+      std::move(icon_view), text));
 }
 
 gfx::ImageSkia ProfileMenuViewBase::ColoredImageForMenu(
