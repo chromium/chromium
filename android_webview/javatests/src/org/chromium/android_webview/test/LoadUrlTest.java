@@ -8,7 +8,6 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Pair;
 import android.view.ViewGroup;
 
 import androidx.test.InstrumentationRegistry;
@@ -276,14 +275,6 @@ public class LoadUrlTest extends AwParameterizedTest {
                 .runOnMainSync(() -> awContents.loadUrl(url, extraHeaders));
         onPageFinishedHelper.waitForCallback(
                 currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-    }
-
-    private static List<Pair<String, String>> createHeadersList(String[] namesAndValues) {
-        List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
-        for (int i = 0; i < namesAndValues.length; i += 2) {
-            result.add(Pair.create(namesAndValues[i], namesAndValues[i + 1]));
-        }
-        return result;
     }
 
     private static Map<String, String> createHeadersMap(String[] namesAndValues) {

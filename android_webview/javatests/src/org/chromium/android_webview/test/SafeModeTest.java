@@ -172,14 +172,6 @@ public class SafeModeTest extends AwParameterizedTest {
         public JobInfo mJob;
         public QueueContainer mQueueContainer = new QueueContainer();
 
-        public void clear() {
-            mJob = null;
-        }
-
-        public void assertScheduled() {
-            Assert.assertNotNull("No job scheduled", mJob);
-        }
-
         public void assertNotScheduled() {
             Assert.assertNull("Job should not have been scheduled", mJob);
         }
@@ -244,10 +236,6 @@ public class SafeModeTest extends AwParameterizedTest {
 
         public JobInfo waitForMessageCallback() throws Exception {
             return AwActivityTestRule.waitForNextQueueElement(mQueue);
-        }
-
-        public boolean isQueueEmpty() {
-            return mQueue.isEmpty();
         }
     }
 

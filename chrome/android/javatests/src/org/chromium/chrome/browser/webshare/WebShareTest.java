@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.webshare;
 
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -32,8 +31,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
-
-import java.io.InputStream;
 
 /** Test suite for Web Share (navigator.share) functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -201,19 +198,5 @@ public class WebShareTest {
                 "Fail: NotAllowedError: "
                         + "Failed to execute 'share' on 'Navigator': Permission denied",
                 mUpdateWaiter.waitForUpdate());
-    }
-
-    private static String getFileContents(Uri fileUri) throws Exception {
-        InputStream inputStream =
-                ApplicationProvider.getApplicationContext()
-                        .getContentResolver()
-                        .openInputStream(fileUri);
-        byte[] buffer = new byte[1024];
-        int position = 0;
-        int read;
-        while ((read = inputStream.read(buffer, position, buffer.length - position)) > 0) {
-            position += read;
-        }
-        return new String(buffer, 0, position, "UTF-8");
     }
 }

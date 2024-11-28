@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
-import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
-import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.components.payments.CurrencyFormatter;
@@ -65,9 +63,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
             ShoppingPersistedTabData.class;
-    private static final int MICROS_TO_UNITS = 1000000;
-    private static final long TWO_UNITS = 2 * MICROS_TO_UNITS;
-    private static final int MINIMUM_DROP_PERCENTAGE = 10;
     private static final int ONE_WEEK_MS = (int) TimeUnit.DAYS.toMillis(7);
 
     @VisibleForTesting public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
@@ -632,28 +627,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 FoundBuyableProduct.NUM_ENTRIES);
     }
 
-    private static boolean hasPriceUpdate(PriceTrackingData priceTrackingDataProto) {
-        if (!priceTrackingDataProto.hasBuyableProduct()
-                || !priceTrackingDataProto.hasProductUpdate()) {
-            return false;
-        }
-        ProductPriceUpdate productUpdateProto = priceTrackingDataProto.getProductUpdate();
-        if (!productUpdateProto.hasNewPrice() || !productUpdateProto.hasOldPrice()) {
-            return false;
-        }
-        if (!productUpdateProto.getNewPrice().hasCurrencyCode()
-                || !productUpdateProto.getOldPrice().hasCurrencyCode()) {
-            return false;
-        }
-        if (!productUpdateProto
-                .getNewPrice()
-                .getCurrencyCode()
-                .equals(productUpdateProto.getOldPrice().getCurrencyCode())) {
-            return false;
-        }
-        return true;
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void setPriceMicros(long priceMicros) {
         mPriceDropData.priceMicros = priceMicros;
@@ -784,15 +757,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public boolean getIsCurrentPriceDropSeen() {
         return false;
-    }
-
-    // TODO(crbug.com/40158181) Make parameters finch configurable
-    private static int getMinimumDroppedThresholdPercentage() {
-        return MINIMUM_DROP_PERCENTAGE;
-    }
-
-    private static long getMinimumDropThresholdAbsolute() {
-        return TWO_UNITS;
     }
 
     // TODO(crbug.com/40720561) support all currencies

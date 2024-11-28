@@ -314,14 +314,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                             mCnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
         }
 
-        public void simulateUserChangeAutofilledField() throws Throwable {
-            mTest.executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
-            mTest.dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
-            mCnt +=
-                    mTest.waitForCallbackAndVerifyTypes(
-                            mCnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
-        }
-
         public void submitForm() throws Throwable {
             mTest.executeJavaScriptAndWaitForResult("document.getElementById('formid').submit();");
             mCnt +=
@@ -427,10 +419,6 @@ public class AwAutofillTest extends AwParameterizedTest {
         mAutofillProvider = mAwContents.getAutofillProviderForTesting();
 
         ThreadUtils.runOnUiThreadBlocking(() -> histograms.assertExpected());
-    }
-
-    private void setUpAwGNotCurrent() throws Exception {
-        doSetUp(/* isAwGCurrentAutofillService= */ false);
     }
 
     @After

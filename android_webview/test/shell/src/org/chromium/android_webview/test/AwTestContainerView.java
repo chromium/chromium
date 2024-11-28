@@ -123,10 +123,6 @@ public class AwTestContainerView extends FrameLayout {
                     });
         }
 
-        public boolean isReadyToRender() {
-            return mHaveSurface;
-        }
-
         public SurfaceView getOverlaysView() {
             return mOverlaysSurfaceView;
         }

@@ -19,6 +19,7 @@ import java.util.List;
 /** Unit tests for SkipCheck. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("UnusedMethod")
 public class SkipCheckTest {
     @Retention(RetentionPolicy.RUNTIME)
     private @interface TestAnnotation {}

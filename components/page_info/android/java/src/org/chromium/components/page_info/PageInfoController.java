@@ -382,13 +382,6 @@ public class PageInfoController
         }
     }
 
-    private void clearData() {
-        recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_CLEARED);
-        for (PageInfoSubpageController controller : mSubpageControllers) {
-            controller.clearData();
-        }
-    }
-
     /**
      * Adds a new row for the given permission.
      *

@@ -49,7 +49,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -176,7 +175,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private TriStatePermissionPreference mLocationTriStatePref;
     // The "desktop_site_window" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mDesktopSiteWindowPref;
-    private CardPreference mCardPreference;
 
     @Nullable private Set<String> mSelectedDomains;
 
@@ -1620,9 +1618,5 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 return false;
             }
         };
-    }
-
-    private void onOffboardingCardCloseClick() {
-        mCardPreference.setVisible(false);
     }
 }

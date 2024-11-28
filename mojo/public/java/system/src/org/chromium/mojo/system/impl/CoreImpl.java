@@ -428,18 +428,6 @@ public class CoreImpl implements Core {
         }
     }
 
-    private static boolean isUnrecoverableError(int code) {
-        switch (code) {
-            case MojoResult.OK:
-            case MojoResult.DEADLINE_EXCEEDED:
-            case MojoResult.CANCELLED:
-            case MojoResult.FAILED_PRECONDITION:
-                return false;
-            default:
-                return true;
-        }
-    }
-
     private ByteBuffer allocateDirectBuffer(int capacity) {
         ByteBuffer buffer = ByteBuffer.allocateDirect(capacity + mByteBufferOffset);
         if (mByteBufferOffset != 0) {

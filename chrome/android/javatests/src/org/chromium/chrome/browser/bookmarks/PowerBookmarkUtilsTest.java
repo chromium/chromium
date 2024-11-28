@@ -8,8 +8,6 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
-import com.google.common.primitives.UnsignedLongs;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,19 +83,5 @@ public class PowerBookmarkUtilsTest {
         Assert.assertEquals(100L, subscription.userSeenOffer.userSeenPrice);
         Assert.assertEquals("us", subscription.userSeenOffer.countryCode);
         Assert.assertEquals("en-US", subscription.userSeenOffer.locale);
-    }
-
-    /**
-     * @param clusterId The product's cluster ID.
-     * @param isPriceTracked Whether the product is price tracked.
-     * @return Power bookmark meta for shopping.
-     */
-    private PowerBookmarkMeta buildPowerBookmarkMeta(String clusterId, boolean isPriceTracked) {
-        ShoppingSpecifics specifics =
-                ShoppingSpecifics.newBuilder()
-                        .setIsPriceTracked(isPriceTracked)
-                        .setProductClusterId(UnsignedLongs.parseUnsignedLong(clusterId))
-                        .build();
-        return PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
     }
 }

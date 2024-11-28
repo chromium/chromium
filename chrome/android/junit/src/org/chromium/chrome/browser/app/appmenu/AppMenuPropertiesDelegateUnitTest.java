@@ -1621,10 +1621,6 @@ public class AppMenuPropertiesDelegateUnitTest {
             return mShowReaderModePrefs;
         }
 
-        protected boolean showAddToHomeScreen() {
-            return mShowAddToHomeScreen;
-        }
-
         protected boolean showPaintPreview() {
             return mShowPaintPreview;
         }
@@ -1685,10 +1681,6 @@ public class AppMenuPropertiesDelegateUnitTest {
             return setShowUpdate(true);
         }
 
-        protected MenuOptions withShowMoveToOtherWindow() {
-            return setShowMoveToOtherWindow(true);
-        }
-
         protected MenuOptions withShowReaderModePrefs() {
             return setShowReaderModePrefs(true);
         }
@@ -1738,8 +1730,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 ? ContentSettingValues.DEFAULT
                                 : ContentSettingValues.BLOCK);
     }
-
-    private void verifyManagedByMenuItem(boolean chromeManagementPageEnabled) {}
 
     /**
      * Preparation to mock the "final" method TabGroupModelFilter#getTabsWithNoOtherRelatedTabs

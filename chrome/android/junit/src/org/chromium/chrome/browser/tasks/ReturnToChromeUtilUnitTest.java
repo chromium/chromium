@@ -475,14 +475,6 @@ public class ReturnToChromeUtilUnitTest {
         histogram.assertExpected();
     }
 
-    private void setupAndVerifyTablets() {
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET)
-                .when(mResources)
-                .getInteger(org.chromium.ui.R.integer.min_screen_width_bucket);
-        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
-    }
-
     private Intent createMainIntentFromLauncher() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_MAIN);

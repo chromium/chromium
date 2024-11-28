@@ -842,14 +842,6 @@ public class AndroidShareSheetControllerUnitTest {
                 .getLocalFaviconImageForURL(anyLong(), eq(mProfile), any(), anyInt(), any());
     }
 
-    private void runModifyActionFromChooserIntent(Intent chooserIntent) throws CanceledException {
-        Bundle modifyAction =
-                chooserIntent.getParcelableExtra(Intent.EXTRA_CHOOSER_MODIFY_SHARE_ACTION);
-        PendingIntent action = modifyAction.getParcelable(KEY_CHOOSER_ACTION_ACTION);
-        action.send();
-        ShadowLooper.idleMainLooper();
-    }
-
     private void assertCustomActions(Intent chooserIntent, Integer... expectedStringRes) {
         Parcelable[] actions =
                 chooserIntent.getParcelableArrayExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS);

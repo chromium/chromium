@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -670,18 +669,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             }
         }
         return found;
-    }
-
-    private void assertMenuContains(Menu menu, int itemId) {
-        Assert.assertTrue(
-                "Item should must be contained in the menu: " + itemId,
-                isMenuVisible(menu, itemId));
-    }
-
-    private void assertMenuDoesNotContain(Menu menu, int itemId) {
-        Assert.assertFalse(
-                "Item should must not be contained in the menu: " + itemId,
-                isMenuVisible(menu, itemId));
     }
 
     private String getMenuTitles(Menu menu) {

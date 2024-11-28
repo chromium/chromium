@@ -46,8 +46,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -86,7 +84,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -220,7 +217,6 @@ public class TabListMediatorUnitTest {
     private static final String TAB7_TITLE = "Tab7";
     private static final String NEW_TITLE = "New title";
     private static final String CUSTOMIZED_DIALOG_TITLE1 = "Cool Tabs";
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
     private static final GURL TAB1_URL = JUnitTestGURLs.URL_1;
     private static final GURL TAB2_URL = JUnitTestGURLs.URL_2;
     private static final GURL TAB3_URL = JUnitTestGURLs.URL_3;
@@ -516,11 +512,6 @@ public class TabListMediatorUnitTest {
     @After
     public void tearDown() {
         ProfileManager.resetForTesting();
-    }
-
-    private static SharedPreferences getGroupTitleSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
     }
 
     @Test
@@ -4997,17 +4988,6 @@ public class TabListMediatorUnitTest {
     private void assertAllUnset(PropertyModel model, List<PropertyKey> keys) {
         for (PropertyKey key : keys) {
             assertUnset(model, key);
-        }
-    }
-
-    /** Asserts that the given key is non-null (aka "set") in the given model. */
-    private void assertSet(PropertyModel model, PropertyKey propertyKey) {
-        if (propertyKey instanceof ReadableObjectPropertyKey) {
-            ReadableObjectPropertyKey objectKey = (ReadableObjectPropertyKey) propertyKey;
-            assertNotNull(
-                    "Expected property to be set, property=" + objectKey, model.get(objectKey));
-        } else {
-            assert false : "Unsupported key type passed to function, add it to #assertSet";
         }
     }
 

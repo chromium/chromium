@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -26,19 +22,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.ResourceTabFavicon;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.StaticTabFaviconType;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
-import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.UrlTabFavicon;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,23 +57,11 @@ public class TabStripSnapshotterTest {
     private final ObservableSupplierImpl<Integer> mBackgroundColorSupplier =
             new ObservableSupplierImpl<>(Color.TRANSPARENT);
 
-    private static Drawable newDrawable() {
-        Bitmap image = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        Resources resources = ContextUtils.getApplicationContext().getResources();
-        return new BitmapDrawable(resources, image);
-    }
-
     @Before
     public void setUp() {}
 
     private void onModelTokenChange(Object token) {
         mTokenList.add(token);
-    }
-
-    private static PropertyModel makePropertyModel(TabFavicon tabFavicon, boolean isSelected) {
-        return new PropertyModel.Builder(PROPERTY_KEYS)
-                .with(TabProperties.IS_SELECTED, isSelected)
-                .build();
     }
 
     private static PropertyModel makePropertyModel(
@@ -93,21 +71,6 @@ public class TabStripSnapshotterTest {
                 .with(TabProperties.FAVICON_FETCHED, isFetched)
                 .with(TabProperties.IS_SELECTED, isSelected)
                 .build();
-    }
-
-    private static PropertyModel makePropertyModel(String url, boolean isSelected) {
-        return makePropertyModel(makeTabFavicon(url), isSelected);
-    }
-
-    private static TabFavicon makeTabFavicon(String url) {
-        GURL gurl = new GURL(url);
-        return new UrlTabFavicon(newDrawable(), gurl);
-    }
-
-    private static PropertyModel makePropertyModel(
-            @StaticTabFaviconType int type, boolean isSelected) {
-        ResourceTabFavicon tabFavicon = new ResourceTabFavicon(newDrawable(), type);
-        return makePropertyModel(tabFavicon, isSelected);
     }
 
     @Test

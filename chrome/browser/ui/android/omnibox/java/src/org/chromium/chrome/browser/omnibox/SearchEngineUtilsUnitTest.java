@@ -476,14 +476,4 @@ public class SearchEngineUtilsUnitTest {
 
         verify(mLocaleManagerDelegate, times(1)).needToCheckForSearchEnginePromo();
     }
-
-    private static Bitmap createSolidImage(int width, int height, int color) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        for (int x = 0; x < bitmap.getWidth(); x++) {
-            for (int y = 0; y < bitmap.getHeight(); y++) {
-                bitmap.setPixel(x, y, color);
-            }
-        }
-        return bitmap;
-    }
 }
