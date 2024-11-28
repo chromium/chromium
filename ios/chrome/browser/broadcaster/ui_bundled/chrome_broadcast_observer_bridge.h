@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCAST_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCAST_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCAST_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCAST_OBSERVER_BRIDGE_H_
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer.h"
 
 // Interface for C++ objects that care about broadcasted UI state.
 class ChromeBroadcastObserverInterface {
@@ -48,7 +48,7 @@ class ChromeBroadcastObserverInterface {
 
 // Bridge object that forwards broadcasted UI state to objects that subclass
 // ChromeBroadcastObserverInterface.
-@interface ChromeBroadcastOberverBridge : NSObject<ChromeBroadcastObserver>
+@interface ChromeBroadcastOberverBridge : NSObject <ChromeBroadcastObserver>
 
 // The observer being updated.
 @property(nonatomic, readonly, nonnull)
@@ -62,4 +62,4 @@ class ChromeBroadcastObserverInterface {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCAST_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCAST_OBSERVER_BRIDGE_H_

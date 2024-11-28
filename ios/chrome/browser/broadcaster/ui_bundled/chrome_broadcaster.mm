@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 
 #import <objc/runtime.h>
+
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -38,13 +39,13 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   invocation.selector = selector;
   return invocation;
 }
-}
+}  // namespace
 
 // Protocol observer subclass that explicitly implements <BroadcastObserver>.
 // Mostly this is used for the non-retaining observer set; this requires
 // observers to be removed before they dealloc. It would be better to track
 // observer lifetime via associated objects and remove them automatically.
-@interface BroadcastObservers : CRBProtocolObservers<ChromeBroadcastObserver>
+@interface BroadcastObservers : CRBProtocolObservers <ChromeBroadcastObserver>
 + (instancetype)observers;
 @end
 
@@ -192,8 +193,9 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   // TODO(crbug.com/40519578) -- Another sanity check is needed here -- verify
   // that the value to be observed is of the type that `selector` expects.
 
-  self.items[name] =
-      [[BroadcastItem alloc] initWithObject:object key:valueKey name:name];
+  self.items[name] = [[BroadcastItem alloc] initWithObject:object
+                                                       key:valueKey
+                                                      name:name];
 
   [self.items[name] addObserver:self];
 }
@@ -216,13 +218,14 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   // Sanity check: `observer` must implement the selector for `selector`.
   DCHECK([observer respondsToSelector:selector]);
 
-  if (!self.observers[name])
+  if (!self.observers[name]) {
     self.observers[name] = [BroadcastObservers observers];
+  }
 
   // If the key is already being broadcast, update the observer immediately.
   if (self.items[name]) {
-    NSInvocation* call =
-        [self invocationForName:name value:self.items[name].currentValue];
+    NSInvocation* call = [self invocationForName:name
+                                           value:self.items[name].currentValue];
     [call invokeWithTarget:observer];
   }
 
@@ -236,8 +239,9 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   DCHECK(self.observerInvocations[name]);
 
   [self.observers[name] removeObserver:observer];
-  if (self.observers[name].empty)
+  if (self.observers[name].empty) {
     [self.observers removeObjectForKey:name];
+  }
 }
 
 #pragma mark - KVO
@@ -255,8 +259,9 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   DCHECK(self.items[name].object == object);
 
   BroadcastObservers* observers = self.observers[name];
-  if (!observers)
+  if (!observers) {
     return;
+  }
 
   // Sanity check: this isn't a change to a collection -- where the observed
   // property is a collection object and this change is (for example) the
@@ -276,8 +281,9 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   // return without notifying observers.
   // -isEqualToValue doesn't deal with nil arguments well, so nil check oldValue
   // here.
-  if (oldValue && [newValue isEqualToValue:oldValue])
+  if (oldValue && [newValue isEqualToValue:oldValue]) {
     return;
+  }
 
   NSInvocation* call = [self invocationForName:name value:newValue];
 

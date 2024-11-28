@@ -15,8 +15,8 @@ source_set("test") {
   ]
 
   deps = [
+    "//ios/chrome/browser/broadcaster/ui_bundled",
     "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
-    "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/common/ui/util",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

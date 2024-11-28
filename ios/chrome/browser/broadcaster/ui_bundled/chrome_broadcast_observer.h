@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCAST_OBSERVER_H_
-#define IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCAST_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCAST_OBSERVER_H_
+#define IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCAST_OBSERVER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -13,7 +13,7 @@
 //
 // All of the methods in this protocol *must* return void and take exactly one
 // argument.
-@protocol ChromeBroadcastObserver<NSObject>
+@protocol ChromeBroadcastObserver <NSObject>
 @optional
 
 #pragma mark - Scrolling events
@@ -77,4 +77,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BROADCASTER_CHROME_BROADCAST_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_BROADCASTER_UI_BUNDLED_CHROME_BROADCAST_OBSERVER_H_

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model_observer.h"

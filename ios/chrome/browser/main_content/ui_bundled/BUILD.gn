@@ -13,9 +13,9 @@ source_set("ui") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/broadcaster",
     "//ios/web/public",
   ]
 }
@@ -29,7 +29,7 @@ source_set("ui_broadcasting_util") {
   deps = [
     ":ui",
     "//base",
-    "//ios/chrome/browser/ui/broadcaster",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
     "//ios/web/common:features",
   ]
 }
@@ -46,9 +46,9 @@ source_set("unit_tests") {
     ":ui_broadcasting_util",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
     "//ios/chrome/browser/main_content/ui_bundled/test",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/common/ui/util",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

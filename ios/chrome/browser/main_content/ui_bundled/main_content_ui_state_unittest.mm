@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "testing/platform_test.h"
 

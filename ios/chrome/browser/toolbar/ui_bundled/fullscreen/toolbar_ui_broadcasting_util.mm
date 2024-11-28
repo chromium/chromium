@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui_broadcasting_util.h"
 
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbar_ui.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 
 void StartBroadcastingToolbarUI(id<ToolbarUI> toolbar,
                                 ChromeBroadcaster* broadcaster) {

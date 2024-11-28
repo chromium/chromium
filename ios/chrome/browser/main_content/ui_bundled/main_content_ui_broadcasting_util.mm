@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_broadcasting_util.h"
 
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/web/common/features.h"
 
 void StartBroadcastingMainContentUI(id<MainContentUI> main_content,

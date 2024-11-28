@@ -14,6 +14,7 @@ source_set("coordinator") {
   ]
   deps = [
     ":public",
+    "//ios/chrome/browser/broadcaster/ui_bundled",
     "//ios/chrome/browser/contextual_panel/model",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/contextual_panel/sample/coordinator",
@@ -24,7 +25,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/util",
   ]

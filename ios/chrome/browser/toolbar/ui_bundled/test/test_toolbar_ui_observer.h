@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
+#import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 
 // An object that observes the toolbar's UI state.
 @interface TestToolbarUIObserver : NSObject <ChromeBroadcastObserver>
