@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/ui/whats_new/whats_new_util.h",
   "+ios/chrome/browser/presenters/ui_bundled",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
   "+ios/chrome/browser/policy/ui_bundled/user_policy_util.h",
