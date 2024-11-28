@@ -213,7 +213,13 @@ class CreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
       user_education::NewBadgeController::DisableNewBadgesForTesting();
 };
 
-IN_PROC_BROWSER_TEST_P(CreatePopupRowViewTest, SuggestionRowUiTest) {
+// TODO(crbug.com/40261456): Re-enable failing test on Windows.
+#if defined(IS_WIN)
+#define MAYBE_SuggestionRowUiTest DISABLED_SuggestionRowUiTest
+#else
+#define MAYBE_SuggestionRowUiTest SuggestionRowUiTest
+#endif
+IN_PROC_BROWSER_TEST_P(CreatePopupRowViewTest, MAYBE_SuggestionRowUiTest) {
   CreateRowView(std::get<Suggestion>(GetParam()),
                 std::get<std::optional<PopupRowView::CellType>>(GetParam()));
   ShowAndVerifyUi();
