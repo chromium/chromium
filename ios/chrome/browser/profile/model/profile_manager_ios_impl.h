@@ -60,6 +60,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
                           ProfileLoadedCallback created_callback) override;
   ProfileIOS* LoadProfile(std::string_view name) override;
   ProfileIOS* CreateProfile(std::string_view name) override;
+  void UnloadProfile(std::string_view name) override;
   void UnloadAllProfiles() override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 

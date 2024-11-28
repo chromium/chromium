@@ -750,6 +750,29 @@ TEST_F(ProfileManagerIOSImplTest, AssignPersonalProfileName_KeepValidValue) {
             kIOSChromeInitialProfile);
 }
 
+// Tests that unloading a profile invoke OnProfileUnloaded(...) on the
+// observers.
+TEST_F(ProfileManagerIOSImplTest, UnloadProfile) {
+  // Create a few profiles synchronously.
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
+  ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
+
+  ScopedTestProfileManagerObserverIOS observer(profile_manager());
+  EXPECT_FALSE(observer.on_profile_unloaded_called());
+
+  // Check that the profiles are accessible.
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+
+  // Unload a profile, it should not longer be accessible and the
+  // observer must have been notified of that.
+  profile_manager().UnloadProfile(kProfileName1);
+
+  EXPECT_FALSE(profile_manager().GetProfileWithName(kProfileName1));
+  EXPECT_TRUE(profile_manager().GetProfileWithName(kProfileName2));
+  EXPECT_TRUE(observer.on_profile_unloaded_called());
+}
+
 // Tests that unloading all profiles invoke OnProfileUnloaded(...) on the
 // observers.
 TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles) {

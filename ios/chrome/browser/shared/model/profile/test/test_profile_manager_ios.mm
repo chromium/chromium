@@ -124,6 +124,16 @@ ProfileIOS* TestProfileManagerIOS::CreateProfile(std::string_view name) {
   return GetProfileWithName(name);
 }
 
+void TestProfileManagerIOS::UnloadProfile(std::string_view name) {
+  auto iter = profiles_map_.find(name);
+  DCHECK(iter != profiles_map_.end());
+  std::unique_ptr<ProfileIOS> profile = std::move(iter->second);
+  profiles_map_.erase(iter);
+  for (auto& observer : observers_) {
+    observer.OnProfileUnloaded(this, profile.get());
+  }
+}
+
 void TestProfileManagerIOS::UnloadAllProfiles() {
   ProfileMap profiles_map = std::exchange(profiles_map_, {});
   for (auto& [_, profile] : profiles_map) {

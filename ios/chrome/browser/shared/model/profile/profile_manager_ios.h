@@ -89,6 +89,9 @@ class ProfileManagerIOS {
   // null if loading or creating the Profile failed.
   virtual ProfileIOS* CreateProfile(std::string_view name) = 0;
 
+  // Unloads the given loaded Profile objects.
+  virtual void UnloadProfile(std::string_view name) = 0;
+
   // Unloads all loaded Profile objects. Meant to be called right before the
   // ProfileManagerIOS itself is destroyed.
   virtual void UnloadAllProfiles() = 0;
