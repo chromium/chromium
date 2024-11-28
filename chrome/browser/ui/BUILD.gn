@@ -4398,6 +4398,8 @@ static_library("ui") {
       "views/page_info/page_info_history_controller.h",
       "views/page_info/page_info_main_view.cc",
       "views/page_info/page_info_main_view.h",
+      "views/page_info/page_info_merchant_trust_content_view.cc",
+      "views/page_info/page_info_merchant_trust_content_view.h",
       "views/page_info/page_info_navigation_handler.h",
       "views/page_info/page_info_permission_content_view.cc",
       "views/page_info/page_info_permission_content_view.h",

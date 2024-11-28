@@ -1138,7 +1138,7 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    if (name == "MerchantTrustMainPage") {
+    if (name == "MerchantTrustMainPage" || name == "MerchantTrustSubpage") {
       ASSERT_TRUE(
           ui_test_utils::NavigateToURL(browser(), GetUrl(kMerchantTrustUrl)));
     } else if (name == "MerchantTrustAndAboutThisSite") {
@@ -1151,6 +1151,12 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     OpenPageInfoBubble(browser());
     // Set static site name to prevent flakes caused by changing port.
     SetStaticSiteName(u"Example site");
+
+    if (name == "MerchantTrustSubpage") {
+      PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
+          PageInfoBubbleView::GetPageInfoBubbleForTesting());
+      bubble_view->OpenMerchantTrustPage();
+    }
   }
 
   GURL GetUrl(const std::string& host) {
@@ -1169,5 +1175,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
                        InvokeUi_MerchantTrustAndAboutThisSite) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
+                       InvokeUi_MerchantTrustSubpage) {
   ShowAndVerifyUi();
 }

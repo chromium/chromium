@@ -817,6 +817,15 @@
   <message name="IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE" desc="The title of the merchant trust side panel." translateable="false">
     What people are saying
   </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HEADER" desc="The title of the merchant trust subpage in the page info." translateable="false">
+    Store reviews
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_DESCRIPTION" desc="The description of the merchant trust feature in the page info. It has a placeholder for learn more link" translateable="false">
+    AI-generated summary of reviews from independent review websites like Trust Pilot, ScamAdvisor, Google and more. <ph name="SETTINGS">$1<ex>Learn more</ex></ph>
+  </message>
+  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_LEARN_MORE_LINK" desc="The link in the description of the merchant trust feature in the page info that opens help center article" translateable="false">
+    Learn more
+  </message>
 
   <!-- History strings -->
   <if expr="is_ios">

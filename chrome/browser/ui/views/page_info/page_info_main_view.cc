@@ -676,9 +676,10 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
 std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
   // TODO(crbug.com/381215331): Add add actual string.
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
-      base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
+      base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
                           base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetMerchantTrustIcon(), u"Store reviews",
+      PageInfoViewFactory::GetMerchantTrustIcon(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   merchant_trust_button->title()->SetEnabledColorId(kColorPageInfoForeground);
   // TODO(crbug.com/381215331): Add custom subtitle with a star rating.

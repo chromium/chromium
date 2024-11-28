@@ -175,6 +175,7 @@ class PageInfoViewFactory {
       content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
+  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustPageView();
 
  private:
   // Creates a subpage header with back button that opens the main page, a
