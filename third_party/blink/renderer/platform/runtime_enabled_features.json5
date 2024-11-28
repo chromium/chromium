@@ -2442,6 +2442,10 @@
       status: {"Android": "test", "default": "stable"},
     },
     {
+      // Improved support for debugging CSSNestedDeclarations.
+      name: "InspectorGhostRules",
+    },
+    {
       name: "InstalledApp",
       public: true,
       status: "stable",
