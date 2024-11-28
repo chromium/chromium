@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "components/trusted_vault/securebox.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
 
 namespace trusted_vault {
@@ -34,23 +35,21 @@ std::vector<uint8_t> ComputeTrustedVaultWrappedKey(
       /*payload=*/trusted_vault_key);
 }
 
-std::vector<uint8_t> ComputeMemberProof(
+std::array<uint8_t, crypto::hash::kSha256Size> ComputeMemberProof(
     const SecureBoxPublicKey& key,
-    const std::vector<uint8_t>& trusted_vault_key) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(trusted_vault_key));
-
-  std::vector<uint8_t> member_proof(kHMACDigestLength);
-  CHECK(hmac.Sign(key.ExportToBytes(), member_proof));
-  return member_proof;
+    base::span<const uint8_t> trusted_vault_key) {
+  return crypto::hmac::SignSha256(trusted_vault_key, key.ExportToBytes());
 }
 
 bool VerifyMemberProof(const SecureBoxPublicKey& key,
-                       const std::vector<uint8_t>& trusted_vault_key,
-                       const std::vector<uint8_t>& member_proof) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(trusted_vault_key));
-  return hmac.Verify(key.ExportToBytes(), member_proof);
+                       base::span<const uint8_t> trusted_vault_key,
+                       base::span<const uint8_t> member_proof) {
+  auto proof = member_proof.to_fixed_extent<kHMACDigestLength>();
+  if (!proof) {
+    return false;
+  }
+  return crypto::hmac::VerifySha256(trusted_vault_key, key.ExportToBytes(),
+                                    *proof);
 }
 
 std::vector<uint8_t> ComputeRotationProofForTesting(  // IN-TEST

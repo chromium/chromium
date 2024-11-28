@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "components/trusted_vault/securebox.h"
+#include "crypto/hash.h"
 
 namespace trusted_vault {
 
@@ -28,14 +29,14 @@ std::vector<uint8_t> ComputeTrustedVaultWrappedKey(
     base::span<const uint8_t> trusted_vault_key);
 
 // Signs |key| with |trusted_vault_key| using HMAC-SHA-256.
-std::vector<uint8_t> ComputeMemberProof(
+std::array<uint8_t, crypto::hash::kSha256Size> ComputeMemberProof(
     const SecureBoxPublicKey& key,
-    const std::vector<uint8_t>& trusted_vault_key);
+    base::span<const uint8_t> trusted_vault_key);
 
 // Returns whether |member_proof| is |key| signed with |trusted_vault_key|.
 bool VerifyMemberProof(const SecureBoxPublicKey& key,
-                       const std::vector<uint8_t>& trusted_vault_key,
-                       const std::vector<uint8_t>& member_proof);
+                       base::span<const uint8_t> trusted_vault_key,
+                       base::span<const uint8_t> member_proof);
 
 // Signs |trusted_vault_key| with |prev_trusted_vault_key| using SecureBox
 // symmetric encryption.
