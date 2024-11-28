@@ -70,7 +70,8 @@ class AutocompleteActionPredictorTableReopenTest
   }
 };
 
-AutocompleteActionPredictorTableTest::AutocompleteActionPredictorTableTest() {}
+AutocompleteActionPredictorTableTest::AutocompleteActionPredictorTableTest() =
+    default;
 
 AutocompleteActionPredictorTableTest::~AutocompleteActionPredictorTableTest() {
 }

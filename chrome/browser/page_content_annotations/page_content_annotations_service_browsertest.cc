@@ -173,7 +173,8 @@ class PageContentAnnotationsServiceEphemeralProfileBrowserTest
                                           /*disabled_features=*/{});
   }
 
-  ~PageContentAnnotationsServiceEphemeralProfileBrowserTest() override {}
+  ~PageContentAnnotationsServiceEphemeralProfileBrowserTest() override =
+      default;
 
   PageContentAnnotationsServiceEphemeralProfileBrowserTest(
       const PageContentAnnotationsServiceEphemeralProfileBrowserTest&) = delete;

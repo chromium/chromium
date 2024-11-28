@@ -416,7 +416,7 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   LoadingPredictorBrowserTest& operator=(const LoadingPredictorBrowserTest&) =
       delete;
 
-  ~LoadingPredictorBrowserTest() override {}
+  ~LoadingPredictorBrowserTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -1260,7 +1260,7 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
     }
   }
 
-  ~LoadingPredictorNetworkIsolationKeyBrowserTest() override {}
+  ~LoadingPredictorNetworkIsolationKeyBrowserTest() override = default;
 
   // One server is used to initiate preconnects, and one is preconnected to.
   // This makes tracking preconnected sockets much easier, and removes all
