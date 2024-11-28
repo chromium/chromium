@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
 #include "content/public/browser/browser_child_process_host.h"
@@ -39,6 +40,8 @@ void ChromePassageEmbeddingsServiceController::LaunchService() {
 
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
   service_remote_.reset_on_disconnect();
+  // Unretained is safe because `this` owns `service_remote_`, which
+  // synchronously calls the idle handler.
   service_remote_.set_idle_handler(
       base::Minutes(1),
       base::BindRepeating(
@@ -57,14 +60,14 @@ void ChromePassageEmbeddingsServiceController::LaunchService() {
 
 void ChromePassageEmbeddingsServiceController::ResetRemotes() {
   PassageEmbeddingsServiceController::ResetRemotes();
-  cpu_logger_.reset();
+  cpu_logger_.StopLoggingAfterNextUpdate();
 }
 
 void ChromePassageEmbeddingsServiceController::OnServiceLaunched(
     const base::Process& process) {
   // `OnServiceLaunched` is triggered by the same observable that
   // `PerformanceManager` uses to register new process hosts, which is necessary
-  // before we can create the CPU histogram logger. As such, this has to be a
+  // before we can start the CPU histogram logger. As such, this has to be a
   // `PostTask` to ensure that `InitializeCpuLogger` is invoked after the
   // service process host is registered.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -79,14 +82,13 @@ void ChromePassageEmbeddingsServiceController::InitializeCpuLogger() {
   while (!iter.Done()) {
     const content::ChildProcessData& data = iter.GetData();
     if (data.name == u"Passage Embeddings Service") {
-      cpu_logger_ = std::make_unique<CpuHistogramLogger>(
+      cpu_logger_.StartLogging(
           content::BrowserChildProcessHost::FromID(data.id));
-      break;
+      return;
     }
     ++iter;
   }
-
-  CHECK(cpu_logger_);
+  NOTREACHED();
 }
 
 }  // namespace history_embeddings

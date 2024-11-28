@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/history_embeddings/cpu_histogram_logger.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 
 namespace base {
@@ -16,8 +17,6 @@ class Process;
 }  // namespace base
 
 namespace history_embeddings {
-
-class CpuHistogramLogger;
 
 // Chrome uses a single instance of PassageEmbeddingsServiceController. We only
 // want to load the model once, not once per Profile. To do otherwise would
@@ -49,7 +48,7 @@ class ChromePassageEmbeddingsServiceController
 
   // When the embeddings service is running, the logger will periodically sample
   // and log the CPU time used by the service process.
-  std::unique_ptr<CpuHistogramLogger> cpu_logger_;
+  CpuHistogramLogger cpu_logger_;
 
   // Used to generate weak pointers to self.
   base::WeakPtrFactory<ChromePassageEmbeddingsServiceController>

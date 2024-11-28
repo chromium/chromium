@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_CPU_HISTOGRAM_LOGGER_H_
 
-#include "base/scoped_observation.h"
-#include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
-#include "components/performance_manager/public/resource_attribution/queries.h"
+#include <memory>
 
 namespace content {
 
@@ -17,19 +15,26 @@ class BrowserChildProcessHost;
 
 namespace history_embeddings {
 
-class CpuHistogramLogger : public resource_attribution::QueryResultObserver {
+// Measures the CPU usage of the service process at fixed intervals.
+class CpuHistogramLogger {
  public:
-  explicit CpuHistogramLogger(
-      content::BrowserChildProcessHost* utility_process_host);
-  ~CpuHistogramLogger() override;
-  void OnResourceUsageUpdated(
-      const resource_attribution::QueryResultMap& results) override;
+  CpuHistogramLogger();
+  ~CpuHistogramLogger();
+
+  CpuHistogramLogger(const CpuHistogramLogger&) = delete;
+  CpuHistogramLogger& operator=(const CpuHistogramLogger&) = delete;
+
+  // Start logging the histogram usage of the child process hosted in
+  // `utility_process_host`.
+  void StartLogging(content::BrowserChildProcessHost* utility_process_host);
+
+  // Stop logging histogram usage after the next update. Note that if the child
+  // process exits, 0 CPU usage will be recorded for the rest of the interval.
+  void StopLoggingAfterNextUpdate();
 
  private:
-  resource_attribution::ScopedResourceUsageQuery scoped_query_;
-  resource_attribution::ScopedQueryObservation query_observation_{this};
-  resource_attribution::CPUProportionTracker proportion_tracker_;
-  bool proportion_tracker_started_ = false;
+  class CpuObserver;
+  std::unique_ptr<CpuObserver> cpu_observer_;
 };
 
 }  // namespace history_embeddings
