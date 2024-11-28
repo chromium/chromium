@@ -4330,6 +4330,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "experimental-omnibox-labs",
+    "owners": [ "esalma@google.com", "ftirelo@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "experimental-web-machine-learning-neural-network",
     "owners": [
       "patelpooja@microsoft.com", "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],

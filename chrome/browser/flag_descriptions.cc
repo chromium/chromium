@@ -1832,6 +1832,11 @@ const char kEnableWebHidInWebViewName[] = "Web HID in WebView";
 const char kEnableWebHidInWebViewDescription[] =
     "Enable WebViews to access Web HID upon embedder's permission.";
 
+const char kExperimentalOmniboxLabsName[] =
+    "Enable extension permission omnibox.directInput";
+const char kExperimentalOmniboxLabsDescription[] =
+    "Allows extensions to request permission omnibox.directInput, which "
+    "enables unscoped mode in the Omnibox";
 const char kExtensionAiDataCollectionName[] =
     "Enables AI Data collection via extension";
 const char kExtensionAiDataCollectionDescription[] =
