@@ -193,7 +193,6 @@ GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
     return GURL();
   }
   GURL url = GURL(*response_url);
-  // TODO(crbug.com/40280145): Allow localhost URLs
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return GURL();
   }
