@@ -97,7 +97,7 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   }
 
  private:
-  ~TestMemoryDetails() override {}
+  ~TestMemoryDetails() override = default;
 
   void OnDetailsAvailable() override {
     MetricsMemoryDetails::OnDetailsAvailable();
@@ -171,12 +171,12 @@ void PrintTo(const SampleMatcherP2<P1, P2>& matcher, std::ostream* os) {
 
 class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  SiteDetailsBrowserTest() {}
+  SiteDetailsBrowserTest() = default;
 
   SiteDetailsBrowserTest(const SiteDetailsBrowserTest&) = delete;
   SiteDetailsBrowserTest& operator=(const SiteDetailsBrowserTest&) = delete;
 
-  ~SiteDetailsBrowserTest() override {}
+  ~SiteDetailsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
