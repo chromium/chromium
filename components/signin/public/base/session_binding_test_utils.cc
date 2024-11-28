@@ -18,6 +18,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -141,6 +142,21 @@ std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
   }
 
   return base::JSONReader::ReadDict(*payload);
+}
+
+std::string EncryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view value) {
+  std::optional<std::vector<uint8_t>> encrypted_value =
+      ephemeral_key.EncryptForTesting(base::as_byte_span(value));
+  if (!encrypted_value) {
+    return std::string();
+  }
+  std::string base64_encrypted_value;
+  base::Base64UrlEncode(*encrypted_value,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &base64_encrypted_value);
+  return base64_encrypted_value;
 }
 
 }  // namespace signin

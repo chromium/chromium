@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -16,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -232,6 +234,24 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
   }
 
   return base::StrCat({header_and_payload, ".", Base64UrlEncode(signature)});
+}
+
+std::string DecryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view base64_encrypted_value) {
+  std::optional<std::vector<uint8_t>> encrypted_value = base::Base64UrlDecode(
+      base64_encrypted_value, base::Base64UrlDecodePolicy::IGNORE_PADDING);
+  if (!encrypted_value.has_value()) {
+    return std::string();
+  }
+
+  std::optional<std::vector<uint8_t>> decryption_result =
+      ephemeral_key.Decrypt(*encrypted_value);
+  if (!decryption_result.has_value()) {
+    return std::string();
+  }
+
+  return std::string(decryption_result->begin(), decryption_result->end());
 }
 
 }  // namespace signin

@@ -13,6 +13,7 @@
 #include "crypto/signature_verifier.h"
 
 class GURL;
+class HybridEncryptionKey;
 
 namespace base {
 class Time;
@@ -65,6 +66,13 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> signature);
+
+// Decrypts `base64_encrypted_value` with `ephemeral_key`.
+// Returns an empty string if `base64_encrypted_value` is not base64url encoded
+// or if the decryption failed.
+std::string DecryptValueWithEphemeralKey(
+    const HybridEncryptionKey& ephemeral_key,
+    std::string_view base64_encrypted_value);
 
 }  // namespace signin
 

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
+#include "components/signin/public/base/session_binding_test_utils.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,13 +130,9 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, CancelRequest) {
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionWithEphemeralKey) {
   HybridEncryptionKey ephemeral_key = CreateHybridEncryptionKeyForTesting();
-  const std::vector<uint8_t> plaintext = {1, 42, 0, 255};
-  const std::vector<uint8_t> encrypted_data =
-      ephemeral_key.EncryptForTesting(plaintext);
-  std::string base64_encrypted_data;
-  base::Base64UrlEncode(encrypted_data,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64_encrypted_data);
+  const std::string_view plaintext = "test_token";
+  std::string base64_encrypted_data =
+      signin::EncryptValueWithEphemeralKey(ephemeral_key, plaintext);
 
   OAuth2MintAccessTokenFetcherAdapter::TokenDecryptor decryptor;
   EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
@@ -145,8 +142,7 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionWithEphemeralKey) {
 
   ASSERT_TRUE(!decryptor.is_null());
   // `decryptor` should transform `base64_encrypted_data` back to `plaintext`.
-  EXPECT_EQ(decryptor.Run(base64_encrypted_data),
-            base::as_string_view(plaintext));
+  EXPECT_EQ(decryptor.Run(base64_encrypted_data), plaintext);
 }
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest,
