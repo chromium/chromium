@@ -6,7 +6,6 @@ import {DataDir} from './data_dir.js';
 import {initContext} from './lit/context.js';
 import {MicrophoneManager} from './microphone_manager.js';
 import {PlatformHandler} from './platform_handler.js';
-import {effect} from './reactive/signal.js';
 import {RecordingDataManager} from './recording_data_manager.js';
 import {installRouter} from './state/route.js';
 import {init as initSettings} from './state/settings.js';
@@ -39,15 +38,5 @@ export async function init(platformHandler: PlatformHandler): Promise<void> {
     microphoneManager,
     recordingDataManager,
     platformHandler,
-  });
-  effect(() => {
-    const state = platformHandler.summaryModelLoader.state.value;
-    const summaryEventType = 'summaryModelDownload';
-    if (state.kind === 'installed') {
-      // Records perf event only if the download has been initiated from UI.
-      if (platformHandler.perfLogger.hasPerfEvent(summaryEventType)) {
-        platformHandler.perfLogger.finish(summaryEventType);
-      }
-    }
   });
 }

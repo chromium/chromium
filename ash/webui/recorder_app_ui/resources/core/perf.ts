@@ -27,10 +27,22 @@ export class PerfLogger {
     });
   }
 
-  hasPerfEvent(eventType: EventType): boolean {
-    return this.perfEventMap.has(eventType);
+  /**
+   * Finishes the event if it has started.
+   *
+   * This avoids `finish` error when we only record `eventType` initiated from
+   * particular sources, e.g. UI.
+   */
+  tryFinish(eventType: EventType): void {
+    if (!this.perfEventMap.has(eventType)) {
+      return;
+    }
+    this.finish(eventType);
   }
 
+  /**
+   * Terminates and sends the perf event.
+   */
   finish(eventType: EventType): void {
     const eventValue = this.perfEventMap.get(eventType);
     if (eventValue === undefined) {

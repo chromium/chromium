@@ -3002,6 +3002,11 @@
         The duration of transcription model download in milliseconds.
       </summary>
     </metric>
+    <metric name="TranscriptionLocale" type="RecorderAppTranscriptionLocale">
+      <summary>
+        The locale for which to download the transcription model.
+      </summary>
+    </metric>
   </event>
 
   <event name="RecorderApp.SummaryModelDownloadPerf">

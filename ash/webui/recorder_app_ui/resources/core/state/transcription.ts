@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {createTranscriptionModelDownloadPerf} from '../events_sender.js';
 import {usePlatformHandler} from '../lit/context.js';
 import {LanguageCode} from '../soda/language_info.js';
 import {assertExhaustive} from '../utils/assert.js';
@@ -20,8 +21,22 @@ export function disableTranscription(firstTime = false): void {
   });
 }
 
+function installSoda(language: LanguageCode) {
+  const platformHandler = usePlatformHandler();
+  // Records download events initiated from UI download buttons.
+  if (platformHandler.getSodaState(language).value.kind === 'notInstalled') {
+    platformHandler.perfLogger.start(
+      createTranscriptionModelDownloadPerf(language),
+    );
+  }
+  // TODO: b/375306309 -  Install only if the state is `notInstalled` after the
+  // `OnSodaUninstalled` event is implemented and there's no inconsistent soda
+  // state.
+  void platformHandler.installSoda(language);
+}
+
 /**
- * Enables transcription.
+ * Wrapper that installs Soda and starts download perf event.
  */
 export function enableTranscriptionSkipConsentCheck(): void {
   settings.mutate((s) => {
@@ -30,7 +45,7 @@ export function enableTranscriptionSkipConsentCheck(): void {
   const platformHandler = usePlatformHandler();
   const selectedLanguage = platformHandler.getSelectedLanguage();
   if (selectedLanguage !== null) {
-    void platformHandler.installSoda(selectedLanguage);
+    installSoda(selectedLanguage);
   }
 }
 
@@ -41,7 +56,7 @@ export function setTranscriptionLanguage(language: LanguageCode): void {
   settings.mutate((s) => {
     s.transcriptionLanguage = language;
   });
-  void usePlatformHandler().installSoda(language);
+  installSoda(language);
 }
 
 /**

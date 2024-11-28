@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventsSender} from './events_sender.js';
+import {
+  createTranscriptionModelDownloadPerf,
+  EventsSender,
+} from './events_sender.js';
 import {NoArgStringName} from './i18n.js';
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {PerfLogger} from './perf.js';
-import {ReadonlySignal, Signal} from './reactive/signal.js';
+import {effect, ReadonlySignal, Signal} from './reactive/signal.js';
 import {LangPackInfo, LanguageCode} from './soda/language_info.js';
 import {SodaSession} from './soda/types.js';
 import {settings} from './state/settings.js';
@@ -222,4 +225,33 @@ export abstract class PlatformHandler {
    * Performance logger to measure performance.
    */
   abstract readonly perfLogger: PerfLogger;
+
+  /**
+   * Adds model state watchers for perf events.
+   */
+  initPerfEventWatchers(): void {
+    // Watcher for summarization model download.
+    effect(() => {
+      const state = this.summaryModelLoader.state.value;
+      const summaryEventType = 'summaryModelDownload';
+      if (state.kind === 'installed') {
+        // Records perf event only if the download has been initiated from UI.
+        this.perfLogger.tryFinish(summaryEventType);
+      }
+    });
+
+    // Watchers for transcription model download.
+    const languageList = this.getLangPackList();
+    for (const language of languageList) {
+      effect(() => {
+        const state = this.getSodaState(language.languageCode).value;
+        if (state.kind === 'installed') {
+          // Records perf event only if the download has been initiated from UI.
+          this.perfLogger.tryFinish(
+            createTranscriptionModelDownloadPerf(language.languageCode).kind,
+          );
+        }
+      });
+    }
+  }
 }

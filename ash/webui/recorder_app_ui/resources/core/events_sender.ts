@@ -73,25 +73,57 @@ export interface ChangePlaybackVolumeParams {
 }
 
 interface DurationOnlyPerf {
-  kind: 'appStart'|'summaryModelDownload'|'transcriptionModelDownload';
+  kind: 'appStart'|'summaryModelDownload';
 }
+
+interface TranscriptionModelDownloadPerf {
+  // LanguageCode is included in `kind` so that perf of each language can be
+  // collected independently.
+  kind: `transcriptionModelDownload-${LanguageCode}`;
+  transcriptionLocale: LanguageCode;
+}
+
 interface RecordPerf {
   // Audio duration in milliseconds.
   audioDuration: number;
   kind: 'record';
   wordCount: number;
 }
+
 interface ModelProcessPerf {
   kind: 'summary'|'titleSuggestion';
   wordCount: number;
 }
+
 interface ExportPerf {
   kind: 'export';
   // Recording size in bytes.
   recordingSize: number;
 }
 
-export type PerfEvent = DurationOnlyPerf|ExportPerf|ModelProcessPerf|RecordPerf;
+export type PerfEvent = DurationOnlyPerf|ExportPerf|ModelProcessPerf|RecordPerf|
+  TranscriptionModelDownloadPerf;
+
+/**
+ * Creates `TranscriptionModelDownloadPerf` for given language.
+ */
+export function createTranscriptionModelDownloadPerf(
+  transcriptionLocale: LanguageCode,
+): TranscriptionModelDownloadPerf {
+  return {
+    kind: `transcriptionModelDownload-${transcriptionLocale}`,
+    transcriptionLocale,
+  };
+}
+
+/**
+ * Checks if a `PerfEvent` is a `TranscriptionModelDownloadPerf`.
+ */
+export function isTranscriptionModelDownloadPerf(
+  perfEvent: PerfEvent,
+): perfEvent is TranscriptionModelDownloadPerf {
+  return perfEvent.kind.startsWith('transcriptionModelDownload-');
+}
 
 export abstract class EventsSender {
   abstract sendStartSessionEvent(params: StartSessionEventParams): void;

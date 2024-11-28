@@ -162,6 +162,8 @@ export class PlatformHandler extends PlatformHandlerBase {
 
     await this.summaryModelLoader.init();
     await this.titleSuggestionModelLoader.init();
+
+    this.initPerfEventWatchers();
   }
 
   override getLangPackList = lazyInit((): readonly LangPackInfo[] => {

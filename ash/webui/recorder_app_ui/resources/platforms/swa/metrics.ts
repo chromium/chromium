@@ -42,6 +42,7 @@ import {
   EventsSender as EventsSenderBase,
   ExportEventParams,
   FeedbackEventParams,
+  isTranscriptionModelDownloadPerf,
   OnboardEventParams,
   PerfEvent,
   RecordEventParams,
@@ -440,6 +441,12 @@ export class EventsSender extends EventsSenderBase {
   }
 
   override sendPerfEvent(event: PerfEvent, duration: number): void {
+    if (isTranscriptionModelDownloadPerf(event)) {
+      return this.sendTranscriptionModelDownloadPerf(
+        duration,
+        event.transcriptionLocale,
+      );
+    }
     const {kind} = event;
     switch (kind) {
       case 'appStart':
@@ -458,9 +465,6 @@ export class EventsSender extends EventsSenderBase {
         return this.sendSummaryModelDownloadPerf(duration);
       case 'titleSuggestion':
         return this.sendTitleSuggestionPerf(duration, event.wordCount);
-      case 'transcriptionModelDownload':
-        // TODO: b/327538356 - Collect soda download perf.
-        return this.sendTranscriptionModelDownloadPerf(duration);
       default:
         assertExhaustive(kind);
     }
@@ -474,10 +478,15 @@ export class EventsSender extends EventsSenderBase {
     record(event);
   }
 
-  private sendTranscriptionModelDownloadPerf(duration: number): void {
-    const event = new CrOSEvents_RecorderApp_TranscriptionModelDownloadPerf()
-                    .setDuration(BigInt(duration))
-                    .build();
+  private sendTranscriptionModelDownloadPerf(
+    duration: number,
+    language: LanguageCode,
+  ): void {
+    const event =
+      new CrOSEvents_RecorderApp_TranscriptionModelDownloadPerf()
+        .setDuration(BigInt(duration))
+        .setTranscriptionLocale(convertTranscriptionLocaleType(language))
+        .build();
 
     record(event);
   }

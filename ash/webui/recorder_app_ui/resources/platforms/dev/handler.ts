@@ -386,6 +386,8 @@ export class PlatformHandler extends PlatformHandlerBase {
       isGenAiSupported: true,
       isSpeakerLabelSupported: true,
     });
+
+    this.initPerfEventWatchers();
   }
 
   override getLangPackList(): readonly LangPackInfo[] {
