@@ -101,6 +101,10 @@ interface TranslationManagerCreateTranslatorClient {
 
 // This is used when creating a new Translator for Translator API.
 // https://github.com/WICG/translation-api/
+// Both `source_lang` and `target_lang` are ISO 639 language code passed from
+// JS via `translation.createTranslator()` method. They will be used in the
+// translation service process to load appropriate language packages and create
+// a translator.
 struct TranslatorCreateOptions {
   // This is `AITranslatorCreateOptions`'s `sourceLanguage` of Translator API.
   string source_lang;
@@ -112,6 +116,13 @@ struct TranslatorCreateOptions {
 interface TranslationManager {
   // Returns if it is supported to create a translator that could translate
   // texts from `source_lang` to `target_lang`.
+  //
+  // Both `source_lang` and `target_lang` are ISO 639 language code passed from
+  // JS via `translation.canTranslate()` method as `TranslationLanguageOptions`
+  // in the explainer. This canTranslate() method was removed from the explainer.
+  // So this `CanCreateTranslator IPC` will be eventually removed when we remove
+  // the `translation.canTranslate()` method (crbug.com/379643382).
+  // https://github.com/WICG/translation-api/blob/5151a1b1b/README.md#full-api-surface-in-web-idl
   CanCreateTranslator(
     string source_lang, string target_lang
   ) => (CanCreateTranslatorResult result);
