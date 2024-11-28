@@ -27,6 +27,10 @@
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/java_handler_thread.h"
+#endif
+
 namespace base {
 namespace {
 
@@ -34,6 +38,9 @@ namespace {
 // support is added.
 enum class FdIOCapableMessagePumpType {
   kDefaultIO,
+#if BUILDFLAG(IS_ANDROID)
+  kAndroid,
+#endif
 };
 
 std::pair<ScopedFD, ScopedFD> CreateSocketPair() {
@@ -92,10 +99,26 @@ class IOWatcherFdTest
         thread_->StartWithOptions(Thread::Options(MessagePumpType::IO, 0));
         io_task_runner_ = thread_->task_runner();
         break;
+
+#if BUILDFLAG(IS_ANDROID)
+      case FdIOCapableMessagePumpType::kAndroid:
+        java_thread_.emplace("Java thread");
+        java_thread_->Start();
+        io_task_runner_ = java_thread_->task_runner();
+        break;
+#endif
     }
   }
 
-  void TearDown() override { thread_.reset(); }
+  void TearDown() override {
+    thread_.reset();
+#if BUILDFLAG(IS_ANDROID)
+    if (java_thread_) {
+      java_thread_->Stop();
+      java_thread_.reset();
+    }
+#endif
+  }
 
   std::unique_ptr<TestFdWatcher> CreateWatcher();
 
@@ -114,6 +137,9 @@ class IOWatcherFdTest
  private:
   test::TaskEnvironment task_environment_;
   std::optional<Thread> thread_;
+#if BUILDFLAG(IS_ANDROID)
+  std::optional<android::JavaHandlerThread> java_thread_;
+#endif
   scoped_refptr<SequencedTaskRunner> io_task_runner_;
 };
 
@@ -363,10 +389,13 @@ TEST_P(IOWatcherFdTest, CancelDuringWrite) {
   EXPECT_LE(watcher->num_events(), 2);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    IOWatcherFdTest,
-    testing::Values(FdIOCapableMessagePumpType::kDefaultIO));
+INSTANTIATE_TEST_SUITE_P(,
+                         IOWatcherFdTest,
+                         testing::Values(
+#if BUILDFLAG(IS_ANDROID)
+                             FdIOCapableMessagePumpType::kAndroid,
+#endif
+                             FdIOCapableMessagePumpType::kDefaultIO));
 
 }  // namespace
 }  // namespace base

@@ -14,6 +14,8 @@
 #include <unistd.h>
 
 #include <atomic>
+#include <map>
+#include <memory>
 #include <utility>
 
 #include "base/android/input_hint_checker.h"
@@ -21,6 +23,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -79,6 +82,235 @@ NO_INSTRUMENT_STACK_ALIGN int DelayedLooperCallback(int fd,
 constexpr uint64_t kTryNativeWorkBeforeIdleBit = uint64_t(1) << 32;
 
 std::atomic_bool g_fast_to_sleep = false;
+
+// Implements IOWatcher to allow any MessagePumpAndroid thread to watch
+// arbitrary file descriptors for I/O events.
+class IOWatcherImpl : public IOWatcher {
+ public:
+  explicit IOWatcherImpl(ALooper* looper) : looper_(looper) {}
+
+  ~IOWatcherImpl() override {
+    for (auto& [fd, watches] : watched_fds_) {
+      ALooper_removeFd(looper_, fd);
+      if (auto read_watch = std::exchange(watches.read_watch, nullptr)) {
+        read_watch->Detach();
+      }
+      if (auto write_watch = std::exchange(watches.write_watch, nullptr)) {
+        write_watch->Detach();
+      }
+    }
+  }
+
+  // IOWatcher:
+  std::unique_ptr<IOWatcher::FdWatch> WatchFileDescriptorImpl(
+      int fd,
+      FdWatchDuration duration,
+      FdWatchMode mode,
+      IOWatcher::FdWatcher& watcher,
+      const Location& location) override {
+    auto& watches = watched_fds_[fd];
+    auto watch = std::make_unique<FdWatchImpl>(*this, fd, duration, watcher);
+    if (mode == FdWatchMode::kRead || mode == FdWatchMode::kReadWrite) {
+      CHECK(!watches.read_watch) << "Only one watch per FD per condition.";
+      watches.read_watch = watch.get();
+    }
+    if (mode == FdWatchMode::kWrite || mode == FdWatchMode::kReadWrite) {
+      CHECK(!watches.write_watch) << "Only one watch per FD per condition.";
+      watches.write_watch = watch.get();
+    }
+
+    const int events = (watches.read_watch ? ALOOPER_EVENT_INPUT : 0) |
+                       (watches.write_watch ? ALOOPER_EVENT_OUTPUT : 0);
+    ALooper_addFd(looper_, fd, 0, events, &OnFdIoEvent, this);
+    return watch;
+  }
+
+ private:
+  // Scopes the maximum lifetime of an FD watch started by WatchFileDescriptor.
+  class FdWatchImpl : public FdWatch {
+   public:
+    FdWatchImpl(IOWatcherImpl& io_watcher,
+                int fd,
+                FdWatchDuration duration,
+                FdWatcher& fd_watcher)
+        : fd_(fd),
+          duration_(duration),
+          fd_watcher_(fd_watcher),
+          io_watcher_(&io_watcher) {}
+
+    ~FdWatchImpl() override {
+      Stop();
+      if (destruction_flag_) {
+        *destruction_flag_ = true;
+      }
+    }
+
+    void set_destruction_flag(bool* flag) { destruction_flag_ = flag; }
+    int fd() const { return fd_; }
+    FdWatcher& fd_watcher() const { return *fd_watcher_; }
+
+    bool is_persistent() const {
+      return duration_ == FdWatchDuration::kPersistent;
+    }
+
+    void Detach() { io_watcher_ = nullptr; }
+
+    void Stop() {
+      if (io_watcher_) {
+        std::exchange(io_watcher_, nullptr)->StopWatching(*this);
+      }
+    }
+
+   private:
+    const int fd_;
+    const FdWatchDuration duration_;
+    raw_ref<FdWatcher> fd_watcher_;
+    raw_ptr<IOWatcherImpl> io_watcher_;
+
+    // If non-null during destruction, the pointee is set to true. Used to
+    // detect reentrant destruction during dispatch.
+    raw_ptr<bool> destruction_flag_ = nullptr;
+  };
+
+  enum class EventResult {
+    kStopWatching,
+    kKeepWatching,
+  };
+
+  static NO_INSTRUMENT_STACK_ALIGN int OnFdIoEvent(int fd,
+                                                   int events,
+                                                   void* data) {
+    switch (static_cast<IOWatcherImpl*>(data)->HandleEvent(fd, events)) {
+      case EventResult::kStopWatching:
+        return 0;
+      case EventResult::kKeepWatching:
+        return 1;
+    }
+  }
+
+  EventResult HandleEvent(int fd, int events) {
+    // NOTE: It is possible for Looper to dispatch one last event for `fd`
+    // *after* we have removed the FD from the Looper - for example if multiple
+    // FDs wake the thread at the same time, and a handler for another FD runs
+    // first and removes the watch for `fd`; this callback will have already
+    // been queued for `fd` and will still run. As such, we must gracefully
+    // tolerate receiving a callback for an FD that is no longer watched.
+    auto it = watched_fds_.find(fd);
+    if (it == watched_fds_.end()) {
+      return EventResult::kStopWatching;
+    }
+
+    auto& watches = it->second;
+    const bool is_readable =
+        events & (ALOOPER_EVENT_INPUT | ALOOPER_EVENT_HANGUP);
+    const bool is_writable =
+        events & (ALOOPER_EVENT_OUTPUT | ALOOPER_EVENT_HANGUP);
+    auto* read_watch = watches.read_watch.get();
+    auto* write_watch = watches.write_watch.get();
+
+    // Any event dispatch can stop any number of watches, so we're careful to
+    // set up destruction observation before dispatching anything.
+    bool read_watch_destroyed = false;
+    bool write_watch_destroyed = false;
+    bool fd_removed = false;
+    if (read_watch) {
+      read_watch->set_destruction_flag(&read_watch_destroyed);
+    }
+    if (write_watch && read_watch != write_watch) {
+      write_watch->set_destruction_flag(&write_watch_destroyed);
+    }
+    watches.removed_flag = &fd_removed;
+
+    bool did_observe_one_shot_read = false;
+    if (read_watch && is_readable) {
+      DCHECK_EQ(read_watch->fd(), fd);
+      did_observe_one_shot_read = !read_watch->is_persistent();
+      read_watch->fd_watcher().OnFdReadable(fd);
+      if (!read_watch_destroyed && did_observe_one_shot_read) {
+        read_watch->Stop();
+      }
+    }
+
+    // If the read and write watches are the same object, it may have been
+    // destroyed; or it may have been a one-shot watch already consumed by a
+    // read above. In either case we inhibit write dispatch.
+    if (read_watch == write_watch &&
+        (read_watch_destroyed || did_observe_one_shot_read)) {
+      write_watch = nullptr;
+    }
+
+    if (write_watch && is_writable && !write_watch_destroyed) {
+      DCHECK_EQ(write_watch->fd(), fd);
+      const bool is_persistent = write_watch->is_persistent();
+      write_watch->fd_watcher().OnFdWritable(fd);
+      if (!write_watch_destroyed && !is_persistent) {
+        write_watch->Stop();
+      }
+    }
+
+    if (read_watch && !read_watch_destroyed) {
+      read_watch->set_destruction_flag(nullptr);
+    }
+    if (write_watch && !write_watch_destroyed) {
+      write_watch->set_destruction_flag(nullptr);
+    }
+
+    if (fd_removed) {
+      return EventResult::kStopWatching;
+    }
+
+    watches.removed_flag = nullptr;
+    return EventResult::kKeepWatching;
+  }
+
+  void StopWatching(FdWatchImpl& watch) {
+    const int fd = watch.fd();
+    auto it = watched_fds_.find(fd);
+    if (it == watched_fds_.end()) {
+      return;
+    }
+
+    WatchPair& watches = it->second;
+    if (watches.read_watch == &watch) {
+      watches.read_watch = nullptr;
+    }
+    if (watches.write_watch == &watch) {
+      watches.write_watch = nullptr;
+    }
+
+    const int remaining_events =
+        (watches.read_watch ? ALOOPER_EVENT_INPUT : 0) |
+        (watches.write_watch ? ALOOPER_EVENT_OUTPUT : 0);
+    if (remaining_events) {
+      ALooper_addFd(looper_, fd, 0, remaining_events, &OnFdIoEvent, this);
+      return;
+    }
+
+    ALooper_removeFd(looper_, fd);
+    if (watches.removed_flag) {
+      *watches.removed_flag = true;
+    }
+    watched_fds_.erase(it);
+  }
+
+ private:
+  const raw_ptr<ALooper> looper_;
+
+  // The set of active FdWatches. Note that each FD may have up to two active
+  // watches only - one for read and one for write. No two FdWatches can watch
+  // the same FD for the same signal. `read_watch` and `write_watch` may point
+  // to the same object.
+  struct WatchPair {
+    raw_ptr<FdWatchImpl> read_watch = nullptr;
+    raw_ptr<FdWatchImpl> write_watch = nullptr;
+
+    // If non-null when this WatchPair is removed, the pointee is set to true.
+    // Used to track reentrant map mutations during dispatch.
+    raw_ptr<bool> removed_flag = nullptr;
+  };
+  std::map<int, WatchPair> watched_fds_;
+};
+
 }  // namespace
 
 MessagePumpAndroid::MessagePumpAndroid()
@@ -107,6 +339,7 @@ MessagePumpAndroid::MessagePumpAndroid()
 
 MessagePumpAndroid::~MessagePumpAndroid() {
   DCHECK_EQ(ALooper_forThread(), looper_);
+  io_watcher_.reset();
   ALooper_removeFd(looper_, non_delayed_fd_);
   ALooper_removeFd(looper_, delayed_fd_);
   ALooper_release(looper_);
@@ -385,6 +618,13 @@ void MessagePumpAndroid::ScheduleDelayedWork(
 
   long ret = timerfd_settime(delayed_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);
   DPCHECK(ret >= 0);
+}
+
+IOWatcher* MessagePumpAndroid::GetIOWatcher() {
+  if (!io_watcher_) {
+    io_watcher_ = std::make_unique<IOWatcherImpl>(looper_);
+  }
+  return io_watcher_.get();
 }
 
 void MessagePumpAndroid::QuitWhenIdle(base::OnceClosure callback) {
