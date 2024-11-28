@@ -62,14 +62,14 @@ BinaryDataHistogram::BinaryDataHistogram() = default;
 BinaryDataHistogram::~BinaryDataHistogram() = default;
 
 bool BinaryDataHistogram::Compute(ConstBufferView region) {
-  DCHECK(!histogram_);
+  DCHECK(histogram_.empty());
   // Binary data with size < 2 are invalid.
   if (region.size() < sizeof(uint16_t))
     return false;
   DCHECK_LE(region.size(),
             static_cast<size_t>(std::numeric_limits<int32_t>::max()));
 
-  histogram_ = std::make_unique<int32_t[]>(kNumBins);
+  histogram_ = base::HeapArray<int32_t>::WithSize(kNumBins);
   size_ = region.size();
   // Number of 2-byte intervals fully contained in |region|.
   size_t bound = size_ - sizeof(uint16_t) + 1;
