@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Token;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -109,21 +107,6 @@ public class StripLayoutUtils {
 
     /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
-     * @param tabGroupId The tab group ID for the tab group .
-     * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
-     *     otherwise.
-     */
-    static StripLayoutGroupTitle findGroupTitleByTabGroupId(
-            StripLayoutGroupTitle[] groupTitles, Token tabGroupId) {
-        for (int i = 0; i < groupTitles.length; i++) {
-            final StripLayoutGroupTitle groupTitle = groupTitles[i];
-            if (groupTitle.getTabGroupId().equals(tabGroupId)) return groupTitle;
-        }
-        return null;
-    }
-
-    /**
-     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param collaborationId he sharing ID associated with the group.
      * @param tabGroupSyncService The sync service to get tab group data form.
      * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
@@ -133,17 +116,16 @@ public class StripLayoutUtils {
             StripLayoutGroupTitle[] groupTitles,
             String collaborationId,
             TabGroupSyncService tabGroupSyncService) {
-        SavedTabGroup savedTabGroup =
-                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                        collaborationId, tabGroupSyncService);
-        if (savedTabGroup == null) {
-            return null;
+        for (StripLayoutGroupTitle groupTitle : groupTitles) {
+            SavedTabGroup savedTabGroup =
+                    tabGroupSyncService.getGroup(new LocalTabGroupId(groupTitle.getTabGroupId()));
+            if (savedTabGroup != null
+                    && savedTabGroup.collaborationId != null
+                    && savedTabGroup.collaborationId.equals(collaborationId)) {
+                return groupTitle;
+            }
         }
-        LocalTabGroupId localTabGroupId = savedTabGroup.localId;
-        if (localTabGroupId == null) {
-            return null;
-        }
-        return findGroupTitleByTabGroupId(groupTitles, localTabGroupId.tabGroupId);
+        return null;
     }
 
     /**

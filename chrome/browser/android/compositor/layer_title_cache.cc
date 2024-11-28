@@ -87,13 +87,14 @@ void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
                                        jint group_root_id,
                                        jint title_resource_id,
                                        jint avatar_resource_id,
+                                       jint avatar_padding,
                                        bool is_incognito,
                                        bool is_rtl) {
   DecorationIconTitle* title_layer = group_layer_cache_.Lookup(group_root_id);
   if (title_layer) {
     if (title_resource_id != -1) {
       title_layer->Update(title_resource_id, avatar_resource_id, fade_width_,
-                          kEmptyWidth, kEmptyWidth, is_incognito, is_rtl);
+                          kEmptyWidth, avatar_padding, is_incognito, is_rtl);
     } else {
       group_layer_cache_.Remove(group_root_id);
     }
@@ -101,7 +102,7 @@ void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
     group_layer_cache_.AddWithID(
         std::make_unique<DecorationIconTitle>(
             resource_manager_, title_resource_id, avatar_resource_id,
-            fade_width_, kEmptyWidth, kEmptyWidth, is_incognito, is_rtl),
+            fade_width_, kEmptyWidth, avatar_padding, is_incognito, is_rtl),
         group_root_id);
   }
 }

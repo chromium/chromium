@@ -16,6 +16,9 @@ found in the LICENSE file.
     <dimen name="tab_title_favicon_start_padding">10dp</dimen>
     <dimen name="tab_title_favicon_end_padding">7dp</dimen>
 
+    <!-- Shared group avatar padding for tablet tab strip -->
+    <dimen name="tablet_shared_group_avatar_padding">4dp</dimen>
+
     <!-- Infobar dimensions -->
     <!-- Text size of descriptive controls on an infobar. -->
     <dimen name="infobar_descriptive_text_size">14sp</dimen>

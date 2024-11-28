@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -205,7 +206,7 @@ public class StripLayoutHelper
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
                     // TODO(crbug.com/375047646): Investigate kicking off animations here.
                     int rootId = movedTab.getRootId();
-                    updateGroupTitleText(rootId);
+                    updateGroupTitleTextOrAvatar(rootId);
                     onTabMergeToOrMoveOutOfGroup();
 
                     // Tab merging should not automatically expand a collapsed tab group. If the
@@ -226,7 +227,7 @@ public class StripLayoutHelper
 
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                    updateGroupTitleText(mSourceRootId);
+                    updateGroupTitleTextOrAvatar(mSourceRootId);
                     int groupIdToHide = mGroupIdToHideSupplier.get();
                     boolean removedLastTabInGroup =
                             (groupIdToHide != Tab.INVALID_TAB_ID)
@@ -259,7 +260,7 @@ public class StripLayoutHelper
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
-                    updateGroupTitleText(groupTitle, newTitle);
+                    updateGroupTitleTextOrAvatar(groupTitle, newTitle);
                     mRenderHost.requestRender();
                 }
 
@@ -287,7 +288,7 @@ public class StripLayoutHelper
                         groupTitle.updateRootId(newRootId);
                         // Refresh properties since removing the root tab may have cleared the ones
                         // associated with the oldRootId before updating to the newRootId here.
-                        updateGroupTitleText(groupTitle);
+                        updateGroupTitleTextOrAvatar(groupTitle);
                         updateGroupTitleTint(groupTitle);
                     }
 
@@ -1035,14 +1036,12 @@ public class StripLayoutHelper
                     new Observer() {
                         @Override
                         public void onGroupChanged(GroupData groupData) {
-                            String collaborationId = groupData.groupToken.collaborationId;
-                            updateSharedTabGroup(collaborationId);
+                            updateOrClearSharedState(groupData);
                         }
 
                         @Override
                         public void onGroupAdded(GroupData groupData) {
-                            String collaborationId = groupData.groupToken.collaborationId;
-                            updateSharedTabGroup(collaborationId);
+                            updateOrClearSharedState(groupData);
                         }
 
                         @Override
@@ -1086,7 +1085,7 @@ public class StripLayoutHelper
 
         for (int i = 0; i < mStripGroupTitles.length; ++i) {
             final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            updateGroupTitleText(groupTitle, groupTitle.getTitle());
+            updateGroupTitleTextOrAvatar(groupTitle, groupTitle.getTitle());
         }
     }
 
@@ -1287,7 +1286,7 @@ public class StripLayoutHelper
      * @param tab The tab that will be closed.
      */
     public void willCloseTab(long time, Tab tab) {
-        if (tab != null) updateGroupTitleText(tab.getRootId());
+        if (tab != null) updateGroupTitleTextOrAvatar(tab.getRootId());
     }
 
     /**
@@ -1378,7 +1377,7 @@ public class StripLayoutHelper
         boolean collapsed = false;
         if (tab != null) {
             int rootId = tab.getRootId();
-            updateGroupTitleText(rootId);
+            updateGroupTitleTextOrAvatar(rootId);
             if (mTabGroupModelFilter.getTabGroupCollapsed(rootId)) {
                 if (selected) {
                     mTabGroupModelFilter.deleteTabGroupCollapsed(rootId);
@@ -1983,18 +1982,41 @@ public class StripLayoutHelper
     }
 
     /**
-     * Update group shared state and avatar face piles displayed on group title for a shared group.
+     * Updates the shared state and avatar face piles for a tab group if it has multiple
+     * collaborators. If the group no longer qualifies as a shared group, clears the shared state
+     * and removes the avatar.
      *
-     * @param collaborationId The sharing ID associated with the group.
+     * @param groupData The shared group data.
      */
-    private void updateSharedTabGroup(String collaborationId) {
+    private void updateOrClearSharedState(GroupData groupData) {
+        String collaborationId = groupData.groupToken.collaborationId;
         StripLayoutGroupTitle groupTitle =
                 StripLayoutUtils.findGroupTitleByCollaborationId(
                         mStripGroupTitles, collaborationId, mTabGroupSyncService);
+        if (TabShareUtils.hasMultipleCollaborators(groupData)) {
+            updateSharedTabGroup(collaborationId, groupTitle);
+        } else {
+            clearSharedTabGroup(collaborationId);
+        }
+    }
+
+    /**
+     * Update group shared state and avatar face piles displayed on group title for a shared group.
+     *
+     * @param collaborationId The sharing ID associated with the group.
+     * @param groupTitle The group title to update with the shared tab group state.
+     */
+    private void updateSharedTabGroup(String collaborationId, StripLayoutGroupTitle groupTitle) {
         if (groupTitle == null) {
             return;
         }
-        groupTitle.updateSharedTabGroup(collaborationId, mDataSharingService);
+        groupTitle.updateSharedTabGroup(
+                collaborationId,
+                mDataSharingService,
+                (avatarRes) -> {
+                    mLayerTitleCache.registerSharedGroupAvatar(groupTitle.getRootId(), avatarRes);
+                },
+                () -> updateGroupTitleTextOrAvatar(groupTitle));
     }
 
     /**
@@ -2007,11 +2029,13 @@ public class StripLayoutHelper
         StripLayoutGroupTitle groupTitle =
                 StripLayoutUtils.findGroupTitleByCollaborationId(
                         mStripGroupTitles, collaborationId, mTabGroupSyncService);
+
         if (groupTitle == null) {
             return;
         }
         groupTitle.clearSharedTabGroup();
-        // TODO(crbug.com/362314403): Update group title bitmap to remove avatar from group title.
+        mLayerTitleCache.removeSharedGroupAvatar(groupTitle.getRootId());
+        updateGroupTitleTextOrAvatar(groupTitle);
     }
 
     private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {
@@ -2925,7 +2949,8 @@ public class StripLayoutHelper
     }
 
     /**
-     * Called to refresh the group title bitmap when it may have changed (text, color, etc.).
+     * Called to refresh the group title bitmap when it may have changed (text, color, or shared
+     * group avatar).
      *
      * @param groupTitle The group title to refresh the bitmap for.
      */
@@ -2967,13 +2992,13 @@ public class StripLayoutHelper
     }
 
     @VisibleForTesting
-    void updateGroupTitleText(int rootId) {
-        updateGroupTitleText(findGroupTitle(rootId));
+    void updateGroupTitleTextOrAvatar(int rootId) {
+        updateGroupTitleTextOrAvatar(findGroupTitle(rootId));
     }
 
-    private void updateGroupTitleText(StripLayoutGroupTitle groupTitle) {
+    private void updateGroupTitleTextOrAvatar(StripLayoutGroupTitle groupTitle) {
         if (groupTitle == null) return;
-        updateGroupTitleText(
+        updateGroupTitleTextOrAvatar(
                 groupTitle, mTabGroupModelFilter.getTabGroupTitle(groupTitle.getRootId()));
     }
 
@@ -2984,7 +3009,7 @@ public class StripLayoutHelper
      * @param groupTitle The {@link StripLayoutGroupTitle} that we're update the title text for.
      * @param titleText The title text to apply. If empty, use a default title text.
      */
-    private void updateGroupTitleText(StripLayoutGroupTitle groupTitle, String titleText) {
+    private void updateGroupTitleTextOrAvatar(StripLayoutGroupTitle groupTitle, String titleText) {
         assert groupTitle != null;
 
         // 1. Update indicator text and width.
@@ -2992,10 +3017,12 @@ public class StripLayoutHelper
         int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         float oldWidth = groupTitle.getWidth();
+
+        // Recalculate width, including avatar width for shared groups if applicable.
         groupTitle.updateTitle(titleText, widthDp);
         updateGroupAccessibilityDescription(groupTitle);
 
-        // 2. Update title text bitmap if needed.
+        // 2. Update title text and avatar bitmap if needed.
         updateGroupTitleBitmapIfNeeded(groupTitle);
 
         // 3. Handle indicator size change if needed.
@@ -3030,7 +3057,7 @@ public class StripLayoutHelper
         // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
         // been added to mStripViews yet.
         updateGroupTitleTint(groupTitle);
-        updateGroupTitleText(groupTitle);
+        updateGroupTitleTextOrAvatar(groupTitle);
 
         // Update tab group share avatars if necessary. The data sharing observer should already be
         // in place by this point (added during #setTabGroupModelFilter).
@@ -3038,10 +3065,17 @@ public class StripLayoutHelper
             SavedTabGroup savedTabGroup =
                     mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
             if (savedTabGroup != null && savedTabGroup.collaborationId != null) {
-                groupTitle.updateSharedTabGroup(savedTabGroup.collaborationId, mDataSharingService);
+                mDataSharingService.readGroup(
+                        savedTabGroup.collaborationId,
+                        (groupDataOrFailureOutcome) -> {
+                            // Check if the group has multiple collaborators.
+                            if (TabShareUtils.hasMultipleCollaborators(groupDataOrFailureOutcome)) {
+                                // Update the group title with shared state and avatar.
+                                updateSharedTabGroup(savedTabGroup.collaborationId, groupTitle);
+                            }
+                        });
             }
         }
-
         return groupTitle;
     }
 

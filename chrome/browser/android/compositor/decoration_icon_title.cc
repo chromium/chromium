@@ -77,6 +77,9 @@ void DecorationIconTitle::handleIconResource(
       layer_icon_->SetUIResourceId(0);
     }
     layer_icon_->SetTransform(gfx::Transform());
+  } else {
+    layer_icon_->SetUIResourceId(0);
+    icon_size_ = gfx::Size(0, 0);
   }
 }
 

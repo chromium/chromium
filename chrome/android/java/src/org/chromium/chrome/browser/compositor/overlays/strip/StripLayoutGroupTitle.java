@@ -12,8 +12,10 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
@@ -68,8 +70,10 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int MAX_VISUAL_WIDTH_DP = 156;
 
     private static final int MARGIN_TOP_DP = 7;
-    private static final int MARGIN_BOTTOM_DP = 9;
+    private static final int MARGIN_BOTTOM_DP = 7;
     private static final int MARGIN_START_DP = 13;
+
+    // TODO(crbug.com/381161875): Update the end margin to align with the top margin.
     private static final int MARGIN_END_DP = 9;
 
     private static final int TEXT_PADDING_DP = 8;
@@ -98,6 +102,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private boolean mIsShared;
     @Nullable private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Nullable private ViewResourceAdapter mAvatarResource;
+    private float mAvatarWidthWithPadding;
 
     /**
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
@@ -199,6 +204,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public void updateTint(@ColorInt int color) {
         mColor = color;
+
+        // Update the shared group avatar border color if a shared image tiles coordinator exists.
+        if (mSharedImageTilesCoordinator != null) {
+            mSharedImageTilesCoordinator.updateColorStyle(
+                    new SharedImageTilesColor(SharedImageTilesColor.Style.TAB_GROUP, mColor));
+        }
     }
 
     /**
@@ -211,9 +222,15 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     protected void updateTitle(String title, float textWidth) {
         mTitle = title;
 
-        // Account for view padding & margins. Increment to prevent off-by-one rounding errors
+        // Account for view padding, margins and width of the avatar and its padding, if applicable.
+        // Increment to prevent off-by-one rounding errors
         // adding a title fade when unnecessary.
-        float viewWidth = textWidth + (TEXT_PADDING_DP * 2) + WIDTH_MARGINS_DP + 1;
+        float viewWidth =
+                getAvatarWidthWithPadding()
+                        + textWidth
+                        + (TEXT_PADDING_DP * 2)
+                        + WIDTH_MARGINS_DP
+                        + 1;
         setWidth(MathUtils.clamp(viewWidth, EFFECTIVE_MIN_WIDTH, EFFECTIVE_MAX_WIDTH));
     }
 
@@ -276,14 +293,25 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
-     * Fetch avatar for a shared group from peopleKit service and capture the avatar view as bitmap.
+     * Updates the shared tab group state by fetching the group avatar from the PeopleKit service,
+     * capturing the avatar view as a bitmap, and updating the group title with the captured avatar.
+     * *
      *
      * @param collaborationId The id to identify a shared tab group.
      * @param dataSharingService Used to fetch and observe current share data.
+     * @param registerAvatarResource A callback to register the avatar resource once it is captured.
+     * @param updateGroupTitleBitmap A {@link Runnable} to update the group title bitmap after the
+     *     avatar is captured.
      */
     public void updateSharedTabGroup(
-            String collaborationId, DataSharingService dataSharingService) {
+            String collaborationId,
+            DataSharingService dataSharingService,
+            Callback<ViewResourceAdapter> registerAvatarResource,
+            Runnable updateGroupTitleBitmap) {
+        // Mark the group as shared.
         mIsShared = true;
+
+        // Initialize the shared image tiles coordinator if it doesn't exist.
         if (mSharedImageTilesCoordinator == null) {
             mSharedImageTilesCoordinator =
                     new SharedImageTilesCoordinator(
@@ -293,37 +321,70 @@ public class StripLayoutGroupTitle extends StripLayoutView {
                                     SharedImageTilesColor.Style.TAB_GROUP, mColor),
                             dataSharingService);
         }
+
+        // Update the collaboration ID and fetch group data from the data sharing service.
         mSharedImageTilesCoordinator.updateCollaborationId(
                 collaborationId,
                 (result) -> {
                     if (result) {
-                        captureSharedAvatarBitmap(mSharedImageTilesCoordinator.getView());
+                        // Capture and register the avatar bitmap if the group data is successfully
+                        // fetched.
+                        captureSharedAvatarBitmap(
+                                mSharedImageTilesCoordinator.getView(),
+                                registerAvatarResource,
+                                updateGroupTitleBitmap);
                     }
                 });
     }
 
     /**
-     * Lays out the avatar view and trigger the capture of the bitmap.
+     * This method measures and lays out the avatar view, registers the avatar resource and triggers
+     * an update to the group title bitmap
      *
      * @params view The Android view of the avatar.
+     * @param registerAvatarResource A callback to register the avatar resource once it is captured.
+     * @param updateGroupTitleBitmap A {@link Runnable} to update the group title bitmap after the
+     *     avatar is captured.
      */
-    private void captureSharedAvatarBitmap(View view) {
+    private void captureSharedAvatarBitmap(
+            View view,
+            Callback<ViewResourceAdapter> registerAvatarResource,
+            Runnable updateGroupTitleBitmap) {
         view.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
 
+        // Register the avatar resource if it does not already exist.
         if (mAvatarResource == null) {
             mAvatarResource = new ViewResourceAdapter(view);
-            // @TODO(crbug.com/362314403): register viewResourceAdapter to resourceManager and
-            // update group title bitmap.
+            registerAvatarResource.onResult(mAvatarResource);
         }
+
+        // Calculate the avatar width including padding.
+        int avatarWidthPx =
+                view.getWidth()
+                        + mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.tablet_shared_group_avatar_padding);
+        mAvatarWidthWithPadding =
+                avatarWidthPx / mContext.getResources().getDisplayMetrics().density;
+
+        // Trigger an update to the group title bitmap.
+        updateGroupTitleBitmap.run();
     }
 
     public void clearSharedTabGroup() {
         mIsShared = false;
-        mAvatarResource = null;
         mSharedImageTilesCoordinator = null;
+        mAvatarResource = null;
+        mAvatarWidthWithPadding = 0;
+    }
+
+    /**
+     * @return The width of the shared group avatar and padding.
+     */
+    public float getAvatarWidthWithPadding() {
+        return mAvatarWidthWithPadding;
     }
 
     /**

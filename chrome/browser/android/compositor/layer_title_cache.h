@@ -68,6 +68,7 @@ class LayerTitleCache {
                         jint group_root_id,
                         jint title_resource_id,
                         jint avatar_resource_id,
+                        jint avatar_padding,
                         bool is_incognito,
                         bool is_rtl);
 

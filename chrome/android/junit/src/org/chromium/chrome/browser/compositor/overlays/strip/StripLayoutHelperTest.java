@@ -30,10 +30,15 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
 
 import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -117,7 +122,9 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -171,11 +178,15 @@ public class StripLayoutHelperTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
+    @Mock private Bitmap mAvatarBitmap;
     @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mSharedImageTilesCaptor;
 
     private Activity mActivity;
     private Context mContext;
+    private SharedGroupTestHelper mSharedGroupTestHelper;
 
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
     // `TestTabModel` for tab model.
@@ -209,8 +220,6 @@ public class StripLayoutHelperTest {
     private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
-    private static final String COLLABORATION_ID1 = "A";
-    private static final String SYNC_ID1 = "B";
     private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 
     /** Reset the environment before each test. */
@@ -261,6 +270,8 @@ public class StripLayoutHelperTest {
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
+        when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
     }
 
     @After
@@ -2982,33 +2993,121 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
-    public void testUpdateSharedGroupState_DuringStripBuild() {
-        // Mock 5 tabs.
-        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
-        initializeTest(false, false, 3, 5);
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+    public void testSharedGroupStateDuringStripBuild_OnlyOneCollaborator_AvatarNotShow() {
+        // Initialize shared tab group with only one collaborator during strip build.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ false, /* duringStripBuild= */ true);
 
-        // Setup sync and collaboration.
-        SavedTabGroup savedTabGroup = setupTabGroupSync();
-        savedTabGroup.collaborationId = COLLABORATION_ID1;
-
-        // Group the first and second tabs.
-        when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
-        groupTabs(0, 1);
-
-        // Verify group title is present.
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
-        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
-
-        // Verify group shared state is updated and avatar resource is initialized.
-        verifySharedGroupState(groupTitle);
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
-    public void testUpdateSharedGroupState_OnGroupAddedAndRemoved() {
+    public void testSharedGroupStateDuringStripBuild_MultipleCollaborators_AvatarShow() {
+        // Initialize shared tab group with multiple collaborators during strip build.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ true);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupAdded_OnlyOneCollaborator_AvatarNotShow() {
+        // Group shared but no other collaborator joined yet.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ false, /* duringStripBuild= */ false);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupChanged_OnlyOneCollaborator_AvatarNotShow() {
+        // Group shared with multiple collaborators.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ false);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+
+        // Group changed that only one collaborator remains.
+        mSharingObserverCaptor
+                .getValue()
+                .onGroupChanged(
+                        SharedGroupTestHelper.newGroupData(
+                                COLLABORATION_ID1, SharedGroupTestHelper.GROUP_MEMBER1));
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupChanged_MultipleCollaborators_AvatarShow() {
+        // Group shared but no other collaborator joined yet.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ false, /* duringStripBuild= */ false);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+
+        // Group changed that shared with multiple collaborators.
+        mSharingObserverCaptor
+                .getValue()
+                .onGroupChanged(
+                        SharedGroupTestHelper.newGroupData(
+                                COLLABORATION_ID1,
+                                SharedGroupTestHelper.GROUP_MEMBER1,
+                                SharedGroupTestHelper.GROUP_MEMBER2));
+
+        // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        loadAvatarBitmap();
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testSharedGroupStateOnGroupRemoved_AvatarNotShow() {
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ false);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle, true);
+
+        // Group removed.
+        mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
+
+        // Verify group unshared and avatar resources cleared when only one collaborator.
+        verifySharedGroupState(groupTitle, false);
+    }
+
+    private SavedTabGroup setupTabGroupSync() {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = new LocalTabGroupId(TAB_GROUP_TOKEN);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
+        savedTabGroup.savedTabs = Arrays.asList(new SavedTabGroupTab[] {savedTab, savedTab2});
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
+        return savedTabGroup;
+    }
+
+    private StripLayoutGroupTitle createCollaborationGroup(
+            boolean multipleCollaborators, boolean duringStripBuild) {
         // Mock 5 tabs.
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         initializeTest(false, false, 3, 5);
@@ -3018,6 +3117,9 @@ public class StripLayoutHelperTest {
 
         // Setup sync.
         SavedTabGroup savedTabGroup = setupTabGroupSync();
+        if (duringStripBuild) {
+            savedTabGroup.collaborationId = COLLABORATION_ID1;
+        }
 
         // Group the first and second tabs.
         when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
@@ -3032,50 +3134,78 @@ public class StripLayoutHelperTest {
                         mContext, TabGroupColorId.GREY, mIncognito);
         groupTitle.updateTint(color);
 
-        // Group added through Data sharing observer.
-        savedTabGroup.collaborationId = COLLABORATION_ID1;
-        mSharingObserverCaptor
-                .getValue()
-                .onGroupAdded(
-                        SharedGroupTestHelper.newGroupData(
-                                COLLABORATION_ID1,
-                                SharedGroupTestHelper.GROUP_MEMBER1,
-                                SharedGroupTestHelper.GROUP_MEMBER2));
-
-        // Verify group shared state is updated and avatar resource is initialized.
-        verifySharedGroupState(groupTitle);
-
-        // Group removed through Data sharing observer.
-        mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
-
-        // Verify group shared state is updated and avatar resource is cleared.
-        assertFalse("Group should be unshared.", groupTitle.isGroupSharedForTesting());
-        assertNull(
-                "SharedImageTilesCoordinator for shared group should be cleared",
-                groupTitle.getSharedImageTilesCoordinatorForTesting());
-        assertNull(
-                "Avatar resource for shared group should be cleared",
-                groupTitle.getAvatarResourceForTesting());
+        if (multipleCollaborators) {
+            if (!duringStripBuild) {
+                // Collaboration group added through Data sharing observer.
+                savedTabGroup.collaborationId = COLLABORATION_ID1;
+                mSharingObserverCaptor
+                        .getValue()
+                        .onGroupAdded(
+                                SharedGroupTestHelper.newGroupData(
+                                        COLLABORATION_ID1,
+                                        SharedGroupTestHelper.GROUP_MEMBER1,
+                                        SharedGroupTestHelper.GROUP_MEMBER2));
+            } else {
+                // Collaboration group already exists. Read group during #createGroupTitle to
+                // confirm multiple collaborators.
+                mSharedGroupTestHelper.respondToReadGroup(
+                        COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+            }
+            // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
+            mSharedGroupTestHelper.respondToReadGroup(
+                    COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+            loadAvatarBitmap();
+        } else {
+            if (!duringStripBuild) {
+                // Collaboration group added through Data sharing observer.
+                savedTabGroup.collaborationId = COLLABORATION_ID1;
+                mSharingObserverCaptor
+                        .getValue()
+                        .onGroupAdded(
+                                SharedGroupTestHelper.newGroupData(
+                                        COLLABORATION_ID1, SharedGroupTestHelper.GROUP_MEMBER1));
+            } else {
+                // Read group during #createGroupTitle to confirm single collaborator.
+                mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+            }
+        }
+        return groupTitle;
     }
 
-    private SavedTabGroup setupTabGroupSync() {
-        SavedTabGroup savedTabGroup = new SavedTabGroup();
-        savedTabGroup.localId = new LocalTabGroupId(TAB_GROUP_TOKEN);
-        SavedTabGroupTab savedTab = new SavedTabGroupTab();
-        SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
-        savedTabGroup.savedTabs = Arrays.asList(new SavedTabGroupTab[] {savedTab, savedTab2});
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_ID1)).thenReturn(savedTabGroup);
-        when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
-        return savedTabGroup;
+    private void loadAvatarBitmap() {
+        ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
+                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
+        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(configCaptor.capture());
+        configCaptor
+                .getAllValues()
+                .get(0)
+                .getDataSharingAvatarCallback()
+                .onAvatarLoaded(mAvatarBitmap);
+        configCaptor
+                .getAllValues()
+                .get(1)
+                .getDataSharingAvatarCallback()
+                .onAvatarLoaded(mAvatarBitmap);
     }
 
-    private void verifySharedGroupState(StripLayoutGroupTitle groupTitle) {
-        assertTrue("Group should be shared.", groupTitle.isGroupSharedForTesting());
-        assertNotNull(
-                "SharedImageTilesCoordinator for shared group should be initialized",
-                groupTitle.getSharedImageTilesCoordinatorForTesting());
-        // TODO(zheliooo): Add verify for avatar resources.
+    private void verifySharedGroupState(StripLayoutGroupTitle groupTitle, boolean shouldShare) {
+        if (shouldShare) {
+            assertTrue("Group should be shared.", groupTitle.isGroupSharedForTesting());
+            assertNotNull(
+                    "SharedImageTilesCoordinator for shared group should be initialized",
+                    groupTitle.getSharedImageTilesCoordinatorForTesting());
+            assertNotNull(
+                    "Avatar resource for shared group should be initialized",
+                    groupTitle.getAvatarResourceForTesting());
+        } else {
+            assertFalse("Group should be unshared.", groupTitle.isGroupSharedForTesting());
+            assertNull(
+                    "SharedImageTilesCoordinator for shared group should be cleared",
+                    groupTitle.getSharedImageTilesCoordinatorForTesting());
+            assertNull(
+                    "Avatar resource for shared group should be cleared",
+                    groupTitle.getAvatarResourceForTesting());
+        }
     }
 
     private void startDraggingTab(
@@ -3766,7 +3896,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
                 .thenReturn(relatedTabs);
 
-        mStripLayoutHelper.updateGroupTitleText(groupRootId);
+        mStripLayoutHelper.updateGroupTitleTextOrAvatar(groupRootId);
         mStripLayoutHelper.rebuildStripViews();
         if (mStripLayoutHelper.getRunningAnimatorForTesting() != null) {
             mStripLayoutHelper.getRunningAnimatorForTesting().end();

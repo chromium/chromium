@@ -63,6 +63,7 @@ public class ViewResourceAdapter
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
     private final CaptureMechanism mCaptureMechanism;
     private float mScale = 1;
+    private int mResId;
 
     private final ObserverList<Callback<Resource>> mOnResourceReadyObservers = new ObserverList<>();
 
@@ -206,5 +207,18 @@ public class ViewResourceAdapter
     /** Clears the contents of the current dirty rect. */
     protected void setDirtyRectEmpty() {
         mDirtyRect.setEmpty();
+    }
+
+    // TODO(crbug.com/381310342): Make the resource id immutable.
+    /**
+     * @param resId The id of the resource.
+     */
+    public void setResId(int resId) {
+        mResId = resId;
+    }
+
+    /** returns The id of the resource. */
+    public int getResId() {
+        return mResId;
     }
 }
