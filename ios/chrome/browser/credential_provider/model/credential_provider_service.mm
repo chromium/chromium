@@ -338,11 +338,9 @@ void CredentialProviderService::SyncStore() {
     if (error) {
       return;
     }
-    if (!SaveAccountInfo()) {
-      return;
-    }
     if (weak_credential_store) {
       SyncASIdentityStore(weak_credential_store);
+      SaveAccountInfo();
     }
   }];
 }
