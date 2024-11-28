@@ -145,12 +145,12 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Overload that makes it easy to pass in std::string values.
   void BindBlob(int param_index, base::span<const char> value) {
-    BindBlob(param_index, base::as_bytes(base::make_span(value)));
+    BindBlob(param_index, base::as_byte_span(value));
   }
 
   // Overload that makes it easy to pass in std::u16string values.
   void BindBlob(int param_index, base::span<const char16_t> value) {
-    BindBlob(param_index, base::as_bytes(base::make_span(value)));
+    BindBlob(param_index, base::as_byte_span(value));
   }
 
   // Conforms with base::Time serialization recommendations.
