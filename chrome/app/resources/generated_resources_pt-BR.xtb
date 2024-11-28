@@ -5174,7 +5174,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagem}one{# imagem}other{# imagens}}</translation>
 <translation id="4660476621274971848">A versão esperada era "<ph name="EXPECTED_VERSION" />", mas a instalada foi a "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Redimensionando</translation>
-<translation id="4661407454952063730">Os dados de apps podem ser quaisquer dados que um app tenha salvo (com base nas configurações do desenvolvedor), incluindo dados como contatos, mensagens e fotos.</translation>
+<translation id="4661407454952063730">Os dados de apps podem ser quaisquer dados salvos por um aplicativo (com base nas configurações do desenvolvedor), incluindo contatos, mensagens e fotos.</translation>
 <translation id="4662208278924489774">Aviso de download</translation>
 <translation id="4662373422909645029">O apelido não pode ter números</translation>
 <translation id="4662788913887017617">Compartilhar esse favorito com seu iPhone</translation>

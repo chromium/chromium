@@ -2240,7 +2240,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2540651571961486573">Arazo bat izan da. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Pantaila osoko igorpena optimizatu nahi duzu?</translation>
 <translation id="2541343621592284735">Ukatu da kamera eta mikrofonoa erabiltzeko baimena</translation>
-<translation id="2541706104884128042">Lo egiteko garaia aldatu da</translation>
+<translation id="2541706104884128042">Lotara joateko garaia aldatu da</translation>
 <translation id="2542050502251273923">Sareko konexioaren kudeatzailearen eta beste zerbitzu batzuen arazketa-maila ezartzen du ff_debug erabiliz.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak aplikazio honi ere emango zaizkio. <ph name="MANAGE_LINK" />}other{<ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak aplikazio hauei ere emango zaizkie.<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Fitxa hau</translation>
