@@ -67,8 +67,6 @@ RichHoverButton::RichHoverButton(
     views::Button::PressedCallback callback,
     const ui::ImageModel& main_image_icon,
     const std::u16string& title_text,
-    const std::u16string& secondary_text,
-    const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
     std::optional<ui::ImageModel> action_image_icon,
     std::optional<ui::ImageModel> state_icon)
@@ -93,14 +91,10 @@ RichHoverButton::RichHoverButton(
       // Column for title.
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kCenter, 1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
-      // Column for |secondary_text|.
-      .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kStretch,
-                 views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   if (state_icon.has_value()) {
+    has_state_icon_ = true;
     table_layout
         // Column for |state_icon|.
         ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
@@ -134,16 +128,7 @@ RichHoverButton::RichHoverButton(
   title_ = AddChildView(std::move(title_label));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetCanProcessEventsWithinSubtree(false);
-
-  auto secondary_label = std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_SECONDARY);
-  secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  secondary_label_ = AddChildView(std::move(secondary_label));
-
   title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  secondary_label_->SetTextStyle(views::style::STYLE_BODY_5);
-  secondary_label_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
 
   // State icon is optional and column is created only when it is set.
   if (state_icon.has_value()) {
@@ -159,13 +144,11 @@ RichHoverButton::RichHoverButton(
 
   if (!title_text.empty()) {
     SetTitleText(title_text);
-    if (!secondary_text.empty())
-      SetSecondaryText(secondary_text);
   }
 
   if (!subtitle_text.empty()) {
     table_layout->AddRows(1, views::TableLayout::kFixedSize);
-    AddChildView(std::make_unique<views::View>());
+    AddChildView(std::make_unique<views::View>());  // main icon column
     auto subtitle = std::make_unique<views::Label>(
         subtitle_text, views::style::CONTEXT_LABEL,
         views::style::STYLE_SECONDARY);
@@ -177,14 +160,12 @@ RichHoverButton::RichHoverButton(
     subtitle_->SetMultiLine(true);
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     subtitle_->SetAutoColorReadabilityEnabled(false);
-    AddChildView(std::make_unique<views::View>());
-    AddChildView(std::make_unique<views::View>());
+    AddFillerViews();
   }
 
   SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
 
-  SetTooltipText(tooltip_text);
   UpdateAccessibleName();
 
   DeprecatedLayoutImmediately();
@@ -193,12 +174,6 @@ RichHoverButton::RichHoverButton(
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {
   DCHECK(title_);
   title_->SetText(title_text);
-  UpdateAccessibleName();
-}
-
-void RichHoverButton::SetSecondaryText(const std::u16string& secondary_text) {
-  DCHECK(secondary_label_);
-  secondary_label_->SetText(secondary_text);
   UpdateAccessibleName();
 }
 
@@ -216,10 +191,9 @@ template <typename T>
 T* RichHoverButton::AddCustomSubtitle(std::unique_ptr<T> custom_view) {
   static_cast<views::TableLayout*>(GetLayoutManager())
       ->AddRows(1, views::TableLayout::kFixedSize);
-  AddChildView(std::make_unique<views::View>());
+  AddChildView(std::make_unique<views::View>());  // main icon column
   auto* view = AddChildView(std::move(custom_view));
-  AddChildView(std::make_unique<views::View>());
-  AddChildView(std::make_unique<views::View>());
+  AddFillerViews();
   return view;
 }
 
@@ -232,16 +206,19 @@ const views::Label* RichHoverButton::GetSubTitleViewForTesting() const {
 }
 
 void RichHoverButton::UpdateAccessibleName() {
-  const std::u16string title_text =
-      secondary_label_ == nullptr
-          ? title_->GetText()
-          : base::JoinString({title_->GetText(), secondary_label_->GetText()},
-                             u" ");
+  const std::u16string title_text = title_->GetText();
   const std::u16string accessible_name =
       subtitle_ == nullptr
           ? title_text
           : base::JoinString({title_text, subtitle_->GetText()}, u"\n");
   HoverButton::GetViewAccessibility().SetName(accessible_name);
+}
+
+void RichHoverButton::AddFillerViews() {
+  if (has_state_icon_) {
+    AddChildView(std::make_unique<views::View>());
+  }
+  AddChildView(std::make_unique<views::View>());
 }
 
 gfx::Size RichHoverButton::CalculatePreferredSize(

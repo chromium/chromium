@@ -30,13 +30,12 @@ class RichHoverButton : public HoverButton {
   METADATA_HEADER(RichHoverButton, HoverButton)
 
  public:
-  // Creates a hoverable button that displays the string given by
-  // |title_text| and |secondary_text| and displays the latter part in the
-  // secondary text color. Optional |action_image_icon| is shown on right side.
-  // |secondary_text| is shown on right side before the |action_image_icon|.
-  // |tooltip_text| is used for the tooltip shown on hovering over the button.
+  // Creates a hoverable button that has an icon on the left side, followed by
+  // |title_text| label. Optional |action_image_icon| and |state_icon| are shown
+  // on right side. |subtile_text| is positioned directly under the
+  // |title_text|.
   // *-------------------------------------------------------------------------*
-  // | Icon | |title_text|          |secondary_text| State image | Action icon |
+  // | Icon | |title_text|                         | State image | Action icon |
   // |-------------------------------------------------------------------------|
   // |      | |subtitle_text|                                                  |
   // *-------------------------------------------------------------------------*
@@ -44,8 +43,6 @@ class RichHoverButton : public HoverButton {
       views::Button::PressedCallback callback,
       const ui::ImageModel& main_image_icon,
       const std::u16string& title_text,
-      const std::u16string& secondary_text,
-      const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
       std::optional<ui::ImageModel> action_image_icon = std::nullopt,
       std::optional<ui::ImageModel> state_icon = std::nullopt);
@@ -56,8 +53,6 @@ class RichHoverButton : public HoverButton {
   ~RichHoverButton() override = default;
 
   void SetTitleText(const std::u16string& title_text);
-
-  void SetSecondaryText(const std::u16string& secondary_text);
 
   void SetSubtitleText(const std::u16string& subtitle_text);
 
@@ -72,7 +67,6 @@ class RichHoverButton : public HoverButton {
   T* AddCustomSubtitle(std::unique_ptr<T> custom_view);
 
   views::Label* title() { return title_; }
-  views::Label* secondary_label() { return secondary_label_; }
   views::Label* subtitle() { return subtitle_; }
 
   const views::Label* GetTitleViewForTesting() const;
@@ -88,9 +82,14 @@ class RichHoverButton : public HoverButton {
  private:
   void UpdateAccessibleName();
 
+  // Add filler views for state icon (if set) and action icon columns. Used for
+  // the table rows after the first one.
+  void AddFillerViews();
+
   raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::Label> secondary_label_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
+
+  bool has_state_icon_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_

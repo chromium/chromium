@@ -680,7 +680,7 @@ void MediaDialogView::InitializeCaptionSettingsSection() {
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsChromeRefreshIcon,
                                      ui::kColorIcon, kImageWidthDip),
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS),
-      std::u16string(), std::u16string(), std::u16string(),
+      std::u16string(),
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon, ui::kColorIcon,
                                      kImageWidthDip));
   caption_settings_button_ = caption_settings_container->AddChildView(

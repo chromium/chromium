@@ -62,8 +62,6 @@ ManagePasswordsListView::ManagePasswordsListView(
                 on_row_clicked_callback, *password_form),
             /*main_image_icon=*/favicon,
             /*title_text=*/GetDisplayUsername(*password_form),
-            /*secondary_text=*/std::u16string(),
-            /*tooltip_text=*/std::u16string(),
             /*subtitle_text=*/std::u16string(),
             /*action_image_icon=*/
             ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
@@ -95,10 +93,6 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*title_text=*/
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
-          /*secondary_text=*/std::u16string(),
-          /*tooltip_text=*/
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
           /*subtitle_text=*/std::u16string(),
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
@@ -107,6 +101,8 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*state_icon=*/std::nullopt));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
+  manage_passwords_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON));
 
   SetProperty(views::kElementIdentifierKey, kTopView);
 }

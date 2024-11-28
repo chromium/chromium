@@ -57,7 +57,7 @@ TEST_F(CookieControlsContentViewUnitTest, FeedbackSection) {
                IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE),
            l10n_util::GetStringUTF16(
                IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION)},
-          u" \n")));
+          u"\n")));
 }
 
 TEST_F(CookieControlsContentViewUnitTest, ToggleButton_Initial) {

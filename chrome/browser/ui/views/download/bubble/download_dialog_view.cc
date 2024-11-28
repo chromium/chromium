@@ -61,8 +61,6 @@ class ShowAllDownloadsButton : public RichHoverButton {
             std::move(show_all_downloads_callback),
             /*main_image_icon=*/ui::ImageModel(),
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL),
-            /*secondary_text=*/std::u16string(),
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP_LABEL),
             /*subtitle_text=*/std::u16string(),
             ui::ImageModel::FromVectorIcon(
                 vector_icons::kLaunchChromeRefreshIcon,
@@ -80,11 +78,6 @@ class ShowAllDownloadsButton : public RichHoverButton {
         // Column for title.
         .AddColumn(views::LayoutAlignment::kStretch,
                    views::LayoutAlignment::kCenter, 1.0f,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        // Column for |secondary_text|.
-        .AddColumn(views::LayoutAlignment::kEnd,
-                   views::LayoutAlignment::kStretch,
-                   views::TableLayout::kFixedSize,
                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
         // Column for |action_icon|.
         .AddColumn(views::LayoutAlignment::kCenter,
@@ -106,6 +99,9 @@ class ShowAllDownloadsButton : public RichHoverButton {
     image_container_view()->SetProperty(views::kViewIgnoredByLayoutKey, true);
     label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
     ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP_LABEL));
 
     DeprecatedLayoutImmediately();
   }

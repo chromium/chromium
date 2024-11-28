@@ -63,8 +63,6 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
                           weak_factory_.GetWeakPtr()),
       PageInfoViewFactory::GetHistoryIcon(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY), last_visit,
-
-      /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon());
   button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON);
   return button;

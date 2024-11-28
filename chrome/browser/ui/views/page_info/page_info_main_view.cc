@@ -135,14 +135,14 @@ PageInfoMainView::PageInfoMainView(
             this),
         PageInfoViewFactory::GetSiteSettingsIcon(),
         /*title_text=*/l10n_util::GetStringUTF16(link_text_id),
-        std::u16string(),
-        /*tooltip_text=*/l10n_util::GetStringUTF16(tooltip_text_id),
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
     site_settings_link_->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
     site_settings_link_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
+    site_settings_link_->SetTooltipText(
+        l10n_util::GetStringUTF16(tooltip_text_id));
   }
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
@@ -172,14 +172,14 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
                               base::Unretained(navigation_handler_)),
           PageInfoViewFactory::GetCookiesAndSiteDataIcon(),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-          /*secondary_text=*/std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP),
           /*subtitle_text=*/std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   cookie_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
   cookie_button_->SetProperty(views::kElementIdentifierKey,
                               kCookieButtonElementId);
+  cookie_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP));
   cookie_button_->title()->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   cookie_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
   if (cookie_button_->subtitle()) {
@@ -358,16 +358,15 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
         std::make_unique<RichHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),
-            PageInfoViewFactory::GetConnectionSecureIcon(), std::u16string(),
-            std::u16string(),
-
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON),
-            std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon())
+            PageInfoViewFactory::GetConnectionSecureIcon(),
+            security_description->summary, std::u16string(),
+            PageInfoViewFactory::GetOpenSubpageIcon())
             .release());
     connection_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    connection_button_->SetTitleText(security_description->summary);
+    connection_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON));
     connection_button_->title()->SetTextStyle(
         views::style::STYLE_BODY_3_MEDIUM);
 
@@ -613,12 +612,12 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
               this, GURL(info.more_about().url()), info.has_description()),
           PageInfoViewFactory::GetAboutThisSiteIcon(),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
-          std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
           description, PageInfoViewFactory::GetLaunchIcon()));
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   about_this_site_button->SetSubtitleMultiline(false);
+  about_this_site_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP));
   about_this_site_button->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);
   about_this_site_button->title()->SetEnabledColorId(kColorPageInfoForeground);
@@ -645,11 +644,11 @@ PageInfoMainView::CreateAdPersonalizationSection() {
                   this),
               PageInfoViewFactory::GetAdPersonalizationIcon(),
               l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
-              std::u16string(),
-              l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP),
               std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));
   ads_personalization_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+  ads_personalization_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP));
 
   ads_personalization_button->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);

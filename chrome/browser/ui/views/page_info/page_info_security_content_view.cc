@@ -139,13 +139,13 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                       view->certificate_.get());
                 },
                 this),
-            icon, l10n_util::GetStringUTF16(title_id), std::u16string(),
-
-            tooltip, subtitle_text, PageInfoViewFactory::GetLaunchIcon())
+            icon, l10n_util::GetStringUTF16(title_id), subtitle_text,
+            PageInfoViewFactory::GetLaunchIcon())
             .release());
     certificate_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
+    certificate_button_->SetTooltipText(tooltip);
     certificate_button_->title()->SetTextStyle(
         views::style::STYLE_BODY_3_MEDIUM);
     certificate_button_->title()->SetEnabledColorId(kColorPageInfoForeground);

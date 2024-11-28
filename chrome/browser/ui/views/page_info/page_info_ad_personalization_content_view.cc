@@ -57,7 +57,6 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
           l10n_util::GetStringUTF16(
               IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
           std::u16string(),
-          /*tooltip_text=*/std::u16string(), std::u16string(),
           PageInfoViewFactory::GetLaunchIcon()));
   manage_ad_privacy_button->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);

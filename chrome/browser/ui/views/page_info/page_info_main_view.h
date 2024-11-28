@@ -155,7 +155,7 @@ class PageInfoMainView : public views::View,
   raw_ptr<RichHoverButton> cookie_button_ = nullptr;
 
   // The button that opens up "Site Settings".
-  raw_ptr<views::View> site_settings_link_ = nullptr;
+  raw_ptr<RichHoverButton> site_settings_link_ = nullptr;
 
   // The view that contains the scroll view with permission rows and the reset
   // button, surrounded by separators.

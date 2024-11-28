@@ -159,14 +159,13 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
               this),
           PageInfoViewFactory::GetPermissionIcon(info),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
-          /*secondary_text=*/std::u16string(),
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP),
           /*subtitle_text=*/u" ", PageInfoViewFactory::GetLaunchIcon()));
   cookies_dialog_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
   cookies_dialog_button_->SetProperty(views::kElementIdentifierKey,
                                       kCookieDialogButton);
+  cookies_dialog_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP));
   cookies_dialog_button_->title()->SetTextStyle(
       views::style::STYLE_BODY_3_MEDIUM);
   cookies_dialog_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
@@ -391,14 +390,15 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
               &PageInfoCookiesContentView::RwsSettingsButtonClicked,
               base::Unretained(this)),
           PageInfoViewFactory::GetRwsIcon(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
           is_managed ? std::optional<ui::ImageModel>(
                            PageInfoViewFactory::GetEnforcedByPolicyIcon())
                      : std::nullopt));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
+  rws_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP));
   rws_button_->title()->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   rws_button_->title()->SetEnabledColorId(kColorPageInfoForeground);
   rws_button_->subtitle()->SetTextStyle(views::style::STYLE_BODY_4);
