@@ -109,6 +109,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void SetCommitFinishTimeStampForPendingEvents(
       base::TimeTicks commit_finish_time);
 
+  void UpdatePendingEventTimingsWithFallbackTime(base::TimeTicks fallback_time);
+
   void OnPaintFinished();
 
   void AddElementTiming(const AtomicString& name,
@@ -201,10 +203,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
-  // If a fallback time should be used in calculating an event duration, set
-  // the fallback value in the PerformanceEventTiming::EventTimingReportingInfo.
-  void SetFallbackTime(PerformanceEventTiming* entry);
-
   // The last time the page visibility was changed.
   base::TimeTicks last_hidden_timestamp_;
 
@@ -227,7 +225,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceNavigation> navigation_;
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
-  DOMHighResTimeStamp pending_pointer_down_start_time_;
+  base::TimeTicks pending_pointer_down_start_time_;
   std::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   std::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 
