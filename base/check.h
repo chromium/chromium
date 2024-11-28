@@ -77,15 +77,13 @@ class BASE_EXPORT CheckError {
  public:
   static CheckError Check(
       const char* condition,
-      base::NotFatalUntil fatal_milestone =
-          base::NotFatalUntil::NoSpecifiedMilestoneInternal,
+      base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
   // Takes ownership over (free()s after using) `log_message_str`, for use with
   // CHECK_op macros.
   static CheckError CheckOp(
       char* log_message_str,
-      base::NotFatalUntil fatal_milestone =
-          base::NotFatalUntil::NoSpecifiedMilestoneInternal,
+      base::NotFatalUntil fatal_milestone,
       const base::Location& location = base::Location::Current());
 
   static CheckError DCheck(
@@ -106,17 +104,8 @@ class BASE_EXPORT CheckError {
       char* log_message_str,
       const base::Location& location = base::Location::Current());
 
-  static CheckError PCheck(
-      const char* condition,
-      const base::Location& location = base::Location::Current());
-  static CheckError PCheck(
-      const base::Location& location = base::Location::Current());
-
   static CheckError DPCheck(
       const char* condition,
-      const base::Location& location = base::Location::Current());
-
-  static CheckError DumpWillBeNotReachedNoreturn(
       const base::Location& location = base::Location::Current());
 
   static CheckError NotImplemented(
@@ -145,13 +134,38 @@ class BASE_EXPORT CheckError {
   std::unique_ptr<LogMessage> log_message_;
 };
 
-// Used for NOTREACHED(base::NotFatalUntil).
-// TODO(pbos): Reconsider the name of this + NotReachedNoreturnError to be less
-// confusing.
+// Used for NOTREACHED(), its destructor is importantly [[noreturn]].
+class BASE_EXPORT CheckNoreturnError : public CheckError {
+ public:
+  [[noreturn]] NOMERGE NOINLINE NOT_TAIL_CALLED ~CheckNoreturnError();
+
+  static CheckNoreturnError Check(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
+  // Takes ownership over (free()s after using) `log_message_str`, for use with
+  // CHECK_op macros.
+  static CheckNoreturnError CheckOp(
+      char* log_message_str,
+      const base::Location& location = base::Location::Current());
+
+  static CheckNoreturnError PCheck(
+      const char* condition,
+      const base::Location& location = base::Location::Current());
+  static CheckNoreturnError PCheck(
+      const base::Location& location = base::Location::Current());
+
+ private:
+  using CheckError::CheckError;
+};
+
+// Used for NOTREACHED(base::NotFatalUntil) and DUMP_WILL_BE_NOTREACHED().
 class BASE_EXPORT NotReachedError : public CheckError {
  public:
   static NotReachedError NotReached(
       base::NotFatalUntil fatal_milestone,
+      const base::Location& location = base::Location::Current());
+
+  static NotReachedError DumpWillBeNotReached(
       const base::Location& location = base::Location::Current());
 
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
@@ -232,7 +246,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #define CHECK_WILL_STREAM() true
 
 #define CHECK_INTERNAL_IMPL(cond) \
-  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::Check(#cond), cond)
+  LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckNoreturnError::Check(#cond), cond)
 
 #endif
 
@@ -242,10 +256,11 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
               logging::CheckError::Check(#cond, __VA_ARGS__), cond))
 
 // Strip the conditional string based on CHECK_WILL_STREAM()
-#define PCHECK(cond)                                                     \
-  LOGGING_CHECK_FUNCTION_IMPL(                                           \
-      BASE_IF(CHECK_WILL_STREAM(), ::logging::CheckError::PCheck(#cond), \
-              ::logging::CheckError::PCheck()),                          \
+#define PCHECK(cond)                                        \
+  LOGGING_CHECK_FUNCTION_IMPL(                              \
+      BASE_IF(CHECK_WILL_STREAM(),                          \
+              ::logging::CheckNoreturnError::PCheck(#cond), \
+              ::logging::CheckNoreturnError::PCheck()),     \
       cond)
 
 #if DCHECK_IS_ON()

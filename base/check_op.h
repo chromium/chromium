@@ -184,8 +184,9 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
 
 #else
 
-#define CHECK_OP_INTERNAL_IMPL(name, op, val1, val2) \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, val1, val2)
+#define CHECK_OP_INTERNAL_IMPL(name, op, val1, val2)                       \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckNoreturnError::CheckOp, name, op, \
+                         val1, val2)
 
 #endif
 

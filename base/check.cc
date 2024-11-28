@@ -291,24 +291,6 @@ CheckError CheckError::DumpWillBeCheckOp(char* log_message_str,
   return CheckError(log_message);
 }
 
-CheckError CheckError::PCheck(const char* condition,
-                              const base::Location& location) {
-  SystemErrorCode err_code = logging::GetLastSystemErrorCode();
-#if BUILDFLAG(IS_WIN)
-  auto* const log_message = new Win32ErrorLogMessage(
-      location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  auto* const log_message = new ErrnoLogMessage(
-      location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
-#endif
-  log_message->stream() << "Check failed: " << condition << ". ";
-  return CheckError(log_message);
-}
-
-CheckError CheckError::PCheck(const base::Location& location) {
-  return PCheck("", location);
-}
-
 CheckError CheckError::DPCheck(const char* condition,
                                const base::Location& location) {
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
@@ -318,15 +300,6 @@ CheckError CheckError::DPCheck(const char* condition,
   auto* const log_message = new DCheckErrnoLogMessage(location, err_code);
 #endif
   log_message->stream() << "Check failed: " << condition << ". ";
-  return CheckError(log_message);
-}
-
-CheckError CheckError::DumpWillBeNotReachedNoreturn(
-    const base::Location& location) {
-  auto* const log_message = new NotReachedLogMessage(
-      location, GetDumpSeverity(),
-      base::NotFatalUntil::NoSpecifiedMilestoneInternal);
-  log_message->stream() << "NOTREACHED hit. ";
   return CheckError(log_message);
 }
 
@@ -364,6 +337,56 @@ CheckError::~CheckError() {
 
 CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
+// Note: This function ends up in crash stack traces. If its full name changes,
+// the crash server's magic signature logic needs to be updated. See
+// cl/306632920.
+CheckNoreturnError::~CheckNoreturnError() {
+  // Reset before `ImmediateCrash()` to ensure the message is flushed.
+  log_message_.reset();
+
+  // Make sure we die if we haven't.
+  // TODO(crbug.com/40254046): Replace this with NOTREACHED() once LOG(FATAL) is
+  // [[noreturn]].
+  base::ImmediateCrash();
+}
+
+CheckNoreturnError CheckNoreturnError::Check(const char* condition,
+                                             const base::Location& location) {
+  auto* const log_message =
+      new CheckLogMessage(location, LOGGING_FATAL,
+                          base::NotFatalUntil::NoSpecifiedMilestoneInternal);
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckNoreturnError(log_message);
+}
+
+CheckNoreturnError CheckNoreturnError::CheckOp(char* log_message_str,
+                                               const base::Location& location) {
+  auto* const log_message =
+      new CheckLogMessage(location, LOGGING_FATAL,
+                          base::NotFatalUntil::NoSpecifiedMilestoneInternal);
+  log_message->stream() << log_message_str;
+  free(log_message_str);
+  return CheckNoreturnError(log_message);
+}
+
+CheckNoreturnError CheckNoreturnError::PCheck(const char* condition,
+                                              const base::Location& location) {
+  SystemErrorCode err_code = logging::GetLastSystemErrorCode();
+#if BUILDFLAG(IS_WIN)
+  auto* const log_message = new Win32ErrorLogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  auto* const log_message = new ErrnoLogMessage(
+      location.file_name(), location.line_number(), LOGGING_FATAL, err_code);
+#endif
+  log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckNoreturnError(log_message);
+}
+
+CheckNoreturnError CheckNoreturnError::PCheck(const base::Location& location) {
+  return PCheck("", location);
+}
+
 NotReachedError NotReachedError::NotReached(base::NotFatalUntil fatal_milestone,
                                             const base::Location& location) {
   auto* const log_message = new NotReachedLogMessage(
@@ -372,6 +395,15 @@ NotReachedError NotReachedError::NotReached(base::NotFatalUntil fatal_milestone,
   // TODO(pbos): Consider a better message for NotReached(), this is here to
   // match existing behavior + test expectations.
   log_message->stream() << "Check failed: false. ";
+  return NotReachedError(log_message);
+}
+
+NotReachedError NotReachedError::DumpWillBeNotReached(
+    const base::Location& location) {
+  auto* const log_message = new NotReachedLogMessage(
+      location, GetDumpSeverity(),
+      base::NotFatalUntil::NoSpecifiedMilestoneInternal);
+  log_message->stream() << "NOTREACHED hit. ";
   return NotReachedError(log_message);
 }
 

@@ -136,11 +136,7 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
   // legitimate for libjingle to use a different thread to invoke this method
   // whenever the audio format changes.
 #ifndef NDEBUG
-  // TODO(crbug.com/40122554): Turn into CHECK once [[noreturn]] on failure is
-  // understood.
-  if (!single_audio_thread_guard_.Try()) {
-    base::ImmediateCrash();
-  }
+  CHECK(single_audio_thread_guard_.Try());
 #endif
 
   TRACE_EVENT2("audio", "PeerConnectionRemoteAudioSource::OnData",
