@@ -214,6 +214,76 @@ def _CreateUncompressedPakSizeDeltas(symbols):
   ]
 
 
+def _ParseUnusedResources(unused_resources_path):
+  with open(unused_resources_path, 'rt') as contents:
+    return set(line.split('#')[0] for line in contents)
+
+
+def _ParseRTxtResources(path):
+  ret = set()
+  with open(path, 'rt') as f:
+    for line in f:
+      # Ignore comments
+      if line.strip().startswith('--'):
+        continue
+      m = re.match(r'(?:int(?:\[\])?) (\w+) (\w+) (?:.+)$', line)
+      if not m:
+        raise Exception('Unexpected line in R.txt: %s' % line)
+      resource_type, name = m.groups()
+      ret.add(f'{resource_type}/{name}')
+  return ret
+
+
+def _CreateResourceDiffLines(unused_resources_before_paths, r_txt_before_paths,
+                             unused_resources_after_paths, r_txt_after_paths):
+  unused_resources_before = set()
+  for path in unused_resources_before_paths:
+    unused_resources_before.update(_ParseUnusedResources(path))
+
+  unused_resources_after = set()
+  for path in unused_resources_after_paths:
+    unused_resources_after.update(_ParseUnusedResources(path))
+
+  all_resources_before = set()
+  for path in r_txt_before_paths:
+    all_resources_before.update(_ParseRTxtResources(path))
+
+  all_resources_after = set()
+  for path in r_txt_after_paths:
+    all_resources_after.update(_ParseRTxtResources(path))
+
+  new_resources = all_resources_after - all_resources_before
+  existing_resources = all_resources_before & all_resources_after
+  removed_resources = all_resources_before - all_resources_after
+
+  new_used_resources = new_resources - unused_resources_after
+  new_unused_resources = new_resources & unused_resources_after
+
+  existing_now_used_resources = (
+      (existing_resources & unused_resources_before) - unused_resources_after)
+  existing_now_unused_resources = (
+      (existing_resources - unused_resources_before) & unused_resources_after)
+
+  removed_resources_previously_used = (removed_resources -
+                                       unused_resources_before)
+  removed_resources_previously_unused = (removed_resources
+                                         & unused_resources_before)
+
+  lines = ['===== New resources that are used: =====']
+  lines += [f'+{r}' for r in sorted(new_used_resources)]
+  lines += ['===== New resources that are unused: =====']
+  lines += [f'+{r}' for r in sorted(new_unused_resources)]
+  lines = ['===== Existing resources that have become used: =====']
+  lines += [f'~{r}' for r in sorted(existing_now_used_resources)]
+  lines += ['===== Existing resources that have become unused: =====']
+  lines += [f'~{r}' for r in sorted(existing_now_unused_resources)]
+  lines += ['===== Removed resources that were previously used: =====']
+  lines += [f'-{r}' for r in sorted(removed_resources_previously_used)]
+  lines += ['===== Removed resources that were previously unused: =====']
+  lines += [f'-{r}' for r in sorted(removed_resources_previously_unused)]
+  return lines
+
+
 def _IsForTestSymbol(value):
   return 'ForTest' in value or 'FOR_TEST' in value
 
@@ -376,7 +446,7 @@ def main():
     config = json.load(fh)
 
   if args.local_test:
-    size_filename = 'Trichrome.minimal.apks.size'
+    size_filename = 'Trichrome32.minimal.apks.size'
   else:
     size_filename = config['supersize_input_file'] + '.size'
 
@@ -417,6 +487,34 @@ def main():
       _CreateMutableConstantsDelta(changed_symbols))
   size_deltas.add(mutable_constants_delta)
   metrics.add((mutable_constants_delta, _MUTABLE_CONSTANTS_LOG))
+
+  logging.info('Calculating android resources diff')
+  unused_resources_paths = []
+  r_txt_paths = []
+  for f in config['archive_files']:
+    if f.endswith('.unused_resources'):
+      unused_resources_paths.append(f)
+    if f.endswith('.R.txt'):
+      r_txt_paths.append(f)
+  resources_diff_lines = []
+  if unused_resources_paths and r_txt_paths:
+    unused_resources_before_paths = [
+        _UseAlterantiveIfMissing(before_path_resolver(p))
+        for p in unused_resources_paths
+    ]
+    unused_resources_after_paths = [
+        _UseAlterantiveIfMissing(after_path_resolver(p))
+        for p in unused_resources_paths
+    ]
+    r_txt_before_paths = [
+        _UseAlterantiveIfMissing(before_path_resolver(p)) for p in r_txt_paths
+    ]
+    r_txt_after_paths = [
+        _UseAlterantiveIfMissing(after_path_resolver(p)) for p in r_txt_paths
+    ]
+    resources_diff_lines = _CreateResourceDiffLines(
+        unused_resources_before_paths, r_txt_before_paths,
+        unused_resources_after_paths, r_txt_after_paths)
 
   # Look for symbols with 'ForTest' in their name.
   logging.info('Checking for DEX symbols named "ForTest"')
@@ -511,6 +609,10 @@ To understand what those checks are and how to pass them, see:
           'name': 'Dex Class and Method Diff',
           'lines': dex_delta_lines + see_docs_lines,
           'log_name': _DEX_SYMBOLS_LOG,
+      },
+      {
+          'name': 'Android Resources Diff',
+          'lines': resources_diff_lines,
       },
       {
           'name': 'SuperSize Text Diff',
