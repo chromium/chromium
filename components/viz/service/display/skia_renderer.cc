@@ -4077,8 +4077,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     overlay->display_rect =
         quad->shared_quad_state->quad_to_target_transform.MapRect(
             gfx::RectF(filter_bounds));
-    // Apply all clipping because we can't always delegate quads that extend
-    // beyond window bounds in Lacros.
+    // Apply all clipping because we may not always delegate quads that extend
+    // beyond window bounds.
     gfx::Rect apply_clip = gfx::Rect(current_frame()->device_viewport_size);
     if (overlay->clip_rect.has_value()) {
       apply_clip.Intersect(overlay->clip_rect.value());

@@ -136,7 +136,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   };
   OverlayResources overlay_resources;
 
-  // TODO(crbug/354862211): Consider removing post LaCros sunset.
+  // TODO(crbug.com/40279814): Remove this resource size.
   const gfx::Size& resource_size_in_pixels() const {
     return overlay_resources.size_in_pixels;
   }
