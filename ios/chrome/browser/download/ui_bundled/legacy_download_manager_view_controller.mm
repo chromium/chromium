@@ -43,7 +43,7 @@ const NSInteger kNumberOfLines = 1;
 const CGFloat kIncognitoWarningMargin = 16;
 
 // Returns formatted size string.
-NSString* GetSizeString(long long size_in_bytes) {
+NSString* GetSizeString(int64_t size_in_bytes) {
   return [NSByteCountFormatter
       stringFromByteCount:size_in_bytes
                countStyle:NSByteCountFormatterCountStyleFile];

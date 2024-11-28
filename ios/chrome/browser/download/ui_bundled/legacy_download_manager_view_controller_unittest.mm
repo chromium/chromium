@@ -47,12 +47,25 @@ TEST_F(LegacyDownloadManagerViewControllerTest, NotStartedWithLongFileName) {
 TEST_F(LegacyDownloadManagerViewControllerTest,
        NotStartedWithLongCountOfExpectedBytes) {
   view_controller_.state = kDownloadManagerStateNotStarted;
-  view_controller_.fileName = @"file.zip";
-  view_controller_.countOfBytesExpectedToReceive = 1000 * 1024 * 1024;
+  NSString* file_name = @"file.zip";
+  view_controller_.fileName = file_name;
+  int64_t count_of_bytes = 1000 * 1024 * 1024;
+  view_controller_.countOfBytesExpectedToReceive = count_of_bytes;
 
-  EXPECT_NSEQ(@"file.zip - 1.05 GB", view_controller_.statusLabel.text);
-  EXPECT_NSEQ(@"Download", [view_controller_.actionButton
-                               titleForState:UIControlStateNormal]);
+  // "file.zip - 1.05 GB"
+  NSString* expected_status_text = [NSString
+      stringWithFormat:
+          @"%@ - %@", file_name,
+          [NSByteCountFormatter
+              stringFromByteCount:count_of_bytes
+                       countStyle:NSByteCountFormatterCountStyleFile]];
+
+  EXPECT_NSEQ(expected_status_text, view_controller_.statusLabel.text);
+  // "Download"
+  NSString* expected_action_text =
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD);
+  EXPECT_NSEQ(expected_action_text, [view_controller_.actionButton
+                                        titleForState:UIControlStateNormal]);
   EXPECT_TRUE(view_controller_.progressView.hidden);
 }
 
