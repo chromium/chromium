@@ -36,7 +36,7 @@ class NotificationUIManager {
  public:
   NotificationUIManager(const NotificationUIManager&) = delete;
   NotificationUIManager& operator=(const NotificationUIManager&) = delete;
-  virtual ~NotificationUIManager() {}
+  virtual ~NotificationUIManager() = default;
 
   // Creates an initialized UI manager.
   static std::unique_ptr<NotificationUIManager> Create();
@@ -91,7 +91,7 @@ class NotificationUIManager {
   virtual void StartShutdown() = 0;
 
  protected:
-  NotificationUIManager() {}
+  NotificationUIManager() = default;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_UI_MANAGER_H_

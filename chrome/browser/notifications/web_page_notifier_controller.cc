@@ -25,7 +25,7 @@
 WebPageNotifierController::WebPageNotifierController(Observer* observer)
     : observer_(observer) {}
 
-WebPageNotifierController::~WebPageNotifierController() {}
+WebPageNotifierController::~WebPageNotifierController() = default;
 
 std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
     Profile* profile) {

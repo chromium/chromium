@@ -29,7 +29,7 @@ namespace message_center {
 
 class NotificationUIManagerTest : public BrowserWithTestWindowTest {
  public:
-  NotificationUIManagerTest() {}
+  NotificationUIManagerTest() = default;
 
  protected:
   void SetUp() override {

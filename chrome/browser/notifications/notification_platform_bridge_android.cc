@@ -396,7 +396,7 @@ void NotificationPlatformBridgeAndroid::RegisterProfilePrefs(
 }
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
-    RegeneratedNotificationInfo() {}
+    RegeneratedNotificationInfo() = default;
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     RegeneratedNotificationInfo(
@@ -406,4 +406,4 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
       webapk_package(webapk_package) {}
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
-    ~RegeneratedNotificationInfo() {}
+    ~RegeneratedNotificationInfo() = default;
