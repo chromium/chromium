@@ -7,6 +7,7 @@ package org.chromium.support_lib_glue;
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
 import android.net.Uri;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,6 +19,7 @@ import com.android.webview.chromium.WebkitToSharedGlueConverter;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
+import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.VisualStateCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderBoundaryInterface;
@@ -211,6 +213,42 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.IS_AUDIO_MUTED")) {
             recordApiCall(ApiCall.IS_AUDIO_MUTED);
             return mSharedWebViewChromium.getAwContents().isAudioMuted();
+        }
+    }
+
+    @Override
+    public void prerenderUrl(
+            String url,
+            ValueCallback<Void> activationCallback,
+            ValueCallback<Throwable> errorCallback) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PRERENDER_URL")) {
+            recordApiCall(ApiCall.PRERENDER_URL);
+            mSharedWebViewChromium.getAwContents().startPrerendering(url, null);
+        }
+    }
+
+    @Override
+    public void prerenderUrl(
+            String url,
+            /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
+            ValueCallback<Void> activationCallback,
+            ValueCallback<Throwable> errorCallback) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.PRERENDER_URL_WITH_PARAMS")) {
+            recordApiCall(ApiCall.PRERENDER_URL_WITH_PARAMS);
+            SpeculativeLoadingParametersBoundaryInterface
+                    speculativeLoadingParametersBoundaryInterface =
+                            BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                                    SpeculativeLoadingParametersBoundaryInterface.class,
+                                    speculativeLoadingParameters);
+            mSharedWebViewChromium
+                    .getAwContents()
+                    .startPrerendering(
+                            url,
+                            SupportLibSpeculativeLoadingParametersAdapter
+                                    .fromSpeculativeLoadingParametersBoundaryInterface(
+                                            speculativeLoadingParametersBoundaryInterface)
+                                    .toAwPrefetchParams());
         }
     }
 }

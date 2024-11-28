@@ -20,6 +20,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerSettingsAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibSpeculativeLoadingParametersAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibStartUpResult.java",
     "java/src/org/chromium/support_lib_glue/SupportLibTracingControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageAdapter.java",

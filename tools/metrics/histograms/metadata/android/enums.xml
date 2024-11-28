@@ -604,6 +604,8 @@ chromium-metrics-reviews@google.com.
   <int value="112" label="WebViewCompat.setDefaultTrafficStatsTag"/>
   <int value="113" label="WebViewCompat.setDefaultTrafficStatsUid"/>
   <int value="114" label="WebViewCompat.startUpWebView"/>
+  <int value="115" label="WebViewCompat.prerenderUrl"/>
+  <int value="116" label="WebViewCompat.prerenderUrlWithParams"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

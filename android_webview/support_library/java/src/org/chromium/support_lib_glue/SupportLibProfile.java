@@ -13,15 +13,12 @@ import android.webkit.WebStorage;
 
 import androidx.annotation.NonNull;
 
-import com.android.webview.chromium.NoVarySearchData;
 import com.android.webview.chromium.PrefetchException;
 import com.android.webview.chromium.PrefetchNetworkException;
 import com.android.webview.chromium.PrefetchOperationCallback;
-import com.android.webview.chromium.PrefetchParams;
 import com.android.webview.chromium.Profile;
 
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.support_lib_boundary.NoVarySearchDataBoundaryInterface;
 import org.chromium.support_lib_boundary.PrefetchOperationCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
 import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
@@ -92,17 +89,11 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                         SpeculativeLoadingParametersBoundaryInterface.class,
                         speculativeLoadingParams);
 
-        NoVarySearchDataBoundaryInterface noVarySearchData =
-                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        NoVarySearchDataBoundaryInterface.class,
-                        speculativeLoadingParameters.getNoVarySearchData());
-
         mProfileImpl.prefetchUrl(
                 url,
-                new PrefetchParams(
-                        speculativeLoadingParameters.getAdditionalHeaders(),
-                        mapNoVarySearchData(noVarySearchData),
-                        speculativeLoadingParameters.isJavaScriptEnabled()),
+                SupportLibSpeculativeLoadingParametersAdapter
+                        .fromSpeculativeLoadingParametersBoundaryInterface(
+                                speculativeLoadingParameters),
                 createOperationCallback(callback));
     }
 
@@ -141,15 +132,5 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                                         : new SupportLibPrefetchException(prefetchException)));
             }
         };
-    }
-
-    private NoVarySearchData mapNoVarySearchData(
-            NoVarySearchDataBoundaryInterface noVarySearchData) {
-        if (noVarySearchData == null) return null;
-        return new NoVarySearchData(
-                noVarySearchData.getVaryOnKeyOrder(),
-                noVarySearchData.getIgnoreDifferencesInParameters(),
-                noVarySearchData.getIgnoredQueryParameters(),
-                noVarySearchData.getConsideredQueryParameters());
     }
 }

@@ -5,6 +5,7 @@
 package org.chromium.support_lib_boundary;
 
 import android.net.Uri;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
@@ -48,4 +49,15 @@ public interface WebViewProviderBoundaryInterface {
     boolean isAudioMuted();
 
     /* Profile */ InvocationHandler getProfile();
+
+    void prerenderUrl(
+            String url,
+            ValueCallback<Void> activationCallback,
+            ValueCallback<Throwable> errorCallback);
+
+    void prerenderUrl(
+            String url,
+            /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
+            ValueCallback<Void> activationCallback,
+            ValueCallback<Throwable> errorCallback);
 }
