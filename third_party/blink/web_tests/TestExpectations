@@ -8680,4 +8680,4 @@ crbug.com/381142479 [ Linux ] virtual/view-transition-on-navigation/external/wpt
 crbug.com/378680890 [ Mac ] fast/peerconnection/RTCPeerConnection-many.html [ Pass Timeout ]
 
 # Gardener 2024-11-28
-crbug.com/380534434 [ Win11 ] external/wpt/css/css-scroll-snap/snap-fling-in-large-area.html [ Failure Pass Timeout ]
+crbug.com/380534434 [ Win ] external/wpt/css/css-scroll-snap/snap-fling-in-large-area.html [ Failure Pass Timeout ]
