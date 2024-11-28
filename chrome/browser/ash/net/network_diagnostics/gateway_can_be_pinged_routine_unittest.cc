@@ -72,7 +72,7 @@ class FakeDebugDaemonClient : public ash::FakeDebugDaemonClient {
   FakeDebugDaemonClient(const FakeDebugDaemonClient&) = delete;
   FakeDebugDaemonClient& operator=(const FakeDebugDaemonClient&) = delete;
 
-  ~FakeDebugDaemonClient() override {}
+  ~FakeDebugDaemonClient() override = default;
 
   void TestICMP(const std::string& ip_address,
                 TestICMPCallback callback) override {

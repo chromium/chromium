@@ -73,7 +73,7 @@ void SavePrivateKeyAndQuitCallback(scoped_refptr<net::SSLPrivateKey>* out_key,
 
 class ClientCertStoreKcerTest : public ::testing::Test {
  public:
-  ClientCertStoreKcerTest() {}
+  ClientCertStoreKcerTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(user1_.constructed_successfully());

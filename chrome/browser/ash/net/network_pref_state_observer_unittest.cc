@@ -48,7 +48,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
   NetworkPrefStateObserverTest& operator=(const NetworkPrefStateObserverTest&) =
       delete;
 
-  ~NetworkPrefStateObserverTest() override {}
+  ~NetworkPrefStateObserverTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();

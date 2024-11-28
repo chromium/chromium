@@ -26,7 +26,7 @@ const int kVeryHighLatencyDelayMs = 1050;
 
 class ArcHttpRoutineTest : public ::testing::Test {
  public:
-  ArcHttpRoutineTest() {}
+  ArcHttpRoutineTest() = default;
 
   ArcHttpRoutineTest(const ArcHttpRoutineTest&) = delete;
   ArcHttpRoutineTest& operator=(const ArcHttpRoutineTest&) = delete;

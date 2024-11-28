@@ -41,7 +41,7 @@ ClientCertStoreKcer::ClientCertStoreKcer(
     base::WeakPtr<kcer::Kcer> kcer)
     : cert_provider_(std::move(cert_provider)), kcer_(std::move(kcer)) {}
 
-ClientCertStoreKcer::~ClientCertStoreKcer() {}
+ClientCertStoreKcer::~ClientCertStoreKcer() = default;
 
 void ClientCertStoreKcer::GetClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,

@@ -26,7 +26,7 @@ const int kVeryHighLatencyDelayMs = 550;
 
 class ArcDnsResolutionRoutineTest : public ::testing::Test {
  public:
-  ArcDnsResolutionRoutineTest() {}
+  ArcDnsResolutionRoutineTest() = default;
 
   ArcDnsResolutionRoutineTest(const ArcDnsResolutionRoutineTest&) = delete;
   ArcDnsResolutionRoutineTest& operator=(const ArcDnsResolutionRoutineTest&) =

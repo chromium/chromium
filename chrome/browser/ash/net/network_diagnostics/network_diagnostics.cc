@@ -46,7 +46,7 @@ NetworkDiagnostics::NetworkDiagnostics(DebugDaemonClient* debug_daemon_client) {
   }
 }
 
-NetworkDiagnostics::~NetworkDiagnostics() {}
+NetworkDiagnostics::~NetworkDiagnostics() = default;
 
 void NetworkDiagnostics::BindReceiver(
     mojo::PendingReceiver<mojom::NetworkDiagnosticsRoutines> receiver) {
