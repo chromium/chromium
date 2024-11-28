@@ -42,7 +42,7 @@ SimpleSizeCalculator::SimpleSizeCalculator(
     const CalculationType& calculation_type)
     : calculation_type_(calculation_type) {}
 
-SimpleSizeCalculator::~SimpleSizeCalculator() {}
+SimpleSizeCalculator::~SimpleSizeCalculator() = default;
 
 void SimpleSizeCalculator::StartCalculation() {
   if (calculating_) {
