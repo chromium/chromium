@@ -2028,6 +2028,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Worker.DevTools.AgentHost.Size" units="count"
+    expires_after="2025-04-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    If PlzDedicatedWorker is enabled, DedicatedWorkerDebToolsAgent will be
+    created and kept in the WorkerDevtoolsManager. This metric shows the number
+    of the agent kept in the manager. The metric is recorded when the new entry
+    is created, which correspond to timing when the
+    Worker.BrowserProcess.DevToolsCreateTime metric is recorded. Therefore, it
+    can be used for good understanding on how the number of entries affect the
+    devtools agent creation time.
+  </summary>
+</histogram>
+
 <histogram name="Worker.TopLevelScript.FetchClassicScriptTime" units="ms"
     expires_after="2025-04-01">
   <owner>yyanagisawa@chromium.org</owner>
