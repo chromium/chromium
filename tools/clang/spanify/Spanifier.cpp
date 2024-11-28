@@ -21,6 +21,7 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
+#include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/TargetSelect.h"
 
@@ -607,23 +608,38 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   return data_node;
 }
 
-// Takes in a copy of a variable assumed to be in snake_case and switches it
-// into CamelCase.
-std::string snakeCaseToCamelCase(std::string snake_case) {
-  // We want the first char to be capitalized so start with '_'.
-  char prev = '_';
-  for (char& c : snake_case) {
+// Generate a class name for rewriting unnamed struct/class types. This is
+// based on the `var_name` which is the name of the array variable.
+std::string GenerateClassName(std::string var_name) {
+  // Chrome coding style is either:
+  // - snake_case for variables.
+  // - kCamelCase for constants.
+  //
+  // Variables are rewritten in CamelCase. Same for constants, but we need to
+  // drop the 'k'.
+  const bool is_constant =
+      var_name.size() > 2 && var_name[0] == 'k' &&
+      std::isupper(static_cast<unsigned char>(var_name[1])) &&
+      var_name.find('_') == std::string::npos;
+  if (is_constant) {
+    var_name = var_name.substr(1);
+  }
+
+  // Convert to CamelCase:
+  char prev = '_';  // Force the first character to be uppercase.
+  for (char& c : var_name) {
     if (prev == '_') {
-      c = std::toupper(c);
+      c = llvm::toUpper(c);
     }
     prev = c;
   }
   // Now we need to remove the '_'s from the string, recall std::remove moves
   // everything to the end and then returns the first '_' (or end()). We then
   // call erase from there to the end to actually remove.
-  snake_case.erase(std::remove(snake_case.begin(), snake_case.end(), '_'),
-                   snake_case.end());
-  return snake_case;
+  // var_name.erase(std::remove(var_name.begin(), var_name.end(), '_'),
+  // var_name.end());
+  llvm::erase(var_name, '_');
+  return var_name;
 }
 
 // Checks if the given array definition involves an unnamed struct type
@@ -678,7 +694,7 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
     clang::DeclarationName original_name = record_decl->getDeclName();
     clang::DeclarationName temporal_class_name;
     if (is_unnamed) {
-      new_class_name_string = snakeCaseToCamelCase(array_variable_as_string);
+      new_class_name_string = GenerateClassName(array_variable_as_string);
       clang::StringRef new_class_name(new_class_name_string);
       clang::IdentifierInfo& new_class_name_identifier =
           ast_context.Idents.get(new_class_name);

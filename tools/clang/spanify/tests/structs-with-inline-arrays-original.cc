@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 // No expected rewrite:
 // We don't handle global C arrays.
 // TODO(364338808) Handle this case.
@@ -30,6 +32,36 @@ void fct() {
   struct {
     int val;
   } func_buffer[4];
+
+  // Expected rewrite:
+  // struct TestCases {
+  //   int val;
+  // };
+  // const auto kTestCases = std::to_array<TestCases, 4>({{1}, {2}, {3}, {4}});
+  const struct {
+    int val;
+  } kTestCases[4] = {{1}, {2}, {3}, {4}};
+  std::ignore = kTestCases[2].val;  // Unsafe access to trigger spanification.
+
+  // Expected rewrite:
+  // struct GTestCases {
+  //   int val;
+  // };
+  // const auto gTestCases = std::to_array<GTestCases, 4>({{1}, {2}, {3}, {4}});
+  const struct {
+    int val;
+  } gTestCases[4] = {{1}, {2}, {3}, {4}};
+  std::ignore = gTestCases[2].val;  // Unsafe access to trigger spanification.
+
+  // Expected rewrite:
+  // struct Knights {
+  //   int val;
+  // };
+  // const auto knights = std::to_array<Knights, 4>({{1}, {2}, {3}, {4}});
+  const struct {
+    int val;
+  } knights[4] = {{1}, {2}, {3}, {4}};
+  std::ignore = knights[2].val;  // Unsafe access to trigger spanification.
 
   // Expected rewrite:
   // struct funcHasName {
