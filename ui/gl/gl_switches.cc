@@ -324,6 +324,12 @@ bool IsDefaultANGLEVulkan() {
   // Exclude SwiftShader-based Android emulators for now.
   if (active_gpu.driverId == VK_DRIVER_ID_GOOGLE_SWIFTSHADER)
     return false;
+
+  // Encountered bugs with older Imagination drivers.  New drivers seem fixed,
+  // but disabled for the sake of experiment for now. crbug.com/371512561
+  if (active_gpu.driverId == VK_DRIVER_ID_IMAGINATION_PROPRIETARY) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
