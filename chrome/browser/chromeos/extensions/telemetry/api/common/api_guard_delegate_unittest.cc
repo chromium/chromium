@@ -121,6 +121,11 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         /*app_ui_url=*/"https://acerpartners.com/acerbooster",
         /*matches_origin=*/"https://acerpartners.com/*",
         /*manufacturer=*/"Acer"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/"abpkjagfgndmbkendplbabnefkjkgdcf",
+        /*app_ui_url=*/"https://chromebookdiags.lenovo.com",
+        /*matches_origin=*/"https://chromebookdiags.lenovo.com/*",
+        /*manufacturer=*/"Lenovo"),
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
