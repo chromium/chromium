@@ -398,9 +398,11 @@ void WorkerScriptFetcher::CreateScriptLoader(
   BrowserContext* browser_context = factory_process->GetBrowserContext();
   DCHECK(browser_context);  // Checked in the Start method.
 
-  // Do not enforce COEP on the main script fetch.
+  // Do not enforce COEP or Document-Isolation-Policy on the main script fetch.
   client_security_state->cross_origin_embedder_policy =
       network::CrossOriginEmbedderPolicy();
+  client_security_state->document_isolation_policy =
+      network::DocumentIsolationPolicy();
 
   // Create the URL loader factory for WorkerScriptLoaderFactory to use to load
   // the main script.

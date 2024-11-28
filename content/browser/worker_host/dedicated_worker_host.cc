@@ -48,6 +48,7 @@
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -430,6 +431,12 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     worker_client_security_state_->cross_origin_embedder_policy =
         result->main_script_load_params->response_head->parsed_headers
             ->cross_origin_embedder_policy;
+
+    // Also set the worker global scope's document isolation policy to the
+    // result of obatining a document isolation policy from response.
+    worker_client_security_state_->document_isolation_policy =
+        result->main_script_load_params->response_head->parsed_headers
+            ->document_isolation_policy;
   }
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
@@ -448,7 +455,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // > 14.8 If the result of checking a global object's embedder policy with
   // worker global scope, owner, and response is false, then set response to a
   // network error.
-  if (!CheckCrossOriginEmbedderPolicy()) {
+  if (!CheckWebSecurityPolicies()) {
     ScriptLoadStartFailed(network::URLLoaderCompletionStatus(
         network::mojom::BlockedByResponseReason::
             kCoepFrameResourceNeedsCoepHeader));
@@ -579,7 +586,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
 
 // [spec]
 // https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
-bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy() {
+bool DedicatedWorkerHost::CheckWebSecurityPolicies() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   DCHECK(final_response_url_);
 
@@ -592,16 +599,31 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy() {
           creator_client_security_state_->cross_origin_embedder_policy;
   const network::CrossOriginEmbedderPolicy&
       worker_cross_origin_embedder_policy = cross_origin_embedder_policy();
+  const network::DocumentIsolationPolicy& creator_document_isolation_policy =
+      creator_client_security_state_->document_isolation_policy;
+  const network::DocumentIsolationPolicy& worker_document_isolation_policy =
+      worker_client_security_state_->document_isolation_policy;
+
+  bool report_only_coep_blocks_worker =
+      network::CompatibleWithCrossOriginIsolated(
+          creator_cross_origin_embedder_policy.report_only_value) &&
+      !network::CompatibleWithCrossOriginIsolated(
+          worker_cross_origin_embedder_policy);
+  bool coep_blocks_worker = network::CompatibleWithCrossOriginIsolated(
+                                creator_cross_origin_embedder_policy.value) &&
+                            !network::CompatibleWithCrossOriginIsolated(
+                                worker_cross_origin_embedder_policy);
+  bool dip_blocks_worker = network::DIPCompatibleWithCrossOriginIsolated(
+                               creator_document_isolation_policy.value) &&
+                           !network::DIPCompatibleWithCrossOriginIsolated(
+                               worker_document_isolation_policy);
 
   // [spec]: 4. If ownerPolicy's report-only value is "require-corp" or
   // "credentialless" and policy's value is "unsafe-none", then queue a
   // cross-origin embedder policy inheritance violation with response, "worker
   // initialization", owner's policy's report only reporting endpoint,
   // "reporting", and owner.
-  if (network::CompatibleWithCrossOriginIsolated(
-          creator_cross_origin_embedder_policy.report_only_value) &&
-      !network::CompatibleWithCrossOriginIsolated(
-          worker_cross_origin_embedder_policy)) {
+  if (report_only_coep_blocks_worker) {
     creator_coep_reporter_->QueueWorkerInitializationReport(
         final_response_url_.value(),
         /*report_only=*/true);
@@ -609,10 +631,7 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy() {
 
   // [spec]: 5. If ownerPolicy's value is "unsafe-none" or policy's value is
   // "require-corp" or "credentialless", then return true.
-  if (!network::CompatibleWithCrossOriginIsolated(
-          creator_cross_origin_embedder_policy) ||
-      network::CompatibleWithCrossOriginIsolated(
-          worker_cross_origin_embedder_policy)) {
+  if (!coep_blocks_worker && !dip_blocks_worker) {
     return true;
   }
 
