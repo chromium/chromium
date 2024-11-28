@@ -2496,7 +2496,7 @@ BASE_FEATURE(kSpeculativeImageDecodes,
 // Enable service worker warming-up feature. (https://crbug.com/1431792)
 BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
              "SpeculativeServiceWorkerWarmUp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
 // count.
@@ -2511,7 +2511,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSpeculativeServiceWorkerWarmUpDuration,
                    &kSpeculativeServiceWorkerWarmUp,
                    "sw_warm_up_duration",
-                   base::Minutes(10));
+                   base::Minutes(5));
 
 // Warms up service workers when a pointerover event is triggered on an anchor.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
@@ -2523,7 +2523,7 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
 
 // Warms up service worker after service worker is stopped on idle timeout.
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
-    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", true};
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", false};
 
 // If enabled, ServiceWorkerStorage suppresses posting tasks when it is
 // possible. This behavior is expected to improve performance by getting rid of

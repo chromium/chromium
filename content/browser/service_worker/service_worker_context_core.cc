@@ -732,7 +732,7 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
   static const size_t kRequestQueueLength =
       base::GetFieldTrialParamByFeatureAsInt(
           blink::features::kSpeculativeServiceWorkerWarmUp,
-          "sw_warm_up_request_queue_length", 1000);
+          "sw_warm_up_request_queue_length", 100);
 
   // Erase redundant warm-up requests.
   std::vector<ServiceWorkerContext::WarmUpServiceWorkerCallback>

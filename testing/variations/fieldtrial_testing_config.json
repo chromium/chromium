@@ -22547,42 +22547,6 @@
             ]
         }
     ],
-    "SpeculativeServiceWorkerWarmUp": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "StayPrewarmed10m_20240315",
-                    "params": {
-                        "sw_warm_up_batch_timer": "1ms",
-                        "sw_warm_up_dry_run": "false",
-                        "sw_warm_up_duration": "10m",
-                        "sw_warm_up_first_batch_timer": "1ms",
-                        "sw_warm_up_from_loading_predictor": "true",
-                        "sw_warm_up_intersection_observer": "false",
-                        "sw_warm_up_on_idle_timeout": "true",
-                        "sw_warm_up_on_pointerdown": "true",
-                        "sw_warm_up_on_pointerover": "true",
-                        "sw_warm_up_on_visible": "false",
-                        "sw_warm_up_request_queue_length": "100",
-                        "sw_warm_up_wait_for_load": "false"
-                    },
-                    "enable_features": [
-                        "SpeculativeServiceWorkerWarmUp"
-                    ],
-                    "disable_features": [
-                        "SpeculativeServiceWorkerStartup"
-                    ]
-                }
-            ]
-        }
-    ],
     "SplitCacheByNavigationInitiatorSite": [
         {
             "platforms": [
