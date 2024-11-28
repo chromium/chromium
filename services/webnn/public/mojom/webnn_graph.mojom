@@ -4,7 +4,6 @@
 
 module webnn.mojom;
 
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
@@ -1422,8 +1421,11 @@ struct GraphInfo {
   // The operations are sorted in the topological order.
   array<Operation> operations;
   // The constant weight data specified through the MLGraphBuilder.constant()
-  // method defined in the WebIDL, the key is the constant operand id.
-  map<uint64, mojo_base.mojom.BigBuffer> constant_id_to_buffer_map;
+  // method defined in the WebIDL. The key is the ID of the constant operand,
+  // while the value is a handle - minted previously by the sending process -
+  // which identifies the respective pending constant operand.
+  map<uint64, blink.mojom.WebNNPendingConstantToken>
+      constant_operand_ids_to_handles;
 };
 
 // WebNNGraph runs in the GPU process and is called by the renderer process to

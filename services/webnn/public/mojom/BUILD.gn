@@ -34,6 +34,10 @@ mojom_component("mojom") {
           default_constructible = false
         },
         {
+          mojom = "webnn.mojom.DataType"
+          cpp = "::webnn::OperandDataType"
+        },
+        {
           mojom = "webnn.mojom.DataTypeLimits"
           cpp = "::webnn::DataTypeLimits"
           default_constructible = false

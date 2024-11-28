@@ -36,6 +36,7 @@
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
 namespace {
+
 struct InitGlobals {
   InitGlobals()
       : scoped_feature_list_(
@@ -214,7 +215,20 @@ class WebnnGraphLPMFuzzer {
  public:
   explicit WebnnGraphLPMFuzzer(
       const services::fuzzing::webnn_graph::proto::Testcase& testcase)
-      : testcase_(testcase) {}
+      : testcase_(testcase) {
+    webnn::WebNNContextProviderImpl::CreateForTesting(
+        provider_remote_.BindNewPipeAndPassReceiver());
+
+    base::test::TestFuture<webnn::mojom::CreateContextResultPtr>
+        create_context_future;
+    provider_remote_->CreateWebNNContext(
+        webnn::mojom::CreateContextOptions::New(),
+        create_context_future.GetCallback());
+    webnn::mojom::CreateContextResultPtr create_context_result =
+        create_context_future.Take();
+    webnn_context_.Bind(
+        std::move(create_context_result->get_success()->context_remote));
+  }
 
   void NextAction() {
     const auto& action = testcase_->actions(action_index_);
@@ -233,6 +247,9 @@ class WebnnGraphLPMFuzzer {
   const raw_ref<const services::fuzzing::webnn_graph::proto::Testcase>
       testcase_;
   int action_index_ = 0;
+
+  mojo::Remote<webnn::mojom::WebNNContextProvider> provider_remote_;
+  mojo::Remote<webnn::mojom::WebNNContext> webnn_context_;
 };
 
 DEFINE_BINARY_PROTO_FUZZER(

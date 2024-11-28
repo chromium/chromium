@@ -89,4 +89,19 @@ bool StructTraits<webnn::mojom::OperandDescriptorDataView,
   return true;
 }
 
+// static
+webnn::mojom::DataType
+EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::ToMojom(
+    webnn::OperandDataType input) {
+  return ToMojoDataType(input);
+}
+
+// static
+bool EnumTraits<webnn::mojom::DataType, webnn::OperandDataType>::FromMojom(
+    webnn::mojom::DataType input,
+    webnn::OperandDataType* output) {
+  *output = FromMojoDataType(input);
+  return true;
+}
+
 }  // namespace mojo

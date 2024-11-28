@@ -84,7 +84,7 @@ actions {
             }
           }
         }
-        m_constant_id_to_buffer_map: {}
+        m_constant_operand_ids_to_handles: {}
       }
     }
   }

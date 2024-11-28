@@ -22,6 +22,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -1479,8 +1480,8 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
               operand_id,
               mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
           // Build the map of constant operands for this graph with the id.
-          graph_info->constant_id_to_buffer_map.insert(
-              operand_id, operand->AsConstantOperand()->Bytes());
+          graph_info->constant_operand_ids_to_handles.insert(
+              operand_id, operand->AsConstantOperand()->handle());
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
@@ -1524,8 +1525,8 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
   // Keep track of new IDs for constant operands.
   HashMap<uint64_t, uint64_t> constant_id_remappings;
 
-  for (const auto& [initial_constant_id, buffer] :
-       graph_info.constant_id_to_buffer_map) {
+  for (const auto& [initial_constant_id, handle] :
+       graph_info.constant_operand_ids_to_handles) {
     uint64_t constant_operand_id = initial_constant_id;
 
     // For each constant operand, keep walking down the dependencies until no
@@ -1594,8 +1595,9 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
   // IDs. This is done after the above loop to avoid mutating this map while
   // iterating over it.
   for (const auto& [former_id, new_id] : constant_id_remappings) {
-    auto buffer = graph_info.constant_id_to_buffer_map.Take(former_id);
-    graph_info.constant_id_to_buffer_map.insert(new_id, std::move(buffer));
+    auto handle = graph_info.constant_operand_ids_to_handles.Take(former_id);
+    graph_info.constant_operand_ids_to_handles.insert(new_id,
+                                                      std::move(handle));
   }
 }
 
@@ -1634,7 +1636,6 @@ MLGraphBuilder::~MLGraphBuilder() = default;
 void MLGraphBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_);
-  visitor->Trace(constant_operands_);
   visitor->Trace(pending_resolver_);
   ScriptWrappable::Trace(visitor);
 }
@@ -1703,10 +1704,12 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
     return nullptr;
   }
 
-  auto* constant_operand = MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor),
-                                                 buffer_view->ByteSpan());
-  constant_operands_.push_back(constant_operand);
-  return constant_operand;
+  auto* constant =
+      MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
+
+  remote_->CreatePendingConstant(constant->handle(), descriptor.data_type(),
+                                 mojo_base::BigBuffer(buffer_view->ByteSpan()));
+  return constant;
 }
 
 MLOperand* MLGraphBuilder::argMin(MLOperand* input,
@@ -3297,10 +3300,6 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
 
   RecordOperatorsUsed(**graph_info);
 
-  // Release constant data held by the renderer now that it has been copied to
-  // the remote graph.
-  ReleaseConstantData();
-
   pending_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
       script_state, exception_state.GetContext());
 
@@ -3348,8 +3347,6 @@ void MLGraphBuilder::DidCreateWebNNGraph(
 void MLGraphBuilder::OnConnectionError() {
   remote_.reset();
 
-  ReleaseConstantData();
-
   if (pending_resolver_) {
     pending_resolver_->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError, "Context is lost.");
@@ -3383,13 +3380,6 @@ base::expected<void, String> MLGraphBuilder::ValidateInputs(
     RETURN_IF_ERROR(ValidateInput(input_to_validate));
   }
   return base::ok();
-}
-
-void MLGraphBuilder::ReleaseConstantData() {
-  base::ranges::for_each(constant_operands_, [](auto& constant_operand) {
-    constant_operand->ReleaseBytes();
-  });
-  constant_operands_.clear();
 }
 
 }  // namespace blink

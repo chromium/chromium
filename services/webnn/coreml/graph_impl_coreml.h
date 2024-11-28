@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"

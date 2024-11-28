@@ -32,7 +32,6 @@ component("webnn_service") {
     "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
-    "webnn_object_impl.h",
     "webnn_tensor_impl.cc",
     "webnn_tensor_impl.h",
   ]
@@ -154,6 +153,9 @@ component("webnn_utils") {
   sources = [
     "webnn_constant_operand.cc",
     "webnn_constant_operand.h",
+    "webnn_object_impl.h",
+    "webnn_pending_constant_operand.cc",
+    "webnn_pending_constant_operand.h",
     "webnn_utils.cc",
     "webnn_utils.h",
   ]

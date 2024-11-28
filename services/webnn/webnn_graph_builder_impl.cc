@@ -4,12 +4,13 @@
 
 #include "services/webnn/webnn_graph_builder_impl.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
+#include "base/numerics/checked_math.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -19,6 +20,7 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_pending_constant_operand.h"
 #include "services/webnn/webnn_utils.h"
 
 // Evaluate `condition`, and if it returns false then return false.
@@ -2642,10 +2644,68 @@ bool OperationValidationContext::ValidateOperation(
 
 }  // namespace
 
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands)
+    : compute_resource_info(std::move(compute_resource_info)),
+      constant_operands(std::move(constant_operands)) {}
+
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
+    ValidateGraphSuccessResult&&) = default;
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult&
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::operator=(
+    ValidateGraphSuccessResult&&) = default;
+
+WebNNGraphBuilderImpl::ValidateGraphSuccessResult::
+    ~ValidateGraphSuccessResult() = default;
+
 WebNNGraphBuilderImpl::WebNNGraphBuilderImpl(WebNNContextImpl& context)
     : context_(context) {}
 
 WebNNGraphBuilderImpl::~WebNNGraphBuilderImpl() = default;
+
+void WebNNGraphBuilderImpl::CreatePendingConstant(
+    const blink::WebNNPendingConstantToken& constant_handle,
+    OperandDataType data_type,
+    mojo_base::BigBuffer data) {
+  if (has_built_) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageOnBuiltGraphBuilder, base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  if (data.size() == 0) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageInvalidPendingConstant,
+        base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  // The size of `data` must be a multiple of the number of bytes of the data
+  // type.
+  auto checked_number_of_bits = base::CheckMul(data.size(), 8);
+  size_t number_of_bits;
+  if (!checked_number_of_bits.AssignIfValid(&number_of_bits) ||
+      number_of_bits % OperandDescriptor::GetBitsPerElement(data_type) != 0u) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageInvalidPendingConstant,
+        base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+
+  // Copy the contents of `data` into a new pending constant operand associated
+  // with this builder.
+  if (!pending_constant_operands_
+           .insert(std::make_unique<WebNNPendingConstantOperand>(
+               constant_handle, data_type, data))
+           .second) {
+    context_->ReportBadGraphBuilderMessage(
+        kBadMessageInvalidPendingConstant,
+        base::PassKey<WebNNGraphBuilderImpl>());
+    return;
+  }
+}
 
 void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
                                         CreateGraphCallback callback) {
@@ -2657,22 +2717,22 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
+  auto validate_graph_result =
+      ValidateGraphImpl(context_->properties(), *graph_info,
+                        /*keep_builder_resources_for_testing=*/false);
+
   has_built_ = true;
 
-  auto compute_resource_info =
-      ValidateGraph(context_->properties(), *graph_info);
-  if (!compute_resource_info.has_value()) {
+  if (!validate_graph_result.has_value()) {
     context_->ReportBadGraphBuilderMessage(
         kBadMessageInvalidGraph, base::PassKey<WebNNGraphBuilderImpl>());
     return;
   }
 
-  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-      constant_operands = TakeConstants(*graph_info);
-
   context_->CreateGraphImpl(
-      std::move(graph_info), *std::move(compute_resource_info),
-      std::move(constant_operands),
+      std::move(graph_info),
+      std::move(validate_graph_result->compute_resource_info),
+      std::move(validate_graph_result->constant_operands),
       base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -2681,6 +2741,16 @@ void WebNNGraphBuilderImpl::SetId(
     mojo::ReceiverId id,
     base::PassKey<WebNNContextImpl> /*pass_key*/) {
   id_ = id;
+}
+
+void WebNNGraphBuilderImpl::IsValidGraphForTesting(
+    const ContextProperties& context_properties,
+    mojom::GraphInfoPtr graph_info,
+    IsValidGraphForTestingCallback callback) {
+  std::move(callback).Run(
+      ValidateGraphImpl(context_properties, *graph_info,
+                        /*keep_builder_resources_for_testing=*/true)
+          .has_value());
 }
 
 void WebNNGraphBuilderImpl::DidCreateGraph(
@@ -2706,11 +2776,17 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
                       base::PassKey<WebNNGraphBuilderImpl>());
 }
 
-// static
-std::optional<WebNNGraphImpl::ComputeResourceInfo>
-WebNNGraphBuilderImpl::ValidateGraph(
+std::optional<WebNNGraphBuilderImpl::ValidateGraphSuccessResult>
+WebNNGraphBuilderImpl::ValidateGraphImpl(
     const ContextProperties& context_properties,
-    const mojom::GraphInfo& graph_info) {
+    const mojom::GraphInfo& graph_info,
+    bool keep_builder_resources_for_testing) {
+  if (keep_builder_resources_for_testing) {
+    CHECK_IS_TEST();
+  } else {
+    CHECK(!has_built_);
+  }
+
   // The input operands of graph can be empty.
   if (graph_info.id_to_operand_map.empty() || graph_info.operations.empty() ||
       graph_info.output_operands.empty()) {
@@ -2735,9 +2811,9 @@ WebNNGraphBuilderImpl::ValidateGraph(
   graph_inputs.reserve(graph_info.input_operands.size());
   std::vector<uint64_t> graph_outputs;
   graph_outputs.reserve(graph_info.output_operands.size());
-  base::flat_map<uint64_t, size_t> constant_ids_to_byte_lengths;
-  constant_ids_to_byte_lengths.reserve(
-      graph_info.constant_id_to_buffer_map.size());
+  std::vector<std::pair<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
+      graph_constants;
+  graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
 
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
     const std::optional<std::string>& name = operand->name;
@@ -2790,8 +2866,52 @@ WebNNGraphBuilderImpl::ValidateGraph(
           return std::nullopt;
         }
 
-        constant_ids_to_byte_lengths[id] =
-            operand->descriptor.PackedByteLength();
+        // `id` must correspond to a pending constant operand handle...
+        auto id_and_handle_it =
+            graph_info.constant_operand_ids_to_handles.find(id);
+        if (id_and_handle_it ==
+            graph_info.constant_operand_ids_to_handles.end()) {
+          return std::nullopt;
+        }
+
+        // ...which must identify a handle known by this builder...
+        auto pending_constant_operand_it =
+            pending_constant_operands_.find(id_and_handle_it->second);
+        if (pending_constant_operand_it == pending_constant_operands_.end()) {
+          return std::nullopt;
+        }
+
+        // ...whose data must be compatible with what `operand` expects.
+        if (keep_builder_resources_for_testing) {
+          if (!pending_constant_operand_it->get()->IsValidWithDescriptor(
+                  operand->descriptor)) {
+            return std::nullopt;
+          }
+
+          // Since `keep_builder_resources_for_testing` is true, insert a
+          // placeholder `nullptr` rather than extracting corresponding
+          // `WebNNPendingConstantOperand` from `pending_constant_operands_` and
+          // converting it into a concrete operand, as is done below.
+          graph_constants.emplace_back(id, nullptr);
+        } else {
+          auto extracted_pending_constant =
+              pending_constant_operands_.extract(pending_constant_operand_it);
+          std::unique_ptr<WebNNPendingConstantOperand>
+              pending_constant_operand =
+                  std::move(extracted_pending_constant.value());
+          CHECK(pending_constant_operand);
+
+          // Give the bytes a shape to turn the pending constant operand into a
+          // concrete operand.
+          auto constant_operand =
+              pending_constant_operand->TakeAsConstantOperand(
+                  operand->descriptor);
+          if (!constant_operand) {
+            return std::nullopt;
+          }
+
+          graph_constants.emplace_back(id, std::move(constant_operand));
+        }
 
         processed_operands.insert(id);
         break;
@@ -2808,15 +2928,18 @@ WebNNGraphBuilderImpl::ValidateGraph(
     return std::nullopt;
   }
 
-  // Validate the constant weight data are valid.
-  if (!base::ranges::equal(graph_info.constant_id_to_buffer_map,
-                           constant_ids_to_byte_lengths,
-                           [](const auto& iter_a, const auto& iter_b) {
-                             // Compare the constant id with the key of map and
-                             // the byte length of buffer with value of map.
-                             return iter_a.first == iter_b.first &&
-                                    iter_a.second.size() == iter_b.second;
-                           })) {
+  // Items were iteratively erased from `pending_constant_operands_` above, so
+  // any remaining items are unused. Release these unused resources.
+  //
+  // TODO(crbug.com/379844003): Consider erroring if constant (or input)
+  // operands are unused, since this is likely an accidental misuse of the WebNN
+  // API.
+  if (!keep_builder_resources_for_testing) {
+    pending_constant_operands_.clear();
+  }
+
+  if (graph_constants.size() !=
+      graph_info.constant_operand_ids_to_handles.size()) {
     return std::nullopt;
   }
 
@@ -2829,42 +2952,12 @@ WebNNGraphBuilderImpl::ValidateGraph(
     return std::nullopt;
   }
 
-  return WebNNGraphImpl::ComputeResourceInfo(
-      std::move(inputs), std::move(outputs),
-      *std::move(operands_to_dependent_operations),
-      base::PassKey<WebNNGraphBuilderImpl>());
-}
-
-// static
-bool WebNNGraphBuilderImpl::IsValidForTesting(
-    const ContextProperties& context_properties,
-    const mojom::GraphInfo& graph_info) {
-  return ValidateGraph(context_properties, graph_info).has_value();
-}
-
-// static
-base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-WebNNGraphBuilderImpl::TakeConstants(mojom::GraphInfo& graph_info) {
-  std::vector<std::pair<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
-      constant_operands;
-  constant_operands.reserve(graph_info.constant_id_to_buffer_map.size());
-
-  for (auto it = graph_info.constant_id_to_buffer_map.begin();
-       it != graph_info.constant_id_to_buffer_map.end();) {
-    const auto* operand =
-        GetMojoOperand(graph_info.id_to_operand_map, it->first);
-    CHECK(operand);
-    constant_operands.emplace_back(
-        it->first, std::make_unique<WebNNConstantOperand>(operand->descriptor,
-                                                          it->second));
-    // Destroy the `BigBuffer` immediately after copying it, to avoid ending up
-    // holding two copies of the all weights simultaneously by the last
-    // iteration of this loop.
-    it = graph_info.constant_id_to_buffer_map.erase(it);
-  }
-
-  return base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>(
-      std::move(constant_operands));
+  return ValidateGraphSuccessResult{
+      WebNNGraphImpl::ComputeResourceInfo(
+          std::move(inputs), std::move(outputs),
+          *std::move(operands_to_dependent_operations),
+          base::PassKey<WebNNGraphBuilderImpl>()),
+      std::move(graph_constants)};
 }
 
 void WebNNGraphBuilderImpl::DestroySelf() {

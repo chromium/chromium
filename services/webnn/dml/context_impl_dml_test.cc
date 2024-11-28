@@ -213,16 +213,16 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   ASSERT_TRUE(webnn_context_remote_.is_bound());
 
   // Build a simple graph with relu operator.
-  GraphInfoBuilder builder;
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context_remote_->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+  GraphInfoBuilder builder(graph_builder_remote);
+
   uint64_t input_operand_id =
       builder.BuildInput("input", {1, 2, 3, 4}, OperandDataType::kFloat32);
   uint64_t output_operand_id =
       builder.BuildOutput("output", {1, 2, 3, 4}, OperandDataType::kFloat32);
   builder.BuildRelu(input_operand_id, output_operand_id);
-
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
-  webnn_context_remote_->CreateGraphBuilder(
-      graph_builder_remote.BindNewEndpointAndPassReceiver());
 
   // The GraphImplDml should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
@@ -258,14 +258,13 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromDispatch) {
   OperandDataType data_type = OperandDataType::kFloat32;
   std::vector<uint32_t> shape = {1, 2, 3, 4};
   // Build a simple graph with relu operator.
-  GraphInfoBuilder builder;
-  uint64_t input_operand_id = builder.BuildInput("input", shape, data_type);
-  uint64_t output_operand_id = builder.BuildOutput("output", shape, data_type);
-  builder.BuildRelu(input_operand_id, output_operand_id);
-
   mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
   webnn_context_remote_->CreateGraphBuilder(
       graph_builder_remote.BindNewEndpointAndPassReceiver());
+  GraphInfoBuilder builder(graph_builder_remote);
+  uint64_t input_operand_id = builder.BuildInput("input", shape, data_type);
+  uint64_t output_operand_id = builder.BuildOutput("output", shape, data_type);
+  builder.BuildRelu(input_operand_id, output_operand_id);
 
   // The GraphImplDml should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;

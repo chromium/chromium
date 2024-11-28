@@ -5,14 +5,19 @@
 #include "services/webnn/webnn_test_utils.h"
 
 #include "base/check_is_test.h"
+#include "base/test/test_future.h"
+#include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
-GraphInfoBuilder::GraphInfoBuilder() {
-  graph_info_ = mojom::GraphInfo::New();
-}
+GraphInfoBuilder::GraphInfoBuilder(
+    mojo::AssociatedRemote<mojom::WebNNGraphBuilder>& graph_builder_remote)
+    : graph_info_(mojom::GraphInfo::New()),
+      graph_builder_remote_(graph_builder_remote) {}
+
 GraphInfoBuilder::~GraphInfoBuilder() = default;
 
 uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
@@ -48,11 +53,14 @@ uint64_t GraphInfoBuilder::BuildInput(const std::string& name,
 uint64_t GraphInfoBuilder::BuildConstant(
     const std::vector<uint32_t>& dimensions,
     OperandDataType type,
-    base::span<const uint8_t> values) {
+    base::span<const uint8_t> values,
+    blink::WebNNPendingConstantToken handle) {
   uint64_t operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kConstant);
-  graph_info_->constant_id_to_buffer_map[operand_id] =
-      mojo_base::BigBuffer(values);
+
+  graph_builder_remote_->get()->CreatePendingConstant(
+      handle, type, mojo_base::BigBuffer(values));
+  graph_info_->constant_operand_ids_to_handles[operand_id] = std::move(handle);
   return operand_id;
 }
 
@@ -525,27 +533,39 @@ void GraphInfoBuilder::BuildSlice(uint64_t input_operand_id,
 }
 
 mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
-  CHECK_IS_TEST();
-  mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();
-  for (auto& [operand_id, operand_info] : graph_info_->id_to_operand_map) {
-    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
-  }
-  cloned_graph_info->input_operands = graph_info_->input_operands;
-  cloned_graph_info->output_operands = graph_info_->output_operands;
-  cloned_graph_info->operations.reserve(graph_info_->operations.size());
-  for (auto& operation : graph_info_->operations) {
-    cloned_graph_info->operations.push_back(operation.Clone());
-  }
-  for (auto& [constant_id, constant_buffer] :
-       graph_info_->constant_id_to_buffer_map) {
-    cloned_graph_info->constant_id_to_buffer_map[constant_id] =
-        constant_buffer.Clone();
-  }
-  return cloned_graph_info;
+  return CloneGraphInfoForTesting(*graph_info_);
 }
 
 mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
   return std::move(graph_info_);
+}
+
+[[nodiscard]] bool GraphInfoBuilder::IsValidGraphForTesting(
+    const ContextProperties& context_properties) {
+  base::test::TestFuture<bool> future;
+  graph_builder_remote_->get()->IsValidGraphForTesting(
+      context_properties, CloneGraphInfo(), future.GetCallback());
+  return future.Take();
+}
+
+mojom::GraphInfoPtr CloneGraphInfoForTesting(
+    const mojom::GraphInfo& graph_info) {
+  mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();
+  for (auto& [operand_id, operand_info] : graph_info.id_to_operand_map) {
+    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
+  }
+  cloned_graph_info->input_operands = graph_info.input_operands;
+  cloned_graph_info->output_operands = graph_info.output_operands;
+  cloned_graph_info->operations.reserve(graph_info.operations.size());
+  for (auto& operation : graph_info.operations) {
+    cloned_graph_info->operations.push_back(operation.Clone());
+  }
+  for (auto& [constant_id, constant_handle] :
+       graph_info.constant_operand_ids_to_handles) {
+    cloned_graph_info->constant_operand_ids_to_handles[constant_id] =
+        constant_handle;
+  }
+  return cloned_graph_info;
 }
 
 ContextProperties GetContextPropertiesForTesting() {

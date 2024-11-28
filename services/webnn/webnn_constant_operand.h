@@ -12,19 +12,14 @@
 
 namespace webnn {
 
-// Manages the data associated with an `MLConstantOperand`. An instance of this
-// class is owned by a `WebNNGraphBuilderImpl` while the graph is being built,
-// and will be destroyed once building the graph succeeds.
+// Manages the data associated with an `MLConstantOperand`. Instances of this
+// class are generally created from a `WebNNPendingConstantOperand`.
 //
 // TODO(crbug.com/349428379): Consider allowing this class to be extended by
 // backend-specific implementations, which can stream the constant data into the
 // form needed by the backend.
 class COMPONENT_EXPORT(WEBNN_UTILS) WebNNConstantOperand {
  public:
-  // Create a constant operand from bytes.
-  WebNNConstantOperand(OperandDescriptor descriptor,
-                       base::span<const uint8_t> data);
-
   // Create a constant operand from an existing HeapArray.
   WebNNConstantOperand(OperandDescriptor descriptor,
                        base::HeapArray<uint8_t> data);
