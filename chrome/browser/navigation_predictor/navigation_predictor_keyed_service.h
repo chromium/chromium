@@ -89,8 +89,8 @@ class NavigationPredictorKeyedService : public KeyedService {
     virtual void OnPredictionUpdated(const Prediction& prediction) = 0;
 
    protected:
-    Observer() {}
-    virtual ~Observer() {}
+    Observer() = default;
+    virtual ~Observer() = default;
   };
 
   explicit NavigationPredictorKeyedService(
