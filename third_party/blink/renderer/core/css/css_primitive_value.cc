@@ -563,8 +563,8 @@ Length CSSPrimitiveValue::ConvertToLength(
   if (IsPercentage()) {
     if (IsNumericLiteralValue() ||
         !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
-      return Length::Percent(
-          CSSValueClampingUtils::ClampLength(GetDoubleValueWithoutClamping()));
+      return Length::Percent(CSSValueClampingUtils::ClampLength(
+          ComputePercentage(length_resolver)));
     }
   }
   DCHECK(IsCalculated());
