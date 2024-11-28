@@ -15,7 +15,6 @@ source_set("default_browser") {
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/settings/ui_bundled/default_browser/resources",
     "//ios/chrome/browser/settings/ui_bundled/resources",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:utils",
