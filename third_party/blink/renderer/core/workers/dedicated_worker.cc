@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
@@ -405,6 +406,8 @@ void DedicatedWorker::OnWorkerHostCreated(
         dedicated_worker_host,
     const WebSecurityOrigin& origin) {
   TRACE_EVENT("blink.worker", "DedicatedWorker::OnWorkerHostCreated");
+  base::UmaHistogramTimes("Worker.TopLevelScript.WorkerHostCreatedTime",
+                          base::TimeTicks::Now() - start_time_);
   DCHECK(!browser_interface_broker_);
   browser_interface_broker_ = std::move(browser_interface_broker);
   pending_dedicated_worker_host_ = std::move(dedicated_worker_host);

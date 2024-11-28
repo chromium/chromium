@@ -1996,6 +1996,38 @@ chromium-metrics-reviews@google.com.
   <token key="ServiceWorkerSchedulerOp" variants="ServiceWorkerSchedulerOp"/>
 </histogram>
 
+<histogram name="Worker.BrowserProcess.DevToolsCreateTime" units="ms"
+    expires_after="2025-04-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms for setting up the devtools agent for the dedicated worker to
+    trace the dedicated worker script fetch.
+  </summary>
+</histogram>
+
+<histogram name="Worker.BrowserProcess.StartScriptLoadTime" units="ms"
+    expires_after="2025-04-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms from when a dedicated worker host is created inside the
+    browser process until when the script is started to load in the browser
+    process.
+  </summary>
+</histogram>
+
+<histogram name="Worker.BrowserProcess.WorkerHostCreateTime" units="ms"
+    expires_after="2025-04-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms for creating a DedicatedWorkerHost in the browser process.
+    The time include all procedures that is needed for creating the
+    DedicatedWorkerHost.
+  </summary>
+</histogram>
+
 <histogram name="Worker.TopLevelScript.FetchClassicScriptTime" units="ms"
     expires_after="2025-04-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -2041,6 +2073,17 @@ chromium-metrics-reviews@google.com.
     fetch finished. This includes PlzDedicatedWorker to offload starting to
     fetch a script in the browser process. It does not include the initial
     evaluation of the script.
+  </summary>
+</histogram>
+
+<histogram name="Worker.TopLevelScript.WorkerHostCreatedTime" units="ms"
+    expires_after="2025-04-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time in ms from when a dedicated worker starts until the worker host
+    creation callback is called from the browser process. This roughly means IPC
+    turn-around time betweeen the renderer process and the browser process.
   </summary>
 </histogram>
 
