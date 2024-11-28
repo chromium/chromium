@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -158,7 +159,11 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
   switch (status) {
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchIsStale:
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch: {
+      CHECK(TriggeringOutcomeFromStatus(status) ==
+            PreloadingTriggeringOutcome::kFailure);
       return true;
+    }
     case PrefetchStatus::kPrefetchNotFinishedInTime:
     case PrefetchStatus::kPrefetchSuccessful:
     case PrefetchStatus::kPrefetchResponseUsed:
@@ -186,7 +191,6 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchAllowed:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
       return false;
   }
 }
@@ -692,15 +696,25 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
   if (old_prefetch_status &&
       TriggeringOutcomeFromStatus(old_prefetch_status.value()) ==
           PreloadingTriggeringOutcome::kFailure) {
-    CHECK(StatusUpdateIsPossibleAfterFailure(new_prefetch_status))
-        << "old_prefetch_status: "
-        << static_cast<int>(old_prefetch_status.value())
-        << " -> new_prefetch_status: " << static_cast<int>(new_prefetch_status);
-    CHECK(TriggeringOutcomeFromStatus(new_prefetch_status) ==
-          PreloadingTriggeringOutcome::kFailure);
-    // Skip this update if the triggering outcome has already been updated to
-    // kFailure.
-    return;
+    if (StatusUpdateIsPossibleAfterFailure(new_prefetch_status)) {
+      // Note that `StatusUpdateIsPossibleAfterFailure()` implies that the
+      // new status is a failure.
+      CHECK(TriggeringOutcomeFromStatus(new_prefetch_status) ==
+            PreloadingTriggeringOutcome::kFailure);
+      // Skip this update if the triggering outcome has already been updated to
+      // kFailure.
+      return;
+    } else {
+      SCOPED_CRASH_KEY_NUMBER("PrefetchContainer", "prefetch_status_from",
+                              static_cast<int>(old_prefetch_status.value()));
+      SCOPED_CRASH_KEY_NUMBER("PrefetchContainer", "prefetch_status_to",
+                              static_cast<int>(new_prefetch_status));
+      NOTREACHED()
+          << "PrefetchStatus illegal transition: (old_prefetch_status, "
+             "new_prefetch_status) = ("
+          << static_cast<int>(old_prefetch_status.value()) << ", "
+          << static_cast<int>(new_prefetch_status) << ")";
+    }
   }
 
   // We record the prefetch status to UMA if it's a failure, or if the prefetch
