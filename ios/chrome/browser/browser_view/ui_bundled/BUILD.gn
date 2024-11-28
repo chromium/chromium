@@ -291,8 +291,8 @@ source_set("ui_bundled") {
     "//url",
 
     # Fake dependencies to break cycles
+    "//ios/chrome/browser/settings/ui_bundled",
     "//ios/chrome/browser/sharing/ui_bundled:sharing_internal",
-    "//ios/chrome/browser/ui/settings",
   ]
   frameworks = [
     "MessageUI.framework",

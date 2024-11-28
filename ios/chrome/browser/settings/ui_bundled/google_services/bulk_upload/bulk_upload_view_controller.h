@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_consumer.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @protocol BulkUploadMutator;
 @protocol BulkUploadViewControllerPresentationDelegate;

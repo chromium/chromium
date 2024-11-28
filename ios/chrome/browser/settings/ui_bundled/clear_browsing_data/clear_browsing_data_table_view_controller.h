@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @protocol ApplicationCommands;
 class Browser;

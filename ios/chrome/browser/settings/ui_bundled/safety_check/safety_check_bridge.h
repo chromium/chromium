@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_service_delegate.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 // These are all just #defines so they can be imported w/out any problem.
 #import "components/strings/grit/components_strings.h"

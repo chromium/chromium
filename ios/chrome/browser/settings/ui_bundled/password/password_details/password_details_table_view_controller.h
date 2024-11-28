@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_edit_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_consumer.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 
 @protocol ApplicationCommands;
 @protocol PasswordDetailsHandler;

@@ -8,4 +8,5 @@ specific_include_rules = {
 
 include_rules = [
   "+components/saved_tab_groups/public",
+  "+ios/chrome/browser/settings/ui_bundled",
 ]

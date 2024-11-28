@@ -27,6 +27,8 @@ source_set("account_menu") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/google_services",
     "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts",
     "//ios/chrome/browser/settings/ui_bundled/sync",
@@ -51,8 +53,6 @@ source_set("account_menu") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signout_action_sheet",
-    "//ios/chrome/browser/ui/settings:constants",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/third_party/material_components_ios",
   ]
 }
@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/sync",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -140,7 +141,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signout_action_sheet",
-    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

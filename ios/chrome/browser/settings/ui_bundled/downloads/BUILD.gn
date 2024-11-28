@@ -16,6 +16,7 @@ source_set("downloads") {
     ":identity_button_cell",
     "//components/prefs",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -29,7 +30,6 @@ source_set("downloads") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

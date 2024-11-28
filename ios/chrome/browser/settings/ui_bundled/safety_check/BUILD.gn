@@ -17,13 +17,13 @@ source_set("ui") {
     "//ios/chrome/app/strings",
   ]
   deps = [
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells:public",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model:list_model",
     "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
   ]
 }
@@ -33,8 +33,8 @@ swift_source_set("ui_swift") {
   sources = [ "safety_check_table_view_controller.swift" ]
   deps = [
     ":ui",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
   ]
 }
@@ -68,6 +68,7 @@ source_set("safety_check") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/ui_bundled:opt_in_alert_coordinator",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells:public",
     "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
@@ -91,7 +92,6 @@ source_set("safety_check") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
     "//ios/chrome/common:string_util",

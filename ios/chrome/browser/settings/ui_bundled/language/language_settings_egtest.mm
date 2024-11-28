@@ -9,7 +9,7 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_ui_constants.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"

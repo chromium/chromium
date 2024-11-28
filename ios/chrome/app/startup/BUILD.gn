@@ -135,9 +135,9 @@ group("chrome_app_startup_parameters_fuzzers_deps") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_fake_hook",
     "//ios/chrome/browser/providers:chromium_providers",
+    "//ios/chrome/browser/settings/ui_bundled",
     "//ios/chrome/browser/sharing/ui_bundled:sharing_internal",
     "//ios/chrome/browser/tabs/model:tabs_internal",
-    "//ios/chrome/browser/ui/settings",
   ]
 }
 

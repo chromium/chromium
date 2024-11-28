@@ -55,11 +55,11 @@ source_set("bulk_upload_ui") {
   deps = [
     ":constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",

@@ -1,6 +1,4 @@
 include_rules = [
-  "+ios/chrome/browser/ui/settings",
-
   "+ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h",
   "+ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h",
   "+ios/chrome/browser/autofill/model/personal_data_manager_factory.h",

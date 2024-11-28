@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_consumer.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @class ManageSyncSettingsTableViewController;
 @protocol ManageSyncSettingsTableViewControllerModelDelegate;

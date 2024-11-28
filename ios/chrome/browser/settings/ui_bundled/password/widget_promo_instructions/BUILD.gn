@@ -10,10 +10,10 @@ source_set("widget_promo_instructions") {
   deps = [
     ":widget_promo_instructions_ui",
     "//base",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/confirmation_alert",
   ]
 }

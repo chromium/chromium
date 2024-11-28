@@ -22,6 +22,7 @@ source_set("save_to_photos") {
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_selection:identity_item_configurator",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -31,7 +32,6 @@ source_set("save_to_photos") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -56,8 +58,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

@@ -9,8 +9,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 // Delegate for the PasswordSettingsViewController to talk to its coordinator.
 @protocol PasswordSettingsPresentationDelegate

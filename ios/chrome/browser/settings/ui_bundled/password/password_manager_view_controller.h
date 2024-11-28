@@ -6,10 +6,10 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 @protocol PasswordsSettingsCommands;

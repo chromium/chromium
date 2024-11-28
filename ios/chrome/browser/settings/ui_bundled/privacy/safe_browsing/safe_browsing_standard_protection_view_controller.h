@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_STANDARD_PROTECTION_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_consumer.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @class SafeBrowsingStandardProtectionViewController;
 @protocol SafeBrowsingStandardProtectionViewControllerDelegate;

@@ -8,7 +8,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_view_controller.h"
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface WidgetPromoInstructionsCoordinator () <

@@ -33,12 +33,12 @@ source_set("inactive_tabs_ui") {
   deps = [
     "//base:i18n",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/tabs:tabs_constants",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

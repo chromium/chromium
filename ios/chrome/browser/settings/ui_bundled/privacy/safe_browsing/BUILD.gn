@@ -30,6 +30,7 @@ source_set("safe_browsing") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/settings/ui_bundled/utils",
@@ -54,7 +55,6 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/colors:colors",
     "//ui/base",
   ]

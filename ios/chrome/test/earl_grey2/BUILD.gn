@@ -140,6 +140,7 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
   deps = [
+    "//ios/chrome/browser/settings/ui_bundled:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/autofill:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/content_settings:eg2_tests",
@@ -160,7 +161,6 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/settings/ui_bundled/sync:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/tabs:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs:eg2_tests",
-    "//ios/chrome/browser/ui/settings:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
@@ -297,12 +297,12 @@ source_set("eg2_tests") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_settings:password_settings_constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common",

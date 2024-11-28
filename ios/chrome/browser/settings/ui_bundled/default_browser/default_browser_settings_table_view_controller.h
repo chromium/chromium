@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_DEFAULT_BROWSER_DEFAULT_BROWSER_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 // Controller for the UI that shows the user how to set Chrome as the default

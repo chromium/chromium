@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_NOTIFICATIONS_CONTENT_NOTIFICATIONS_CONTENT_NOTIFICATIONS_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/settings/ui_bundled/notifications/content_notifications/content_notifications_consumer.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @class ContentNotificationsViewController;
 @protocol ContentNotificationsViewControllerDelegate;

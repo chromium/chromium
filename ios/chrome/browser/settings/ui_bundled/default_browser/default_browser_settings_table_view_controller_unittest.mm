@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/default_browser/default_browser_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"

@@ -81,7 +81,7 @@ source_set("password_settings_ui") {
     "//ios/chrome/common/ui/util:image_util",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/ui/settings:settings_root" ]
+  public_deps = [ "//ios/chrome/browser/settings/ui_bundled:settings_root" ]
   frameworks = [ "UIKit.framework" ]
 }
 

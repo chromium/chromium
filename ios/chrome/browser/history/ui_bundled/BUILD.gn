@@ -143,12 +143,12 @@ source_set("clear_browsing_data") {
     ":ui",
     "//base",
     "//ios/chrome/browser/history/ui_bundled/public",
+    "//ios/chrome/browser/settings/ui_bundled",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public",
   ]

@@ -17,6 +17,8 @@ source_set("bandwidth") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/prerender/model:prerender_pref",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
@@ -24,8 +26,6 @@ source_set("bandwidth") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/settings:constants",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
     "//url",
   ]

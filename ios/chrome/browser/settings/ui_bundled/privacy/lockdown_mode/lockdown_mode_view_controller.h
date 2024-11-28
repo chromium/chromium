@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode/lockdown_mode_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode/lockdown_mode_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @class LockdownModeViewController;
 

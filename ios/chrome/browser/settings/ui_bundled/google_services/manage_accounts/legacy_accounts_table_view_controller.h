@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/with_overridable_model_identity_data_source.h"
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @protocol ApplicationCommands;
 @protocol ManageAccountsModelIdentityDataSource;

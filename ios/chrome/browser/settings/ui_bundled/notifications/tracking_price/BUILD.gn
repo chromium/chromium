@@ -55,9 +55,9 @@ source_set("tracking_price_ui") {
     ":constants",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ui/base",
   ]
 }

@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
-#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"

@@ -8,12 +8,12 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/clear_browsing_data_ui_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 @interface ClearBrowsingDataCoordinator () <BrowserObserving,
                                             ClearBrowsingDataUIDelegate> {
   // Observe BrowserObserver to prevent any access to Browser after its
