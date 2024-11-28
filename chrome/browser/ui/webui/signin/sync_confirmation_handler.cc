@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 
-#include <optional>
+#include <map>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -64,66 +65,6 @@ constexpr bool UseMinorModeRestrictions() {
 inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
   return GetScreenMode(primary_account_info.capabilities) ==
          SyncConfirmationScreenMode::kPending;
-}
-
-SyncConfirmationScreenMode GetScreenModeFromValue(const base::Value& value) {
-  if (!value.is_int()) {
-    return SyncConfirmationScreenMode::kUnsupported;
-  }
-  return static_cast<SyncConfirmationScreenMode>(value.GetInt());
-}
-
-// Records the button click in the `mode` context. `equal` denotes button to
-// record in kRestricted `mode`, and `notEqual` denotes button to record in
-// kUnrestricted `mode`.
-void RecordButtonClicked(SyncConfirmationScreenMode mode,
-                         signin_metrics::SyncButtonClicked equal,
-                         signin_metrics::SyncButtonClicked not_equal) {
-  if (mode == SyncConfirmationScreenMode::kUnsupported) {
-    // Do not record metrics from SyncConfirmation screens that don't support
-    // minor modes.
-    return;
-  }
-
-  std::optional<signin_metrics::SyncButtonClicked> button_clicked;
-  switch (mode) {
-    case SyncConfirmationScreenMode::kRestricted:
-    case SyncConfirmationScreenMode::kDeadlined:
-      button_clicked = equal;
-      break;
-    case SyncConfirmationScreenMode::kUnrestricted:
-      button_clicked = not_equal;
-      break;
-    case SyncConfirmationScreenMode::kPending:
-      // Special case: the only button that can be clicked in this mode is the
-      // settings button.
-      button_clicked =
-          signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
-}
-
-// Translates screen `mode` to the corresponding metric describing what type of
-// buttons are presented.
-signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
-    SyncConfirmationScreenMode mode) {
-  switch (mode) {
-    case SyncConfirmationScreenMode::kRestricted:
-      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability;
-    case SyncConfirmationScreenMode::kDeadlined:
-      return signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline;
-    case SyncConfirmationScreenMode::kUnrestricted:
-      return signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
-
-    // Metric is not emitted for these cases:
-    case SyncConfirmationScreenMode::kUnsupported:
-    case SyncConfirmationScreenMode::kPending:
-      NOTREACHED();
-  }
 }
 }  // namespace
 
@@ -197,12 +138,7 @@ void SyncConfirmationHandler::RegisterMessages() {
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
-  CHECK_EQ(3U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[2]),
-      signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted);
-
+  CHECK_EQ(2U, args.size()) << "Args must contain consent information.";
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -210,12 +146,7 @@ void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
 
 void SyncConfirmationHandler::HandleGoToSettings(
     const base::Value::List& args) {
-  CHECK_EQ(3U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[2]),
-      signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted);
-
+  CHECK_EQ(2U, args.size()) << "Args must contain consent information.";
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
@@ -223,12 +154,7 @@ void SyncConfirmationHandler::HandleGoToSettings(
 }
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[0]),
-      signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted);
-
+  CHECK(args.empty());
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -312,30 +238,7 @@ void SyncConfirmationHandler::OnScreenModeChanged(
   screen_mode_notified_ = true;
   screen_mode_deadline_.Stop();
 
-  // Note on timing: this function is executed exactly once
-  // because it sets `screen_mode_notified_` to `true`. This means that the
-  // latencies are recorded only once, but either immediately from
-  // `HandleInitializedWithSize`, or subsequently as a result of OnDeadline or
-  // OnExtendedAccountInfoUpdated. For the latter case, the timer was started in
-  // `HandleInitializedWithSize` when the capability was requested but not
-  // available.
-
-  if (user_visible_latency_.has_value()) {
-    // Timer was started so it means it is a subsequent attempt.
-    base::TimeDelta elapsed = user_visible_latency_->Elapsed();
-    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
-                            elapsed);
-    base::UmaHistogramTimes("Signin.AccountCapabilities.FetchLatency", elapsed);
-  } else {
-    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
-                              true);
-    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
-                            base::Seconds(0));
-  }
-
   FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
-  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown",
-                                GetButtonTypeMetricValue(mode));
 }
 
 void SyncConfirmationHandler::OnDeadline() {
@@ -436,17 +339,6 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
   }
 
   DispatchAccountInfoUpdate(primary_account_info);
-
-  if (UseMinorModeRestrictions() && ScreenModeIsPending(primary_account_info) &&
-      !user_visible_latency_.has_value()) {
-    CHECK(!screen_mode_notified_);
-    // `user_visible_latency_` timer is only ticking when the capabilities
-    // were not immediately available, but is only started at the very first
-    // attempt to access them.
-    user_visible_latency_.emplace();
-    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
-                              false);
-  }
 
   if (!avatar_notified_ ||
       (!screen_mode_notified_ && UseMinorModeRestrictions())) {
