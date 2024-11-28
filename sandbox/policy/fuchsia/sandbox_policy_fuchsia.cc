@@ -68,9 +68,7 @@ struct SandboxConfig {
 };
 
 // Services that are passed to all processes.
-// Prevent incorrect indentation due to the preprocessor lines within `({...})`:
-// clang-format off
-constexpr auto kMinimalServices = base::make_span((const char* const[]){
+constexpr const char* kMinimalServices[] = {
     // TODO(crbug.com/40815933): Remove this and/or intl below if an alternative
     // solution does not require access to the service in all processes. For now
     // these services are made available everywhere because they are required by
@@ -86,8 +84,7 @@ constexpr auto kMinimalServices = base::make_span((const char* const[]){
     fuchsia::intl::PropertyProvider::Name_,
     fuchsia::logger::LogSink::Name_,
     fuchsia::tracing::perfetto::ProducerConnector::Name_,
-});
-// clang-format on
+};
 
 // For processes that only get kMinimalServices and no other capabilities.
 constexpr SandboxConfig kMinimalConfig = {
