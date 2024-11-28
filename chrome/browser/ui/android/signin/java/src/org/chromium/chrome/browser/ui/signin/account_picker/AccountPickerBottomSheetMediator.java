@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -123,16 +122,7 @@ public class AccountPickerBottomSheetMediator
     @Override
     public void onAccountSelected(String accountName) {
         setSelectedAccountName(accountName);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            launchDeviceLockIfNeededAndSignIn();
-        } else {
-            // Clicking on one account in the account list when the account list is expanded
-            // will collapse it to the selected account
-            mModel.set(
-                    AccountPickerBottomSheetProperties.VIEW_STATE,
-                    ViewState.COLLAPSED_ACCOUNT_LIST);
-        }
+        launchDeviceLockIfNeededAndSignIn();
     }
 
     /** Implements {@link AccountPickerCoordinator.Listener}. */
