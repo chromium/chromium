@@ -3532,7 +3532,7 @@ using UserFeedbackDataCallback =
 
   __weak __typeof(self) weakSelf = self;
   BOOL resetSigninState = self.signinCoordinator != nil;
-  completion = ^{
+  ProceduralBlock resetAndDismiss = ^{
     __typeof(self) strongSelf = weakSelf;
     // Cleanup settings resources after dismissal.
     [strongSelf settingsWasDismissed];
@@ -3560,10 +3560,10 @@ using UserFeedbackDataCallback =
       if (strongPresentingViewController) {
         [strongPresentingViewController
             dismissViewControllerAnimated:animated
-                               completion:completion];
+                               completion:resetAndDismiss];
       } else {
         // The view is already dismissed. Completion should still be called.
-        completion();
+        resetAndDismiss();
       }
       weakSelf.dismissingSettings = NO;
     };
@@ -3581,9 +3581,10 @@ using UserFeedbackDataCallback =
   } else if (self.signinCoordinator) {
     // `self.signinCoordinator` can be presented without settings, from the
     // bookmarks or the recent tabs view.
-    [self interruptSigninCoordinatorAnimated:animated completion:completion];
+    [self interruptSigninCoordinatorAnimated:animated
+                                  completion:resetAndDismiss];
   } else {
-    completion();
+    resetAndDismiss();
   }
 }
 
