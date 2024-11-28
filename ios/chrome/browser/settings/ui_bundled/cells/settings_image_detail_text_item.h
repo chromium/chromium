@@ -43,6 +43,10 @@
 // [UIColor colorNamed:kTextSecondaryColor] is used.
 @property(nonatomic, strong) UIColor* detailTextColor;
 
+// If the item should be hidden from the accessibility view or not. Default is
+// NO.
+@property(nonatomic, assign) BOOL accessibilityElementsHidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CELLS_SETTINGS_IMAGE_DETAIL_TEXT_ITEM_H_

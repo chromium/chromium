@@ -1334,13 +1334,15 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   syncErrorItem.image =
       DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolPointSize);
   syncErrorItem.imageViewTintColor = [UIColor colorNamed:kRed500Color];
+  syncErrorItem.accessibilityElementsHidden = YES;
   return syncErrorItem;
 }
 
 // Creates an error action button item to handle the indicated sync error type
 // for signed in not syncing users.
 - (TableViewItem*)createSyncErrorButtonItemWithItemType:(NSInteger)itemType
-                                          buttonLabelID:(int)buttonLabelID {
+                                          buttonLabelID:(int)buttonLabelID
+                                              messageID:(int)messageID {
   CHECK((itemType == PrimaryAccountReauthErrorItemType) ||
         (itemType == ShowPassphraseDialogErrorItemType) ||
         (itemType == SyncNeedsTrustedVaultKeyErrorItemType) ||
@@ -1349,6 +1351,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   CHECK(self.syncAccountState == SyncSettingsAccountState::kSignedIn);
   TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:itemType];
   item.text = l10n_util::GetNSString(buttonLabelID);
+  item.accessibilityLabel = l10n_util::GetNSString(messageID);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   item.accessibilityIdentifier = kSyncErrorButtonIdentifier;
@@ -1430,7 +1433,10 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [self createSyncErrorButtonItemWithItemType:type.value()
                                       buttonLabelID:GetAccountErrorUIInfo(
                                                         _syncService)
-                                                        .buttonLabelID];
+                                                        .buttonLabelID
+                                          messageID:GetAccountErrorUIInfo(
+                                                        _syncService)
+                                                        .messageID];
   } else {
     // For syncing users, the sync error item will be displayed as
     // an icon with descriptive text.

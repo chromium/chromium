@@ -29,6 +29,10 @@
   cell.image = self.image;
   [cell setImageViewAlpha:self.imageViewAlpha];
 
+  if (self.accessibilityElementsHidden) {
+    cell.accessibilityElementsHidden = self.accessibilityElementsHidden;
+  }
+
   if (self.attributedText) {
     cell.textLabel.attributedText = self.attributedText;
   } else if (self.textColor) {
