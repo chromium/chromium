@@ -48,7 +48,6 @@ template <class T>
 using NumericRangeSet = blink::media_constraints::NumericRangeSet<T>;
 
 namespace {
-
 using BoolSet = blink::media_constraints::DiscreteSet<bool>;
 using DoubleRangeSet = blink::media_constraints::NumericRangeSet<double>;
 using EchoCancellationTypeSet =
@@ -839,13 +838,12 @@ class ProcessingBasedContainer {
     if (failed_constraint_name)
       return failed_constraint_name;
 
-    for (auto& info : kBooleanPropertyContainerInfoMap) {
-      failed_constraint_name =
-          boolean_containers_[info.index].ApplyConstraintSet(
-              constraint_set.*(info.constraint_member));
-      if (failed_constraint_name)
-        return failed_constraint_name;
+    failed_constraint_name = noise_suppression_container_.ApplyConstraintSet(
+        constraint_set.noise_suppression);
+    if (failed_constraint_name) {
+      return failed_constraint_name;
     }
+
     return failed_constraint_name;
   }
 
@@ -920,14 +918,10 @@ class ProcessingBasedContainer {
             constraint_set, properties.voice_isolation);
     score += sub_score;
 
-    for (size_t i = 0; i < kNumBooleanContainerIds; ++i) {
-      auto& info = kBooleanPropertyContainerInfoMap[i];
-      std::tie(sub_score, properties.*(info.property_member)) =
-          boolean_containers_[info.index].SelectSettingsAndScore(
-              constraint_set.*(info.constraint_member),
-              properties.*(info.property_member));
-      score += sub_score;
-    }
+    std::tie(sub_score, properties.noise_suppression) =
+        noise_suppression_container_.SelectSettingsAndScore(
+            constraint_set.noise_suppression, properties.noise_suppression);
+    score += sub_score;
 
     score.set_processing_priority(
         GetProcessingPriority(constraint_set.echo_cancellation));
@@ -938,14 +932,9 @@ class ProcessingBasedContainer {
   // The ProcessingBasedContainer is considered empty if at least one of the
   // containers owned by it is empty.
   bool IsEmpty() const {
-    DCHECK(!boolean_containers_.empty());
-
-    for (auto& container : boolean_containers_) {
-      if (container.IsEmpty())
-        return true;
-    }
     return echo_cancellation_container_.IsEmpty() ||
            auto_gain_control_container_.IsEmpty() ||
+           noise_suppression_container_.IsEmpty() ||
            sample_size_container_.IsEmpty() || channels_container_.IsEmpty() ||
            sample_rate_container_.IsEmpty() || latency_container_.IsEmpty();
   }
@@ -953,27 +942,6 @@ class ProcessingBasedContainer {
   ProcessingType processing_type() const { return processing_type_; }
 
  private:
-  enum BooleanContainerId {
-    kGoogNoiseSuppression,
-    kNumBooleanContainerIds
-  };
-
-  // This struct groups related fields or entries from
-  // AudioProcessingProperties,
-  // ProcessingBasedContainer::boolean_containers_, and
-  // MediaTrackConstraintSetPlatform.
-  struct BooleanPropertyContainerInfo {
-    BooleanContainerId index;
-    BooleanConstraint ConstraintSet::*constraint_member;
-    bool AudioProcessingProperties::*property_member;
-  };
-
-  static constexpr BooleanPropertyContainerInfo
-      kBooleanPropertyContainerInfoMap[] = {
-          {kGoogNoiseSuppression, &ConstraintSet::noise_suppression,
-           &AudioProcessingProperties::noise_suppression},
-  };
-
   // Private constructor intended to instantiate different variants of this
   // class based on the initial values provided. The appropriate way to
   // instantiate this class is via the three factory methods provided.
@@ -1015,8 +983,7 @@ class ProcessingBasedContainer {
 
     voice_isolation_container_ = VoiceIsolationContainer(voice_isolation_set);
 
-    boolean_containers_[kGoogNoiseSuppression] =
-        BooleanContainer(noise_suppression_set);
+    noise_suppression_container_ = BooleanContainer(noise_suppression_set);
 
     // Allow the full set of supported values when the device is not open or
     // when the candidate settings would open the device using an unprocessed
@@ -1034,11 +1001,8 @@ class ProcessingBasedContainer {
     auto_gain_control_container_ = AutoGainControlContainer(
         BoolSet({source_info.properties().auto_gain_control}));
 
-    for (size_t i = 0; i < kNumBooleanContainerIds; ++i) {
-      auto& info = kBooleanPropertyContainerInfoMap[i];
-      boolean_containers_[info.index] = BooleanContainer(
-          BoolSet({source_info.properties().*(info.property_member)}));
-    }
+    noise_suppression_container_ =
+        BooleanContainer(BoolSet({source_info.properties().noise_suppression}));
 
     DCHECK(source_info.channels());
     channels_container_ = IntegerDiscreteContainer({*source_info.channels()});
@@ -1093,18 +1057,15 @@ class ProcessingBasedContainer {
   }
 
   ProcessingType processing_type_;
-  std::array<BooleanContainer, kNumBooleanContainerIds> boolean_containers_;
   EchoCancellationContainer echo_cancellation_container_;
   AutoGainControlContainer auto_gain_control_container_;
+  BooleanContainer noise_suppression_container_;
   VoiceIsolationContainer voice_isolation_container_;
   IntegerRangeContainer sample_size_container_;
   IntegerDiscreteContainer channels_container_;
   IntegerRangeContainer sample_rate_container_;
   DoubleRangeContainer latency_container_;
 };
-
-constexpr ProcessingBasedContainer::BooleanPropertyContainerInfo
-    ProcessingBasedContainer::kBooleanPropertyContainerInfoMap[];
 
 // Container for the constrainable properties of a single audio device.
 class DeviceContainer {
