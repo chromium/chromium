@@ -51,43 +51,55 @@ declare_args() {
 shared_bundle_id_for_test_apps =
     "$ios_app_bundle_id_prefix.chrome.unittests.dev"
 
-# If codesigning is enabled, use must configure either a codesigning identity
-# or a filter to automatically select the codesigning identity.
-if (target_environment == "device" && ios_enable_code_signing) {
-  assert(ios_code_signing_identity == "" ||
-             ios_code_signing_identity_description == "",
-         "You should either specify the precise identity to use with " +
-             "ios_code_signing_identity or let the code select an identity " +
-             "automatically (via find_signing_identity.py which use the " +
-             "variable ios_code_signing_identity_description to set the " +
-             "pattern to match the identity to use).")
-}
-
-if (target_environment == "device" && ios_enable_code_signing) {
-  # Automatically select a codesigning identity if no identity is configured.
-  # This only applies to device build as simulator builds are not signed.
-  if (ios_code_signing_identity == "") {
-    find_signing_identity_args = []
-    if (ios_code_signing_identity_description != "") {
-      find_signing_identity_args = [
-        "--matching-pattern",
-        ios_code_signing_identity_description,
-      ]
+# This file is included on all platforms, but the automatic configuration of
+# the variables can only be executed if building for ios or watchos (as they
+# either have no meaning or depend on tools that are only available on macOS).
+if (is_ios || is_watchos) {
+  if (target_environment == "") {
+    if (current_cpu == "x86" || current_cpu == "x64") {
+      target_environment = "simulator"
+    } else {
+      target_environment = "device"
     }
-    ios_code_signing_identity =
-        exec_script("//build/config/apple/find_signing_identity.py",
-                    find_signing_identity_args,
-                    "trim string")
+  }
+
+  # Check that target_environment is set to a supported value.
+  _target_environments = [
+    "simulator",
+    "device",
+  ]
+  if (is_ios) {
+    _target_environments += [ "catalyst" ]
+  }
+  assert(filter_include([ target_environment ], _target_environments) != [],
+         "target_environment must be in $_target_environments: " +
+             "$target_environment")
+
+  if (target_environment == "device" && ios_enable_code_signing) {
+    # If codesigning is enabled, user must configure either a codesigning
+    # identity or a filter to automatically select the codesigning identity.
+    assert(ios_code_signing_identity == "" ||
+               ios_code_signing_identity_description == "",
+           "You should either specify the precise identity to use with " +
+               "ios_code_signing_identity or let the code select an identity " +
+               "automatically (via find_signing_identity.py which use the " +
+               "variable ios_code_signing_identity_description to set the " +
+               "pattern to match the identity to use).")
+
+    # Automatically select a codesigning identity if no identity is configured.
+    # This only applies to device build as simulator builds are not signed.
+    if (ios_code_signing_identity == "") {
+      find_signing_identity_args = []
+      if (ios_code_signing_identity_description != "") {
+        find_signing_identity_args = [
+          "--matching-pattern",
+          ios_code_signing_identity_description,
+        ]
+      }
+      ios_code_signing_identity =
+          exec_script("//build/config/apple/find_signing_identity.py",
+                      find_signing_identity_args,
+                      "trim string")
+    }
   }
 }
-
-if (target_environment == "") {
-  if (current_cpu == "x86" || current_cpu == "x64") {
-    target_environment = "simulator"
-  } else {
-    target_environment = "device"
-  }
-}
-
-assert(target_environment == "simulator" || target_environment == "device" ||
-       target_environment == "catalyst")
