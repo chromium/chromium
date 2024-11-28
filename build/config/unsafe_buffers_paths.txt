@@ -105,7 +105,6 @@
 -components/webrtc_logging/
 -components/zucchini/
 -fuchsia_web/
--google_apis/
 -gpu/ipc/service/
 -ios/
 -ios_internal/
