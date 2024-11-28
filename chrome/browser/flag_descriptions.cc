@@ -5875,12 +5875,6 @@ const char kArcIdleManagerName[] = "Enable ARC Idle Manager";
 const char kArcIdleManagerDescription[] =
     "ARC will turn on Android's doze mode when idle.";
 
-const char kArcIgnoreHoverEventAnrName[] =
-    "Ignore ANR triggered by hover event in ARC";
-const char kArcIgnoreHoverEventAnrDescription[] =
-    "When enabled, ANR triggered by hover input event will be ignored. Noted"
-    " that ANR triggered by other types of input event will not be ignored.";
-
 const char kArcInstantResponseWindowOpenName[] =
     "Enable Instance Response for ARC app window open";
 const char kArcInstantResponseWindowOpenDescription[] =

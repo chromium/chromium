@@ -344,11 +344,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "arc-ignore-hover-event-anr",
-    "owners": [ "lingyufeng@chromium.org", "arc-user-focus@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "arc-native-bridge-toggle",
     "owners": [ "levarum@google.com" ],
     // Used on ChromeOS to compare and debug different ARC native-bridge

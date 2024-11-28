@@ -91,8 +91,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->render_arc_notifications_by_chrome =
       ash::features::IsRenderArcNotificationsByChromeEnabled();
   flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
-  flags->ignore_hover_event_anr =
-      base::FeatureList::IsEnabled(arc::kIgnoreHoverEventAnr);
+  flags->ignore_hover_event_anr = true;
   // TODO(yunfanc): Remove this flag together with ARC++ side removal.
   flags->extend_input_anr_timeout = true;
   flags->extend_intent_anr_timeout =

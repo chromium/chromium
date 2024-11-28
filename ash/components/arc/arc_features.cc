@@ -255,11 +255,6 @@ BASE_FEATURE(kArcVmPvclock,
              "ArcEnablePvclock",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether enable ignoring hover event ANR in input dispatcher.
-BASE_FEATURE(kIgnoreHoverEventAnr,
-             "IgnoreHoverEventAnr",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables/disables mlock() of guest memory for ARCVM.
 // Often used in combination with kGuestZram.
 BASE_FEATURE(kLockGuestMemory,

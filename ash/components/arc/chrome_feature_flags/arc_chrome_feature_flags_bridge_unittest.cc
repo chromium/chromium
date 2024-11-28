@@ -148,18 +148,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompatDisabled) {
   EXPECT_FALSE(instance()->flags_called_value()->resize_compat);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyIgnoreHoverEventAnrEnabled) {
-  scoped_feature_list()->InitAndEnableFeature(arc::kIgnoreHoverEventAnr);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->ignore_hover_event_anr);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyIgnoreHoverEventAnrDisabled) {
-  scoped_feature_list()->InitAndDisableFeature(arc::kIgnoreHoverEventAnr);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->ignore_hover_event_anr);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeoutEnabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendIntentAnrTimeout);
   Connect();
