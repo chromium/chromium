@@ -53,7 +53,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'MockNotUsedInProduction',
     # High priority to enable in non-tests:
     'JdkObsolete',
-    'UnusedMethod',
     'ReturnValueIgnored',
     'StaticAssignmentInConstructor',
     # These are all for Javadoc, which we don't really care about.
