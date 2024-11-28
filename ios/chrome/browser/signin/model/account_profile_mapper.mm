@@ -143,6 +143,8 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   std::optional<std::string> FindProfileNameForGaiaID(
       std::string_view gaia_id) const;
 
+  void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id);
+
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() final;
   void OnIdentityUpdated(id<SystemIdentity> identity) final;
@@ -253,6 +255,53 @@ AccountProfileMapper::Assigner::FindProfileNameForGaiaID(
   // The identity isn't assigned to any profile. This can happen (temporarily)
   // just after an identity is added to the device.
   return std::nullopt;
+}
+
+void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
+    std::string_view managed_gaia_id) {
+  CHECK(profile_manager_);
+
+  ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
+  CHECK(storage);
+
+  const std::string previous_personal_profile_name = GetPersonalProfileName();
+  const std::optional<std::string> abandoned_managed_profile_name =
+      FindProfileNameForGaiaID(managed_gaia_id);
+
+  const std::set<std::string, std::less<>> personal_gaia_ids =
+      profile_to_gaia_ids_[previous_personal_profile_name];
+
+  // Detach all Gaia IDs from the old personal profile.
+  for (const std::string& gaia_id : personal_gaia_ids) {
+    DetachGaiaIdFromProfile(storage, previous_personal_profile_name, gaia_id);
+  }
+  // Delete the old managed profile.
+  if (abandoned_managed_profile_name) {
+    // The old managed profile mustn't be loaded, since it's going to be deleted
+    // and there's no good way to unload it.
+    CHECK(
+        !profile_manager_->GetProfileWithName(*abandoned_managed_profile_name));
+    // TODO(crbug.com/331783685): Also mark the profile for deletion from disk,
+    // once an API for that exists (though in practice, the abandoned profile
+    // shouldn't exist on disk yet anyway).
+    storage->RemoveProfile(*abandoned_managed_profile_name);
+  }
+
+  // Register a new personal profile.
+  const std::string new_personal_profile_name = FindUnusedProfileName();
+  storage->AddProfile(new_personal_profile_name);
+  storage->SetPersonalProfileName(new_personal_profile_name);
+  // ..and re-interpret the previous personal profile as a managed profile.
+  const std::string& new_managed_profile_name = previous_personal_profile_name;
+
+  // Re-attach all relevant Gaia IDs to their new profiles.
+  for (const std::string& gaia_id : personal_gaia_ids) {
+    AttachGaiaIdToProfile(storage, new_personal_profile_name, gaia_id);
+  }
+  AttachGaiaIdToProfile(storage, new_managed_profile_name, managed_gaia_id);
+
+  // Let observers know about the changes.
+  MaybeUpdateCachedMappingAndNotify();
 }
 
 void AccountProfileMapper::Assigner::OnIdentityListChanged() {
@@ -526,6 +575,11 @@ void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
         }
       },
       callback));
+}
+
+void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
+    std::string_view gaia_id) {
+  assigner_->MakePersonalProfileManagedWithGaiaID(gaia_id);
 }
 
 void AccountProfileMapper::IdentityUpdated(id<SystemIdentity> identity) {

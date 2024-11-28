@@ -764,4 +764,72 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
 }
 
+// Tests that the personal profile gets correctly converted into a managed
+// profile on MakePersonalProfileManagedWithGaiaID(), and a new personal profile
+// gets created.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       ConvertsPersonalProfileToManaged) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+
+  // A personal and a managed account get added.
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+
+  // Two profile should be registered, the personal one and a managed one, each
+  // with the appropriate account assigned to it.
+  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+
+  const std::string original_personal_profile_name =
+      profile_attributes_storage()->GetPersonalProfileName();
+  ASSERT_TRUE(
+      profile_manager_->HasProfileWithName(original_personal_profile_name));
+  NSArray* expected_identities_personal = @[ gmail_identity1 ];
+  ASSERT_NSEQ(expected_identities_personal,
+              GetIdentitiesForProfile(original_personal_profile_name));
+
+  const std::string original_managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{original_personal_profile_name});
+  ASSERT_FALSE(original_managed_profile_name.empty());
+  ASSERT_TRUE(
+      profile_manager_->HasProfileWithName(original_managed_profile_name));
+  NSArray* expected_identities_managed = @[ google_identity ];
+  ASSERT_NSEQ(expected_identities_managed,
+              GetIdentitiesForProfile(original_managed_profile_name));
+
+  // Simulate that the user signs in with the managed account, and chooses to
+  // take existing local data along, i.e. convert the personal profile into a
+  // managed profile.
+  account_profile_mapper_->MakePersonalProfileManagedWithGaiaID(
+      base::SysNSStringToUTF8(google_identity.gaiaID));
+
+  // What should have happened:
+  // * The original personal profile should have become managed.
+  // * The original managed profile should be gone.
+  // * A new personal profile should have been registered.
+  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
+  EXPECT_TRUE(
+      profile_manager_->HasProfileWithName(original_personal_profile_name));
+  EXPECT_FALSE(
+      profile_manager_->HasProfileWithName(original_managed_profile_name));
+  const std::string new_personal_profile_name =
+      profile_attributes_storage()->GetPersonalProfileName();
+  const std::string new_managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{new_personal_profile_name});
+  EXPECT_NE(new_personal_profile_name, original_personal_profile_name);
+  EXPECT_EQ(new_managed_profile_name, original_personal_profile_name);
+
+  // The accounts should be assigned to the appropriate *new* profiles.
+  EXPECT_NSEQ(expected_identities_personal,
+              GetIdentitiesForProfile(new_personal_profile_name));
+  EXPECT_NSEQ(expected_identities_managed,
+              GetIdentitiesForProfile(new_managed_profile_name));
+}
+
 }  // namespace
