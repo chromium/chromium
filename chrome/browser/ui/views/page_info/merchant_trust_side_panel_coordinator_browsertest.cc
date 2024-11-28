@@ -6,6 +6,8 @@
 #include "base/strings/escape.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
@@ -16,7 +18,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_service.h"
+#include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -25,12 +30,32 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using testing::Return;
 
 namespace {
-const char kRegularUrl1[] = "a.test";
-const char kRegularUrl2[] = "b.test";
 const char kMerchantReviewsUrl[] = "reviews.test";
+const char kUrlWithMerchantTrustData[] = "merchant.test";
+const char kUrlWithoutMerchantTrustData[] = "no-merchant.test";
+
+page_info::proto::MerchantTrustSignalsV3 CreateValidProto() {
+  page_info::proto::MerchantTrustSignalsV3 proto;
+  proto.set_star_rating(3.8);
+  proto.set_count_rating(45);
+  proto.set_page_url(kMerchantReviewsUrl);
+  proto.set_overall_summary("Test summary");
+  return proto;
+}
 }  // namespace
+
+class MockMerchantTrustService : public page_info::MerchantTrustService {
+ public:
+  explicit MockMerchantTrustService()
+      : MerchantTrustService(nullptr, false, nullptr) {}
+  MOCK_METHOD(std::optional<page_info::proto::MerchantTrustSignalsV3>,
+              GetMerchantTrustInfo,
+              (const GURL&, ukm::SourceId),
+              (const, override));
+};
 
 class MerchantTrustSidePanelCoordinatorBrowserTest
     : public InProcessBrowserTest {
@@ -44,18 +69,26 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+    service_ = static_cast<MockMerchantTrustService*>(
+        MerchantTrustServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&MerchantTrustSidePanelCoordinatorBrowserTest::
+                                    BuildMockMerchantTrustService,
+                                base::Unretained(this))));
+
+    // Mock GetMerchanTrustInfo based on the requested URL.
+    ON_CALL(*service(), GetMerchantTrustInfo(_, _))
+        .WillByDefault(
+            [](const GURL& url, ukm::SourceId source_id)
+                -> std::optional<page_info::proto::MerchantTrustSignalsV3> {
+              return url == GURL(kUrlWithMerchantTrustData)
+                         ? std::make_optional(CreateValidProto())
+                         : std::nullopt;
+            });
   }
 
   GURL CreateUrl(const std::string& host) {
     return https_server_.GetURL(host, "/title1.html");
-  }
-
-  std::string CreateMerchantTrustUrl(const GURL& url) {
-    return base::StringPrintf(
-        "https://www.google.com/search?"
-        "q=Merchant+trust+%s"
-        "&tbm=ilp&ctx=chrome_nav",
-        base::EscapeQueryParamValue(url.spec(), true).c_str());
   }
 
   content::WebContents* web_contents() {
@@ -68,14 +101,22 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
 
   base::test::ScopedFeatureList feature_list_;
 
+  MockMerchantTrustService* service() { return service_; }
+
  private:
+  std::unique_ptr<KeyedService> BuildMockMerchantTrustService(
+      content::BrowserContext* context) {
+    return std::make_unique<::testing::NiceMock<MockMerchantTrustService>>();
+  }
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  raw_ptr<MockMerchantTrustService, DanglingUntriaged> service_;
 };
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
-                       ShowOnRefresh) {
-  GURL kRegularGURL1 = CreateUrl(kRegularUrl1);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kRegularGURL1));
+                       ShowOnRefreshingMerchantSite) {
+  GURL kGURLWithMerchantTrustData = CreateUrl(kUrlWithMerchantTrustData);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Test showing a side panel.
@@ -84,31 +125,59 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kMerchantTrust);
 
-  // Check that the side panel remains open on refresh.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kRegularGURL1));
-  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kMerchantTrust);
+  // Refresh the page and check that the side panel is still open.
+  EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
+      .WillRepeatedly(Return(std::nullopt));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator()->IsSidePanelShowing(); }));
 }
 
-// TODO(crbug.com/378671877): Add tests for same tab navigations.
-
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
-                       ShowSameTabNavRef) {
-  GURL kRegularGURL1 = CreateUrl(kRegularUrl1);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kRegularGURL1));
+                       ClosePanelOnNavigationToNoMerchantSite) {
+  GURL kGURLWithMerchantTrustData = CreateUrl(kUrlWithMerchantTrustData);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Test showing a side panel.
-  GURL kMerchantTrustGURL = CreateUrl(kMerchantReviewsUrl);
-  ShowMerchantTrustSidePanel(web_contents(), kMerchantTrustGURL);
+  ShowMerchantTrustSidePanel(web_contents(), CreateUrl(kMerchantReviewsUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Navigate to a different URL with no merchant trust data.
+  GURL kGURLWithoutMerchantTrustData = CreateUrl(kUrlWithoutMerchantTrustData);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithoutMerchantTrustData));
+  // The side panel will not be closed immediately because the animation is in
+  // progress.
+  ASSERT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Side panel should eventually close.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !side_panel_coordinator()->IsSidePanelShowing(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       ShowSameTabNavRef) {
+  GURL kGURLWithMerchantTrustData = CreateUrl(kUrlWithMerchantTrustData);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+
+  // Test showing a side panel.
+  GURL kMerchantReviewsGURL = CreateUrl(kMerchantReviewsUrl);
+  ShowMerchantTrustSidePanel(web_contents(), kMerchantReviewsGURL);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kMerchantTrust);
 
   // Check that side panel remains open on navigation with an anchor.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), kRegularGURL1.Resolve("#ref")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), kGURLWithMerchantTrustData.Resolve("#ref")));
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kMerchantTrust);
@@ -118,12 +187,16 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   EXPECT_EQ(side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->GetOpenInNewTabURL(),
-            kMerchantTrustGURL);
+            kMerchantReviewsGURL);
 }
 
+// TODO(crbug.com/378671877): Add tests for same tab, replace history
+// navigations.
+
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
-                       RemainsClosedOnSameTabNav) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+                       RemainsClosedOnNonMerchantSameTabNav) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), CreateUrl(kUrlWithoutMerchantTrustData)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Test showing a side panel.
@@ -142,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   // Check that side panel remains closed on navigation.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl2)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), CreateUrl(kUrlWithoutMerchantTrustData)));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 }

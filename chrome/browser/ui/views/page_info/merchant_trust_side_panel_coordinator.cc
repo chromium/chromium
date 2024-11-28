@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/page_info/merchant_trust_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -137,6 +140,67 @@ GURL MerchantTrustSidePanelCoordinator::GetOpenInNewTabUrl() {
   // TODO(crbug.com/378818867): TBD, need to figure out how to build the correct
   // URL here.
   return last_url_info_.value().new_tab_url;
+}
+
+std::optional<page_info::proto::MerchantTrustSignalsV3>
+MerchantTrustSidePanelCoordinator::GetMerchantTrustInfo(const GURL& url) const {
+  auto* service = MerchantTrustServiceFactory::GetForProfile(GetProfile());
+  return service->GetMerchantTrustInfo(
+      url, web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+}
+
+void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If the navigation is not in the primary main frame or has not committed,
+  // then we don't want to close the side panel.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  // If the navigation is a same document navigation, then we don't want to
+  // close the side panel.
+  if (navigation_handle->IsSameDocument() &&
+      web_contents()->GetLastCommittedURL().GetWithoutRef() ==
+          last_url_info_->context_url.GetWithoutRef()) {
+    return;
+  }
+
+  SidePanelUI* side_panel_ui = GetSidePanelUI();
+  if (!side_panel_ui) {
+    return;
+  }
+
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents());
+  SidePanelEntry::Key key(SidePanelEntry::Id::kMerchantTrust);
+
+  // Update the SidePanel when a user navigates to another url with the
+  // correct reviews URL.
+  if (web_view_side_panel_view_ && side_panel_ui->GetCurrentEntryId() ==
+                                       SidePanelEntry::Id::kMerchantTrust) {
+    // TODO(crbug.com/378818867): TBD update the URL
+    // with query params if needed.
+    auto merchant_info = GetMerchantTrustInfo(navigation_handle->GetURL());
+    if (merchant_info.has_value()) {
+      RegisterEntryAndShow(GURL(merchant_info->page_url()));
+    } else {
+      side_panel_ui->Close();
+    }
+  }
+
+  // If the merchant trust side panel is no longer being shown and the view is
+  // cached, then we will remove the cached view since it shows the wrong page.
+  if (side_panel_ui->GetCurrentEntryId() !=
+          SidePanelEntry::Id::kMerchantTrust &&
+      web_view_side_panel_view_) {
+    auto* entry = registry->GetEntryForKey(
+        SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
+    DCHECK(entry);
+    entry->ClearCachedView();
+  }
+}
+
+Profile* MerchantTrustSidePanelCoordinator::GetProfile() const {
+  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MerchantTrustSidePanelCoordinator);

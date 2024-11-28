@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -56,6 +57,15 @@ class MerchantTrustSidePanelCoordinator
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
 
+  // content::WebContentsObserver:
+  // Override DidFinishNavigation to ensure that the MerchantTrust side panel
+  // is closed or updates when the user navigates to a different site and
+  // that cached data is cleaned up.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  Profile* GetProfile() const;
+
   // Stores the |url_params| for the MerchantTrust SidePanel and the
   // |context_url| that they are associated with.
   struct URLInfo {
@@ -79,6 +89,9 @@ class MerchantTrustSidePanelCoordinator
   base::WeakPtr<WebViewSidePanelView> web_view_side_panel_view_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  std::optional<page_info::proto::MerchantTrustSignalsV3>
+  GetMerchantTrustInfo(const GURL& url) const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_MERCHANT_TRUST_SIDE_PANEL_COORDINATOR_H_
