@@ -333,4 +333,4 @@ void ProfileWriter::AddAutocompleteFormDataEntries(
     web_data_service->UpdateAutocompleteEntries(autocomplete_entries);
 }
 
-ProfileWriter::~ProfileWriter() {}
+ProfileWriter::~ProfileWriter() = default;

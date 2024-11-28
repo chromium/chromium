@@ -12,4 +12,4 @@ void Importer::Cancel() {
 
 Importer::Importer() : cancelled_(false) {}
 
-Importer::~Importer() {}
+Importer::~Importer() = default;

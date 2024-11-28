@@ -20,7 +20,7 @@ using base::win::RegKey;
 
 class GCAPIReactivationTest : public ::testing::Test {
  protected:
-  GCAPIReactivationTest() {}
+  GCAPIReactivationTest() = default;
 
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(

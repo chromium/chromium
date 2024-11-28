@@ -47,7 +47,7 @@ class RegistryUtilTest : public testing::Test {
   RegistryUtilTest& operator=(const RegistryUtilTest&) = delete;
 
  protected:
-  RegistryUtilTest() {}
+  RegistryUtilTest() = default;
 
   void SetUp() override { ASSERT_NO_FATAL_FAILURE(ResetRegistryOverrides()); }
 

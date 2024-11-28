@@ -28,7 +28,7 @@ ArchivePatchHelper::ArchivePatchHelper(const base::FilePath& working_directory,
       target_(target),
       consumer_(consumer) {}
 
-ArchivePatchHelper::~ArchivePatchHelper() {}
+ArchivePatchHelper::~ArchivePatchHelper() = default;
 
 // static
 bool ArchivePatchHelper::UncompressAndPatch(

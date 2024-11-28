@@ -10,7 +10,7 @@
 ConditionalWorkItemList::ConditionalWorkItemList(Condition* condition)
     : condition_(condition) {}
 
-ConditionalWorkItemList::~ConditionalWorkItemList() {}
+ConditionalWorkItemList::~ConditionalWorkItemList() = default;
 
 bool ConditionalWorkItemList::DoImpl() {
   VLOG(1) << "Evaluating " << log_message_ << " condition...";
@@ -36,7 +36,7 @@ bool ConditionRunIfFileExists::ShouldRun() const {
 Not::Not(WorkItem::Condition* original_condition)
     : original_condition_(original_condition) {}
 
-Not::~Not() {}
+Not::~Not() = default;
 
 bool Not::ShouldRun() const {
   return !original_condition_->ShouldRun();

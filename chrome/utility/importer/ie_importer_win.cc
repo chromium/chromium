@@ -461,7 +461,7 @@ void IEImporter::StartImport(const importer::SourceProfile& source_profile,
   bridge_->NotifyEnded();
 }
 
-IEImporter::~IEImporter() {}
+IEImporter::~IEImporter() = default;
 
 void IEImporter::ImportFavorites() {
   FavoritesInfo info;

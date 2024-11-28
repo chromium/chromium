@@ -4,6 +4,6 @@
 
 #include "chrome/common/importer/mock_importer_bridge.h"
 
-MockImporterBridge::MockImporterBridge() {}
+MockImporterBridge::MockImporterBridge() = default;
 
-MockImporterBridge::~MockImporterBridge() {}
+MockImporterBridge::~MockImporterBridge() = default;

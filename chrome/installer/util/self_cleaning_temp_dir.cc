@@ -37,7 +37,7 @@ void SelfCleaningTempDir::GetTopDirToCreate(
   }
 }
 
-SelfCleaningTempDir::SelfCleaningTempDir() {}
+SelfCleaningTempDir::SelfCleaningTempDir() = default;
 
 SelfCleaningTempDir::~SelfCleaningTempDir() {
   if (!path().empty() && !Delete())

@@ -87,7 +87,7 @@ const wchar_t kTempDirPrefix[] = L"mini_installer_test_temp";
 // contents) when the guard instance is destroyed.
 class ScopedTempDirectory {
  public:
-  ScopedTempDirectory() {}
+  ScopedTempDirectory() = default;
 
   ScopedTempDirectory(const ScopedTempDirectory&) = delete;
   ScopedTempDirectory& operator=(const ScopedTempDirectory&) = delete;
@@ -133,7 +133,7 @@ class ChromeVersion {
                          static_cast<ULONGLONG>(c[3]));
   }
 
-  ChromeVersion() {}
+  ChromeVersion() = default;
   explicit ChromeVersion(ULONGLONG value) : version_(value) {}
   WORD major() const { return static_cast<WORD>(version_ >> 48); }
   WORD minor() const { return static_cast<WORD>(version_ >> 32); }
