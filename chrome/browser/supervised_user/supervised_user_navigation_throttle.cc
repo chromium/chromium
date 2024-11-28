@@ -60,7 +60,7 @@ SupervisedUserNavigationThrottle::SupervisedUserNavigationThrottle(
       deferred_(false),
       behavior_(supervised_user::FilteringBehavior::kInvalid) {}
 
-SupervisedUserNavigationThrottle::~SupervisedUserNavigationThrottle() {}
+SupervisedUserNavigationThrottle::~SupervisedUserNavigationThrottle() = default;
 
 void SupervisedUserNavigationThrottle::CheckURL() {
   GURL url = navigation_handle()->GetURL();
