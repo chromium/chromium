@@ -194,7 +194,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
   GetViewAccessibility().AddVirtualChildView(std::move(alert_view));
 }
 
-IconLabelBubbleView::~IconLabelBubbleView() {}
+IconLabelBubbleView::~IconLabelBubbleView() = default;
 
 void IconLabelBubbleView::InkDropAnimationStarted() {
   separator_view_->UpdateOpacity();

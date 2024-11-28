@@ -60,7 +60,7 @@ AppInfoHeaderPanel::AppInfoHeaderPanel(Profile* profile,
   CreateControls();
 }
 
-AppInfoHeaderPanel::~AppInfoHeaderPanel() {}
+AppInfoHeaderPanel::~AppInfoHeaderPanel() = default;
 
 void AppInfoHeaderPanel::OnIconUpdated(extensions::ChromeAppIcon* icon) {
   app_icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon->image_skia()));

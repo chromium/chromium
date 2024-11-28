@@ -62,7 +62,7 @@ ChromeBrowserMainExtraPartsViews* g_main_parts_views = nullptr;
 // tracing service.
 class UiDevtoolsConnector : public ui_devtools::ConnectorDelegate {
  public:
-  UiDevtoolsConnector() {}
+  UiDevtoolsConnector() = default;
   ~UiDevtoolsConnector() override = default;
 
   void BindTracingConsumerHost(

@@ -188,7 +188,7 @@ class LocalCardMigrationBrowserTest
         features::kAutofillEnableNewCardArtAndNetworkImages);
   }
 
-  ~LocalCardMigrationBrowserTest() override {}
+  ~LocalCardMigrationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();

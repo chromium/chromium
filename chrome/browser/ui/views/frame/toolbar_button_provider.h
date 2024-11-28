@@ -83,7 +83,7 @@ class ToolbarButtonProvider {
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:
-  virtual ~ToolbarButtonProvider() {}
+  virtual ~ToolbarButtonProvider() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOOLBAR_BUTTON_PROVIDER_H_

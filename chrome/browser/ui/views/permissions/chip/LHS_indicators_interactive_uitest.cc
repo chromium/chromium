@@ -117,7 +117,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
-  ~LHSIndicatorsInteractiveUITest() override {}
+  ~LHSIndicatorsInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);

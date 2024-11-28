@@ -30,7 +30,7 @@ class PasswordReuseModalWarningTest : public DialogBrowserTest {
   PasswordReuseModalWarningTest& operator=(
       const PasswordReuseModalWarningTest&) = delete;
 
-  ~PasswordReuseModalWarningTest() override {}
+  ~PasswordReuseModalWarningTest() override = default;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {

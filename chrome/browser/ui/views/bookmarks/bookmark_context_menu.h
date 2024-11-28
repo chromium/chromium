@@ -34,7 +34,7 @@ class BookmarkContextMenuObserver {
   virtual void OnContextMenuClosed() = 0;
 
  protected:
-  virtual ~BookmarkContextMenuObserver() {}
+  virtual ~BookmarkContextMenuObserver() = default;
 };
 
 class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,

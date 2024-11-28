@@ -49,7 +49,7 @@ void ShowChooser(const std::string& test_name,
 // extension.
 class UsbChooserBrowserTest : public DialogBrowserTest {
  public:
-  UsbChooserBrowserTest() {}
+  UsbChooserBrowserTest() = default;
 
   UsbChooserBrowserTest(const UsbChooserBrowserTest&) = delete;
   UsbChooserBrowserTest& operator=(const UsbChooserBrowserTest&) = delete;

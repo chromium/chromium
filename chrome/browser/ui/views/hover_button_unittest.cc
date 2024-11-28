@@ -67,7 +67,7 @@ std::u16string GetAccessibleName(HoverButton& button) {
 
 class HoverButtonTest : public ChromeViewsTestBase {
  public:
-  HoverButtonTest() {}
+  HoverButtonTest() = default;
 
   HoverButtonTest(const HoverButtonTest&) = delete;
   HoverButtonTest& operator=(const HoverButtonTest&) = delete;

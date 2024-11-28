@@ -32,7 +32,7 @@ SystemMenuModelDelegate::SystemMenuModelDelegate(
       browser_(browser) {
 }
 
-SystemMenuModelDelegate::~SystemMenuModelDelegate() {}
+SystemMenuModelDelegate::~SystemMenuModelDelegate() = default;
 
 bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 #if BUILDFLAG(IS_LINUX)

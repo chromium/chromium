@@ -70,7 +70,7 @@ BookmarkContextMenu::BookmarkContextMenu(
   }
 }
 
-BookmarkContextMenu::~BookmarkContextMenu() {}
+BookmarkContextMenu::~BookmarkContextMenu() = default;
 
 void BookmarkContextMenu::InstallPreRunCallback(base::OnceClosure callback) {
   DCHECK(PreRunCallback().is_null());

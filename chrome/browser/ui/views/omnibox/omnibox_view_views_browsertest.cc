@@ -815,7 +815,7 @@ using Microsoft::WRL::ComPtr;
 
 class OmniboxViewViewsUIATest : public OmniboxViewViewsTest {
  public:
-  OmniboxViewViewsUIATest() {}
+  OmniboxViewViewsUIATest() = default;
 
   void ExpectUIADoubleSafearrayEQ(
       SAFEARRAY* safearray,

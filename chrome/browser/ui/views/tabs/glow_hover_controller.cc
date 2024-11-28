@@ -22,7 +22,7 @@ GlowHoverController::GlowHoverController(views::View* view)
   animation_.set_delegate(this);
 }
 
-GlowHoverController::~GlowHoverController() {}
+GlowHoverController::~GlowHoverController() = default;
 
 void GlowHoverController::SetAnimationContainer(
     gfx::AnimationContainer* container) {

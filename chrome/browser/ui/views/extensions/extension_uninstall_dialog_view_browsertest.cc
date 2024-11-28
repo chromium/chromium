@@ -84,7 +84,7 @@ class TestExtensionUninstallDialogDelegate
   TestExtensionUninstallDialogDelegate& operator=(
       const TestExtensionUninstallDialogDelegate&) = delete;
 
-  ~TestExtensionUninstallDialogDelegate() override {}
+  ~TestExtensionUninstallDialogDelegate() override = default;
 
   bool canceled() const { return canceled_; }
   const std::u16string& error() const { return error_; }

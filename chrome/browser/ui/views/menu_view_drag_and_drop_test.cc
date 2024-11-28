@@ -613,8 +613,8 @@ VIEW_TEST(MenuViewDragAndDropTestNestedDrag,
 
 class MenuViewDragAndDropForDropStayOpen : public MenuViewDragAndDropTest {
  public:
-  MenuViewDragAndDropForDropStayOpen() {}
-  ~MenuViewDragAndDropForDropStayOpen() override {}
+  MenuViewDragAndDropForDropStayOpen() = default;
+  ~MenuViewDragAndDropForDropStayOpen() override = default;
 
  private:
   // MenuViewDragAndDropTest:
@@ -644,8 +644,8 @@ VIEW_TEST(MenuViewDragAndDropForDropStayOpen, MenuViewStaysOpenForNestedDrag)
 
 class MenuViewDragAndDropForDropCancel : public MenuViewDragAndDropTest {
  public:
-  MenuViewDragAndDropForDropCancel() {}
-  ~MenuViewDragAndDropForDropCancel() override {}
+  MenuViewDragAndDropForDropCancel() = default;
+  ~MenuViewDragAndDropForDropCancel() override = default;
 
  private:
   // MenuViewDragAndDropTest:

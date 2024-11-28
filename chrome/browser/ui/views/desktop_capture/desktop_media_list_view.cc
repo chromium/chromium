@@ -80,7 +80,7 @@ DesktopMediaListView::DesktopMediaListView(
   GetViewAccessibility().SetName(accessible_name);
 }
 
-DesktopMediaListView::~DesktopMediaListView() {}
+DesktopMediaListView::~DesktopMediaListView() = default;
 
 void DesktopMediaListView::OnSelectionChanged() {
   controller_->OnSourceSelectionChanged();

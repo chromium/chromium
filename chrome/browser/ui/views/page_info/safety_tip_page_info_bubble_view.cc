@@ -133,7 +133,7 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
 }
 
-SafetyTipPageInfoBubbleView::~SafetyTipPageInfoBubbleView() {}
+SafetyTipPageInfoBubbleView::~SafetyTipPageInfoBubbleView() = default;
 
 void SafetyTipPageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);

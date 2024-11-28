@@ -17,7 +17,7 @@ RelaunchRecommendedTimer::RelaunchRecommendedTimer(
   ScheduleNextTitleRefresh();
 }
 
-RelaunchRecommendedTimer::~RelaunchRecommendedTimer() {}
+RelaunchRecommendedTimer::~RelaunchRecommendedTimer() = default;
 
 std::u16string RelaunchRecommendedTimer::GetWindowTitle() const {
   const base::TimeDelta elapsed = base::Time::Now() - upgrade_detected_time_;

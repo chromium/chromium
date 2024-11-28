@@ -29,7 +29,7 @@ ViewStack::ViewStack()
   slide_out_animator_->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
 }
 
-ViewStack::~ViewStack() {}
+ViewStack::~ViewStack() = default;
 
 void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
   gfx::Rect destination = bounds();

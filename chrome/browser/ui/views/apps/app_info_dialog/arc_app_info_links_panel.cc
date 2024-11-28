@@ -48,7 +48,7 @@ ArcAppInfoLinksPanel::ArcAppInfoLinksPanel(Profile* profile,
   }
 }
 
-ArcAppInfoLinksPanel::~ArcAppInfoLinksPanel() {}
+ArcAppInfoLinksPanel::~ArcAppInfoLinksPanel() = default;
 
 void ArcAppInfoLinksPanel::OnAppRegistered(
     const std::string& app_id,

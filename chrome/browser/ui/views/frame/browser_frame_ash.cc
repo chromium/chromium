@@ -48,7 +48,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   BrowserWindowStateDelegate& operator=(const BrowserWindowStateDelegate&) =
       delete;
 
-  ~BrowserWindowStateDelegate() override {}
+  ~BrowserWindowStateDelegate() override = default;
 
   // Overridden from ash::WindowStateDelegate.
   bool ToggleFullscreen(ash::WindowState* window_state) override {
@@ -90,7 +90,7 @@ BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
     SetWindowAutoManaged();
 }
 
-BrowserFrameAsh::~BrowserFrameAsh() {}
+BrowserFrameAsh::~BrowserFrameAsh() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameAsh, views::NativeWidgetAura overrides:

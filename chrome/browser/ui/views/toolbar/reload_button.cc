@@ -57,7 +57,7 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
   SetID(VIEW_ID_RELOAD_BUTTON);
 }
 
-ReloadButton::~ReloadButton() {}
+ReloadButton::~ReloadButton() = default;
 
 void ReloadButton::ChangeMode(Mode mode, bool force) {
   intended_mode_ = mode;

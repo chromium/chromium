@@ -62,7 +62,7 @@ END_METADATA
 
 class MenuControllerUITest : public InProcessBrowserTest {
  public:
-  MenuControllerUITest() {}
+  MenuControllerUITest() = default;
 
   MenuControllerUITest(const MenuControllerUITest&) = delete;
   MenuControllerUITest& operator=(const MenuControllerUITest&) = delete;

@@ -28,7 +28,7 @@
 
 class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
  public:
-  DesktopMediaPickerViewsBrowserTest() {}
+  DesktopMediaPickerViewsBrowserTest() = default;
 
   DesktopMediaPickerViewsBrowserTest(
       const DesktopMediaPickerViewsBrowserTest&) = delete;

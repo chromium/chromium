@@ -67,7 +67,7 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
   AutocompletePopupWidget(const AutocompletePopupWidget&) = delete;
   AutocompletePopupWidget& operator=(const AutocompletePopupWidget&) = delete;
 
-  ~AutocompletePopupWidget() override {}
+  ~AutocompletePopupWidget() override = default;
 
   void InitOmniboxPopup(const views::Widget* parent_widget) {
     views::Widget::InitParams params(

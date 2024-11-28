@@ -287,7 +287,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   browser_->tab_strip_model()->AddObserver(this);
 }
 
-CustomTabBarView::~CustomTabBarView() {}
+CustomTabBarView::~CustomTabBarView() = default;
 
 gfx::Rect CustomTabBarView::GetAnchorBoundsInScreen() const {
   return gfx::UnionRects(location_icon_view_->GetAnchorBoundsInScreen(),

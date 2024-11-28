@@ -18,7 +18,7 @@ class BookmarkBarViewTestHelper {
   BookmarkBarViewTestHelper& operator=(const BookmarkBarViewTestHelper&) =
       delete;
 
-  ~BookmarkBarViewTestHelper() {}
+  ~BookmarkBarViewTestHelper() = default;
 
   size_t GetBookmarkButtonCount() { return bbv_->bookmark_buttons_.size(); }
 

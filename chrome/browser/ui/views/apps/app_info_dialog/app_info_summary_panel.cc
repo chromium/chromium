@@ -69,7 +69,7 @@ LaunchOptionsComboboxModel::LaunchOptionsComboboxModel() {
       l10n_util::GetStringUTF16(IDS_APP_CONTEXT_MENU_OPEN_WINDOW));
 }
 
-LaunchOptionsComboboxModel::~LaunchOptionsComboboxModel() {}
+LaunchOptionsComboboxModel::~LaunchOptionsComboboxModel() = default;
 
 extensions::LaunchType LaunchOptionsComboboxModel::GetLaunchTypeAtIndex(
     int index) const {

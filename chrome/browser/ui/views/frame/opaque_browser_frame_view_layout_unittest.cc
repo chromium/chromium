@@ -47,7 +47,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   TestLayoutDelegate(const TestLayoutDelegate&) = delete;
   TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;
 
-  ~TestLayoutDelegate() override {}
+  ~TestLayoutDelegate() override = default;
 
   void set_window_title(const std::u16string& title) { window_title_ = title; }
   void set_show_caption_buttons(bool show_caption_buttons) {
@@ -106,14 +106,14 @@ class OpaqueBrowserFrameViewLayoutTest
     : public ChromeViewsTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  OpaqueBrowserFrameViewLayoutTest() {}
+  OpaqueBrowserFrameViewLayoutTest() = default;
 
   OpaqueBrowserFrameViewLayoutTest(const OpaqueBrowserFrameViewLayoutTest&) =
       delete;
   OpaqueBrowserFrameViewLayoutTest& operator=(
       const OpaqueBrowserFrameViewLayoutTest&) = delete;
 
-  ~OpaqueBrowserFrameViewLayoutTest() override {}
+  ~OpaqueBrowserFrameViewLayoutTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();

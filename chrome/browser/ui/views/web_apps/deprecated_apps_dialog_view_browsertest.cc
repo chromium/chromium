@@ -64,7 +64,7 @@ class DeprecatedAppDialogWidgetObserver : public views::WidgetObserver {
     widget_->AddObserver(this);
   }
 
-  ~DeprecatedAppDialogWidgetObserver() override {}
+  ~DeprecatedAppDialogWidgetObserver() override = default;
 
   void Wait() { run_loop_.Run(); }
 

@@ -46,7 +46,7 @@ ContactInfoEditorViewController::ContactInfoEditorViewController(
       on_edited_(std::move(on_edited)),
       on_added_(std::move(on_added)) {}
 
-ContactInfoEditorViewController::~ContactInfoEditorViewController() {}
+ContactInfoEditorViewController::~ContactInfoEditorViewController() = default;
 
 bool ContactInfoEditorViewController::IsEditingExistingItem() {
   return !!profile_to_edit_;
@@ -177,7 +177,7 @@ ContactInfoEditorViewController::ContactInfoValidationDelegate::
     : field_(field), controller_(controller), locale_(locale) {}
 
 ContactInfoEditorViewController::ContactInfoValidationDelegate::
-    ~ContactInfoValidationDelegate() {}
+    ~ContactInfoValidationDelegate() = default;
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     ShouldFormat() {

@@ -186,7 +186,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
 #endif
 }
 
-EnterpriseStartupDialogView::~EnterpriseStartupDialogView() {}
+EnterpriseStartupDialogView::~EnterpriseStartupDialogView() = default;
 
 void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
     const std::u16string& information) {

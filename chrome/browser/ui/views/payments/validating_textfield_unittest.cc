@@ -18,22 +18,22 @@ namespace payments {
 
 class ValidatingTextfieldTest : public ChromeViewsTestBase {
  public:
-  ValidatingTextfieldTest() {}
+  ValidatingTextfieldTest() = default;
 
   ValidatingTextfieldTest(const ValidatingTextfieldTest&) = delete;
   ValidatingTextfieldTest& operator=(const ValidatingTextfieldTest&) = delete;
 
-  ~ValidatingTextfieldTest() override {}
+  ~ValidatingTextfieldTest() override = default;
 
  protected:
   class TestValidationDelegate : public ValidationDelegate {
    public:
-    TestValidationDelegate() {}
+    TestValidationDelegate() = default;
 
     TestValidationDelegate(const TestValidationDelegate&) = delete;
     TestValidationDelegate& operator=(const TestValidationDelegate&) = delete;
 
-    ~TestValidationDelegate() override {}
+    ~TestValidationDelegate() override = default;
 
     // ValidationDelegate:
     bool TextfieldValueChanged(views::Textfield* textfield,

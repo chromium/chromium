@@ -657,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
 class ChipGestureSensitiveEnabledInteractiveTest
     : public PermissionChipInteractiveUITest {
  public:
-  ChipGestureSensitiveEnabledInteractiveTest() {}
+  ChipGestureSensitiveEnabledInteractiveTest() = default;
 };
 IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
                        ChipAutoPopupBubbleEnabled) {

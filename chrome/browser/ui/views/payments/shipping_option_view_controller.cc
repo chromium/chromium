@@ -42,7 +42,7 @@ class ShippingOptionItem final : public PaymentRequestItemList::Item {
   ShippingOptionItem(const ShippingOptionItem&) = delete;
   ShippingOptionItem& operator=(const ShippingOptionItem&) = delete;
 
-  ~ShippingOptionItem() override {}
+  ~ShippingOptionItem() override = default;
 
   base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

@@ -28,7 +28,7 @@ FindBarIcon::FindBarIcon(
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
 }
 
-FindBarIcon::~FindBarIcon() {}
+FindBarIcon::~FindBarIcon() = default;
 
 void FindBarIcon::SetActive(bool activate, bool should_animate) {
   if (activate ==

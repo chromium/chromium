@@ -31,7 +31,7 @@ ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       IDS_TOOLTIP_ZOOM, base::FormatPercent(current_zoom_percent_)));
 }
 
-ZoomView::~ZoomView() {}
+ZoomView::~ZoomView() = default;
 
 void ZoomView::UpdateImpl() {
   ZoomChangedForActiveTab(false);

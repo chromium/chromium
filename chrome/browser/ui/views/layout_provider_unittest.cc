@@ -53,7 +53,7 @@ constexpr int kHarmonyTitleSize = 15;
 
 class LayoutProviderTest : public testing::Test {
  public:
-  LayoutProviderTest() {}
+  LayoutProviderTest() = default;
 
   LayoutProviderTest(const LayoutProviderTest&) = delete;
   LayoutProviderTest& operator=(const LayoutProviderTest&) = delete;

@@ -43,7 +43,7 @@ class ScopedWebContentsTestHelper {
 
 class SafetyTipPageInfoBubbleViewTest : public testing::Test {
  public:
-  SafetyTipPageInfoBubbleViewTest() {}
+  SafetyTipPageInfoBubbleViewTest() = default;
 
   SafetyTipPageInfoBubbleViewTest(const SafetyTipPageInfoBubbleViewTest&) =
       delete;

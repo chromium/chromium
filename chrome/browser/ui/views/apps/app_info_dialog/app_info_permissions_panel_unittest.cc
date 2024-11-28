@@ -37,7 +37,7 @@ using testing::Eq;
 
 class AppInfoPermissionsPanelTest : public testing::Test {
  protected:
-  AppInfoPermissionsPanelTest() {}
+  AppInfoPermissionsPanelTest() = default;
 
   base::Value::Dict ValidAppManifest() {
     return base::Value::Dict()

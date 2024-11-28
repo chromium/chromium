@@ -204,7 +204,7 @@ class PaymentRequestRowBorderPainter : public views::Painter {
   PaymentRequestRowBorderPainter& operator=(
       const PaymentRequestRowBorderPainter&) = delete;
 
-  ~PaymentRequestRowBorderPainter() override {}
+  ~PaymentRequestRowBorderPainter() override = default;
 
   // views::Painter:
   gfx::Size GetMinimumSize() const override {

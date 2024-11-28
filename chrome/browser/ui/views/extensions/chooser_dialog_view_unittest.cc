@@ -21,7 +21,7 @@ using permissions::FakeBluetoothChooserController;
 
 class ChooserDialogViewTest : public ChromeViewsTestBase {
  public:
-  ChooserDialogViewTest() {}
+  ChooserDialogViewTest() = default;
 
   ChooserDialogViewTest(const ChooserDialogViewTest&) = delete;
   ChooserDialogViewTest& operator=(const ChooserDialogViewTest&) = delete;

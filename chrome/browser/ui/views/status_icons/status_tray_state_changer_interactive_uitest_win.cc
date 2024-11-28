@@ -20,7 +20,7 @@
 
 class StatusTrayStateChangerWinTest : public testing::Test {
  public:
-  StatusTrayStateChangerWinTest() {}
+  StatusTrayStateChangerWinTest() = default;
 
   StatusTrayStateChangerWinTest(const StatusTrayStateChangerWinTest&) = delete;
   StatusTrayStateChangerWinTest& operator=(

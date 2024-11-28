@@ -64,7 +64,7 @@ ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
   DCHECK(anchor_view);
 }
 
-ToolbarActionsBarBubbleViews::~ToolbarActionsBarBubbleViews() {}
+ToolbarActionsBarBubbleViews::~ToolbarActionsBarBubbleViews() = default;
 
 std::string ToolbarActionsBarBubbleViews::GetAnchorActionId() const {
   return delegate_->GetAnchorActionId();

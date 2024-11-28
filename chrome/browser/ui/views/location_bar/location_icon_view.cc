@@ -81,7 +81,7 @@ LocationIconView::LocationIconView(
   UpdateBorder();
 }
 
-LocationIconView::~LocationIconView() {}
+LocationIconView::~LocationIconView() = default;
 
 gfx::Size LocationIconView::GetMinimumSize() const {
   return GetMinimumSizeForPreferredSize(GetPreferredSize());

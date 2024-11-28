@@ -61,7 +61,7 @@ class WidgetCloseWaiter : public views::WidgetObserver {
   explicit WidgetCloseWaiter(views::Widget* widget) {
     observation_.Observe(widget);
   }
-  ~WidgetCloseWaiter() override {}
+  ~WidgetCloseWaiter() override = default;
 
   void Wait() { loop_.Run(); }
 

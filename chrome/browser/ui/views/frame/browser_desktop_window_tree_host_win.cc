@@ -119,7 +119,7 @@ void VirtualDesktopHelper::Init(HWND hwnd) {
                                 initial_workspace_));
 }
 
-VirtualDesktopHelper::~VirtualDesktopHelper() {}
+VirtualDesktopHelper::~VirtualDesktopHelper() = default;
 
 std::string VirtualDesktopHelper::GetWorkspace() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -231,7 +231,7 @@ BrowserDesktopWindowTreeHostWin::BrowserDesktopWindowTreeHostWin(
   }
 }
 
-BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() {}
+BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() = default;
 
 views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
   if (!system_menu_.get()) {

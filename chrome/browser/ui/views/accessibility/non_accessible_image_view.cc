@@ -11,8 +11,7 @@ NonAccessibleImageView::NonAccessibleImageView() {
   GetViewAccessibility().SetIsInvisible(true);
 }
 
-NonAccessibleImageView::~NonAccessibleImageView() {}
-
+NonAccessibleImageView::~NonAccessibleImageView() = default;
 
 BEGIN_METADATA(NonAccessibleImageView)
 END_METADATA

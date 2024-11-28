@@ -2113,7 +2113,7 @@ class TestDialog : public views::DialogDelegateView {
   TestDialog(const TestDialog&) = delete;
   TestDialog& operator=(const TestDialog&) = delete;
 
-  ~TestDialog() override {}
+  ~TestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
@@ -4428,12 +4428,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
 class DetachToBrowserInSeparateDisplayTabDragControllerTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DetachToBrowserInSeparateDisplayTabDragControllerTest() {}
+  DetachToBrowserInSeparateDisplayTabDragControllerTest() = default;
   DetachToBrowserInSeparateDisplayTabDragControllerTest(
       const DetachToBrowserInSeparateDisplayTabDragControllerTest&) = delete;
   DetachToBrowserInSeparateDisplayTabDragControllerTest& operator=(
       const DetachToBrowserInSeparateDisplayTabDragControllerTest&) = delete;
-  virtual ~DetachToBrowserInSeparateDisplayTabDragControllerTest() {}
+  virtual ~DetachToBrowserInSeparateDisplayTabDragControllerTest() = default;
 
   void SetUpOnMainThread() override {
     DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
@@ -4877,12 +4877,12 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
 class DifferentDeviceScaleFactorDisplayTabDragControllerTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DifferentDeviceScaleFactorDisplayTabDragControllerTest() {}
+  DifferentDeviceScaleFactorDisplayTabDragControllerTest() = default;
   DifferentDeviceScaleFactorDisplayTabDragControllerTest(
       const DifferentDeviceScaleFactorDisplayTabDragControllerTest&) = delete;
   DifferentDeviceScaleFactorDisplayTabDragControllerTest& operator=(
       const DifferentDeviceScaleFactorDisplayTabDragControllerTest&) = delete;
-  virtual ~DifferentDeviceScaleFactorDisplayTabDragControllerTest() {}
+  virtual ~DifferentDeviceScaleFactorDisplayTabDragControllerTest() = default;
 
   void SetUpOnMainThread() override {
     DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
@@ -4973,7 +4973,7 @@ IN_PROC_BROWSER_TEST_P(DifferentDeviceScaleFactorDisplayTabDragControllerTest,
 class DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest() {}
+  DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest() = default;
   DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest(
       const DetachToBrowserInSeparateDisplayAndCancelTabDragControllerTest&) =
       delete;
@@ -5126,12 +5126,12 @@ IN_PROC_BROWSER_TEST_P(
 class DetachToBrowserTabDragControllerTestTouch
     : public DetachToBrowserTabDragControllerTest {
  public:
-  DetachToBrowserTabDragControllerTestTouch() {}
+  DetachToBrowserTabDragControllerTestTouch() = default;
   DetachToBrowserTabDragControllerTestTouch(
       const DetachToBrowserTabDragControllerTestTouch&) = delete;
   DetachToBrowserTabDragControllerTestTouch& operator=(
       const DetachToBrowserTabDragControllerTestTouch&) = delete;
-  virtual ~DetachToBrowserTabDragControllerTestTouch() {}
+  virtual ~DetachToBrowserTabDragControllerTestTouch() = default;
 
   void TearDown() override {
     ui::SetEventTickClockForTesting(nullptr);

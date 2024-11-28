@@ -13,7 +13,7 @@ namespace {
 
 class CrostiniPackageInstallFailureViewTest : public DialogBrowserTest {
  public:
-  CrostiniPackageInstallFailureViewTest() {}
+  CrostiniPackageInstallFailureViewTest() = default;
 
   CrostiniPackageInstallFailureViewTest(
       const CrostiniPackageInstallFailureViewTest&) = delete;

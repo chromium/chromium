@@ -13,7 +13,8 @@ AppWindowEasyResizeWindowTargeter::AppWindowEasyResizeWindowTargeter(
     : wm::EasyResizeWindowTargeter(insets, insets),
       native_app_window_(native_app_window) {}
 
-AppWindowEasyResizeWindowTargeter::~AppWindowEasyResizeWindowTargeter() {}
+AppWindowEasyResizeWindowTargeter::~AppWindowEasyResizeWindowTargeter() =
+    default;
 
 bool AppWindowEasyResizeWindowTargeter::GetHitTestRects(
     aura::Window* window,

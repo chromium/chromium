@@ -20,7 +20,7 @@
 
 class TabGroupViewsTest : public ChromeViewsTestBase {
  public:
-  TabGroupViewsTest() {}
+  TabGroupViewsTest() = default;
   TabGroupViewsTest(const TabGroupViewsTest&) = delete;
   TabGroupViewsTest& operator=(const TabGroupViewsTest&) = delete;
   ~TabGroupViewsTest() override = default;

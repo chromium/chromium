@@ -525,7 +525,7 @@ AccountSelectionViewBase::AccountSelectionViewBase(
       std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
 }
 
-AccountSelectionViewBase::~AccountSelectionViewBase() {}
+AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
 void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);

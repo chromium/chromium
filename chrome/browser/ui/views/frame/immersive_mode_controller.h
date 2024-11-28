@@ -25,10 +25,10 @@ class Widget;
 // See ImmersiveModeController::GetRevealedLock for details.
 class ImmersiveRevealedLock {
  public:
-  virtual ~ImmersiveRevealedLock() {}
+  virtual ~ImmersiveRevealedLock() = default;
 
  protected:
-  ImmersiveRevealedLock() {}
+  ImmersiveRevealedLock() = default;
 };
 
 // Controller for an "immersive mode" similar to MacOS presentation mode where
@@ -61,7 +61,7 @@ class ImmersiveModeController {
     virtual void OnImmersiveFullscreenExited() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   ImmersiveModeController();

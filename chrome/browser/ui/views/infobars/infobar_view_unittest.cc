@@ -29,7 +29,7 @@ class TestInfoBarDelegate : public infobars::InfoBarDelegate {
 
 class InfoBarViewTest : public BrowserWithTestWindowTest {
  public:
-  InfoBarViewTest() {}
+  InfoBarViewTest() = default;
 
   InfoBarViewTest(const InfoBarViewTest&) = delete;
   InfoBarViewTest& operator=(const InfoBarViewTest&) = delete;

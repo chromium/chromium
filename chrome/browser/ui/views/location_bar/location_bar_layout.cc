@@ -73,7 +73,7 @@ DecorationInfo::DecorationInfo(int y,
 LocationBarLayout::LocationBarLayout(Position position, int item_edit_padding)
     : position_(position), item_edit_padding_(item_edit_padding) {}
 
-LocationBarLayout::~LocationBarLayout() {}
+LocationBarLayout::~LocationBarLayout() = default;
 
 void LocationBarLayout::AddDecoration(int y,
                                       int height,

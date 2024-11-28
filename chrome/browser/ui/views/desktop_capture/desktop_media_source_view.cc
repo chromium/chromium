@@ -72,7 +72,7 @@ DesktopMediaSourceView::DesktopMediaSourceView(
           &DesktopMediaSourceView::OnLabelTextChanged, base::Unretained(this)));
 }
 
-DesktopMediaSourceView::~DesktopMediaSourceView() {}
+DesktopMediaSourceView::~DesktopMediaSourceView() = default;
 
 void DesktopMediaSourceView::SetName(const std::u16string& name) {
   label_->SetText(name);

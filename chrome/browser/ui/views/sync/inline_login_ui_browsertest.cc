@@ -257,7 +257,7 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
 
 class InlineLoginUIBrowserTest : public InProcessBrowserTest {
  public:
-  InlineLoginUIBrowserTest() {}
+  InlineLoginUIBrowserTest() = default;
   void EnableSigninAllowed(bool enable);
   void AddEmailToOneClickRejectedList(const std::string& email);
   void AllowSigninCookies(bool enable);

@@ -22,7 +22,7 @@ class MockWebContentsCloseHandlerDelegate
   MockWebContentsCloseHandlerDelegate& operator=(
       const MockWebContentsCloseHandlerDelegate&) = delete;
 
-  ~MockWebContentsCloseHandlerDelegate() override {}
+  ~MockWebContentsCloseHandlerDelegate() override = default;
 
   void Clear() {
     got_clone_ = got_destroy_ = false;
@@ -54,7 +54,7 @@ class WebContentsCloseHandlerTest : public testing::Test {
   WebContentsCloseHandlerTest& operator=(const WebContentsCloseHandlerTest&) =
       delete;
 
-  ~WebContentsCloseHandlerTest() override {}
+  ~WebContentsCloseHandlerTest() override = default;
 
  protected:
   bool IsTimerRunning() const {
