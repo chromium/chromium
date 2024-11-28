@@ -6343,15 +6343,8 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
       line_cursor.MoveToNextInlineLeafOnLine();
 
       if (!line_object) [[unlikely]] {
-        // TODO(crbug.com/378761505): Move DUMP_WILL_BE_NOTREACHED() to CHECK().
-        DUMP_WILL_BE_NOTREACHED()
-            << "InlineCursor says that has an existing position however no "
-               "LayoutObject was found. Found this while processing "
-            << layout_object << "(" << Get(layout_object) << ") after " << runs
-            << " runs.";
         break;
       }
-      if (line_object) {
         auto* next_line_object =
             line_cursor ? line_cursor.CurrentMutableLayoutObject() : nullptr;
 
@@ -6380,7 +6373,6 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
           // previous line.
           ConnectToTrailingWhitespaceOnLine(*line_object, *block_flow);
         }
-      }
     }
     cursor.MoveToNextLine();
   } while (cursor);
