@@ -76,6 +76,11 @@ static_library("messaging_internal") {
     "messaging/empty_messaging_backend_service.h",
     "messaging/messaging_backend_service_impl.cc",
     "messaging/messaging_backend_service_impl.h",
+    "messaging/storage/collaboration_message_util.cc",
+    "messaging/storage/collaboration_message_util.h",
+    "messaging/storage/messaging_backend_store.h",
+    "messaging/storage/messaging_backend_store_impl.cc",
+    "messaging/storage/messaging_backend_store_impl.h",
     "messaging/tab_group_change_notifier.cc",
     "messaging/tab_group_change_notifier.h",
     "messaging/tab_group_change_notifier_impl.cc",
@@ -145,6 +150,7 @@ source_set("messaging_unit_tests") {
   testonly = true
   sources = [
     "messaging/messaging_backend_service_impl_unittest.cc",
+    "messaging/storage/messaging_backend_store_impl_unittest.cc",
     "messaging/tab_group_change_notifier_impl_unittest.cc",
   ]
   deps = [

@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/saved_tab_groups/public/types.h"
