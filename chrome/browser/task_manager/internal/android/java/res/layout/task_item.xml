@@ -11,6 +11,7 @@ found in the LICENSE file.
     android:orientation="horizontal"
     android:padding="16dp">
 
+    <!-- TODO(crbug.com/381352682): Make the header items easier to click. -->
     <TextView
         android:id="@+id/task_name"
         android:layout_width="0dp"

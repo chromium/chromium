@@ -17,7 +17,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class TaskManagerActivity extends AppCompatActivity {
     private static final int REFRESH_TIME_MS = 1000;
-    private final PropertyModel mHeaderModel = new PropertyModel(TaskManagerProperties.COLUMNS);
+    private final PropertyModel mHeaderModel =
+            new PropertyModel(TaskManagerProperties.HEADER_PROPERTY_KEYS);
     private final ModelList mTasksModel = new ModelList();
     private final TaskManagerMediator mMediator =
             new TaskManagerMediator(

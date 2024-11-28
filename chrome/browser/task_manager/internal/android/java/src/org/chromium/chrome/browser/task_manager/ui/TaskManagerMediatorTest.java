@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.HEADER_PROPERTY_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
@@ -54,7 +55,7 @@ public class TaskManagerMediatorTest {
     public void setUp() {
         TaskManagerServiceBridgeJni.setInstanceForTesting(mBridge);
 
-        mHeader = new PropertyModel(COLUMNS);
+        mHeader = new PropertyModel(HEADER_PROPERTY_KEYS);
         mTasks = new ModelList();
         mMediator = new TaskManagerMediator(1000, mHeader, mTasks, MEMORY_FOOTPRINT);
         mMediator.onHasSelectedTaskChanged(mOnHasTaskSelectionChanged);
@@ -70,23 +71,70 @@ public class TaskManagerMediatorTest {
 
     @Test
     @SmallTest
-    public void testTasksAreSorted() {
-        when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
-        when(mBridge.getMemoryFootprintUsage(2)).thenReturn(2_000_000L);
-
-        // ModelList should be sorted by the task id regardless of the order of addition.
-        mObserver.onTaskAdded(2);
+    public void testBasicAttributes() {
         mObserver.onTaskAdded(1);
 
         assertArrayEquals(mHeader.get(COLUMNS), new PropertyKey[] {MEMORY_FOOTPRINT});
 
         assertEquals(mTasks.get(0).type, RowType.TASK);
         assertEquals(mTasks.get(0).model.get(TASK_ID), 1);
-        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 1_000_000);
+    }
 
-        assertEquals(mTasks.get(1).type, RowType.TASK);
-        assertEquals(mTasks.get(1).model.get(TASK_ID), 2);
-        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000);
+    @Test
+    @SmallTest
+    public void testTasksAreSorted() {
+        when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
+        when(mBridge.getMemoryFootprintUsage(2)).thenReturn(2_000_000L);
+        when(mBridge.getMemoryFootprintUsage(3)).thenReturn(1_500_000L);
+
+        mObserver.onTaskAdded(1);
+        mObserver.onTaskAdded(2);
+
+        // Tasks are added in order of addition by default.
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+
+        // Sort by memory footprint (desc).
+        mMediator.cycleSortOrder(MEMORY_FOOTPRINT);
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+
+        mObserver.onTaskAdded(3);
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_500_000L);
+        assertEquals(mTasks.get(2).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+
+        when(mBridge.getMemoryFootprintUsage(3)).thenReturn(3_000_000L);
+        mObserver.onTasksRefreshed(new long[] {3});
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 3_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(mTasks.get(2).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+    }
+
+    @Test
+    @SmallTest
+    public void testCycleSortOrder() {
+        when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
+        when(mBridge.getMemoryFootprintUsage(2)).thenReturn(2_000_000L);
+
+        mObserver.onTaskAdded(1);
+        mObserver.onTaskAdded(2);
+
+        mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // desc
+
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+
+        mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // asc
+
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 1_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+
+        mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // unspecified
+        mMediator.cycleSortOrder(MEMORY_FOOTPRINT); // desc
+
+        assertEquals(mTasks.get(0).model.get(MEMORY_FOOTPRINT), 2_000_000L);
+        assertEquals(mTasks.get(1).model.get(MEMORY_FOOTPRINT), 1_000_000L);
     }
 
     @Test

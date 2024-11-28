@@ -11,9 +11,11 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.HEADER_PROPERTY_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SORT_DESCRIPTOR;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
@@ -37,6 +39,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.RowType;
+import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -66,7 +69,7 @@ public class TaskManagerCoordinatorTest {
         mActivity.setContentView(R.layout.task_manager_activity);
         View taskManagerView = mActivity.findViewById(android.R.id.content);
 
-        mHeaderModel = new PropertyModel(COLUMNS);
+        mHeaderModel = new PropertyModel(HEADER_PROPERTY_KEYS);
         mTasksModel = new ModelList();
 
         mCoordinator =
@@ -87,7 +90,7 @@ public class TaskManagerCoordinatorTest {
 
     @Test
     @SmallTest
-    public void testTaskManagerActivity() {
+    public void testTaskProperties() {
         mTasksModel.add(
                 new ListItem(
                         RowType.TASK,
@@ -110,6 +113,7 @@ public class TaskManagerCoordinatorTest {
                         .itemView
                         .findViewById(R.id.task_name);
         assertEquals("foo", taskName.getText().toString());
+        // TODO(crbug.com/380188424): Test other properties on customizing stringification per type.
     }
 
     @Test
@@ -143,5 +147,17 @@ public class TaskManagerCoordinatorTest {
                                         .itemView
                                         .getBackground())
                         .getColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testSortIndicator() {
+        TextView taskNameHeader = mHeaderView.findViewById(R.id.task_name);
+        String defaultText = taskNameHeader.getText().toString();
+
+        assertNotEquals("", defaultText);
+
+        mHeaderModel.set(SORT_DESCRIPTOR, new SortDescriptor(TASK_NAME, false));
+        assertNotEquals(defaultText, taskNameHeader.getText().toString());
     }
 }

@@ -30,9 +30,36 @@ class TaskManagerProperties {
         int TASK = 1;
     }
 
+    /** Describes sort order of tasks. */
+    static class SortDescriptor {
+        public final PropertyKey key;
+        public final boolean ascending;
+
+        SortDescriptor(PropertyKey key, boolean ascending) {
+            this.key = key;
+            this.ascending = ascending;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            if (other == null) return false;
+            if (this.getClass() != other.getClass()) return false;
+            SortDescriptor that = (SortDescriptor) other;
+            return key == that.key && ascending == that.ascending;
+        }
+    }
+
     /** Property key for the columns of the header. */
     static final WritableObjectPropertyKey<PropertyKey[]> COLUMNS =
             new WritableObjectPropertyKey<>();
+
+    /** Property key for the sort order. If the sort order is unspecified, null is set. */
+    static final WritableObjectPropertyKey<SortDescriptor> SORT_DESCRIPTOR =
+            new WritableObjectPropertyKey<>();
+
+    /** All the property keys used by the header model. */
+    static final PropertyKey[] HEADER_PROPERTY_KEYS = new PropertyKey[] {COLUMNS, SORT_DESCRIPTOR};
 
     /** Property key for task id. */
     static final ReadableLongPropertyKey TASK_ID = new ReadableLongPropertyKey();

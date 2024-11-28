@@ -10,9 +10,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SortDescriptor;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -40,7 +42,33 @@ class TaskManagerCoordinator {
         LinearLayout headerView = taskManagerView.findViewById(R.id.header_linear_layout);
         mHeaderChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        headerModel, headerView, TaskManagerCoordinator::bindHeader);
+                        headerModel,
+                        headerView,
+                        (model, view, key) -> {
+                            view.findViewById(R.id.task_name)
+                                    .setOnClickListener(
+                                            (unused) ->
+                                                    mMediator.cycleSortOrder(
+                                                            TaskManagerProperties.TASK_NAME));
+                            view.findViewById(R.id.memory_footprint)
+                                    .setOnClickListener(
+                                            (unused) ->
+                                                    mMediator.cycleSortOrder(
+                                                            TaskManagerProperties
+                                                                    .MEMORY_FOOTPRINT));
+                            view.findViewById(R.id.cpu)
+                                    .setOnClickListener(
+                                            (unused) ->
+                                                    mMediator.cycleSortOrder(
+                                                            TaskManagerProperties.CPU));
+                            view.findViewById(R.id.process_id)
+                                    .setOnClickListener(
+                                            (unused) ->
+                                                    mMediator.cycleSortOrder(
+                                                            TaskManagerProperties.PROCESS_ID));
+
+                            bindHeader(model, view, key);
+                        });
 
         RecyclerView recyclerView = taskManagerView.findViewById(R.id.tasks_view);
         recyclerView.setLayoutManager(
@@ -78,10 +106,9 @@ class TaskManagerCoordinator {
         mHeaderChangeProcessor.destroy();
     }
 
-    private static void bindHeader(PropertyModel model, View view, PropertyKey key) {
-        if (key != TaskManagerProperties.COLUMNS) {
-            throw new IllegalArgumentException();
-        }
+    private static void bindHeader(PropertyModel model, View view, PropertyKey unused) {
+        @Nullable SortDescriptor descriptor = model.get(TaskManagerProperties.SORT_DESCRIPTOR);
+
         for (PropertyKey columnKey : model.get(TaskManagerProperties.COLUMNS)) {
             TextView textView;
             if (columnKey == TaskManagerProperties.TASK_NAME) {
@@ -99,6 +126,16 @@ class TaskManagerCoordinator {
             } else {
                 throw new IllegalArgumentException("column key " + columnKey + " not supported");
             }
+
+            // TOOD(crbug.com/380158700): Descriptive message for a11y.
+            if (descriptor != null && descriptor.key == columnKey) {
+                if (descriptor.ascending) {
+                    textView.append(" ▲");
+                } else {
+                    textView.append(" ▼");
+                }
+            }
+
             textView.setTypeface(null, Typeface.BOLD);
         }
     }
