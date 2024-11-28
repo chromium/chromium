@@ -521,6 +521,7 @@ public class TabDragSourceTest {
      * H] drag start special cases (see crbug.com/374480348):
      *  H.1] drag starts outside of the source strip - we trigger an #onDragExit after 50ms.
      *  H.2] drag starts outside of the source strip - we cancel the runnable after drag enter.
+     *  H.3] drag starts outside of the source strip - we cancel the runnable after drag end.
      *  </pre>
      */
     private static final String ONDRAG_TEST_CASES = "";
@@ -1000,7 +1001,7 @@ public class TabDragSourceTest {
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario H.2 */
     @Test
-    public void test_onDrag_startsOutsideSourceStrip_runnableCancelled() {
+    public void test_onDrag_startsOutsideSourceStrip_runnableCancelledOnEnter() {
         // Start tab drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
         mSourceInstance.startTabDragAction(
                 mTabsToolbarView,
@@ -1029,6 +1030,36 @@ public class TabDragSourceTest {
                 "Drag shadow should still not visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
                         .getShadowShownForTesting());
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario H.3 */
+    @Test
+    public void test_onDrag_startsOutsideSourceStrip_runnableCancelledOnEnd() {
+        // Start tab drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
+
+        // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertTrue(
+                "#onDragExit runnable should be posted.",
+                mSourceInstance
+                        .getHandlerForTesting()
+                        .hasCallbacks(mSourceInstance.getOnDragExitRunnableForTesting()));
+
+        // Verify the runnable has been cancelled after ACTION_DRAG_ENDED.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY));
+        assertFalse(
+                "#onDragExit runnable should be cleared.",
+                mSourceInstance
+                        .getHandlerForTesting()
+                        .hasCallbacks(mSourceInstance.getOnDragExitRunnableForTesting()));
     }
 
     @Test

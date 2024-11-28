@@ -460,6 +460,7 @@ public class TabDragSource implements View.OnDragListener {
                 DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
 
         mStripLayoutHelperSupplier.get().clearTabDragState();
+        mHandler.removeCallbacks(mOnDragExitRunnable);
         if (mShadowView != null) {
             mShadowView.clear();
         }
@@ -766,6 +767,14 @@ public class TabDragSource implements View.OnDragListener {
 
     View getShadowViewForTesting() {
         return mShadowView;
+    }
+
+    Handler getHandlerForTesting() {
+        return mHandler;
+    }
+
+    Runnable getOnDragExitRunnableForTesting() {
+        return mOnDragExitRunnable;
     }
 
     static class DragLocalUmaState {
