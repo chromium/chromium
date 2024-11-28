@@ -139,12 +139,12 @@ void BatchUploadService::OnGetLocalDataDescriptionsReady(
       GetOrderedListOfNonEmptyDataDescriptions(std::move(local_data_map)),
       state_.dialog_state_->entry_point_,
       /*complete_callback=*/
-      base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
+      base::BindOnce(&BatchUploadService::OnBatchUploadDialogResult,
                      base::Unretained(this)));
   std::move(state_.dialog_state_->dialog_shown_callback_).Run(true);
 }
 
-void BatchUploadService::OnBatchUplaodDialogResult(
+void BatchUploadService::OnBatchUploadDialogResult(
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>&
         item_ids_to_move) {
