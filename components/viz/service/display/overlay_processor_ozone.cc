@@ -192,17 +192,13 @@ bool AllowColorSpaceCombination(
   // range to DRM/KMS. At that point, we need to ensure that
   // EGL_YUV_COLOR_SPACE_HINT_EXT/EGL_SAMPLE_RANGE_HINT_EXT would also get the
   // same values as DRM/KMS.
-  //
-  // TODO(b/243150091): Remove the call to IsYUVColorSpace() or turn it into a
-  // DCHECK() once LaCrOS plumbs the correct color space.
-  bool is_yuv_color_space = IsYUVColorSpace(source_color_space);
   if ((source_format == MultiPlaneFormat::kNV12 ||
        source_format == MultiPlaneFormat::kYV12 ||
        source_format == MultiPlaneFormat::kP010) &&
-      is_yuv_color_space &&
       (source_color_space.GetMatrixID() ==
            gfx::ColorSpace::MatrixID::BT2020_NCL ||
        source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
+    DCHECK(IsYUVColorSpace(source_color_space));
     return false;
   }
 
