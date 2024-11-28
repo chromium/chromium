@@ -2791,7 +2791,7 @@
     },
     {
       name: "MultipleImportMaps",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MultiSelectDeselectWhenOnlyOption",
