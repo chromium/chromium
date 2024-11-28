@@ -336,7 +336,7 @@ bool DocumentLoaderImpl::SaveBuffer(uint32_t input_size) {
   bytes_received_ += input_size;
   bool chunk_saved = false;
   bool loading_pending_request = pending_requests_.Contains(chunk_.chunk_index);
-  auto input = base::make_span(buffer_).first(input_size);
+  auto input = base::span(buffer_).first(input_size);
   while (!input.empty()) {
     if (chunk_.data_size == 0)
       chunk_.chunk_data = std::make_unique<DataStream::ChunkData>();

@@ -2046,8 +2046,7 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInNonEditMode) {
     "fileName": "example.pdf",
     "editModeForTesting": false,
   })");
-  AddDataToValue(base::make_span(TestPDFiumEngine::kLoadedData),
-                 expected_response);
+  AddDataToValue(base::span(TestPDFiumEngine::kLoadedData), expected_response);
 
   EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
@@ -2073,8 +2072,7 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
     "fileName": "example.pdf",
     "editModeForTesting": true,
   })");
-  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
-                 expected_response);
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
@@ -2148,8 +2146,7 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInNonEditMode) {
     "fileName": "example.pdf",
     "editModeForTesting": false,
   })");
-  AddDataToValue(base::make_span(TestPDFiumEngine::kLoadedData),
-                 expected_response);
+  AddDataToValue(base::span(TestPDFiumEngine::kLoadedData), expected_response);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
@@ -2171,8 +2168,7 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
     "fileName": "example.pdf",
     "editModeForTesting": true,
   })");
-  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
-                 expected_response);
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
@@ -2905,8 +2901,7 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
     "fileName": "example.pdf",
     "editModeForTesting": false,
   })");
-  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
-                 expected_response);
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
@@ -2932,8 +2927,7 @@ TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
     "fileName": "example.pdf",
     "editModeForTesting": true,
   })");
-  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
-                 expected_response);
+  AddDataToValue(base::span(TestPDFiumEngine::kSaveData), expected_response);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));

@@ -1733,8 +1733,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
       ElementsAre(kMouseDownPoint1, kMouseMovePoint1, kMouseUpPoint1),
       ElementsAre(kMouseDownPoint2, kMouseMovePoint2, kMouseUpPoint2),
       ElementsAre(kMouseDownPoint3, kMouseMovePoint3, kMouseUpPoint3)};
-  const auto kInitial4StrokeMatchersSpan =
-      base::make_span(kInitial4StrokeMatchers);
+  const auto kInitial4StrokeMatchersSpan = base::span(kInitial4StrokeMatchers);
   EXPECT_THAT(
       StrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAreArray(kInitial4StrokeMatchersSpan))));
@@ -1776,7 +1775,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
       ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
       ElementsAre(kMouseDownPoint1, kMouseMovePoint1, kMouseUpPoint1),
       ElementsAre(kMouseDownPoint3, kMouseMovePoint3, kMouseUpPoint3)};
-  const auto kNext3StrokeMatchersSpan = base::make_span(kNext3StrokeMatchers);
+  const auto kNext3StrokeMatchersSpan = base::span(kNext3StrokeMatchers);
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
   EXPECT_THAT(VisibleStrokeInputPositions(),
@@ -1968,8 +1967,7 @@ TEST_F(PdfInkModuleUndoRedoTest, StrokeStrokeUndoStroke) {
   const auto kInitialStrokeMatchers = {
       ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
       ElementsAre(kMouseDownPoint2, kMouseMovePoint2, kMouseUpPoint2)};
-  const auto kInitialStrokeMatchersSpan =
-      base::make_span(kInitialStrokeMatchers);
+  const auto kInitialStrokeMatchersSpan = base::span(kInitialStrokeMatchers);
   EXPECT_THAT(
       StrokeInputPositions(),
       ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
@@ -2000,7 +1998,7 @@ TEST_F(PdfInkModuleUndoRedoTest, StrokeStrokeUndoStroke) {
   const auto kNextStrokeMatchers = {
       ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
       ElementsAre(kMouseDownPoint3, kMouseMovePoint3, kMouseUpPoint3)};
-  const auto kNextStrokeMatchersSpan = base::make_span(kNextStrokeMatchers);
+  const auto kNextStrokeMatchersSpan = base::span(kNextStrokeMatchers);
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNextStrokeMatchersSpan))));
   EXPECT_THAT(VisibleStrokeInputPositions(),
