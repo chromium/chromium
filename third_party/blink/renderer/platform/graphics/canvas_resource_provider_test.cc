@@ -754,19 +754,22 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
+      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB(),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
+      gfx::Size(kMaxTextureSize, kMaxTextureSize), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB(),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
+      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB(),
       cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
@@ -798,7 +801,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      kInfo, cc::PaintFlags::FilterQuality::kLow,
+      kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
+      cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_);
 

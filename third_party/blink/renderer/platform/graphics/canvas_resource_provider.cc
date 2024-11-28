@@ -1243,7 +1243,10 @@ CanvasResourceProvider::CreatePassThroughProvider(
 
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateSwapChainProvider(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     cc::PaintFlags::FilterQuality filter_quality,
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
@@ -1261,16 +1264,15 @@ CanvasResourceProvider::CreateSwapChainProvider(
           .SharedImageInterface()
           ->GetCapabilities();
 
-  if (info.width() > capabilities.max_texture_size ||
-      info.height() > capabilities.max_texture_size ||
+  if (size.width() > capabilities.max_texture_size ||
+      size.height() > capabilities.max_texture_size ||
       !shared_image_capabilities.shared_image_swap_chain) {
     return nullptr;
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      gfx::Size(info.width(), info.height()), info.colorType(),
-      info.alphaType(), info.refColorSpace(), filter_quality,
-      context_provider_wrapper, resource_host);
+      size, sk_color_type, alpha_type, std::move(sk_color_space),
+      filter_quality, context_provider_wrapper, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

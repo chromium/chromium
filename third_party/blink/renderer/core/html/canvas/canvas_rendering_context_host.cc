@@ -257,7 +257,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // If we can use the gpu and low latency is enabled, we will try to use a
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), this);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
