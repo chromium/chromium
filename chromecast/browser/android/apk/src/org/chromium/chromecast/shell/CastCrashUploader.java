@@ -21,8 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -260,25 +258,6 @@ public final class CastCrashUploader {
         } catch (UnsupportedCharsetException e) {
             Log.wtf(TAG, "UTF-8 not supported");
             return "";
-        }
-    }
-
-    /**
-     * Waits until Future is propagated
-     *
-     * @return Whether thread should continue waiting
-     */
-    private boolean waitOnTask(Future task) {
-        try {
-            task.get();
-            return true;
-        } catch (InterruptedException e) {
-            // Was interrupted while waiting, tell caller to cancel waiting
-            return false;
-        } catch (ExecutionException e) {
-            // Task execution may have failed, but this is fine as long as it finished
-            // executing
-            return true;
         }
     }
 }
