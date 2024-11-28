@@ -15,6 +15,8 @@
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -63,9 +65,7 @@ std::string ToString(const scoped_refptr<IOBufferWithSize>& buffer) {
 }
 
 std::string ToString(const WebSocketFrame* frame) {
-  return frame->payload
-             ? std::string(frame->payload, frame->header.payload_length)
-             : "";
+  return std::string(base::as_string_view(frame->payload));
 }
 
 std::string ToString(const std::unique_ptr<WebSocketFrame>& frame) {
@@ -238,9 +238,9 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
     auto frame = std::make_unique<WebSocketFrame>(opcode);
     frame->header.final = (flag & kFinal);
     frame->header.reserved1 = (flag & kReserved1);
-    auto buffer = std::make_unique<char[]>(data.size());
-    memcpy(buffer.get(), data.c_str(), data.size());
-    frame->payload = buffer.get();
+    auto buffer =
+        base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(data));
+    frame->payload = buffer.as_span();
     data_buffers.push_back(std::move(buffer));
     frame->header.payload_length = data.size();
     frames->push_back(std::move(frame));
@@ -252,8 +252,7 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
   // Owned by |deflate_stream_|.
   raw_ptr<WebSocketDeflatePredictorMock> predictor_ = nullptr;
 
-  // TODO(yoichio): Make this type std::vector<std::string>.
-  std::vector<std::unique_ptr<const char[]>> data_buffers;
+  std::vector<base::HeapArray<uint8_t>> data_buffers;
 };
 
 // Since WebSocketDeflater with DoNotTakeOverContext is well tested at
@@ -1195,8 +1194,8 @@ TEST_F(WebSocketDeflateStreamTest, LargeDeflatedFramesShouldBeSplit) {
     ASSERT_THAT(deflate_stream_->WriteFrames(&frames, CompletionOnceCallback()),
                 IsOk());
     for (auto& frame : *stub.frames()) {
-      buffers.emplace_back(frame->payload, frame->header.payload_length);
-      frame->payload = (buffers.end() - 1)->data();
+      buffers.emplace_back(base::as_string_view(frame->payload));
+      frame->payload = base::as_byte_span(buffers.back());
     }
     total_compressed_frames.insert(
         total_compressed_frames.end(),

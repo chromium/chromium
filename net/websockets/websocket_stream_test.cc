@@ -945,8 +945,7 @@ TEST_P(WebSocketStreamCreateExtensionTest, PerMessageDeflateInflates) {
   ASSERT_THAT(rv, IsOk());
   ASSERT_EQ(1U, frames.size());
   ASSERT_EQ(5U, frames[0]->header.payload_length);
-  EXPECT_EQ(std::string("Hello"),
-            std::string(frames[0]->payload, frames[0]->header.payload_length));
+  EXPECT_EQ("Hello", base::as_string_view(frames[0]->payload));
 }
 
 // Unknown extension in the response is rejected
@@ -1873,16 +1872,17 @@ TEST_P(WebSocketStreamCreateTest, HandleConnectionCloseInFirstSegment) {
   WaitUntilConnectDone();
   ASSERT_TRUE(stream_);
 
-  std::vector<std::unique_ptr<WebSocketFrame>> frames;
-  TestCompletionCallback callback1;
-  int rv1 = stream_->ReadFrames(&frames, callback1.callback());
-  rv1 = callback1.GetResult(rv1);
-  ASSERT_THAT(rv1, IsOk());
-  ASSERT_EQ(1U, frames.size());
-  EXPECT_EQ(frames[0]->header.opcode, WebSocketFrameHeader::kOpCodeClose);
-  EXPECT_TRUE(frames[0]->header.final);
-  EXPECT_EQ(close_body,
-            std::string(frames[0]->payload, frames[0]->header.payload_length));
+  {
+    std::vector<std::unique_ptr<WebSocketFrame>> frames;
+    TestCompletionCallback callback1;
+    int rv1 = stream_->ReadFrames(&frames, callback1.callback());
+    rv1 = callback1.GetResult(rv1);
+    ASSERT_THAT(rv1, IsOk());
+    ASSERT_EQ(1U, frames.size());
+    EXPECT_EQ(frames[0]->header.opcode, WebSocketFrameHeader::kOpCodeClose);
+    EXPECT_TRUE(frames[0]->header.final);
+    EXPECT_EQ(close_body, base::as_string_view(frames[0]->payload));
+  }
 
   std::vector<std::unique_ptr<WebSocketFrame>> empty_frames;
   TestCompletionCallback callback2;

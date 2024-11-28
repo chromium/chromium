@@ -125,14 +125,14 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   // |header| is always present.
   WebSocketFrameHeader header;
 
-  // |payload| is always unmasked even if the frame is masked. The size of
-  // |payload| is given by |header.payload_length|.
+  // |payload| is always unmasked even if the frame is masked.
   // The lifetime of |payload| is not defined by WebSocketFrameChunk. It is the
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this
   // object.
   // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
-  const char* payload = nullptr;
+  // TODO(crbug.com/377222393): Remove `DanglingUntriaged`.
+  base::raw_span<const uint8_t, DanglingUntriaged> payload;
 };
 
 // Structure describing one chunk of a WebSocket frame.

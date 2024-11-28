@@ -23,6 +23,7 @@
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -177,10 +178,11 @@ class WebSocketChannel::SendBuffer {
   std::vector<std::unique_ptr<WebSocketFrame>>* frames() { return &frames_; }
 
  private:
-  // The frames_ that will be sent in the next call to WriteFrames().
-  std::vector<std::unique_ptr<WebSocketFrame>> frames_;
   // References of each WebSocketFrame.data;
   std::vector<scoped_refptr<IOBuffer>> buffers_;
+  // The frames_ that will be sent in the next call to WriteFrames().
+  // Note: The frames_ can contain non-owning pointers to buffers_.
+  std::vector<std::unique_ptr<WebSocketFrame>> frames_;
 
   // The total size of the payload data in |frames_|. This will be used to
   // measure the throughput of the link.
@@ -708,10 +710,8 @@ ChannelState WebSocketChannel::HandleFrame(
   }
 
   // Respond to the frame appropriately to its type.
-  return HandleFrameByState(
-      opcode, frame->header.final,
-      base::make_span(frame->payload, base::checked_cast<size_t>(
-                                          frame->header.payload_length)));
+  return HandleFrameByState(opcode, frame->header.final,
+                            base::as_chars(frame->payload));
 }
 
 ChannelState WebSocketChannel::HandleFrameByState(
@@ -910,7 +910,8 @@ ChannelState WebSocketChannel::SendFrameInternal(
   header.final = fin;
   header.masked = true;
   header.payload_length = buffer_size;
-  frame->payload = buffer->data();
+  frame->payload =
+      buffer->span().first(base::checked_cast<size_t>(buffer_size));
 
   if (data_being_sent_) {
     // Either the link to the WebSocket server is saturated, or several messages
