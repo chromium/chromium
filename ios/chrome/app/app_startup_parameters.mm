@@ -30,8 +30,6 @@
 
 @synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
-// TODO(crbug.com/40106317): Remove this stub.
-@synthesize completePaymentRequest = _completePaymentRequest;
 @synthesize textQuery = _textQuery;
 
 - (const GURL&)externalURL {
@@ -146,10 +144,6 @@
       break;
     default:
       break;
-  }
-
-  if (self.completePaymentRequest) {
-    [description appendString:@", should complete payment request"];
   }
 
   return description;
