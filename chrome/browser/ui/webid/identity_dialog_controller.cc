@@ -24,7 +24,7 @@ IdentityDialogController::IdentityDialogController(
     content::WebContents* rp_web_contents)
     : rp_web_contents_(rp_web_contents) {}
 
-IdentityDialogController::~IdentityDialogController() {}
+IdentityDialogController::~IdentityDialogController() = default;
 
 int IdentityDialogController::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
