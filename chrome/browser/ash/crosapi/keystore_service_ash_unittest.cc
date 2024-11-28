@@ -558,6 +558,48 @@ TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
 
 //------------------------------------------------------------------------------
 
+TEST_F(KeystoreServiceAshTest, SetAttributeForKeySuccess) {
+  EXPECT_CALL(platform_keys_service_,
+              SetAttributeForKey(
+                  TokenId::kUser, GetPublicKeyBin(),
+                  chromeos::platform_keys::KeyAttributeType::kPlatformKeysTag,
+                  GetDataBin(),
+                  /*callback=*/_))
+      .WillOnce(RunOnceCallback<4>(Status::kSuccess));
+
+  StatusCallbackObserver observer;
+  keystore_service_.SetAttributeForKey(
+      mojom::KeystoreType::kUser, GetPublicKeyBin(),
+      mojom::KeystoreKeyAttributeType::kPlatformKeysTag, GetDataBin(),
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.has_value());
+  EXPECT_EQ(observer.result_is_error, false);
+}
+
+TEST_F(KeystoreServiceAshTest, SetAttributeForKeyFail) {
+  EXPECT_CALL(platform_keys_service_,
+              SetAttributeForKey(
+                  TokenId::kUser, GetPublicKeyBin(),
+                  chromeos::platform_keys::KeyAttributeType::kPlatformKeysTag,
+                  GetDataBin(),
+                  /*callback=*/_))
+      .WillOnce(RunOnceCallback<4>(Status::kErrorKeyAttributeSettingFailed));
+
+  StatusCallbackObserver observer;
+  keystore_service_.SetAttributeForKey(
+      mojom::KeystoreType::kUser, GetPublicKeyBin(),
+      mojom::KeystoreKeyAttributeType::kPlatformKeysTag, GetDataBin(),
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.has_value());
+  EXPECT_EQ(observer.result_is_error, true);
+  EXPECT_EQ(observer.result_error,
+            mojom::KeystoreError::kKeyAttributeSettingFailed);
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
   const std::vector<uint8_t> cert_bin =
       CertToBlob(GetCertificateList()->front());

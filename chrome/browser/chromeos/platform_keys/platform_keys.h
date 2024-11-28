@@ -26,7 +26,11 @@ enum class KeyType { kRsassaPkcs1V15, kEcdsa, kRsaOaep };
 enum class SymKeyType { kAesCbc, kHmac, kSp800Kdf };
 
 // Supported key attribute types.
-enum class KeyAttributeType { kCertificateProvisioningId, kKeyPermissions };
+enum class KeyAttributeType {
+  kCertificateProvisioningId,
+  kKeyPermissions,
+  kPlatformKeysTag
+};
 
 // Supported hash algorithms.
 enum HashAlgorithm {
