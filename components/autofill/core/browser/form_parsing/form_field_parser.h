@@ -187,7 +187,7 @@ class FormFieldParser {
 
 #if defined(UNIT_TEST)
   static bool MatchForTesting(ParsingContext& context,
-                              const AutofillField* field,
+                              const AutofillField& field,
                               std::u16string_view pattern,
                               DenseSet<MatchAttribute> match_attributes,
                               const char* regex_name = "") {
@@ -320,14 +320,24 @@ class FormFieldParser {
   RemoveCheckableFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
 
-  // Matches the regular expression |pattern| against the components of
-  // |field| as specified in |match_type|.
+  // Matches the regular expression `pattern` against the specified
+  // `match_attributes` of the `field`.
   static std::optional<MatchInfo> Match(
       ParsingContext& context,
-      const AutofillField* field,
+      const AutofillField& field,
       std::u16string_view pattern,
       DenseSet<MatchAttribute> match_attributes,
-      const char* regex_name = "");
+      const char* regex_name);
+
+  // Like `Match()`, but only for the label or name of the field.
+  static std::optional<MatchInfo> MatchInLabel(ParsingContext& context,
+                                               const AutofillField& field,
+                                               std::u16string_view pattern,
+                                               const char* regex_name);
+  static std::optional<MatchInfo> MatchInName(ParsingContext& context,
+                                              const AutofillField& field,
+                                              std::u16string_view pattern,
+                                              const char* regex_name);
 
   // Perform a "pass" over the |fields| where each pass uses the supplied
   // |parse| method to match content to a given field type.

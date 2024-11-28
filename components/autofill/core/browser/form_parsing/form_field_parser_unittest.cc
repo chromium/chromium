@@ -126,14 +126,14 @@ TEST_P(MatchTest, Match) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(context, &field, pattern,
+    EXPECT_TRUE(FormFieldParser::MatchForTesting(context, field, pattern,
                                                  {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(context, &field, pattern,
+    EXPECT_FALSE(FormFieldParser::MatchForTesting(context, field, pattern,
                                                   {MatchAttribute::kLabel}));
   }
 }
@@ -174,7 +174,7 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     EXPECT_TRUE(FormFieldParser::MatchForTesting(
-        context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
+        context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -183,7 +183,7 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     EXPECT_FALSE(FormFieldParser::MatchForTesting(
-        context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
+        context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
 }
 

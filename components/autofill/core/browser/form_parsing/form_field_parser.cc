@@ -434,7 +434,7 @@ FormFieldParser::FieldMatchesMatchPatternRef(
       // matches the negative pattern. If so, remove it from the attributes that
       // are considered for positive matching.
       for (MatchAttribute attribute : match_params.attributes) {
-        if (Match(context, &field, pattern.negative_pattern, {attribute},
+        if (Match(context, field, pattern.negative_pattern, {attribute},
                   regex_name)) {
           reduced_attributes.erase(attribute);
         }
@@ -454,7 +454,7 @@ FormFieldParser::FieldMatchesMatchPatternRef(
   }
   for (const auto& [attributes, positive_patterns] : batched_patterns) {
     if (auto match_info =
-            Match(context, &field, base::JoinString(positive_patterns, u"|"),
+            Match(context, field, base::JoinString(positive_patterns, u"|"),
                   attributes, regex_name)) {
       return match_info;
     }
@@ -544,10 +544,10 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
            FormControlType::kSelectOne, FormControlType::kTextArea})) {
     return false;
   }
-  if (Match(context, field, kEmptyLabelRegex, {MatchAttribute::kLabel},
-            "kEmptyLabelRegex")) {
+  if (std::optional<MatchInfo> match_info =
+          MatchInLabel(context, *field, kEmptyLabelRegex, "kEmptyLabelRegex")) {
     if (match) {
-      *match = {field, MatchInfo{.matched_attribute = MatchAttribute::kLabel}};
+      *match = {field, *match_info};
     }
     scanner->Advance();
     return true;
@@ -595,9 +595,34 @@ FormFieldParser::RemoveCheckableFields(
 
 std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
     ParsingContext& context,
-    const AutofillField* field,
+    const AutofillField& field,
     std::u16string_view pattern,
     DenseSet<MatchAttribute> match_attributes,
+    const char* regex_name) {
+  for (MatchAttribute attribute : match_attributes) {
+    switch (attribute) {
+      case MatchAttribute::kLabel:
+        if (std::optional<MatchInfo> match_info =
+                MatchInLabel(context, field, pattern, regex_name)) {
+          return match_info;
+        }
+        break;
+      case MatchAttribute::kName:
+        if (std::optional<MatchInfo> match_info =
+                MatchInName(context, field, pattern, regex_name)) {
+          return match_info;
+        }
+        break;
+    }
+  }
+  return std::nullopt;
+}
+
+// static
+std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
+    ParsingContext& context,
+    const AutofillField& field,
+    std::u16string_view pattern,
     const char* regex_name) {
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
@@ -607,23 +632,32 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
   // TODO(crbug.com/40741721): Remove once shared labels are launched.
   const std::u16string& label =
       context.autofill_enable_support_for_parsing_with_shared_labels
-          ? field->parseable_label()
-          : field->label();
-
-  const std::u16string& name = field->parseable_name();
-
-  if (match_attributes.contains(MatchAttribute::kLabel) &&
-      MatchesRegexWithCache(context, label, pattern, capture_destination)) {
+          ? field.parseable_label()
+          : field.label();
+  if (MatchesRegexWithCache(context, label, pattern, capture_destination)) {
     MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
                         matches);
     return MatchInfo{.matched_attribute = MatchAttribute::kLabel};
   }
-  if (match_attributes.contains(MatchAttribute::kName) &&
-      MatchesRegexWithCache(context, name, pattern, capture_destination)) {
+  return std::nullopt;
+}
+
+// static
+std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInName(
+    ParsingContext& context,
+    const AutofillField& field,
+    std::u16string_view pattern,
+    const char* regex_name) {
+  std::vector<std::u16string> matches;
+  std::vector<std::u16string>* capture_destination =
+      context.log_manager && context.log_manager->IsLoggingActive() ? &matches
+                                                                    : nullptr;
+
+  const std::u16string& name = field.parseable_name();
+  if (MatchesRegexWithCache(context, name, pattern, capture_destination)) {
     MaybePrintMatchLogs(context.log_manager, regex_name, "name", name, matches);
     return MatchInfo{.matched_attribute = MatchAttribute::kName};
   }
-
   return std::nullopt;
 }
 
