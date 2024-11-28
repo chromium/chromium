@@ -58,8 +58,7 @@ TEST(ChromeOSSystemExtensionInfo, AcerExtension) {
       chromeos::GetChromeOSExtensionInfoById(acer_extension_id);
   EXPECT_THAT(extension_info.manufacturers,
               testing::UnorderedElementsAre("Acer"));
-  EXPECT_EQ("https://acerpartners.com/acerbooster/*",
-            extension_info.pwa_origin);
+  EXPECT_EQ("https://acerpartners.com/*", extension_info.pwa_origin);
   EXPECT_FALSE(extension_info.iwa_id);
 }
 

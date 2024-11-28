@@ -73,7 +73,7 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
       {/*extension_id=*/"aoefhlbfcighemjpchndkhonjfjoehnm",
        {
            /*manufacturers=*/{"Acer"},
-           /*pwa_origin=*/"https://acerpartners.com/acerbooster/*",
+           /*pwa_origin=*/"https://acerpartners.com/*",
            /*iwa_id=*/std::nullopt,
        }},
       {/*extension_id=*/"abpkjagfgndmbkendplbabnefkjkgdcf",
