@@ -1310,14 +1310,7 @@ void PrefetchContainer::OnDeterminedHead() {
 
   // Propagates the header to `no_vary_search_data_` if a non-redirect response
   // header is got.
-  //
-  // TODO(crbug.com/40946257): Current code doesn't support NVS for
-  // browser-initated triggers.
-  if (IsRendererInitiated()) {
-    auto* rfhi_can_be_null =
-        RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
-    MaybeSetNoVarySearchData(rfhi_can_be_null);
-  }
+  MaybeSetNoVarySearchData();
 
   UnblockPrefetchMatchResolver();
 }
@@ -1327,29 +1320,26 @@ void PrefetchContainer::OnDeterminedHead2() {
 
   // Propagates the header to `no_vary_search_data_` if a non-redirect response
   // header is got.
-  //
-  // TODO(crbug.com/40946257): Current code doesn't support NVS for
-  // browser-initated triggers.
-  if (IsRendererInitiated()) {
-    auto* rfhi_can_be_null =
-        RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
-    MaybeSetNoVarySearchData(rfhi_can_be_null);
-  }
+  MaybeSetNoVarySearchData();
 
   for (auto& observer : observers_) {
     observer.OnDeterminedHead(*this);
   }
 }
 
-void PrefetchContainer::MaybeSetNoVarySearchData(RenderFrameHost* rfh) {
+void PrefetchContainer::MaybeSetNoVarySearchData() {
   CHECK(!no_vary_search_data_.has_value());
 
   if (!GetNonRedirectHead()) {
     return;
   }
 
-  no_vary_search_data_ =
-      no_vary_search::ProcessHead(*GetNonRedirectHead(), GetURL(), rfh);
+  // RenderFrameHostImpl will be used to display error messagse in DevTools
+  // console. Can be null when the prefetch is browser-initiated.
+  auto* rfhi_can_be_null =
+      RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
+  no_vary_search_data_ = no_vary_search::ProcessHead(
+      *GetNonRedirectHead(), GetURL(), rfhi_can_be_null);
 }
 
 void PrefetchContainer::UnblockPrefetchMatchResolver() {
