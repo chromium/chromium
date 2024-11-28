@@ -357,15 +357,6 @@ extern bool UseVideoContextForTextOnlyLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseVideoContextForMultimodalLensOverlayRequests();
 
-// Returns whether to use the new optimized request flow which makes a request
-// to get the cluster info prior to uploading any image or page content bytes.
-// This also decouples sending the images and page content bytes in the same
-// request.
-// TODO(crbug.com/373878302): Move this flag to LensOverlayLatencyOptimizations
-// feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseOptimizedRequestFlow();
-
 // Returns the finch configured endpoint URL for the cluster info request.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayClusterInfoEndpointUrl();
@@ -627,6 +618,13 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 // Whether to show the contextual searchbox in the Lens Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayContextualSearchboxEnabled();
+
+// Returns whether to use the new optimized request flow which makes a request
+// to get the cluster info prior to uploading any image or page content bytes.
+// This also decouples sending the images and page content bytes in the same
+// request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayClusterInfoOptimizationEnabled();
 
 // Whether to enable the early interaction optimization for the Lens Overlay.
 // This optimization allows the interaction request to be sent before the full

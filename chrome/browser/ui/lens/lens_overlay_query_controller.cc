@@ -648,11 +648,8 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
 
   // If the cluster info optimization is enabled, request the cluster info prior
   // to making the full image request.
-  // TODO(crbug.com/373878302): Use a new cluster-info flag provided by the
-  // LensOverlayLatencyOptimizations feature instead.
   if (!cluster_info_ &&
-      (lens::features::UseOptimizedRequestFlow() ||
-       lens::features::IsLensOverlayEarlyInteractionOptimizationEnabled())) {
+      (lens::features::IsLensOverlayClusterInfoOptimizationEnabled())) {
     FetchClusterInfoRequest();
     return;
   }

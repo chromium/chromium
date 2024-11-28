@@ -260,6 +260,9 @@ constexpr base::FeatureParam<int>
     kLensOverlayImageContextMenuActionsTextReceivedTimeout{
         &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
 
+constexpr base::FeatureParam<bool> kEnableClusterInfoOptimization{
+    &kLensOverlayLatencyOptimizations, "enable-cluster-info-optimization", true};
+
 constexpr base::FeatureParam<bool> kEnableEarlyInteractionOptimization{
     &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization",
     true};
@@ -289,9 +292,6 @@ constexpr base::FeatureParam<bool>
     kUseVideoContextForMultimodalLensOverlayRequests{
         &kLensOverlayContextualSearchbox,
         "use-video-context-for-multimodal-requests", false};
-
-constexpr base::FeatureParam<bool> kUseOptimizedRequestFlow{
-    &kLensOverlayContextualSearchbox, "use-optimized-request-flow", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
     &kLensOverlayContextualSearchbox, "cluster-info-endpoint-url",
@@ -599,10 +599,6 @@ bool UseVideoContextForMultimodalLensOverlayRequests() {
   return kUseVideoContextForMultimodalLensOverlayRequests.Get();
 }
 
-bool UseOptimizedRequestFlow() {
-  return kUseOptimizedRequestFlow.Get();
-}
-
 std::string GetLensOverlayClusterInfoEndpointUrl() {
   return kLensOverlayClusterInfoEndpointUrl.Get();
 }
@@ -823,6 +819,11 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
 
 bool IsLensOverlayContextualSearchboxEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
+}
+
+bool IsLensOverlayClusterInfoOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
+         kEnableClusterInfoOptimization.Get();
 }
 
 bool IsLensOverlayEarlyInteractionOptimizationEnabled() {
