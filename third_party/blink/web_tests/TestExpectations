@@ -8678,3 +8678,6 @@ crbug.com/381085690 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/vali
 # Gardener 2024-11-27
 crbug.com/381142479 [ Linux ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
 crbug.com/378680890 [ Mac ] fast/peerconnection/RTCPeerConnection-many.html [ Pass Timeout ]
+
+# Gardener 2024-11-28
+crbug.com/380534434 [ Win11 ] external/wpt/css/css-scroll-snap/snap-fling-in-large-area.html [ Failure Pass Timeout ]
