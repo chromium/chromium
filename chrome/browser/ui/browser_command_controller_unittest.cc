@@ -289,7 +289,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
       delete;
 
-  ~FullscreenTestBrowserWindow() override {}
+  ~FullscreenTestBrowserWindow() override = default;
 
   // TestBrowserWindow overrides:
   bool ShouldHideUIForFullscreen() const override { return fullscreen_; }

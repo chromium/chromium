@@ -25,7 +25,7 @@ class BookmarkMergedSurfaceService;
 // menu for the controller.
 class BookmarkContextMenuControllerDelegate {
  public:
-  virtual ~BookmarkContextMenuControllerDelegate() {}
+  virtual ~BookmarkContextMenuControllerDelegate() = default;
 
   // Closes the bookmark context menu.
   virtual void CloseMenu() = 0;

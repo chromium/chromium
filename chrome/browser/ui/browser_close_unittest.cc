@@ -34,7 +34,7 @@ class TestingDownloadCoreService : public DownloadCoreService {
   TestingDownloadCoreService& operator=(const TestingDownloadCoreService&) =
       delete;
 
-  ~TestingDownloadCoreService() override {}
+  ~TestingDownloadCoreService() override = default;
 
   // All methods that aren't expected to be called in the execution of
   // this unit test are marked to result in test failure.  Using a simple
@@ -101,7 +101,7 @@ class BrowserCloseTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
   }
 
-  ~BrowserCloseTest() override {}
+  ~BrowserCloseTest() override = default;
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 

@@ -34,7 +34,7 @@ BookmarkSubMenuModel::BookmarkSubMenuModel(
   Build(browser);
 }
 
-BookmarkSubMenuModel::~BookmarkSubMenuModel() {}
+BookmarkSubMenuModel::~BookmarkSubMenuModel() = default;
 
 void BookmarkSubMenuModel::Build(Browser* browser) {
   if (delegate()->IsCommandIdVisible(IDC_BOOKMARK_THIS_TAB) ||

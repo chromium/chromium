@@ -74,7 +74,7 @@ TabDeclutterController::TabDeclutterController(
   StartDeclutterTimer();
 }
 
-TabDeclutterController::~TabDeclutterController() {}
+TabDeclutterController::~TabDeclutterController() = default;
 
 void TabDeclutterController::StartDeclutterTimer() {
   declutter_timer_->Start(

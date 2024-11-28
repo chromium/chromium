@@ -7,9 +7,11 @@
 #include "chrome/browser/platform_util.h"
 #include "content/public/browser/web_contents.h"
 
-ChromeWebModalDialogManagerDelegate::ChromeWebModalDialogManagerDelegate() {}
+ChromeWebModalDialogManagerDelegate::ChromeWebModalDialogManagerDelegate() =
+    default;
 
-ChromeWebModalDialogManagerDelegate::~ChromeWebModalDialogManagerDelegate() {}
+ChromeWebModalDialogManagerDelegate::~ChromeWebModalDialogManagerDelegate() =
+    default;
 
 bool ChromeWebModalDialogManagerDelegate::IsWebContentsVisible(
     content::WebContents* web_contents) {

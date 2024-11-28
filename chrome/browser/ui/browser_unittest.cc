@@ -295,12 +295,12 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 
 class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  public:
-  BrowserBookmarkBarTest() {}
+  BrowserBookmarkBarTest() = default;
 
   BrowserBookmarkBarTest(const BrowserBookmarkBarTest&) = delete;
   BrowserBookmarkBarTest& operator=(const BrowserBookmarkBarTest&) = delete;
 
-  ~BrowserBookmarkBarTest() override {}
+  ~BrowserBookmarkBarTest() override = default;
 
  protected:
   BookmarkBar::State window_bookmark_bar_state() const {
@@ -330,7 +330,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
     BookmarkBarStateTestBrowserWindow& operator=(
         const BookmarkBarStateTestBrowserWindow&) = delete;
 
-    ~BookmarkBarStateTestBrowserWindow() override {}
+    ~BookmarkBarStateTestBrowserWindow() override = default;
 
     void set_browser(Browser* browser) { browser_ = browser; }
 

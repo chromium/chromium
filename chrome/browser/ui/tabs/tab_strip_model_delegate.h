@@ -52,7 +52,7 @@ class TabStripModelDelegate {
     TAB_TEAROFF_ACTION = 2
   };
 
-  virtual ~TabStripModelDelegate() {}
+  virtual ~TabStripModelDelegate() = default;
 
   // Adds a tab to the model and loads |url| in the tab. If |url| is an empty
   // URL, then the new tab-page is loaded instead. An |index| value of -1

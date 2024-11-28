@@ -15,7 +15,7 @@ class SettingsWindowManagerObserver {
   virtual void OnNewSettingsWindow(Browser* settings_browser) = 0;
 
  protected:
-  virtual ~SettingsWindowManagerObserver() {}
+  virtual ~SettingsWindowManagerObserver() = default;
 };
 
 }  // namespace chrome

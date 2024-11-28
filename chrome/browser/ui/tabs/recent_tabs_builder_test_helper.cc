@@ -75,13 +75,13 @@ struct RecentTabsBuilderTestHelper::TabInfo {
 };
 struct RecentTabsBuilderTestHelper::WindowInfo {
   WindowInfo() : id(SessionID::InvalidValue()) {}
-  ~WindowInfo() {}
+  ~WindowInfo() = default;
   SessionID id;
   std::vector<TabInfo> tabs;
 };
 struct RecentTabsBuilderTestHelper::SessionInfo {
   SessionInfo() : id(SessionID::InvalidValue()) {}
-  ~SessionInfo() {}
+  ~SessionInfo() = default;
   SessionID id;
   std::vector<WindowInfo> windows;
 };
@@ -90,7 +90,7 @@ RecentTabsBuilderTestHelper::RecentTabsBuilderTestHelper() {
   start_time_ = base::Time::Now();
 }
 
-RecentTabsBuilderTestHelper::~RecentTabsBuilderTestHelper() {}
+RecentTabsBuilderTestHelper::~RecentTabsBuilderTestHelper() = default;
 
 void RecentTabsBuilderTestHelper::AddSession() {
   SessionInfo info;

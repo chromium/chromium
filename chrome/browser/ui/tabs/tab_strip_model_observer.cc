@@ -186,7 +186,7 @@ TabGroupChange::TabGroupChange(TabStripModel* model,
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver
 //
-TabStripModelObserver::TabStripModelObserver() {}
+TabStripModelObserver::TabStripModelObserver() = default;
 
 TabStripModelObserver::~TabStripModelObserver() {
   std::set<raw_ptr<TabStripModel, SetExperimental>> models(

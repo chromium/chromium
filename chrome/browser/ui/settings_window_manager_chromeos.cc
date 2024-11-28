@@ -233,8 +233,8 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
   }
 }
 
-SettingsWindowManager::SettingsWindowManager() {}
+SettingsWindowManager::SettingsWindowManager() = default;
 
-SettingsWindowManager::~SettingsWindowManager() {}
+SettingsWindowManager::~SettingsWindowManager() = default;
 
 }  // namespace chrome

@@ -66,7 +66,7 @@ namespace chrome {
 
 class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
  public:
-  BrowserCommandControllerBrowserTest() {}
+  BrowserCommandControllerBrowserTest() = default;
 
   BrowserCommandControllerBrowserTest(
       const BrowserCommandControllerBrowserTest&) = delete;

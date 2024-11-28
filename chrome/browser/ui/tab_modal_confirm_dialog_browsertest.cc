@@ -27,7 +27,8 @@ MockTabModalConfirmDialogDelegate::MockTabModalConfirmDialogDelegate(
     Delegate* delegate)
     : TabModalConfirmDialogDelegate(web_contents), delegate_(delegate) {}
 
-MockTabModalConfirmDialogDelegate::~MockTabModalConfirmDialogDelegate() {}
+MockTabModalConfirmDialogDelegate::~MockTabModalConfirmDialogDelegate() =
+    default;
 
 std::u16string MockTabModalConfirmDialogDelegate::GetTitle() {
   return std::u16string();

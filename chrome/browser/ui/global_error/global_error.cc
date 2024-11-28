@@ -9,9 +9,9 @@
 
 // GlobalError ---------------------------------------------------------------
 
-GlobalError::GlobalError() {}
+GlobalError::GlobalError() = default;
 
-GlobalError::~GlobalError() {}
+GlobalError::~GlobalError() = default;
 
 GlobalError::Severity GlobalError::GetSeverity() { return SEVERITY_MEDIUM; }
 

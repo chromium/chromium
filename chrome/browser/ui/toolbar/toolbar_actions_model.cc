@@ -68,7 +68,7 @@ ToolbarActionsModel::ToolbarActionsModel(
                           base::Unretained(this)));
 }
 
-ToolbarActionsModel::~ToolbarActionsModel() {}
+ToolbarActionsModel::~ToolbarActionsModel() = default;
 
 // static
 ToolbarActionsModel* ToolbarActionsModel::Get(Profile* profile) {
