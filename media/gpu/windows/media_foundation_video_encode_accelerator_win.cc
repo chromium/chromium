@@ -1517,9 +1517,9 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     return;
   }
 
-  framerate = std::clamp(framerate, 1u,
-                         static_cast<uint32_t>(kDefaultFrameRateNumerator /
-                                               kDefaultFrameRateDenominator));
+  if (framerate == 0) {
+    framerate = kDefaultFrameRateNumerator / kDefaultFrameRateDenominator;
+  }
 
   if (framerate == frame_rate_ && bitrate_allocation == bitrate_allocation_ &&
       !size.has_value()) {
