@@ -1728,7 +1728,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout"
+<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout2"
     enum="Boolean" expires_after="2025-06-01">
   <owner>awillia@chromium.org</owner>
   <owner>sergiog@microsoft.com</owner>
@@ -1738,7 +1738,11 @@ chromium-metrics-reviews@google.com.
     painted content before the maximum timeout allowed. The histogram will be
     emitted with true value once timeout expires and first contentful paint is
     not reached, and it will be emitted with false value if first contentful
-    paint is reached before expiring the timeout.
+    paint is reached before expiring the timeout. The navigation is considered
+    as suspended, and thus the timeout timer will be stopped, when page is going
+    to back and forward cache or is hidden. Timeout timer will be restarted when
+    page is restored from back and forward cache or is back to shown from hidden
+    and first contentful paint was not yet reached.
   </summary>
 </histogram>
 
