@@ -86,7 +86,7 @@
 
 class InfoBarsTest : public InProcessBrowserTest {
  public:
-  InfoBarsTest() {}
+  InfoBarsTest() = default;
 
   void InstallExtension(const char* filename) {
     base::FilePath path = ui_test_utils::GetTestFilePath(

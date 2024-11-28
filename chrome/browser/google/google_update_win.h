@@ -54,7 +54,7 @@ enum GoogleUpdateErrorCode {
 // and results of an update check.
 class UpdateCheckDelegate {
  public:
-  virtual ~UpdateCheckDelegate() {}
+  virtual ~UpdateCheckDelegate() = default;
 
   // Invoked following a successful update check. |new_version|, if not empty,
   // indicates the new version that is available. Otherwise (if |new_version| is
@@ -86,7 +86,7 @@ class UpdateCheckDelegate {
                        const std::u16string& new_version) = 0;
 
  protected:
-  UpdateCheckDelegate() {}
+  UpdateCheckDelegate() = default;
 };
 
 // Begins an asynchronous update check. If a new version is
