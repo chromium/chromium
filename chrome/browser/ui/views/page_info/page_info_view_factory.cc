@@ -731,6 +731,11 @@ const ui::ImageModel PageInfoViewFactory::GetRwsIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetMerchantTrustIcon() {
+  return GetImageModel(vector_icons::kStorefrontIcon);
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetEnforcedByPolicyIcon() {
   return GetImageModel(vector_icons::kBusinessIcon);
 }

@@ -161,6 +161,9 @@ class PageInfoViewFactory {
   // Returns the icon for the related website sets button.
   static const ui::ImageModel GetRwsIcon();
 
+  // Returns the icon for the merchant trust button.
+  static const ui::ImageModel GetMerchantTrustIcon();
+
   // Returns the image model for the vector icon.
   static const ui::ImageModel GetImageModel(const gfx::VectorIcon& icon);
 

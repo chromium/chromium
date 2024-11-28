@@ -73,6 +73,7 @@ constexpr int kTopicsAPITestTaxonomyVersion = 1;
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
 constexpr char kAboutThisSiteUrl[] = "a.test";
 constexpr char kHistoryUrl[] = "b.test";
+constexpr char kMerchantTrustUrl[] = "b.test";
 
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
@@ -98,6 +99,35 @@ views::View* GetView(Browser* browser, int view_id) {
   views::View* view = page_info_bubble->GetRootView()->GetViewByID(view_id);
   EXPECT_TRUE(view);
   return view;
+}
+
+// Set static site name to prevent flakes caused by changing port.
+void SetStaticSiteName(std::u16string site_name) {
+  auto* bubble_view = static_cast<PageInfoBubbleView*>(
+      PageInfoBubbleView::GetPageInfoBubbleForTesting());
+  bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
+  ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
+            site_name);
+}
+
+optimization_guide::OptimizationMetadata GetAboutThisSiteMetadata() {
+  optimization_guide::OptimizationMetadata optimization_metadata;
+  page_info::proto::AboutThisSiteMetadata metadata;
+  auto* site_info = metadata.mutable_site_info();
+
+  auto* description = site_info->mutable_description();
+  description->set_description(
+      "A domain used in illustrative examples in documents");
+  description->set_lang("en_US");
+  description->set_name("Example");
+  description->mutable_source()->set_url("https://example.com");
+  description->mutable_source()->set_label("Example source");
+
+  auto* more_about = site_info->mutable_more_about();
+  more_about->set_url("https://example.com/moreinfo");
+
+  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  return optimization_metadata;
 }
 
 }  // namespace
@@ -538,29 +568,12 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    optimization_guide::OptimizationMetadata optimization_metadata;
-    page_info::proto::AboutThisSiteMetadata metadata;
-    auto* site_info = metadata.mutable_site_info();
-
-    auto* description = site_info->mutable_description();
-    description->set_description(
-        "A domain used in illustrative examples in documents");
-    description->set_lang("en_US");
-    description->set_name("Example");
-    description->mutable_source()->set_url("https://example.com");
-    description->mutable_source()->set_label("Example source");
-
-    auto* more_about = site_info->mutable_more_about();
-    more_about->set_url("https://example.com/moreinfo");
-
-    optimization_metadata.SetAnyMetadataForTesting(metadata);
-
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->profile());
     optimization_guide_decider->AddHintForTesting(
         GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
-        optimization_metadata);
+        GetAboutThisSiteMetadata());
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -578,12 +591,8 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
         ui_test_utils::NavigateToURL(browser(), GetUrl(kAboutThisSiteUrl)));
     OpenPageInfoBubble(browser());
 
-    auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    std::u16string site_name = u"Example site";
-    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
-    ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
-              site_name);
+    // Set static site name to prevent flakes caused by changing port.
+    SetStaticSiteName(u"Example site");
 
     const std::string& name =
         name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
@@ -649,18 +658,15 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
                                         kTopicsAPITestTaxonomyVersion));
 
     OpenPageInfoBubble(browser());
-
-    auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    std::u16string site_name = u"Example site";
-    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
-    ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
-              site_name);
+    // Set static site name to prevent flakes caused by changing port.
+    SetStaticSiteName(u"Example site");
 
     if (name == "PrivacySandboxMain") {
       // No further action needed, default case.
     } else {
       CHECK_EQ(name, "PrivacySandboxSubpage");
+      auto* bubble_view = static_cast<PageInfoBubbleView*>(
+          PageInfoBubbleView::GetPageInfoBubbleForTesting());
       bubble_view->OpenAdPersonalizationPage();
     }
   }
@@ -714,13 +720,8 @@ class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kHistoryUrl)));
     OpenPageInfoBubble(browser());
-
-    auto* bubble_view = static_cast<PageInfoBubbleView*>(
-        PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    std::u16string site_name = u"Example site";
-    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
-    ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
-              site_name);
+    // Set static site name to prevent flakes caused by changing port.
+    SetStaticSiteName(u"Example site");
   }
 
   GURL GetUrl(const std::string& host) {
@@ -1101,3 +1102,72 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn({WebAppWindowMode::kBrowserTab,
                        WebAppWindowMode::kAppWindow}),
     &WebAppWindowModeToString);
+
+class PageInfoBubbleViewMerchantTrustDialogBrowserTest
+    : public DialogBrowserTest {
+ public:
+  PageInfoBubbleViewMerchantTrustDialogBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {page_info::kMerchantTrust, page_info::kPageInfoAboutThisSiteMoreLangs},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_decider->AddHintForTesting(
+        GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
+        GetAboutThisSiteMetadata());
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableCheckingUserPermissionsForTesting);
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
+    if (name == "MerchantTrustMainPage") {
+      ASSERT_TRUE(
+          ui_test_utils::NavigateToURL(browser(), GetUrl(kMerchantTrustUrl)));
+    } else if (name == "MerchantTrustAndAboutThisSite") {
+      ASSERT_TRUE(
+          ui_test_utils::NavigateToURL(browser(), GetUrl(kAboutThisSiteUrl)));
+    } else {
+      NOTREACHED();
+    }
+
+    OpenPageInfoBubble(browser());
+    // Set static site name to prevent flakes caused by changing port.
+    SetStaticSiteName(u"Example site");
+  }
+
+  GURL GetUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/title1.html");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
+                       InvokeUi_MerchantTrustMainPage) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
+                       InvokeUi_MerchantTrustAndAboutThisSite) {
+  ShowAndVerifyUi();
+}
