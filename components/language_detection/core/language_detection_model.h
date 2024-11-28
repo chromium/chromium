@@ -83,8 +83,22 @@ class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
   // considers a prefix of the input, the runtime is proportional to the total
   // length of the input.
   // TODO(https://crbug.com/352636753): Remove the option and always truncate.
-  std::vector<Prediction> Predict(const std::u16string& contents,
+  std::vector<Prediction> Predict(std::u16string_view contents,
                                   bool truncate = true) const;
+
+  // Runs the TFLIte language detection model on the whole string. This will
+  // scan over the content with the 128 character window.
+  // Return a vector of scored language predictions. The predictions are the
+  // mean value of the predictions on each window.
+  std::vector<Prediction> PredictWithScan(std::u16string_view contents) const;
+
+  // Runs the TFLIte language detection model on no more than three samples of
+  // the string. If the contents is less than 768 characters, the function will
+  // decide the language by running the model over the first 128 characters.
+  // Otherwise, the first, last and the middle 256-character text piece will be
+  // sampled and the return value will be the prediction with the highest
+  // confidence for the three samples.
+  Prediction PredictTopLanguageWithSamples(std::u16string_view contents) const;
 
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
@@ -113,8 +127,23 @@ class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
   // live.
   void DetachFromSequence() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
+  // The number of characters to sample and provide as a buffer to the model
+  // in PredictTopLanguageWithSamples.
+  static constexpr size_t kTextSampleLength = 256;
+
+  // The number of samples of |kTextSampleLength| to evaluate the model
+  // in PredictTopLanguageWithSamples.
+  static constexpr int kNumTextSamples = 3;
+
+  // The maximum window size the model runs over when predicting the language.
+  static constexpr size_t kScanWindowSize = 128;
+
  private:
   void NotifyModelLoaded();
+
+  // Execute the model on the provided |sampled_str| and return the top language
+  // and the models score/confidence in that prediction.
+  Prediction DetectTopLanguage(std::u16string_view sampled_str) const;
 
   // An owned NLClassifier.
   using OwnedNLClassifier =

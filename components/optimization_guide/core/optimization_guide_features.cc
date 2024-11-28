@@ -163,6 +163,12 @@ BASE_FEATURE(kTextSafetyClassifier,
              "TextSafetyClassifier",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to scan the full text when running the language detection in the text
+// safety classifier.
+BASE_FEATURE(kTextSafetyScanLanguageDetection,
+             "TextSafetyScanLanguageDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether the text safety remote fallback should be used.
 BASE_FEATURE(kTextSafetyRemoteFallback,
              "TextSafetyRemoteFallback",
