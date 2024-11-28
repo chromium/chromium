@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
@@ -117,6 +118,26 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   // There should be one launch param -- because the Intent Picker triggers a
   // new navigation in the app (and launch params are then enqueued).
   EXPECT_THAT(launch_params, testing::ElementsAre(GetAppUrlWithQuery()));
+}
+
+// Test that the intent picker shows up for chrome://password-manager, since it
+// is installable.
+IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
+                       DoShowIconAndBubbleOnChromePasswordManagerPage) {
+  GURL password_manager_url("chrome://password-manager");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), password_manager_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  webapps::AppId pwd_manager_app_id =
+      web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(),
+                                                       password_manager_url);
+
+  content::RenderFrameHost* host =
+      ui_test_utils::NavigateToURL(browser(), password_manager_url);
+  ASSERT_NE(nullptr, host);
+
+  ASSERT_TRUE(WaitForIntentPickerToShow(browser()));
 }
 
 }  // namespace web_app
