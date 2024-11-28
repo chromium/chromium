@@ -746,6 +746,10 @@ void DemoSession::OnDemoAppComponentLoaded() {
   }
 
   TriggerLaunchDemoModeApp();
+  if (features::IsDemoModeSignInEnabled()) {
+    idle_handler_ = std::make_unique<DemoModeIdleHandler>(
+        base::BindRepeating(&TriggerLaunchDemoModeApp));
+  }
 }
 
 base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,
