@@ -30,11 +30,10 @@ class Delegate : public seven_zip::Delegate {
                base::span<uint8_t>& output) override {
     if (entry.file_size < 4096) {
       buffer_.resize(entry.file_size);
-      output = base::make_span(buffer_);
+      output = base::span(buffer_);
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
   bool OnDirectory(const seven_zip::EntryInfo& entry) override { return true; }
   bool EntryDone(seven_zip::Result result,
