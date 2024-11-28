@@ -256,6 +256,32 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Required credential field missing"/>
 </enum>
 
+<!-- LINT.IfChange(BoundSessionParamsReadError) -->
+
+<enum name="BoundSessionParamsReadError">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kNoSessionsDict"/>
+  <int value="2" label="kSessionsDictEmpty"/>
+  <int value="3" label="kNoEncodedParams"/>
+  <int value="4" label="kBase64DecodeFailed"/>
+  <int value="5" label="kProtoParseFailed"/>
+  <int value="6" label="kSiteDoesNotMatch"/>
+  <int value="7" label="kInvalidParams"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_params_storage.cc:BoundSessionParamsReadError) -->
+
+<!-- LINT.IfChange(BoundSessionParamsWriteError) -->
+
+<enum name="BoundSessionParamsWriteError">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kParamsInvalid"/>
+  <int value="2" label="kProtoSerializeFailed"/>
+  <int value="3" label="kProtoSerializeFailedAfterCleanUp"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_params_storage.cc:BoundSessionParamsWriteError) -->
+
 <enum name="CctAccountMismatchType">
   <int value="0" label="Signed out of both Chrome and 1P app"/>
   <int value="1" label="Signed in to Chrome and 1P app with same account"/>
