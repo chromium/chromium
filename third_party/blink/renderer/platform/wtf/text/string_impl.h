@@ -32,6 +32,7 @@
 #include <limits.h>
 #include <string.h>
 
+#include <array>
 #include <atomic>
 
 #include "base/check_op.h"
@@ -497,7 +498,7 @@ class WTF_EXPORT StringImpl {
   operator NSString*();
 #endif
 
-  static const UChar kLatin1CaseFoldTable[256];
+  static const std::array<UChar, 256> kLatin1CaseFoldTable;
 
  private:
   friend class AtomicStringTable;
