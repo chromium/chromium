@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -126,15 +127,15 @@ TEST_P(MatchTest, Match) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(context, field, pattern,
-                                                 {MatchAttribute::kLabel}));
+    EXPECT_TRUE(FormFieldParserTestApi::Match(context, field, pattern,
+                                              {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(context, field, pattern,
-                                                  {MatchAttribute::kLabel}));
+    EXPECT_FALSE(FormFieldParserTestApi::Match(context, field, pattern,
+                                               {MatchAttribute::kLabel}));
   }
 }
 
@@ -173,7 +174,7 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(
+    EXPECT_TRUE(FormFieldParserTestApi::Match(
         context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
   {
@@ -182,7 +183,7 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(
+    EXPECT_FALSE(FormFieldParserTestApi::Match(
         context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
 }
@@ -303,7 +304,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   }
 
   EXPECT_EQ(
-      FormFieldParser::ParseInAnyOrderForTesting(&scanner, fields_and_parsers),
+      FormFieldParserTestApi::ParseInAnyOrder(&scanner, fields_and_parsers),
       expect_success);
 
   if (expect_success) {

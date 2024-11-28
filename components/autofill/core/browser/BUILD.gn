@@ -892,6 +892,7 @@ static_library("test_support") {
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
     "form_import/form_data_importer_test_api.h",
+    "form_parsing/form_field_parser_test_api.h",
     "form_parsing/regex_patterns_test_api.h",
     "form_structure_test_api.cc",
     "form_structure_test_api.h",

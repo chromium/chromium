@@ -185,33 +185,9 @@ class FormFieldParser {
       std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
           {});
 
-#if defined(UNIT_TEST)
-  static bool MatchForTesting(ParsingContext& context,
-                              const AutofillField& field,
-                              std::u16string_view pattern,
-                              DenseSet<MatchAttribute> match_attributes,
-                              const char* regex_name = "") {
-    return FormFieldParser::Match(context, field, pattern, match_attributes,
-                                  regex_name)
-        .has_value();
-  }
-
-  static bool ParseInAnyOrderForTesting(
-      AutofillScanner* scanner,
-      std::vector<
-          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
-          fields_and_parsers) {
-    return FormFieldParser::ParseInAnyOrder(scanner, fields_and_parsers);
-  }
-
-  // Assign types to the fields for the testing purposes.
-  void AddClassificationsForTesting(
-      FieldCandidatesMap& field_candidates_for_testing) const {
-    AddClassifications(field_candidates_for_testing);
-  }
-#endif
-
  protected:
+  friend class FormFieldParserTestApi;
+
   // Initial values assigned to FieldCandidates by their corresponding parsers.
   // There's an implicit precedence determined by the values assigned here.
   // Email is currently the most important followed by Phone, Travel, Address,
