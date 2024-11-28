@@ -533,9 +533,10 @@ void DesktopWindowTreeHostWin::SetVisibilityChangedAnimationsEnabled(
 
 std::unique_ptr<NonClientFrameView>
 DesktopWindowTreeHostWin::CreateNonClientFrameView() {
-  return ShouldUseNativeFrame() ? std::make_unique<NativeFrameView>(
-                                      native_widget_delegate_->AsWidget())
-                                : nullptr;
+  return (ShouldUseNativeFrame() && native_widget_delegate_)
+             ? std::make_unique<NativeFrameView>(
+                   native_widget_delegate_->AsWidget())
+             : nullptr;
 }
 
 bool DesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
@@ -880,6 +881,9 @@ int DesktopWindowTreeHostWin::GetInitialShowState() const {
 
 int DesktopWindowTreeHostWin::GetNonClientComponent(
     const gfx::Point& point) const {
+  if (!native_widget_delegate_) {
+    return HTTRANSPARENT;
+  }
   gfx::Point dip_position =
       display::win::ScreenWin::ClientToDIPPoint(GetHWND(), point);
   return native_widget_delegate_->GetNonClientComponent(dip_position);
@@ -1002,13 +1006,16 @@ void DesktopWindowTreeHostWin::HandleAccelerator(
 }
 
 void DesktopWindowTreeHostWin::HandleCreate() {
-  native_widget_delegate_->OnNativeWidgetCreated();
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetCreated();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleDestroying() {
   drag_drop_client_->OnNativeWidgetDestroying(GetHWND());
-  if (native_widget_delegate_)
+  if (native_widget_delegate_) {
     native_widget_delegate_->OnNativeWidgetDestroying();
+  }
 
   // Destroy the compositor before destroying the HWND since shutdown
   // may try to swap to the window.
@@ -1075,8 +1082,10 @@ void DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(bool restored) {
   // done. If a window is created minimized, and then activated, restoring
   // focus will fail because the root window is not visible, which is exposed by
   // ExtensionWindowCreateTest.AcceptState.
-  if (!native_widget_delegate_->IsNativeWidgetInitialized())
+  if (!native_widget_delegate_ ||
+      !native_widget_delegate_->IsNativeWidgetInitialized()) {
     return;
+  }
 
   if (restored)
     window()->Show();
