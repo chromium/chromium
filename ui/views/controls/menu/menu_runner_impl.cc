@@ -114,6 +114,7 @@ void MenuRunnerImpl::RunMenuAt(
     MenuButtonController* button_controller,
     const gfx::Rect& bounds,
     MenuAnchorPosition anchor,
+    ui::mojom::MenuSourceType source_type,
     int32_t run_types,
     gfx::NativeView native_view_for_gestures,
     std::optional<gfx::RoundedCornersF> corners,
@@ -187,7 +188,7 @@ void MenuRunnerImpl::RunMenuAt(
   }
 
   controller->Run(parent, button_controller, menu_.get(), bounds, anchor,
-                  (run_types & MenuRunner::CONTEXT_MENU) != 0,
+                  source_type, (run_types & MenuRunner::CONTEXT_MENU) != 0,
                   (run_types & MenuRunner::NESTED_DRAG) != 0,
                   native_view_for_gestures);
 }

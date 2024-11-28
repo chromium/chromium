@@ -576,6 +576,7 @@ void MenuController::Run(Widget* parent,
                          MenuItemView* root,
                          const gfx::Rect& anchor_bounds,
                          MenuAnchorPosition position,
+                         ui::mojom::MenuSourceType source_type,
                          bool context_menu,
                          bool is_nested_drag,
                          gfx::NativeView native_view_for_gestures) {
@@ -584,7 +585,13 @@ void MenuController::Run(Widget* parent,
   drag_in_progress_ = false;
   closing_event_time_ = base::TimeTicks();
   menu_start_time_ = base::TimeTicks::Now();
-  menu_start_mouse_press_loc_ = gfx::Point();
+  // In some cases, the context menu is asynchronously created after the "mouse
+  // pressed event" is dispatched, so `RootView::current_event()` below is null.
+  // The mouse press location must be taken from the `anchor_bounds` for these
+  // cases.
+  menu_start_mouse_press_loc_ = source_type == ui::mojom::MenuSourceType::kMouse
+                                    ? anchor_bounds.origin()
+                                    : gfx::Point();
 
   ui::Event* event = nullptr;
   if (parent) {

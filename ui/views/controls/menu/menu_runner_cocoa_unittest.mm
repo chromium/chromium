@@ -13,6 +13,7 @@
 #include "base/test/test_timeouts.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/menus/cocoa/menu_controller.h"
@@ -169,9 +170,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
                          base::Unretained(this), std::move(wrapped_callback)));
     }
 
-    runner_->RunMenuAt(parent_, nullptr, gfx::Rect(),
-                       MenuAnchorPosition::kTopLeft, MenuRunner::CONTEXT_MENU,
-                       nullptr);
+    runner_->RunMenuAt(
+        parent_, nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
+        ui::mojom::MenuSourceType::kNone, MenuRunner::CONTEXT_MENU, nullptr);
     MaybeRunAsync();
   }
 
