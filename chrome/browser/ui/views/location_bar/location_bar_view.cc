@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/autofill/payments/local_card_migration_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
@@ -61,6 +63,8 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/page_action/action_ids.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
@@ -118,6 +122,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/ime/input_method.h"
@@ -413,6 +418,21 @@ void LocationBarView::Init() {
   page_action_icon_container_ =
       AddChildView(std::make_unique<PageActionIconContainerView>(params));
   page_action_icon_controller_ = page_action_icon_container_->controller();
+
+  std::vector<actions::ActionItem*> page_action_items = {};
+  if (browser_) {
+    actions::ActionItem* root_action_item =
+        browser_->browser_actions()->root_action_item();
+    for (actions::ActionId action_id : page_actions::kActionIds) {
+      if (actions::ActionItem* item = actions::ActionManager::Get().FindAction(
+              action_id, root_action_item)) {
+        page_action_items.emplace_back(item);
+      }
+    }
+  }
+  page_action_container_ =
+      AddChildView(std::make_unique<page_actions::PageActionContainerView>(
+          page_action_items, this));
 
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(
@@ -945,6 +965,7 @@ void LocationBarView::Update(WebContents* contents) {
   RefreshContentSettingViews();
 
   RefreshPageActionIconViews();
+  RefreshPageActionContainerView();
   location_icon_view_->Update(/*suppress_animations=*/contents,
                               omnibox_view_->model()->PopupIsOpen());
 
@@ -1231,6 +1252,16 @@ void LocationBarView::RefreshPageActionIconViews() {
   }
 
   page_action_icon_controller_->UpdateAll();
+}
+
+void LocationBarView::RefreshPageActionContainerView() {
+  page_actions::PageActionController* controller = nullptr;
+  if (browser_) {
+    if (tabs::TabInterface* active_tab = browser_->GetActiveTabInterface()) {
+      controller = active_tab->GetTabFeatures()->page_action_controller();
+    }
+  }
+  page_action_container_->SetController(controller);
 }
 
 void LocationBarView::RefreshClearAllButtonIcon() {

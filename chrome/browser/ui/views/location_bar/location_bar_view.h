@@ -60,6 +60,10 @@ class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
 
+namespace page_actions {
+class PageActionContainerView;
+}  // namespace page_actions
+
 namespace views {
 class ImageButton;
 class Label;
@@ -313,6 +317,10 @@ class LocationBarView
   // actions are available on the current page.
   void RefreshPageActionIconViews();
 
+  // Updates PageActionContainerView's action controller to the active tab's
+  // controller.
+  void RefreshPageActionContainerView();
+
   // Updates the color of the icon for the "clear all" button.
   void RefreshClearAllButtonIcon();
 
@@ -481,6 +489,8 @@ class LocationBarView
 
   // The container for page action icons.
   raw_ptr<PageActionIconContainerView> page_action_icon_container_ = nullptr;
+  raw_ptr<page_actions::PageActionContainerView> page_action_container_ =
+      nullptr;
 
   // An [x] that appears in touch mode (when the OSK is visible) and allows the
   // user to clear all text.

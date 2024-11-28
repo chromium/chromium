@@ -138,6 +138,10 @@ class TabFeatures {
 
   TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
 
+  page_actions::PageActionController* page_action_controller() {
+    return page_action_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);

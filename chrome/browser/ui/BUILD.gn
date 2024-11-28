@@ -4355,6 +4355,8 @@ static_library("ui") {
       "views/overlay/video_overlay_window_views.cc",
       "views/overlay/video_overlay_window_views.h",
       "views/page_action/action_ids.h",
+      "views/page_action/page_action_container_view.cc",
+      "views/page_action/page_action_container_view.h",
       "views/page_action/page_action_controller.cc",
       "views/page_action/page_action_controller.h",
       "views/page_action/page_action_icon_container.cc",
