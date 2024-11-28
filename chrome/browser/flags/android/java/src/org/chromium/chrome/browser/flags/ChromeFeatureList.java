@@ -173,6 +173,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";
+    public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS_AND_DUPLICATE_TABS =
+            "AndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH =
@@ -877,6 +879,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveAllButActiveTab =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE, false);
+    public static final MutableFlagWithSafeDefault
+            sAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs =
+                    newMutableFlagWithSafeDefault(
+                            ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS_AND_DUPLICATE_TABS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterRescueKillSwitch =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH, true);
     public static final MutableFlagWithSafeDefault sBottomBrowserControlsRefactor =

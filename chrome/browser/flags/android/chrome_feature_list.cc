@@ -192,6 +192,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidPdfAssistContent,
     &kAndroidTabDeclutter,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
+    &kAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs,
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
     &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidToolbarScrollAblation,
@@ -496,6 +497,10 @@ BASE_FEATURE(kAndroidTabDeclutter,
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab,
              "AndroidTabDeclutterArchiveAllButActiveTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs,
+             "AndroidTabDeclutterArchiveTabGroupsAndDuplicateTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch,
