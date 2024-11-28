@@ -44,7 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TaskManagerMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TaskManagerServiceBridge.Natives mBridge;
-    @Mock private Callback<Boolean> mOnHasTaskSelectionChanged;
+    @Mock private Callback<Boolean> mOnHasKillableSelectedTaskChanged;
 
     private PropertyModel mHeader;
     private ModelList mTasks;
@@ -58,7 +58,7 @@ public class TaskManagerMediatorTest {
         mHeader = new PropertyModel(HEADER_PROPERTY_KEYS);
         mTasks = new ModelList();
         mMediator = new TaskManagerMediator(1000, mHeader, mTasks, MEMORY_FOOTPRINT);
-        mMediator.onHasSelectedTaskChanged(mOnHasTaskSelectionChanged);
+        mMediator.onHasKillableSelectedTaskChanged(mOnHasKillableSelectedTaskChanged);
         mMediator.startObserving();
 
         ArgumentCaptor<TaskManagerObserver> observerCaptor =
@@ -165,6 +165,9 @@ public class TaskManagerMediatorTest {
     @Test
     @SmallTest
     public void testTaskSelectionChange() {
+        when(mBridge.isTaskKillable(1)).thenReturn(true);
+        when(mBridge.isTaskKillable(2)).thenReturn(true);
+
         mObserver.onTaskAdded(1);
         mObserver.onTaskAdded(2);
 
@@ -173,7 +176,7 @@ public class TaskManagerMediatorTest {
         mMediator.toggleSelection(mTasks.get(0).model);
 
         assertTrue(mTasks.get(0).model.get(IS_SELECTED));
-        verify(mOnHasTaskSelectionChanged).onResult(true);
+        verify(mOnHasKillableSelectedTaskChanged).onResult(true);
 
         mMediator.toggleSelection(mTasks.get(1).model);
 
@@ -182,6 +185,24 @@ public class TaskManagerMediatorTest {
 
         mMediator.toggleSelection(mTasks.get(1).model);
 
-        verify(mOnHasTaskSelectionChanged).onResult(false);
+        verify(mOnHasKillableSelectedTaskChanged).onResult(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnHasKillableSelectedTaskChanged() {
+        when(mBridge.isTaskKillable(1)).thenReturn(true);
+        when(mBridge.isTaskKillable(2)).thenReturn(false);
+
+        mObserver.onTaskAdded(1);
+        mObserver.onTaskAdded(2);
+
+        mMediator.toggleSelection(mTasks.get(0).model);
+
+        verify(mOnHasKillableSelectedTaskChanged).onResult(true);
+
+        mMediator.toggleSelection(mTasks.get(1).model);
+
+        verify(mOnHasKillableSelectedTaskChanged).onResult(false);
     }
 }

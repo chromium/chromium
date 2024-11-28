@@ -93,7 +93,7 @@ class TaskManagerCoordinator {
         killButton.setEnabled(false);
         killButton.setOnClickListener((view) -> mMediator.killSelectedTasks());
 
-        mMediator.onHasSelectedTaskChanged(
+        mMediator.onHasKillableSelectedTaskChanged(
                 (hasSelectedTask) -> killButton.setEnabled(hasSelectedTask));
         mMediator.startObserving();
     }
@@ -142,9 +142,7 @@ class TaskManagerCoordinator {
 
     // TODO(crbug.com/380188424): Customize stringification per column type.
     private static void bindTask(PropertyModel model, View view, PropertyKey key) {
-        if (key == TaskManagerProperties.TASK_ID) {
-            return;
-        } else if (key == TaskManagerProperties.IS_SELECTED) {
+        if (key == TaskManagerProperties.IS_SELECTED) {
             if (model.get(TaskManagerProperties.IS_SELECTED)) {
                 view.setBackgroundColor(
                         SemanticColorUtils.getColorPrimaryContainer(view.getContext()));
@@ -163,8 +161,6 @@ class TaskManagerCoordinator {
         } else if (key == TaskManagerProperties.PROCESS_ID) {
             TextView textView = view.findViewById(R.id.process_id);
             textView.setText(String.valueOf(model.get(TaskManagerProperties.PROCESS_ID)));
-        } else {
-            throw new IllegalArgumentException();
         }
     }
 }

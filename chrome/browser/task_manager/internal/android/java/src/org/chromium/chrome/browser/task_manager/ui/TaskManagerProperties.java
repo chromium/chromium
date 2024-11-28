@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 import androidx.annotation.IntDef;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -78,4 +79,7 @@ class TaskManagerProperties {
 
     /** Property key for whether the task is selected. */
     static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
+
+    /** Property key for whether the task is killable. */
+    static final ReadableBooleanPropertyKey IS_KILLABLE = new ReadableBooleanPropertyKey();
 }

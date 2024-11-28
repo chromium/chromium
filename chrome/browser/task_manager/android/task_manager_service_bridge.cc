@@ -57,6 +57,13 @@ static jlong JNI_TaskManagerServiceBridge_GetProcessId(
       task_id);
 }
 
+static jboolean JNI_TaskManagerServiceBridge_IsTaskKillable(
+    JNIEnv* env,
+    task_manager::TaskId task_id) {
+  return task_manager::TaskManagerInterface::GetTaskManager()->IsTaskKillable(
+      task_id);
+}
+
 static void JNI_TaskManagerServiceBridge_KillTask(
     JNIEnv* env,
     task_manager::TaskId task_id) {

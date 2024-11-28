@@ -53,6 +53,10 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getProcessId(taskId);
     }
 
+    public boolean isTaskKillable(long taskId) {
+        return TaskManagerServiceBridgeJni.get().isTaskKillable(taskId);
+    }
+
     public void killTask(long taskId) {
         TaskManagerServiceBridgeJni.get().killTask(taskId);
     }
@@ -83,6 +87,8 @@ public class TaskManagerServiceBridge {
         double getPlatformIndependentCpuUsage(long taskId);
 
         long getProcessId(long taskId);
+
+        boolean isTaskKillable(long taskId);
 
         void killTask(long taskId);
     }

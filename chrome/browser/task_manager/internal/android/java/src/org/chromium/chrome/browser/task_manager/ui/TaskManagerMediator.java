@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_KILLABLE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
@@ -45,9 +46,9 @@ class TaskManagerMediator {
     // The list containing the properties representing tasks. Sorted by task id.
     // TODO(crbug.com/380154224): Enable sorting by other attributes.
     private final ModelList mTasks;
-    private boolean mHasSelectedTask;
+    private boolean mHasKillableSelectedTask;
 
-    private @Nullable Callback<Boolean> mHasSelectedTaskChangedCallback;
+    private @Nullable Callback<Boolean> mHasKillableSelectedTaskChangedCallback;
 
     /**
      * Constructs the mediator backed by the modelList.
@@ -92,14 +93,14 @@ class TaskManagerMediator {
             mObserverHandle = null;
 
             mTasks.clear();
-            mHasSelectedTask = false;
+            mHasKillableSelectedTask = false;
         }
     }
 
     /** Kill the currently selected tasks. */
     void killSelectedTasks() {
         for (ListItem task : mTasks) {
-            if (task.model.get(IS_SELECTED)) {
+            if (task.model.get(IS_SELECTED) && task.model.get(IS_KILLABLE)) {
                 mBridge.killTask(task.model.get(TASK_ID));
             }
         }
@@ -119,12 +120,12 @@ class TaskManagerMediator {
                 }
             }
         }
-        checkAndNotifyIfTaskSelectionChanged();
+        checkAndNotifyIfHasKillableSelectedTaskChanged();
     }
 
-    /** Set a callback called when the existence of a selected task changes. */
-    void onHasSelectedTaskChanged(Callback<Boolean> callback) {
-        mHasSelectedTaskChangedCallback = callback;
+    /** Set a callback called when the existence of a killable selected task changes. */
+    void onHasKillableSelectedTaskChanged(Callback<Boolean> callback) {
+        mHasKillableSelectedTaskChangedCallback = callback;
     }
 
     /**
@@ -166,12 +167,14 @@ class TaskManagerMediator {
 
     private ListItem createTaskModel(long taskId) {
         PropertyKey[] keys =
-                PropertyModel.concatKeys(mColumnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED});
+                PropertyModel.concatKeys(
+                        mColumnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED, IS_KILLABLE});
         return new ListItem(
                 RowType.TASK,
                 new PropertyModel.Builder(keys)
                         .with(TASK_ID, taskId)
                         .with(IS_SELECTED, false)
+                        .with(IS_KILLABLE, mBridge.isTaskKillable(taskId))
                         .build());
     }
 
@@ -220,7 +223,7 @@ class TaskManagerMediator {
             @Override
             public void onTaskToBeRemoved(long taskId) {
                 mTasks.removeAt(getIndexForTaskId(taskId));
-                checkAndNotifyIfTaskSelectionChanged();
+                checkAndNotifyIfHasKillableSelectedTaskChanged();
             }
 
             @Override
@@ -259,18 +262,18 @@ class TaskManagerMediator {
         throw new NoSuchElementException("Task id " + taskId + " not found");
     }
 
-    private void checkAndNotifyIfTaskSelectionChanged() {
-        boolean hasSelectedTask = false;
+    private void checkAndNotifyIfHasKillableSelectedTaskChanged() {
+        boolean hasKillableSelectedTask = false;
         for (ListItem task : mTasks) {
-            if (task.model.get(IS_SELECTED)) {
-                hasSelectedTask = true;
+            if (task.model.get(IS_SELECTED) && task.model.get(IS_KILLABLE)) {
+                hasKillableSelectedTask = true;
                 break;
             }
         }
-        if (mHasSelectedTask != hasSelectedTask) {
-            mHasSelectedTask = hasSelectedTask;
-            if (mHasSelectedTaskChangedCallback != null) {
-                mHasSelectedTaskChangedCallback.onResult(hasSelectedTask);
+        if (mHasKillableSelectedTask != hasKillableSelectedTask) {
+            mHasKillableSelectedTask = hasKillableSelectedTask;
+            if (mHasKillableSelectedTaskChangedCallback != null) {
+                mHasKillableSelectedTaskChangedCallback.onResult(hasKillableSelectedTask);
             }
         }
     }
