@@ -2568,6 +2568,16 @@ inline constexpr char kGraduationNudgeShownCount[] =
 inline constexpr char kGraduationNudgeLastShownTime[] =
     "ash.graduation.nudge_last_shown_time";
 
+// An integer pref that counts the number of times we have shown the Sunfish
+// launcher nudge.
+inline constexpr char kSunfishLauncherNudgeShownCount[] =
+    "ash.capture_mode.sunfish_launcher_nudge_shown_count";
+
+// A time pref that tracks the most recent instance when we have shown the
+// Sunfish launcher nudge.
+inline constexpr char kSunfishLauncherNudgeLastShown[] =
+    "ash.capture_mode.sunfish_launcher_nudge_last_shown";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

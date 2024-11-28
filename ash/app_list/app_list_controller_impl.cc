@@ -356,6 +356,11 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kLauncherAppsCollectionsExperimentArm,
       static_cast<int>(
           AppsCollectionsController::ExperimentalArm::kDefaultValue));
+
+  // The prefs for the Sunfish launcher nudge.
+  registry->RegisterIntegerPref(prefs::kSunfishLauncherNudgeShownCount, 0);
+  registry->RegisterTimePref(prefs::kSunfishLauncherNudgeLastShown,
+                             base::Time());
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
@@ -2083,10 +2088,33 @@ void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
     return;
   }
 
-  // TODO(hewer): Add user prefs to prevent the nudge from appearing too
-  // frequently.
+  // We don't want to show the nudge if the user is not signed in yet.
+  auto* session_controller = Shell::Get()->session_controller();
+  if (!session_controller || session_controller->IsUserSessionBlocked()) {
+    return;
+  }
 
+  auto* pref_service = session_controller->GetActivePrefService();
+  CHECK(pref_service);
   CHECK(launcher_button);
+
+  const int shown_count =
+      pref_service->GetInteger(prefs::kSunfishLauncherNudgeShownCount);
+  const base::Time last_shown_time =
+      pref_service->GetTime(prefs::kSunfishLauncherNudgeLastShown);
+
+  // Do not show the nudge more than three times, or if it has already been
+  // shown in the past 24 hours.
+  const base::Time now = base::Time::Now();
+  if ((shown_count >= capture_mode::kSunfishNudgeMaxShownCount) ||
+      ((now - last_shown_time) < capture_mode::kSunfishNudgeTimeBetweenShown)) {
+    return;
+  }
+
+  // Update the preferences.
+  pref_service->SetInteger(prefs::kSunfishLauncherNudgeShownCount,
+                           shown_count + 1);
+  pref_service->SetTime(prefs::kSunfishLauncherNudgeLastShown, now);
 
   // TODO(hewer): Upload string for translation.
   AnchoredNudgeData nudge_data = AnchoredNudgeData(

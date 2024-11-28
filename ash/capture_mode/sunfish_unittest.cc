@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_bubble_presenter.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -134,7 +136,9 @@ Matcher<ActionButtonView*> ActionButtonIsCollapsed() {
 
 class SunfishTestBase : public AshTestBase {
  public:
-  SunfishTestBase() = default;
+  SunfishTestBase()
+      : AshTestBase(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
   SunfishTestBase(const SunfishTestBase&) = delete;
   SunfishTestBase& operator=(const SunfishTestBase&) = delete;
   ~SunfishTestBase() override = default;
@@ -1615,6 +1619,9 @@ TEST_F(SunfishTest, PanelBounds) {
 // Tests that the sunfish launcher nudge appears and closes properly in
 // clamshell mode.
 TEST_F(SunfishTest, ClamshellLauncherNudge) {
+  // Advance clock so we aren't at zero time.
+  task_environment()->AdvanceClock(base::Hours(25));
+
   // Open the app list by clicking on the home button.
   LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
   auto* bubble_view = GetAppListBubbleView();
@@ -1641,6 +1648,9 @@ TEST_F(SunfishTest, ClamshellLauncherNudge) {
 // Tests that the sunfish launcher nudge appears and closes properly in
 // tablet mode.
 TEST_F(SunfishTest, TabletLauncherNudge) {
+  // Advance clock so we aren't at zero time.
+  task_environment()->AdvanceClock(base::Hours(25));
+
   SwitchToTabletMode();
 
   // The app list should be open by default when we enter tablet mode.
@@ -1663,6 +1673,61 @@ TEST_F(SunfishTest, TabletLauncherNudge) {
   VerifyActiveBehavior(BehaviorType::kSunfish);
   EXPECT_FALSE(
       nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
+}
+
+// Tests that the sunfish nudge only appears three times at most, with at least
+// 24 hours between showings.
+TEST_F(SunfishTest, LauncherNudgeLimits) {
+  // Advance clock so we aren't at zero time.
+  task_environment()->AdvanceClock(base::Hours(25));
+
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  AppListBubblePresenter* bubble_presenter =
+      Shell::Get()->app_list_controller()->bubble_presenter_for_test();
+  for (int i = 0; i < 3; i++) {
+    // Click on the shelf home button to open up the app list launcher.
+    LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+    ASSERT_TRUE(GetAppListBubbleView());
+    ASSERT_TRUE(bubble_presenter->IsShowing());
+
+    // Get the list of visible nudges from the nudge manager and make sure our
+    // education nudge is in the list and visible.
+    const AnchoredNudge* nudge =
+        nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId);
+    ASSERT_TRUE(nudge);
+    EXPECT_TRUE(nudge->GetVisible());
+
+    // Showing the nudge should also update the preferences.
+    EXPECT_EQ(capture_mode_util::GetActiveUserPrefService()->GetInteger(
+                  prefs::kSunfishLauncherNudgeShownCount),
+              i + 1);
+
+    // Click on the shelf home button again to close the app list launcher (the
+    // view will still exist but not be visible).
+    LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+    ASSERT_FALSE(bubble_presenter->IsShowing());
+
+    // Closing the app list (and therefore the sunfish button) should hide the
+    // nudge.
+    EXPECT_FALSE(
+        nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
+
+    // Advance the clock so we can show the nudge again.
+    task_environment()->AdvanceClock(base::Hours(25));
+  }
+
+  // Click on the shelf home button to open up the app list launcher.
+  LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+  ASSERT_TRUE(GetAppListBubbleView());
+  ASSERT_TRUE(bubble_presenter->IsShowing());
+
+  // The nudge should not show anymore, as we have hit the show limit.
+  EXPECT_FALSE(
+      nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
+  EXPECT_EQ(capture_mode_util::GetActiveUserPrefService()->GetInteger(
+                prefs::kSunfishLauncherNudgeShownCount),
+            3);
 }
 
 class ScannerTest : public AshTestBase {

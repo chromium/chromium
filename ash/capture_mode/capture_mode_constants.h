@@ -161,6 +161,12 @@ inline constexpr char kSunfishConsentDisclaimerAccepted[] =
 // The ID for the nudge anchored to the Sunfish button in the launcher.
 inline constexpr char kSunfishLauncherNudgeId[] = "kSunfishLauncherNudge";
 
+// The nudge will not be shown if it already been shown 3 times, or if 24
+// hours have not yet passed since it was last shown.
+constexpr int kSunfishNudgeMaxShownCount = 3;
+inline constexpr base::TimeDelta kSunfishNudgeTimeBetweenShown =
+    base::Hours(24);
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_
