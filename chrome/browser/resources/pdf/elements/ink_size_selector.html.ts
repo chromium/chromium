@@ -18,6 +18,8 @@ export function getHtml(this: InkSizeSelectorElement) {
             data-index="${index}" data-size="${item.size}"
             data-selected="${this.isCurrentSize_(item.size)}"
             aria-selected="${this.isCurrentSize_(item.size)}"
+            aria-label="${this.i18n(item.label)}"
+            title="${this.i18n(item.label)}"
             @click="${this.onSizeClick_}"></cr-icon-button>
       `)}
     </div>

@@ -595,4 +595,14 @@ export function assertSelectedColor(
   }
 }
 
+/**
+ * Tests that `element` have the correct tooltip and aria labels.
+ * @param element The element that has labels.
+ * @param label The expected tooltip and aria label.
+ */
+export function assertLabels(element: HTMLElement, label: string) {
+  chrome.test.assertEq(label, element.ariaLabel);
+  chrome.test.assertEq(label, element.title);
+}
+
 // </if>

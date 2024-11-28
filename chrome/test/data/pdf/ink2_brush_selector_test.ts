@@ -7,7 +7,7 @@ import type {InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeo
 import {assert} from 'chrome://resources/js/assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {setupMockMetricsPrivate} from './test_util.js';
+import {assertLabels, setupMockMetricsPrivate} from './test_util.js';
 
 const mockMetricsPrivate = setupMockMetricsPrivate();
 
@@ -49,16 +49,6 @@ function assertBrushIcons(
       selectedBrushType === AnnotationBrushType.PEN ? 'pdf:ink-pen-fill' :
                                                       'pdf:ink-pen',
       penIcon);
-}
-
-/**
- * Tests that `element` have the correct tooltip and aria labels.
- * @param element The element that has labels.
- * @param label The expected tooltip and aria label.
- */
-function assertLabels(element: HTMLElement, label: string) {
-  chrome.test.assertEq(label, element.ariaLabel);
-  chrome.test.assertEq(label, element.title);
 }
 
 /**
