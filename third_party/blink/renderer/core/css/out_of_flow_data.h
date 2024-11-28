@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_OUT_OF_FLOW_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_OUT_OF_FLOW_DATA_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/successful_position_fallback.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -37,7 +40,8 @@ class CORE_EXPORT OutOfFlowData final
 
   // At resize observer timing, update the last successful try fallback.
   // Returns true if last successful fallback was cleared.
-  bool ApplyPendingSuccessfulPositionFallback(LayoutObject* layout_object);
+  bool ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
+      LayoutObject* layout_object);
 
   bool HasLastSuccessfulPositionFallback() const {
     return last_successful_position_fallback_.position_try_fallbacks_ !=
@@ -64,6 +68,17 @@ class CORE_EXPORT OutOfFlowData final
     return last_successful_position_fallback_.index_;
   }
 
+  // Return the offset caused by scrolling in all containers up to (but not
+  // including) the containing block of this anchored element, at the latest
+  // anchor recalculation point.
+  //
+  // This value is set when the element is initially laid out - at an "anchor
+  // recalulcation point"). Any scrolling that takes place after this point.
+  //
+  std::optional<PhysicalOffset> DefaultAnchorScrollShift() const {
+    return default_anchor_scroll_shift_;
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -74,6 +89,8 @@ class CORE_EXPORT OutOfFlowData final
   // here. Will be copied to the last_successful_position_fallback_ at next
   // resize observer update.
   SuccessfulPositionFallback new_successful_position_fallback_;
+
+  std::optional<PhysicalOffset> default_anchor_scroll_shift_;
 };
 
 }  // namespace blink

@@ -938,6 +938,15 @@
       name: "CSSAdvancedAttrFunction",
     },
     {
+      // Let the visual position of the default anchor affect IMCB for
+      // position-area.
+      // This means taking scroll offset into account, if an element is aligned
+      // to the default anchor at one edge, and at the actual containing block
+      // at the other edge.
+      name: "CSSAnchorPositionAreaVisualPosition",
+      status: "experimental",
+    },
+    {
       // Support for the anchor-scope property.
       // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
       name: "CSSAnchorScope",

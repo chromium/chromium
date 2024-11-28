@@ -57,12 +57,13 @@ bool AnchorPositionScrollData::IsActive() const {
 }
 
 PhysicalOffset AnchorPositionScrollData::TotalOffset(
-    const LayoutObject& anchor_object) const {
-  if (anchor_object == default_anchor_adjustment_data_.anchor_object) {
+    const LayoutObject* anchor_object) const {
+  if (!anchor_object ||
+      anchor_object == default_anchor_adjustment_data_.anchor_object) {
     return default_anchor_adjustment_data_.TotalOffset();
   }
 
-  return ComputeAdjustmentContainersData(anchor_object).TotalOffset();
+  return ComputeAdjustmentContainersData(*anchor_object).TotalOffset();
 }
 
 AnchorPositionScrollData::AdjustmentData
@@ -224,7 +225,7 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
       // The range was calculated with a different anchor object. Check if the
       // anchored element (which previously overflowed with the try option that
       // specified that anchor) will become non-overflowing with that option.
-      if (range.Contains(TotalOffset(*range.anchor_object))) {
+      if (range.Contains(TotalOffset(range.anchor_object))) {
         return false;
       }
     } else {

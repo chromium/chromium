@@ -2469,7 +2469,9 @@ bool LocalFrameView::RunResizeObserverSteps(
   disconnected_elements_with_remembered_size_.clear();
 
   // https://drafts.csswg.org/css-anchor-position-1/#last-successful-position-option
-  bool re_run_lifecycles = UpdateLastSuccessfulPositionFallbacks();
+  StyleEngine& engine = GetFrame().GetDocument()->GetStyleEngine();
+  bool re_run_lifecycles =
+      engine.UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
   ForAllNonThrottledLocalFrameViews(
       [&re_run_lifecycles](LocalFrameView& frame_view) {
@@ -5117,13 +5119,6 @@ void LocalFrameView::ExecutePendingSnapUpdates() {
 void LocalFrameView::NotifyElementWithRememberedSizeDisconnected(
     Element* element) {
   disconnected_elements_with_remembered_size_.insert(element);
-}
-
-bool LocalFrameView::UpdateLastSuccessfulPositionFallbacks() {
-  return GetFrame()
-      .GetDocument()
-      ->GetStyleEngine()
-      .UpdateLastSuccessfulPositionFallbacks();
 }
 
 }  // namespace blink
