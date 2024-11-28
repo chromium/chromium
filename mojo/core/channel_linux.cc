@@ -35,6 +35,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_security_policy.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
@@ -180,7 +181,7 @@ bool ValidateFDIsProperlySealedMemFD(const base::ScopedFD& fd) {
 // EventFDNotifier is an implementation of the DataAvailableNotifier interface
 // which uses EventFDNotifier to signal the reader.
 class EventFDNotifier : public DataAvailableNotifier,
-                        public base::MessagePumpForIO::FdWatcher {
+                        public base::IOWatcher::FdWatcher {
  public:
   EventFDNotifier(EventFDNotifier&& efd) = default;
 
@@ -257,15 +258,15 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   bool is_valid() const override { return fd_.is_valid(); }
 
-  // base::MessagePumpForIO::FdWatcher impl:
-  void OnFileCanReadWithoutBlocking(int fd) override {
+  // base::IOWatcher::FdWatcher impl:
+  void OnFdReadable(int fd) override {
     DCHECK(fd == fd_.get());
 
     // Invoke the callback to inform them that data is available to read.
     DataAvailable();
   }
 
-  void OnFileCanWriteWithoutBlocking(int fd) override {}
+  void OnFdWritable(int fd) override {}
 
   base::ScopedFD take() { return std::move(fd_); }
   base::ScopedFD take_dup() {
@@ -273,7 +274,7 @@ class EventFDNotifier : public DataAvailableNotifier,
   }
 
   void reset() {
-    watcher_.reset();
+    watch_.reset();
     fd_.reset();
   }
 
@@ -293,8 +294,6 @@ class EventFDNotifier : public DataAvailableNotifier,
         zero_on_wake_(zero_on_wake),
         fd_(std::move(fd)),
         io_task_runner_(io_task_runner) {
-    watcher_ =
-        std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
     WaitForEventFDOnIOThread();
   }
 
@@ -315,14 +314,14 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   void WaitForEventFDOnIOThread() {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-    base::CurrentIOThread::Get()->WatchFileDescriptor(
-        fd_.get(), true, base::MessagePumpForIO::WATCH_READ, watcher_.get(),
-        this);
+    watch_ = base::IOWatcher::Get()->WatchFileDescriptor(
+        fd_.get(), base::IOWatcher::FdWatchDuration::kPersistent,
+        base::IOWatcher::FdWatchMode::kRead, *this);
   }
 
   bool zero_on_wake_ = false;
   base::ScopedFD fd_;
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> watcher_;
+  std::unique_ptr<base::IOWatcher::FdWatch> watch_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 };
 
