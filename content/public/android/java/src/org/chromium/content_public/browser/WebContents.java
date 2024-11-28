@@ -590,4 +590,11 @@ public interface WebContents extends Parcelable {
      * an unload/pagehide/visibilitychange handler.
      */
     boolean needToFireBeforeUnloadOrUnloadEvents();
+
+    /**
+     * Notify that the new {@link WebContents} for the payment handler is created.
+     *
+     * @param newWebContents The new {@link WebContents} for the payment handler.
+     */
+    void notifyOnCreateNewPaymentHandler(WebContents newWebContents);
 }

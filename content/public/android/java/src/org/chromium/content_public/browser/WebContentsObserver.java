@@ -229,6 +229,12 @@ public abstract class WebContentsObserver {
     /** Called when the top level WindowAndroid changes. */
     public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {}
 
+    /**
+     * Called when the payment handler's WebContents is created.
+     * @param newWebContents the new WebContents for the payment handler.
+     */
+    public void onCreateNewPaymentHandler(WebContents newWebContents) {}
+
     /** Stop observing the web contents and clean up associated references. */
     public void destroy() {
         if (mWebContents == null) return;
