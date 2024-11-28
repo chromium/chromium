@@ -40,7 +40,7 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
   MockUserspaceSwapPolicy(const MockUserspaceSwapPolicy&) = delete;
   MockUserspaceSwapPolicy& operator=(const MockUserspaceSwapPolicy&) = delete;
 
-  ~MockUserspaceSwapPolicy() override {}
+  ~MockUserspaceSwapPolicy() override = default;
 
   MOCK_METHOD0(SwapNodesOnGraph, void(void));
   MOCK_METHOD1(InitializeProcessNode, bool(const ProcessNode*));
@@ -102,7 +102,7 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
   UserspaceSwapPolicyTest(const UserspaceSwapPolicyTest&) = delete;
   UserspaceSwapPolicyTest& operator=(const UserspaceSwapPolicyTest&) = delete;
 
-  ~UserspaceSwapPolicyTest() override {}
+  ~UserspaceSwapPolicyTest() override = default;
 
   void SetUp() override {
     if (!base::SysInfo::IsRunningOnChromeOS()) {

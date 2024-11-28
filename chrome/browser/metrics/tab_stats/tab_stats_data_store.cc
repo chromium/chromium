@@ -74,7 +74,7 @@ TabStatsDataStore::TabStatsDataStore(PrefService* pref_service)
           ::prefs::kTabStatsReloadsFrozenWithGrowingMemory);
 }
 
-TabStatsDataStore::~TabStatsDataStore() {}
+TabStatsDataStore::~TabStatsDataStore() = default;
 
 void TabStatsDataStore::OnWindowAdded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
