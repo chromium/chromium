@@ -24,7 +24,7 @@ GetAccountInformationHelper::GetAccountInformationHelper(
 GetAccountInformationHelper::~GetAccountInformationHelper() = default;
 
 GetAccountInformationHelper::GetAccountInformationResult::
-    GetAccountInformationResult() {}
+    GetAccountInformationResult() = default;
 
 GetAccountInformationHelper::GetAccountInformationResult::
     GetAccountInformationResult(const GetAccountInformationResult& other) =

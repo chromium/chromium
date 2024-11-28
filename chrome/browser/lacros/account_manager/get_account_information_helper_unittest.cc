@@ -77,7 +77,7 @@ using ::testing::NiceMock;
 
 class GetAccountInformationHelperTest : public testing::Test {
  public:
-  GetAccountInformationHelperTest() {}
+  GetAccountInformationHelperTest() = default;
 
   void RunTest(
       std::vector<GetAccountInformationHelper::GetAccountInformationResult>
