@@ -10,21 +10,21 @@ source_set("tabs") {
     "tabs_settings_mediator.mm",
   ]
   deps = [
-    ":tabs_ui",
+    ":ui",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/sync/service",
+    "//ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
   ]
 }
 
-source_set("tabs_ui") {
+source_set("ui") {
   sources = [
     "tabs_settings_consumer.h",
     "tabs_settings_navigation_commands.h",
@@ -37,12 +37,12 @@ source_set("tabs_ui") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs:inactive_tabs_ui",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:inactive_tabs_ui",
     "//ui/base",
   ]
 }

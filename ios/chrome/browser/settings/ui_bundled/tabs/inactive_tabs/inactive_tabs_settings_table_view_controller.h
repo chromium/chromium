@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_consumer.h"
 
 @protocol InactiveTabsSettingsTableViewControllerDelegate;
 
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_H_

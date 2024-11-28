@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_table_view_controller_delegate.h"
 
 class PrefService;
 @protocol TabsSettingsConsumer;
@@ -34,4 +34,4 @@ class PrefService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_MEDIATOR_H_
