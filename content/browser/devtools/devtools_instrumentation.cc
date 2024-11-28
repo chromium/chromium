@@ -868,6 +868,9 @@ protocol::String BuildBlockedByResponseReason(
           CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
       return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameSite;
+    case network::mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          SRIMessageSignatureMismatch;
   }
 }
 

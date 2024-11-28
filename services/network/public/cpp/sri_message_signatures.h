@@ -10,7 +10,9 @@
 
 #include "base/component_export.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 
@@ -44,6 +46,16 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool ValidateSRIMessageSignaturesOverHeaders(
     const std::vector<mojom::SRIMessageSignaturePtr>& signatures,
     const net::HttpResponseHeaders& headers);
+
+// Returns `BlockedByResponseReason::kSRIMessageSignatureMismatch` if a response
+// fails validation. If validation is successful, returns `std::nullopt`.
+//
+// Validation always succeeds if the `features::kSRIMessageSignatureEnforcement`
+// flag is disabled.
+COMPONENT_EXPORT(NETWORK_CPP)
+std::optional<mojom::BlockedByResponseReason>
+MaybeBlockResponseForSRIMessageSignature(
+    const network::mojom::URLResponseHead& response);
 
 }  // namespace network
 

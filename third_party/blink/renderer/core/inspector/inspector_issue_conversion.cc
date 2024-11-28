@@ -300,6 +300,10 @@ protocol::String BuildBlockedByResponseReason(
           CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
     case network::mojom::blink::BlockedByResponseReason::kCorpNotSameSite:
       return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameSite;
+    case network::mojom::blink::BlockedByResponseReason::
+        kSRIMessageSignatureMismatch:
+      return protocol::Audits::BlockedByResponseReasonEnum::
+          SRIMessageSignatureMismatch;
   }
 }
 

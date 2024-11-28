@@ -426,6 +426,8 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
           CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
     case blink::ResourceRequestBlockedReason::kCorpNotSameSite:
       return protocol::Network::BlockedReasonEnum::CorpNotSameSite;
+    case blink::ResourceRequestBlockedReason::kSRIMessageSignatureMismatch:
+      return protocol::Network::BlockedReasonEnum::SriMessageSignatureMismatch;
     case ResourceRequestBlockedReason::kConversionRequest:
       // This is actually never reached, as the conversion request
       // is marked as successful and no blocking reason is reported.

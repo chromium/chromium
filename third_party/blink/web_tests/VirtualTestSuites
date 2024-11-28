@@ -4060,5 +4060,14 @@
     "args": ["--enable-features=AtomicMoveRangePreservation"],
     "owners": ["dom@chromium.org", "nrosenthal@chromium.org"],
     "expires": "May 1, 2025"
+  },
+  {
+    "prefix": "sri-message-signatures",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/subresource-integrity/signatures/tentative"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=SRIMessageSignatureEnforcement"],
+    "owners": ["mkwst@chromium.org"],
+    "expires": "May 1, 2025"
   }
 ]

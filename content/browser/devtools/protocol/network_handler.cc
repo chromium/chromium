@@ -2257,6 +2257,8 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
           CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case blink::ResourceRequestBlockedReason::kCorpNotSameSite:
       return protocol::Network::BlockedReasonEnum::CorpNotSameSite;
+    case blink::ResourceRequestBlockedReason::kSRIMessageSignatureMismatch:
+      return protocol::Network::BlockedReasonEnum::SriMessageSignatureMismatch;
     case blink::ResourceRequestBlockedReason::kConversionRequest:
       // This is actually never reached, as the conversion request
       // is marked as successful and no blocking reason is reported.
@@ -2293,6 +2295,10 @@ std::optional<String> GetBlockedReasonFor(
         return {protocol::Network::BlockedReasonEnum::CorpNotSameOrigin};
       case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
         return {protocol::Network::BlockedReasonEnum::CorpNotSameSite};
+      case network::mojom::BlockedByResponseReason::
+          kSRIMessageSignatureMismatch:
+        return {
+            protocol::Network::BlockedReasonEnum::SriMessageSignatureMismatch};
     }
     NOTREACHED();
   }

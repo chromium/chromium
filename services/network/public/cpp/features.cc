@@ -413,4 +413,8 @@ BASE_FEATURE(kEnableLockCookieDatabaseByDefault,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+BASE_FEATURE(kSRIMessageSignatureEnforcement,
+             "SRIMessageSignatureEnforcement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

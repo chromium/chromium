@@ -172,6 +172,11 @@ COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kEnableLockCookieDatabaseByDefault);
 #endif  // BUILDFLAG(IS_WIN)
 
+// Should SRI-compliant HTTP Message Signatures be enforced?
+// https://wicg.github.io/signature-based-sri/
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kSRIMessageSignatureEnforcement);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

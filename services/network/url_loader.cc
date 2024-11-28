@@ -92,6 +92,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -1984,6 +1985,20 @@ void URLLoader::ContinueOnResponseStarted() {
               url_request_->initiator(), *response_, request_mode_,
               request_destination_, cross_origin_embedder_policy,
               coep_reporter_, document_isolation_policy)) {
+    CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
+                            blocked_reason);
+    // Close the socket associated with the request, to prevent leaking
+    // information.
+    url_request_->AbortAndCloseConnection();
+    DeleteSelf();
+    return;
+  }
+
+  // Enforce SRI-compliant HTTP Message Signature headers.
+  //
+  // https://wicg.github.io/signature-based-sri/
+  if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
+          MaybeBlockResponseForSRIMessageSignature(*response_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking

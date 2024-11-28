@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace network {
@@ -354,6 +355,27 @@ bool ValidateSRIMessageSignaturesOverHeaders(
   }
 
   return true;
+}
+
+std::optional<mojom::BlockedByResponseReason>
+MaybeBlockResponseForSRIMessageSignature(
+    const network::mojom::URLResponseHead& response) {
+  // If the feature is disabled, never block resources.
+  if (!base::FeatureList::IsEnabled(
+          features::kSRIMessageSignatureEnforcement)) {
+    return std::nullopt;
+  }
+
+  // No headers, no blocking.
+  if (!response.headers) {
+    return std::nullopt;
+  }
+  auto signatures = ParseSRIMessageSignaturesFromHeaders(*response.headers);
+  if (!signatures.size() ||
+      ValidateSRIMessageSignaturesOverHeaders(signatures, *response.headers)) {
+    return std::nullopt;
+  }
+  return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
 }
 
 }  // namespace network

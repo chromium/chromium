@@ -654,6 +654,7 @@ experimental domain Audits
       CorpNotSameOriginAfterDefaultedToSameOriginByDip
       CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip
       CorpNotSameSite
+      SRIMessageSignatureMismatch
 
   # Details for a request that has been blocked with the BLOCKED_BY_RESPONSE
   # code. Currently only used for COEP/COOP, but may be extended to include
@@ -5991,6 +5992,7 @@ domain Network
       corp-not-same-origin-after-defaulted-to-same-origin-by-dip
       corp-not-same-origin-after-defaulted-to-same-origin-by-coep-and-dip
       corp-not-same-site
+      sri-message-signature-mismatch
 
   # The reason why request was blocked.
   type CorsError extends string

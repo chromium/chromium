@@ -7,7 +7,9 @@
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -733,6 +735,74 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
     ASSERT_EQ(1u, signatures.size());
 
     EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  }
+}
+
+class SRIMessageSignatureEnforcementTest
+    : public SRIMessageSignatureValidationTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  SRIMessageSignatureEnforcementTest() {}
+
+  mojom::URLResponseHeadPtr ResponseHead(std::string_view digest,
+                                         std::string_view signature,
+                                         std::string_view input) {
+    auto head = mojom::URLResponseHead::New();
+    head->headers = Headers(digest, signature, input);
+    return head;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(FeatureFlag,
+                         SRIMessageSignatureEnforcementTest,
+                         testing::Values(true, false));
+
+TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
+  bool feature_flag_enabled = GetParam();
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
+
+  auto head = ResponseHead("", "", "");
+  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
+  bool feature_flag_enabled = GetParam();
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
+
+  auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
+                           kValidSignatureInputHeader);
+  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  EXPECT_FALSE(result.has_value());
+}
+TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
+  bool feature_flag_enabled = GetParam();
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
+
+  const char* wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  const char* wrong_signature =
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAA==";
+
+  auto head = ResponseHead(kValidDigestHeader,
+                           SignatureHeader("bad-signature", wrong_signature),
+                           SignatureInputHeader("bad-signature", wrong_key));
+  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  if (feature_flag_enabled) {
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+              result.value());
+  } else {
+    EXPECT_FALSE(result.has_value());
   }
 }
 
