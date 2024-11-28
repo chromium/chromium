@@ -93,9 +93,8 @@ CaptureRegionOverlayController::~CaptureRegionOverlayController() = default;
 void CaptureRegionOverlayController::SchedulePaintForGlow(
     ui::Layer* layer,
     const gfx::Rect& region_bounds_in_layer) {
-  // TODO(crbug.com/374381937): We only need to invalidate the glowing area
-  // outside the region, not an entire bounding rect containing the maximum
-  // glow. Consider invalidating a union of rects around the region border.
+  // Invalidate a bounding rect containing the maximum glow outsets and blur
+  // from the region bounds.
   gfx::Rect glow_bounds(region_bounds_in_layer);
   glow_bounds.Outset(kRegionGlowDamageOutset);
   layer->SchedulePaint(glow_bounds);
