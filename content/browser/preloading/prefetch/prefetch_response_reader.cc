@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "net/http/http_cookie_indices.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -455,7 +456,7 @@ void PrefetchResponseReader::OnReceiveResponse(
   head_ = std::move(head);
   if (is_reusable_) {
     body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
-        std::move(body), features::kPrefetchReusableBodySizeLimit.Get());
+        std::move(body), GetPrefetchDataPipeTeeBodySizeLimit());
   } else {
     body_ = std::move(body);
   }
