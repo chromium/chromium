@@ -253,18 +253,11 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
 
   wgpu::DeviceDescriptor device_descriptor;
 
-  constexpr wgpu::FeatureName kOptionalFeatures[] = {
-      // We need to request internal usage to be able to do operations with
-      // internal methods that would need specific usages.
-      wgpu::FeatureName::DawnInternalUsages,
-
-      // AHardwareBuffers are imported directly into Dawn and SyncFDs are used
-      // to synchronize them.
-      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
-      wgpu::FeatureName::SharedFenceSyncFD,
-  };
-  device_descriptor.requiredFeatureCount = std::size(kOptionalFeatures);
-  device_descriptor.requiredFeatures = kOptionalFeatures;
+  // We need to request internal usage to be able to do operations with
+  // internal methods that would need specific usages.
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  device_descriptor.requiredFeatureCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 
