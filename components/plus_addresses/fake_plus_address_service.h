@@ -173,16 +173,11 @@ class FakePlusAddressService : public PlusAddressService {
     return was_email_chosen_over_plus_address_;
   }
 
-  std::optional<hats::SurveyType> get_triggered_survey_type() {
-    return triggered_survey_;
-  }
-
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
   std::vector<PlusProfile> plus_profiles_;
-  std::optional<hats::SurveyType> triggered_survey_;
   bool is_confirmed_ = false;
   bool should_fail_to_confirm_ = false;
   bool should_fail_to_reserve_ = false;

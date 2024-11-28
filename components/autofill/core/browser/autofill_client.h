@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -560,6 +561,11 @@ class AutofillClient {
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const;
+
+  // Triggers the HaTS survey of the `survey_type`.
+  // TODO: crbug.com/348139343 - Move back for components/plus_addresses.
+  virtual void TriggerPlusAddressUserPerceptionSurvey(
+      plus_addresses::hats::SurveyType survey_type);
 };
 
 }  // namespace autofill

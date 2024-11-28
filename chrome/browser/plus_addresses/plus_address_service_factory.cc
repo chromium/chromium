@@ -36,20 +36,6 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
                                 plus_addresses::hats::SurveyType survey_type) {
   std::string survey_trigger;
   switch (survey_type) {
-    case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
-      if (!base::FeatureList::IsEnabled(
-              autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
-        return;
-      }
-      survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
-      break;
-    case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
-      if (!base::FeatureList::IsEnabled(
-              autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
-        return;
-      }
-      survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
-      break;
     case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
       if (!base::FeatureList::IsEnabled(
               autofill::features::
@@ -95,6 +81,8 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       survey_trigger =
           kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
       break;
+    default:
+      NOTREACHED();
   }
 
   hats_service->LaunchSurvey(survey_trigger,

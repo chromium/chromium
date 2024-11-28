@@ -202,6 +202,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AutofillManager& manager,
       FormGlobalId form_id,
       FieldGlobalId field_id) const final;
+  void TriggerPlusAddressUserPerceptionSurvey(
+      plus_addresses::hats::SurveyType survey_type) final;
 
   // TODO(crbug.com/320634151): Create a test API.
   base::WeakPtr<AutofillSuggestionController>

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
@@ -436,8 +437,9 @@ bool PlusAddressCreationControllerAndroid::ShouldShowNotice() const {
 
 void PlusAddressCreationControllerAndroid::TriggerUserPerceptionSurvey(
     hats::SurveyType survey_type) {
-  if (PlusAddressService* plus_address_service = GetPlusAddressService()) {
-    plus_address_service->TriggerUserPerceptionSurvey(survey_type);
+  if (autofill::ContentAutofillClient* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())) {
+    autofill_client->TriggerPlusAddressUserPerceptionSurvey(survey_type);
   }
 }
 

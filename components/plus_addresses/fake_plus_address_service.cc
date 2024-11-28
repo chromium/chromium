@@ -316,9 +316,7 @@ bool FakePlusAddressService::IsEnabled() const {
 }
 
 void FakePlusAddressService::TriggerUserPerceptionSurvey(
-    hats::SurveyType survey_type) {
-  triggered_survey_ = survey_type;
-}
+    hats::SurveyType survey_type) {}
 
 void FakePlusAddressService::ClearState() {
   is_confirmed_ = false;

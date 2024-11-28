@@ -211,4 +211,7 @@ PasswordFormClassification AutofillClient::ClassifyAsPasswordForm(
   return {};
 }
 
+void AutofillClient::TriggerPlusAddressUserPerceptionSurvey(
+    plus_addresses::hats::SurveyType survey_type) {}
+
 }  // namespace autofill

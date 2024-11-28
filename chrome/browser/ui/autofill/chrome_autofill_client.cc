@@ -199,6 +199,40 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void LaunchPlusAddressUserPerceptionSurvey(
+    content::WebContents* web_contents,
+    HatsService* hats_service,
+    AutofillPlusAddressDelegate* delegate,
+    plus_addresses::hats::SurveyType survey_type) {
+  std::string survey_trigger;
+  switch (survey_type) {
+    case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+        return;
+      }
+      survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
+      break;
+    case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
+        return;
+      }
+      survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  hats_service->LaunchSurveyForWebContents(
+      survey_trigger, web_contents,
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/
+      delegate->GetPlusAddressHatsData(),
+      /*success_callback=*/base::DoNothing(),
+      /*failure_callback=*/base::DoNothing());
+}
+
 }  // namespace
 
 // static
@@ -944,6 +978,19 @@ PasswordFormClassification ChromeAutofillClient::ClassifyAsPasswordForm(
     FormGlobalId form_id,
     FieldGlobalId field_id) const {
   return password_manager::ClassifyAsPasswordForm(manager, form_id, field_id);
+}
+
+void ChromeAutofillClient::TriggerPlusAddressUserPerceptionSurvey(
+    plus_addresses::hats::SurveyType survey_type) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* delegate = GetPlusAddressDelegate();
+  CHECK(delegate);
+  LaunchPlusAddressUserPerceptionSurvey(
+      web_contents(),
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true),
+      delegate, survey_type);
 }
 
 }  // namespace autofill

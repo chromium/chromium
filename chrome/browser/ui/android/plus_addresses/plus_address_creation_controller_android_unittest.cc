@@ -18,6 +18,8 @@
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
@@ -66,6 +68,15 @@ std::string FormatRefreshHistogramNameFor(
       /*offsets=*/nullptr);
 }
 
+class MockAutofillClient : public autofill::TestContentAutofillClient {
+ public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
+  MOCK_METHOD(void,
+              TriggerPlusAddressUserPerceptionSurvey,
+              (plus_addresses::hats::SurveyType),
+              (override));
+};
+
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
 class PlusAddressCreationControllerAndroidEnabledTest
@@ -113,10 +124,16 @@ class PlusAddressCreationControllerAndroidEnabledTest
             browser_context()));
   }
 
+  MockAutofillClient& autofill_client(content::WebContents* web_contents) {
+    return *autofill_client_injector_[web_contents];
+  }
+
   base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
+  autofill::TestAutofillClientInjector<MockAutofillClient>
+      autofill_client_injector_;
 };
 
 // Tests that accepting the bottomsheet calls Autofill to fill the plus address
@@ -143,6 +160,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -168,7 +188,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses.OfferedPlusAddressAccepted"),
             1);
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 // Tests that no notice is shown if the onboarding feature is disabled.
@@ -191,9 +210,11 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 // Tests that the notice is shown and its acceptance registered if the
@@ -219,6 +240,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate));
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(
@@ -241,8 +265,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time::Now());
-  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
-              Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
 // Tests that the notice is shown if the  `kPlusAddressUserOnboardingEnabled`,
@@ -267,6 +289,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate));
   controller->OnCanceled();
   EXPECT_FALSE(future.IsReady());
   EXPECT_THAT(
@@ -285,8 +310,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
           metrics::PlusAddressModalCompletionStatus::kModalCanceled,
           /*notice_shown=*/true),
       0, 1);
-  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
-              Optional(hats::SurveyType::kDeclinedFirstTimeCreate));
 }
 
 // Tests that the dialog can still be accepted after an error occurs and the
@@ -320,6 +343,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
 
   plus_address_service().set_should_fail_to_confirm(false);
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate));
   controller->OnConfirmed();
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses.CreateErrorTryAgainClicked"),
@@ -345,8 +371,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time::Now());
-  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
-              Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
@@ -401,6 +425,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
 
   plus_address_service().set_should_fail_to_confirm(true);
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
   controller->OnConfirmed();
   EXPECT_FALSE(future.IsReady());
 
@@ -429,7 +456,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
   EXPECT_EQ(
       user_action_tester.GetActionCount("PlusAddresses.CreateErrorCanceled"),
       1);
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
@@ -450,6 +476,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
   controller->OnCanceled();
 
   // Ensure that plus address can be canceled after erroneous reserve event and
@@ -472,7 +501,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
   EXPECT_EQ(
       user_action_tester.GetActionCount("PlusAddresses.ReserveErrorCanceled"),
       1);
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, TriesAgainToReserve) {
@@ -632,6 +660,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
+  EXPECT_CALL(autofill_client(web_contents.get()),
+              TriggerPlusAddressUserPerceptionSurvey)
+      .Times(0);
   controller->OnCanceled();
   EXPECT_FALSE(future.IsReady());
   EXPECT_THAT(
@@ -652,7 +683,6 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses.OfferedPlusAddressDeclined"),
             1);
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
