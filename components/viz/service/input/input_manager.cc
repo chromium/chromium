@@ -49,6 +49,10 @@ void ForwardVizInputTransferToken(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+bool IsFrameMetadataAvailable(CompositorFrameSinkSupport* support) {
+  return support && support->GetLastActivatedFrameMetadata();
+}
+
 }  // namespace
 
 FrameSinkMetadata::FrameSinkMetadata(
@@ -148,11 +152,14 @@ void InputManager::OnCreateCompositorFrameSink(
   auto rir_delegate = std::make_unique<RenderInputRouterDelegateImpl>(
       it->second, *this, frame_sink_id, grouping_id);
 
+  // Sets up RenderInputRouter.
   auto render_input_router = std::make_unique<input::RenderInputRouter>(
       /* host */ nullptr,
       /* fling_scheduler */ nullptr,
       /* delegate */ rir_delegate.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
+  render_input_router->SetupInputRouter(
+      GetDeviceScaleFactorForId(frame_sink_id));
 
   frame_sink_metadata_map_.emplace(std::make_pair(
       frame_sink_id,
@@ -201,6 +208,21 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 }
 
+void InputManager::OnFrameSinkDeviceScaleFactorChanged(
+    const FrameSinkId& frame_sink_id,
+    float device_scale_factor) {
+  auto rir_iter = rir_map_.find(frame_sink_id);
+  // Return early if |frame_sink_id| is associated with a non layer tree frame
+  // sink.
+  if (rir_iter == rir_map_.end()) {
+    return;
+  }
+
+  // Update device scale factor in RenderInputRouter from latest activated
+  // compositor frame.
+  rir_iter->second->SetDeviceScaleFactor(device_scale_factor);
+}
+
 input::TouchEmulator* InputManager::GetTouchEmulator(bool create_if_necessary) {
   return nullptr;
 }
@@ -213,7 +235,20 @@ float InputManager::GetDeviceScaleFactorForId(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
   CHECK(support);
-  CHECK(support->GetLastActivatedFrameMetadata());
+
+  if (!IsFrameMetadataAvailable(support)) {
+    // If a CompositorFrame hasn't been submitted yet for a child frame, we fall
+    // back to use RootCompositorFrameSink's submitted frame metadata.
+    support = frame_sink_manager_->GetFrameSinkForId(
+        GetRootCompositorFrameSinkId(frame_sink_id));
+
+    // If there's still no activated frame metadata available, return a default
+    // scale factor of 1.0.
+    if (!IsFrameMetadataAvailable(support)) {
+      return 1.0;
+    }
+  }
+
   return support->GetLastActivatedFrameMetadata()->device_scale_factor;
 }
 

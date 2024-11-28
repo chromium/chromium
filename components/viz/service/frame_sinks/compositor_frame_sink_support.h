@@ -434,6 +434,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   const bool is_root_;
 
+  // Device scale factor associated with this CompositorFrameSinkSupport.
+  // Default value is 1.0.
+  float device_scale_factor_ = 1.0;
+
   // By default, this is equivalent to |is_root_|, but may be overridden for
   // testing. Generally, for non-roots, there must not be any CopyOutputRequests
   // contained within submitted CompositorFrames. Otherwise, unprivileged

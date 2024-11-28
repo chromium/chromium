@@ -367,6 +367,15 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   }
 
   MaybeEvictSurfaces();
+
+  // Update |device_scale_factor_| if it changes with latest activated surface.
+  float new_device_scale_factor =
+      surface->GetActiveFrameMetadata().device_scale_factor;
+  if (device_scale_factor_ != new_device_scale_factor) {
+    frame_sink_manager_->OnFrameSinkDeviceScaleFactorChanged(
+        surface->surface_id().frame_sink_id(), new_device_scale_factor);
+    device_scale_factor_ = new_device_scale_factor;
+  }
 }
 
 void CompositorFrameSinkSupport::OnSurfaceWillDraw(Surface* surface) {

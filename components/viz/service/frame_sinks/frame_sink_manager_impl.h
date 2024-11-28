@@ -290,6 +290,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void DidFinishFrame(const FrameSinkId& frame_sink_id,
                       const BeginFrameArgs& args);
 
+  void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
+                                           float device_scale_factor);
+
   void AddObserver(FrameSinkObserver* obs);
   void RemoveObserver(FrameSinkObserver* obs);
 

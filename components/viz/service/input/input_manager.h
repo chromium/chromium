@@ -76,6 +76,8 @@ class VIZ_SERVICE_EXPORT InputManager
   // FrameSinkObserver overrides.
   void OnDestroyedCompositorFrameSink(
       const FrameSinkId& frame_sink_id) override;
+  void OnFrameSinkDeviceScaleFactorChanged(const FrameSinkId& frame_sink_id,
+                                           float device_scale_factor) override;
 
   // RenderWidgetHostInputEventRouter::Delegate implementation.
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
