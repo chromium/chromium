@@ -2656,8 +2656,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoPrerenderer) {
 // Verify that existing <webview>'s are detected when the task manager starts
 // up.
 IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerExistingWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   LoadAndLaunchPlatformApp("web_view/task_manager", "guest-loaded");
@@ -2681,8 +2679,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerExistingWebView) {
 
 // Verify that the task manager notices the creation of new <webview>'s.
 IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerNewWebView) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   chrome::ShowTaskManager(browser());  // Show task manager BEFORE guest loads.
@@ -2702,6 +2698,49 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerNewWebView) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyApp()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyBackground()));
+}
+
+// The guest tasks should show up again after re-opening the task manager.
+IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerShowAndHide) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  LoadAndLaunchPlatformApp("web_view/task_manager", "guest-loaded");
+  ASSERT_TRUE(
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated());
+  const char* guest_title = "WebViewed test content";
+  {
+    SCOPED_TRACE("first show");
+    chrome::ShowTaskManager(browser());
+    ASSERT_NO_FATAL_FAILURE(
+        WaitForTaskManagerRows(1, MatchWebView(guest_title)));
+  }
+  chrome::HideTaskManager();
+  {
+    SCOPED_TRACE("second show");
+    chrome::ShowTaskManager(browser());
+    ASSERT_NO_FATAL_FAILURE(
+        WaitForTaskManagerRows(1, MatchWebView(guest_title)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebViewTest, TaskEntryDeletedAfterGuestKilled) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAndLaunchPlatformApp("web_view/task_manager", "guest-loaded");
+  ASSERT_TRUE(
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated());
+  const char* guest_title = "WebViewed test content";
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchWebView(guest_title)));
+  {
+    content::RenderFrameHostWrapper crashed(
+        GetGuestViewManager()->GetLastGuestRenderFrameHostCreated());
+    content::RenderProcessHostWatcher crashed_obs(
+        crashed->GetProcess(),
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    crashed->GetProcess()->Shutdown(content::RESULT_CODE_KILLED);
+    crashed_obs.Wait();
+    ASSERT_TRUE(crashed.WaitUntilRenderFrameDeleted());
+  }
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyWebView()));
 }
 
 // This tests cookie isolation for packaged apps with webview tags. It navigates

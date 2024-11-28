@@ -9238,8 +9238,13 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
   // TODO(evan): make use of title_direction.
   // http://code.google.com/p/chromium/issues/detail?id=27094
   bool title_changed = UpdateTitleForEntryImpl(entry, title);
-  if (title_changed && render_frame_host == GetPrimaryMainFrame()) {
-    NotifyTitleUpdateForEntry(entry);
+  if (title_changed) {
+    if (render_frame_host == GetPrimaryMainFrame()) {
+      NotifyTitleUpdateForEntry(entry);
+    }
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.TitleWasSetForMainFrame");
+    observers_.NotifyObservers(&WebContentsObserver::TitleWasSetForMainFrame,
+                               render_frame_host);
   }
 }
 

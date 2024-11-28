@@ -669,6 +669,10 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // This method is invoked when the title of the WebContents is set.
   virtual void TitleWasSet(NavigationEntry* entry) {}
 
+  // Invoked when the title is changed for any main frame in the WebContents
+  // (a primary main frame of a WebContents, a fenced frame or a MPArch guest).
+  virtual void TitleWasSetForMainFrame(RenderFrameHost* render_frame_host) {}
+
   // These methods are invoked when a Pepper plugin instance is created/deleted
   // in the DOM.
   virtual void PepperInstanceCreated() {}

@@ -208,6 +208,7 @@ chromium-metrics-reviews@google.com.
   <variant name="RenderFrameDeleted"/>
   <variant name="RenderViewReady"/>
   <variant name="TitleWasSet"/>
+  <variant name="TitleWasSetForMainFrame"/>
 </variants>
 
 <!-- LINT.IfChange(WebUIHostnameForCodeCache) -->
