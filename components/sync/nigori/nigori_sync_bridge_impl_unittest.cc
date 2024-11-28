@@ -1128,6 +1128,46 @@ TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
               HasDefaultKeyDerivedFrom(passphrase_key_params));
 }
 
+TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
+       ShouldRestoreNotDecryptedCustomPassphraseNigori) {
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(GetCustomPassphraseKeyParams());
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_THAT(bridge()->GetPassphraseType(),
+              Eq(PassphraseType::kCustomPassphrase));
+  EXPECT_FALSE(cryptographer()->CanEncrypt());
+
+  EXPECT_CALL(*observer(), OnPassphraseAccepted());
+  bridge()->SetExplicitPassphraseDecryptionKey(
+      MakeNigoriKey(GetCustomPassphraseKeyParams()));
+  EXPECT_TRUE(cryptographer()->CanEncrypt());
+  EXPECT_THAT(*cryptographer(),
+              HasDefaultKeyDerivedFrom(GetCustomPassphraseKeyParams()));
+}
+
+TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
+       ShouldRestoreDecryptedCustomPassphraseNigori) {
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(GetCustomPassphraseKeyParams());
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+
+  bridge()->SetExplicitPassphraseDecryptionKey(
+      MakeNigoriKey(GetCustomPassphraseKeyParams()));
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_TRUE(cryptographer()->CanEncrypt());
+  EXPECT_THAT(*cryptographer(),
+              HasDefaultKeyDerivedFrom(GetCustomPassphraseKeyParams()));
+}
+
 INSTANTIATE_TEST_SUITE_P(Scrypt,
                          NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
                          testing::Values(false, true));
