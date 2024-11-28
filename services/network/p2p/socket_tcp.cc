@@ -544,10 +544,10 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
   }
 
   // WriteOrQueue may free the memory, so dump it first.
-  delegate_->DumpPacket(base::make_span(reinterpret_cast<const uint8_t*>(
-                                            send_buffer.buffer->data()),
-                                        data.size()),
-                        false);
+  delegate_->DumpPacket(
+      base::span(reinterpret_cast<const uint8_t*>(send_buffer.buffer->data()),
+                 data.size()),
+      false);
 
   WriteOrQueue(send_buffer);
 }

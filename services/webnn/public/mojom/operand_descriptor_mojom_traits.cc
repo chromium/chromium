@@ -79,7 +79,7 @@ bool StructTraits<webnn::mojom::OperandDescriptorDataView,
 
   base::expected<webnn::OperandDescriptor, std::string> descriptor =
       webnn::OperandDescriptor::Create(FromMojoDataType(data.data_type()),
-                                       base::make_span(shape));
+                                       base::span(shape));
 
   if (!descriptor.has_value()) {
     return false;

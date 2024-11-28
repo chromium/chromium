@@ -217,8 +217,8 @@ void MojoHandle::WriteMessage(gin::Arguments* arguments) {
   base::span<const uint8_t> bytes;
   if (args[0]->IsArrayBuffer()) {
     v8::Local<v8::ArrayBuffer> array = args[0].As<v8::ArrayBuffer>();
-    bytes = base::make_span(static_cast<const uint8_t*>(array->Data()),
-                            array->ByteLength());
+    bytes = base::span(static_cast<const uint8_t*>(array->Data()),
+                       array->ByteLength());
   } else {
     v8::Local<v8::ArrayBufferView> view = args[0].As<v8::ArrayBufferView>();
     base::FixedArray<uint8_t> bites(view->ByteLength());
@@ -226,7 +226,7 @@ void MojoHandle::WriteMessage(gin::Arguments* arguments) {
     bytes = base::span(bites);
   }
 
-  auto message = mojo::Message(bytes, base::make_span(scoped_handles));
+  auto message = mojo::Message(bytes, base::span(scoped_handles));
   DCHECK(!message.IsNull());
   MojoResult result = mojo::WriteMessageNew(
       mojo::MessagePipeHandle(handle_.get().value()), message.TakeMojoMessage(),

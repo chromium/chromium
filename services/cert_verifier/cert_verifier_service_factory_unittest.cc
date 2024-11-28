@@ -136,9 +136,8 @@ void UpdateCRLSetWithTestFile(
       &crl_set_bytes));
 
   base::RunLoop update_run_loop;
-  cv_service_factory_impl->UpdateCRLSet(
-      base::as_bytes(base::make_span(crl_set_bytes)),
-      update_run_loop.QuitClosure());
+  cv_service_factory_impl->UpdateCRLSet(base::as_byte_span(crl_set_bytes),
+                                        update_run_loop.QuitClosure());
   update_run_loop.Run();
 }
 
@@ -1218,9 +1217,8 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest, BadCRLSetIgnored) {
     std::string crl_set_bytes(1000, '\xff');
 
     base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateCRLSet(
-        base::as_bytes(base::make_span(crl_set_bytes)),
-        update_run_loop.QuitClosure());
+    cv_service_factory_impl.UpdateCRLSet(base::as_byte_span(crl_set_bytes),
+                                         update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 

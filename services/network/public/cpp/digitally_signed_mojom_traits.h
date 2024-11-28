@@ -118,7 +118,7 @@ struct StructTraits<network::mojom::DigitallySignedDataView,
   }
   static base::span<const uint8_t> signature(
       const net::ct::DigitallySigned& obj) {
-    return base::as_bytes(base::make_span(obj.signature_data));
+    return base::as_byte_span(obj.signature_data);
   }
 
   static bool Read(network::mojom::DigitallySignedDataView obj,

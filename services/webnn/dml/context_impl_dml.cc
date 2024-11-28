@@ -685,7 +685,7 @@ void ContextImplDml::OnReadbackComplete(
     return;
   }
 
-  mojo_base::BigBuffer dst_buffer(base::make_span(
+  mojo_base::BigBuffer dst_buffer(base::span(
       static_cast<const uint8_t*>(mapped_download_data), read_byte_size));
 
   download_buffer->Unmap(0, nullptr);

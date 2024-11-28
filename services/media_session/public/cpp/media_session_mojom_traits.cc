@@ -60,8 +60,7 @@ bool StructTraits<media_session::mojom::MediaMetadataDataView,
 const base::span<const uint8_t>
 StructTraits<media_session::mojom::MediaImageBitmapDataView,
              SkBitmap>::pixel_data(const SkBitmap& r) {
-  return base::make_span(static_cast<uint8_t*>(r.getPixels()),
-                         r.computeByteSize());
+  return base::span(static_cast<uint8_t*>(r.getPixels()), r.computeByteSize());
 }
 
 // static

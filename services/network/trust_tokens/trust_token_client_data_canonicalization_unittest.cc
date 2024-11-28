@@ -33,7 +33,7 @@ TEST(TrustTokenClientDataCanonicalization, SerializeThenDeserialize) {
   ASSERT_TRUE(maybe_serialization);
 
   std::optional<cbor::Value> maybe_deserialized_cbor =
-      cbor::Reader::Read(base::make_span(*maybe_serialization));
+      cbor::Reader::Read(base::span(*maybe_serialization));
 
   ASSERT_TRUE(maybe_deserialized_cbor);
   ASSERT_TRUE(maybe_deserialized_cbor->is_map());

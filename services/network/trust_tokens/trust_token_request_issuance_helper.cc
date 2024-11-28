@@ -314,7 +314,7 @@ void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
     return;
   }
 
-  token_store_->AddTokens(*issuer_, base::make_span(maybe_tokens->tokens),
+  token_store_->AddTokens(*issuer_, base::span(maybe_tokens->tokens),
                           maybe_tokens->body_of_verifying_key);
 
   num_obtained_tokens_ = maybe_tokens->tokens.size();

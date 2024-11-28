@@ -361,9 +361,9 @@ UploadAndCreateConstantBufferBinding(
     // Copy the input data to the upload heap with byte offset
     const auto& d3d12_range =
         aligned_byte_length.key_to_d3d12_range_map.at(operand_id);
-    auto mapped_buffer_span = base::make_span(
-        static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-        constant_operand->descriptor().PackedByteLength());
+    auto mapped_buffer_span =
+        base::span(static_cast<uint8_t*>(mapped_buffer) + d3d12_range.Begin,
+                   constant_operand->descriptor().PackedByteLength());
     mapped_buffer_span.copy_from(constant_operand->ByteSpan());
     // Create the buffer binding for each constant/input and push back into the
     // DML_BUFFER_BINDING array.
@@ -5259,8 +5259,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT64;
       std::array<uint64_t, 2> values = {static_cast<uint64_t>(lower_mask),
                                         static_cast<uint64_t>(upper_mask)};
-      buffer = base::HeapArray<uint8_t>::CopiedFrom(
-          base::as_bytes(base::make_span(values)));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(values));
       break;
     }
     default:

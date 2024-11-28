@@ -189,11 +189,9 @@ SCTAuditingReporter::SCTHashdanceMetadata::operator=(SCTHashdanceMetadata&&) =
 base::Value SCTAuditingReporter::SCTHashdanceMetadata::ToValue() const {
   auto dict =
       base::Value::Dict()
-          .Set(kLeafHashKey,
-               base::Base64Encode(base::as_bytes(base::make_span(leaf_hash))))
+          .Set(kLeafHashKey, base::Base64Encode(base::as_byte_span(leaf_hash)))
           .Set(kIssuedKey, base::TimeToValue(issued))
-          .Set(kLogIdKey,
-               base::Base64Encode(base::as_bytes(base::make_span(log_id))))
+          .Set(kLogIdKey, base::Base64Encode(base::as_byte_span(log_id)))
           .Set(kLogMMDKey, base::TimeDeltaToValue(log_mmd))
           .Set(kCertificateExpiry, base::TimeToValue(certificate_expiry));
   return base::Value(std::move(dict));
@@ -334,7 +332,7 @@ void SCTAuditingReporter::SendLookupQuery() {
       configuration_->hashdance_lookup_uri.spec(),
       {
           base::NumberToString(kHashdanceHashPrefixLength),
-          base::HexEncode(base::as_bytes(base::make_span(hash_prefix))),
+          base::HexEncode(base::as_byte_span(hash_prefix)),
       },
       /*offsets=*/nullptr));
   report_request->method = "GET";
@@ -486,8 +484,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   // comparison without having to convert every value in the |suffix_value|.
   std::string hash_suffix = TruncateSuffix(sct_hashdance_metadata_->leaf_hash,
                                            kHashdanceHashPrefixLength);
-  hash_suffix =
-      base::Base64Encode(base::as_bytes(base::make_span(hash_suffix)));
+  hash_suffix = base::Base64Encode(base::as_byte_span(hash_suffix));
   base::Value hash_suffix_value(std::move(hash_suffix));
   // TODO(nsatragno): it would be neat if the backend returned a sorted list and
   // we could binary search it instead.

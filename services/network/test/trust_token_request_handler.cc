@@ -160,8 +160,7 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
     dict.SetByDottedPath(
         protocol_string + ".keys." + base::NumberToString(i) + ".Y",
-        base::Base64Encode(
-            base::make_span(rep_->issuance_keys[i].verification)));
+        base::Base64Encode(base::span(rep_->issuance_keys[i].verification)));
     dict.SetByDottedPath(
         protocol_string + ".keys." + base::NumberToString(i) + ".expiry",
         base::NumberToString(

@@ -106,7 +106,7 @@ base::span<const uint8_t> TestReportDescriptors::Digitizer() {
       0xc0,              //  End Collection
       0xc0               // End Collection
   };
-  return base::make_span(kDigitizer);
+  return base::span(kDigitizer);
 }
 
 // static
@@ -147,7 +147,7 @@ base::span<const uint8_t> TestReportDescriptors::Keyboard() {
       0x81, 0x00,  //  Input (Dat|Arr|Abs|NoWrp|Lin|Prf|NoNull|BitF)
       0xc0         // End Collection
   };
-  return base::make_span(kKeyboard);
+  return base::span(kKeyboard);
 }
 
 // static
@@ -203,7 +203,7 @@ base::span<const uint8_t> TestReportDescriptors::Monitor() {
       0xb1, 0x02,        //  Feature (Dat|Var|Abs|NoWrp|Lin|Prf|NoNull|BitF)
       0xc0               // End Collection
   };
-  return base::make_span(kMonitor);
+  return base::span(kMonitor);
 }
 
 // static
@@ -238,7 +238,7 @@ base::span<const uint8_t> TestReportDescriptors::Mouse() {
       0xc0,        //  End Collection
       0xc0         // End Collection
   };
-  return base::make_span(kMouse);
+  return base::span(kMouse);
 }
 
 // static
@@ -293,7 +293,7 @@ base::span<const uint8_t> TestReportDescriptors::LogitechUnifyingReceiver() {
       0x91, 0x00,        //  Output (Dat|Arr|Abs|NoWrp|Lin|Prf|NoNull|BitF)
       0xC0               // End Collection
   };
-  return base::make_span(kLogitechUnifyingReceiver);
+  return base::span(kLogitechUnifyingReceiver);
 }
 
 // static
@@ -387,7 +387,7 @@ base::span<const uint8_t> TestReportDescriptors::SonyDualshock3Usb() {
       0xC0,              //   End Collection
       0xC0,              // End Collection
   };
-  return base::make_span(kSonyDualshock3);
+  return base::span(kSonyDualshock3);
 }
 
 // static
@@ -675,7 +675,7 @@ base::span<const uint8_t> TestReportDescriptors::SonyDualshock4Usb() {
                          //   State,No Null Position,Non-volatile)
       0xC0,              // End Collection
   };
-  return base::make_span(kSonyDualshock4);
+  return base::span(kSonyDualshock4);
 }
 
 // static
@@ -860,7 +860,7 @@ TestReportDescriptors::MicrosoftXboxWirelessControllerBluetooth() {
       0xC0,                          // End Collection
       0x00,                          // Unknown (bTag: 0x00, bType: 0x00)
   };
-  return base::make_span(kMicrosoftXboxWirelessController);
+  return base::span(kMicrosoftXboxWirelessController);
 }
 
 // static
@@ -977,7 +977,7 @@ TestReportDescriptors::NintendoSwitchProControllerUsb() {
                                      //   Volatile)
       0xC0,                          // End Collection
   };
-  return base::make_span(kNintendoSwitchProController);
+  return base::span(kNintendoSwitchProController);
 }
 
 // static
@@ -1667,7 +1667,7 @@ TestReportDescriptors::MicrosoftXboxAdaptiveControllerBluetooth() {
       0xC0,                          // End Collection
       0x00,                          // Unknown (bTag: 0x00, bType: 0x00)
   };
-  return base::make_span(kMicrosoftXboxAdaptiveController);
+  return base::span(kMicrosoftXboxAdaptiveController);
 }
 
 // static
@@ -1766,7 +1766,7 @@ base::span<const uint8_t> TestReportDescriptors::NexusPlayerController() {
       0xC0,              // End Collection
       0x00,              // Unknown (bTag: 0x00, bType: 0x00)
   };
-  return base::make_span(kNexusPlayerController);
+  return base::span(kNexusPlayerController);
 }
 
 // static
@@ -1811,7 +1811,7 @@ base::span<const uint8_t> TestReportDescriptors::SteamControllerKeyboard() {
                    //   State,No Null Position)
       0xC0,        // End Collection
   };
-  return base::make_span(kSteamControllerKeyboard);
+  return base::span(kSteamControllerKeyboard);
 }
 
 // static
@@ -1848,7 +1848,7 @@ base::span<const uint8_t> TestReportDescriptors::SteamControllerMouse() {
       0xC0,        //   End Collection
       0xC0,        // End Collection
   };
-  return base::make_span(kSteamControllerMouse);
+  return base::span(kSteamControllerMouse);
 }
 
 // static
@@ -1874,7 +1874,7 @@ base::span<const uint8_t> TestReportDescriptors::SteamControllerVendor() {
                          //   State,No Null Position,Non-volatile)
       0xC0,              // End Collection
   };
-  return base::make_span(kSteamControllerVendor);
+  return base::span(kSteamControllerVendor);
 }
 
 // static
@@ -1926,7 +1926,7 @@ base::span<const uint8_t> TestReportDescriptors::XSkillsUsbAdapter() {
                          //   State,No Null Position,Non-volatile)
       0xC0,              // End Collection
   };
-  return base::make_span(kXSkillsUsbAdapter);
+  return base::span(kXSkillsUsbAdapter);
 }
 
 // static
@@ -1959,7 +1959,7 @@ base::span<const uint8_t> TestReportDescriptors::BelkinNostromoKeyboard() {
                    //   State,No Null Position)
       0xC0,        // End Collection
   };
-  return base::make_span(kBelkinNostromoKeyboard);
+  return base::span(kBelkinNostromoKeyboard);
 }
 
 // static
@@ -2011,7 +2011,7 @@ base::span<const uint8_t> TestReportDescriptors::BelkinNostromoMouseAndExtra() {
       0xC0,        //   End Collection
       0xC0,        // End Collection
   };
-  return base::make_span(kBelkinNostromoMouseAndExtra);
+  return base::span(kBelkinNostromoMouseAndExtra);
 }
 
 // static
@@ -2215,7 +2215,7 @@ base::span<const uint8_t> TestReportDescriptors::JabraLink380c() {
                          //   State,No Null Position)
       0xC0,              // End Collection
   };
-  return base::make_span(kJabraLink380c);
+  return base::span(kJabraLink380c);
 }
 
 // static
@@ -2240,7 +2240,7 @@ base::span<const uint8_t> TestReportDescriptors::FidoU2fHid() {
                          //   State,No Null Position,Non-volatile)
       0xC0,              // End Collection
   };
-  return base::make_span(kFidoU2fHid);
+  return base::span(kFidoU2fHid);
 }
 
 base::span<const uint8_t> TestReportDescriptors::RfideasPcproxBadgeReader() {
@@ -2290,7 +2290,7 @@ base::span<const uint8_t> TestReportDescriptors::RfideasPcproxBadgeReader() {
                    //   State,No Null Position,Non-volatile)
       0xC0,        // End Collection
   };
-  return base::make_span(kRfideasPcproxBadgeReader);
+  return base::span(kRfideasPcproxBadgeReader);
 }
 
 }  // namespace device
