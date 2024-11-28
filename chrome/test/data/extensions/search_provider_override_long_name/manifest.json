@@ -1,8 +1,8 @@
 {
-  "name": "Search Override Extension",
+  "name": "This extension name should be longer than our truncation threshold to test that the bubble can handle long names",
   "manifest_version": 3,
   "version": "0.1",
-  "description": "A simple extension that overrides the search engine",
+  "description": "A simple extension that overrides the search engine and has a very long name",
   "default_locale": "en",
   "permissions": ["storage"],
   "chrome_settings_overrides": {
