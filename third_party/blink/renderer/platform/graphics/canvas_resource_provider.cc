@@ -110,11 +110,11 @@ gfx::ColorSpace SkColorSpaceToGfxColorSpace(
                         : gfx::ColorSpace::CreateSRGB();
 }
 
-bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
-  const gfx::Size size(info.width(), info.height());
+bool IsGMBAllowed(gfx::Size size,
+                  viz::SharedImageFormat format,
+                  const gpu::Capabilities& caps) {
   const gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()));
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
   return gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format) &&
          gpu::IsImageFromGpuMemoryBufferFormatSupported(buffer_format, caps);
 }
@@ -1147,7 +1147,11 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 
   const bool is_gpu_memory_buffer_image_allowed =
-      is_gpu_compositing_enabled && IsGMBAllowed(adjusted_info, capabilities) &&
+      is_gpu_compositing_enabled &&
+      IsGMBAllowed(gfx::Size(adjusted_info.width(), adjusted_info.height()),
+                   viz::SkColorTypeToSinglePlaneSharedImageFormat(
+                       adjusted_info.colorType()),
+                   capabilities) &&
       SharedGpuContext::GetGpuMemoryBufferManager();
 
   if (raster_mode == RasterMode::kCPU && !is_gpu_memory_buffer_image_allowed)
@@ -1242,7 +1246,10 @@ CanvasResourceProvider::CreatePassThroughProvider(
           ->GetCapabilities();
   // Either swap_chain or gpu memory buffer should be enabled for this be used
   if (!shared_image_capabilities.shared_image_swap_chain &&
-      (!IsGMBAllowed(info, capabilities) ||
+      (!IsGMBAllowed(
+           gfx::Size(info.width(), info.height()),
+           viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
+           capabilities) ||
        !Platform::Current()->GetGpuMemoryBufferManager())) {
     return nullptr;
   }
