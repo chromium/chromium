@@ -37,7 +37,7 @@ class TestPermissionContext : public MediaStreamDevicePermissionContext {
                         const ContentSettingsType content_settings_type)
       : MediaStreamDevicePermissionContext(profile, content_settings_type) {}
 
-  ~TestPermissionContext() override {}
+  ~TestPermissionContext() override = default;
 };
 
 }  // anonymous namespace

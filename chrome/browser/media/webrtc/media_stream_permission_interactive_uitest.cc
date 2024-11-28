@@ -33,13 +33,13 @@
 
 class MediaStreamPermissionTest : public WebRtcTestBase {
  public:
-  MediaStreamPermissionTest() {}
+  MediaStreamPermissionTest() = default;
 
   MediaStreamPermissionTest(const MediaStreamPermissionTest&) = delete;
   MediaStreamPermissionTest& operator=(const MediaStreamPermissionTest&) =
       delete;
 
-  ~MediaStreamPermissionTest() override {}
+  ~MediaStreamPermissionTest() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {

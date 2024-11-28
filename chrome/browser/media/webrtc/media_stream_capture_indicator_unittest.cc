@@ -26,7 +26,7 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
   LenientMockObserver(const LenientMockObserver&) = delete;
   LenientMockObserver& operator=(const LenientMockObserver&) = delete;
 
-  ~LenientMockObserver() override {}
+  ~LenientMockObserver() override = default;
 
   // Helper functions used to set the expectations of the mock methods. This
   // allows passing function pointers to
@@ -96,8 +96,8 @@ typedef bool (MediaStreamCaptureIndicator::*AccessorMethod)(
 
 class MediaStreamCaptureIndicatorTest : public ChromeRenderViewHostTestHarness {
  public:
-  MediaStreamCaptureIndicatorTest() {}
-  ~MediaStreamCaptureIndicatorTest() override {}
+  MediaStreamCaptureIndicatorTest() = default;
+  ~MediaStreamCaptureIndicatorTest() override = default;
   MediaStreamCaptureIndicatorTest(const MediaStreamCaptureIndicatorTest&) =
       delete;
   MediaStreamCaptureIndicatorTest& operator=(

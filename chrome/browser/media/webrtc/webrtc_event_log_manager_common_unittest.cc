@@ -296,7 +296,7 @@ class LogFileWriterTest
  public:
   LogFileWriterTest() { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
-  ~LogFileWriterTest() override {}
+  ~LogFileWriterTest() override = default;
 
   void Init(WebRtcEventLogCompression compression) {
     DCHECK(!compression_.has_value()) << "Must only be called once.";

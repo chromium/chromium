@@ -116,7 +116,7 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       std::make_unique<PermissionBubbleMediaAccessHandler>());
 }
 
-MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() {}
+MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() = default;
 
 void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
