@@ -45,7 +45,7 @@ async def test_remove_intercept_twice(websocket):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": "https://www.example.com/*"
+                    "pattern": "https://www.example.com/\\*"
                 }],
             },
         })

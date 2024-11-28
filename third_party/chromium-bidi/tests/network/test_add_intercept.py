@@ -52,7 +52,7 @@ async def test_add_intercept_returns_intercept_id(websocket):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": "https://www.example.com/*"
+                    "pattern": "https://www.example.com"
                 }],
             },
         })
@@ -73,7 +73,7 @@ async def test_add_intercept_type_pattern_valid(websocket):
                     "type": "pattern",
                     "protocol": "https",
                     "hostname": "www.example.com",
-                    "path": "/*",
+                    "path": "/",
                 }],
             },
         })
@@ -89,7 +89,7 @@ async def test_add_intercept_type_string_invalid(websocket):
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": "Invalid URL 'foo': TypeError: Failed to construct 'URL': Invalid URL"
+                "message": "Failed to construct 'URL': Invalid URL 'foo'"
             })):
         await execute_command(
             websocket, {
@@ -110,7 +110,7 @@ async def test_add_intercept_type_string_one_valid_and_one_invalid(websocket):
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": "Invalid URL 'foo': TypeError: Failed to construct 'URL': Invalid URL"
+                "message": "Failed to construct 'URL': Invalid URL 'foo'"
             })):
         await execute_command(
             websocket, {
@@ -202,7 +202,7 @@ async def test_add_intercept_type_pattern_hostname_invalid(
             Exception,
             match=str({
                 "error": "invalid argument",
-                "message": "URL pattern hostname must not contain a colon"
+                "message": "':' is only allowed inside brackets in hostname"
             })):
         await execute_command(
             websocket, {

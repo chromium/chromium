@@ -29,13 +29,13 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
 import type {EventManager} from '../session/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
-import {matchUrlPattern} from './NetworkUtils.js';
+import {matchUrlPattern, type ParsedUrlPattern} from './NetworkUtils.js';
 
 type NetworkInterception = Omit<
   Network.AddInterceptParameters,
   'urlPatterns'
 > & {
-  urlPatterns: Network.UrlPattern[];
+  urlPatterns: ParsedUrlPattern[];
 };
 
 /** Stores network and intercept maps. */

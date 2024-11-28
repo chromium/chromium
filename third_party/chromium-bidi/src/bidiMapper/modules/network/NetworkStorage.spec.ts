@@ -30,6 +30,7 @@ import {
   MockCdpNetworkEvents,
   MockCdpTarget,
 } from './NetworkModuleMocks.spec.js';
+import {NetworkProcessor} from './NetworkProcessor.js';
 import {NetworkStorage} from './NetworkStorage.js';
 
 function logger(...args: any[]) {
@@ -134,7 +135,9 @@ describe('NetworkStorage', () => {
     it('should work interception', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       const interception = networkStorage.addIntercept({
-        urlPatterns: [{type: 'string', pattern: request.url}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
 
@@ -153,7 +156,9 @@ describe('NetworkStorage', () => {
     it('should work interception pause first', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       const interception = networkStorage.addIntercept({
-        urlPatterns: [{type: 'string', pattern: request.url}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
 
@@ -171,7 +176,9 @@ describe('NetworkStorage', () => {
 
     it('should work non blocking interception', async () => {
       networkStorage.addIntercept({
-        urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: 'http://not.correct.com'},
+        ]),
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
       const request = new MockCdpNetworkEvents(cdpClient);
@@ -191,7 +198,9 @@ describe('NetworkStorage', () => {
     it('should work with non blocking interception and fail response', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       networkStorage.addIntercept({
-        urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: 'http://not.correct.com'},
+        ]),
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
 
@@ -219,7 +228,7 @@ describe('NetworkStorage', () => {
 
     it('should work with data url and global interception', async () => {
       networkStorage.addIntercept({
-        urlPatterns: [{type: 'pattern'}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]),
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
       const request = new MockCdpNetworkEvents(cdpClient, {
@@ -271,7 +280,9 @@ describe('NetworkStorage', () => {
     it('should work interception', async () => {
       const request = new MockCdpNetworkEvents(cdpClient);
       const interception = networkStorage.addIntercept({
-        urlPatterns: [{type: 'string', pattern: request.url}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: request.url},
+        ]),
         phases: [Network.InterceptPhase.ResponseStarted],
       });
 
@@ -292,7 +303,9 @@ describe('NetworkStorage', () => {
 
     it('should work non blocking interception', async () => {
       networkStorage.addIntercept({
-        urlPatterns: [{type: 'string', pattern: 'http://not.correct.com'}],
+        urlPatterns: NetworkProcessor.parseUrlPatterns([
+          {type: 'string', pattern: 'http://not.correct.com'},
+        ]),
         phases: [Network.InterceptPhase.ResponseStarted],
       });
       const request = new MockCdpNetworkEvents(cdpClient);

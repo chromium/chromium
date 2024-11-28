@@ -165,7 +165,6 @@
     "@eslint/eslintrc": "3.2.0",
     "@eslint/js": "9.15.0",
     "@puppeteer/browsers": "2.4.1",
-    "@rollup/plugin-alias": "5.1.1",
     "@rollup/plugin-node-resolve": "15.3.0",
     "@rollup/wasm-node": "4.27.4",
     "@types/chai": "4.3.17",
@@ -212,7 +211,6 @@
   },
   "dependencies": {
     "mitt": "3.0.1",
-    "urlpattern-polyfill": "10.0.0",
     "zod": "3.23.8"
   }
 }

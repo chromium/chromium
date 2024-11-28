@@ -21,11 +21,11 @@ import {
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import {URLPattern} from '../../../utils/UrlPattern.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
+import {isSpecialScheme, type ParsedUrlPattern} from './NetworkUtils.js';
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
@@ -46,7 +46,7 @@ export class NetworkProcessor {
     this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
 
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
-    const parsedUrlPatterns: Network.UrlPattern[] =
+    const parsedUrlPatterns: ParsedUrlPattern[] =
       NetworkProcessor.parseUrlPatterns(urlPatterns);
 
     const intercept: Network.Intercept = this.#networkStorage.addIntercept({
@@ -291,41 +291,108 @@ export class NetworkProcessor {
 
   static parseUrlPatterns(
     urlPatterns: Network.UrlPattern[],
-  ): Network.UrlPattern[] {
+  ): ParsedUrlPattern[] {
     return urlPatterns.map((urlPattern) => {
+      let patternUrl = '';
+      let hasProtocol = true;
+      let hasHostname = true;
+      let hasPort = true;
+      let hasPathname = true;
+      let hasSearch = true;
+
       switch (urlPattern.type) {
         case 'string': {
-          NetworkProcessor.parseUrlString(urlPattern.pattern);
-          return urlPattern;
+          patternUrl = unescapeURLPattern(urlPattern.pattern);
+          break;
         }
-        case 'pattern':
-          // No params signifies intercept all
-          if (
-            urlPattern.protocol === undefined &&
-            urlPattern.hostname === undefined &&
-            urlPattern.port === undefined &&
-            urlPattern.pathname === undefined &&
-            urlPattern.search === undefined
-          ) {
-            return urlPattern;
-          }
-
-          if (urlPattern.protocol) {
+        case 'pattern': {
+          if (urlPattern.protocol === undefined) {
+            hasProtocol = false;
+            patternUrl += 'http';
+          } else {
+            if (urlPattern.protocol === '') {
+              throw new InvalidArgumentException(
+                'URL pattern must specify a protocol',
+              );
+            }
             urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
             if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
               throw new InvalidArgumentException('Forbidden characters');
             }
+            patternUrl += urlPattern.protocol;
           }
-          if (urlPattern.hostname) {
+          const scheme = patternUrl.toLocaleLowerCase();
+          patternUrl += ':';
+          if (isSpecialScheme(scheme)) {
+            patternUrl += '//';
+          }
+          if (urlPattern.hostname === undefined) {
+            if (scheme !== 'file') {
+              patternUrl += 'placeholder';
+            }
+            hasHostname = false;
+          } else {
+            if (urlPattern.hostname === '') {
+              throw new InvalidArgumentException(
+                'URL pattern must specify a hostname',
+              );
+            }
+            if (urlPattern.protocol === 'file') {
+              throw new InvalidArgumentException(
+                `URL pattern protocol cannot be 'file'`,
+              );
+            }
+
             urlPattern.hostname = unescapeURLPattern(urlPattern.hostname);
+
+            let insideBrackets = false;
+
+            for (const c of urlPattern.hostname) {
+              if (c === '/' || c === '?' || c === '#') {
+                throw new InvalidArgumentException(
+                  `'/', '?', '#' are forbidden in hostname`,
+                );
+              }
+              if (!insideBrackets && c === ':') {
+                throw new InvalidArgumentException(
+                  `':' is only allowed inside brackets in hostname`,
+                );
+              }
+              if (c === '[') {
+                insideBrackets = true;
+              }
+              if (c === ']') {
+                insideBrackets = false;
+              }
+            }
+
+            patternUrl += urlPattern.hostname;
           }
-          if (urlPattern.port) {
+          if (urlPattern.port === undefined) {
+            hasPort = false;
+          } else {
+            if (urlPattern.port === '') {
+              throw new InvalidArgumentException(
+                `URL pattern must specify a port`,
+              );
+            }
             urlPattern.port = unescapeURLPattern(urlPattern.port);
+
+            patternUrl += ':';
+
+            if (!urlPattern.port.match(/^\d+$/)) {
+              throw new InvalidArgumentException('Forbidden characters');
+            }
+
+            patternUrl += urlPattern.port;
           }
-          if (urlPattern.pathname) {
+
+          if (urlPattern.pathname === undefined) {
+            hasPathname = false;
+          } else {
             urlPattern.pathname = unescapeURLPattern(urlPattern.pathname);
             if (urlPattern.pathname[0] !== '/') {
-              urlPattern.pathname = `/${urlPattern.pathname}`;
+              patternUrl += '/';
             }
             if (
               urlPattern.pathname.includes('#') ||
@@ -333,59 +400,59 @@ export class NetworkProcessor {
             ) {
               throw new InvalidArgumentException('Forbidden characters');
             }
-          } else if (urlPattern.pathname === '') {
-            urlPattern.pathname = '/';
+            patternUrl += urlPattern.pathname;
           }
 
-          if (urlPattern.search) {
+          if (urlPattern.search === undefined) {
+            hasSearch = false;
+          } else {
             urlPattern.search = unescapeURLPattern(urlPattern.search);
             if (urlPattern.search[0] !== '?') {
-              urlPattern.search = `?${urlPattern.search}`;
+              patternUrl += '?';
             }
             if (urlPattern.search.includes('#')) {
               throw new InvalidArgumentException('Forbidden characters');
             }
+            patternUrl += urlPattern.search;
           }
+          break;
+        }
+      }
 
-          if (urlPattern.protocol === '') {
-            throw new InvalidArgumentException(
-              `URL pattern must specify a protocol`,
-            );
-          }
+      const serializePort = (url: URL) => {
+        const defaultPorts: {[key: string]: null | number} = {
+          'ftp:': 21,
+          'file:': null,
+          'http:': 80,
+          'https:': 443,
+          'ws:': 80,
+          'wss:': 443,
+        };
+        if (
+          isSpecialScheme(url.protocol) &&
+          defaultPorts[url.protocol] !== null &&
+          (!url.port || String(defaultPorts[url.protocol]) === url.port)
+        ) {
+          return '';
+        } else if (url.port) {
+          return url.port;
+        }
+        return undefined;
+      };
 
-          if (urlPattern.hostname === '') {
-            throw new InvalidArgumentException(
-              `URL pattern must specify a hostname`,
-            );
-          }
-
-          if ((urlPattern.hostname?.length ?? 0) > 0) {
-            if (urlPattern.protocol?.match(/^file/i)) {
-              throw new InvalidArgumentException(
-                `URL pattern protocol cannot be 'file'`,
-              );
-            }
-
-            if (urlPattern.hostname?.includes(':')) {
-              throw new InvalidArgumentException(
-                `URL pattern hostname must not contain a colon`,
-              );
-            }
-          }
-
-          if (urlPattern.port === '') {
-            throw new InvalidArgumentException(
-              `URL pattern must specify a port`,
-            );
-          }
-
-          try {
-            new URLPattern(urlPattern);
-          } catch (error) {
-            throw new InvalidArgumentException(`${error}`);
-          }
-
-          return urlPattern;
+      try {
+        const url = new URL(patternUrl);
+        return {
+          protocol: hasProtocol ? url.protocol.replace(/:$/, '') : undefined,
+          hostname: hasHostname ? url.hostname : undefined,
+          port: hasPort ? serializePort(url) : undefined,
+          pathname: hasPathname && url.pathname ? url.pathname : undefined,
+          search: hasSearch ? url.search : undefined,
+        };
+      } catch (err) {
+        throw new InvalidArgumentException(
+          `${(err as Error).message} '${patternUrl}'`,
+        );
       }
     });
   }

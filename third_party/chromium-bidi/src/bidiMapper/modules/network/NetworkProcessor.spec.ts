@@ -44,6 +44,17 @@ describe('NetworkProcessor', () => {
       ).to.throw(`Invalid URL 'invalid.url%%'`);
     });
 
+    it('invalid hostname', () => {
+      expect(() =>
+        NetworkProcessor.parseUrlPatterns([
+          {
+            type: 'pattern',
+            hostname: 'abc/com/',
+          },
+        ]),
+      ).to.throw(`'/', '?', '#' are forbidden in hostname`);
+    });
+
     it('valid string', () => {
       expect(
         NetworkProcessor.parseUrlPatterns([
@@ -53,17 +64,23 @@ describe('NetworkProcessor', () => {
           },
           {
             type: 'string',
-            pattern: 'https://example.org/*',
+            pattern: 'https://example.org/\\*',
           },
         ]),
       ).to.deep.equal([
         {
-          type: 'string',
-          pattern: 'https://example.com/',
+          hostname: 'example.com',
+          pathname: '/',
+          port: '',
+          protocol: 'https',
+          search: '',
         },
         {
-          type: 'string',
-          pattern: 'https://example.org/*',
+          hostname: 'example.org',
+          pathname: '/*',
+          port: '',
+          protocol: 'https',
+          search: '',
         },
       ]);
     });
@@ -113,7 +130,7 @@ describe('NetworkProcessor', () => {
             hostname: 'a:b',
           },
         ]),
-      ).to.throw('URL pattern hostname must not contain a colon');
+      ).to.throw(`':' is only allowed inside brackets in hostname`);
     });
 
     it('invalid pattern missing port', () => {
@@ -154,11 +171,10 @@ describe('NetworkProcessor', () => {
         ]),
       ).to.deep.equal([
         {
-          type: 'pattern',
           protocol: 'https',
           hostname: 'example.com',
           pathname: '/',
-          port: '443',
+          port: '',
           search: '?q=search',
         },
       ]);
@@ -169,7 +185,11 @@ describe('NetworkProcessor', () => {
         NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]),
       ).to.deep.equal([
         {
-          type: 'pattern',
+          protocol: undefined,
+          hostname: undefined,
+          pathname: undefined,
+          port: undefined,
+          search: undefined,
         },
       ]);
     });

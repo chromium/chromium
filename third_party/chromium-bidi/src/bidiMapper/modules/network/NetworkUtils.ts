@@ -20,12 +20,10 @@
  * @fileoverview Utility functions for the Network domain.
  */
 import type {Protocol} from 'devtools-protocol';
-import type {URLPatternInit} from 'urlpattern-polyfill/dist/types.js';
 
 import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
 import {base64ToString} from '../../../utils/Base64.js';
-import {URLPattern} from '../../../utils/UrlPattern.js';
 
 export function computeHeadersSize(headers: Network.Header[]): number {
   const requestHeaders = headers.reduce((acc, header) => {
@@ -304,30 +302,57 @@ export function isSpecialScheme(protocol: string): boolean {
   );
 }
 
-type RequireStringPattern = Omit<
-  Required<URLPatternInit>,
-  'baseURL' | 'hash' | 'username' | 'password'
->;
+export type ParsedUrlPattern = {
+  protocol?: string;
+  hostname?: string;
+  port?: string;
+  pathname?: string;
+  search?: string;
+};
+
+function getScheme(url: URL) {
+  return url.protocol.replace(/:$/, '');
+}
 
 /** Matches the given URLPattern against the given URL. */
 export function matchUrlPattern(
-  urlPattern: Network.UrlPattern,
-  url: string | undefined,
+  pattern: ParsedUrlPattern,
+  url: string,
 ): boolean {
-  switch (urlPattern.type) {
-    case 'string': {
-      const pattern = new URLPattern(urlPattern.pattern);
-      return new URLPattern({
-        protocol: pattern.protocol,
-        hostname: pattern.hostname,
-        port: pattern.port,
-        pathname: pattern.pathname,
-        search: pattern.search,
-      } satisfies RequireStringPattern).test(url);
-    }
-    case 'pattern':
-      return new URLPattern(urlPattern).test(url);
+  // Roughly https://w3c.github.io/webdriver-bidi/#match-url-pattern
+  // plus some differences based on the URL parsing methods.
+  const parsedUrl = new URL(url);
+
+  if (
+    pattern.protocol !== undefined &&
+    pattern.protocol !== getScheme(parsedUrl)
+  ) {
+    return false;
   }
+
+  if (
+    pattern.hostname !== undefined &&
+    pattern.hostname !== parsedUrl.hostname
+  ) {
+    return false;
+  }
+
+  if (pattern.port !== undefined && pattern.port !== parsedUrl.port) {
+    return false;
+  }
+
+  if (
+    pattern.pathname !== undefined &&
+    pattern.pathname !== parsedUrl.pathname
+  ) {
+    return false;
+  }
+
+  if (pattern.search !== undefined && pattern.search !== parsedUrl.search) {
+    return false;
+  }
+
+  return true;
 }
 
 export function bidiBodySizeFromCdpPostDataEntries(

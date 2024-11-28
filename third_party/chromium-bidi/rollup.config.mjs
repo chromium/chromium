@@ -16,7 +16,6 @@
  */
 import path from 'path';
 
-import alias from '@rollup/plugin-alias';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import license from 'rollup-plugin-license';
 
@@ -65,11 +64,6 @@ const mapperTabConfig = {
           },
         },
       },
-    }),
-    alias({
-      entries: [
-        {find: /^(.*)UrlPattern\.js$/, replacement: '$1UrlPattern-browser.js'},
-      ],
     }),
     nodeResolve(),
   ],

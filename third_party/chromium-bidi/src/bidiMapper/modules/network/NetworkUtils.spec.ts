@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 
+import {NetworkProcessor} from './NetworkProcessor.js';
 import * as networkUtils from './NetworkUtils.js';
 
 describe('NetworkUtils', () => {
@@ -243,6 +244,132 @@ describe('NetworkUtils', () => {
 
     it('should work with ints', () => {
       expect(networkUtils.getTiming(1)).to.equal(1);
+    });
+  });
+
+  describe('matchUrlPattern', () => {
+    function createPattern(pattern: Network.UrlPattern) {
+      return NetworkProcessor.parseUrlPatterns([pattern])[0]!;
+    }
+
+    it('should not match urls', () => {
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'string',
+            pattern: 'https://example.test/test?query',
+          }),
+          'https://example2.test/test?query',
+        ),
+      ).to.equal(false);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'string',
+            pattern: 'https://example.test:333',
+          }),
+          'https://example.test:444',
+        ),
+      ).to.equal(false);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({search: '', type: 'pattern'}),
+          'https://web-platform.test/?search',
+        ),
+      ).to.equal(false);
+    });
+
+    it('should match urls against string patterns', () => {
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'string',
+            pattern: 'https://example.test/test?query',
+          }),
+          'https://example.test/test?query',
+        ),
+      ).to.equal(true);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'string',
+            pattern: 'https://www.example.com/',
+          }),
+          'https://www.example.com/',
+        ),
+      ).to.equal(true);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'string',
+            pattern: 'https://example.test:333',
+          }),
+          'https://example.test:333',
+        ),
+      ).to.equal(true);
+    });
+
+    it('should match urls against object patterns', () => {
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.test',
+            port: '333',
+            pathname: '/test',
+            search: '?query',
+          }),
+          'https://example.test:333/test?query',
+        ),
+      ).to.equal(true);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'pattern',
+            search: '?query',
+          }),
+          'https://example.test:333/test?query',
+        ),
+      ).to.equal(true);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({hostname: 'WEB-PLATFORM.TEST', type: 'pattern'}),
+          'https://web-platform.test/',
+        ),
+      ).to.equal(true);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.test',
+            port: '333',
+            pathname: '/test',
+            search: '?query+another',
+          }),
+          'https://example.test:333/test?query+another',
+        ),
+      ).to.equal(true);
+
+      expect(
+        networkUtils.matchUrlPattern(
+          createPattern({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'www.example.com',
+            pathname: '/',
+          }),
+          'https://www.example.com/',
+        ),
+      ).to.equal(true);
     });
   });
 });
