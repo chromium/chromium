@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/color_table_lookup.h"
 
+#include "base/containers/heap_array.h"
+
 namespace blink {
 
 namespace {
@@ -23,8 +25,8 @@ bool ColorTableLookup::TypefaceHasAnySupportedColorTable(
   if (!num_tags) {
     return false;
   }
-  std::unique_ptr<SkFontTableTag[]> tags(new SkFontTableTag[num_tags]);
-  const int returned_tags = typeface->getTableTags(tags.get());
+  auto tags = base::HeapArray<SkFontTableTag>::Uninit(num_tags);
+  const int returned_tags = typeface->getTableTags(tags.data());
   if (!returned_tags) {
     return false;
   }
