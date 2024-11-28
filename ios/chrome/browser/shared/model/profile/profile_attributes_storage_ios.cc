@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
@@ -99,25 +100,40 @@ bool ProfileAttributesStorageIOS::HasProfileWithName(
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileAtIndex(
     size_t index) const {
-  DCHECK_LT(index, sorted_keys_.size());
-  const std::string& profile_name = sorted_keys_[index];
-  return ProfileAttributesIOS(
-      profile_name,
-      prefs_->GetDict(prefs::kProfileInfoCache).FindDict(profile_name));
+  CHECK_LT(index, sorted_keys_.size());
+  return GetAttributesForProfileWithName(sorted_keys_[index]);
 }
 
 ProfileAttributesIOS
 ProfileAttributesStorageIOS::GetAttributesForProfileWithName(
     std::string_view name) const {
-  const size_t index = GetIndexOfProfileWithName(name);
-  return GetAttributesForProfileAtIndex(index);
+  const base::Value::Dict& values =
+      CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
+  return ProfileAttributesIOS::WithAttrs(name, values);
+}
+
+void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
+    size_t index,
+    ProfileAttributesCallback callback) {
+  CHECK_LT(index, sorted_keys_.size());
+  UpdateAttributesForProfileWithName(sorted_keys_[index], std::move(callback));
 }
 
 void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
     std::string_view name,
     ProfileAttributesCallback callback) {
-  const size_t index = GetIndexOfProfileWithName(name);
-  UpdateAttributesForProfileAtIndex(index, std::move(callback));
+  const base::Value::Dict& values =
+      CHECK_DEREF(prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name));
+
+  base::Value::Dict updated_values =
+      std::move(callback)
+          .Run(ProfileAttributesIOS::WithAttrs(name, values))
+          .GetStorage();
+
+  if (values != updated_values) {
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+    update->Set(name, std::move(updated_values));
+  }
 }
 
 void ProfileAttributesStorageIOS::SetProfileNameForSceneID(
@@ -166,22 +182,6 @@ void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kLastActiveProfiles);
   registry->RegisterDictionaryPref(prefs::kProfileForScene);
   registry->RegisterStringPref(prefs::kPersonalProfileName, std::string());
-}
-
-void ProfileAttributesStorageIOS::UpdateAttributesForProfileAtIndex(
-    size_t index,
-    ProfileAttributesCallback callback) {
-  DCHECK_LT(index, sorted_keys_.size());
-  const std::string& name = sorted_keys_[index];
-  const base::Value::Dict* values =
-      prefs_->GetDict(prefs::kProfileInfoCache).FindDict(name);
-
-  base::Value::Dict updated_values =
-      std::move(callback).Run(ProfileAttributesIOS(name, values)).GetStorage();
-  if (!values || *values != updated_values) {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, std::move(updated_values));
-  }
 }
 
 size_t ProfileAttributesStorageIOS::GetIndexOfProfileWithName(

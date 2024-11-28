@@ -9,6 +9,7 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
@@ -589,7 +590,8 @@ void ProfileManagerIOSImpl::RestoreLegacyProfiles(
     profile_attributes_storage_.UpdateAttributesForProfileWithName(
         key, base::BindOnce(
                  [](const base::Value::Dict* dict, ProfileAttributesIOS attr) {
-                   return ProfileAttributesIOS(attr.GetProfileName(), dict);
+                   return ProfileAttributesIOS::WithAttrs(attr.GetProfileName(),
+                                                          CHECK_DEREF(dict));
                  },
                  &value.GetDict()));
   }

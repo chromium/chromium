@@ -59,6 +59,12 @@ class ProfileAttributesStorageIOS {
   ProfileAttributesIOS GetAttributesForProfileWithName(
       std::string_view name) const;
 
+  // Modifies the attributes for the profile at `index` (which must exist).
+  // The callback is invoked synchronously and can modify the attributes
+  // and the data will be saved to the preferences if changed.
+  void UpdateAttributesForProfileAtIndex(size_t index,
+                                         ProfileAttributesCallback callback);
+
   // Modifies the attributes for the profile with `name` (which must exist).
   // The callback is invoked synchronously and can modify the attributes
   // and the data will be saved to the preferences if changed.
@@ -89,12 +95,6 @@ class ProfileAttributesStorageIOS {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  // Modifies the attributes for the profile at `index` (which must exist).
-  // The callback is invoked synchronously and can modify the attributes
-  // and the data will be saved to the preferences if changed.
-  void UpdateAttributesForProfileAtIndex(size_t index,
-                                         ProfileAttributesCallback callback);
-
   // Returns the index of the profile with `name` or std::string::npos if
   // not found.
   size_t GetIndexOfProfileWithName(std::string_view name) const;

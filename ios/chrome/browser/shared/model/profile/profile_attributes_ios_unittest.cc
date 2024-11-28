@@ -19,15 +19,28 @@ const char kUserName[] = "email@example.com";
 
 using ProfileAttributesIOSTest = PlatformTest;
 
+// Tests the CreateNew() factory of ProfileAttributesIOS.
+TEST_F(ProfileAttributesIOSTest, CreateNew) {
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::CreateNew(kProfileName);
+  EXPECT_EQ(attributes.GetProfileName(), kProfileName);
+  EXPECT_TRUE(attributes.IsNewProfile());
+
+  attributes.ClearIsNewProfile();
+  EXPECT_FALSE(attributes.IsNewProfile());
+}
+
 // Tests the GetName() method of ProfileAttributesIOS.
 TEST_F(ProfileAttributesIOSTest, GetName) {
-  ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
   EXPECT_EQ(attributes.GetProfileName(), kProfileName);
 }
 
 // Tests that setting and reading the authentication info works.
 TEST_F(ProfileAttributesIOSTest, GetSetAuthenticationInfo) {
-  ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
   EXPECT_EQ(attributes.GetGaiaId(), "");
   EXPECT_EQ(attributes.GetUserName(), "");
   EXPECT_FALSE(attributes.HasAuthenticationError());
@@ -45,12 +58,11 @@ TEST_F(ProfileAttributesIOSTest, GetSetAuthenticationInfo) {
 
 // Tests that setting and reading the attached gaia ids.
 TEST_F(ProfileAttributesIOSTest, GetSetAttachedGaiaIds) {
-  ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
 
   EXPECT_EQ(attributes.GetAttachedGaiaIds().size(), 0ul);
-  ProfileAttributesIOS::GaiaIdSet gaia_ids;
-  gaia_ids.insert(kGaiaId1);
-  gaia_ids.insert(kGaiaId2);
+  ProfileAttributesIOS::GaiaIdSet gaia_ids = {kGaiaId1, kGaiaId2};
   ASSERT_EQ(gaia_ids.size(), 2u);
   attributes.SetAttachedGaiaIds(gaia_ids);
   EXPECT_EQ(attributes.GetAttachedGaiaIds(), gaia_ids);
@@ -58,7 +70,8 @@ TEST_F(ProfileAttributesIOSTest, GetSetAttachedGaiaIds) {
 
 // Tests that setting and reading the last activation time works.
 TEST_F(ProfileAttributesIOSTest, GetSetLastActiveTime) {
-  ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
 
   const base::Time now = base::Time::Now();
   EXPECT_NE(attributes.GetLastActiveTime(), now);
@@ -70,15 +83,17 @@ TEST_F(ProfileAttributesIOSTest, GetSetLastActiveTime) {
 // Tests that the internal storage can be accessed.
 TEST_F(ProfileAttributesIOSTest, GetStorage) {
   {
-    ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+    ProfileAttributesIOS attributes =
+        ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
     EXPECT_EQ(std::move(attributes).GetStorage(), base::Value::Dict());
   }
 
   {
-    ProfileAttributesIOS attributes(kProfileName, /*attrs=*/nullptr);
+    ProfileAttributesIOS attributes =
+        ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
     attributes.SetAuthenticationInfo(kGaiaId1, kUserName);
     attributes.SetLastActiveTime(base::Time::Now());
-    attributes.SetHasAuthenticationError(false);
+    attributes.SetHasAuthenticationError(true);
     EXPECT_EQ(std::move(attributes).GetStorage().size(), 4u);
   }
 }
