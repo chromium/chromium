@@ -40,12 +40,16 @@ function getAveragePoint(points: DataPoint[]): DataPoint {
  * values for displaying on the line chart.
  */
 export class DataSeries {
-  constructor(title: string) {
+  constructor(title: string, category: string) {
     this.displayedTitle = title;
+    this.displayedCategory = category;
   }
 
   // The name of this data series.
   private readonly displayedTitle: string;
+
+  // The category of this data series.
+  private readonly displayedCategory: string;
 
   // All the data points of the data series. Sorted by time.
   private dataPoints: DataPoint[] = [];
@@ -95,6 +99,11 @@ export class DataSeries {
 
   getTitle(): string {
     return this.displayedTitle;
+  }
+
+  // Use full title when displaying custom category.
+  getTitleForCustom(): string {
+    return `${this.displayedTitle} (${this.displayedCategory})`;
   }
 
   getPoints(): DataPoint[] {

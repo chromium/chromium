@@ -92,6 +92,7 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     CategoryTypeEnum.ZRAM,
     CategoryTypeEnum.BATTERY,
     CategoryTypeEnum.THERMAL,
+    CategoryTypeEnum.CUSTOM,
   ];
 
   private selectedCategory: CategoryTypeEnum = this.displayedCategories[0];
@@ -117,7 +118,7 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
   }
 
   setupDataSeriesList() {
-    this.$.lineChart.setupDataSeriesList(
+    this.$.lineChart.setupDataSeriesLists(
         this.selectedCategory, this.controller.getData(this.selectedCategory));
   }
 

@@ -17,11 +17,17 @@ export enum CategoryTypeEnum {
   MEMORY = 'Memory',
   THERMAL = 'Thermals',
   ZRAM = 'Zram',
+  CUSTOM = 'Custom',
 }
 
+/**
+ * The data series shared the same label and displayed with the same scale.
+ */
 export interface DataSeriesList {
   // The data.
   dataList: DataSeries[];
+  // Indices of selected data for custom category
+  selectedIndices: number[];
   // The helper class to decide displayed unit shared by all data series.
   readonly unitLabel: UnitLabel;
 }
@@ -43,16 +49,35 @@ export class SystemTrendController {
   constructor(element: HealthdInternalsSystemTrendElement) {
     this.element = element;
     this.dataCollection = {
-      battery: {dataList: [], unitLabel: new UnitLabel([''], 1)},
-      cpuFrequency:
-          {dataList: [], unitLabel: new UnitLabel(['kHz', 'MHz', 'GHz'], 1000)},
-      cpuUsage: {dataList: [], unitLabel: new UnitLabel(['%'], 1)},
-      memory:
-          {dataList: [], unitLabel: new UnitLabel(['KiB', 'MiB', 'GiB'], 1024)},
-      thermal: {dataList: [], unitLabel: new UnitLabel(['°C'], 1)},
+      battery: {
+        dataList: [],
+        selectedIndices: [],
+        unitLabel: new UnitLabel([''], 1),
+      },
+      cpuFrequency: {
+        dataList: [],
+        selectedIndices: [],
+        unitLabel: new UnitLabel(['kHz', 'MHz', 'GHz'], 1000),
+      },
+      cpuUsage: {
+        dataList: [],
+        selectedIndices: [],
+        unitLabel: new UnitLabel(['%'], 1),
+      },
+      memory: {
+        dataList: [],
+        selectedIndices: [],
+        unitLabel: new UnitLabel(['KiB', 'MiB', 'GiB'], 1024),
+      },
+      thermal: {
+        dataList: [],
+        selectedIndices: [],
+        unitLabel: new UnitLabel(['°C'], 1),
+      },
       zram: {
         dataList: [],
-        unitLabel: new UnitLabel(['B', 'KiB', 'MiB', 'GiB'], 1024)
+        selectedIndices: [],
+        unitLabel: new UnitLabel(['B', 'KiB', 'MiB', 'GiB'], 1024),
       },
     };
   }
@@ -70,16 +95,25 @@ export class SystemTrendController {
 
   setCpuFrequencyData(dataSeriesList: DataSeries[]) {
     this.dataCollection.cpuFrequency.dataList = dataSeriesList;
+    if (dataSeriesList.length > 1) {
+      // Select the first one and last one to include both big and little cores.
+      this.dataCollection.cpuFrequency.selectedIndices =
+          [0, dataSeriesList.length - 1];
+    }
     this.element.setupDataSeriesList();
   }
 
   setCpuUsageData(dataSeriesList: DataSeries[]) {
     this.dataCollection.cpuUsage.dataList = dataSeriesList;
+    // The first one is overall usage.
+    this.dataCollection.cpuUsage.selectedIndices = [0];
     this.element.setupDataSeriesList();
   }
 
   setMemoryData(dataSeriesList: DataSeries[]) {
     this.dataCollection.memory.dataList = dataSeriesList;
+    // The first one is available memory.
+    this.dataCollection.memory.selectedIndices = [0];
     this.element.setupDataSeriesList();
   }
 
@@ -90,23 +124,54 @@ export class SystemTrendController {
 
   setZramData(dataSeriesList: DataSeries[]) {
     this.dataCollection.zram.dataList = dataSeriesList;
+    // The first one is total used zram.
+    this.dataCollection.zram.selectedIndices = [0];
     this.element.setupDataSeriesList();
   }
 
-  getData(type: CategoryTypeEnum): DataSeriesList {
+  /**
+   * Get the required data for line chart.
+   *
+   * @param type - Type of displayed category.
+   * @returns - List of `DataSeriesList` data. Except for custom category, we
+   *            only return one element in the list for single source.
+   */
+  getData(type: CategoryTypeEnum): DataSeriesList[] {
     switch (type) {
       case CategoryTypeEnum.BATTERY:
-        return this.dataCollection.battery;
+        return [this.dataCollection.battery];
       case CategoryTypeEnum.CPU_FREQUENCY:
-        return this.dataCollection.cpuFrequency;
+        return [this.dataCollection.cpuFrequency];
       case CategoryTypeEnum.CPU_USAGE:
-        return this.dataCollection.cpuUsage;
+        return [this.dataCollection.cpuUsage];
       case CategoryTypeEnum.MEMORY:
-        return this.dataCollection.memory;
+        return [this.dataCollection.memory];
       case CategoryTypeEnum.THERMAL:
-        return this.dataCollection.thermal;
+        return [this.dataCollection.thermal];
       case CategoryTypeEnum.ZRAM:
-        return this.dataCollection.zram;
+        return [this.dataCollection.zram];
+      case CategoryTypeEnum.CUSTOM:
+        return this.getCustomData();
     }
+  }
+
+  private getCustomData(): DataSeriesList[] {
+    const output: DataSeriesList[] = [];
+    const allData = [
+      this.dataCollection.cpuUsage, this.dataCollection.cpuFrequency,
+      this.dataCollection.memory, this.dataCollection.zram,
+      this.dataCollection.battery, this.dataCollection.thermal
+    ];
+    for (const data of allData) {
+      if (data.selectedIndices.length === 0) {
+        continue;
+      }
+      output.push({
+        dataList: data.selectedIndices.map(i => data.dataList[i]),
+        selectedIndices: data.selectedIndices,
+        unitLabel: data.unitLabel,
+      });
+    }
+    return output;
   }
 }

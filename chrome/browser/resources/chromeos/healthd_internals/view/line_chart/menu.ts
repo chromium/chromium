@@ -50,6 +50,9 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
     return getTemplate();
   }
 
+  // Whether the current category is custom.
+  private isCustomCategory: boolean = false;
+
   // Used to display buttons for changing visibility of each data.
   private buttons: ButtonState[] = [];
 
@@ -60,7 +63,8 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   /**
    * Set up the list of data series for the menu.
    */
-  setupDataSeriesList(dataSeriesList: DataSeries[]) {
+  setupDataSeriesList(dataSeriesList: DataSeries[], isCustomCategory: boolean) {
+    this.isCustomCategory = isCustomCategory;
     const buttonContainer = this.$.dataButtonsContainer;
     while (buttonContainer.lastElementChild) {
       buttonContainer.removeChild(buttonContainer.lastElementChild);
@@ -86,7 +90,9 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   private createButton(dataSeries: DataSeries, color: string): HTMLElement {
     const buttonInner: HTMLElement =
         createElementWithClassName('span', 'line-chart-menu-button-inner-span');
-    buttonInner.innerText = dataSeries.getTitle();
+    buttonInner.innerText = this.isCustomCategory ?
+        dataSeries.getTitleForCustom() :
+        dataSeries.getTitle();
     const button: HTMLElement =
         createElementWithClassName('div', 'line-chart-menu-button');
     button.appendChild(buttonInner);

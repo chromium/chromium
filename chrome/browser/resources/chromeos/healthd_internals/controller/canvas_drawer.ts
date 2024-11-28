@@ -130,6 +130,10 @@ export class CanvasDrawer {
       context: CanvasRenderingContext2D, dataPoints: DataPoint[],
       displayedColor: string, startTime: number, timeScale: number,
       valueScale: number) {
+    if (dataPoints.length === 0) {
+      return;
+    }
+
     context.strokeStyle = displayedColor;
     context.fillStyle = displayedColor;
     context.beginPath();

@@ -288,7 +288,7 @@ export class DataManager {
 
   private initBatteryDataSeries() {
     for (const header of LINE_CHART_BATTERY_HEADERS) {
-      this.batteryDataSeries.push(new DataSeries(header));
+      this.batteryDataSeries.push(new DataSeries(header, 'Battery'));
     }
     this.systemTrendController.setBatteryData(this.batteryDataSeries);
   }
@@ -298,19 +298,19 @@ export class DataManager {
       for (let logicalCpuId: number = 0;
            logicalCpuId < physicalCpu.logicalCpus.length; ++logicalCpuId) {
         this.cpuFrequencyDataSeries.push(
-            new DataSeries(`CPU #${physicalCpuId}-${logicalCpuId}`));
+            new DataSeries(`CPU #${physicalCpuId}-${logicalCpuId}`, 'Freq'));
       }
     }
     this.systemTrendController.setCpuFrequencyData(this.cpuFrequencyDataSeries);
   }
 
   private initCpuUsageDataSeries(physcialCpuUsage: (CpuUsage|null)[][]) {
-    this.cpuUsageDataSeries.push(new DataSeries('Overall'));
+    this.cpuUsageDataSeries.push(new DataSeries('Overall', 'Usage'));
     for (const [physicalCpuId, logicalCpuUsage] of physcialCpuUsage.entries()) {
       for (let logicalCpuId: number = 0; logicalCpuId < logicalCpuUsage.length;
            ++logicalCpuId) {
         this.cpuUsageDataSeries.push(
-            new DataSeries(`CPU #${physicalCpuId}-${logicalCpuId}`));
+            new DataSeries(`CPU #${physicalCpuId}-${logicalCpuId}`, 'Usage'));
       }
     }
     this.systemTrendController.setCpuUsageData(this.cpuUsageDataSeries);
@@ -318,7 +318,7 @@ export class DataManager {
 
   private initMemoryDataSeries() {
     for (const header of LINE_CHART_MEMORY_HEADERS) {
-      this.memoryDataSeries.push(new DataSeries(header));
+      this.memoryDataSeries.push(new DataSeries(header, 'Memory'));
     }
     this.systemTrendController.setMemoryData(this.memoryDataSeries);
   }
@@ -326,14 +326,14 @@ export class DataManager {
   private initThermalDataSeries(thermals: HealthdApiThermalResult[]) {
     for (const thermal of thermals) {
       this.thermalDataSeries.push(
-          new DataSeries(`${thermal.name} (${thermal.source})`));
+          new DataSeries(`${thermal.name} (${thermal.source})`, 'Thermal'));
     }
     this.systemTrendController.setThermalData(this.thermalDataSeries);
   }
 
   private initZramDataSeries() {
     for (const header of LINE_CHART_ZRAM_HEADERS) {
-      this.zramDataSeries.push(new DataSeries(header));
+      this.zramDataSeries.push(new DataSeries(header, 'Zram'));
     }
     this.systemTrendController.setZramData(this.zramDataSeries);
   }
