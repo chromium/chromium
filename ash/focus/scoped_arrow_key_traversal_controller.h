@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_FOCUS_ARROW_KEY_TRAVERSAL_CONTROLLER_H_
-#define ASH_FOCUS_ARROW_KEY_TRAVERSAL_CONTROLLER_H_
+#ifndef ASH_FOCUS_SCOPED_ARROW_KEY_TRAVERSAL_CONTROLLER_H_
+#define ASH_FOCUS_SCOPED_ARROW_KEY_TRAVERSAL_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/auto_reset.h"
 #include "ui/views/focus/focus_manager_factory.h"
 
 namespace ash {
@@ -21,32 +22,16 @@ class ASH_EXPORT ScopedArrowKeyTraversalController {
   ~ScopedArrowKeyTraversalController();
 
  private:
-  const bool was_enabled_;
+  base::AutoReset<bool> auto_reset_;
 };
 
 using ScopedArrowKeyTraversalEnabler = ScopedArrowKeyTraversalController<true>;
 using ScopedArrowKeyTraversalDisabler =
     ScopedArrowKeyTraversalController<false>;
 
-// Stores whether or not the arrow key focus traversal is enabled.
-class ArrowKeyTraversalController {
- public:
-  static ArrowKeyTraversalController* Get();
-
-  ArrowKeyTraversalController();
-  ArrowKeyTraversalController(const ArrowKeyTraversalController&) = delete;
-  ArrowKeyTraversalController& operator=(const ArrowKeyTraversalController&) =
-      delete;
-  ~ArrowKeyTraversalController();
-
-  bool enabled() const { return enabled_; }
-
- private:
-  friend class ScopedArrowKeyTraversalController<true>;
-  friend class ScopedArrowKeyTraversalController<false>;
-  bool enabled_ = false;
-};
+// Returns true if the arrow key focus traversal is enabled.
+bool IsArrowKeyTraversalEnabled();
 
 }  // namespace ash
 
-#endif  // ASH_FOCUS_ARROW_KEY_TRAVERSAL_CONTROLLER_H_
+#endif  // ASH_FOCUS_SCOPED_ARROW_KEY_TRAVERSAL_CONTROLLER_H_
