@@ -36,7 +36,7 @@
 
 class ChromeMainTest : public InProcessBrowserTest {
  public:
-  ChromeMainTest() {}
+  ChromeMainTest() = default;
 
   void Relaunch(const base::CommandLine& new_command_line) {
     base::LaunchProcess(new_command_line, base::LaunchOptionsForTest());

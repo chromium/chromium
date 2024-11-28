@@ -125,7 +125,7 @@ std::vector<uint8_t> StringToVector(const std::string& str) {
 // first renderer process.
 class ChromeContentBrowserClientBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeContentBrowserClientBrowserTest() {}
+  ChromeContentBrowserClientBrowserTest() = default;
 
   ChromeContentBrowserClientBrowserTest(
       const ChromeContentBrowserClientBrowserTest&) = delete;
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
 class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
  public:
-  IsolatedOriginNTPBrowserTest() {}
+  IsolatedOriginNTPBrowserTest() = default;
 
   IsolatedOriginNTPBrowserTest(const IsolatedOriginNTPBrowserTest&) = delete;
   IsolatedOriginNTPBrowserTest& operator=(const IsolatedOriginNTPBrowserTest&) =
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
 class OpenWindowFromNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {
  public:
-  OpenWindowFromNTPBrowserTest() {}
+  OpenWindowFromNTPBrowserTest() = default;
 
   OpenWindowFromNTPBrowserTest(const OpenWindowFromNTPBrowserTest&) = delete;
   OpenWindowFromNTPBrowserTest& operator=(const OpenWindowFromNTPBrowserTest&) =

@@ -61,7 +61,7 @@ using content::RenderFrameHost;
 using content::RenderFrameHostTester;
 using content::WebContents;
 
-BrowserWithTestWindowTest::~BrowserWithTestWindowTest() {}
+BrowserWithTestWindowTest::~BrowserWithTestWindowTest() = default;
 
 void BrowserWithTestWindowTest::SetUp() {
   testing::Test::SetUp();

@@ -871,7 +871,7 @@ HistoryEnumerator::HistoryEnumerator(Profile* profile) {
   run_loop.Run();
 }
 
-HistoryEnumerator::~HistoryEnumerator() {}
+HistoryEnumerator::~HistoryEnumerator() = default;
 
 // Wait for HistoryService to load.
 class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {

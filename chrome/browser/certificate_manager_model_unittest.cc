@@ -71,7 +71,7 @@ CertificateManagerModel::CertInfo* GetCertInfoFromOrgGroupingMap(
 
 class CertificateManagerModelTest : public testing::Test {
  public:
-  CertificateManagerModelTest() {}
+  CertificateManagerModelTest() = default;
 
   CertificateManagerModelTest(const CertificateManagerModelTest&) = delete;
   CertificateManagerModelTest& operator=(const CertificateManagerModelTest&) =

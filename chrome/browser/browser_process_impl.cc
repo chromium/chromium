@@ -634,7 +634,7 @@ class RundownTaskCounter :
 
  private:
   friend class base::RefCountedThreadSafe<RundownTaskCounter>;
-  ~RundownTaskCounter() {}
+  ~RundownTaskCounter() = default;
 
   // Decrements the counter and releases the waitable event on transition to
   // zero.

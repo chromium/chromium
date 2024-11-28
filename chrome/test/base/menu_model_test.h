@@ -12,8 +12,8 @@
 // testing::Test to provide some extra functionality for testing menu models.
 class MenuModelTest {
  public:
-  MenuModelTest() {}
-  virtual ~MenuModelTest() {}
+  MenuModelTest() = default;
+  virtual ~MenuModelTest() = default;
 
  protected:
   // A menu delegate that counts the number of times certain things are called

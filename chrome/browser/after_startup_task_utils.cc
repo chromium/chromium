@@ -40,7 +40,7 @@ struct AfterStartupTask {
                    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                    base::OnceClosure task)
       : from_here(from_here), task_runner(task_runner), task(std::move(task)) {}
-  ~AfterStartupTask() {}
+  ~AfterStartupTask() = default;
 
   const base::Location from_here;
   const scoped_refptr<base::SequencedTaskRunner> task_runner;

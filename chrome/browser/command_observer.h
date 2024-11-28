@@ -14,7 +14,7 @@ class CommandObserver {
   virtual void EnabledStateChangedForCommand(int id, bool enabled) = 0;
 
  protected:
-  virtual ~CommandObserver() {}
+  virtual ~CommandObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_COMMAND_OBSERVER_H_

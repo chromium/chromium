@@ -25,7 +25,7 @@ class CommandObserver;
 //
 class CommandUpdater {
  public:
-  virtual ~CommandUpdater() {}
+  virtual ~CommandUpdater() = default;
 
   // Returns true if the specified command ID is supported.
   virtual bool SupportsCommand(int id) const = 0;

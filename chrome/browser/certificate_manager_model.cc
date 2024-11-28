@@ -542,7 +542,7 @@ CertificateManagerModel::CertInfo::CertInfo(net::ScopedCERTCertificate cert,
       hardware_backed_(hardware_backed),
       device_wide_(device_wide) {}
 
-CertificateManagerModel::CertInfo::~CertInfo() {}
+CertificateManagerModel::CertInfo::~CertInfo() = default;
 
 // static
 std::unique_ptr<CertificateManagerModel::CertInfo>
@@ -643,7 +643,7 @@ CertificateManagerModel::CertificateManagerModel(
 #endif
 }
 
-CertificateManagerModel::~CertificateManagerModel() {}
+CertificateManagerModel::~CertificateManagerModel() = default;
 
 void CertificateManagerModel::OnCertsSourceUpdated() {
   if (hold_back_updates_)

@@ -82,7 +82,7 @@ class PrimaryProfileServicesShutdownNotifierFactory
   PrimaryProfileServicesShutdownNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PrimaryProfileServices") {}
-  ~PrimaryProfileServicesShutdownNotifierFactory() override {}
+  ~PrimaryProfileServicesShutdownNotifierFactory() override = default;
 };
 
 }  // namespace

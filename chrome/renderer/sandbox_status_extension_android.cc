@@ -37,7 +37,7 @@ SandboxStatusExtension::SandboxStatusExtension(content::RenderFrame* frame)
           base::RetainedRef(this)));
 }
 
-SandboxStatusExtension::~SandboxStatusExtension() {}
+SandboxStatusExtension::~SandboxStatusExtension() = default;
 
 // static
 void SandboxStatusExtension::Create(content::RenderFrame* frame) {

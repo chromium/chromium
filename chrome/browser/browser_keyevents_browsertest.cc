@@ -115,7 +115,7 @@ class TestFinishObserver : public content::WebContentsObserver {
 
 class BrowserKeyEventsTest : public InProcessBrowserTest {
  public:
-  BrowserKeyEventsTest() {}
+  BrowserKeyEventsTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Some builders are flaky due to slower loading interacting with
