@@ -31,9 +31,6 @@ class ProfileManagerIOS {
   virtual void AddObserver(ProfileManagerObserverIOS* observer) = 0;
   virtual void RemoveObserver(ProfileManagerObserverIOS* observer) = 0;
 
-  // Loads the last active profiles. *Deprecated*.
-  virtual void LoadProfiles() = 0;
-
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
   virtual ProfileIOS* GetProfileWithName(std::string_view name) = 0;

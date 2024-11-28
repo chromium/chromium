@@ -33,7 +33,6 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   // ProfileManagerIOS:
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
-  void LoadProfiles() override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
   std::vector<ProfileIOS*> GetLoadedProfiles() const override;
   bool HasProfileWithName(std::string_view name) const override;

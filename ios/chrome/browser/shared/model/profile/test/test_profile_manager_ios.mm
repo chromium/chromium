@@ -58,8 +58,6 @@ void TestProfileManagerIOS::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void TestProfileManagerIOS::LoadProfiles() {}
-
 ProfileIOS* TestProfileManagerIOS::GetProfileWithName(std::string_view name) {
   auto iterator = profiles_map_.find(name);
   return iterator != profiles_map_.end() ? iterator->second.get() : nullptr;

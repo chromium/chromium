@@ -123,8 +123,6 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     NOTREACHED();
   }
 
-  void LoadProfiles() override { NOTREACHED(); }
-
   ProfileIOS* GetProfileWithName(std::string_view name) override {
     auto it = profiles_map_.find(name);
     if (it != profiles_map_.end()) {

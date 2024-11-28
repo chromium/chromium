@@ -1732,12 +1732,6 @@ void BeginMemoryExperimentationAfterDelay() {
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
   PrefService* localState = applicationContext->GetLocalState();
 
-  // Clear the list of recently active profiles. When profiles are loaded by
-  // -attachProfileToScene:profileManager:attributesStorage:localState: they
-  // will be added to the list. This avoids loading profiles that are not in
-  // use.
-  localState->SetList(prefs::kLastActiveProfiles, base::Value::List());
-
   for (SceneState* sceneState in self.appState.connectedScenes) {
     [self attachProfileToScene:sceneState
                 profileManager:manager
@@ -1779,11 +1773,6 @@ void BeginMemoryExperimentationAfterDelay() {
         _profileControllers.insert(std::make_pair(profileName, controller));
     DCHECK(insertion_result.second);
     iterator = insertion_result.first;
-
-    // Insert the profile in the list of recently active profile, ensuring
-    // it is loaded at application startup.
-    ScopedListPrefUpdate update(localState, prefs::kLastActiveProfiles);
-    update->Append(base::Value(profileName));
 
     // Start loading the profile.
     [controller loadProfileNamed:profileName usingManager:manager];
