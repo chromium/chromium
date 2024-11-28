@@ -356,7 +356,7 @@ TEST_F(AppStartupParametersTest, ParseSearchWidgetKit) {
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
   EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 1, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 1, 1);
 }
 
 // Tests that quick actions widget search url is parsed correctly, and the right
@@ -377,7 +377,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitSearch) {
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
   EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 2, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 2, 1);
 }
 
 // Tests that quick actions widget incognito url is parsed correctly, and the
@@ -398,7 +398,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitIncognito) {
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
   EXPECT_EQ([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 3, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 3, 1);
 }
 
 // Tests that quick actions widget voice search url is parsed correctly, and the
@@ -418,7 +418,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitVoiceSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, START_VOICE_SEARCH);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 4, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 4, 1);
 }
 
 // Tests that quick actions widget QR reader url is parsed correctly, and the
@@ -438,7 +438,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitQRReader) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, START_QR_CODE_SCANNER);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 5, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 5, 1);
 }
 
 // Tests that quick actions widget Lens url is parsed correctly, and the
@@ -455,7 +455,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitLens) {
 
   EXPECT_TRUE(params.externalURL.is_empty());
   EXPECT_EQ(params.postOpeningAction, START_LENS_FROM_HOME_SCREEN_WIDGET);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 10, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 10, 1);
 }
 
 // Tests that shortcuts action search is parsed correctly, and the
@@ -472,7 +472,7 @@ TEST_F(AppStartupParametersTest, ParseShortcutWidgetSearch) {
 
   EXPECT_EQ(params.externalURL, kChromeUINewTabURL);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 11, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 11, 1);
 }
 
 // Tests that shortcuts action open is parsed correctly, and the
@@ -489,7 +489,7 @@ TEST_F(AppStartupParametersTest, ParseShortcutWidgetOpen) {
 
   EXPECT_EQ(params.externalURL, "https://www.example.org/");
   EXPECT_EQ(params.postOpeningAction, NO_ACTION);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 12, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 12, 1);
 }
 
 // Tests that shortcuts action open with invalid URL is parsed correctly, and
@@ -505,7 +505,7 @@ TEST_F(AppStartupParametersTest, ParseShortcutWidgetOpenInvalid) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params, nil);
-  histogram_tester.ExpectTotalCount("IOS.WidgetKit.Action", 0);
+  histogram_tester.ExpectTotalCount(kWidgetKitActionHistogram, 0);
 }
 
 // Tests that dino widget game url is parsed correctly, and the right metric is
@@ -523,7 +523,7 @@ TEST_F(AppStartupParametersTest, ParseDinoWidgetKit) {
       GURL(base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
 
   EXPECT_EQ(params.externalURL, expected_url);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 0, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 0, 1);
 }
 
 // Tests that the lockscreen launcher widget search url is handled correctly.
@@ -543,7 +543,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherSearch) {
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
   EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 6, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 6, 1);
 }
 
 // Tests that the lockscreen launcher widget incognito url is handled correctly.
@@ -563,7 +563,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherIncognito) {
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
   EXPECT_EQ([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 7, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 7, 1);
 }
 
 // Tests that the lockscreen launcher widget voice search url is
@@ -584,7 +584,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherVoiceSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, START_VOICE_SEARCH);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 8, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 8, 1);
 }
 
 // Tests that the lockscreen launcher widget game url is handled correctly.
@@ -602,7 +602,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherGame) {
       GURL(base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
 
   EXPECT_EQ(params.externalURL, expected_url);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 9, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 9, 1);
 }
 
 // Tests that search passwords widget url is parsed correctly, and the right
@@ -621,7 +621,7 @@ TEST_F(AppStartupParametersTest, ParseSearchPasswordsWidgetKit) {
   EXPECT_TRUE(params.externalURL.is_empty());
   EXPECT_EQ(params.postOpeningAction, SEARCH_PASSWORDS);
   EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
-  histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 13, 1);
+  histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 13, 1);
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget, 1);
@@ -642,9 +642,9 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeOpenNTP) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params.externalURL, GURL("chrome://newtab/"));
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction",
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
                                      /*ACTION_OPEN_NTP*/ 1, 1);
 }
 
@@ -665,9 +665,9 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
 
   EXPECT_EQ(params.postOpeningAction, EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS);
   EXPECT_TRUE(params.externalURL.is_empty());
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction",
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
                                      /*ACTION_DEFAULT_BROWSER_SETTINGS*/ 2, 1);
 }
 
@@ -688,10 +688,10 @@ TEST_F(AppStartupParametersTest,
           forceApplicationMode:NO];
 
   EXPECT_EQ(params.externalURL, GURL("chrome://newtab/"));
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
   histogram_tester.ExpectBucketCount(
-      "IOS.ExternalAction",
+      kExternalActionHistogram,
       /*ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP*/ 3, 1);
 }
 
@@ -710,9 +710,9 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeChromiumURLHandled) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params.externalURL, GURL("chrome://newtab/"));
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction",
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
                                      /*ACTION_OPEN_NTP*/ 1, 1);
 }
 
@@ -729,10 +729,10 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidAction) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params, nil);
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
-                                     1);
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
+                                     /*ACTION_INVALID*/ 0, 1);
 }
 
 // Tests that the external action scheme does nothing when passed an invalid
@@ -749,10 +749,10 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionLongPath) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params, nil);
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
-                                     1);
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
+                                     /*ACTION_INVALID*/ 0, 1);
 }
 
 // Tests that the external action scheme does nothing when passed an invalid
@@ -767,10 +767,10 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoAction) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params, nil);
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
-                                     1);
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
+                                     /*ACTION_INVALID*/ 0, 1);
 }
 
 // Tests that the external action scheme does nothing when passed an invalid
@@ -785,10 +785,10 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoPath) {
           forceApplicationMode:NO];
 
   EXPECT_EQ(params, nil);
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+  histogram_tester.ExpectBucketCount(kAppLaunchSource,
                                      AppLaunchSource::EXTERNAL_ACTION, 1);
-  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
-                                     1);
+  histogram_tester.ExpectBucketCount(kExternalActionHistogram,
+                                     /*ACTION_INVALID*/ 0, 1);
 }
 
 }  // namespace
