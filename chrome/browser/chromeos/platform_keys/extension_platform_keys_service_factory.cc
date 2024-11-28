@@ -31,7 +31,7 @@ class DefaultSelectDelegate
   DefaultSelectDelegate() = default;
   DefaultSelectDelegate(const DefaultSelectDelegate&) = delete;
   auto operator=(const DefaultSelectDelegate&) = delete;
-  ~DefaultSelectDelegate() override {}
+  ~DefaultSelectDelegate() override = default;
 
   void Select(const std::string& extension_id,
               const net::CertificateList& certs,
