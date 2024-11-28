@@ -46,7 +46,7 @@
 ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
-ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() {}
+ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() = default;
 
 std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);

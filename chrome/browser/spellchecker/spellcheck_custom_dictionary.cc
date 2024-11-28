@@ -418,7 +418,7 @@ base::WeakPtr<syncer::SyncableService> SpellcheckCustomDictionary::AsWeakPtr() {
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
     : is_valid_file(false) {}
 
-SpellcheckCustomDictionary::LoadFileResult::~LoadFileResult() {}
+SpellcheckCustomDictionary::LoadFileResult::~LoadFileResult() = default;
 
 // static
 std::unique_ptr<SpellcheckCustomDictionary::LoadFileResult>

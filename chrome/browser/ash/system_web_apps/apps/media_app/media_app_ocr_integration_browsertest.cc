@@ -42,7 +42,7 @@ constexpr char kFilePdfTall[] = "tall.pdf";
 
 class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MediaAppOcrIntegrationTest() {}
+  MediaAppOcrIntegrationTest() = default;
 
   void SetUpOnMainThread() override {
     SystemWebAppIntegrationTest::SetUpOnMainThread();
