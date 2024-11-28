@@ -17,8 +17,10 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
@@ -37,6 +39,51 @@ constexpr std::string_view kConsoleSwitchName = "console";
 // please see
 // https://learn.microsoft.com/en-us/windows/win32/api/winsvc/ns-winsvc-service_table_entrya#members
 constexpr wchar_t kWindowsServiceName[] = L"";
+
+void WINAPI SpuriousServiceControlHandler(DWORD) {}
+
+// A service main function that logs the state of its service and then stops it.
+void HandleSpuriousServiceMain(DWORD argc, const wchar_t* const* argv) {
+  using ServiceHandle =
+      std::unique_ptr<SC_HANDLE__, decltype(&::CloseServiceHandle)>;
+
+  // The first argument is the name of the service.
+  const wchar_t* service_name = argc && *argv ? *argv : kWindowsServiceName;
+
+  if (auto scm_raw = ::OpenSCManager(
+          /*lpMachineName=*/nullptr,
+          /*lpDatabaseName=*/SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT)) {
+    ServiceHandle scm(scm_raw, &::CloseServiceHandle);
+    if (auto svc_raw =
+            ::OpenService(scm.get(), service_name, SERVICE_QUERY_STATUS)) {
+      ServiceHandle svc(svc_raw, &::CloseServiceHandle);
+      SERVICE_STATUS_PROCESS status = {};
+      DWORD bytes_needed = 0;
+      if (::QueryServiceStatusEx(svc.get(), SC_STATUS_PROCESS_INFO,
+                                 reinterpret_cast<unsigned char*>(&status),
+                                 sizeof(status), &bytes_needed)) {
+        LOG(ERROR) << "Spurious start for " << service_name
+                   << ". Current state: " << status.dwCurrentState
+                   << "; pid: " << status.dwProcessId;
+      } else {
+        PLOG(ERROR) << "Failed to query " << service_name;
+      }
+    } else {
+      PLOG(ERROR) << "Failed to open " << service_name;
+    }
+  } else {
+    PLOG(ERROR) << "Failed to connect to SCM";
+  }
+
+  if (auto service_status_handle = ::RegisterServiceCtrlHandler(
+          service_name, &SpuriousServiceControlHandler)) {
+    SERVICE_STATUS service_status{.dwServiceType = SERVICE_WIN32_OWN_PROCESS,
+                                  .dwCurrentState = SERVICE_STOPPED};
+    ::SetServiceStatus(service_status_handle, &service_status);
+  } else {
+    PCHECK(false);
+  }
+}
 
 }  // namespace
 
@@ -163,6 +210,18 @@ int Service::RunAsService() {
   // stopped. This same thread will process calls to `ServiceControlHandler()`.
   if (!::StartServiceCtrlDispatcher(dispatch_table)) {
     const auto error = ::GetLastError();
+
+    // MSDN States: "If StartServiceCtrlDispatcher succeeds, it connects the
+    // calling thread to the service control manager and does not return until
+    // all running services in the process have entered the SERVICE_STOPPED
+    // state." Despite that, https://crbug.com/380943791 is a case where a
+    // service main thread is executing `ServiceMainEntry()` after the service
+    // control dispatcher returns. Put the error code from a failure to start
+    // the dispatcher into a crash key so that it is included in such crashes.
+    static auto* const crash_key = base::debug::AllocateCrashKeyString(
+        "Service-DispatcherError", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(crash_key, base::NumberToString(error));
+
     PLOG(ERROR) << "Failed to connect to the service control manager";
     return error;
   }
@@ -244,13 +303,19 @@ void Service::StopInteractive() {
 // static
 void Service::ServiceControlHandler(DWORD control) {
   if (control == SERVICE_CONTROL_STOP) {
-    Service::GetInstance().OnStopRequested();
+    GetInstance().OnStopRequested();
   }
 }
 
 // static
 void WINAPI Service::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
-  GetInstance().ServiceMainImpl(base::CommandLine(argc, argv));
+  if (Service* instance = g_instance.load(std::memory_order_relaxed)) {
+    instance->ServiceMainImpl(base::CommandLine(argc, argv));
+  } else {
+    // There are cases where this function is called when there is no active
+    // Service instance; see https://crbug.com/380943791.
+    HandleSpuriousServiceMain(argc, argv);
+  }
 }
 
 void Service::SetServiceStatus(DWORD state) {
