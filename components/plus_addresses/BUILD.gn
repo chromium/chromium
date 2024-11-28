@@ -56,16 +56,7 @@ source_set("prefs") {
 }
 
 source_set("hats_utils") {
-  sources = [
-    "plus_address_hats_utils.cc",
-    "plus_address_hats_utils.h",
-  ]
-  deps = [
-    ":prefs",
-    "//base",
-    "//components/pref_registry",
-    "//components/prefs",
-  ]
+  sources = [ "plus_address_hats_utils.h" ]
 }
 
 proto_library("plus_address_blocklist_proto") {
@@ -93,7 +84,6 @@ source_set("plus_addresses") {
     "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
-    "plus_address_hats_utils.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
@@ -111,6 +101,7 @@ source_set("plus_addresses") {
   ]
   deps = [
     ":blocklist_data",
+    ":hats_utils",
     ":parsing",
     ":prefs",
     "//components/affiliations/core/browser:affiliations",
@@ -153,7 +144,6 @@ source_set("unit_tests") {
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_blocklist_data_unittest.cc",
-    "plus_address_hats_utils_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
@@ -204,6 +194,7 @@ static_library("test_support") {
     "plus_address_test_utils.h",
   ]
   deps = [
+    ":hats_utils",
     ":prefs",
     "//base",
     "//base/test:test_support",

@@ -14,7 +14,6 @@
 #include "components/lens/lens_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
@@ -583,29 +582,28 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
   survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
+      &autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey,
       kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
+      &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
       kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.emplace_back(
-      &plus_addresses::features::
-          kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
+      &autofill::features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
       kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.emplace_back(
-      &plus_addresses::features::
+      &autofill::features::
           kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
       kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
@@ -613,22 +611,21 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressUserDidChoosePlusAddressOverEmail,
+      &autofill::features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
       kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.emplace_back(
-      &plus_addresses::features::kPlusAddressUserDidChooseEmailOverPlusAddress,
+      &autofill::features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
       kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
   survey_configs.emplace_back(
-      &plus_addresses::features::
-          kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+      &autofill::features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
       kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{

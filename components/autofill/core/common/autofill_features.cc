@@ -691,6 +691,56 @@ BASE_FEATURE(kAutofillInferLabelFromDefaultSelectText,
              "AutofillInferLabelFromDefaultSelectText",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a HaTS survey is shown after the successful first time creation
+// flow.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
+             "PlusAddressAcceptedFirstTimeCreateSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the declined the first plus
+// address creation flow.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey,
+             "PlusAddressDeclinedFirstTimeCreateSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user fills a plus address
+// after triggering autofill manually.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+             "PlusAddressFilledPlusAddressViaManualFallbackSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user creates a 3rd+ plus
+// address.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
+             "PlusAddressUserCreatedMultiplePlusAddressesSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user creates a plus address
+// triggering the popup via the Chrome context menu on Desktop or via the
+// Keyboard Accessory on Android.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
+             "PlusAddressUserCreatedPlusAddressViaManualFallbackSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user chooses to fill an email
+// when a plus address suggestion is also offered in the Autofill popup.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
+             "PlusAddressUserDidChooseEmailOverPlusAddressSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, a HaTS survey is shown after the user chooses to fill a plus
+// address when an email suggestion is also offered in the Autofill popup.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
+             "PlusAddressUserDidChoosePlusAddressOverEmailSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

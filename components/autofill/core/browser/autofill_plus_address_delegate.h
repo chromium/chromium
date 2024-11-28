@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -193,6 +194,10 @@ class AutofillPlusAddressDelegate {
       ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
       ShowErrorDialogCallback show_error_dialog,
       base::OnceClosure reshow_suggestions) = 0;
+
+  // Returns survey specific data for plus address HaTS surveys. Subsequent
+  // calls can return different data.
+  virtual std::map<std::string, std::string> GetPlusAddressHatsData() const = 0;
 };
 
 }  // namespace autofill

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"

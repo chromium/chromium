@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
@@ -36,23 +38,21 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
   switch (survey_type) {
     case plus_addresses::hats::SurveyType::kAcceptedFirstTimeCreate:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressAcceptedFirstTimeCreateSurvey)) {
+              autofill::features::kPlusAddressAcceptedFirstTimeCreateSurvey)) {
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
       break;
     case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressDeclinedFirstTimeCreateSurvey)) {
+              autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey)) {
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
       break;
     case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
+              autofill::features::
                   kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
         return;
       }
@@ -61,7 +61,7 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       break;
     case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
+              autofill::features::
                   kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey)) {
         return;
       }
@@ -70,8 +70,8 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       break;
     case plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressUserDidChoosePlusAddressOverEmail)) {
+              autofill::features::
+                  kPlusAddressUserDidChoosePlusAddressOverEmailSurvey)) {
         return;
       }
       survey_trigger =
@@ -79,8 +79,8 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       break;
     case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
-                  kPlusAddressUserDidChooseEmailOverPlusAddress)) {
+              autofill::features::
+                  kPlusAddressUserDidChooseEmailOverPlusAddressSurvey)) {
         return;
       }
       survey_trigger =
@@ -88,7 +88,7 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       break;
     case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
       if (!base::FeatureList::IsEnabled(
-              plus_addresses::features::
+              autofill::features::
                   kPlusAddressFilledPlusAddressViaManualFallbackSurvey)) {
         return;
       }
@@ -97,13 +97,11 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       break;
   }
 
-  hats_service->LaunchSurvey(
-      survey_trigger,
-      /*success_callback=*/base::DoNothing(),
-      /*failure_callback=*/base::DoNothing(),
-      /*product_specific_bits_data=*/{},
-      /*product_specific_string_data=*/
-      plus_addresses::hats::GetPlusAddressHatsData(pref_service));
+  hats_service->LaunchSurvey(survey_trigger,
+                             /*success_callback=*/base::DoNothing(),
+                             /*failure_callback=*/base::DoNothing(),
+                             /*product_specific_bits_data=*/{},
+                             /*product_specific_string_data=*/{});
 }
 }  // namespace
 

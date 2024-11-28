@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_allocator.h"
@@ -756,6 +757,24 @@ void PlusAddressServiceImpl::OnAcceptedInlineSuggestion(
                      std::move(show_affiliation_error_dialog),
                      std::move(show_error_dialog),
                      std::move(reshow_suggestions), requested_plus_address));
+}
+
+std::map<std::string, std::string>
+PlusAddressServiceImpl::GetPlusAddressHatsData() const {
+  auto time_pref_to_string = [&](std::string_view pref) {
+    const base::Time time = pref_service_->GetTime(pref);
+    if (time.is_null()) {
+      return std::string("-1");
+    }
+    const base::TimeDelta delta = base::Time::Now() - time;
+    return delta.is_positive() ? base::ToString(delta.InSeconds())
+                               : std::string("-1");
+  };
+
+  return {{hats::kFirstPlusAddressCreationTime,
+           time_pref_to_string(prefs::kFirstPlusAddressCreationTime)},
+          {hats::kLastPlusAddressFillingTime,
+           time_pref_to_string(prefs::kLastPlusAddressFillingTime)}};
 }
 
 void PlusAddressServiceImpl::OnConfirmInlineCreation(

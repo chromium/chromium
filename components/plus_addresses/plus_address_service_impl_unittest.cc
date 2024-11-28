@@ -42,6 +42,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_prefs.h"
@@ -97,6 +98,7 @@ using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 constexpr std::string_view kPlusAddressSuggestionMetric =
@@ -995,6 +997,30 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionTimeoutError) {
   ASSERT_FALSE(launch_survey_future().IsReady());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsNotSet) {
+  std::map<std::string, std::string> hats_data =
+      service().GetPlusAddressHatsData();
+  EXPECT_THAT(hats_data,
+              UnorderedElementsAre(
+                  Pair(hats::kFirstPlusAddressCreationTime, std::string("-1")),
+                  Pair(hats::kLastPlusAddressFillingTime, std::string("-1"))));
+}
+
+TEST_F(PlusAddressServiceRequestsTest, GetPlusAddressHatsData_PrefsSet) {
+  pref_service().SetTime(prefs::kFirstPlusAddressCreationTime,
+                         base::Time::Now());
+  pref_service().SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
+
+  task_environment().FastForwardBy(base::Seconds(100));
+
+  std::map<std::string, std::string> hats_data =
+      service().GetPlusAddressHatsData();
+  EXPECT_THAT(hats_data,
+              UnorderedElementsAre(
+                  Pair(hats::kFirstPlusAddressCreationTime, std::string("100")),
+                  Pair(hats::kLastPlusAddressFillingTime, std::string("100"))));
+}
 
 class PlusAddressServicePreAllocationTest
     : public PlusAddressServiceRequestsTest {

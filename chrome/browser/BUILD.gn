@@ -2205,6 +2205,7 @@ static_library("browser") {
     "//components/permissions/prediction_service",
     "//components/permissions/prediction_service:prediction_service_messages_proto",
     "//components/plus_addresses",
+    "//components/plus_addresses:hats_utils",
     "//components/plus_addresses:prefs",
     "//components/plus_addresses/settings",
     "//components/plus_addresses/webdata",
@@ -7796,9 +7797,7 @@ static_library("browser") {
     # TODO(https://crbug.com/356905053): Remove the circular dependency once
     # we port ExtensionService and migrate away from
     # extensions/desktop_android/desktop_android_extension_system.cc.
-    allow_circular_includes_from += [
-      "//chrome/browser/extensions",
-    ]
+    allow_circular_includes_from += [ "//chrome/browser/extensions" ]
   }
 
   if (enable_library_cdms) {

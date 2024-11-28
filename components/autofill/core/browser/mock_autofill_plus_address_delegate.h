@@ -83,6 +83,10 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                ShowErrorDialogCallback,
                base::OnceClosure),
               (override));
+  MOCK_METHOD((std::map<std::string, std::string>),
+              GetPlusAddressHatsData,
+              (),
+              (const, override));
 };
 
 }  // namespace autofill

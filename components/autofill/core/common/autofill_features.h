@@ -245,6 +245,27 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillGreekRegexes);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillInferLabelFromDefaultSelectText);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
+// TODO: crbug.com/348139343 - Move back to components/plus_addresses.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)

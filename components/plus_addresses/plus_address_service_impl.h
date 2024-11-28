@@ -121,6 +121,7 @@ class PlusAddressServiceImpl : public PlusAddressService,
       ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
       ShowErrorDialogCallback show_error_dialog,
       base::OnceClosure reshow_suggestions) override;
+  std::map<std::string, std::string> GetPlusAddressHatsData() const override;
 
   // PlusAddressWebDataService::Observer:
   void OnWebDataChangedBySync(

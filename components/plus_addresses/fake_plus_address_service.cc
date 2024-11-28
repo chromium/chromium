@@ -15,6 +15,8 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -133,6 +135,12 @@ void FakePlusAddressService::OnAcceptedInlineSuggestion(
     ShowErrorDialogCallback show_error_dialog,
     base::OnceClosure reshow_suggestions) {
   NOTIMPLEMENTED();
+}
+
+std::map<std::string, std::string>
+FakePlusAddressService::GetPlusAddressHatsData() const {
+  return {{hats::kFirstPlusAddressCreationTime, "-1"},
+          {hats::kLastPlusAddressFillingTime, "-1"}};
 }
 
 bool FakePlusAddressService::IsPlusAddressFillingEnabled(
