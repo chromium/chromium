@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 using std::numeric_limits;
 
@@ -410,14 +411,11 @@ scoped_refptr<StringImpl> StringImpl::Substring(wtf_size_t start,
 }
 
 UChar32 StringImpl::CharacterStartingAt(wtf_size_t i) {
-  if (Is8Bit())
-    return Characters8()[i];
-  if (U16_IS_SINGLE(Characters16()[i]))
-    return Characters16()[i];
-  if (i + 1 < length_ && U16_IS_LEAD(Characters16()[i]) &&
-      U16_IS_TRAIL(Characters16()[i + 1]))
-    return U16_GET_SUPPLEMENTARY(Characters16()[i], Characters16()[i + 1]);
-  return 0;
+  if (Is8Bit()) {
+    return Span8()[i];
+  }
+  const UChar32 c = CodePointAt(Span16(), i);
+  return U_IS_SURROGATE(c) ? 0 : c;
 }
 
 size_t StringImpl::CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
