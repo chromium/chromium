@@ -240,6 +240,15 @@ class ContentAutofillDriver : public AutofillDriver,
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  // TODO(crbug.com/356442446): This event is currently routed to the main frame
+  // but it should be broadcasted to all RenderFrames when we want to collect
+  // the final checkout amount from all frames.
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)> response_callback)
+      override;
 
   // Group (1d): browser -> renderer events, unrouted (see comment above).
   // autofill::AutofillDriver:

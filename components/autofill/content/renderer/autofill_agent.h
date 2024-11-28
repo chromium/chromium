@@ -198,6 +198,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   void ExtractForm(FormRendererId form,
                    base::OnceCallback<void(const std::optional<FormData>&)>
                        callback) override;
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string&)> callback) override;
+
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   // Besides cases that "actually" clear the form, this function needs to be

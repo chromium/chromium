@@ -103,6 +103,12 @@ class TestAutofillDriverTemplate : public T {
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override {}
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)> response_callback)
+      override {}
 
   // The return value contains the FieldGlobalIds of all elements (field_id,
   // type) of `field_type_map` for which

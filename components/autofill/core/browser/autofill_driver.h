@@ -320,6 +320,16 @@ class AutofillDriver {
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) = 0;
 
+  // Searches for the final checkout amount in the DOM and returns the amount
+  // back to the browser process.
+  // See `form_util::ExtractFinalCheckoutAmountFromDom()` for details.
+  virtual void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)>
+          response_callback) = 0;
+
  private:
   friend class AutofillDriverTestApi;
 

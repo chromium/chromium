@@ -322,6 +322,24 @@ void ContentAutofillDriver::GetFourDigitCombinationsFromDom(
   }
 }
 
+void ContentAutofillDriver::ExtractLabeledTextNodeValue(
+    const std::u16string& value_regex,
+    const std::u16string& label_regex,
+    uint32_t number_of_ancestor_levels_to_search,
+    base::OnceCallback<void(const std::string& amount)> response_callback) {
+  if (!IsActive()) {
+    LOG(WARNING) << "Skipped Autofill message for inactive frame";
+    std::move(response_callback).Run(std::string());
+    return;
+  }
+  content::RenderFrameHost* main_rfh = render_frame_host_->GetMainFrame();
+  if (auto* main_driver = GetForRenderFrameHost(main_rfh)) {
+    main_driver->GetAutofillAgent()->ExtractLabeledTextNodeValue(
+        value_regex, label_regex, number_of_ancestor_levels_to_search,
+        std::move(response_callback));
+  }
+}
+
 // static
 ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {

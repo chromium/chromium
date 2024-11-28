@@ -21,9 +21,11 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -191,6 +193,13 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   MOCK_METHOD(void,
               GetPotentialLastFourCombinationsForStandaloneCvc,
               (base::OnceCallback<void(const std::vector<std::string>&)>),
+              (override));
+  MOCK_METHOD(void,
+              ExtractLabeledTextNodeValue,
+              (const std::u16string&,
+               const std::u16string&,
+               uint32_t number_of_ancestor_levels_to_search,
+               base::OnceCallback<void(const std::string&)>),
               (override));
 
  private:
@@ -436,6 +445,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
   }
 
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
 
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
@@ -922,6 +932,56 @@ TEST_F(ContentAutofillDriverTest, AskForValuesToFillChecksTriggerSource) {
   driver().renderer_events().AskForValuesToFill(
       FormData(), FieldRendererId(), gfx::Rect(),
       AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+}
+
+// Test that the inactive render frame does not trigger the DOM search and
+// early return an empty string directly.
+TEST_F(ContentAutofillDriverTest,
+       ExtractLabeledTextNodeValue_DoesNotTriggerOnInactiveFrame) {
+  // Create an AutofillDriver instance from an inactive RenderFrameHost.
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+  NavigateAndCommit(GURL("https://a.test/"));
+  content::RenderFrameHost* rfh =
+      content::WebContentsTester::For(web_contents())
+          ->AddPrerenderAndCommitNavigation(GURL("https://a.test/prerender"));
+
+  ASSERT_NE(rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+  ContentAutofillDriver& driver_of_inactive_render_frame_host = driver(rfh);
+
+  base::MockCallback<base::OnceCallback<void(const std::string&)>>
+      mock_callback;
+  // Verify that AutofillAgent.ExtractLabeledTextNodeValue should not be called.
+  EXPECT_CALL(agent(), ExtractLabeledTextNodeValue).Times(0);
+  EXPECT_CALL(mock_callback, Run(""));
+
+  driver_of_inactive_render_frame_host.browser_events()
+      .ExtractLabeledTextNodeValue(u"value_regex", u"label_regex",
+                                   /*number_of_ancestor_levels_to_search=*/6,
+                                   mock_callback.Get());
+}
+
+// Test that the renderer receives the call to run checkout amount extraction,
+// and that the browser is able to get the result.
+TEST_F(ContentAutofillDriverTest, ExtractLabeledTextNodeValue_Success) {
+  base::test::TestFuture<const std::string&> captured_result_for_test;
+
+  // On the renderer, when the call to run checkout amount extraction is
+  // received, run callback with different results.
+  EXPECT_CALL(agent(), ExtractLabeledTextNodeValue)
+      .Times(1)
+      .WillOnce(base::test::RunOnceCallback<3>("$1,234.56"));
+
+  // Trigger checkout amount extraction from the browser, and capture the result
+  // that the callback is called with.
+  driver().browser_events().ExtractLabeledTextNodeValue(
+      u"value_regex", u"label_regex",
+      /*number_of_ancestor_levels_to_search=*/6,
+      captured_result_for_test.GetCallback());
+
+  // Verify that the correct result is captured.
+  EXPECT_EQ(captured_result_for_test.Get<std::string>(), "$1,234.56");
 }
 
 class ContentAutofillDriverTest_PrerenderBadMessage

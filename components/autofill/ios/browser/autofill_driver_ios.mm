@@ -367,6 +367,14 @@ void AutofillDriverIOS::GetFourDigitCombinationsFromDom(
   NOTIMPLEMENTED();
 }
 
+void AutofillDriverIOS::ExtractLabeledTextNodeValue(
+    const std::u16string& value_regex,
+    const std::u16string& label_regex,
+    uint32_t number_of_ancestor_levels_to_search,
+    base::OnceCallback<void(const std::string& amount)> response_callback) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {}
 
 void AutofillDriverIOS::RendererShouldTriggerSuggestions(

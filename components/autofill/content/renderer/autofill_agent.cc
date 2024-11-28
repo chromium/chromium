@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -1434,6 +1435,23 @@ void AutofillAgent::ExtractForm(
     return;
   }
   std::move(callback).Run(std::nullopt);
+}
+
+void AutofillAgent::ExtractLabeledTextNodeValue(
+    const std::u16string& value_regex,
+    const std::u16string& label_regex,
+    uint32_t number_of_ancestor_levels_to_search,
+    base::OnceCallback<void(const std::string&)> callback) {
+  WebDocument document = GetDocument();
+  if (!document) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::string result = form_util::ExtractFinalCheckoutAmountFromDom(
+      document, base::UTF16ToUTF8(value_regex), base::UTF16ToUTF8(label_regex),
+      number_of_ancestor_levels_to_search);
+  std::move(callback).Run(result);
 }
 
 void AutofillAgent::EmitFormIssuesToDevtools() {

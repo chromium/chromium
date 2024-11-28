@@ -82,6 +82,13 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               GetPotentialLastFourCombinationsForStandaloneCvc,
               (base::OnceCallback<void(const std::vector<std::string>&)>),
               (override));
+  MOCK_METHOD(void,
+              ExtractLabeledTextNodeValue,
+              (const std::u16string& value_regex,
+               const std::u16string& label_regex,
+               uint32_t number_of_ancestor_levels_to_search,
+               base::OnceCallback<void(const std::string&)>),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
