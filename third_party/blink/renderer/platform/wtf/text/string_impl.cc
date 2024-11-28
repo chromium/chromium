@@ -902,22 +902,15 @@ wtf_size_t StringImpl::Find(CharacterMatchFunctionPtr match_function,
 
 wtf_size_t StringImpl::Find(base::RepeatingCallback<bool(UChar)> match_callback,
                             wtf_size_t index) const {
-  if (Is8Bit()) {
-    const LChar* characters8 = Characters8();
-    while (index < length_) {
-      if (match_callback.Run(characters8[index]))
+  return VisitCharacters(*this, [&](auto chars) {
+    while (index < chars.size()) {
+      if (match_callback.Run(chars[index])) {
         return index;
+      }
       ++index;
     }
     return kNotFound;
-  }
-  const UChar* characters16 = Characters16();
-  while (index < length_) {
-    if (match_callback.Run(characters16[index]))
-      return index;
-    ++index;
-  }
-  return kNotFound;
+  });
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
