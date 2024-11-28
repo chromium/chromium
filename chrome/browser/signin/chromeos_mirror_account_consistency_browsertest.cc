@@ -72,7 +72,7 @@ class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
       const ChromeOsMirrorAccountConsistencyTest&) = delete;
 
  protected:
-  ~ChromeOsMirrorAccountConsistencyTest() override {}
+  ~ChromeOsMirrorAccountConsistencyTest() override = default;
 
   ChromeOsMirrorAccountConsistencyTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(1);

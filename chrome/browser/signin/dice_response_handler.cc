@@ -165,7 +165,7 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   StartTokenFetch();
 }
 
-DiceResponseHandler::DiceTokenFetcher::~DiceTokenFetcher() {}
+DiceResponseHandler::DiceTokenFetcher::~DiceTokenFetcher() = default;
 
 void DiceResponseHandler::DiceTokenFetcher::OnTimeout() {
   RecordDiceFetchTokenResult(kFetchTimeout);
@@ -285,7 +285,7 @@ DiceResponseHandler::DiceResponseHandler(
   DCHECK(about_signin_internals_);
 }
 
-DiceResponseHandler::~DiceResponseHandler() {}
+DiceResponseHandler::~DiceResponseHandler() = default;
 
 void DiceResponseHandler::ProcessDiceHeader(
     const signin::DiceResponseParams& dice_params,

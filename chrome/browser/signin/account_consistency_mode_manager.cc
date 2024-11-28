@@ -112,7 +112,7 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   account_consistency_initialized_ = true;
 }
 
-AccountConsistencyModeManager::~AccountConsistencyModeManager() {}
+AccountConsistencyModeManager::~AccountConsistencyModeManager() = default;
 
 // static
 void AccountConsistencyModeManager::RegisterProfilePrefs(

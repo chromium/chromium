@@ -56,7 +56,7 @@ class BrowserContextData : public base::SupportsUserData::Data {
   BrowserContextData(const BrowserContextData&) = delete;
   BrowserContextData& operator=(const BrowserContextData&) = delete;
 
-  ~BrowserContextData() override {}
+  ~BrowserContextData() override = default;
 
   static void StartProxying(Profile* profile,
                             const net::IsolationInfo& factory_isolation_info,
@@ -100,7 +100,7 @@ class BrowserContextData : public base::SupportsUserData::Data {
   }
 
  private:
-  BrowserContextData() {}
+  BrowserContextData() = default;
 
   std::set<std::unique_ptr<ProxyingURLLoaderFactory>, base::UniquePtrComparator>
       proxies_;
