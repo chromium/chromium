@@ -3103,6 +3103,53 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleStreamsHttp1) {
   ASSERT_EQ(group.IdleStreamSocketCount(), kNumStreams);
 }
 
+// Test that preconnects don't attempt new streams when the maximum
+// preconnect count is less than or equal to the active stream count, for
+// compatibility with the non-HEv3 code path.
+// TODO(crbug.com/346835898): Revisit this behavior when we obsolete the
+// non-HEv3 code path.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       PreconnectMultipleStreamsWithActiveOneHttp1) {
+  constexpr size_t kNumPreconnectStreams = 2;
+
+  const HttpStreamKey stream_key = StreamKeyBuilder().Build();
+
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (size_t i = 0; i < kNumPreconnectStreams; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+  }
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Preparation: Create an active stream.
+  StreamRequester requester(stream_key);
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+
+  // Preconnect multiple streams.
+  Preconnector preconnector("http://a.test");
+  int rv =
+      preconnector.set_num_streams(kNumPreconnectStreams).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_EQ(group.GetAttemptManagerForTesting()->InFlightAttemptCount(),
+            kNumPreconnectStreams - 1u);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  preconnector.WaitForResult();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+  ASSERT_EQ(group.ActiveStreamSocketCount(), kNumPreconnectStreams);
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleStreamsHttp2) {
   constexpr size_t kNumStreams = 2;
 
@@ -3209,8 +3256,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleStreamsOkAndFail) {
             kNumStreams);
   ASSERT_FALSE(preconnector.result().has_value());
 
-  RunUntilIdle();
-  EXPECT_THAT(preconnector.result(), Optional(IsError(ERR_FAILED)));
+  preconnector.WaitForResult();
+  // Even the second connection attempt will fail, the preconnect request
+  // completes successfully when the first attempt succeeded. This behavior is
+  // to align the behavior of the non-HEv3 code path.
+  // TODO(crbug.com/346835898): Revisit this behavior when we obsolete the
+  // non-HEv3 code path.
+  EXPECT_THAT(preconnector.result(), Optional(OK));
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
 }
 
@@ -3268,23 +3320,21 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleRequests) {
 
   int rv = preconnector1.set_num_streams(1).Preconnect(pool());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  rv = preconnector2.set_num_streams(2).Preconnect(pool());
-  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
   ASSERT_FALSE(preconnector1.result().has_value());
-  ASSERT_FALSE(preconnector2.result().has_value());
 
   completers[0].Complete(OK);
-  RunUntilIdle();
-  ASSERT_TRUE(preconnector1.result().has_value());
-  EXPECT_THAT(*preconnector1.result(), IsOk());
-  ASSERT_FALSE(preconnector2.result().has_value());
+  preconnector1.WaitForResult();
+  EXPECT_THAT(preconnector1.result(), Optional(IsOk()));
+
+  rv = preconnector2.set_num_streams(2).Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   completers[1].Complete(OK);
-  RunUntilIdle();
+  preconnector2.WaitForResult();
   EXPECT_THAT(preconnector2.result(), Optional(IsOk()));
 }
 

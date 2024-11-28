@@ -293,10 +293,12 @@ class HttpStreamPool::AttemptManager
   // Notifies all preconnects of completion.
   void NotifyPreconnectsComplete(int rv);
 
-  // Called after completion of a connection attempt to decriment stream
+  // Called after completion of a connection attempt to decrement stream
   // counts in preconnect entries. Invokes the callback of an entry when the
-  // entry's stream counts becomes zero (i.e., `this` has enough streams).
-  void ProcessPreconnectsAfterAttemptComplete(int rv);
+  // entry's stream counts is less than or equal to `active_stream_count`
+  // (i.e., `this` has enough streams).
+  void ProcessPreconnectsAfterAttemptComplete(int rv,
+                                              size_t active_stream_count);
 
   // Creates a text based stream and notifies the highest priority job.
   void CreateTextBasedStreamAndNotify(

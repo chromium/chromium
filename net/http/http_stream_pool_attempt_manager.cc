@@ -433,6 +433,13 @@ size_t HttpStreamPool::AttemptManager::PendingPreconnectCount() const {
   for (const auto& entry : preconnects_) {
     num_streams = std::max(num_streams, entry->num_streams);
   }
+  // Pending preconnect count is treated as zero when the maximum preconnect
+  // socket count is less than or equal to the active stream socket count.
+  // This behavior is for compatibility with the non-HEv3 code path. See
+  // TransportClientSocketPool::RequestSockets().
+  if (num_streams <= group_->ActiveStreamSocketCount()) {
+    return 0;
+  }
   return PendingCountInternal(num_streams);
 }
 
@@ -1192,15 +1199,15 @@ void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
 }
 
 void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
-    int rv) {
+    int rv,
+    size_t active_stream_count) {
   std::vector<PreconnectEntry*> completed;
   for (auto& entry : preconnects_) {
     CHECK_GT(entry->num_streams, 0u);
-    --entry->num_streams;
     if (rv != OK) {
       entry->result = rv;
     }
-    if (entry->num_streams == 0) {
+    if (entry->num_streams <= active_stream_count) {
       completed.emplace_back(entry.get());
     }
   }
@@ -1441,7 +1448,9 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
     return;
   }
 
-  ProcessPreconnectsAfterAttemptComplete(rv);
+  // We will create an active stream so +1 to the current active stream count.
+  ProcessPreconnectsAfterAttemptComplete(rv,
+                                         group_->ActiveStreamSocketCount() + 1);
 
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
@@ -1485,7 +1494,9 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     return;
   }
 
-  ProcessPreconnectsAfterAttemptComplete(rv);
+  // We already removed `in_flight_attempt` from `in_flight_attempts_` so
+  // the active stream count is up-to-date.
+  ProcessPreconnectsAfterAttemptComplete(rv, group_->ActiveStreamSocketCount());
 
   if (is_failing_) {
     // `this` has already failed and is notifying jobs to the failure.
@@ -1649,6 +1660,12 @@ void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
 
 base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams() {
   base::Value::Dict dict;
+  dict.Set("num_active_sockets",
+           static_cast<int>(group_->ActiveStreamSocketCount()));
+  dict.Set("num_idle_sockets",
+           static_cast<int>(group_->IdleStreamSocketCount()));
+  dict.Set("num_total_sockets",
+           static_cast<int>(group_->ActiveStreamSocketCount()));
   dict.Set("num_jobs", static_cast<int>(jobs_.size()));
   dict.Set("num_notified_jobs", static_cast<int>(notified_jobs_.size()));
   dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
