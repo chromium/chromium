@@ -90,7 +90,7 @@ ShellLinkItem::ShellLinkItem()
     : command_line_(base::CommandLine::NO_PROGRAM), icon_index_(0) {
 }
 
-ShellLinkItem::~ShellLinkItem() {}
+ShellLinkItem::~ShellLinkItem() = default;
 
 std::wstring ShellLinkItem::GetArguments() const {
   return command_line_.GetArgumentsString();

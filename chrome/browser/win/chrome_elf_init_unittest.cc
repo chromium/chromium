@@ -21,14 +21,7 @@
 namespace {
 
 class ChromeBlocklistTrialTest : public testing::Test {
- public:
-  ChromeBlocklistTrialTest(const ChromeBlocklistTrialTest&) = delete;
-  ChromeBlocklistTrialTest& operator=(const ChromeBlocklistTrialTest&) = delete;
-
  protected:
-  ChromeBlocklistTrialTest() {}
-  ~ChromeBlocklistTrialTest() override {}
-
   void SetUp() override {
     testing::Test::SetUp();
 
