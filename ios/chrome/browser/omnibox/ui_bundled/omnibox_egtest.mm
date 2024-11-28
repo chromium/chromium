@@ -569,6 +569,10 @@ void FocusFakebox() {
 }
 
 - (void)testCopyPaste {
+  // TODO(crbug.com/381419242): Re-enable when fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails consistently on iPads.");
+  }
   [self openPage1];
 
   // Long pressing should allow copying.
