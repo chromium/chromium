@@ -173,6 +173,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     @Override
     public void destroy() {
+        if (mVisibilityDelegate != null) {
+            mVisibilityDelegate.removeObserver(mConstraintsChangedCallback);
+            mVisibilityDelegate = null;
+        }
+
         if (mNativeTabBrowserControlsConstraintsHelper != 0) {
             TabBrowserControlsConstraintsHelperJni.get()
                     .onDestroyed(
