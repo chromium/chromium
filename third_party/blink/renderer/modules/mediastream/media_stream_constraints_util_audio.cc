@@ -739,7 +739,6 @@ class ProcessingBasedContainer {
         {EchoCancellationType::kEchoCancellationAec3,
          EchoCancellationType::kEchoCancellationDisabled},
         BoolSet(),                               /* auto_gain_control_set */
-        BoolSet(),                               /* goog_audio_mirroring_set */
         BoolSet(),                               /* noise_suppression_set */
         BoolSet(),                               /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
@@ -752,9 +751,8 @@ class ProcessingBasedContainer {
 
   // Creates an instance of ProcessingBasedContainer for the processed source
   // type. The source type allows (a) either system echo cancellation, if
-  // allowed by the |parameters.effects()|, or none, (b) enabled or disabled
-  // audio mirroring, while (c) all other processing properties settings cannot
-  // be enabled.
+  // allowed by the |parameters.effects()|, or none, while (b) all other
+  // processing properties settings cannot be enabled.
   static ProcessingBasedContainer CreateNoApmProcessedContainer(
       const SourceInfo& source_info,
       bool is_device_capture,
@@ -764,7 +762,6 @@ class ProcessingBasedContainer {
         ProcessingType::kNoApmProcessed,
         {EchoCancellationType::kEchoCancellationDisabled},
         BoolSet({false}),                        /* auto_gain_control_set */
-        BoolSet(),                               /* goog_audio_mirroring_set */
         BoolSet({false}),                        /* noise_suppression_set */
         BoolSet(),                               /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
@@ -788,7 +785,6 @@ class ProcessingBasedContainer {
         ProcessingType::kUnprocessed,
         {EchoCancellationType::kEchoCancellationDisabled},
         BoolSet({false}),                        /* auto_gain_control_set */
-        BoolSet({false}),                        /* goog_audio_mirroring_set */
         BoolSet({false}),                        /* noise_suppression_set */
         BoolSet({false}),                        /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
@@ -951,7 +947,6 @@ class ProcessingBasedContainer {
   ProcessingBasedContainer(ProcessingType processing_type,
                            Vector<EchoCancellationType> echo_cancellation_types,
                            BoolSet auto_gain_control_set,
-                           BoolSet goog_audio_mirroring_set,
                            BoolSet noise_suppression_set,
                            BoolSet voice_isolation_set,
                            IntRangeSet sample_size_range,
