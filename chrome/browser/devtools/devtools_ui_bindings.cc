@@ -166,7 +166,7 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   DefaultBindingsDelegate& operator=(const DefaultBindingsDelegate&) = delete;
 
  private:
-  ~DefaultBindingsDelegate() override {}
+  ~DefaultBindingsDelegate() override = default;
 
   void ActivateWindow() override;
   void CloseWindow() override {}
@@ -616,7 +616,7 @@ DevToolsUIBindings::FrontendWebContentsObserver::FrontendWebContentsObserver(
       devtools_bindings_(devtools_ui_bindings) {}
 
 DevToolsUIBindings::FrontendWebContentsObserver::
-    ~FrontendWebContentsObserver() {}
+    ~FrontendWebContentsObserver() = default;
 
 // static
 GURL DevToolsUIBindings::SanitizeFrontendURL(const GURL& url) {

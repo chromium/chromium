@@ -49,7 +49,7 @@ class DevToolsFileHelper {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void FileSystemAdded(const std::string& error,
                                  const FileSystem* file_system) = 0;
     virtual void FileSystemRemoved(const std::string& file_system_path) = 0;

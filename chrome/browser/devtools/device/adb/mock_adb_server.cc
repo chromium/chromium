@@ -215,7 +215,7 @@ class SimpleHttpServer {
   class Parser {
    public:
     virtual size_t Consume(const char* data, size_t size) = 0;
-    virtual ~Parser() {}
+    virtual ~Parser() = default;
   };
 
   using SendCallback = base::RepeatingCallback<void(const std::string&)>;

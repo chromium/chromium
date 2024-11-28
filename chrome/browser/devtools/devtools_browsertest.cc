@@ -2313,7 +2313,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   BrowserAutofillManagerTestDelegateDevtoolsImpl& operator=(
       const BrowserAutofillManagerTestDelegateDevtoolsImpl&) = delete;
 
-  ~BrowserAutofillManagerTestDelegateDevtoolsImpl() override {}
+  ~BrowserAutofillManagerTestDelegateDevtoolsImpl() override = default;
 
   void DidPreviewFormData() override {}
 

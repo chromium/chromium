@@ -99,7 +99,7 @@ DevToolsAndroidBridge::Factory::Factory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-DevToolsAndroidBridge::Factory::~Factory() {}
+DevToolsAndroidBridge::Factory::~Factory() = default;
 
 std::unique_ptr<KeyedService>
 DevToolsAndroidBridge::Factory::BuildServiceInstanceForBrowserContext(
