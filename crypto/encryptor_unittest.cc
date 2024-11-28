@@ -228,17 +228,17 @@ void TestAESCTREncrypt(
 
   // Repeat the test with the bytes API.
   EXPECT_TRUE(
-      encryptor.SetCounter(base::make_span(init_counter, init_counter_size)));
+      encryptor.SetCounter(base::span(init_counter, init_counter_size)));
   std::vector<uint8_t> encrypted_vec;
-  EXPECT_TRUE(encryptor.Encrypt(base::make_span(plaintext, plaintext_size),
-                                &encrypted_vec));
+  EXPECT_TRUE(
+      encryptor.Encrypt(base::span(plaintext, plaintext_size), &encrypted_vec));
 
   EXPECT_EQ(ciphertext_size, encrypted_vec.size());
   EXPECT_EQ(0, memcmp(encrypted_vec.data(), ciphertext, encrypted_vec.size()));
 
   std::vector<uint8_t> decrypted_vec;
   EXPECT_TRUE(
-      encryptor.SetCounter(base::make_span(init_counter, init_counter_size)));
+      encryptor.SetCounter(base::span(init_counter, init_counter_size)));
   EXPECT_TRUE(encryptor.Decrypt(encrypted_vec, &decrypted_vec));
 
   EXPECT_EQ(std::vector<uint8_t>(plaintext, plaintext + plaintext_size),

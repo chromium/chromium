@@ -62,8 +62,7 @@ bool HMAC::Init(const SymmetricKey* key) {
 bool HMAC::Sign(std::string_view data,
                 unsigned char* digest,
                 size_t digest_length) const {
-  return Sign(base::as_bytes(base::make_span(data)),
-              base::make_span(digest, digest_length));
+  return Sign(base::as_byte_span(data), base::span(digest, digest_length));
 }
 
 bool HMAC::Sign(base::span<const uint8_t> data,
@@ -81,8 +80,7 @@ bool HMAC::Sign(base::span<const uint8_t> data,
 }
 
 bool HMAC::Verify(std::string_view data, std::string_view digest) const {
-  return Verify(base::as_bytes(base::make_span(data)),
-                base::as_bytes(base::make_span(digest)));
+  return Verify(base::as_byte_span(data), base::as_byte_span(digest));
 }
 
 bool HMAC::Verify(base::span<const uint8_t> data,
@@ -94,8 +92,7 @@ bool HMAC::Verify(base::span<const uint8_t> data,
 
 bool HMAC::VerifyTruncated(std::string_view data,
                            std::string_view digest) const {
-  return VerifyTruncated(base::as_bytes(base::make_span(data)),
-                         base::as_bytes(base::make_span(digest)));
+  return VerifyTruncated(base::as_byte_span(data), base::as_byte_span(digest));
 }
 
 bool HMAC::VerifyTruncated(base::span<const uint8_t> data,
