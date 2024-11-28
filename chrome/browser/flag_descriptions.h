@@ -1250,6 +1250,9 @@ extern const char kFlexFirmwareUpdateDescription[];
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 
+extern const char kHappyEyeballsV3Name[];
+extern const char kHappyEyeballsV3Description[];
+
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 

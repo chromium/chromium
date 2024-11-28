@@ -2213,6 +2213,11 @@ const char kEnableSearchAggregatorPolicyDescription[] =
     "engine that can be used in the Omnibox";
 #endif
 
+const char kHappyEyeballsV3Name[] = "Happy Eyeballs Version 3";
+const char kHappyEyeballsV3Description[] =
+    "Enables the Happy Eyeballs Version 3 algorithm. See "
+    "https://datatracker.ietf.org/doc/draft-pauly-v6ops-happy-eyeballs-v3/";
+
 const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
 const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "

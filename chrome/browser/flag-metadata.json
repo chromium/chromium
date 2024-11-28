@@ -4900,6 +4900,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "happy-eyeballs-v3",
+    "owners": [ "bashi@chromium.org", "blink-network-stack@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "hardware-media-key-handling",
     "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 140
