@@ -62,7 +62,7 @@ struct ImageInfo {
   ImageInfo(ImageInfo&&) = default;
   ImageInfo& operator=(ImageInfo&&) = default;
 
-  ~ImageInfo() {}
+  ~ImageInfo() = default;
 
   base::FilePath file_path;
   int pixels_per_side;

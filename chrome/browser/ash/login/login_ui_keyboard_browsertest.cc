@@ -90,7 +90,7 @@ class LoginUIKeyboardTest : public LoginManagerTest {
     test_users_.push_back(
         AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId));
   }
-  ~LoginUIKeyboardTest() override {}
+  ~LoginUIKeyboardTest() override = default;
 
   void SetUpOnMainThread() override {
     user_input_methods.push_back("xkb:fr::fra");
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
 class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
  public:
   LoginUIKeyboardTestWithUsersAndOwner() = default;
-  ~LoginUIKeyboardTestWithUsersAndOwner() override {}
+  ~LoginUIKeyboardTestWithUsersAndOwner() override = default;
 
   void SetUp() override {
     LoginManagerTest::SetUp();

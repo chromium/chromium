@@ -70,7 +70,7 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
-LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() {}
+LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() = default;
 
 void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
   SetPeopleAPIResponseLocale("en");

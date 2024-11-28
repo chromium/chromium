@@ -326,7 +326,7 @@ ChromeRestartRequest::ChromeRestartRequest(const std::vector<std::string>& argv,
                                            RestartChromeReason reason)
     : argv_(argv), reason_(reason) {}
 
-ChromeRestartRequest::~ChromeRestartRequest() {}
+ChromeRestartRequest::~ChromeRestartRequest() = default;
 
 void ChromeRestartRequest::Start() {
   VLOG(1) << "Requesting a restart with command line: "

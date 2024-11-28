@@ -583,11 +583,11 @@ std::string Sha1Digest(const std::string& data) {
 
 }  // namespace
 
-UserSessionManagerDelegate::~UserSessionManagerDelegate() {}
+UserSessionManagerDelegate::~UserSessionManagerDelegate() = default;
 
 void UserSessionStateObserver::PendingUserSessionsRestoreFinished() {}
 
-UserSessionStateObserver::~UserSessionStateObserver() {}
+UserSessionStateObserver::~UserSessionStateObserver() = default;
 
 // static
 UserSessionManager* UserSessionManager::GetInstance() {

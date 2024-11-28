@@ -14,7 +14,7 @@ AccountTransferClientData::AccountTransferClientData(
     Base64UrlString challenge_b64url)
     : challenge_b64url_(challenge_b64url) {}
 
-AccountTransferClientData::~AccountTransferClientData() {}
+AccountTransferClientData::~AccountTransferClientData() = default;
 
 Base64UrlString AccountTransferClientData::GetChallengeBase64URLString() {
   return challenge_b64url_;

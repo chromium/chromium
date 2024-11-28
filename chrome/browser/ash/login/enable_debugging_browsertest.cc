@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingTest, NoShowInNonDevMode) {
 
 class EnableDebuggingRequestedTest : public EnableDebuggingDevTest {
  public:
-  EnableDebuggingRequestedTest() {}
+  EnableDebuggingRequestedTest() = default;
 
   // EnableDebuggingDevTest overrides:
   bool SetUpUserDataDirectory() override {

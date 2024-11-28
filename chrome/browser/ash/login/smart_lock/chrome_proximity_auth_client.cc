@@ -24,7 +24,7 @@ namespace ash {
 ChromeProximityAuthClient::ChromeProximityAuthClient(Profile* profile)
     : profile_(profile) {}
 
-ChromeProximityAuthClient::~ChromeProximityAuthClient() {}
+ChromeProximityAuthClient::~ChromeProximityAuthClient() = default;
 
 void ChromeProximityAuthClient::UpdateSmartLockState(SmartLockState state) {
   SmartLockService* service = SmartLockService::Get(profile_);

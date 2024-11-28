@@ -258,7 +258,7 @@ class UserImageManagerImpl::Job {
 UserImageManagerImpl::Job::Job(UserImageManagerImpl* parent)
     : parent_(parent), run_(false) {}
 
-UserImageManagerImpl::Job::~Job() {}
+UserImageManagerImpl::Job::~Job() = default;
 
 void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
                                           const int image_index,
@@ -560,7 +560,7 @@ UserImageManagerImpl::UserImageManagerImpl(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 }
 
-UserImageManagerImpl::~UserImageManagerImpl() {}
+UserImageManagerImpl::~UserImageManagerImpl() = default;
 
 void UserImageManagerImpl::LoadUserImage() {
   // If the user image for `user_id` is managed by policy and the policy-set

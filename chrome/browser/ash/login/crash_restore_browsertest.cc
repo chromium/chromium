@@ -123,7 +123,7 @@ class UserSessionRestoreObserver : public UserSessionStateObserver {
   UserSessionRestoreObserver& operator=(const UserSessionRestoreObserver&) =
       delete;
 
-  ~UserSessionRestoreObserver() override {}
+  ~UserSessionRestoreObserver() override = default;
 
   void PendingUserSessionsRestoreFinished() override {
     user_sessions_restored_ = true;
@@ -155,8 +155,8 @@ class UserSessionRestoreObserver : public UserSessionStateObserver {
 
 class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
  protected:
-  CrashRestoreComplexTest() {}
-  ~CrashRestoreComplexTest() override {}
+  CrashRestoreComplexTest() = default;
+  ~CrashRestoreComplexTest() override = default;
 
   bool SetUpUserDataDirectory() override {
     RegisterUsers();

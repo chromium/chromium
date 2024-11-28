@@ -26,7 +26,7 @@ ChromeVoxHintDetector::ChromeVoxHintDetector(const base::TickClock* clock,
   StartIdleDetection();
 }
 
-ChromeVoxHintDetector::~ChromeVoxHintDetector() {}
+ChromeVoxHintDetector::~ChromeVoxHintDetector() = default;
 
 void ChromeVoxHintDetector::StartIdleDetection() {
   if (switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {

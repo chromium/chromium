@@ -163,7 +163,7 @@ OobePageActor::OobePageActor(std::optional<OobeScreenId> screen,
                              std::optional<ash::test::UIPath> path)
     : screen_(screen), path_(path) {}
 
-OobePageActor::~OobePageActor() {}
+OobePageActor::~OobePageActor() = default;
 
 std::unique_ptr<test::TestConditionWaiter> OobePageActor::UntilShown() {
   std::unique_ptr<test::TestConditionWaiter> result =

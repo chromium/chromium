@@ -137,7 +137,7 @@ class MockSmartLockNotificationController
   MockSmartLockNotificationController& operator=(
       const MockSmartLockNotificationController&) = delete;
 
-  ~MockSmartLockNotificationController() override {}
+  ~MockSmartLockNotificationController() override = default;
 
   // SmartLockNotificationController:
   MOCK_METHOD0(ShowChromebookAddedNotification, void());
