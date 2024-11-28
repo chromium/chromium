@@ -25,6 +25,16 @@ COMPONENT_EXPORT(NETWORK_CPP)
 std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
     const net::HttpResponseHeaders& headers);
 
+// Given an SRI Message Signature, and a set of response headers, construct
+// the "signature base" as per Section 2.5 of RFC9421. Returns `std::nullopt`
+// if no base can be constructed.
+//
+// https://www.rfc-editor.org/rfc/rfc9421.html#name-creating-the-signature-base
+COMPONENT_EXPORT(NETWORK_CPP)
+std::optional<std::string> ConstructSignatureBase(
+    const mojom::SRIMessageSignaturePtr& signature,
+    const net::HttpResponseHeaders& headers);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_SRI_MESSAGE_SIGNATURES_H_

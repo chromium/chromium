@@ -9,6 +9,8 @@
 
 namespace network {
 
+using Parameters = mojom::SRIMessageSignatureComponent::Parameter;
+
 namespace {
 
 const size_t kEd25519KeyLength = 32;
@@ -37,8 +39,7 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
     }
     auto result = mojom::SRIMessageSignatureComponent::New();
     result->name = name;
-    result->params.push_back(mojom::SRIMessageSignatureComponent::Parameter::
-                                 kStrictStructuredFieldSerialization);
+    result->params.push_back(Parameters::kStrictStructuredFieldSerialization);
     return result;
   } else {
     return std::nullopt;
@@ -175,6 +176,145 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
   }
 
   return parsed_headers;
+}
+
+std::optional<std::string> ConstructSignatureBase(
+    const mojom::SRIMessageSignaturePtr& signature,
+    const net::HttpResponseHeaders& headers) {
+  if (!signature) {
+    return std::nullopt;
+  }
+
+  // Build the signature base per
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-creating-the-signature-base
+  std::stringstream signature_base;
+
+  // 2. For each message component item in the covered components set (in
+  //    order):
+  for (const auto& component : signature->components) {
+    // 2.1. If the component identifier (including its parameters) has already
+    //      been added to the signature base, produce an error.
+    //
+    //      (We handle this at parse time)
+    //
+    // 2.2. Append the component identifier for the covered component ...
+    // 2.3. Append a single colon (`:`).
+    // 2.4. Append a single space (` `).
+    signature_base << '"' << component->name << "\": ";
+
+    // 2.5. Determine the component value for the component identifier.
+    //
+    //      (The error conditions listed in the spec for this step do not
+    //       apply to the SRI-valid subset of message signatures.)
+    //
+    //      *  If the component name does not start with an "at" (`@`)
+    //         character, canonizalize the HTTP field value ... If the field
+    //         cannot be found in the message or the value cannot be obtained
+    //         in the context, produce an error.
+    std::optional<std::string> component_value;
+    std::optional<std::string> header =
+        headers.GetNormalizedHeader(component->name);
+    if (!header.has_value()) {
+      return std::nullopt;
+    }
+
+    // Determine how to serialize the header:
+    //
+    // SRI requires the `sf` parameter, which forces strict serialization for
+    // structured fields.
+    if (component->params.size() != 1u ||
+        component->params[0] !=
+            Parameters::kStrictStructuredFieldSerialization) {
+      return std::nullopt;
+    }
+
+    // Unfortunately, there doesn't seem to be a good way to decide how a
+    // given structured field should be serialized (as a Dictionary? List?),
+    // other than encoding a list of known headers and their types.
+    // Fortunately, we only support one header at the moment, so the list is
+    // managable.
+    if (component->name == "identity-digest") {
+      std::optional<net::structured_headers::Dictionary> dict =
+          net::structured_headers::ParseDictionary(header.value());
+      if (!dict.has_value()) {
+        return std::nullopt;
+      }
+      component_value =
+          net::structured_headers::SerializeDictionary(dict.value());
+    } else {
+      return std::nullopt;
+    }
+
+    // 2.6. Append the covered component's canonicalized component value.
+    // 2.7. Append a single newline (`\n`).
+    if (!component_value.has_value()) {
+      return std::nullopt;
+    }
+    signature_base << component_value.value() << '\n';
+  }
+
+  // 3.   Append the signature parameters component (Section 2.3) ...
+  // 3.1. Append the ... exact value `"@signature-params"`.
+  // 3.2. Append a single colon (`:`).
+  // 3.3. Append a single space (` `).
+  signature_base << "\"@signature-params\": ";
+
+  // 3.4. Append the signature parameters' canonicalized component values as
+  //      defined in Section 2.3 ...
+  //
+  // 1. Let the output be an empty string.
+  // 2. Determine an order for the component identifiers of the covered
+  //    components.
+  //
+  //    (We only have one component, so ordering is trivial.)
+  // 3. Serialize the component identifiers ... as an ordered Inner List of
+  //    String values ... append this to the output.
+  signature_base << '(';
+  for (const auto& component : signature->components) {
+    signature_base << '"' << component->name << '"';
+    for (auto param : component->params) {
+      switch (param) {
+        case Parameters::kStrictStructuredFieldSerialization:
+          signature_base << ";sf";
+          break;
+      }
+    }
+
+    // Put a space between each component, avoiding an extra space at the end.
+    if (&component != &signature->components.back()) {
+      signature_base << ' ';
+    }
+  }
+  signature_base << ')';
+
+  // 4. Determine an order for any signature parameters.
+  //
+  //    (SRI's validity constraints require alphabetization, so:
+  //     « "alg", "created", "expires", "keyid", "nonce", "tag" ».)
+  //
+  // 5. Append the parameters to the inner list in order ... skipping
+  //    parameters that are not available or not used for this message
+  //    signature.
+  if (signature->alg.has_value()) {
+    signature_base << ";alg=\"" << signature->alg.value() << "\"";
+  }
+  if (signature->created.has_value()) {
+    signature_base << ";created=" << signature->created.value();
+  }
+  if (signature->expires.has_value()) {
+    signature_base << ";expires=" << signature->expires.value();
+  }
+  if (signature->keyid.has_value()) {
+    signature_base << ";keyid=\"" << signature->keyid.value() << "\"";
+  }
+  if (signature->nonce.has_value()) {
+    signature_base << ";nonce=\"" << signature->nonce.value() << "\"";
+  }
+  if (signature->tag.has_value()) {
+    signature_base << ";tag=\"" << signature->tag.value() << "\"";
+  }
+
+  return signature_base.str();
 }
 
 }  // namespace network

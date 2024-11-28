@@ -13,6 +13,8 @@
 
 namespace network {
 
+using Parameters = mojom::SRIMessageSignatureComponent::Parameter;
+
 namespace {
 
 // Exciting test constants, leaning on test data from the RFC.
@@ -43,15 +45,14 @@ const char* kSignature =
 //
 // {"hello": "world"}
 // ```
-// const char* kTestDigest = "X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=";
-// const char* kTestBody = "{\"hello\": \"world\"}";
-
 const char* kValidSignatureInputHeader =
     "signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
     "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
 const char* kValidSignatureHeader =
     "signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aO"
     "wEAz3w6KjjZuGkdrOUwxhBQ==:";
+const char* kValidDigestHeader =
+    "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
 
 }  // namespace
 
@@ -484,6 +485,126 @@ TEST_F(SRIMessageSignatureParserTest, Nonce) {
     ASSERT_EQ(1u, result.size());
     ASSERT_TRUE(result[0]->nonce.has_value());
     EXPECT_EQ(test, result[0]->nonce.value());
+  }
+}
+
+//
+// "Signature Base" Creation Tests
+//
+class SRIMessageSignatureBaseTest : public testing::Test {
+ protected:
+  SRIMessageSignatureBaseTest() {}
+
+  scoped_refptr<net::HttpResponseHeaders> ValidHeadersPlusInput(
+      const char* input) {
+    auto builder =
+        net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200");
+    builder.AddHeader("Identity-Digest", kValidDigestHeader);
+    builder.AddHeader("Signature", kValidSignatureHeader);
+    if (input) {
+      builder.AddHeader("Signature-Input", input);
+    }
+    return builder.Build();
+  }
+
+  mojom::SRIMessageSignaturePtr ValidSignature() {
+    mojom::SRIMessageSignaturePtr sig = mojom::SRIMessageSignature::New();
+
+    sig->label = "signature";
+
+    std::optional<std::vector<uint8_t>> decoded =
+        base::Base64Decode(kSignature);
+    EXPECT_TRUE(decoded.has_value());
+    sig->signature = decoded.value();
+
+    mojom::SRIMessageSignatureComponentPtr valid_component =
+        mojom::SRIMessageSignatureComponent::New();
+    valid_component->name = "identity-digest";
+    valid_component->params = {Parameters::kStrictStructuredFieldSerialization};
+    sig->components.push_back(std::move(valid_component));
+
+    sig->alg = "ed25519";
+    sig->keyid = kPublicKey;
+    sig->tag = "sri";
+    return sig;
+  }
+};
+
+TEST_F(SRIMessageSignatureBaseTest, NoSignaturesNoBase) {
+  auto headers =
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200").Build();
+  mojom::SRIMessageSignaturePtr signature;
+
+  std::optional<std::string> result =
+      ConstructSignatureBase(signature, *headers);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
+  auto headers = ValidHeadersPlusInput(kValidSignatureInputHeader);
+  auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(1u, signatures.size());
+
+  std::optional<std::string> result =
+      ConstructSignatureBase(signatures[0], *headers);
+  ASSERT_TRUE(result.has_value());
+  std::string expected_base =
+      base::StrCat({"\"identity-digest\": ", kValidDigestHeader,
+                    "\n\"@signature-params\": "
+                    "(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"",
+                    kPublicKey, "\";tag=\"sri\""});
+  EXPECT_EQ(expected_base, result.value());
+}
+
+TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
+  struct {
+    int64_t created;
+    int64_t expires;
+    std::string nonce;
+  } cases[] = {{0, 0, ""},
+               {0, 1, ""},
+               {0, 0, "noncy-nonce"},
+               {0, 1, "noncy-nonce"},
+               {1, 0, ""},
+               {1, 1, ""},
+               {1, 0, "noncy-nonce"},
+               {1, 1, "noncy-nonce"},
+               {999999999999999, 999999999999999, "noncy-nonce"}};
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Test case:\n- Created: `" << test.created
+                 << "`\n- Expires: `" << test.expires << "`\n- Nonce:  `"
+                 << test.nonce << '`');
+
+    mojom::SRIMessageSignaturePtr signature = ValidSignature();
+    std::stringstream expected_base;
+    expected_base
+        << "\"identity-digest\": " << kValidDigestHeader << '\n'
+        << "\"@signature-params\": (\"identity-digest\";sf);alg=\"ed25519\"";
+    if (test.created) {
+      signature->created = test.created;
+      expected_base << ";created=" << test.created;
+    }
+    if (test.expires) {
+      signature->expires = test.expires;
+      expected_base << ";expires=" << test.expires;
+    }
+    expected_base << ";keyid=\"" << kPublicKey << '"';
+    if (!test.nonce.empty()) {
+      signature->nonce = test.nonce;
+      expected_base << ";nonce=\"" << test.nonce << '"';
+    }
+    expected_base << ";tag=\"sri\"";
+
+    // These headers won't have a `Signature-Input` header that matches the
+    // test, but we're constructing the SRIMessageSignature manually, so that
+    // bit doesn't matter. We just need the `Identity-Digest` headers to match.
+    auto headers = ValidHeadersPlusInput(kValidSignatureInputHeader);
+    std::optional<std::string> result =
+        ConstructSignatureBase(signature, *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
   }
 }
 
