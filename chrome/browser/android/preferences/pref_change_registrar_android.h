@@ -18,7 +18,9 @@ class Profile;
 // for Android.
 class PrefChangeRegistrarAndroid {
  public:
-  PrefChangeRegistrarAndroid(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  PrefChangeRegistrarAndroid(JNIEnv* env,
+                             const JavaParamRef<jobject>& obj,
+                             Profile* profile);
   void Destroy(JNIEnv*, const JavaParamRef<jobject>&);
 
   PrefChangeRegistrarAndroid(const PrefChangeRegistrarAndroid&) = delete;
@@ -38,7 +40,6 @@ class PrefChangeRegistrarAndroid {
 
   PrefChangeRegistrar pref_change_registrar_;
   ScopedJavaGlobalRef<jobject> pref_change_registrar_jobject_;
-  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_

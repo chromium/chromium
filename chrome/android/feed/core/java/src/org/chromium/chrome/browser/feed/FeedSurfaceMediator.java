@@ -312,7 +312,7 @@ public class FeedSurfaceMediator
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
         } else {
-            mPrefChangeRegistrar = new PrefChangeRegistrar();
+            mPrefChangeRegistrar = new PrefChangeRegistrar(profile);
         }
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS_BY_DSE, this::updateContent);

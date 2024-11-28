@@ -40,8 +40,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
 
     @VisibleForTesting static final String PREF_EMAIL_NOTIFICATIONS = "send_email_switch";
 
-    private final PrefChangeRegistrar mPrefChangeRegistrar = new PrefChangeRegistrar();
-
+    private PrefChangeRegistrar mPrefChangeRegistrar;
     private PrefService mPrefService;
     private TextMessagePreference mMobileNotificationsText;
     private ChromeSwitchPreference mEmailNotificationsSwitch;
@@ -75,6 +74,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
             String email = info.getEmail();
             mEmailNotificationsSwitch.setSummary(
                     getString(R.string.price_notifications_settings_email_description, email));
+            mPrefChangeRegistrar = new PrefChangeRegistrar(getProfile());
             mPrefChangeRegistrar.addObserver(
                     Pref.PRICE_EMAIL_NOTIFICATIONS_ENABLED, this::updateEmailNotificationSwitch);
             updateEmailNotificationSwitch();

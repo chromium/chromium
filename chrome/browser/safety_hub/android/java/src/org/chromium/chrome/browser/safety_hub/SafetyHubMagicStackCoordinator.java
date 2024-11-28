@@ -38,7 +38,7 @@ class SafetyHubMagicStackCoordinator implements ModuleProvider {
                         MagicStackBridge.getForProfile(profile),
                         tabModelSelector,
                         moduleDelegate,
-                        new PrefChangeRegistrar(),
+                        new PrefChangeRegistrar(profile),
                         modalDialogManagerSupplier,
                         SafetyHubHatsHelper.getForProfile(profile));
     }
