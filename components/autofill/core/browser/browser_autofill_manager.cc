@@ -373,7 +373,6 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
@@ -2527,27 +2526,24 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (trigger_source !=
-      AutofillSuggestionTriggerSource::kManualFallbackAddress) {
-    bool should_suppress =
-        client()
-            .GetPersonalDataManager()
-            .address_data_manager()
-            .AreAddressSuggestionsBlocked(
-                CalculateFormSignature(form),
-                CalculateFieldSignatureForField(trigger_field), form.url());
-    base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
-                              should_suppress);
-    if (should_suppress &&
-        !base::FeatureList::IsEnabled(
-            features::test::kAutofillDisableSuggestionStrikeDatabase)) {
-      LOG_AF(log_manager())
-          << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
-          << " Reason: strike limit reached.";
-      // If the user already reached the strike limit on this particular field,
-      // address suggestions are suppressed.
-      return {};
-    }
+  bool should_suppress =
+      client()
+          .GetPersonalDataManager()
+          .address_data_manager()
+          .AreAddressSuggestionsBlocked(
+              CalculateFormSignature(form),
+              CalculateFieldSignatureForField(trigger_field), form.url());
+  base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
+                            should_suppress);
+  if (should_suppress &&
+      !base::FeatureList::IsEnabled(
+          features::test::kAutofillDisableSuggestionStrikeDatabase)) {
+    LOG_AF(log_manager()) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: strike limit reached.";
+    // If the user already reached the strike limit on this particular field,
+    // address suggestions are suppressed.
+    return {};
   }
 #endif
   metrics_->address_form_event_logger.OnDidPollSuggestions(trigger_field);

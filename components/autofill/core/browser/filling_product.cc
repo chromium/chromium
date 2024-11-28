@@ -148,10 +148,6 @@ FillingProduct GetPreferredSuggestionFillingProduct(
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource suggestion_trigger_source) {
   if (suggestion_trigger_source ==
-      mojom::AutofillSuggestionTriggerSource::kManualFallbackAddress) {
-    return FillingProduct::kAddress;
-  }
-  if (suggestion_trigger_source ==
       mojom::AutofillSuggestionTriggerSource::kManualFallbackPayments) {
     return FillingProduct::kCreditCard;
   }

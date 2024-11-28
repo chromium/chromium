@@ -1005,25 +1005,6 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateAcceptDatalistSuggestion) {
       SuggestionPosition{.row = 0});
 }
 
-// Test that a11y autofill availability is set to `kNoSuggestions` when
-// the popup is open and if it was manually triggered on an unclassified field.
-TEST_F(AutofillExternalDelegateTest,
-       AutofillSuggestionAvailability_ManuallFallback) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-
-  std::vector<Suggestion> suggestions = {test::CreateAutofillSuggestion(
-      SuggestionType::kAddressEntry, u"Suggestion main_text")};
-  OnSuggestionsReturned(queried_field().global_id(), suggestions);
-
-  EXPECT_CALL(driver(),
-              RendererShouldSetSuggestionAvailability(
-                  queried_field().global_id(),
-                  mojom::AutofillSuggestionAvailability::kNoSuggestions));
-
-  external_delegate().OnSuggestionsShown(suggestions);
-}
-
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
 // the popup is open with regular autofill suggestions.
 TEST_F(AutofillExternalDelegateTest, AutofillSuggestionAvailability_Autofill) {
@@ -1187,9 +1168,9 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
 
-  // Expect that `kManualFallbackAddress` translates to the manual fallback
-  // trigger source.
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  // Expect that `kManualFallbackPlusAddresses` translates to the manual
+  // fallback trigger source.
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
   expected_source = AutofillTriggerSource::kManualFallback;
   EXPECT_CALL(manager(),
               FillOrPreviewProfileForm(mojom::ActionPersistence::kFill,

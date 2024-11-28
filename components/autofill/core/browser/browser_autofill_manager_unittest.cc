@@ -1606,7 +1606,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Check that after accepting a suggestion, suppression and strikes are reset.
   GetAutofillSuggestions(
       form, form.fields()[0],
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
   external_delegate()->DidAcceptSuggestion(
       Suggestion(SuggestionType::kAddressEntry), {});
   EXPECT_FALSE(test_api(*browser_autofill_manager_)

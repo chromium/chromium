@@ -120,7 +120,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
 #else
       return AutofillTriggerSource::kPopup;
 #endif  // BUILDFLAG(IS_ANDROID)
-    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
     case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
@@ -548,23 +547,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
         base::UserMetricsAction("PlusAddresses.AddressFillSuggestionShown"));
   }
 
-  // If the popup was manually triggered on an unclassified field, the chances
-  // are high that it has no regular suggestions, as it is the main usecase for
-  // the manual fallback functionality. It is considered an acceptable
-  // approximation, but it obviously doesn't cover many other cases, such as
-  // manual triggering payment suggestions on an address field, and should
-  // be reconsidered if some more critical cases are found.
-  const bool likely_has_no_regular_autofilling_options =
-      TriggerSourceFromSuggestionTriggerSource(trigger_source_) ==
-          AutofillTriggerSource::kManualFallback &&
-      (!GetQueriedAutofillField() ||
-       GetQueriedAutofillField()->Type().IsUnknown());
-
-  if (likely_has_no_regular_autofilling_options) {
-    OnAutofillAvailabilityEvent(
-        mojom::AutofillSuggestionAvailability::kNoSuggestions);
-  } else if (std::ranges::any_of(shown_suggestion_types,
-                                 HasAutofillSugestionsForA11y)) {
+  if (std::ranges::any_of(shown_suggestion_types,
+                          HasAutofillSugestionsForA11y)) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutofillAvailable);
   } else {
