@@ -236,7 +236,7 @@ UIImageView* BrandingImageView() {
       PlusAddressModalCompletionStatus::kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
-
+  _bottomSheetErrorStatus.reset();
   self.isLoading = NO;
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
@@ -446,12 +446,19 @@ UIImageView* BrandingImageView() {
           PlusAddressModalCompletionStatus::kModalCanceled),
       base::Time::Now() - _bottomSheetShownTime,
       /*refresh_count=*/(int)_refreshCount, was_notice_shown);
-  if (_bottomSheetErrorStatus &&
-      *_bottomSheetErrorStatus ==
-          PlusAddressModalCompletionStatus::kReservePlusAddressError) {
-    base::RecordAction(
-        base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+  if (_bottomSheetErrorStatus) {
+    if (*_bottomSheetErrorStatus ==
+        PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+    }
+    if (*_bottomSheetErrorStatus ==
+        PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+    }
   }
+
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
