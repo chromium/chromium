@@ -39,7 +39,7 @@ class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
       const OnSinksDiscoveredCallback& callback,
       cast_channel::CastSocketService* cast_socket_service,
       DiscoveryNetworkMonitor* network_monitor,
-      MediaSinkServiceBase* dial_media_sink_service);
+      DialMediaSinkServiceImpl* dial_media_sink_service);
   ~MockCastMediaSinkServiceImpl() override;
 
   void Start() override { DoStart(); }
@@ -79,7 +79,7 @@ class TestCastMediaSinkService : public CastMediaSinkService {
 
   std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
   CreateImpl(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-             MediaSinkServiceBase* dial_media_sink_service) override;
+             DialMediaSinkServiceImpl* dial_media_sink_service) override;
   MOCK_METHOD(void, StartMdnsDiscovery, ());
 
   MockCastMediaSinkServiceImpl* mock_impl() { return mock_impl_; }

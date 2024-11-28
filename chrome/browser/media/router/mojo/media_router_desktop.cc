@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
@@ -773,7 +774,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
           new CastMediaRouteProvider(
               cast_provider_remote.InitWithNewPipeAndPassReceiver(),
               std::move(media_router_remote),
-              media_sink_service_->GetCastMediaSinkServiceBase(),
+              media_sink_service_->GetCastMediaSinkServiceImpl(),
               media_sink_service_->cast_app_discovery_service(),
               GetCastMessageHandler(), GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));

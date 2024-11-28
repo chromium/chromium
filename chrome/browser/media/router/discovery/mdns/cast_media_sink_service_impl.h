@@ -63,7 +63,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   CastMediaSinkServiceImpl(const OnSinksDiscoveredCallback& callback,
                            cast_channel::CastSocketService* cast_socket_service,
                            DiscoveryNetworkMonitor* network_monitor,
-                           MediaSinkServiceBase* dial_media_sink_service,
+                           DialMediaSinkServiceImpl* dial_media_sink_service,
                            bool allow_all_ips);
 
   CastMediaSinkServiceImpl(const CastMediaSinkServiceImpl&) = delete;
@@ -376,7 +376,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Non-owned pointer to DIAL MediaSinkService. Observed by |this| for dual
   // discovery.  May be nullptr if the DIAL Media Route Provider is disabled.
-  const raw_ptr<MediaSinkServiceBase> dial_media_sink_service_;
+  const raw_ptr<DialMediaSinkServiceImpl> dial_media_sink_service_;
 
   // The SequencedTaskRunner on which methods are run. This shares the
   // same SequencedTaskRunner as the one used by |cast_socket_service_|.

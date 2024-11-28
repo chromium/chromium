@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
@@ -28,7 +29,7 @@ CastSessionTracker* CastSessionTracker::GetInstance() {
     return instance_for_test_;
 
   static CastSessionTracker* instance = new CastSessionTracker(
-      DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceBase(),
+      DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceImpl(),
       GetCastMessageHandler(),
       cast_channel::CastSocketService::GetInstance()->task_runner());
   return instance;
