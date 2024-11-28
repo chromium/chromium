@@ -1561,27 +1561,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.ThermalThrottling" enum="Boolean"
-    expires_after="2024-11-03">
-  <owner>handellm@google.com</owner>
-  <owner>hbos@chromium.org</owner>
-  <summary>
-    Sampled every 60s when the peer connection is open. True when the computer's
-    speed limit is between 0 and 99 inclusively, false otherwise.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.ThermalThrottlingEpisodes" units="count"
-    expires_after="2024-02-25">
-  <owner>handellm@google.com</owner>
-  <owner>hbos@chromium.org</owner>
-  <summary>
-    The number of thermal throttling episodes the peer connection encountered.
-    Reported when the peer connection is torn down if the peer connection had at
-    least one track.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.UsagePattern"
     enum="WebRtcPeerConnectionUsagePattern" expires_after="2025-05-22">
   <owner>hta@chromium.org</owner>
