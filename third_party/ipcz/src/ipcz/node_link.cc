@@ -528,6 +528,7 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
       accept.GetArrayView<HandleType>(accept.v0()->handle_types);
   absl::Span<const RouterDescriptor> new_routers =
       accept.GetArrayView<RouterDescriptor>(accept.v0()->new_routers);
+  const SublinkId for_sublink = accept.v0()->sublink;
   auto driver_objects = accept.driver_objects();
 
   // Note that on any validation failure below, we defer rejection at least
@@ -544,7 +545,8 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
           continue;
         }
 
-        Ref<Router> new_router = Router::Deserialize(new_routers[0], *this);
+        Ref<Router> new_router =
+            Router::Deserialize(new_routers[0], *this, for_sublink);
         if (!new_router) {
           parcel_valid = false;
           continue;
@@ -597,7 +599,6 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
     return false;
   }
 
-  const SublinkId for_sublink = accept.v0()->sublink;
   auto parcel = std::make_unique<Parcel>(accept.v0()->sequence_number);
   parcel->set_num_subparcels(num_subparcels);
   parcel->set_subparcel_index(subparcel_index);

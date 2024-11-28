@@ -700,7 +700,21 @@ IpczResult Router::MergeRoute(const Ref<Router>& other) {
 
 // static
 Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
-                                NodeLink& from_node_link) {
+                                NodeLink& from_node_link,
+                                SublinkId receiving_sublink) {
+  std::optional<SublinkId> new_decaying_sublink;
+  if (descriptor.proxy_already_bypassed) {
+    new_decaying_sublink = descriptor.new_decaying_sublink;
+  }
+
+  if (descriptor.new_sublink == receiving_sublink ||
+      descriptor.new_sublink == new_decaying_sublink ||
+      new_decaying_sublink == receiving_sublink) {
+    // New sublink IDs must be unique among each other, and must not identify
+    // the new Router as its own recipient.
+    return nullptr;
+  }
+
   auto router = MakeRefCounted<Router>();
   Ref<RemoteRouterLink> new_outward_link;
   {
@@ -721,7 +735,7 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
       }
     }
 
-    if (descriptor.proxy_already_bypassed) {
+    if (new_decaying_sublink) {
       // When split from a local peer, our remote counterpart (our remote peer's
       // former local peer) will use this link to forward parcels it already
       // received from our peer. This link decays like any other decaying link
@@ -732,9 +746,9 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
       // The sequence length from the link is whatever had already been sent
       // to our counterpart back on the peer's node.
       Ref<RemoteRouterLink> new_decaying_link =
-          from_node_link.AddRemoteRouterLink(
-              descriptor.new_decaying_sublink, nullptr,
-              LinkType::kPeripheralOutward, LinkSide::kB, router);
+          from_node_link.AddRemoteRouterLink(*new_decaying_sublink, nullptr,
+                                             LinkType::kPeripheralOutward,
+                                             LinkSide::kB, router);
       if (!new_decaying_link) {
         return nullptr;
       }
@@ -766,7 +780,7 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                << from_node_link.remote_node_name().ToString() << " to "
                << from_node_link.local_node_name().ToString() << " via sublink "
                << descriptor.new_sublink << " and decaying sublink "
-               << descriptor.new_decaying_sublink;
+               << *new_decaying_sublink;
     } else {
       if (!descriptor.new_link_state_fragment.is_null()) {
         // No RouterLinkState fragment should be provided for this new
