@@ -3597,7 +3597,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3513019849832307207">Pridruži me i otvori</translation>
 <translation id="3513563267917474897">Klizač za nijansu boje od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kontrola igre</translation>
-<translation id="3514373592552233661">Željene mreže će imati prioritet u odnosu na druge poznate mreže ako je dostupno više njih</translation>
 <translation id="3514647716686280777">Dobijate standardnu zaštitu. Da biste dobili dodatnu zaštitu od opasnih veb-sajtova, preuzimanja i dodataka, uključite poboljšano bezbedno pregledanje u podešavanjima Chrome-a.</translation>
 <translation id="3514681096978190000">Ovaj fajl arhive sadrži druge fajlove koji mogu da kriju malver</translation>
 <translation id="3515983984924808886">Dodirnite ponovo bezbednosni ključ da biste potvrdili resetovanje. Sve informacije sačuvane na bezbednosnom ključu, uključujući njegov PIN, biće obrisane.</translation>
@@ -10292,7 +10291,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8306063480506363120">Ukloni pristup Disku</translation>
 <translation id="8306430106790753902">ChromeOS mrežne putanje</translation>
 <translation id="8306885873692337975">Dobijajte najnovije funkcije i bezbednosna poboljšanja.</translation>
-<translation id="8308016398665340540">Delite ovu mrežu sa ostalim korisnicima na ovom uređaju</translation>
 <translation id="8308024039615003152">Livada</translation>
 <translation id="8308179586020895837">Pitaj me ako <ph name="HOST" /> želi da pristupi kameri</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11196,7 +11194,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8942714513622077633">Želite li da otkažete podešavanje Microsoft-a 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">brža potrošnja baterije (trenutno <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Ograničeno</translation>
 <translation id="8944633700466246631">Napravite šestocifreni PIN za vraćanje pristupa Google menadžeru lozinki</translation>
 <translation id="8944725102565796255">Ako želite da koristite ovaj nalog samo jednom, možete da <ph name="GUEST_LINK_BEGIN" />koristite uređaj kao gost<ph name="GUEST_LINK_END" />. Ako želite da dodate nalog za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
 

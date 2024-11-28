@@ -1241,6 +1241,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite izgled preglednika</translation>
 <translation id="3240791268468473923">Otvorena je tabela obavještenja da nema akreditiva za sigurno plaćanje koji se podudaraju</translation>
 <translation id="324180406144491771">Linkovi hosta "<ph name="HOST_NAME" />" su blokirani</translation>
+<translation id="3243650379537999343">Crtaj</translation>
 <translation id="3248329428895535435">Ne prikazuj na ovoj web lokaciji</translation>
 <translation id="3249102948665905108">Otpremanje fajlova na uslugu <ph name="CLOUD_PROVIDER" /> je izvršeno s greškama</translation>
 <translation id="3252772880526154546">Arhitektura</translation>
@@ -2634,6 +2635,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5740911612628596808">Koverta C9</translation>
 <translation id="5742806904559466333">Barovi, klubovi i noćni život</translation>
 <translation id="5743684619253032786">Proizvodi za njegu noktiju</translation>
+<translation id="574392208103952083">Srednje</translation>
 <translation id="5745733273847572235">Može tražiti vašu lokaciju</translation>
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5752327398324808817">Unesite riječ-dvije</translation>
@@ -3469,7 +3471,7 @@ Dodatni detalji:
 <translation id="725866823122871198">Nije moguće uspostaviti privatnu vezu s domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer su datum i vrijeme (<ph name="DATE_AND_TIME" />) na vašem računaru netačni.</translation>
 <translation id="7260075294900977274">Novi pametni folder koji vam omogućava da na jednom mjestu sačuvate sve stranice za kupovinu, automatski pratite cijene, dobijate uvide u cijene i drugo</translation>
 <translation id="7265608370113700582">Adresa je dostupna samo na ovom uređaju</translation>
-<translation id="7269151392155523061">Prečac ne može biti isti kao ključna riječ agregatora pretraživanja definirana pravilom <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7269151392155523061">Prečica ne može biti ista kao ključna riječ agregatora pretraživanja koja je definirana pravilima <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fajlovi koje preuzmete se šalju na Google Cloud ili trećim stranama na analizu. Naprimjer, mogu se skenirati radi otkrivanja postojanja osjetljivih podataka ili zlonamjernog softvera i mogu se pohraniti na osnovu pravila kompanije i biti vidljivi vašem administratoru.</translation>
 <translation id="7275334191706090484">Upravljane oznake</translation>
 <translation id="7275808129217605899">Zdrava ishrana</translation>

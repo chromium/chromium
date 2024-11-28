@@ -1239,6 +1239,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
 <translation id="3240791268468473923">“无匹配的安全付款凭据”表单已打开</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”链接已被禁用</translation>
+<translation id="3243650379537999343">绘制</translation>
 <translation id="3248329428895535435">不在此网站上显示</translation>
 <translation id="3249102948665905108">文件已上传到“<ph name="CLOUD_PROVIDER" />”，但出现错误</translation>
 <translation id="3252772880526154546">建筑</translation>
@@ -2630,6 +2631,7 @@
 <translation id="5740911612628596808">C9 信封</translation>
 <translation id="5742806904559466333">酒吧、俱乐部和夜生活</translation>
 <translation id="5743684619253032786">指甲护理产品</translation>
+<translation id="574392208103952083">中等</translation>
 <translation id="5745733273847572235">可以询问能否获取您的位置信息</translation>
 <translation id="5750869797196646528">手部跟踪</translation>
 <translation id="5752327398324808817">请输入一到两个字词</translation>
@@ -3464,6 +3466,7 @@
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="7260075294900977274">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等</translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
+<translation id="7269151392155523061">下述快捷字词不能与 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 所定义的搜索聚合器关键字相同：<ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7275808129217605899">健康饮食</translation>

@@ -1531,7 +1531,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2048254245884707305">Buscando software malicioso…</translation>
 <translation id="2048554637254265991">Se produjo un error al iniciar el administrador de contenedores. Vuelve a intentarlo.</translation>
 <translation id="2048653237708779538">La acción no está disponible</translation>
-<translation id="204914487372604757">Crear accesos directos</translation>
+<translation id="204914487372604757">Crear acceso directo</translation>
 <translation id="2049573977943974163">¿Quieres activar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">El Administrador de contraseñas de Google creó una contraseña segura para este sitio web</translation>
@@ -3596,7 +3596,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3513019849832307207">Unirse y abrir</translation>
 <translation id="3513563267917474897">Control deslizante de tono de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Control de juegos</translation>
-<translation id="3514373592552233661">Se utilizarán las redes preferidas en lugar de otras conocidas si hay más de una disponible</translation>
 <translation id="3514647716686280777">Obtienes protección de seguridad estándar. Para obtener más protección contra descargas, extensiones y sitios web peligrosos, activa la Navegación segura mejorada en la configuración de Chrome.</translation>
 <translation id="3514681096978190000">Este archivo incluye otros archivos que pueden ocultar software malicioso</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se borrará toda la información almacenada en la llave de seguridad, incluido su PIN.</translation>
@@ -10288,7 +10287,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8306063480506363120">Quitar el acceso a Drive</translation>
 <translation id="8306430106790753902">Rutas de red de ChromeOS</translation>
 <translation id="8306885873692337975">Obtén las funciones y mejoras de seguridad más recientes.</translation>
-<translation id="8308016398665340540">Compartes esta red con otros usuarios de este dispositivo</translation>
 <translation id="8308024039615003152">Pradera</translation>
 <translation id="8308179586020895837">Preguntar si <ph name="HOST" /> quiere acceder a la cámara</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -10654,7 +10652,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8566916288687510520">Se recibió una contraseña nueva</translation>
 <translation id="8569673829373920831">Más información sobre <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">No se encontró ningún destino.</translation>
-<translation id="8571213806525832805">Últimas cuatro semanas</translation>
+<translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8571687764447439720">Agregar un ticket de Kerberos</translation>
 <translation id="8572052284359771939">Envía a la Navegación segura de Google las URLs de sitios que visitas y una pequeña muestra del contenido de las páginas, las descargas, la actividad de las extensiones y la información del sistema para revisar si los sitios son dañinos.</translation>
 <translation id="8573111744706778015">Escribe "uo7" para obtener "ươ"</translation>
@@ -11190,7 +11188,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8942714513622077633">¿Quieres cancelar la configuración de Microsoft 365?</translation>
 <translation id="894360074127026135">Suplemento especial internacional de Netscape</translation>
 <translation id="8944099748578356325">Usa la batería de forma más rápida (nivel actual: <ph name="BATTERY_PERCENTAGE" />%).</translation>
-<translation id="8944485226638699751">Limitadas</translation>
 <translation id="8944633700466246631">Crea un PIN de recuperación de 6 dígitos para el Administrador de contraseñas de Google</translation>
 <translation id="8944725102565796255">Si quieres usar esta cuenta solo una vez, puedes <ph name="GUEST_LINK_BEGIN" />usar el dispositivo como invitado<ph name="GUEST_LINK_END" />. Si quieres agregar una cuenta para alguien más, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
 

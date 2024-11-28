@@ -3596,7 +3596,6 @@
 <translation id="3513019849832307207">加入並開啟</translation>
 <translation id="3513563267917474897">色調滑桿，最小值為 <ph name="MIN_VALUE" />，最大值為 <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">遊戲控制項</translation>
-<translation id="3514373592552233661">如有多個可用網路，慣用網路的優先使用順序高於其他已知網路</translation>
 <translation id="3514647716686280777">你即將使用標準安全防護機制。如要進一步防範不安全的網站、下載內容和擴充功能，請在 Chrome 設定中啟用「安全瀏覽強化防護功能」。</translation>
 <translation id="3514681096978190000">這個封存檔案包含可能隱藏惡意軟體的其他檔案</translation>
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
@@ -10280,7 +10279,6 @@
 <translation id="8306063480506363120">移除雲端硬碟存取權</translation>
 <translation id="8306430106790753902">ChromeOS 網路路徑</translation>
 <translation id="8306885873692337975">取得最新功能和改善安全性的資訊。</translation>
-<translation id="8308016398665340540">你正在與這部裝置的其他使用者共用這個網路</translation>
 <translation id="8308024039615003152">草原</translation>
 <translation id="8308179586020895837">當 <ph name="HOST" /> 要求存取攝影機時詢問我。</translation>
 <translation id="830868413617744215">Beta 版</translation>
@@ -11182,7 +11180,6 @@
 <translation id="8942714513622077633">要取消設定 Microsoft 365 嗎？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">更快耗盡電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">限制使用</translation>
 <translation id="8944633700466246631">設定 Google 密碼管理工具的 6 位數復原 PIN 碼</translation>
 <translation id="8944725102565796255">如果你只想使用這個帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客的身分使用這部裝置<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請在「<ph name="DEVICE_TYPE" />」上<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />。
 

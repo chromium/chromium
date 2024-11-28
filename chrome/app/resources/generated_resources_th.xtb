@@ -3597,7 +3597,6 @@
 <translation id="3513019849832307207">เข้าร่วมและเปิด</translation>
 <translation id="3513563267917474897">แถบเลื่อนโทนสีจาก <ph name="MIN_VALUE" /> ถึง <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">ตัวควบคุมเกม</translation>
-<translation id="3514373592552233661">ระบบจะเลือกเครือข่ายที่ต้องการแทนเครือข่ายที่รู้จักอื่นๆ หากมีเครือข่ายที่รู้จักมากกว่า 1 เครือข่าย</translation>
 <translation id="3514647716686280777">คุณกำลังได้รับการป้องกันความปลอดภัยแบบมาตรฐาน หากต้องการรับการป้องกันมากยิ่งขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย ให้เปิดฟีเจอร์ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นในการตั้งค่า Chrome</translation>
 <translation id="3514681096978190000">ไฟล์ที่เก็บถาวรนี้มีไฟล์อื่นๆ ที่อาจซ่อนมัลแวร์ไว้</translation>
 <translation id="3515983984924808886">แตะคีย์ความปลอดภัยอีกครั้งเพื่อยืนยันการรีเซ็ต ระบบจะลบข้อมูลทั้งหมดที่เก็บไว้ในคีย์ความปลอดภัย รวมถึง PIN ของคีย์ด้วย</translation>
@@ -10283,7 +10282,6 @@
 <translation id="8306063480506363120">นำสิทธิ์เข้าถึงไดรฟ์ออก</translation>
 <translation id="8306430106790753902">เส้นทางเครือข่าย ChromeOS</translation>
 <translation id="8306885873692337975">รับฟีเจอร์และการปรับปรุงด้านความปลอดภัยล่าสุด</translation>
-<translation id="8308016398665340540">คุณกำลังแชร์เครือข่ายนี้กับผู้ใช้คนอื่นๆ ของอุปกรณ์นี้</translation>
 <translation id="8308024039615003152">ทุ่งหญ้า</translation>
 <translation id="8308179586020895837">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงกล้องของคุณไหม</translation>
 <translation id="830868413617744215">เบต้า</translation>
@@ -11185,7 +11183,6 @@
 <translation id="8942714513622077633">ยกเลิกการตั้งค่า Microsoft 365 ไหม</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ใช้แบตเตอรี่หมดเร็วขึ้น (ขณะนี้อยู่ที่ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">จำกัด</translation>
 <translation id="8944633700466246631">สร้าง PIN การกู้คืน 6 หลักสำหรับเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8944725102565796255">หากต้องการใช้บัญชีนี้เพียงครั้งเดียว คุณสามารถ<ph name="GUEST_LINK_BEGIN" />ใช้อุปกรณ์ในฐานะผู้มาเยือน<ph name="GUEST_LINK_END" />ได้ หากต้องการเพิ่มบัญชีสำหรับผู้อื่น ให้<ph name="LINK_BEGIN" />เพิ่มบุคคลใหม่<ph name="LINK_END" />ลงใน <ph name="DEVICE_TYPE" />
 

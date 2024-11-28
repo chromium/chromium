@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Mae'n bosib eich bod wedi'ch allgofnodi o'r wefan hon</translation>
 <translation id="6085954183010297841">Tynnu mynediad golygu ffeiliau? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael gwybod pryd rydych yn defnyddio'ch dyfais yn weithredol. Pan fydd wedi'i ddiffodd, ni all gwefannau wybod pryd rydych yn defnyddio'ch dyfais yn weithredol.</translation>
-<translation id="6140839633433422817">Ydych chi'n siŵr eich bod am ailosod caniatadau, a dileu cwcis a data gwefan?</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6171020522141473435">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio dyfeisiau Bluetooth. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau Bluetooth.</translation>
-<translation id="6177111841848151710">Wedi'i rwystro ar gyfer y peiriant chwilio presennol</translation>
 <translation id="6177128806592000436">Nid yw eich cysylltiad â'r wefan hon yn ddiogel</translation>
 <translation id="6181444274883918285">Ychwanegu eithriad gwefan</translation>
 <translation id="6192792657125177640">Eithriadau</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch meicroffon (argymhellir)</translation>
 <translation id="6999131147875565462">Mae Chrome yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd</translation>
 <translation id="7000754031042624318">Wedi'i ddiffodd yn Gosodiadau Android</translation>
-<translation id="7016516562562142042">Wedi'i ganiatáu ar gyfer y peiriant chwilio presennol</translation>
 <translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="7053983685419859001">Rhwystro</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Rhwystro gwefannau rhag gweld a newid gwybodaeth ar ddyfeisiau NFC</translation>
 <translation id="8944485226638699751">Cyfyngedig</translation>
 <translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Anghofio</translation>
 <translation id="8990043154272859344">Byddwch yn cael eich allgofnodi o bob gwefan</translation>
 <translation id="8993853206419610596">Ehangu pob cais</translation>
 <translation id="9002538116239926534">Pan fydd wedi'i droi ymlaen, gall gwefannau gadw data ar eich dyfais. Pan fydd wedi'i ddiffodd, ni all gwefannau gadw data ar eich dyfais.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Trowch ganiatadau ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Y lefel chwyddo yw <ph name="ZOOM_LEVEL" /> %% ar hyn o bryd</translation>
 <translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
-<translation id="930525582205581608">Anghofio'r wefan hon?</translation>
 <translation id="947156494302904893">Gall gwefannau rydych yn ymweld â nhw gadarnhau eich bod yn berson go iawn ac nid bot</translation>
 <translation id="959682366969460160">Byddwch yn drefnus</translation>
 <translation id="967624055006145463">Data a storiwyd</translation>

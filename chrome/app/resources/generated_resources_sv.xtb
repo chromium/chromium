@@ -3473,6 +3473,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3421387094817716717">Offentlig nyckel vid kryptering med elliptisk kurva</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Någon med en liknande röst eller en inspelning av din röst kan få åtkomst till dina personliga resultat eller Google Assistent.</translation>
 <translation id="3421835120203732951">Lägg till en ny profil</translation>
+<translation id="3422989558057853751">Detta är det sista markerade objektet. Om du avmarkerar det avslutas markeringsläget</translation>
 <translation id="3423111258700187173">Resultat hittades på <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Läs mer om den här AI-funktionen</translation>
 <translation id="3423275441470187644">Pålitlighet</translation>
@@ -3611,7 +3612,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3513019849832307207">Gå med och öppna</translation>
 <translation id="3513563267917474897">Nyansreglage från <ph name="MIN_VALUE" /> till <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Spelinställningar</translation>
-<translation id="3514373592552233661">Prioriterade nätverk väljs före andra kända nätverk när det finns flera nätverk tillgängliga</translation>
 <translation id="3514647716686280777">Du har nu standardsäkerhetsskydd. Aktivera Förbättrad säker webbsökning i Chrome-inställningarna om du vill få ett bättre skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="3514681096978190000">Den här arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="3515983984924808886">Tryck på säkerhetsnyckeln igen för att bekräfta återställningen. All information som lagras på säkerhetsnyckeln, inklusive dess pinkod, raderas.</translation>
@@ -4969,6 +4969,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4461483878391246134">Lägg till språk som översättning aldrig ska erbjudas för</translation>
 <translation id="4462159676511157176">Anpassade namnservrar</translation>
 <translation id="4465236939126352372">En tidsgräns på <ph name="TIME" /> har ställts in för <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Fel pinkod</translation>
 <translation id="4467561276409486506">Aktivera/inaktivera kompakt läge</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> har redigeringsbehörighet för <ph name="FOLDERNAME" /></translation>
@@ -10302,7 +10303,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8306063480506363120">Ta bort Drive-åtkomst</translation>
 <translation id="8306430106790753902">Nätverksrutter för ChromeOS</translation>
 <translation id="8306885873692337975">Uppdatera till de senaste funktionerna och säkerhetsförbättringarna.</translation>
-<translation id="8308016398665340540">Du delar det här nätverket med andra användare på enheten</translation>
 <translation id="8308024039615003152">Äng</translation>
 <translation id="8308179586020895837">Fråga om <ph name="HOST" /> vill använda din kamera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11204,7 +11204,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8942714513622077633">Vill du avbryta konfigureringen av Microsoft 365?</translation>
 <translation id="894360074127026135">Netscapes internationella uppgradering</translation>
 <translation id="8944099748578356325">Batteriet förbrukas snabbare (för närvarande <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Begränsade</translation>
 <translation id="8944633700466246631">Skapa en sexsiffrig pinkod för återställning för Google Lösenordshantering</translation>
 <translation id="8944725102565796255">Om du bara vill logga in en gång med kontot kan du <ph name="GUEST_LINK_BEGIN" />använda enheten som gäst<ph name="GUEST_LINK_END" />. Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
 

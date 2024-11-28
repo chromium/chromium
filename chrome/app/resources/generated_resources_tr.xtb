@@ -3595,7 +3595,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3513019849832307207">Katıl ve aç</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />-<ph name="MAX_VALUE" /> arasında ton kaydırma çubuğu</translation>
 <translation id="3514335087372914653">Oyun Kontrolü</translation>
-<translation id="3514373592552233661">Birden fazla ağ kullanılabilir olduğunda, bilinen ağlar arasında tercih edilen ağlar seçilir</translation>
 <translation id="3514647716686280777">Standart güvenlik korumasına sahipsiniz. Tehlikeli web siteleri, indirmeler ve uzantılara karşı daha fazla koruma elde etmek için Chrome ayarlarında Gelişmiş Güvenli Tarama'yı etkinleştirin.</translation>
 <translation id="3514681096978190000">Bu arşiv dosyası, kötü amaçlı yazılımın gizlenmiş olabileceği başka dosyalar içeriyor</translation>
 <translation id="3515983984924808886">Sıfırlamayı onaylamak için güvenlik anahtarınıza tekrar dokunun. PIN'i de dahil olmak üzere güvenlik anahtarında depolanan tüm bilgiler silinir.</translation>
@@ -5226,7 +5225,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4660465405448977105">{COUNT,plural, =1{Resim}other{# resim}}</translation>
 <translation id="4660476621274971848">Beklenen sürüm "<ph name="EXPECTED_VERSION" />" idi, ancak "<ph name="NEW_ID" />" sürümü belirlendi</translation>
 <translation id="4660540330091848931">Yeniden boyutlandırılıyor</translation>
-<translation id="4661407454952063730">Uygulama verisi, geliştiricinin ayarlarına bağlı olarak bir uygulamanın kaydettiği her tür veri olabilir. Bunlar arasında kişiler, mesajlar ve fotoğraflar gibi veriler bulunabilir.</translation>
+<translation id="4661407454952063730">Uygulama verileri, geliştiricinin ayarlarına bağlı olarak bir uygulamanın kaydettiği her tür veri olabilir. Bunlar arasında kişiler, mesajlar ve fotoğraflar gibi veriler bulunabilir.</translation>
 <translation id="4662208278924489774">İndirme uyarısı</translation>
 <translation id="4662373422909645029">Takma ad sayı içeremez</translation>
 <translation id="4662788913887017617">Bu yer işaretini iPhone'unuzla paylaşın</translation>
@@ -10286,7 +10285,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8306063480506363120">Drive erişimini kaldır</translation>
 <translation id="8306430106790753902">ChromeOS Ağ Rotaları</translation>
 <translation id="8306885873692337975">En son özellikleri ve güvenlik iyileştirmelerini edinin.</translation>
-<translation id="8308016398665340540">Bu ağı, bu cihazın diğer kullanıcılarıyla paylaşıyorsunuz</translation>
 <translation id="8308024039615003152">Çayır</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> sitesi kamerama erişmek isterse sor</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11188,7 +11186,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8942714513622077633">Microsoft 365 kurulumu iptal edilsin mi?</translation>
 <translation id="894360074127026135">Netscape Uluslararası İlerlemesi</translation>
 <translation id="8944099748578356325">Pili daha çabuk tüketir (şu anda %<ph name="BATTERY_PERCENTAGE" />)</translation>
-<translation id="8944485226638699751">Sınırlı</translation>
 <translation id="8944633700466246631">Google Şifre Yöneticisi için 6 haneli kurtarma PIN'i oluşturun</translation>
 <translation id="8944725102565796255">Bu hesabı yalnızca bir kez kullanmak istiyorsanız <ph name="GUEST_LINK_BEGIN" />cihazı misafir olarak kullanabilirsiniz<ph name="GUEST_LINK_END" />. Başka biri için hesap eklemek isterseniz <ph name="DEVICE_TYPE" /> cihazınıza <ph name="LINK_BEGIN" />yeni bir kişi ekleyin<ph name="LINK_END" />.
 

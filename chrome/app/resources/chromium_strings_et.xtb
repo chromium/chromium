@@ -252,6 +252,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
 <translation id="4434353761996769206">Installiprogrammi viga: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> haldab Chromiumi</translation>
+<translation id="444069871276811466">Chromiumi profiili lisamine</translation>
 <translation id="4447409407328223819">Brauseri Chrome for Testing teave</translation>
 <translation id="4470974262661801543">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool</translation>
 <translation id="4493028449971051158">Käivitamisel ilmnes viga: käitage installiprogrammi administraatorina.</translation>
@@ -582,6 +583,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chromiumiga külastatud saitide andmed.</translation>
 <translation id="8852026904190808918">Selles keeles kuvatakse Chromiumi menüüd, seaded, hoiatused ja muu tekst</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
+<translation id="8876044221123442390">Chromiumi profiili lisamine</translation>
 <translation id="8880203542552872219">Sellisel juhul muutke Chromiumis oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
 <translation id="8891709362986793894">Teie organisatsioon nõuab, et logiksite Chromiumi sisse</translation>
 <translation id="8907580949721785412">Chromium proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>

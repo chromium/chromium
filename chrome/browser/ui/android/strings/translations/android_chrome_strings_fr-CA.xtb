@@ -460,7 +460,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3037177537145227281">Suivi du prix en cours…</translation>
 <translation id="3037517125981011456">Affiche l'invite de connexion dans Chrome</translation>
 <translation id="3038272154009688107">Afficher tous les sites</translation>
-<translation id="3055841435094910999">Des informations sont envoyées à Google concernant votre utilisation de Chrome, mais elles ne sont pas liées à vous\n\nSi Chrome plante, les détails concernant le plantage peuvent inclure des renseignements personnels\n\nSi vous activez la synchronisation, les statistiques peuvent également inclure des renseignements sur les URL que vous visitez</translation>
 <translation id="3059531648236115056">Ajouter un résumé</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles portant sur vos centres d'intérêt dans Chrome</translation>
@@ -873,6 +872,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="496607651705915226">Pour enregistrer et utiliser de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play</translation>
 <translation id="4971753085054504448">Essayez de rechercher autre chose ou ouvrez l'historique complet de Chrome pour consulter plus de résultats.</translation>
 <translation id="497421865427891073">Avancer</translation>
+<translation id="498624032394115435">Toute personne disposant du lien peut modifier tous les onglets.</translation>
 <translation id="4987271110129728827">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4991110219272367918">Option d'approuver ou de ne pas approuver un site Web fermée</translation>
@@ -959,7 +959,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> ».</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> Go disponible(s)</translation>
-<translation id="543121643585717256">Toute personne disposant du lien peut modifier tous les onglets. En savoir plus sur les groupes d'onglets partagés</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="5438292632479953702">Télécharger de nouveau</translation>
@@ -1154,6 +1153,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6284472661216707937">Mots de passe sur tous vos appareils fermés</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6296366034485697675">Exporter et supprimer</translation>
+<translation id="629730747756840877">Compte</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (mode silencieux)</translation>
 <translation id="6315386555979018699">Supprimer et continuer</translation>
@@ -1317,6 +1317,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6910211073230771657">Supprimé</translation>
 <translation id="6918398787259831832">Si ce problème persiste, <ph name="BEGIN_LINK" />obtenez plus d'information<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
 <translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6937524809504266803">Personnalisation, association</translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>
@@ -1640,6 +1641,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> a retiré l'onglet « <ph name="TAB_NAME" /> »</translation>
 <translation id="8310451567823644042">Les mots de passe cesseront bientôt de fonctionner</translation>
 <translation id="831192587911042850">Ajoute le site Web actuel à la liste des sites Web que vous suivez.</translation>
+<translation id="8320212361750431956">Activité récente</translation>
 <translation id="8342727528718219152">Chrome vous informera des sites susceptibles d'envoyer trop de notifications</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8348430946834215779">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge</translation>

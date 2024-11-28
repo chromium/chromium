@@ -3611,7 +3611,6 @@
 <translation id="3513019849832307207">ເຂົ້າຮ່ວມ ແລະ ເປີດ</translation>
 <translation id="3513563267917474897">ແຖບເລື່ອນໂທນສີຈາກ <ph name="MIN_VALUE" /> ຫາ <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">ການຄວບຄຸມເກມ</translation>
-<translation id="3514373592552233661">ເຄືອຂ່າຍທີ່ເລືອກໄວ້ຈະຖືກໃຊ້ກ່ອນເຄືອຂ່າຍທີ່ຮູ້ຈັກອື່ນ ຖ້າມີຫຼາຍກວ່າໜຶ່ງເຄືອຂ່າຍໃຫ້ນຳໃຊ້</translation>
 <translation id="3514647716686280777">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານ. ເພື່ອຮັບການປົກປ້ອງເພີ່ມເຕີມຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ, ໃຫ້ເປີດ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນໃນການຕັ້ງຄ່າ Chrome.</translation>
 <translation id="3514681096978190000">ໄຟລ໌ທີ່ເກັບໄວ້ໃນແຟ້ມນີ້ມີໄຟລ໌ອື່ນໆທີ່ອາດເຊື່ອງເມົາແວໄວ້</translation>
 <translation id="3515983984924808886">ສຳຜັດກະແຈຄວາມປອດໄພຂອງທ່ານອີກຄັ້ງເພື່ອຢືນຢັນການຣີເຊັດ. ລະບົບຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນກະແຈຄວາມປອດໄພ, ຮວມທັງ PIN ຂອງມັນ.</translation>
@@ -10298,7 +10297,6 @@
 <translation id="8306063480506363120">ລຶບສິດເຂົ້າເຖິງ Drive ອອກ</translation>
 <translation id="8306430106790753902">ເສັ້ນທາງເຄືອຂ່າຍ ChromeOS</translation>
 <translation id="8306885873692337975">ໃຊ້ຄຸນສົມບັດຫຼ້າສຸດ ແລະ ການປັບປຸງຄວາມປອດໄພ.</translation>
-<translation id="8308016398665340540">ທ່ານກຳລັງແບ່ງປັນເຄືອຂ່າຍນີ້ກັບຜູ້ໃຊ້ອື່ນຂອງອຸປະກອນນີ້</translation>
 <translation id="8308024039615003152">ທົ່ງຫຍ້າ</translation>
 <translation id="8308179586020895837">ຖາມ​ເບິ່ງວ່າ <ph name="HOST" /> ຕ້ອງ​ການ​​ເຂົ້າຫາກ້ອງ​ຖ່າຍ​ຮູບ​ຂອງ​ທ່ານບໍ່</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11200,7 +11198,6 @@
 <translation id="8942714513622077633">ຍົກເລີກການຕັ້ງຄ່າ Microsoft 365 ບໍ?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ໃຊ້ແບັດເຕີຣີໝົດໄວກວ່າ (ປັດຈຸບັນ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">ຈຳກັດ</translation>
 <translation id="8944633700466246631">ສ້າງ PIN ການກູ້ຄືນ 6 ຕົວເລກສຳລັບຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="8944725102565796255">ຫາກທ່ານຕ້ອງການໃຊ້ບັນຊີນີ້ແບບເທື່ອດຽວເທົ່ານັ້ນ, ທ່ານສາມາດ <ph name="GUEST_LINK_BEGIN" />ໃຊ້ອຸປະກອນນີ້ໃນຖານະແຂກ<ph name="GUEST_LINK_END" /> ໄດ້. ຫາກທ່ານຕ້ອງການເພີ່ມບັນຊີໃຫ້ຄົນອື່ນ, ກະລຸນາ <ph name="LINK_BEGIN" />ເພີ່ມຄົນໃໝ່<ph name="LINK_END" /> ໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.
 

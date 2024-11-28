@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">És possible que se't tanqui la sessió d'aquest lloc web</translation>
 <translation id="6085954183010297841">Vols suprimir el permís per editar fitxers? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quan aquesta opció està activada, els llocs web poden demanar permís per saber si estàs utilitzant el teu dispositiu de manera activa. Quan aquesta opció està desactivada, els llocs web no poden saber si estàs utilitzant el teu dispositiu de manera activa.</translation>
-<translation id="6140839633433422817">Confirmes que vols restablir els permisos i suprimir les galetes i les dades del lloc web?</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6171020522141473435">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius Bluetooth. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius Bluetooth.</translation>
-<translation id="6177111841848151710">S'ha bloquejat per al motor de cerca actual</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
 <translation id="6181444274883918285">Afegeix excepció de lloc web</translation>
 <translation id="6192792657125177640">Excepcions</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pregunta abans de permetre que els llocs web utilitzin el micròfon (opció recomanada)</translation>
 <translation id="6999131147875565462">Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar</translation>
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
-<translation id="7016516562562142042">Es permet al motor de cerca actual</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 de seleccionat}other{# de seleccionats}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Bloqueja els llocs web perquè no vegin ni canviïn la informació que hi ha als dispositius amb NFC</translation>
 <translation id="8944485226638699751">Amb limitacions</translation>
 <translation id="8959122750345127698">No es pot accedir a la navegació: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Oblida</translation>
 <translation id="8990043154272859344">Se't tancarà la sessió de tots els llocs web</translation>
 <translation id="8993853206419610596">Desplega totes les sol·licituds</translation>
 <translation id="9002538116239926534">Quan aquesta opció està activada, els llocs web poden desar dades al teu dispositiu. Quan aquesta opció està desactivada, els llocs web no poden desar dades al teu dispositiu.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">El zoom actual és <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
-<translation id="930525582205581608">Vols oblidar aquest lloc web?</translation>
 <translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>

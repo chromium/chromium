@@ -2265,7 +2265,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2540651571961486573">Arazo bat izan da. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Pantaila osoko igorpena optimizatu nahi duzu?</translation>
 <translation id="2541343621592284735">Ukatu da kamera eta mikrofonoa erabiltzeko baimena</translation>
-<translation id="2541706104884128042">Lo egiteko garaia aldatu da</translation>
+<translation id="2541706104884128042">Lotara joateko garaia aldatu da</translation>
 <translation id="2542050502251273923">Sareko konexioaren kudeatzailearen eta beste zerbitzu batzuen arazketa-maila ezartzen du ff_debug erabiliz.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak aplikazio honi ere emango zaizkio. <ph name="MANAGE_LINK" />}other{<ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak aplikazio hauei ere emango zaizkie.<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">Fitxa hau</translation>
@@ -3458,6 +3458,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3421387094817716717">Kurba eliptikoko gako publikoa</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Oharra<ph name="END_BOLD" />: baliteke zurearen antzekoa den ahots bat edo zure ahotsaren grabaketa bat erabilita zure emaitza pertsonalak edo Laguntzailea atzitu ahal izatea.</translation>
 <translation id="3421835120203732951">Gehitu profil bat</translation>
+<translation id="3422989558057853751">Azken elementua hautatuta dago; desautatuz gero, hautapen modutik irtengo zara</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> karpetan aurkitutako emaitzak</translation>
 <translation id="3423226218833787854">Lortu AA bidezko eginbide honi buruzko informazio gehiago</translation>
 <translation id="3423275441470187644">Fidagarritasuna</translation>
@@ -3596,7 +3597,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3513019849832307207">Sartu eta ireki</translation>
 <translation id="3513563267917474897">Tonalitate-graduatzailea, <ph name="MIN_VALUE" /> eta <ph name="MAX_VALUE" /> artekoa</translation>
 <translation id="3514335087372914653">Jokoak kontrolatzeko aukera</translation>
-<translation id="3514373592552233661">Sare bat baino gehiago badaude erabilgarri, hobetsitakoek izango dute lehentasuna</translation>
 <translation id="3514647716686280777">Babes estandarra darabilzu. Webgune, deskarga eta luzapen arriskutsuen aurkako babesa handitzeko, aktibatu Arakatze seguru hobetua Chrome-ren ezarpenetan.</translation>
 <translation id="3514681096978190000">Artxibo-fitxategi honek beste fitxategi batzuk ditu, eta baliteke haietan malwarea egotea</translation>
 <translation id="3515983984924808886">Berrezarri nahi duzula berresteko, sakatu segurtasun-giltza. Ezabatu egingo da segurtasun-giltzan gordetako informazio guztia (PINa barne).</translation>
@@ -4954,6 +4954,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4461483878391246134">Gehitu inoiz itzuli behar ez diren hizkuntzak</translation>
 <translation id="4462159676511157176">Izen-zerbitzari pertsonalizatuak</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> aplikazioak denbora-muga hau dauka ezarrita: <ph name="TIME" /></translation>
+<translation id="4467373268340082204">PIN okerra</translation>
 <translation id="4467561276409486506">&amp;Aktibatu edo desaktibatu modu xehatuena</translation>
 <translation id="4469324811108161144">Oharrek <ph name="CHARACTER_LIMIT" /> karaktere izan ditzakete gehienez.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> webguneak <ph name="FOLDERNAME" /> karpetako fitxategiak edita ditzake</translation>
@@ -10279,7 +10280,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8306063480506363120">Kendu Drive-rako sarbidea</translation>
 <translation id="8306430106790753902">ChromeOS-eko sareen bideak</translation>
 <translation id="8306885873692337975">Lortu azken eginbideak eta segurtasun-hobekuntzak.</translation>
-<translation id="8308016398665340540">Gailu honen beste erabiltzaile batzuekin ari zara partekatzen sarea</translation>
 <translation id="8308024039615003152">Larrea</translation>
 <translation id="8308179586020895837">Galdetu <ph name="HOST" /> ostalariak zure kamera atzitu nahi duenean</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11181,7 +11181,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8942714513622077633">Bertan behera utzi nahi duzu Microsoft 365 konfiguratzeko prozesua?</translation>
 <translation id="894360074127026135">Nazioarteko Netscape Step-Up ziurtagiria</translation>
 <translation id="8944099748578356325">Bateria gehiago kontsumitu (% <ph name="BATTERY_PERCENTAGE" /> geratzen zaizu)</translation>
-<translation id="8944485226638699751">Mugatuak</translation>
 <translation id="8944633700466246631">Sortu kontua berreskuratzeko 6 digituko PIN bat Google-ren Pasahitz-kudeatzailea zerbitzurako</translation>
 <translation id="8944725102565796255">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />erabili gailua gonbidatu gisa<ph name="GUEST_LINK_END" />. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
 

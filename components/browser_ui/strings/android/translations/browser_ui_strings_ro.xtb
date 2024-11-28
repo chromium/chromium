@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Este posibil să te fi deconectat de pe acest site</translation>
 <translation id="6085954183010297841">Elimini permisiunea de editare a fișierului? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Când opțiunea este activată, site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul. Când opțiunea este dezactivată, site-urile nu pot afla când folosești activ dispozitivul.</translation>
-<translation id="6140839633433422817">Sigur vrei să resetezi permisiunile și să ștergi cookie-urile și datele privind site-urile?</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6171020522141473435">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive Bluetooth. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive Bluetooth.</translation>
-<translation id="6177111841848151710">Blocată pentru motorul de căutare actual</translation>
 <translation id="6177128806592000436">Conexiunea la acest site nu este sigură</translation>
 <translation id="6181444274883918285">Adaugă o excepție privind site-urile</translation>
 <translation id="6192792657125177640">Excepții</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Întreabă înainte de a permite site-urilor să folosească microfonul (recomandat)</translation>
 <translation id="6999131147875565462">Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător</translation>
 <translation id="7000754031042624318">Dezactivată din setările Android</translation>
-<translation id="7016516562562142042">Se permite pentru motorul de căutare actual</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selectat}few{# selectate}other{# selectate}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Împiedică site-urile să vadă și să modifice informații de pe dispozitive NFC</translation>
 <translation id="8944485226638699751">Limitate</translation>
 <translation id="8959122750345127698">Navigarea nu este accesibilă: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Șterge</translation>
 <translation id="8990043154272859344">Te vei deconecta de la toate site-urile</translation>
 <translation id="8993853206419610596">Extinde toate solicitările</translation>
 <translation id="9002538116239926534">Când opțiunea este activată, site-urile pot salva date pe dispozitiv. Când opțiunea este dezactivată, site-urile nu pot salva date pe dispozitiv.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Nivelul de zoom actual este <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
-<translation id="930525582205581608">Elimini acest site?</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>
 <translation id="967624055006145463">Date stocate</translation>

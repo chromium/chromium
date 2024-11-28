@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="3037517125981011456">Chromeରେ ସାଇନ୍ ଇନ୍ କରିବାକୁ ପ୍ରମ୍ପ୍ଟ ଦେଖାଏ</translation>
 <translation id="3038272154009688107">ସମସ୍ତ ସାଇଟ ଦେଖନ୍ତୁ</translation>
-<translation id="3055841435094910999">ଆପଣଙ୍କ Chrome ବ୍ୟବହାର ବିଷୟରେ ସୂଚନା Googleକୁ ପଠାଯାଏ କିନ୍ତୁ ଏହି ସୂଚନା ଆପଣଙ୍କ ସହ ସମ୍ବନ୍ଧିତ ନଥାଏ\n\nଯଦି Chrome କ୍ରାସ ହୁଏ, ତେବେ କ୍ରାସ ବିଷୟରେ ଥିବା ବିବରଣୀରେ କିଛି ବ୍ୟକ୍ତିଗତ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ ଥାଇପାରେ\n\nଯଦି ଆପଣ ସିଙ୍କ ଚାଲୁ କରନ୍ତି, ତେବେ ମେଟ୍ରିକଗୁଡ଼ିକରେ ଆପଣ ଭିଜିଟ କରୁଥିବା URLଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା ମଧ୍ୟ ଅନ୍ତର୍ଭୁକ୍ତ ଥାଇପାରେ</translation>
 <translation id="3059531648236115056">ସାରାଂଶ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />ଟି ବୁକ୍‌ମାର୍କ}other{<ph name="BOOKMARKS_COUNT_MANY" />ଟି ବୁକ୍‌ମାର୍କ}}</translation>
 <translation id="3062802207422175757">Chromeରେ ଆପଣଙ୍କ ଆଗ୍ରହଗୁଡ଼ିକ ବିଷୟରେ ଆର୍ଟିକିଲ୍</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ନୂଆ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="4971753085054504448">ଅନ୍ୟ କିଛି ସର୍ଚ୍ଚ କରି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଅଧିକ ଫଳାଫଳ ଦେଖିବା ପାଇଁ ସମ୍ପୂର୍ଣ୍ଣ Chrome ଇତିହାସ ଖୋଲନ୍ତୁ।</translation>
 <translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="498624032394115435">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ସମସ୍ତ ଟାବକୁ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="4987271110129728827">ସେହି ପୃଷ୍ଠାଟି ମିଳୁନାହିଁ। ଆପଣଙ୍କର ବନାନ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ଏକ ୱେବ ସର୍ଚ୍ଚ ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="4991110219272367918">ଏକ ୱେବସାଇଟକୁ ଅନୁମୋଦନ କରିବା କିମ୍ବା ନକରିବାର ବିକଳ୍ପକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ</translation>
 <translation id="5423934151118863508">ଆପଣଙ୍କ ଦ୍ୱାରା ସବୁଠାରୁ ଅଧିକ ଦେଖାଯାଇଥିବା ପୃଷ୍ଠା ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ଉପଲବ୍ଧ ଅଛି</translation>
-<translation id="543121643585717256">ଲିଙ୍କ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ସମସ୍ତ ଟାବକୁ ଏଡିଟ କରିପାରିବେ। ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
 <translation id="543338862236136125">ପାସ୍‍ୱାର୍ଡ ସମ୍ପାଦନ କରନ୍ତୁ</translation>
 <translation id="5433691172869980887">ଉପଯୋଗକର୍ତ୍ତାଙ୍କର ନାମ କପି କରାଗଲା</translation>
 <translation id="5438292632479953702">ପୁଣି ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ପାସୱାର୍ଡ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6296366034485697675">ଏକ୍ସପୋର୍ଟ ଏବଂ ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
 <translation id="6303969859164067831">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ ଏବଂ ସିଙ୍କ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6312687380483398334">ୱେବ୍ ଆପଗୁଡ଼ିକ (ନୀରବ)</translation>
 <translation id="6315386555979018699">ଡିଲିଟ କରି ଜାରି ରଖନ୍ତୁ</translation>
@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">ଡିଲିଟ୍ କରାଗଲା</translation>
 <translation id="6918398787259831832">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ <ph name="BEGIN_LINK" />ଅଧିକ ସୂଚନା ପାଆନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ଟାବ}other{<ph name="NUMBER_OF_TABS" /> ଟାବ}}</translation>
 <translation id="6929224077895306814">ଆପଣଙ୍କ ଡିଭାଇସ ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ସୁରକ୍ଷା କୋଡକୁ ଡିଲିଟ କରାଯିବ</translation>
 <translation id="6937524809504266803">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଲିଙ୍କ କରିବା</translation>
 <translation id="6937876069006524083">ଡାକନାମ (ଇଚ୍ଛାଧୀନ)</translation>
@@ -1640,6 +1641,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” ଟାବକୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="8310451567823644042">ପାସୱାର୍ଡଗୁଡ଼ିକ କାମ କରିବା ଶୀଘ୍ର ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="831192587911042850">ଆପଣ ଅନୁସରଣ କରୁଥିବା ୱେବସାଇଟଗୁଡ଼ିକର ତାଲିକାରେ ବର୍ତ୍ତମାନର ୱେବସାଇଟକୁ ଯୋଗ କରେ।</translation>
+<translation id="8320212361750431956">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="8342727528718219152">ବହୁତ ଅଧିକ ବିଜ୍ଞପ୍ତି ପଠାଉଥିବା ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ Chrome ଆପଣଙ୍କୁ ଜଣାଇବ</translation>
 <translation id="834313815369870491">ସାଇଟଗୁଡ଼ିକୁ କେବେ ବି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="8348430946834215779">ଯେତେବେଳେ ସମ୍ଭବ HTTPS ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ଏହାକୁ ସମର୍ଥନ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ ଲୋଡ କରିବା ପୂର୍ବରୁ ଚେତାବନୀ ପାଆନ୍ତୁ</translation>

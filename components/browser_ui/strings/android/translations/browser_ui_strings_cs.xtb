@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Můžete být odhlášeni z tohoto webu</translation>
 <translation id="6085954183010297841">Smazat udělené oprávnění k úpravám souboru? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Když je tato možnost zapnutá, weby mohou žádat o informace o tom, zda své zařízení aktivně používáte. Když je vypnutá, weby se nemohou dozvědět, zda zařízení aktivně používáte.</translation>
-<translation id="6140839633433422817">Opravdu chcete resetovat oprávnění a vymazat soubory cookie a data tohoto webu?</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6171020522141473435">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení Bluetooth. Když je vypnutá, weby nemohou používat zařízení Bluetooth.</translation>
-<translation id="6177111841848151710">Pro aktuální vyhledávač blokováno</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
 <translation id="6181444274883918285">Přidat výjimku pro konkrétní web</translation>
 <translation id="6192792657125177640">Výjimky</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pokud web bude chtít použít váš mikrofon, zobrazit dotaz (doporučeno)</translation>
 <translation id="6999131147875565462">Chrome běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy</translation>
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
-<translation id="7016516562562142042">Pro aktuální vyhledávač povoleno</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Bránit webům v zobrazení a změně informací na zařízeních NFC</translation>
 <translation id="8944485226638699751">Omezeno</translation>
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Odstranit</translation>
 <translation id="8990043154272859344">Budete odhlášeni ze všech webů</translation>
 <translation id="8993853206419610596">Rozbalit všechny žádosti</translation>
 <translation id="9002538116239926534">Když je tato možnost zapnutá, weby mohou ukládat data do vašeho zařízení. Když je vypnutá, weby nemohou ukládat data do vašeho zařízení.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Aktuální přiblížení je <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
-<translation id="930525582205581608">Zapomenout tento web?</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="967624055006145463">Uložená data</translation>

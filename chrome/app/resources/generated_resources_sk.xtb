@@ -3462,6 +3462,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3421387094817716717">Verejný kľúč založený na eliptickej krivke</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K vašim osobným výsledkom alebo vášmu Asistentovi je možné získať prístup podobným hlasom alebo jeho nahrávkou.</translation>
 <translation id="3421835120203732951">Pridať nový profil</translation>
+<translation id="3422989558057853751">Je vybraná posledná položka, zrušením jej výberu ukončíte režim výberu</translation>
 <translation id="3423111258700187173">Výsledky boli nájdené v priečinku <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Ďalšie informácie o tejto funkcii umelej inteligencie</translation>
 <translation id="3423275441470187644">Dôveryhodnosť</translation>
@@ -3600,7 +3601,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3513019849832307207">Pripojiť sa a otvoriť</translation>
 <translation id="3513563267917474897">Posúvač odtieňa od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Ovládanie hry</translation>
-<translation id="3514373592552233661">Ak je k dispozícii viac sietí, uprednostní sa preferovaná sieť pred ostatnými známymi sieťami</translation>
 <translation id="3514647716686280777">Máte štandardnú ochranu zabezpečenia. Ak chcete získať účinnejšiu ochranu pred nebezpečnými webmi, sťahovanými súbormi a rozšíreniami, zapnite v nastaveniach Chromu Zlepšené bezpečné prehliadanie.</translation>
 <translation id="3514681096978190000">Tento súbor archívu obsahuje ďalšie súbory, ktoré môžu skrývať malvér</translation>
 <translation id="3515983984924808886">Resetovanie potvrďte opätovným stlačením bezpečnostného kľúča. Všetky informácie uchované v bezpečnostnom kľúči (vrátane jeho kódu PIN) budú odstránené.</translation>
@@ -4958,6 +4958,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4461483878391246134">Pridajte jazyky, pri ktorých sa nikdy nemá ponúkať preklad</translation>
 <translation id="4462159676511157176">Vlastné menné servery</translation>
 <translation id="4465236939126352372">Pre aplikáciu <ph name="APP_NAME" /> bol nastavený časový limit <ph name="TIME" /></translation>
+<translation id="4467373268340082204">Nesprávny kód PIN</translation>
 <translation id="4467561276409486506">&amp;Prepnúť kompaktný režim</translation>
 <translation id="4469324811108161144">Poznámky môžu uložiť maximálne tento počet znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Web <ph name="ORIGIN" /> môže upravovať súbory v priečinku <ph name="FOLDERNAME" /></translation>
@@ -10292,7 +10293,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8306063480506363120">Odstrániť prístup k Disku</translation>
 <translation id="8306430106790753902">Cesty siete v systéme ChromeOS</translation>
 <translation id="8306885873692337975">Dostávajte najnovšie funkcie a zlepšenia zabezpečenia.</translation>
-<translation id="8308016398665340540">Túto sieť zdieľate s ďalšími používateľmi tohto zariadenia</translation>
 <translation id="8308024039615003152">Lúka</translation>
 <translation id="8308179586020895837">Opýtať sa, ak chcú stránky <ph name="HOST" /> pristupovať ku kamere</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11196,7 +11196,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8942714513622077633">Chcete zrušiť nastavovanie súpravy Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape – medzinárodný prestup na vyššiu edíciu</translation>
 <translation id="8944099748578356325">Bude intenzívnejšie využívať batériu (aktuálne <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Obmedzené</translation>
 <translation id="8944633700466246631">Vytvorte šesťmiestny kód PIN na obnovenie pre Správcu hesiel Google</translation>
 <translation id="8944725102565796255">Ak chcete použiť tento účet iba jednorazovo, môžete <ph name="GUEST_LINK_BEGIN" />použiť dané zariadenie ako hosť<ph name="GUEST_LINK_END" />. Ak chcete pridať účet niekoho iného, pridajte si do zariadenia <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novú osobu<ph name="LINK_END" />.
 

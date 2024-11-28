@@ -5117,14 +5117,6 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
       Si cette règle n'est pas définie, le paramètre par défaut est autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="487460824085252184">Effectuer automatiquement la migration, sans demander l'autorisation de l'utilisateur.</translation>
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
-<translation id="4875557601092081492">Cette règle est obsolète dans M132 et remplacée par <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />, qui permet de contrôler plus précisément la fonctionnalité. Utilisez <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> à la place.
-
-Lens Overlay permet aux utilisateurs de lancer des recherches Google en interagissant avec une capture d'écran de la page actuelle superposée au contenu Web réel.
-
-Aucun paramètre utilisateur ne permet de contrôler cette fonctionnalité. Elle est généralement disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
-
-Si cette règle est définie sur 0 - Enabled ou n'est pas configurée, la fonctionnalité est disponible pour les utilisateurs.
-Si la règle est définie sur 1 - Disabled, la fonctionnalité n'est pas disponible.</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
 <translation id="4877305769899044884">Couleur par défaut de rétroéclairage du clavier</translation>
 <translation id="4886138258823889910">Activer le fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> du navigateur sous Windows</translation>
@@ -10281,6 +10273,12 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 
       Pour en savoir plus sur les types de contenus JavaScript/ECMAScript, consultez https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
+<translation id="8668202868357089313">Lens Overlay permet aux utilisateurs de lancer des recherches Google en interagissant avec une capture d'écran de la page actuelle superposée au contenu Web réel.
+
+Aucun paramètre utilisateur ne permet de contrôler cette fonctionnalité. Elle est généralement disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
+
+Si cette règle est définie sur 0 - Enabled ou n'est pas configurée, la fonctionnalité est disponible pour les utilisateurs.
+Si la règle est définie sur 1 - Disabled, la fonctionnalité n'est pas disponible.</translation>
 <translation id="8668928485126473293">Permet de définir si <ph name="PRODUCT_NAME" /> exécutera le moteur JavaScript V8 avec des optimisations JavaScript plus avancées activées.
 
 Si vous désactivez les optimisations JavaScript (en définissant la valeur de cette règle sur 2), <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement.
@@ -10298,17 +10296,6 @@ Si cette règle n'est pas configurée, les optimisations JavaScript sont activé
       Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
 <translation id="8672321184841719703">Cibler une version pour les mises à jour automatiques</translation>
 <translation id="867410340948518937">U2F (Deuxième facteur universel)</translation>
-<translation id="8674130752570077671">Lens Overlay permet aux utilisateurs de lancer des recherches Google en interagissant avec une capture d'écran de la page actuelle superposée au contenu Web réel. De plus, les utilisateurs peuvent lancer des recherches Google en fonction du contexte de la page actuelle. Pour fournir des réponses contextuelles, Lens Overlay envoie le contenu de la page à Google afin de répondre à la requête de l'utilisateur en tenant compte du contexte de la page sur laquelle il se trouve.
-
-Aucun paramètre utilisateur ne permet de contrôler cette fonctionnalité. Elle est généralement disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
-
-Cette règle remplace la règle <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" />, obsolète.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Désactiver la fonctionnalité.</translation>
 <translation id="8676959842615154675">Si cette règle est activée, l'hôte d'accès à distance compare le nom de l'utilisateur local auquel il est associé au nom du compte Google enregistré en tant que propriétaire de l'hôte (par exemple, "pierredupont" si l'hôte appartient à pierredupont@example.com). Cet hôte ne démarre pas si le nom de son propriétaire diffère de celui de l'utilisateur local auquel l'hôte est associé. Pour faire en sorte que le compte Google du propriétaire soit associé à un domaine spécifique, utilisez la règle avec "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />".
 
       Si la règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'accès à distance peut être associé à n'importe quel utilisateur local.</translation>

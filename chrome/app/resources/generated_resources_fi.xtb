@@ -3611,7 +3611,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3513019849832307207">Liity ja avaa</translation>
 <translation id="3513563267917474897">Värisävyliukusäädin <ph name="MIN_VALUE" />–<ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Peliasetukset</translation>
-<translation id="3514373592552233661">Jos tarjolla on useampia verkkoja, ensisijaisiin verkkoihin muodostetaan yhteys ennen muita tunnettuja verkkoja.</translation>
 <translation id="3514647716686280777">Sinulla on perustason suojaus. Voit parantaa suojausta vaarallisia verkkosivustoja, latauksia ja laajennuksia vastaan laittamalla Parannettu selaussuoja päälle Chromen asetuksista.</translation>
 <translation id="3514681096978190000">Tämä arkistotiedosto sisältää muita tiedostoja, jotka voivat piilottaa haittaohjelmia</translation>
 <translation id="3515983984924808886">Vahvista nollaus koskettamalla suojausavainta uudelleen. Tällöin kaikki suojausavaimeen tallennetut tiedot, kuten sen PIN-koodi, poistetaan.</translation>
@@ -10300,7 +10299,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8306063480506363120">Poista pääsy Driveen</translation>
 <translation id="8306430106790753902">ChromeOS-verkkoreitit</translation>
 <translation id="8306885873692337975">Lataa uusimmat ominaisuudet ja tietoturvaparannukset.</translation>
-<translation id="8308016398665340540">Jaat tämä verkon muiden laitteen käyttäjien kanssa</translation>
 <translation id="8308024039615003152">Niitty</translation>
 <translation id="8308179586020895837">Kysy, jos <ph name="HOST" /> haluaa käyttää kameraasi</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11202,7 +11200,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8942714513622077633">Peruutetaanko Microsoft 365:n käyttöönotto?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Käyttää akkua nopeammin (akkua tällä hetkellä <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Rajoitettu</translation>
 <translation id="8944633700466246631">Luo Google Salasanoille kuusinumeroinen palautuksen PIN-koodi</translation>
 <translation id="8944725102565796255">Jos haluat käyttää tiliä vain tämän kerran, voit <ph name="GUEST_LINK_BEGIN" />käyttää laitetta vieraana<ph name="GUEST_LINK_END" />. Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
 

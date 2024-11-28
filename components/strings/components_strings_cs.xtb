@@ -1238,6 +1238,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si přizpůsobíte vzhled prohlížeče</translation>
 <translation id="3240791268468473923">List identifikačních údajů pro zabezpečené platby o nenalezených odpovídajících identifikačních údajích je otevřený</translation>
 <translation id="324180406144491771">Odkazy „<ph name="HOST_NAME" />“ jsou blokovány</translation>
+<translation id="3243650379537999343">Kreslit</translation>
 <translation id="3248329428895535435">Na tomto webu nezobrazovat</translation>
 <translation id="3249102948665905108">Nahrávání souboru do úložiště <ph name="CLOUD_PROVIDER" /> bylo dokončeno s chybami</translation>
 <translation id="3252772880526154546">Architektura</translation>
@@ -2630,6 +2631,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5740911612628596808">Obálka C9</translation>
 <translation id="5742806904559466333">Bary, kluby a noční život</translation>
 <translation id="5743684619253032786">Produkty péče o nehty</translation>
+<translation id="574392208103952083">Střední</translation>
 <translation id="5745733273847572235">Může žádat o vaši polohu</translation>
 <translation id="5750869797196646528">Sledování rukou</translation>
 <translation id="5752327398324808817">Zadejte jedno nebo dvě slova</translation>
@@ -3463,6 +3465,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="725866823122871198">Soukromé připojení k doméně <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nelze navázat, protože máte v počítači nastaveno chybné datum a čas (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="7260075294900977274">Nová chytrá složka, která umožňuje uložit si všechny nákupní stránky na jednom místě, automaticky sledovat ceny, získat informace o cenách a nejen to</translation>
 <translation id="7265608370113700582">Adresa je dostupná pouze na tomto zařízení</translation>
+<translation id="7269151392155523061">Zkratka nemůže být stejná jako klíčové slovo agregátoru vyhledávání definované v zásadě <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Stahované soubory se odesílají k analýze do služby Google Cloud nebo třetím stranám. Může se u nich například kontrolovat přítomnost citlivých údajů nebo malwaru, mohou být uchovávány v souladu se zásadami společnosti a může k nim mít přístup váš administrátor.</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7275808129217605899">Zdravá výživa</translation>

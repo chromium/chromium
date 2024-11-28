@@ -3615,7 +3615,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3513019849832307207">Ymuno ac agor</translation>
 <translation id="3513563267917474897">Llithrydd arlliw o <ph name="MIN_VALUE" /> i <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Rheoli Gemau</translation>
-<translation id="3514373592552233661">Bydd y rhwydweithiau a ffefrir yn cael eu dewis yn lle rhwydweithiau hysbys eraill os oes mwy nag un ar gael</translation>
 <translation id="3514647716686280777">Rydych yn cael amddiffyniad diogelwch safonol. I gael rhagor o amddiffyniad rhag gwefannau, lawrlwythiadau ac estyniadau peryglus, trowch Gwell Pori'n Ddiogel ymlaen yng ngosodiadau Chrome.</translation>
 <translation id="3514681096978190000">Mae'r ffeil archif hon yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
 <translation id="3515983984924808886">Cyffyrddwch â'ch allwedd ddiogelwch eto i gadarnhau ailosod. Bydd yr holl wybodaeth sy'n cael ei storio ar yr allwedd ddiogelwch, gan gynnwys ei PIN, yn cael ei dileu.</translation>
@@ -10313,7 +10312,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8306063480506363120">Tynnu mynediad Drive</translation>
 <translation id="8306430106790753902">Llwybrau Rhwydwaith ChromeOS</translation>
 <translation id="8306885873692337975">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf.</translation>
-<translation id="8308016398665340540">Rydych yn rhannu'r rhwydwaith hwn â defnyddwyr eraill y ddyfais hon</translation>
 <translation id="8308024039615003152">Dôl</translation>
 <translation id="8308179586020895837">Gofyn os mae <ph name="HOST" /> eisiau mynediad at eich camera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11219,7 +11217,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8942714513622077633">Canslo gosodiad Microsoft 365?</translation>
 <translation id="894360074127026135">Cam i fyny Rhyngwladol Netscape</translation>
 <translation id="8944099748578356325">Defnyddio'r batri yn gyflymach (<ph name="BATTERY_PERCENTAGE" />% ar hyn o bryd)</translation>
-<translation id="8944485226638699751">Cyfyngedig</translation>
 <translation id="8944633700466246631">Creu PIN adfer 6 digid ar gyfer Rheolwr Cyfrineiriau Google</translation>
 <translation id="8944725102565796255">Os ydych chi am ddefnyddio'r cyfrif hwn unwaith yn unig, gallwch <ph name="GUEST_LINK_BEGIN" />ddefnyddio'r ddyfais fel gwestai<ph name="GUEST_LINK_END" />. Os hoffech ychwanegu cyfrif ar gyfer rhywun arall, <ph name="LINK_BEGIN" />ychwanegwch berson newydd<ph name="LINK_END" /> at eich <ph name="DEVICE_TYPE" />.
 

@@ -460,7 +460,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3037517125981011456">Permet d'afficher des invites de connexion à Chrome</translation>
 <translation id="3038272154009688107">Afficher tous les sites</translation>
-<translation id="3055841435094910999">Des infos sur l'utilisation de Chrome, mais qui ne sont pas rattachées à vous, sont transmises à Google\n\nSi Chrome plante, il se peut que des détails sur ce plantage contiennent des infos personnelles\n\nSi vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez</translation>
 <translation id="3059531648236115056">Ajouter un résumé</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles sur vos centres d'intérêt dans Chrome</translation>
@@ -873,6 +872,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="496607651705915226">Pour enregistrer et utiliser de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play</translation>
 <translation id="4971753085054504448">Essayez d'effectuer une autre recherche ou ouvrez tout l'historique Chrome pour voir plus de résultats.</translation>
 <translation id="497421865427891073">Avancer</translation>
+<translation id="498624032394115435">Toutes les personnes disposant du lien peuvent modifier tous les onglets.</translation>
 <translation id="4987271110129728827">Page introuvable. Vérifiez l'orthographe ou effectuez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4991110219272367918">Option permettant d'approuver ou non un site Web fermée</translation>
@@ -959,7 +959,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici.</translation>
 <translation id="5424588387303617268">Espace disponible : <ph name="GIGABYTES" /> Go</translation>
-<translation id="543121643585717256">Toutes les personnes disposant du lien peuvent modifier tous les onglets. En savoir plus sur les groupes d'onglets partagés</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="5438292632479953702">Retélécharger</translation>
@@ -1154,6 +1153,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6284472661216707937">Mots de passe sur tous vos appareils (fiche fermée)</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6296366034485697675">Exporter et supprimer</translation>
+<translation id="629730747756840877">Compte</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6312687380483398334">Applications Web (discrètes)</translation>
 <translation id="6315386555979018699">Supprimer et continuer</translation>
@@ -1640,6 +1640,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> a supprimé l'onglet "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Les mots de passe ne fonctionneront bientôt plus</translation>
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
+<translation id="8320212361750431956">Activité récente</translation>
 <translation id="8342727528718219152">Chrome vous indiquera les sites qui envoient peut-être trop de notifications</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
 <translation id="8348430946834215779">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>

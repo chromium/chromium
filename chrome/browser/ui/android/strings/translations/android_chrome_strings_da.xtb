@@ -460,7 +460,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3037517125981011456">Viser anmodninger om at logge ind i Chrome</translation>
 <translation id="3038272154009688107">Se alle websites</translation>
-<translation id="3055841435094910999">Der sendes oplysninger om din brug af Chrome til Google, men oplysningerne kan ikke knyttes til dig\n\nHvis Chrome går ned, omfatter dataene om nedbruddet muligvis nogle personlige oplysninger\n\nHvis du aktiverer synkronisering, omfatter metrics muligvis også oplysninger om, de webadresser, du navigerer til</translation>
 <translation id="3059531648236115056">Tilføj oversigt</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bogmærke}one{<ph name="BOOKMARKS_COUNT_MANY" /> bogmærke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bogmærker}}</translation>
 <translation id="3062802207422175757">Artikler om dine interesser i Chrome</translation>
@@ -873,6 +872,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="496607651705915226">Opdater Google Play-tjenester for at gemme og bruge nye adgangskoder på din Google-konto</translation>
 <translation id="4971753085054504448">Prøv at søge efter noget andet, eller åbn hele Chrome-historikken for at se flere resultater.</translation>
 <translation id="497421865427891073">Gå fremad</translation>
+<translation id="498624032394115435">Alle med linket kan redigere alle faner.</translation>
 <translation id="4987271110129728827">Siden kan ikke findes. Tjek stavningen, eller prøv med en websøgning.</translation>
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4991110219272367918">Mulighed for at godkende eller ikke godkende et website – lukket</translation>
@@ -959,7 +959,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Dine mest besøgte sider vises her</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ledig plads</translation>
-<translation id="543121643585717256">Alle med linket kan redigere alle faner. Få flere oplysninger om delte fanegrupper</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5433691172869980887">Brugernavnet er kopieret</translation>
 <translation id="5438292632479953702">Download igen</translation>
@@ -1154,6 +1153,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6284472661216707937">Adgangskoder på alle dine enheder er lukket</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6296366034485697675">Eksportér og slet</translation>
+<translation id="629730747756840877">Konto</translation>
 <translation id="6303969859164067831">Log ud, og deaktiver synkronisering</translation>
 <translation id="6312687380483398334">Webapps (lydløs)</translation>
 <translation id="6315386555979018699">Slet og fortsæt</translation>
@@ -1317,6 +1317,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6918398787259831832">Hvis problemet fortsætter, kan du <ph name="BEGIN_LINK" />få flere oplysninger<ph name="END_LINK" /> fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi du ikke har besøgt websitet for nylig</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fane}one{<ph name="NUMBER_OF_TABS" /> fane}other{<ph name="NUMBER_OF_TABS" /> faner}}</translation>
 <translation id="6929224077895306814">Alle sikkerhedskoder, der er gemt på din enhed og på din Google-konto, slettes</translation>
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
 <translation id="6937876069006524083">Kaldenavn (valgfrit)</translation>
@@ -1640,6 +1641,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har fjernet fanen "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Du mister snart adgangen til dine gemte adgangskoder</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
+<translation id="8320212361750431956">Seneste aktivitet</translation>
 <translation id="8342727528718219152">Chrome giver dig besked om websites, der muligvis sender for mange notifikationer</translation>
 <translation id="834313815369870491">Oversæt aldrig websites</translation>
 <translation id="8348430946834215779">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS</translation>

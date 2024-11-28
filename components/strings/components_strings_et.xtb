@@ -1241,6 +1241,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma brauseri ilme kohandamiseks vajutage tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="3240791268468473923">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati, on avatud</translation>
 <translation id="324180406144491771">Hosti „<ph name="HOST_NAME" />“ lingid on blokeeritud</translation>
+<translation id="3243650379537999343">Joonista</translation>
 <translation id="3248329428895535435">Ära kuva sellel saidil</translation>
 <translation id="3249102948665905108">Faili üleslaadimine kohta <ph name="CLOUD_PROVIDER" /> viidi lõpule vigadega</translation>
 <translation id="3252772880526154546">Arhitektuur</translation>
@@ -2634,6 +2635,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5740911612628596808">Ümbrik C9</translation>
 <translation id="5742806904559466333">Baarid, klubid ja ööelu</translation>
 <translation id="5743684619253032786">Küünehooldustooted</translation>
+<translation id="574392208103952083">Keskmine</translation>
 <translation id="5745733273847572235">Saab küsida teie asukohta</translation>
 <translation id="5750869797196646528">Käeliigutuste jälgimine</translation>
 <translation id="5752327398324808817">Sisestage sõna või kaks</translation>
@@ -3469,6 +3471,7 @@ Lisateave:
 <translation id="725866823122871198">Privaatset ühendust ei saa domeeniga <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> luua, kuna arvuti kuupäev ja kellaaeg (<ph name="DATE_AND_TIME" />) on valed.</translation>
 <translation id="7260075294900977274">Uus nutikas kaust, mis aitab teil salvestada kõik oma ostulehed ühte kohta, jälgib automaatselt hindu, hangib hinnastatistikat ja teeb muudki</translation>
 <translation id="7265608370113700582">Aadress on saadaval ainult selles seadmes</translation>
+<translation id="7269151392155523061">Otsetee ei tohi olla sama, mis otsingukoondaja märksõna, mille on määranud <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Teie allalaaditud failid saadetakse Google Cloudi või kolmandatele osapooltele analüüsimiseks. Näiteks võidakse neid skannida tundlike andmete või pahavara tuvastamiseks, talletada teie ettevõtte eeskirjade alusel ja need võivad olla teie administraatorile nähtavad.</translation>
 <translation id="7275334191706090484">Hallatud järjehoidjad</translation>
 <translation id="7275808129217605899">Tervislik toitumine</translation>

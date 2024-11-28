@@ -3599,7 +3599,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3513019849832307207">Qoʻshilish va ochish</translation>
 <translation id="3513563267917474897">Tuslar slayderi: <ph name="MIN_VALUE" /> — <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Oʻyin boshqaruvi</translation>
-<translation id="3514373592552233661">Agar bir nechta saqlangan tarmoqlar mavjud bo‘lsa, avval afzal tarmoqlar tanlanadi</translation>
 <translation id="3514647716686280777">Siz standart xavfsizlik himoyasiga ega boʻlasiz. Zararli saytlar, yuklamalar va kengaytmalardan himoyalanish uchun Chrome sozlamalarida Saytlarni kuchaytirilgan rejimda xavfsiz kezish funksiyasini yoqing.</translation>
 <translation id="3514681096978190000">Bu arxiv faylida zararli dasturlarni yashirishi mumkin boʻlgan boshqa fayllar bor</translation>
 <translation id="3515983984924808886">Sozlamalarni asliga qaytarishni tasdiqlash uchun elektron kalit tugmasini qayta bosing. Bunda elektron kalitdagi barcha maʼlumotlar, jumladan, PIN kodlar ham tozalab tashlanadi.</translation>
@@ -10287,7 +10286,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8306063480506363120">Drive ruxsatini olib tashlash</translation>
 <translation id="8306430106790753902">ChromeOS tarmoq marshrutlari</translation>
 <translation id="8306885873692337975">Eng oxirgi funksiyalar va xavfsizlikka oid yangilanishlarni olish</translation>
-<translation id="8308016398665340540">Qurilmadagi boshqa foydalanuvchilar bu tarmoqqa ulana oladi</translation>
 <translation id="8308024039615003152">Maysazor</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> saytida kameradan foydalanishga ruxsat so‘ralsin</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11189,7 +11187,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8942714513622077633">Microsoft 365 dasturini sozlash bekor qilinsinmi?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Batareya quvvati tezroq sarflanadi (hozirda: <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Cheklangan</translation>
 <translation id="8944633700466246631">Google Parollar menejeri uchun 6 raqamli zaxiraviy PIN kod yarating</translation>
 <translation id="8944725102565796255">Bu hisobdan bir marta foydalanish uchun <ph name="GUEST_LINK_BEGIN" />qurilmadan mehmon rejimida foydalanish<ph name="GUEST_LINK_END" /> mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
 

@@ -460,7 +460,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037517125981011456">Hiển thị lời nhắc đăng nhập vào Chrome</translation>
 <translation id="3038272154009688107">Xem tất cả trang web</translation>
-<translation id="3055841435094910999">Không thể nhận dạng bạn bằng thông tin được gửi cho Google về hoạt động sử dụng Chrome của bạn\n\nNếu Chrome gặp sự cố, thông tin về sự cố đó có thể chứa một số thông tin cá nhân\n\nNếu bạn bật tính năng đồng bộ hoá, thì các chỉ số cũng có thể bao gồm thông tin về các URL bạn truy cập</translation>
 <translation id="3059531648236115056">Thêm nội dung tóm tắt</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
@@ -873,6 +872,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="496607651705915226">Cập nhật Dịch vụ Google Play để lưu và sử dụng mật khẩu mới trong Tài khoản Google</translation>
 <translation id="4971753085054504448">Hãy thử tìm nội dung khác hoặc mở toàn bộ nhật ký duyệt web trên Chrome để xem thêm kết quả.</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
+<translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
 <translation id="4987271110129728827">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên web.</translation>
 <translation id="4988526792673242964">Trang</translation>
 <translation id="4991110219272367918">Lựa chọn phê duyệt hoặc không phê duyệt một trang web đã đóng</translation>
@@ -959,7 +959,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sẽ mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" ngay lập tức</translation>
 <translation id="5423934151118863508">Trang bạn truy cập nhiều nhất sẽ xuất hiện ở đây</translation>
 <translation id="5424588387303617268">Còn trống <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ. Tìm hiểu về nhóm thẻ được chia sẻ</translation>
 <translation id="543338862236136125">Chỉnh sửa mật khẩu</translation>
 <translation id="5433691172869980887">Đã sao chép tên người dùng</translation>
 <translation id="5438292632479953702">Tải xuống lần nữa</translation>
@@ -1154,6 +1153,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6284472661216707937">Bảng "Mật khẩu trên tất cả thiết bị của bạn" đã đóng</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6296366034485697675">Xuất và xoá</translation>
+<translation id="629730747756840877">Tài khoản</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6312687380483398334">Ứng dụng web (im lặng)</translation>
 <translation id="6315386555979018699">Xoá và tiếp tục</translation>
@@ -1641,6 +1641,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> đã xoá thẻ "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Các mật khẩu sắp ngừng hoạt động</translation>
 <translation id="831192587911042850">Thêm trang web hiện tại vào danh sách các trang web bạn đang theo dõi.</translation>
+<translation id="8320212361750431956">Hoạt động gần đây</translation>
 <translation id="8342727528718219152">Chrome sẽ cho bạn biết những trang web có thể đang gửi quá nhiều thông báo</translation>
 <translation id="834313815369870491">Không bao giờ dịch các trang web</translation>
 <translation id="8348430946834215779">Sử dụng HTTPS bất cứ khi nào có thể và nhận thông tin cảnh báo trước khi tải những trang web không hỗ trợ HTTPS</translation>

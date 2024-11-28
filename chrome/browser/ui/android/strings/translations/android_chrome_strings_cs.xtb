@@ -460,7 +460,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037517125981011456">Zobrazuje výzvy k přihlášení do Chromu</translation>
 <translation id="3038272154009688107">Zobrazit všechny weby</translation>
-<translation id="3055841435094910999">Informace o vašem používání Chromu se odesílají do Googlu, ale nejsou spojeny s vámi.\n\nPokud Chrome spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.\n\nPokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.</translation>
 <translation id="3059531648236115056">Přidat souhrn</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> záložka}few{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}many{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}other{<ph name="BOOKMARKS_COUNT_MANY" /> záložek}}</translation>
 <translation id="3062802207422175757">Články o vašich zájmech v Chromu</translation>
@@ -873,6 +872,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="496607651705915226">Pokud chcete používat hesla ze svého účtu Google a ukládat do něj nová, aktualizujte služby Google Play.</translation>
 <translation id="4971753085054504448">Zkuste vyhledat něco jiného nebo otevřete celou historii Chromu, abyste viděli více výsledků.</translation>
 <translation id="497421865427891073">Vpřed</translation>
+<translation id="498624032394115435">Kdokoli s odkazem může upravovat všechny karty.</translation>
 <translation id="4987271110129728827">Stránku nelze najít. Zkontrolujte, zda jste neudělali překlep, nebo ji zkuste vyhledat na webu.</translation>
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4991110219272367918">Možnost schválit nebo neschválit web byla zavřena</translation>
@@ -959,7 +959,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) hned přijde o přístup ke skupině karet <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Zde se zobrazí vaše nejnavštěvovanější stránky.</translation>
 <translation id="5424588387303617268">K dispozici: <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Kdokoli s odkazem může upravovat všechny karty. Další informace o sdílených skupinách karet</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5433691172869980887">Uživatelské jméno bylo zkopírováno</translation>
 <translation id="5438292632479953702">Stáhnout znovu</translation>
@@ -1154,6 +1153,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6284472661216707937">Panel Hesla ve všech vašich zařízeních je zavřený</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6296366034485697675">Exportovat a smazat</translation>
+<translation id="629730747756840877">Účet</translation>
 <translation id="6303969859164067831">Odhlásit a vypnout synchronizaci</translation>
 <translation id="6312687380483398334">Webové aplikace (tiché)</translation>
 <translation id="6315386555979018699">Vymazat a pokračovat</translation>
@@ -1640,6 +1640,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8307517230426267469">Uživatel <ph name="GIVEN_NAME" /> odstranil kartu „<ph name="TAB_NAME" />“</translation>
 <translation id="8310451567823644042">Hesla brzy přestanou fungovat</translation>
 <translation id="831192587911042850">Tento web bude přidán na seznam sledovaných.</translation>
+<translation id="8320212361750431956">Nedávná aktivita</translation>
 <translation id="8342727528718219152">Chrome vás bude informovat o webech, které odesílají příliš mnoho oznámení</translation>
 <translation id="834313815369870491">Weby nikdy nepřekládat</translation>
 <translation id="8348430946834215779">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje</translation>

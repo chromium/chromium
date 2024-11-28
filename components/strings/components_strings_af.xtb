@@ -1241,6 +1241,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om die voorkoms van jou blaaier te pasmaak</translation>
 <translation id="3240791268468473923">Blad vir geen passende eiebewys vir veilige betalingeiebewys is oopgemaak</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”-skakels word geblokkeer</translation>
+<translation id="3243650379537999343">Teken</translation>
 <translation id="3248329428895535435">Moenie op hierdie werf wys nie</translation>
 <translation id="3249102948665905108">Lêeroplaai na <ph name="CLOUD_PROVIDER" /> is voltooi, met foute</translation>
 <translation id="3252772880526154546">Argitektuur</translation>
@@ -2634,6 +2635,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5740911612628596808">Koevert C9</translation>
 <translation id="5742806904559466333">Kroeë, klubs en naglewe</translation>
 <translation id="5743684619253032786">Naelsorgprodukte</translation>
+<translation id="574392208103952083">Medium</translation>
 <translation id="5745733273847572235">Kan vir jou ligging vra</translation>
 <translation id="5750869797196646528">Handnasporing</translation>
 <translation id="5752327398324808817">Voer ’n woord of twee in</translation>
@@ -3468,6 +3470,7 @@ Bykomende besonderhede:
 <translation id="725866823122871198">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou rekenaar se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
 <translation id="7260075294900977274">’n Nuwe slim vouer wat jou help om al jou inkopiebladsye op een plek te stoor en outomaties pryse dop te hou, prysinsigte te kry, en nog meer</translation>
 <translation id="7265608370113700582">Adres is net op hierdie toestel beskikbaar</translation>
+<translation id="7269151392155523061">Kortpad kan nie dieselfde wees as die soektogsamevoegersleutelwoord wat deur <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> gedefinieer is nie: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Lêers wat jy aflaai, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word en sigbaar vir jou administrateur wees.</translation>
 <translation id="7275334191706090484">Bestuurde boekmerke</translation>
 <translation id="7275808129217605899">Gesonde eetgewoontes</translation>

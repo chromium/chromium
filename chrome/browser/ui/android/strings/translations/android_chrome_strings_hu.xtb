@@ -460,7 +460,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037517125981011456">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="3038272154009688107">Összes webhely megjelenítése</translation>
-<translation id="3055841435094910999">A rendszer információt küld a Google-nak az Ön Chrome-használatáról, de ez az információ nem köthető Önhöz\n\nHa a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes adatok\n\nHa bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak információkat az Ön által felkeresett URL-ekre vonatkozó adatokat</translation>
 <translation id="3059531648236115056">Összefoglaló hozzáadása</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> könyvjelző}other{<ph name="BOOKMARKS_COUNT_MANY" /> könyvjelző}}</translation>
 <translation id="3062802207422175757">Az érdeklődési köreihez kapcsolódó cikkek a Chrome-ban</translation>
@@ -873,6 +872,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="496607651705915226">Ha új jelszavakat szeretne menteni és használni Google-fiókjában, frissítse a Google Play-szolgáltatásokat.</translation>
 <translation id="4971753085054504448">További találatok megjelenítéséhez próbáljon valami másra keresni, vagy nyissa meg a teljes Chrome-előzményeket.</translation>
 <translation id="497421865427891073">Előrelépés</translation>
+<translation id="498624032394115435">A link birtokában bárki szerkesztheti az összes lapot.</translation>
 <translation id="4987271110129728827">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni az interneten.</translation>
 <translation id="4988526792673242964">Oldal</translation>
 <translation id="4991110219272367918">Lehetőség a webhely jóváhagyására vagy elutasítására bezárva</translation>
@@ -959,7 +959,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) azonnal elveszíti a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz való hozzáférését</translation>
 <translation id="5423934151118863508">A leggyakrabban látogatott oldalak fognak itt megjelenni</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB szabad</translation>
-<translation id="543121643585717256">A link birtokában bárki szerkesztheti az összes lapot. További információ a megosztott lapcsoportokról.</translation>
 <translation id="543338862236136125">Jelszó módosítása</translation>
 <translation id="5433691172869980887">Felhasználónév vágólapra másolva</translation>
 <translation id="5438292632479953702">Letöltés újra</translation>
@@ -1154,6 +1153,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6284472661216707937">Jelszavak az összes eszközén párbeszédpanel bezárva</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6296366034485697675">Exportálás és törlés</translation>
+<translation id="629730747756840877">Fiók</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
 <translation id="6312687380483398334">Webalkalmazások (csendes)</translation>
 <translation id="6315386555979018699">Törlés és folytatás</translation>
@@ -1317,6 +1317,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6910211073230771657">Törölve</translation>
 <translation id="6918398787259831832">Ha a probléma továbbra is fennáll, <ph name="BEGIN_LINK" />itt talál további információt<ph name="END_LINK" /> a következőről: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert Ön az utóbbi időben nem kereste fel ezt a webhelyet</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 lap}other{<ph name="NUMBER_OF_TABS" /> lap}}</translation>
 <translation id="6929224077895306814">Az eszközére és a Google-fiókjába mentett biztonsági kódok is törlődnek</translation>
 <translation id="6937524809504266803">Személyre szabás és összekapcsolás</translation>
 <translation id="6937876069006524083">Becenév (nem kötelező)</translation>
@@ -1640,6 +1641,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> eltávolította a(z) „<ph name="TAB_NAME" />” lapot</translation>
 <translation id="8310451567823644042">A jelszavak hamarosan nem fognak működni</translation>
 <translation id="831192587911042850">Hozzáadja a jelenlegi webhelyet az Ön által követett webhelyeket tartalmazó listához.</translation>
+<translation id="8320212361750431956">Legutóbbi tevékenység</translation>
 <translation id="8342727528718219152">A Chrome értesíteni fogja Önt azokról a webhelyekről, amelyek lehet, hogy túl sok értesítést küldenek</translation>
 <translation id="834313815369870491">Sosem fordított webhelyek</translation>
 <translation id="8348430946834215779">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt.</translation>

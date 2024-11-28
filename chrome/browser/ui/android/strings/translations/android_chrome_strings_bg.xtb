@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Цената се проследява</translation>
 <translation id="3037517125981011456">Показва подкани за влизане в Chrome</translation>
 <translation id="3038272154009688107">Преглед на всички сайтове</translation>
-<translation id="3055841435094910999">До Google се изпраща информация за употребата на Chrome от ваша страна, но тя не е свързана с вас\n\nАко Chrome претърпи срив, подробностите за срива може да включват известна лична информация\n\nАко включите синхронизирането, показателите може да включват и информация за посещаваните от вас URL адреси</translation>
 <translation id="3059531648236115056">Добавяне на обобщение</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">За да запазвате нови пароли в профила си в Google и да ги използвате, актуализирайте услугите за Google Play</translation>
 <translation id="4971753085054504448">Потърсете нещо друго или отворете пълната история на Chrome, за да видите още резултати.</translation>
 <translation id="497421865427891073">Преминаване напред</translation>
+<translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
 <translation id="4987271110129728827">Страницата не е намерена. Проверете изписването или потърсете в мрежата.</translation>
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4991110219272367918">Опцията за одобряване или отхвърляне на уебсайт бе затворена</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) незабавно ще загуби достъп до групата раздели „<ph name="GROUP_NAME" />“</translation>
 <translation id="5423934151118863508">Най-посещаваните от вас страници ще се показват тук</translation>
 <translation id="5424588387303617268">Налични: <ph name="GIGABYTES" /> ГБ</translation>
-<translation id="543121643585717256">Всеки, който разполага с връзката, може да редактира всички раздели. Научете за споделените групи раздели</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5433691172869980887">Потребителското име е копирано</translation>
 <translation id="5438292632479953702">Повторно изтегляне</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">Известието „Паролите са достъпни на всичките ви устройства“ е затворено</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6296366034485697675">Експортиране и изтриване</translation>
+<translation id="629730747756840877">Профил</translation>
 <translation id="6303969859164067831">Изход от профила и изключване на синхронизирането</translation>
 <translation id="6312687380483398334">Уеб приложения (без прекъсвания)</translation>
 <translation id="6315386555979018699">Изтриване и продължаване</translation>
@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">Изтрито</translation>
 <translation id="6918398787259831832">Ако този проблем не се отстрани, <ph name="BEGIN_LINK" />получете повече информация<ph name="END_LINK" /> от <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome премахна това разрешение, защото не сте посещавали този сайт наскоро</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 раздел}other{<ph name="NUMBER_OF_TABS" /> раздела}}</translation>
 <translation id="6929224077895306814">Всички кодове за сигурност, запазени на устройството ви и в профила ви в Google, ще бъдат изтрити</translation>
 <translation id="6937524809504266803">Персонализиране и свързване</translation>
 <translation id="6937876069006524083">Псевдоним (по избор)</translation>
@@ -1640,6 +1641,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> премахна раздела „<ph name="TAB_NAME" />“</translation>
 <translation id="8310451567823644042">Паролите скоро ще спрат да работят</translation>
 <translation id="831192587911042850">Добавя текущия уебсайт към списъка с тези, които следвате.</translation>
+<translation id="8320212361750431956">Скорошна активност</translation>
 <translation id="8342727528718219152">Chrome ще ви уведомява за сайтовете, които може да изпращат твърде много известия</translation>
 <translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>
 <translation id="8348430946834215779">Използвайте HTTPS, когато е възможно, и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол</translation>

@@ -252,6 +252,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4434353761996769206">Installationsfejl: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> administrerer Chromium</translation>
+<translation id="444069871276811466">Tilføj Chromium-profil</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4470974262661801543">Angiv din adgangssætning for at bruge og gemme Chromium-data på din Google-konto</translation>
 <translation id="4493028449971051158">Opstartsfejl: Kør installationsprogrammet som administrator.</translation>
@@ -582,6 +583,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chromium på denne enhed.</translation>
 <translation id="8852026904190808918">Dette sprog bruges i menuer, indstillinger, underretninger og anden tekst i Chromium</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
+<translation id="8876044221123442390">Tilføj Chromium-profil</translation>
 <translation id="8880203542552872219">Hvis ja, skal du redigere den gemte adgangskode i Chromium, så den matcher den nye adgangskode.</translation>
 <translation id="8891709362986793894">Din organisation kræver, at du logger ind i Chromium</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>

@@ -3597,7 +3597,6 @@
 <translation id="3513019849832307207">Придружи ме и отвори</translation>
 <translation id="3513563267917474897">Клизач за нијансу боје од <ph name="MIN_VALUE" /> до <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Контрола игре</translation>
-<translation id="3514373592552233661">Жељене мреже ће имати приоритет у односу на друге познате мреже ако је доступно више њих</translation>
 <translation id="3514647716686280777">Добијате стандардну заштиту. Да бисте добили додатну заштиту од опасних веб-сајтова, преузимања и додатака, укључите побољшано безбедно прегледање у подешавањима Chrome-а.</translation>
 <translation id="3514681096978190000">Овај фајл архиве садржи друге фајлове који могу да крију малвер</translation>
 <translation id="3515983984924808886">Додирните поново безбедносни кључ да бисте потврдили ресетовање. Све информације сачуване на безбедносном кључу, укључујући његов PIN, биће обрисане.</translation>
@@ -10292,7 +10291,6 @@
 <translation id="8306063480506363120">Уклони приступ Диску</translation>
 <translation id="8306430106790753902">ChromeOS мрежне путање</translation>
 <translation id="8306885873692337975">Добијајте најновије функције и безбедносна побољшања.</translation>
-<translation id="8308016398665340540">Делите ову мрежу са осталим корисницима на овом уређају</translation>
 <translation id="8308024039615003152">Ливада</translation>
 <translation id="8308179586020895837">Питај ме ако <ph name="HOST" /> жели да приступи камери</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11196,7 +11194,6 @@
 <translation id="8942714513622077633">Желите ли да откажете подешавање Microsoft-а 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">бржа потрошња батерије (тренутно <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Ограничено</translation>
 <translation id="8944633700466246631">Направите шестоцифрени PIN за враћање приступа Google менаџеру лозинки</translation>
 <translation id="8944725102565796255">Ако желите да користите овај налог само једном, можете да <ph name="GUEST_LINK_BEGIN" />користите уређај као гост<ph name="GUEST_LINK_END" />. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
 

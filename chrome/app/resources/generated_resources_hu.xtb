@@ -3611,7 +3611,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3513019849832307207">Csatlakozás és megnyitás</translation>
 <translation id="3513563267917474897">Színárnyalat csúszkája <ph name="MIN_VALUE" /> és <ph name="MAX_VALUE" /> között</translation>
 <translation id="3514335087372914653">Játékbeállítások</translation>
-<translation id="3514373592552233661">Ha egynél több hálózat áll rendelkezésre, a rendszer a preferált hálózatokat részesíti előnyben más ismert hálózatokkal szemben</translation>
 <translation id="3514647716686280777">Normál biztonsági védelemben részesül. Ha hatékonyabb védelmet szeretne kapni a veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben, kapcsolja be a Biztonságos Böngészés fokozott védelemmel funkciót a Chrome beállításainál.</translation>
 <translation id="3514681096978190000">Ez az archívumfájl olyan egyéb fájlokat tartalmaz, amelyek esetlegesen rosszindulatú programokat rejthetnek</translation>
 <translation id="3515983984924808886">A visszaállítás megerősítéséhez érintse meg újra a biztonsági hardverkulcsot. Ezzel törli a biztonsági hardverkulcson tárolt összes adatot, köztük a PIN-kódot is.</translation>
@@ -10302,7 +10301,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8306063480506363120">Drive-hozzáférés eltávolítása</translation>
 <translation id="8306430106790753902">A ChromeOS hálózati útvonalai</translation>
 <translation id="8306885873692337975">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket.</translation>
-<translation id="8308016398665340540">Ön épp megosztja ezt a hálózatot ennek az eszköznek a többi felhasználójával</translation>
 <translation id="8308024039615003152">Rét</translation>
 <translation id="8308179586020895837">Kérdezzen rá, ha a(z) <ph name="HOST" /> hozzá szeretne férni a kamerához</translation>
 <translation id="830868413617744215">Béta</translation>
@@ -11204,7 +11202,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8942714513622077633">Megszakítja a Microsoft 365 beállítását?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Megnövekedett akkuhasználat (jelenleg <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Korlátozott</translation>
 <translation id="8944633700466246631">Hatjegyű helyreállítási PIN-kód létrehozása a Google Jelszókezelőhöz</translation>
 <translation id="8944725102565796255">Ha csak egyszer szeretné használni ezt a fiókot, akkor <ph name="GUEST_LINK_BEGIN" />vendég módban is használhatja az eszközt<ph name="GUEST_LINK_END" />. Ha más számára szeretne hozzáadni fiókot, <ph name="LINK_BEGIN" />inkább új személyt adjon hozzá<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> eszközéhez.
 

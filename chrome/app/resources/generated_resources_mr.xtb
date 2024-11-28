@@ -3611,7 +3611,6 @@
 <translation id="3513019849832307207">सामील व्हा आणि उघडा</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> ते <ph name="MAX_VALUE" /> पर्यंतचा ह्यू स्लायडर</translation>
 <translation id="3514335087372914653">गेम नियंत्रण</translation>
-<translation id="3514373592552233661">एका पेक्षा जास्त नेटवर्क उपलब्ध असल्यास इतर ज्ञात नेटवर्क ऐवजी प्राधान्यीकृत नेटवर्कना प्राधान्य दिले जाईल</translation>
 <translation id="3514647716686280777">तुम्हाला मानक सुरक्षा संरक्षण मिळत आहे. धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक संरक्षण मिळवण्यासाठी, Chrome सेटिंग्जमध्ये वर्धित सुरक्षित ब्राउझिंग सुरू करा.</translation>
 <translation id="3514681096978190000">या संग्रहण फाइलमध्ये मालवेअर लपवू शकणाऱ्या इतर फाइलचा समावेश आहे</translation>
 <translation id="3515983984924808886">रीसेटची खात्री करण्यासाठी तुमच्या सिक्युरिटी कीला पुन्हा स्पर्श करा. सिक्युरिटी कीवर स्टोअर केलेली सर्व माहिती, तिच्या पिनसह, हटवली जाईल.</translation>
@@ -10302,7 +10301,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8306063480506363120">Drive अ‍ॅक्सेस काढून टाका</translation>
 <translation id="8306430106790753902">ChromeOS नेटवर्क मार्ग</translation>
 <translation id="8306885873692337975">नवीनतम वैशिष्ट्ये आणि सुरक्षा मिळवा.</translation>
-<translation id="8308016398665340540">तुम्ही या डिव्हाइसच्या इतर वापरकर्त्यांसोबत हे नेटवर्क शेअर करत आहात</translation>
 <translation id="8308024039615003152">कुरण</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> तुमचा कॅमेरा ॲक्सेस करू इच्छित असल्यास विचारा</translation>
 <translation id="830868413617744215">बीटा</translation>
@@ -11205,7 +11203,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8942714513622077633">Microsoft 365 चा सेटअप रद्द करायचा आहे करा?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">अधिक द्रुतपणे बॅटरी वापरा (सध्या <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">मर्यादित</translation>
 <translation id="8944633700466246631">Google Password Manager साठी ६ अंकी रिकव्‍हरी पिन तयार करा</translation>
 <translation id="8944725102565796255">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही <ph name="GUEST_LINK_BEGIN" />अतिथी म्हणून डिव्हाइस वापरणे<ph name="GUEST_LINK_END" /> हे करू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
 

@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
 <translation id="3037517125981011456">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے</translation>
 <translation id="3038272154009688107">سبھی سائٹس دیکھیں</translation>
-<translation id="3055841435094910999">‏آپ کے Chrome کے استعمال کے بارے میں معلومات Google کو بھیجی جاتی ہے، لیکن یہ آپ سے منسلک نہیں ہے\n\nاگر Chrome کریش ہو جاتا ہے تو کریش کی تفصیلات میں کچھ ذاتی معلومات شامل ہو سکتی ہیں\n\nاگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں آپ کے ملاحظہ کردہ URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں</translation>
 <translation id="3059531648236115056">خلاصہ شامل کریں</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> بُک مارک}other{<ph name="BOOKMARKS_COUNT_MANY" /> بُک مارکس}}</translation>
 <translation id="3062802207422175757">‏Chrome پر آپ کی دلچسپیوں سے متعلق مضامین</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">‏نئے پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کرنے اور ان کا استعمال کرنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں</translation>
 <translation id="4971753085054504448">‏مزید نتائج دیکھنے کے لیے کچھ اور تلاش کرنے کی کوشش کریں یا Chrome کی مکمل سرگزشت کھولیں۔</translation>
 <translation id="497421865427891073">آگے جائیں</translation>
+<translation id="498624032394115435">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے۔</translation>
 <translation id="4987271110129728827">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا ویب تلاش کی کوشش کریں۔</translation>
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4991110219272367918">کسی بند ویب سائٹ کو منظوری دینے یا منظوری نہ دینے کا اختیار</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028">‫<ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا</translation>
 <translation id="5423934151118863508">آپ کے سب سے زیادہ ملاحظہ کردہ صفحات یہاں دکھائے جائیں گے</translation>
 <translation id="5424588387303617268">‏<ph name="GIGABYTES" /> GB دستیاب ہے</translation>
-<translation id="543121643585717256">لنک کا حامل کوئی بھی شخص تمام ٹیبز میں ترمیم کر سکتا ہے۔ اشتراک کردہ ٹیب گروپس کے بارے میں جانیں</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
 <translation id="5438292632479953702">دوبارہ ڈاؤن لوڈ کریں</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">'آپ کے تمام آلات پر پاس ورڈز' کی شیٹ بند ہو گئی ہے</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
 <translation id="6296366034485697675">برآمد کریں اور حذف کریں</translation>
+<translation id="629730747756840877">اکاؤنٹ</translation>
 <translation id="6303969859164067831">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
 <translation id="6312687380483398334">ویب ایپس (خاموش)</translation>
 <translation id="6315386555979018699">حذف کریں اور جاری رکھیں</translation>
@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">حذف کردہ</translation>
 <translation id="6918398787259831832">اگر یہ مسئلہ جاری رہتا ہے تو <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے <ph name="BEGIN_LINK" />مزید معلومات حاصل کریں<ph name="END_LINK" />۔</translation>
 <translation id="6922812712751566567">‏<ph name="PERMISSION" />، <ph name="SEPARATOR" />، Chrome نے یہ اجازتیں ہٹا دی ہیں کیوں کہ آپ حال ہی میں ان پر نہیں گئے ہیں</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{‫1 ٹیب}other{‫<ph name="NUMBER_OF_TABS" /> ٹیبز}}</translation>
 <translation id="6929224077895306814">‏آپ کے آلے اور آپ کے Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
 <translation id="6937524809504266803">ذاتی نوعیت سازی اور لنک کرنا</translation>
 <translation id="6937876069006524083">عرفی نام (اختیاری)</translation>
@@ -1640,6 +1641,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> نے ٹیب "<ph name="TAB_NAME" />" کو ہٹا دیا ہے</translation>
 <translation id="8310451567823644042">پاس ورڈز جلد ہی کام کرنا بند کر دیں گے</translation>
 <translation id="831192587911042850">موجودہ ویب سائٹ کو ان ویب سائٹس کی فہرست میں شامل کرتا ہے جن کی آپ پیروی کر رہے ہیں۔</translation>
+<translation id="8320212361750431956">حالیہ سرگرمی</translation>
 <translation id="8342727528718219152">‏‫Chrome آپ کو ان سائٹس کے بارے میں مطلع کرے گا جو ہو سکتا ہے کہ بہت زیادہ اطلاعات بھیج رہی ہوں</translation>
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="8348430946834215779">‏جب بھی ممکن ہو HTTPS کا استعمال کریں اور ان سائٹس کو لوڈ کرنے سے پہلے وارننگ حاصل کریں جو اس کی حمایت نہیں کرتی ہیں</translation>

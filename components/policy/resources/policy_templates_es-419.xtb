@@ -5325,14 +5325,6 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
       Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
 <translation id="487460824085252184">Migra automáticamente y no solicita el consentimiento del usuario.</translation>
 <translation id="4874982543810021567">Bloquea WebUSB en estos sitios</translation>
-<translation id="4875557601092081492">Esta política ya no está disponible en M132 y se reemplazó por <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />, que proporciona un control más detallado sobre la función. Usa <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> en su lugar.
-
-La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real.
-
-No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
-
-Si estableces la política con el valor "0" (habilitada) o no la estableces, los usuarios podrán acceder a la función.
-Si la estableces con el valor "1" (inhabilitada), la función no estará disponible.</translation>
 <translation id="4876805738539874299">Versión de SSL máxima habilitada</translation>
 <translation id="4877305769899044884">Color predeterminado para la retroiluminación del teclado</translation>
 <translation id="4886138258823889910">Habilitar el proveedor del framework de accesibilidad de <ph name="UIA_NAME" /> del navegador en Windows</translation>
@@ -10719,6 +10711,12 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 
       Consulta https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage para obtener detalles sobre los tipos de medios JavaScript y ECMAScript.
       </translation>
+<translation id="8668202868357089313">La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real.
+
+No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
+
+Si estableces la política con el valor "0" (habilitada) o no la estableces, los usuarios podrán acceder a la función.
+Si la estableces con el valor "1" (inhabilitada), la función no estará disponible.</translation>
 <translation id="8668928485126473293">Te permite establecer si <ph name="PRODUCT_NAME" />
 ejecutará el motor v8 de JavaScript con las optimizaciones de JavaScript más avanzadas habilitadas.
 
@@ -10739,17 +10737,6 @@ Si no estableces esta política, se habilitarán las optimizaciones de JavaScrip
       Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="8672321184841719703">Versión de destino para las actualizaciones automáticas</translation>
 <translation id="867410340948518937">U2F (segundo factor universal)</translation>
-<translation id="8674130752570077671">La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real. Además, permite a los usuarios realizar búsquedas en Google que tengan en cuenta el contexto de la página actual. Para proporcionar respuestas contextuales, Lens Overlay envía el contenido de la página a Google para responder la consulta del usuario según el contexto de la página en la que se encuentra.
-
-No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
-
-Esto reemplaza la política <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" />, que dejó de estar disponible.
-
-0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función.</translation>
 <translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("juanperez" si el host le pertenece a "juanperez@ejemplo.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>

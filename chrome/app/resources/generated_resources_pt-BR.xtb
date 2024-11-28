@@ -3474,6 +3474,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3421387094817716717">Chave pública de curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar seus resultados personalizados ou o Google Assistente.</translation>
 <translation id="3421835120203732951">Adicionar novo perfil</translation>
+<translation id="3422989558057853751">Último item selecionado. Se você o desmarcar, sairá do modo de seleção</translation>
 <translation id="3423111258700187173">Resultados encontrados em <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Saiba mais sobre esse recurso de IA</translation>
 <translation id="3423275441470187644">Confiável</translation>
@@ -3612,7 +3613,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3513019849832307207">Entrar e abrir</translation>
 <translation id="3513563267917474897">Controle deslizante de matiz de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Controle de jogos</translation>
-<translation id="3514373592552233661">Se mais de uma rede estiver disponível, as preferenciais terão precedência sobre outras redes conhecidas</translation>
 <translation id="3514647716686280777">Você está usando a segurança padrão. Para ter mais proteção contra sites, extensões e downloads perigosos, ative o recurso Navegação segura com proteção reforçada nas configurações do Chrome.</translation>
 <translation id="3514681096978190000">Este arquivo inclui outros arquivos que podem ocultar malware</translation>
 <translation id="3515983984924808886">Toque na sua chave de segurança novamente para confirmar a redefinição. Todas as informações armazenadas na chave de segurança, inclusive o PIN, serão excluídas.</translation>
@@ -4970,6 +4970,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4461483878391246134">Adicione idiomas para nunca oferecer tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizados</translation>
 <translation id="4465236939126352372">Tempo limite de <ph name="TIME" /> definido para <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">PIN incorreto</translation>
 <translation id="4467561276409486506">&amp;Ativar/desativar o modo compacto</translation>
 <translation id="4469324811108161144">Observações podem ter até <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar arquivos em <ph name="FOLDERNAME" /></translation>
@@ -5242,7 +5243,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagem}one{# imagem}other{# imagens}}</translation>
 <translation id="4660476621274971848">A versão esperada era "<ph name="EXPECTED_VERSION" />", mas a instalada foi a "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Redimensionando</translation>
-<translation id="4661407454952063730">Os dados de apps podem ser quaisquer dados que um app tenha salvo (com base nas configurações do desenvolvedor), incluindo dados como contatos, mensagens e fotos.</translation>
+<translation id="4661407454952063730">Os dados de apps podem ser quaisquer dados salvos por um aplicativo (com base nas configurações do desenvolvedor), incluindo contatos, mensagens e fotos.</translation>
 <translation id="4662208278924489774">Aviso de download</translation>
 <translation id="4662373422909645029">O apelido não pode ter números</translation>
 <translation id="4662788913887017617">Compartilhar esse favorito com seu iPhone</translation>
@@ -10306,7 +10307,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8306063480506363120">Remover acesso ao Drive</translation>
 <translation id="8306430106790753902">Circuitos de rede do ChromeOS</translation>
 <translation id="8306885873692337975">Instale os recursos e melhorias de segurança mais recentes.</translation>
-<translation id="8308016398665340540">Você está compartilhando a rede com outros usuários do dispositivo</translation>
 <translation id="8308024039615003152">Prado</translation>
 <translation id="8308179586020895837">Perguntar se <ph name="HOST" /> deseja acessar sua câmera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11209,7 +11209,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8942714513622077633">Cancelar a configuração do Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Consumir a bateria mais rapidamente (no momento com <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Limitado</translation>
 <translation id="8944633700466246631">Crie um PIN de recuperação de 6 dígitos para o Gerenciador de senhas do Google</translation>
 <translation id="8944725102565796255">Se você quiser usar essa conta apenas uma vez, <ph name="GUEST_LINK_BEGIN" />utilize o dispositivo como visitante<ph name="GUEST_LINK_END" />. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione um novo usuário<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
 

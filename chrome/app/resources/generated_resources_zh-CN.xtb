@@ -3450,6 +3450,7 @@
 <translation id="3421387094817716717">椭圆曲线公共密钥</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与您相似或拥有您的语音录音，此人可能也能获取您的个人信息相关结果或使用您的 Google 助理。</translation>
 <translation id="3421835120203732951">添加新的个人资料</translation>
+<translation id="3422989558057853751">已选择最后一项内容，取消选择后会退出选择模式</translation>
 <translation id="3423111258700187173">在“<ph name="FOLDER_TITLE" />”中找到的结果</translation>
 <translation id="3423226218833787854">详细了解这项 AI 功能</translation>
 <translation id="3423275441470187644">信任</translation>
@@ -3588,7 +3589,6 @@
 <translation id="3513019849832307207">加入并打开</translation>
 <translation id="3513563267917474897">色调滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">游戏控制</translation>
-<translation id="3514373592552233661">如果有多个网络可供使用，首选网络将优先于其他已知网络</translation>
 <translation id="3514647716686280777">Chrome 正在为您提供标准安全保护。为了进一步防范危险的网站、下载内容和扩展程序，请在 Chrome 设置中开启“增强型安全浏览”功能。</translation>
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
@@ -4945,6 +4945,7 @@
 <translation id="4461483878391246134">添加一律不提供翻译的语言</translation>
 <translation id="4462159676511157176">自定义域名服务器</translation>
 <translation id="4465236939126352372">为“<ph name="APP_NAME" />”设置了 <ph name="TIME" />的使用时限</translation>
+<translation id="4467373268340082204">PIN 码错误</translation>
 <translation id="4467561276409486506">开启/关闭紧凑模式(&amp;T)</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可修改“<ph name="FOLDERNAME" />”内的文件</translation>
@@ -10273,7 +10274,6 @@
 <translation id="8306063480506363120">撤消云端硬盘访问权限</translation>
 <translation id="8306430106790753902">ChromeOS 网络路由</translation>
 <translation id="8306885873692337975">获取最新的功能和安全性方面的改进。</translation>
-<translation id="8308016398665340540">您正在与此设备的其他用户共享该网络</translation>
 <translation id="8308024039615003152">草地</translation>
 <translation id="8308179586020895837">当 <ph name="HOST" /> 想要使用摄像头时询问我</translation>
 <translation id="830868413617744215">测试版</translation>
@@ -11175,7 +11175,6 @@
 <translation id="8942714513622077633">取消 Microsoft 365 设置？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">这样会更快消耗电量（目前电量：<ph name="BATTERY_PERCENTAGE" />%）</translation>
-<translation id="8944485226638699751">受限</translation>
 <translation id="8944633700466246631">为 Google 密码管理工具创建 6 位数的恢复 PIN 码</translation>
 <translation id="8944725102565796255">如果您只想使用此账号一次，可考虑<ph name="GUEST_LINK_BEGIN" />以访客身份使用设备<ph name="GUEST_LINK_END" />。如果想添加他人的账号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。
 

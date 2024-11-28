@@ -3460,6 +3460,7 @@
 <translation id="3421387094817716717">ඉලිප්සාකාර වක්‍ර පොදු යතුර</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" /> සමාන කටහඬකට හෝ පටිගත කිරීමකට ඔබගේ පුද්ගලික ප්‍රතිඵල හෝ ඔබගේ සහායක වෙත ප්‍රවේශ විය හැකි වීමට ඉඩ ඇත.</translation>
 <translation id="3421835120203732951">නව පැතිකඩ එක් කරන්න</translation>
+<translation id="3422989558057853751">අවසන් වරට තෝරාගත් අයිතමය, එය තේරීම ඉවත් කිරීමෙන් තේරීම් ප්‍රකාරයෙන් ඉවත් වේ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> තුළ ප්‍රතිඵල හමුවිය</translation>
 <translation id="3423226218833787854">මෙම AI විශේෂාංගය ගැන තව දැන ගන්න</translation>
 <translation id="3423275441470187644">අරමුදල</translation>
@@ -3598,7 +3599,6 @@
 <translation id="3513019849832307207">එකතු වී විවෘත කරන්න</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> සිට <ph name="MAX_VALUE" /> දක්වා පැහැය ස්ලයිඩරය</translation>
 <translation id="3514335087372914653">ක්‍රීඩා පාලනය</translation>
-<translation id="3514373592552233661">එකකට වඩා තිබේ නම් කැමති ජාලවලට දන්නා ජාලවලට වඩා කැමති වනු ඇත</translation>
 <translation id="3514647716686280777">ඔබ සම්මත ආරක්ෂණ ආරක්ෂාව ලබන්නෙහි. අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහිව වැඩි ආරක්ෂාව ලබා ගැනීමට Chrome සැකසීම් තුළ ඉහළ නැංවූ සුරක්ෂිත බ්‍රවුස් කිරීම සක්‍රීය කරන්න.</translation>
 <translation id="3514681096978190000">මෙම ලේඛනාරක්ෂිත ගොනුවේ අනිෂ්ට මෘදුකාංග සැඟවිය හැකි වෙනත් ගොනු ඇතුළත් වේ</translation>
 <translation id="3515983984924808886">යළි සැකසීම තහවුරු කිරීමට ඔබේ ආරක්‍ෂක යතුර නැවත ස්පර්ශ කරන්න. එහි රහස් අංකය ඇතුළුව ආරක්‍ෂක යතුරේ ගබඩා කර ඇති ඔබේ තොරතුරු සියල්ල මකනු ලැබේ.</translation>
@@ -4957,6 +4957,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4461483878391246134">කිසි විටෙකත් පරිවර්තනය ලබා නොදීමට භාෂා එක් කරන්න</translation>
 <translation id="4462159676511157176">රුචි නාම සේවාදායක</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> සඳහා සකසන ලද වේලා සීමාව <ph name="TIME" /></translation>
+<translation id="4467373268340082204">PIN එක වැරදියි</translation>
 <translation id="4467561276409486506">&amp;සංයුක්ත ප්‍රකාරය ටොගල් කරන්න</translation>
 <translation id="4469324811108161144">සටහන්වලට අනුලකුණු <ph name="CHARACTER_LIMIT" />ක් දක්වා සුරැකිය හැකිය.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> හට <ph name="FOLDERNAME" /> තුළ ඇති ගොනු සංස්කරණ කළ හැක</translation>
@@ -10287,7 +10288,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8306063480506363120">Drive ප්‍රවේශය ඉවත් කරන්න</translation>
 <translation id="8306430106790753902">ChromeOS ජාල මාර්ග</translation>
 <translation id="8306885873692337975">නවතම විශේෂාංග සහ ආරක්ෂක වැඩිදියුණු කිරීම් ලබා ගන්න.</translation>
-<translation id="8308016398665340540">ඔබ මෙම ජාලය මෙම උපාංගයේ අනෙකුත් පරිශීලකයින් සමඟ බෙදා ගනියි</translation>
 <translation id="8308024039615003152">තණබිම</translation>
 <translation id="8308179586020895837">ඔබේ කැමරාවට ප්‍රවේශ වීමට අවශ්‍යදැයි <ph name="HOST" /> ගෙන් විමසන්න</translation>
 <translation id="830868413617744215">බීටා</translation>
@@ -11190,7 +11190,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8942714513622077633">Microsoft 365 පිහිටුවීම අවලංගු කරන්න ද?</translation>
 <translation id="894360074127026135">Netscape අන්තර්ජාතික ඉහල පියවර</translation>
 <translation id="8944099748578356325">වඩා ඉක්මනින් බැටරිය භාවිත කරන්න (දැනට <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">සීමිතයි</translation>
 <translation id="8944633700466246631">Google මුරපද කළමනාකරු සඳහා ඉලක්කම් 6ක ප්‍රතිසාධන PIN අංකයක් තනන්න</translation>
 <translation id="8944725102565796255">ඔබට මෙම ගිණුම එක් වරක් පමණක් භාවිතා කිරීමට අවශ්‍ය නම්, ඔබට <ph name="GUEST_LINK_BEGIN" />උපාංගය ආගන්තුකයෙකු ලෙස භාවිතා කළ<ph name="GUEST_LINK_END" /> හැක. ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඔබේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයෙකු එක් කරන්න<ph name="LINK_END" />.
 

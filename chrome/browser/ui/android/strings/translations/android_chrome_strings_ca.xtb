@@ -460,7 +460,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037517125981011456">Mostra sol·licituds per iniciar la sessió a Chrome</translation>
 <translation id="3038272154009688107">Mostra tots els llocs web</translation>
-<translation id="3055841435094910999">S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu\n\nSi Chrome falla, els detalls sobre el bloqueig poden incloure informació personal\n\nSi actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites</translation>
 <translation id="3059531648236115056">Afegeix un resum</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
@@ -873,6 +872,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="496607651705915226">Per desar i utilitzar contrasenyes noves al teu Compte de Google, actualitza Serveis de Google Play</translation>
 <translation id="4971753085054504448">Prova de fer una altra cerca o obre l'historial complet de Chrome per veure més resultats.</translation>
 <translation id="497421865427891073">Ves endavant</translation>
+<translation id="498624032394115435">Tothom que tingui l'enllaç pot editar totes les pestanyes.</translation>
 <translation id="4987271110129728827">No es troba aquesta pàgina. Comprova'n l'ortografia o prova de fer una cerca web.</translation>
 <translation id="4988526792673242964">Pàgines</translation>
 <translation id="4991110219272367918">Opció per aprovar o no aprovar un lloc web tancat</translation>
@@ -959,7 +959,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Les pàgines més visitades es mostraran aquí</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
-<translation id="543121643585717256">Tothom que tingui l'enllaç pot editar totes les pestanyes. Informació sobre els grups de pestanyes compartits</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5433691172869980887">S'ha copiat el nom d'usuari</translation>
 <translation id="5438292632479953702">Torna a baixar</translation>
@@ -1154,6 +1153,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6284472661216707937">Contrasenyes en tots els teus dispositius està tancat</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6296366034485697675">Exporta i suprimeix</translation>
+<translation id="629730747756840877">Compte</translation>
 <translation id="6303969859164067831">Tanca la sessió i desactiva la sincronització</translation>
 <translation id="6312687380483398334">Aplicacions web (en mode silenciós)</translation>
 <translation id="6315386555979018699">Suprimeix i continua</translation>
@@ -1317,6 +1317,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6910211073230771657">Suprimit</translation>
 <translation id="6918398787259831832">Si el problema persisteix, <ph name="BEGIN_LINK" />obtén més informació<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè no has visitat aquest lloc web recentment</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestanya}other{<ph name="NUMBER_OF_TABS" /> pestanyes}}</translation>
 <translation id="6929224077895306814">Se suprimiran tots els codis de seguretat desats al teu dispositiu i al teu Compte de Google</translation>
 <translation id="6937524809504266803">Personalització i enllaçaments</translation>
 <translation id="6937876069006524083">Àlies (opcional)</translation>
@@ -1640,6 +1641,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ha suprimit la pestanya "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Les contrasenyes deixaran de funcionar aviat</translation>
 <translation id="831192587911042850">Afegeix el lloc web actual a la llista de llocs web que segueixes.</translation>
+<translation id="8320212361750431956">Activitat recent</translation>
 <translation id="8342727528718219152">Chrome t'informarà dels llocs web que poden estar enviant massa notificacions</translation>
 <translation id="834313815369870491">No tradueixis mai els llocs web</translation>
 <translation id="8348430946834215779">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol</translation>

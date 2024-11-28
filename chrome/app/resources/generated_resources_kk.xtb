@@ -3455,6 +3455,7 @@
 <translation id="3421387094817716717">Эллипстік қисық сызықтардың ашық кілті</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> кез келген адам сіздікіне ұқсайтын дауыс немесе жазба арқылы жеке нәтижелеріңізді немесе Assistant қызметін пайдалануы мүмкін.</translation>
 <translation id="3421835120203732951">Жаңа профиль қосу</translation>
+<translation id="3422989558057853751">Соңғы элемент таңдалды. Таңдаудан алынса, таңдау режимінен шығады.</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> қалтасынан нәтижелер табылды</translation>
 <translation id="3423226218833787854">Бұл AI функциясы туралы толық ақпарат</translation>
 <translation id="3423275441470187644">Сенім</translation>
@@ -3593,7 +3594,6 @@
 <translation id="3513019849832307207">Қосылу және ашу</translation>
 <translation id="3513563267917474897">Реңк жүгірткісі: <ph name="MIN_VALUE" /> &gt; <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Ойынды басқару</translation>
-<translation id="3514373592552233661">Егер бірнеше сақталған желі қолжетімді болса, алдымен таңдаулы желілер алынады</translation>
 <translation id="3514647716686280777">Стандарт қауіпсіздік жүйесі қолданылады. Қауіпті веб-сайттарға, жүктеп алынған файлдар мен кеңейтімдерге қатысты қауіпсіздік жүйесін жақсарту үшін Chrome параметрлерінен Күшейтілген Safe Browsing функциясын қосыңыз.</translation>
 <translation id="3514681096978190000">Бұл мұрағат файлында зиянды бағдарламаны жасыруы мүмкін басқа файлдар бар.</translation>
 <translation id="3515983984924808886">Бастапқы күйге қайтаруды растау үшін қауіпсіздік кілтін қайта түртіңіз. Қауіпсіздік кілтінде сақталған барлық ақпарат, оның ішінде PIN коды жойылатын болады.</translation>
@@ -4951,6 +4951,7 @@
 <translation id="4461483878391246134">Аударма ешқашан ұсынылмайтын тілдерді қосу</translation>
 <translation id="4462159676511157176">Реттелетін атау серверлері</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> қолданбасы үшін шектелген уақыт: <ph name="TIME" /></translation>
+<translation id="4467373268340082204">PIN коды дұрыс емес.</translation>
 <translation id="4467561276409486506">&amp;Жинақы режимді қосу/өшіру</translation>
 <translation id="4469324811108161144">Ескертпелерде <ph name="CHARACTER_LIMIT" /> таңбаға дейін болуы мүмкін.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> қалтасындағы файлдарды өңдей алады.</translation>
@@ -10276,7 +10277,6 @@
 <translation id="8306063480506363120">Drive-ты пайдалану рұқсатын өшіру</translation>
 <translation id="8306430106790753902">ChromeOS желісінің бағыттары</translation>
 <translation id="8306885873692337975">Соңғы шыққан функцияларды және қауіпсіздікті жақсарту мүмкіндіктерін пайдаланыңыз.</translation>
-<translation id="8308016398665340540">Бұл желіні осы құрылғының басқа пайдаланушыларымен бөлісіп жатырсыз</translation>
 <translation id="8308024039615003152">Көгал</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> камераны пайдаланғысы келгенде, рұқсат сұралсын</translation>
 <translation id="830868413617744215">Бета</translation>
@@ -11178,7 +11178,6 @@
 <translation id="8942714513622077633">Microsoft 365 бағдарламасын орнатуды тоқтату керек пе?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Батарея жылдамырақ пайдаланылады (қазір: <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Шектеу қойылған</translation>
 <translation id="8944633700466246631">Google Password Manager-ге арналған қалпына келтірудің 6 цифрлық PIN кодын жасаңыз.</translation>
 <translation id="8944725102565796255">Бұл аккаунтты тек бір рет пайдалану керек болса, <ph name="GUEST_LINK_BEGIN" />құрылғыны қонақ ретінде пайдалануға<ph name="GUEST_LINK_END" /> болады. Тағы біреуге аккаунт қосқыңыз келсе, <ph name="DEVICE_TYPE" /> құрылғысына <ph name="LINK_BEGIN" />жаңа адам қосыңыз<ph name="LINK_END" />.
 

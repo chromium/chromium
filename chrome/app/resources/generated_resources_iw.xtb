@@ -3611,7 +3611,6 @@
 <translation id="3513019849832307207">הצטרפות ופתיחה</translation>
 <translation id="3513563267917474897">פס הזזה של גוון הצבע מ-<ph name="MIN_VALUE" /> עד <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">בקרת משחקים</translation>
-<translation id="3514373592552233661">כשיש יותר מרשת זמינה אחת, הרשתות המועדפות יקבלו עדיפות על פני רשתות מוכרות אחרות</translation>
 <translation id="3514647716686280777">‏בחשבון פועלת אבטחה ברמה רגילה. כדי לקבל הגנה נוספת מפני אתרים, הורדות ותוספים מסוכנים, יש להפעיל את הגרסה המשופרת של הגלישה הבטוחה בהגדרות של Chrome.</translation>
 <translation id="3514681096978190000">קובץ הארכיון הזה כולל קבצים אחרים שעלולים להסתיר תוכנות זדוניות</translation>
 <translation id="3515983984924808886">יש לגעת במפתח האבטחה פעם נוספת כדי לאשר את האיפוס. כל המידע שמאוחסן במפתח האבטחה יימחק, כולל קוד האימות.</translation>
@@ -10309,7 +10308,6 @@
 <translation id="8306063480506363120">‏הסרת הגישה אל Drive</translation>
 <translation id="8306430106790753902">‏מסלולי רשת של ChromeOS</translation>
 <translation id="8306885873692337975">קבלה של התכונות ושיפורי האבטחה האחרונים.</translation>
-<translation id="8308016398665340540">הרשת הזו משותפת עם משתמשים אחרים במכשיר הזה</translation>
 <translation id="8308024039615003152">אחו</translation>
 <translation id="8308179586020895837">לשאול אם <ph name="HOST" /> רוצה לגשת למצלמה שלך</translation>
 <translation id="830868413617744215">ביטא</translation>
@@ -11213,7 +11211,6 @@
 <translation id="8942714513622077633">‏לבטל את ההגדרה של Microsoft 365?</translation>
 <translation id="894360074127026135">‏הגברה בינלאומית של Netscape</translation>
 <translation id="8944099748578356325">אפשרות זו גורמת לפריקה מהירה יותר של הסוללה (כרגע %<ph name="BATTERY_PERCENTAGE" />)</translation>
-<translation id="8944485226638699751">יש הגבלה</translation>
 <translation id="8944633700466246631">‏יצירת קוד אימות בן 6 ספרות למנהל הסיסמאות של Google</translation>
 <translation id="8944725102565796255">‏רוצה להשתמש בחשבון הזה באופן חד-פעמי? אפשר <ph name="GUEST_LINK_BEGIN" />להשתמש במכשיר כאורח<ph name="GUEST_LINK_END" />. כדי להוסיף חשבון של מישהו אחר, <ph name="LINK_BEGIN" />יש להוסיף משתמש חדש<ph name="LINK_END" /> אל <ph name="DEVICE_TYPE" />.
 

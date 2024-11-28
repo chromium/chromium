@@ -3600,7 +3600,6 @@ Quer pará-lo?</translation>
 <translation id="3513019849832307207">Aderir e abrir</translation>
 <translation id="3513563267917474897">Controlador de deslize da tonalidade de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Controlo de jogos</translation>
-<translation id="3514373592552233661">As redes preferidas terão prioridade em relação a outras redes conhecidas, caso mais do que uma esteja disponível</translation>
 <translation id="3514647716686280777">Vai obter a proteção de segurança padrão. Para obter mais proteção contra Websites, transferências e extensões perigosos, ative a Navegação segura melhorada nas definições do Chrome.</translation>
 <translation id="3514681096978190000">Este ficheiro de arquivo inclui outros ficheiros que podem ocultar software malicioso</translation>
 <translation id="3515983984924808886">Toque novamente na chave de segurança para confirmar a reposição. Todas as informações armazenadas na chave de segurança, incluindo o respetivo PIN, serão eliminadas.</translation>
@@ -10293,7 +10292,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8306063480506363120">Remover acesso ao Drive</translation>
 <translation id="8306430106790753902">Trajetos da rede do ChromeOS</translation>
 <translation id="8306885873692337975">Obtenha as funcionalidades e as melhorias de segurança mais recentes.</translation>
-<translation id="8308016398665340540">Está a partilhar esta rede com outros utilizadores deste dispositivo</translation>
 <translation id="8308024039615003152">Prado</translation>
 <translation id="8308179586020895837">Perguntar se <ph name="HOST" /> quer aceder à sua câmara</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11195,7 +11193,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8942714513622077633">Cancelar a configuração do Microsoft 365?</translation>
 <translation id="894360074127026135">Step-Up Internacional Netscape</translation>
 <translation id="8944099748578356325">Usar a bateria mais rapidamente (atualmente, <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Conteúdo visível por um grupo limitado de pessoas ou um grupo</translation>
 <translation id="8944633700466246631">Crie um PIN de recuperação de 6 dígitos para o Gestor de Palavras-passe da Google</translation>
 <translation id="8944725102565796255">Se quiser usar esta conta apenas uma vez, pode <ph name="GUEST_LINK_BEGIN" />usar o dispositivo como convidado<ph name="GUEST_LINK_END" />. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao seu dispositivo <ph name="DEVICE_TYPE" />.
 

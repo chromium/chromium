@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Sua conta pode ser desconectada deste site</translation>
 <translation id="6085954183010297841">Excluir a permissão de edição do arquivo? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Quando essa configuração está ativada, os sites podem pedir para saber quando você está usando o dispositivo ativamente. Quando está desativada, os sites não conseguem saber quando você está usando o dispositivo ativamente.</translation>
-<translation id="6140839633433422817">Tem certeza de que quer redefinir as permissões e excluir os cookies e dados do site?</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6171020522141473435">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos Bluetooth. Quando está desativada, os sites não podem usar dispositivos Bluetooth.</translation>
-<translation id="6177111841848151710">Bloqueado para o mecanismo de pesquisa atual</translation>
 <translation id="6177128806592000436">Sua conexão com esse site não é segura</translation>
 <translation id="6181444274883918285">Adicionar site às exceções</translation>
 <translation id="6192792657125177640">Exceções</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Perguntar antes de permitir que sites usem o microfone (recomendado)</translation>
 <translation id="6999131147875565462">O Chrome fica mais rápido e os recursos que usam JavaScript vão funcionar conforme projetado</translation>
 <translation id="7000754031042624318">Desativada nas configurações do Android</translation>
-<translation id="7016516562562142042">Permitido para o mecanismo de pesquisa atual</translation>
 <translation id="702275896380648118">Este site determina seus interesses e sugere anúncios para outros sites. Ele também usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}one{# selecionado}other{# selecionados}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Impedir que sites vejam e mudem informações em dispositivos NFC</translation>
 <translation id="8944485226638699751">Limitado</translation>
 <translation id="8959122750345127698">A Navegação GPS está inacessível: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Esquecer</translation>
 <translation id="8990043154272859344">Sua conta vai ser desconectada de todos os sites</translation>
 <translation id="8993853206419610596">Abrir todas as solicitações</translation>
 <translation id="9002538116239926534">Quando essa configuração está ativada, os sites podem salvar dados no seu dispositivo. Quando está desativada, os sites não podem salvar dados no seu dispositivo.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Ative as permissões para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">O zoom atual está em <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
-<translation id="930525582205581608">Esquecer este site?</translation>
 <translation id="947156494302904893">Os sites que você visita podem verificar que você é uma pessoa real, e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>
 <translation id="967624055006145463">Dados armazenados</translation>

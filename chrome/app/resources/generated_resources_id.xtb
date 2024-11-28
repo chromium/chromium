@@ -3612,7 +3612,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3513019849832307207">Gabung dan buka</translation>
 <translation id="3513563267917474897">Penggeser warna dari <ph name="MIN_VALUE" /> ke <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kontrol Game</translation>
-<translation id="3514373592552233661">Jika ada beberapa jaringan yang tersedia, jaringan pilihan akan lebih diprioritaskan dari jaringan yang dikenal lainnya.</translation>
 <translation id="3514647716686280777">Anda mendapatkan perlindungan keamanan standar. Untuk mendapatkan perlindungan lebih terhadap situs, download, dan ekstensi berbahaya, aktifkan Safe Browsing yang Disempurnakan di setelan Chrome.</translation>
 <translation id="3514681096978190000">File arsip ini mencakup file lain yang dapat menyembunyikan malware</translation>
 <translation id="3515983984924808886">Sentuh kunci keamanan Anda sekali lagi untuk mengonfirmasi peresetan. Semua informasi yang tersimpan di kunci keamanan, termasuk PIN-nya, akan dihapus.</translation>
@@ -10303,7 +10302,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8306063480506363120">Hapus akses Drive</translation>
 <translation id="8306430106790753902">Rute Jaringan ChromeOS</translation>
 <translation id="8306885873692337975">Dapatkan fitur dan peningkatan keamanan terbaru.</translation>
-<translation id="8308016398665340540">Anda membagikan jaringan ini kepada pengguna lain di perangkat ini</translation>
 <translation id="8308024039615003152">Padang rumput</translation>
 <translation id="8308179586020895837">Tanyakan jika <ph name="HOST" /> ingin mengakses kamera Anda</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11205,7 +11203,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8942714513622077633">Batalkan penyiapan Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Menghabiskan baterai lebih cepat (saat ini <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Terbatas</translation>
 <translation id="8944633700466246631">Buat PIN pemulihan 6 digit untuk Pengelola Sandi Google</translation>
 <translation id="8944725102565796255">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat <ph name="GUEST_LINK_BEGIN" />menggunakan perangkat sebagai tamu<ph name="GUEST_LINK_END" />. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
 

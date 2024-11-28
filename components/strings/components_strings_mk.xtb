@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го приспособите изгледот на прелистувачот</translation>
 <translation id="3240791268468473923">Листот што означува дека нема акредитив што се совпаѓа за акредитивот за безбедно плаќање е отворен</translation>
 <translation id="324180406144491771">Линковите до „<ph name="HOST_NAME" />“ се блокирани</translation>
+<translation id="3243650379537999343">Цртај</translation>
 <translation id="3248329428895535435">Не прикажувај на сајтов</translation>
 <translation id="3249102948665905108">Прикачувањето на датотеката во <ph name="CLOUD_PROVIDER" /> заврши без грешки</translation>
 <translation id="3252772880526154546">Архитектура</translation>
@@ -2634,6 +2635,7 @@
 <translation id="5740911612628596808">Плик C9</translation>
 <translation id="5742806904559466333">Барови, клубови и ноќен живот</translation>
 <translation id="5743684619253032786">Производи за нега на ноктите</translation>
+<translation id="574392208103952083">Медиум</translation>
 <translation id="5745733273847572235">Може да прашува за вашата локација</translation>
 <translation id="5750869797196646528">Следење раце</translation>
 <translation id="5752327398324808817">Внесете еден или два збора</translation>
@@ -3468,6 +3470,7 @@
 <translation id="725866823122871198">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот компјутер (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="7260075294900977274">Нова паметна папка што ви помага да ги зачувате сите ваши страници за купување на едно место и автоматски да ги следите цените, да добивате увиди во цените и друго</translation>
 <translation id="7265608370113700582">Адресата е достапна само на овој уред</translation>
+<translation id="7269151392155523061">Кратенката не може да биде иста со клучниот збор на агрегаторот за пребарување дефиниран од <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Датотеките што ги преземате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци или злонамерен софтвер. Можеби ќе се складираат согласно со правилата на компанијата и ќе бидат видливи за администраторот.</translation>
 <translation id="7275334191706090484">Управувани обележувачи</translation>
 <translation id="7275808129217605899">Здрава исхрана</translation>

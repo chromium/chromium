@@ -460,7 +460,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3037177537145227281">Hintaa seurataan</translation>
 <translation id="3037517125981011456">Näytä kehotteet kirjautua Chromeen</translation>
 <translation id="3038272154009688107">Näytä kaikki sivustot</translation>
-<translation id="3055841435094910999">Chromen käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun\n\nChromen kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja\n\nJos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita</translation>
 <translation id="3059531648236115056">Lisää yhteenveto</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> kirjanmerkki}other{<ph name="BOOKMARKS_COUNT_MANY" /> kirjanmerkkiä}}</translation>
 <translation id="3062802207422175757">Artikkeleita kiinnostuksen kohteistasi Chromessa</translation>
@@ -873,6 +872,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="496607651705915226">Jos haluat tallentaa ja käyttää uusia salasanoja Google-tilillä, päivitä Google Play Palvelut</translation>
 <translation id="4971753085054504448">Yritä hakea jotain muuta tai avaa koko Chrome-historia, niin näet lisää tuloksia.</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
+<translation id="498624032394115435">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä.</translation>
 <translation id="4987271110129728827">Sivua ei löydy. Tarkista oikeinkirjoitus tai kokeile verkkohakua.</translation>
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="4991110219272367918">Suljetun verkkosivuston hyväksymisen tai hyväksymättä jättämisen vaihtoehto</translation>
@@ -959,7 +959,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) menettää heti pääsyn välilehtiryhmään "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Käydyimmät sivusi näkyvät täällä</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> Gt käytettävissä</translation>
-<translation id="543121643585717256">Kaikki linkin saaneet voivat muokata kaikkia välilehtiä. Lue lisää jaetuista välilehtiryhmistä</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
 <translation id="5438292632479953702">Lataa uudelleen</translation>
@@ -1154,6 +1153,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6284472661216707937">Kaikkien laitteiden salasanat tallennetaan, kun taulukko suljetaan</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6296366034485697675">Vie ja poista</translation>
+<translation id="629730747756840877">Tili</translation>
 <translation id="6303969859164067831">Kirjaudu ulos ja poista synkronointi käytöstä</translation>
 <translation id="6312687380483398334">Verkkosovellukset (hiljainen)</translation>
 <translation id="6315386555979018699">Poista ja jatka</translation>
@@ -1640,6 +1640,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> poisti välilehden (<ph name="TAB_NAME" />)</translation>
 <translation id="8310451567823644042">Salasanat lakkaavat pian toimimasta</translation>
 <translation id="831192587911042850">Lisää nykyisen verkkosivuston seuraamiesi sivustojen luetteloon.</translation>
+<translation id="8320212361750431956">Uusimmat tapahtumat</translation>
 <translation id="8342727528718219152">Chrome ilmoittaa sivustoista, jotka saattavat lähettää liikaa ilmoituksia</translation>
 <translation id="834313815369870491">Älä koskaan käännä näitä sivustoja</translation>
 <translation id="8348430946834215779">Käytä HTTPS:ää aina kun mahdollista. Saat varoituksen ennen sellaisten sivustojen lataamista, jotka eivät tue sitä.</translation>

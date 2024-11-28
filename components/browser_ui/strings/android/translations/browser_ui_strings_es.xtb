@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Puede que se cierre tu sesión en este sitio</translation>
 <translation id="6085954183010297841">¿Eliminar autorización para editar archivos? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Cuando esta opción está activada, los sitios pueden solicitar permiso para saber cuándo usas activamente tu dispositivo. Si está desactivada, los sitios no pueden saber cuándo usas activamente tu dispositivo.</translation>
-<translation id="6140839633433422817">¿Seguro que quieres restablecer los permisos y eliminar las cookies y los datos de sitios?</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6171020522141473435">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos Bluetooth. Si está desactivada, los sitios no pueden usar dispositivos Bluetooth.</translation>
-<translation id="6177111841848151710">Bloqueado en el motor de búsqueda actual</translation>
 <translation id="6177128806592000436">La conexión con este sitio web no es segura</translation>
 <translation id="6181444274883918285">Añadir excepción de sitio</translation>
 <translation id="6192792657125177640">Excepciones</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Preguntar antes de permitir que los sitios utilicen el micrófono (recomendado)</translation>
 <translation id="6999131147875565462">Chrome se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto</translation>
 <translation id="7000754031042624318">Desactivado en los ajustes de Android</translation>
-<translation id="7016516562562142042">Permitido en el motor de búsqueda actual</translation>
 <translation id="702275896380648118">Este sitio determina qué cosas te gustan y, después, ofrece sugerencias de anuncios a otros sitios. Este sitio también consulta tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Impide que los sitios vean y cambien la información de los dispositivos NFC</translation>
 <translation id="8944485226638699751">Limitadas</translation>
 <translation id="8959122750345127698">No se puede realizar la navegación: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Dejar de recordar</translation>
 <translation id="8990043154272859344">Se cerrará tu sesión en todos los sitios</translation>
 <translation id="8993853206419610596">Mostrar todas las solicitudes</translation>
 <translation id="9002538116239926534">Cuando esta opción está activada, los sitios pueden guardar datos en tu dispositivo. Si está desactivada, los sitios no pueden guardar datos en tu dispositivo.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Activa los permisos para <ph name="APP_NAME" /> en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zoom actual: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
-<translation id="930525582205581608">¿Olvidar este sitio?</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="959682366969460160">Mantenlo todo organizado</translation>
 <translation id="967624055006145463">Datos almacenados</translation>

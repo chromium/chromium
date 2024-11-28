@@ -253,6 +253,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
 <translation id="4434353761996769206">Chyba instalačního programu: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium spravuje organizace <ph name="MANAGER" /></translation>
+<translation id="444069871276811466">Přidat profil Chromium</translation>
 <translation id="4447409407328223819">O Chrome for Testing</translation>
 <translation id="4470974262661801543">Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, zadejte svou heslovou frázi</translation>
 <translation id="4493028449971051158">Chyba při spuštění: Spusťte instalační program jako administrátor.</translation>
@@ -583,6 +584,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jaké údaje používáme:<ph name="END_BOLD" /> Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromiu na tomto zařízení.</translation>
 <translation id="8852026904190808918">Tento jazyk se používá k zobrazení nabídek, nastavení, upozornění a dalšího textu v prohlížeči Chromium</translation>
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
+<translation id="8876044221123442390">Přidat profil Chromium</translation>
 <translation id="8880203542552872219">Pokud ano, upravte uložené heslo v prohlížeči Chromium tak, aby odpovídalo novému heslu.</translation>
 <translation id="8891709362986793894">Vaše organizace vyžaduje, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="8907580949721785412">Aplikace Chromium se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>

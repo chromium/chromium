@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">ከዚህ ጣቢያ ዘግተው እንዲወጡ ሊደረጉ ይችላሉ</translation>
 <translation id="6085954183010297841">ፋይል አርትዖት የማድረግ ፈቃድ ይሰረዝ? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">ሲበራ፣ ጣቢያዎች መሳሪያዎን በንቃት ሲጠቀሙ ለማወቅ መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች መሳሪያዎን በንቃት ሲጠቀሙ ማወቅ አይችሉም።</translation>
-<translation id="6140839633433422817">እርግጠኛ ነዎት ፈቃዶችን ዳግም ማስጀመር እና ኩኪዎችን እና የጣቢያ ውሂብን መሰረዝ ይፈልጋሉ?</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6171020522141473435">ሲበራ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን ለመጠቀም መጠየቅ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን መጠቀም አይችሉም።</translation>
-<translation id="6177111841848151710">ለአሁኑ የፍለጋ ፕሮግራም ታግዷል</translation>
 <translation id="6177128806592000436">ወደዚህ ጣቢያ ያልዎት ግንኙነት ደህንነቱ አስተማማኝ አይደለም</translation>
 <translation id="6181444274883918285">ለየት ያለ ጣቢያን አክል</translation>
 <translation id="6192792657125177640">የተለዩ</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">ጣቢያዎች ማይክሮፎንዎን እንዲጠቀሙ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="6999131147875565462">Chrome ይበልጥ በፍጥነት ይሄዳል እና ጃቫስክሪፕት የሚጠቀሙ ባህሪያት እንደተነደፉት ሊሠሩ ይገባል</translation>
 <translation id="7000754031042624318">በAndroid ቅንብሮች ውስጥ ጠፍቷል</translation>
-<translation id="7016516562562142042">ለአሁኑ የፍለጋ ፕሮግራም ተፈቅዷል</translation>
 <translation id="702275896380648118">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል እና ከዚያም ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል።</translation>
 <translation id="7053983685419859001">አግድ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ተመርጧል}one{# ተመርጠዋል}other{# ተመርጠዋል}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃን እንዳያዩ እና እንዳይቀይሩ ያግዱ</translation>
 <translation id="8944485226638699751">የተወሰነ</translation>
 <translation id="8959122750345127698">ዳሰሳ ሊደረስበት አይችልም፦ <ph name="URL" /></translation>
-<translation id="8986362086234534611">እርሳ</translation>
 <translation id="8990043154272859344">ከሁሉም ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="8993853206419610596">ሁሉንም ጥያቄዎች አስወግድ</translation>
 <translation id="9002538116239926534">ሲበራ፣ ጣቢያዎች በመሣሪያዎ ላይ ውሂብ ማስቀመጥ ይችላሉ። ሲጠፋ፣ ጣቢያዎች በመሣሪያዎ ላይ ውሂብ ማስቀመጥ አይችሉም።</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>
 <translation id="9138217887606523162">የአሁን ማጉላት <ph name="ZOOM_LEVEL" /> %% ነው</translation>
 <translation id="9162462602695099906">ይህ ገፅ አደገኛ ነው</translation>
-<translation id="930525582205581608">ይህ ጣቢያ ይረሳ?</translation>
 <translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>
 <translation id="959682366969460160">ይደራጁ</translation>
 <translation id="967624055006145463">የተከማቸ ውሂብ</translation>

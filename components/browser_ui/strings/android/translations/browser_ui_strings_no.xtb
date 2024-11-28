@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Du kan være logget av dette nettstedet</translation>
 <translation id="6085954183010297841">Vil du fjerne tilgangen til å redigere filen? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Når dette er på, kan nettsteder be om å få vite når du bruker enheten aktivt. Når dette er av, kan ikke nettsteder vite når du bruker enheten aktivt.</translation>
-<translation id="6140839633433422817">Er du sikker på at du vil tilbakestille tillatelser og slette informasjonskapsler og nettstedsdata?</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6171020522141473435">Når dette er på, kan nettsteder be om å få bruke Bluetooth-enheter. Når dette er av, kan ikke nettsteder bruke Bluetooth-enheter.</translation>
-<translation id="6177111841848151710">Blokkert for den aktive søkemotoren</translation>
 <translation id="6177128806592000436">Tilkoblingen til dette nettstedet er ikke sikker</translation>
 <translation id="6181444274883918285">Legg til et nettsted som unntak</translation>
 <translation id="6192792657125177640">Unntak</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Spør før nettsteder får bruke mikrofonen (anbefales)</translation>
 <translation id="6999131147875565462">Chrome kjører raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet</translation>
 <translation id="7000754031042624318">Slått av i Android-innstillingene</translation>
-<translation id="7016516562562142042">tillatt for den aktive søkemotoren</translation>
 <translation id="702275896380648118">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder. Dette nettstedet henter også annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}other{# er valgt}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Blokker nettsteder fra å se og endre informasjon på NFC-enheter</translation>
 <translation id="8944485226638699751">Begrenset</translation>
 <translation id="8959122750345127698">Nettadressen er utilgjengelig: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du blir logget av alle nettsteder</translation>
 <translation id="8993853206419610596">Vis alle forespørsler</translation>
 <translation id="9002538116239926534">Når dette er på, kan nettsteder lagre data på enheten din. Når dette er av, kan ikke nettsteder lagre data på enheten din.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Slå på tillatelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Gjeldende zoom er <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Denne siden er farlig</translation>
-<translation id="930525582205581608">Vil du glemme dette nettstedet?</translation>
 <translation id="947156494302904893">Nettsteder du besøker, kan bekrefte at du er en ekte person og ikke en robot</translation>
 <translation id="959682366969460160">Få orden på ting</translation>
 <translation id="967624055006145463">Lagrede data</translation>

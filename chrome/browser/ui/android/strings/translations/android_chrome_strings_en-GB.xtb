@@ -460,7 +460,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3038272154009688107">See all sites</translation>
-<translation id="3055841435094910999">Info is sent to Google about your Chrome usage, but it isn\u2019t tied to you\n\nIf Chrome crashes, details about the crash may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs that you visit</translation>
 <translation id="3059531648236115056">Add summary</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
@@ -549,7 +548,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3518985090088779359">Accept &amp; continue</translation>
 <translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3522247891732774234">Update available. More options</translation>
-<translation id="3523789730715594198">You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
+<translation id="3523789730715594198">You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="3524138585025253783">Developer UI</translation>
 <translation id="3524334353996115845">Let <ph name="ORIGIN" /> verify that it's you</translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -873,6 +872,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="496607651705915226">To save and use new passwords in your Google Account, update Google Play services</translation>
 <translation id="4971753085054504448">Try searching for something else or open full Chrome history to see more results.</translation>
 <translation id="497421865427891073">go forward</translation>
+<translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
 <translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4991110219272367918">Option to approve or not approve a website closed</translation>
@@ -959,7 +959,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB available</translation>
-<translation id="543121643585717256">Anyone with the link can edit all tabs. Learn about shared tab groups</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5433691172869980887">Username copied</translation>
 <translation id="5438292632479953702">Download again</translation>
@@ -1154,6 +1153,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6284472661216707937">Passwords on all your devices closed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6296366034485697675">Export and delete</translation>
+<translation id="629730747756840877">Account</translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6312687380483398334">Web apps (quiet)</translation>
 <translation id="6315386555979018699">Delete and continue</translation>
@@ -1640,6 +1640,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> removed tab '<ph name="TAB_NAME" />'</translation>
 <translation id="8310451567823644042">Passwords will stop working soon</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
+<translation id="8320212361750431956">Recent activity</translation>
 <translation id="8342727528718219152">Chrome will let you know about sites that may be sending too many notifications</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>

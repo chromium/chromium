@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Sinut voidaan kirjata ulos tältä sivustolta</translation>
 <translation id="6085954183010297841">Poistetaanko tiedoston muokkauslupa? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kun tämä on päällä, sivustot voivat pyytää lupaa nähdä, milloin käytät laitetta aktiivisesti. Kun tämä on pois päältä, sivustot eivät saa tietää, milloin käytät laitetta aktiivisesti.</translation>
-<translation id="6140839633433422817">Haluatko varmasti nollata luvat sekä tyhjentää evästeet ja sivustodatan?</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6171020522141473435">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää Bluetooth-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää Bluetooth-laitteita.</translation>
-<translation id="6177111841848151710">Estetty nykyiseltä hakukoneelta</translation>
 <translation id="6177128806592000436">Sivustoon ei ole muodostettu turvallista yhteyttä.</translation>
 <translation id="6181444274883918285">Lisää sivustopoikkeus</translation>
 <translation id="6192792657125177640">Poikkeukset</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pyydä lupaa, kun sivustot yrittävät käyttää mikrofonia (suositus).</translation>
 <translation id="6999131147875565462">Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti</translation>
 <translation id="7000754031042624318">Poistettu käytöstä Android-asetuksissa</translation>
-<translation id="7016516562562142042">Sallittu nykyisellä hakukoneella</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Estä sivustoja näkemästä ja muuttamasta NFC-laitteiden tietoja</translation>
 <translation id="8944485226638699751">Rajoitettu</translation>
 <translation id="8959122750345127698">Kohde ei ole saatavilla: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Unohda</translation>
 <translation id="8990043154272859344">Sinut kirjataan ulos kaikilta sivustoilta</translation>
 <translation id="8993853206419610596">Laajenna kaikki pyynnöt</translation>
 <translation id="9002538116239926534">Kun tämä on päällä, sivustot voivat tallentaa dataa laitteellesi. Kun tämä on pois päältä, sivustot eivät voi tallentaa dataa laitteellesi.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Laita luvat (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zoomaus on <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
-<translation id="930525582205581608">Unohdetaanko tämä sivusto?</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>
 <translation id="967624055006145463">Tallennettu data</translation>

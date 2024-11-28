@@ -3464,6 +3464,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3421387094817716717">Elliptilise kõveraga avalik võti</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Sarnase hääle või salvestisega võib pääseda ligi teie personaalsetele tulemustele või assistendile.</translation>
 <translation id="3421835120203732951">Lisa uus profiil</translation>
+<translation id="3422989558057853751">Viimane üksus valitud; valiku tühistamine väljub valikurežiimist</translation>
 <translation id="3423111258700187173">Kaustast <ph name="FOLDER_TITLE" /> leitud tulemused</translation>
 <translation id="3423226218833787854">Lisateave selle AI-funktsiooni kohta</translation>
 <translation id="3423275441470187644">Usaldusväärsus</translation>
@@ -3602,7 +3603,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3513019849832307207">Liitu ja ava</translation>
 <translation id="3513563267917474897">Värvitooni liugur alates <ph name="MIN_VALUE" /> kuni <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Mängu juhtimine</translation>
-<translation id="3514373592552233661">Eelistatud võrke eelistatakse muudele teadaolevatele võrkudele, kui saadaval on üle ühe võrgu</translation>
 <translation id="3514647716686280777">Teil on standardne turvakaitse. Parema kaitse saamiseks ohtlike veebisaitide, allalaadimiste ja laienduste vastu lülitage Chrome'i seadetes sisse funktsioon Täiustatud ohutu sirvimine.</translation>
 <translation id="3514681096978190000">See arhiivifail sisaldab teisi faile, mis võivad peita pahavara</translation>
 <translation id="3515983984924808886">Lähtestamise kinnitamiseks puudutage turvavõtit. Kogu turvavõtmele salvestatud teave, sh selle PIN-kood, kustutatakse.</translation>
@@ -4960,6 +4960,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4461483878391246134">Lisage keeli, mille jaoks te ei soovi kunagi tõlget saada</translation>
 <translation id="4462159676511157176">Kohandatud nimeserverid</translation>
 <translation id="4465236939126352372">Rakendusele <ph name="APP_NAME" /> on määratud ajapiirang <ph name="TIME" /></translation>
+<translation id="4467373268340082204">Vale PIN-kood</translation>
 <translation id="4467561276409486506">&amp;Kompaktse režiimi lüliti</translation>
 <translation id="4469324811108161144">Märkmetesse saab salvestada kuni <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> saab muuta kaustas <ph name="FOLDERNAME" /> olevaid faile</translation>
@@ -10293,7 +10294,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8306063480506363120">Eemalda Drive'i juurdepääs</translation>
 <translation id="8306430106790753902">ChromeOS-i võrgumarsruudid</translation>
 <translation id="8306885873692337975">Hankige uusimad funktsioonid ja turvatäiustused.</translation>
-<translation id="8308016398665340540">Jagate seda võrku teiste selle seadme kasutajatega</translation>
 <translation id="8308024039615003152">Aas</translation>
 <translation id="8308179586020895837">Küsi, kui sait <ph name="HOST" /> soovib juurdepääsu kaamerale</translation>
 <translation id="830868413617744215">Beeta</translation>
@@ -11195,7 +11195,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8942714513622077633">Kas tühistada Microsoft 365 seadistamine?</translation>
 <translation id="894360074127026135">Netscape'i rahvusvaheline seadistus</translation>
 <translation id="8944099748578356325">Aku kiiremini kulutamine (praegu <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Piiratud</translation>
 <translation id="8944633700466246631">Looge Google'i paroolihalduri jaoks 6-kohaline taastekood</translation>
 <translation id="8944725102565796255">Kui soovite seda kontot kasutada ainult ühe korra, saate <ph name="GUEST_LINK_BEGIN" />seadet kasutada külalisena<ph name="GUEST_LINK_END" />. Kui soovite konto lisada kellegi teise jaoks, <ph name="LINK_BEGIN" />lisage oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene<ph name="LINK_END" />.
 

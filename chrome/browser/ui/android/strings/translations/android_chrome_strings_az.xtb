@@ -460,7 +460,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3037177537145227281">Qiymət izlənilir</translation>
 <translation id="3037517125981011456">Chrome'a giriş tələblərini göstərir</translation>
 <translation id="3038272154009688107">Bütün saytlara baxın</translation>
-<translation id="3055841435094910999">Chrome istifadəniz haqqında məlumat Google'a göndərilir, lakin sizinlə əlaqələndirilmir\n\nChrome'da xəta olarsa, xəta ilə bağlı təfərrüatlar bəzi şəxsi məlumatları ehtiva edə bilər\n\nSinxronizasiyanı aktiv etsəniz, göstəricilərə daxil olduunuz keçidlər haqqında məlumat da daxil ola bilər</translation>
 <translation id="3059531648236115056">Xülasə əlavə edin</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> əlfəcin}other{<ph name="BOOKMARKS_COUNT_MANY" /> əlfəcin}}</translation>
 <translation id="3062802207422175757">Chrome'da maraqlarınıza dair məqalələr</translation>
@@ -873,6 +872,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="496607651705915226">Google Hesabınızda yeni parolları yaddaşda saxlamaq və istifadə etmək üçün Google Play xidmətlərini yeniləyin</translation>
 <translation id="4971753085054504448">Başqa nəsə axtarmağa cəhd edin və ya daha çox nəticə görmək üçün tam Chrome tarixçəsini açın.</translation>
 <translation id="497421865427891073">İrəli</translation>
+<translation id="498624032394115435">Keçidi olan hər kəs bütün tablara düzəliş edə bilər.</translation>
 <translation id="4987271110129728827">Həmin səhifəni tapmaq mümkün deyil. Orfoqrafiyanı yoxlayın və ya vebdə axtarış edin.</translation>
 <translation id="4988526792673242964">Səhifələr</translation>
 <translation id="4991110219272367918">Vebsaytı təsdiqləmək və ya təsdiqləməmək seçimi bağlanıb</translation>
@@ -959,7 +959,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək</translation>
 <translation id="5423934151118863508">Ən çox daxil olduğunuz səhifələr burada görünəcək</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB əlçatandır</translation>
-<translation id="543121643585717256">Keçidi olan hər kəs bütün tablara düzəliş edə bilər. Ortaq tab qrupları haqqında məlumat əldə edin</translation>
 <translation id="543338862236136125">Parolu redaktə edin</translation>
 <translation id="5433691172869980887">İstifadəçi adı kopyalandı</translation>
 <translation id="5438292632479953702">Yenidən endirin</translation>
@@ -1152,6 +1151,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6284472661216707937">Bütün cihazlarda parollar bağlanıb</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6296366034485697675">Eksport edin və silin</translation>
+<translation id="629730747756840877">Hesab</translation>
 <translation id="6303969859164067831">Çıxış edin və sinxronizasiyanı deaktiv edin</translation>
 <translation id="6312687380483398334">Veb tətbiqlər (sakit)</translation>
 <translation id="6315386555979018699">Silin və davam edin</translation>
@@ -1638,6 +1638,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> "<ph name="TAB_NAME" />" tabını sildi</translation>
 <translation id="8310451567823644042">Parollar tezliklə işləməyəcək</translation>
 <translation id="831192587911042850">Cari veb saytı izlədiyiniz veb saytların siyahısına əlavə edir.</translation>
+<translation id="8320212361750431956">Son fəaliyyət</translation>
 <translation id="8342727528718219152">Chrome həddən artıq bildiriş göndərə biləcək saytlar haqqında sizə məlumat verəcək</translation>
 <translation id="834313815369870491">Saytları heç vaxt tərcümə etməyin</translation>
 <translation id="8348430946834215779">Mümkün olduqda HTTPS istifadə edin və onu dəstəkləməyən saytları yükləməzdən əvvəl xəbərdarlıq alın</translation>

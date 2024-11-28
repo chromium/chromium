@@ -1241,6 +1241,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar o aspeto do seu navegador</translation>
 <translation id="3240791268468473923">A página de credenciais de pagamento seguro sem correspondência com as credenciais está aberta</translation>
 <translation id="324180406144491771">Os links do anfitrião "<ph name="HOST_NAME" />" estão bloqueados</translation>
+<translation id="3243650379537999343">Desenhar</translation>
 <translation id="3248329428895535435">Não mostrar neste site</translation>
 <translation id="3249102948665905108">O carregamento do ficheiro para <ph name="CLOUD_PROVIDER" /> foi concluído com erros</translation>
 <translation id="3252772880526154546">Arquitetura</translation>
@@ -2634,6 +2635,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Bares, clubes e vida noturna</translation>
 <translation id="5743684619253032786">Produtos para cuidados das unhas</translation>
+<translation id="574392208103952083">Médio</translation>
 <translation id="5745733273847572235">Pode solicitar a sua localização</translation>
 <translation id="5750869797196646528">Monitorização das mãos</translation>
 <translation id="5752327398324808817">Introduza uma ou duas palavras</translation>

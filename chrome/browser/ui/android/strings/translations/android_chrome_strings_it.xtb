@@ -460,7 +460,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
 <translation id="3037517125981011456">Vengono mostrate richieste di accesso a Chrome</translation>
 <translation id="3038272154009688107">Visualizza tutti i siti</translation>
-<translation id="3055841435094910999">A Google vengono inviate informazioni sul tuo utilizzo di Chrome, ma non sono riconducibili a te\n\nSe Chrome si arresta in modo anomalo, i dettagli su questo evento potrebbero includere alcune delle tue informazioni personali\n\nSe attivi la sincronizzazione, le metriche potrebbero includere anche informazioni sugli URL che visiti</translation>
 <translation id="3059531648236115056">Aggiungi riepilogo</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
 <translation id="3062802207422175757">Articoli relativi ai tuoi interessi su Chrome</translation>
@@ -873,6 +872,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="496607651705915226">Per salvare e usare nuove password nel tuo Account Google, aggiorna Google Play Services</translation>
 <translation id="4971753085054504448">Prova a cercare qualcos'altro o apri la cronologia completa di Chrome per visualizzare più risultati.</translation>
 <translation id="497421865427891073">Avanti</translation>
+<translation id="498624032394115435">Chiunque abbia il link può modificare tutte le schede.</translation>
 <translation id="4987271110129728827">Impossibile trovare la pagina. Controlla l'ortografia o prova a effettuare una ricerca web.</translation>
 <translation id="4988526792673242964">Pagine</translation>
 <translation id="4991110219272367918">Opzione per approvare o meno un sito web chiuso</translation>
@@ -959,7 +959,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderà immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Le pagine che visiti più spesso verranno visualizzate qui</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponibili</translation>
-<translation id="543121643585717256">Chiunque abbia il link può modificare tutte le schede. Scopri di più sui gruppi di schede condivisi</translation>
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
 <translation id="5438292632479953702">Scarica di nuovo</translation>
@@ -1154,6 +1153,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6284472661216707937">Pagina Password su tutti i tuoi dispositivi chiusa</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6296366034485697675">Esporta ed elimina</translation>
+<translation id="629730747756840877">Account</translation>
 <translation id="6303969859164067831">Esci e disattiva la sincronizzazione</translation>
 <translation id="6312687380483398334">App web (modalità silenziosa)</translation>
 <translation id="6315386555979018699">Elimina e continua</translation>
@@ -1641,6 +1641,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ha rimosso la scheda "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">A breve le password non funzioneranno più</translation>
 <translation id="831192587911042850">Consente di aggiungere il sito web corrente all'elenco di siti web che segui.</translation>
+<translation id="8320212361750431956">Attività recente</translation>
 <translation id="8342727528718219152">Chrome ti avviserà quando dei siti potrebbero inviare troppe notifiche</translation>
 <translation id="834313815369870491">Non tradurre mai i siti</translation>
 <translation id="8348430946834215779">Utilizza HTTPS quando possibile e ricevi un avviso prima di caricare i siti che non lo supportano</translation>

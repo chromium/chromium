@@ -5326,14 +5326,6 @@ Se a política for definida como "false", o comportamento padrão será usado.</
       Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="487460824085252184">Migrar automaticamente, sem autorização do usuário.</translation>
 <translation id="4874982543810021567">Bloquear o WebUSB nesses sites</translation>
-<translation id="4875557601092081492">Esta política foi descontinuada na versão M132 para dar preferência à <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />, que oferece um controle mais refinado do recurso. Use <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />.
-
-Com a sobreposição do Lens, os usuários podem fazer pesquisas no Google interagindo com uma captura de tela da página atual sobreposta ao conteúdo da Web.
-
-Não há uma configuração para o usuário controlar esse recurso. Ele geralmente fica disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
-
-Quando a política definida como 0 (ativada ou deixada sem definição), o recurso ficará disponível para os usuários.
-Quando for definida como 1 (desativada), o recurso não ficará disponível.</translation>
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
 <translation id="4877305769899044884">Luz de fundo padrão do teclado</translation>
 <translation id="4886138258823889910">Ativar o provedor do framework de acessibilidade de <ph name="UIA_NAME" /> para o navegador no Windows</translation>
@@ -10688,6 +10680,12 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 
       Consulte https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage (link em inglês) para ver detalhes sobre os tipos de mídia JavaScript / ECMAScript.
       </translation>
+<translation id="8668202868357089313">Com a sobreposição do Lens, os usuários podem fazer pesquisas no Google interagindo com uma captura de tela da página atual sobreposta ao conteúdo da Web.
+
+Não há uma configuração do usuário para controlar esse recurso. Ele geralmente fica disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
+
+Quando a política for ativada (definida como 1) ou deixada sem definição, o recurso ficará disponível para os usuários.
+Quando for desativada (definida como 0), o recurso não ficará disponível.</translation>
 <translation id="8668928485126473293">Permite definir se o <ph name="PRODUCT_NAME" />
 vai executar o mecanismo JavaScript V8 com otimizações do JavaScript mais avançadas ativadas.
 
@@ -10708,17 +10706,6 @@ Se ela for deixada sem definição, as otimizações do JavaScript serão ativad
       Observação: leia mais sobre políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies (link em inglês).</translation>
 <translation id="8672321184841719703">Versão de atualização automática de destino</translation>
 <translation id="867410340948518937">Segundo fator universal (U2F, na sigla em inglês)</translation>
-<translation id="8674130752570077671">Com a sobreposição do Lens, os usuários podem fazer pesquisas no Google interagindo com uma captura de tela da página atual sobreposta ao conteúdo da Web. Além disso, ela permite que os usuários façam pesquisas no Google relacionadas ao contexto da página atual. Para fornecer respostas contextuais, a sobreposição do Lens envia o conteúdo da página ao Google para responder à consulta do usuário com o contexto da página em que ele está.
-
-Não há uma configuração para o usuário controlar esse recurso. Ele geralmente fica disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
-
-Isso substitui a política <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" /> descontinuada.
-
-0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = desativa o recurso.</translation>
 <translation id="8676959842615154675">Se a política for definida como "Ativada", o host de acesso remoto fará a comparação entre o nome do usuário local associado com o host e o nome da Conta do Google registrada como proprietária do host ("joaosilva", se o host for propriedade de "joaosilva@exemplo.com"). Este host não será iniciado se o nome do proprietário do host for diferente do nome do usuário local associado com o host. Use a política <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> para garantir que a Conta do Google do proprietário seja associada com um domínio específico.
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de acesso remoto poderá ser associado com qualquer usuário local.</translation>

@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">您可能會登出此網站</translation>
 <translation id="6085954183010297841">要刪除檔案編輯權限嗎？<ph name="FILE" /></translation>
 <translation id="6120483543004435978">開咗之後，網站可以要求偵測你有冇主動用緊裝置。閂咗之後，網站唔可以偵測你有冇主動用緊裝置。</translation>
-<translation id="6140839633433422817">確定要重設權限，並刪除 Cookie 和網站資料嗎？</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6171020522141473435">開咗之後，網站可以要求使用藍牙裝置。閂咗之後，網站唔可以使用藍牙裝置。</translation>
-<translation id="6177111841848151710">禁止目前的搜尋引擎使用</translation>
 <translation id="6177128806592000436">您與此網站的連線並非完全安全</translation>
 <translation id="6181444274883918285">新增例外網站</translation>
 <translation id="6192792657125177640">例外</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">允許網站使用麥克風前先詢問您 (建議)</translation>
 <translation id="6999131147875565462">提高 Chrome 執行速度，並讓使用 JavaScript 的功能正常運作</translation>
 <translation id="7000754031042624318">已在「Android 設定」中關閉</translation>
-<translation id="7016516562562142042">允許目前的搜尋引擎使用</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資料</translation>
 <translation id="8944485226638699751">有限制</translation>
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
-<translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">您將會從所有網站登出</translation>
 <translation id="8993853206419610596">展開所有要求</translation>
 <translation id="9002538116239926534">開咗之後，網站可以喺裝置度儲存資料。閂咗之後，網站唔可以喺裝置度儲存資料。</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
-<translation id="930525582205581608">要清除此網站的資料嗎？</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

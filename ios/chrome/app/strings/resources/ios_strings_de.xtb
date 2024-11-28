@@ -432,6 +432,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="288902476966286676">Zurück an Absender</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
+<translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2905479111267140204">Du nutzt <ph name="NUMBER_OF_PASSWORDS" /> wiederverwendete Passwörter, die deine Sicherheit gefährden könnten.</translation>
 <translation id="291754862089661335">Positioniere den QR-Code oder Barcode in diesem Bereich</translation>
 <translation id="2918688092312652908">Als ungelesen markieren</translation>
@@ -1522,7 +1523,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7899199123054742721">Alle als ungelesen markieren</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>
 <translation id="792357691529995513">Keine Probleme gefunden</translation>
-<translation id="7925108652071887026">AutoFill-Daten</translation>
+<translation id="7925108652071887026">Autofill-Daten</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
 <translation id="7927711904086083099">Nicht ausgewählt</translation>
 <translation id="7930998711684428189">Du wirst gewarnt, wenn Passwörter durch eine Datenpanne preisgegeben werden.</translation>

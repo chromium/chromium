@@ -253,6 +253,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> gère Chromium</translation>
+<translation id="444069871276811466">Ajouter un profil Chromium</translation>
 <translation id="4447409407328223819">À propos de Chrome for Testing</translation>
 <translation id="4470974262661801543">Pour utiliser et enregistrer les données Chromium dans votre compte Google, saisissez votre phrase de passe</translation>
 <translation id="4493028449971051158">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'administrateur.</translation>
@@ -583,6 +584,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>
 <translation id="8852026904190808918">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chromium</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>
+<translation id="8876044221123442390">Ajouter un profil Chromium</translation>
 <translation id="8880203542552872219">Dans ce cas, veuillez modifier votre mot de passe enregistré dans Chromium pour qu'il corresponde à votre nouveau mot de passe.</translation>
 <translation id="8891709362986793894">Votre organisation vous demande de vous connecter à Chromium</translation>
 <translation id="8907580949721785412">Chromium essaie d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>

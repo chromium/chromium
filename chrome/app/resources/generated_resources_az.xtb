@@ -3598,7 +3598,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3513019849832307207">Qoşulun və açın</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />-<ph name="MAX_VALUE" /> aralığında rəng slayderi</translation>
 <translation id="3514335087372914653">Oyuna Nəzarət</translation>
-<translation id="3514373592552233661">Birdən çox şəbəkə əlçatan olduqda, məlum olan şəbəkə ilə müqayisədə tərcih edilən şəbəkələr seçiləcək</translation>
 <translation id="3514647716686280777">Standart qoruma əldə edirsiniz. Təhlükəli vebsaytlara, endirmələrə və artırmalara qarşı daha çox qoruma əldə etmək üçün Chrome ayarlarında Qabaqcıl Güvənli Baxışı aktiv edin.</translation>
 <translation id="3514681096978190000">Bu arxivə zərərli proqramı gizlədən başqa fayllar daxildir</translation>
 <translation id="3515983984924808886">Sıfırlamanı təsdiq etmək üçün təhlükəsizlik açarınıza yenidən toxunun. PIN kod daxil olmaqla təhlükəsizlik açarında saxlanılan bütün məlumatlar silinəcək.</translation>
@@ -10284,7 +10283,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8306063480506363120">Diskə girişi silin</translation>
 <translation id="8306430106790753902">ChromeOS şəbəkə marşrutları</translation>
 <translation id="8306885873692337975">Ən son funksiyaları və təhlükəsizlik təkmilləşdirmələrini əldə edin.</translation>
-<translation id="8308016398665340540">Bu şəbəkəni bu cihazın digər istifadəçiləri ilə paylaşırsınız</translation>
 <translation id="8308024039615003152">Çəmənlik</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> kameranıza girmədən öncə icazə alsın</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11184,7 +11182,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8942714513622077633">Microsoft 365 ayarlaması ləğv edilsin?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Batareyanı daha sürətlə istifadə edin (hazırda <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Məhdud</translation>
 <translation id="8944633700466246631">Google Parol Meneceri üçün 6 rəqəmli bərpa PIN-i yaradın</translation>
 <translation id="8944725102565796255">Hesabdan yalnız bir dəfə istifadə etmək istəyirsinizsə, <ph name="GUEST_LINK_BEGIN" />cihazı qonaq kimi istifadə edə<ph name="GUEST_LINK_END" /> bilərsiniz. Başqası üçün hesab əlavə etmək istəyirsinizsə, <ph name="DEVICE_TYPE" /> cihazına <ph name="LINK_BEGIN" />yeni şəxs əlavə edin<ph name="LINK_END" />.
 

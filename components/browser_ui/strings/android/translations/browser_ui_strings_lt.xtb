@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Galite būti atjungti šioje svetainėje</translation>
 <translation id="6085954183010297841">Ištrinti failo redagavimo leidimą? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Įjungus svetainėse gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį. Išjungus svetainės nežino, kada aktyviai naudojate įrenginį.</translation>
-<translation id="6140839633433422817">Ar tikrai norite nustatyti leidimus iš naujo ir ištrinti slapukus bei svetainių duomenis?</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6171020522141473435">Įjungus svetainėse gali būti prašoma naudoti „Bluetooth“ įrenginius. Išjungus svetainėse negalima naudoti „Bluetooth“ įrenginių.</translation>
-<translation id="6177111841848151710">Užblokuota dabartiniam paieškos varikliui</translation>
 <translation id="6177128806592000436">Ryšys su šia svetaine nėra saugus</translation>
 <translation id="6181444274883918285">Pridėti svetainės išimtį</translation>
 <translation id="6192792657125177640">Išimtys</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pirmiausia klausti prieš leidžiant svetainėms naudoti mikrofoną (rekomenduojama)</translation>
 <translation id="6999131147875565462">„Chrome“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta</translation>
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
-<translation id="7016516562562142042">Leidžiama dabartiniam paieškos varikliui</translation>
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Blokuoti svetaines neleidžiant peržiūrėti ir keisti informacijos NFC įrenginiuose</translation>
 <translation id="8944485226638699751">Apribota</translation>
 <translation id="8959122750345127698">Naršymas nepasiekiamas: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8990043154272859344">Būsite atjungti nuo visų svetainių</translation>
 <translation id="8993853206419610596">Išskleisti visas užklausas</translation>
 <translation id="9002538116239926534">Įjungus svetainės gali išsaugoti duomenis įrenginyje. Išjungus svetainės negali išsaugoti duomenų įrenginyje.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
-<translation id="930525582205581608">Pamiršti šią svetainę?</translation>
 <translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>

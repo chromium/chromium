@@ -3474,6 +3474,7 @@
 <translation id="3421387094817716717">এলিপ্টিক কার্ভ সর্বজনীন কী</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />মনে রাখবেন:<ph name="END_BOLD" /> একই ধরনের ভয়েস বা রেকর্ডিং হয়ত আপনার ব্যক্তিগত ফলাফল বা Assistant অ্যাক্সেস করতে পারবে।</translation>
 <translation id="3421835120203732951">নতুন প্রোফাইল যোগ করুন</translation>
+<translation id="3422989558057853751">এটি বেছে নেওয়া শেষ আইটেম, এটি থেকে টিকচিহ্ন সরিয়ে দেওয়া হলে বেছে নেওয়া মোড বন্ধ হয়ে যাবে</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />-এ ফলাফল খুঁজে পাওয়া গেছে</translation>
 <translation id="3423226218833787854">এই AI ফিচার সম্পর্কে আরও জানুন</translation>
 <translation id="3423275441470187644">ট্রাস্ট</translation>
@@ -3612,7 +3613,6 @@
 <translation id="3513019849832307207">যোগ দিন ও খুলুন</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> থেকে <ph name="MAX_VALUE" /> পর্যন্ত রঙের শেডের জন্য স্লাইডার</translation>
 <translation id="3514335087372914653">গেম কন্ট্রোল</translation>
-<translation id="3514373592552233661">একাধিক নেটওয়ার্ক উপলব্ধ থাকলে, পছন্দের নেটওয়ার্ককে অন্যান্য পরিচিত নেটওয়ার্কগুলির থেকে অগ্রাধিকার দেওয়া হবে</translation>
 <translation id="3514647716686280777">আপনি স্ট্যান্ডার্ড নিরাপত্তা সুরক্ষা পাচ্ছেন। ঝুঁকিপূর্ণ ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের বিরুদ্ধে আরও সুরক্ষা পেতে, Chrome সেটিংসে উন্নত নিরাপদ ব্রাউজিং চালু করুন।</translation>
 <translation id="3514681096978190000">এই আর্কাইভে ম্যালওয়্যার লুকাতে পারে এমন অন্যান্য ফাইল আছে</translation>
 <translation id="3515983984924808886">রিসেট করা কনফার্ম করতে আপনার নিরাপত্তা কী আবার টাচ করুন। পিন সহ নিরাপত্তা কীয়ে সেভ করা সব তথ্য মুছে যাবে।</translation>
@@ -4970,6 +4970,7 @@
 <translation id="4461483878391246134">ভাষা যোগ করুন যাতে আর অনুবাদ করার প্রয়োজন না পড়ে</translation>
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-এর জন্য <ph name="TIME" /> টাইম লিমিট সেট করা হয়েছে</translation>
+<translation id="4467373268340082204">ভুল পিন লেখা হয়েছে</translation>
 <translation id="4467561276409486506">&amp;কম্প্যাক্ট মোড টগল করুন</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-এর কাছে <ph name="FOLDERNAME" /> ফোল্ডারের ফাইল এডিট করার অনুমতি আছে</translation>
@@ -10305,7 +10306,6 @@
 <translation id="8306063480506363120">Drive-এর অ্যাক্সেস সরান</translation>
 <translation id="8306430106790753902">ChromeOS নেটওয়ার্ক রুট</translation>
 <translation id="8306885873692337975">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান।</translation>
-<translation id="8308016398665340540">আপনি এই নেটওয়ার্ক এই ডিভাইসের অন্য ব্যবহারকারীদের সাথে শেয়ার করছেন</translation>
 <translation id="8308024039615003152">মিডো</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> আপনার ক্যামেরা অ্যাক্সেস  করতে চায় কিনা জিজ্ঞাসা করুন</translation>
 <translation id="830868413617744215">বিটা</translation>
@@ -11208,7 +11208,6 @@
 <translation id="8942714513622077633">Microsoft 365 সেট-আপ বাতিল করতে চান?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ব্যাটারি আরও দ্রুত শেষ হবে (বর্তমানে <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">সীমিত</translation>
 <translation id="8944633700466246631">Google Password Manager-এর জন্য ৬ সংখ্যার একটি ফিরিয়ে আনার পিন তৈরি করুন।</translation>
 <translation id="8944725102565796255">আপনি শুধু একবারের জন্য এই অ্যাকাউন্ট ব্যবহার করলে, আপনি <ph name="GUEST_LINK_BEGIN" />ডিভাইসটি গেস্ট হিসেবে ব্যবহার করতে পারবেন<ph name="GUEST_LINK_END" />। অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
 

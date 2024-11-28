@@ -1238,6 +1238,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter si prispôsobte vzhľad prehliadača</translation>
 <translation id="3240791268468473923">Hárok s nezodpovedajúcim poverením pre prihlasovací údaj zabezpečenej platby je otvorený</translation>
 <translation id="324180406144491771">Odkazy na hostiteľa <ph name="HOST_NAME" /> sú blokované</translation>
+<translation id="3243650379537999343">Kresliť</translation>
 <translation id="3248329428895535435">Nezobrazovať na tomto webe</translation>
 <translation id="3249102948665905108">Nahrávanie súboru do služby <ph name="CLOUD_PROVIDER" /> bolo dokončené s chybami</translation>
 <translation id="3252772880526154546">Architektúra</translation>
@@ -2630,6 +2631,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5740911612628596808">Obálka C9</translation>
 <translation id="5742806904559466333">Bary, kluby a nočný život</translation>
 <translation id="5743684619253032786">Výrobky na starostlivosť o nechty</translation>
+<translation id="574392208103952083">Stredné</translation>
 <translation id="5745733273847572235">Môže žiadať o povolenie používať vašu polohu</translation>
 <translation id="5750869797196646528">Sledovanie rúk</translation>
 <translation id="5752327398324808817">Zadajte slovo alebo dve</translation>
@@ -3464,6 +3466,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="725866823122871198">Súkromné pripojenie k doméne <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sa nedá nadviazať, pretože dátum a čas (<ph name="DATE_AND_TIME" />) vášho počítača sú nesprávne.</translation>
 <translation id="7260075294900977274">Nový inteligentný priečinok, ktorý vám pomáha ukladať všetky nákupné stránky na jednom mieste, automaticky sledovať ceny, získavať cenové štatistiky a viac</translation>
 <translation id="7265608370113700582">Adresa je k dispozícii iba v tomto zariadení</translation>
+<translation id="7269151392155523061">Odkaz nemôže byť rovnaký ako kľúčové slovo agregátora vyhľadávania definované v dokumente <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Súbory, ktoré si stiahnete, sa odosielajú na analýzu do služby Google Cloud alebo tretím stranám. V rámci nej môžu byť napríklad podrobené kontrole prítomnosti citlivých údajov alebo malvéru, pričom môžu byť uložené podľa firemných pravidiel a viditeľné pre vášho správcu.</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7275808129217605899">Zdravá výživa</translation>

@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Bạn có thể bị đăng xuất khỏi trang web này</translation>
 <translation id="6085954183010297841">Xoá quyền chỉnh sửa tệp? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu được biết khi nào bạn đang sử dụng thiết bị. Khi bạn tắt tuỳ chọn này, các trang web sẽ không được biết khi nào bạn đang sử dụng thiết bị.</translation>
-<translation id="6140839633433422817">Bạn có chắc chắn muốn đặt lại quyền và xoá cookie cùng dữ liệu trang web không?</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6171020522141473435">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị Bluetooth.</translation>
-<translation id="6177111841848151710">Bị chặn đối với công cụ tìm kiếm hiện tại</translation>
 <translation id="6177128806592000436">Kết nối của bạn tới trang web này không an toàn</translation>
 <translation id="6181444274883918285">Thêm trang web ngoại lệ</translation>
 <translation id="6192792657125177640">Ngoại lệ</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Hỏi trước trước khi cho phép các trang web sử dụng micrô của bạn (được đề xuất)</translation>
 <translation id="6999131147875565462">Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến</translation>
 <translation id="7000754031042624318">Đã tắt trong phần Cài đặt Android</translation>
-<translation id="7016516562562142042">Được cho phép đối với công cụ tìm kiếm hiện tại</translation>
 <translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Đã chọn 1 mục}other{Đã chọn # mục}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Chặn không cho các trang web xem và thay đổi thông tin trên thiết bị NFC</translation>
 <translation id="8944485226638699751">Bị giới hạn</translation>
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Quên</translation>
 <translation id="8990043154272859344">Bạn sẽ bị đăng xuất khỏi tất cả các trang web</translation>
 <translation id="8993853206419610596">Mở rộng tất cả yêu cầu</translation>
 <translation id="9002538116239926534">Khi bạn bật tuỳ chọn này, các trang web có thể lưu dữ liệu trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể lưu dữ liệu trên thiết bị của bạn.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Mức thu phóng hiện tại là <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
-<translation id="930525582205581608">Xóa trang web này?</translation>
 <translation id="947156494302904893">Các trang web bạn truy cập có thể xác minh rằng bạn là người thực chứ không phải bot</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>
 <translation id="967624055006145463">Dữ liệu đã lưu trữ</translation>

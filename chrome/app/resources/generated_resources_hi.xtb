@@ -3474,6 +3474,7 @@
 <translation id="3421387094817716717">अंडाकार वक्र वाली सार्वजनिक कुंजी</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है.</translation>
 <translation id="3421835120203732951">नई प्रोफ़ाइल जोड़ें</translation>
+<translation id="3422989558057853751">यह चुना गया आखिरी आइटम है. इससे चुने हुए का निशान हटाने पर, चुनने वाला मोड बंद हो जाएगा</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> में नतीजे मिले</translation>
 <translation id="3423226218833787854">एआई की इस सुविधा के बारे में ज़्यादा जानें</translation>
 <translation id="3423275441470187644">ट्रस्ट</translation>
@@ -3612,7 +3613,6 @@
 <translation id="3513019849832307207">ग्रुप में शामिल हों और टैब खोलें</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> से <ph name="MAX_VALUE" /> तक रंगों वाला स्लाइडर</translation>
 <translation id="3514335087372914653">गेम कंट्रोल</translation>
-<translation id="3514373592552233661">एक से ज़्यादा नेटवर्क उपलब्ध होने पर पसंदीदा नेटवर्क को दूसरे ज्ञात नेटवर्क पर प्राथमिकता दी जाएगी</translation>
 <translation id="3514647716686280777">आपको सामान्य सुरक्षा दी जा रही है. नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचने के लिए, Chrome की सेटिंग में 'बेहतर सुरक्षित ब्राउज़िंग' चालू करें.</translation>
 <translation id="3514681096978190000">इस संग्रह फ़ाइल में ऐसी अन्य फ़ाइलें शामिल हैं जिनमें मैलवेयर हो सकता है</translation>
 <translation id="3515983984924808886">रीसेट की पुष्टि करने के लिए, अपनी सुरक्षा कुंजी फिर से छुएं. ऐसा करने से सुरक्षा कुंजी का पिन और उस पर मौजूद पूरी जानकारी मिट जाएगी.</translation>
@@ -4969,6 +4969,7 @@
 <translation id="4461483878391246134">वे भाषाएं जोड़ें जिनके लिए आपको अनुवाद की सुविधा नहीं चाहिए</translation>
 <translation id="4462159676511157176">कस्टम नाम सर्वर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> के लिए <ph name="TIME" /> की समयसीमा तय की गई</translation>
+<translation id="4467373268340082204">गलत पिन</translation>
 <translation id="4467561276409486506">&amp;कॉम्पैक्ट मोड टॉगल करें</translation>
 <translation id="4469324811108161144">पासवर्ड के नोट में <ph name="CHARACTER_LIMIT" /> वर्ण तक सेव किए जा सकते हैं.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> में जाकर फ़ाइलों में बदलाव कर सकती है</translation>
@@ -10300,7 +10301,6 @@
 <translation id="8306063480506363120">Drive का ऐक्सेस हटाएं</translation>
 <translation id="8306430106790753902">ChromeOS नेटवर्क के रूट</translation>
 <translation id="8306885873692337975">नई सुविधाएं और बेहतर सुरक्षा पाएं.</translation>
-<translation id="8308016398665340540">आप इस डिवाइस के अन्य उपयोगकर्ताओं के साथ यह नेटवर्क शेयर कर रहे हैं</translation>
 <translation id="8308024039615003152">घास का मैदान</translation>
 <translation id="8308179586020895837">अगर <ph name="HOST" /> आपका कैमरा और माइक्रोफ़ोन एक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="830868413617744215">बीटा</translation>
@@ -11203,7 +11203,6 @@
 <translation id="8942714513622077633">क्या आपको Microsoft 365 का सेटअप रद्द करना है?</translation>
 <translation id="894360074127026135">Netscape अंतर्राष्ट्रीय स्टेप-अप</translation>
 <translation id="8944099748578356325">बैटरी का उपयोग ज़्यादा तेज़ी से करेंं (इस समय <ph name="BATTERY_PERCENTAGE" />% है)</translation>
-<translation id="8944485226638699751">सीमित</translation>
 <translation id="8944633700466246631">Google Password Manager के लिए, छह अंकों वाला एक रिकवरी पिन सेट करें</translation>
 <translation id="8944725102565796255">अगर आपको इस खाते का इस्तेमाल सिर्फ़ एक बार करना है, तो <ph name="GUEST_LINK_BEGIN" />डिवाइस का इस्तेमाल मेहमान के तौर पर करें<ph name="GUEST_LINK_END" />. अगर आपको किसी अन्य व्यक्ति के लिए कोई खाता जोड़ना है, तो अपने <ph name="DEVICE_TYPE" /> में <ph name="LINK_BEGIN" />एक नया व्यक्ति जोड़ें<ph name="LINK_END" />.
 

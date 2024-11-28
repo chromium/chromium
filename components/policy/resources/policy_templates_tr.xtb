@@ -5217,14 +5217,6 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
       Bu politika ayarlanmadan bırakılırsa hem kurumsal olarak yönetilen kullanıcılar hem de yönetilmeyen kullanıcılar için varsayılana izin verilir.</translation>
 <translation id="487460824085252184">Otomatik olarak taşı, kullanıcıdan onay isteme.</translation>
 <translation id="4874982543810021567">Bu sitelerde WebUSB'yi engelle</translation>
-<translation id="4875557601092081492">Bu politikanın desteği M132 sürümünde sonlandırılarak yerine <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> getirilmiştir. Bu yeni politika, özellik üzerinde daha ayrıntılı kontrol sağlar. Bunun yerine <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> politikasını kullanın.
-
-Yer Paylaşımlı Lens özelliğinde mevcut sayfanın ekran görüntüsü, asıl web içeriğinin üzerine yerleştirilir ve kullanıcılar bu görüntüyle etkileşimde bulunarak Google araması yapabilirler.
-
-Bu özelliği kontrol eden bir kullanıcı ayarı yoktur. Bu politika ile devre dışı bırakılmadığı sürece, genellikle varsayılan arama motoru Google olan herkes tarafından kullanılabilir.
-
-Politika, 0 - Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bu özellik kullanıcılara sunulur.
-Politika, 1 - Devre Dışı değerine ayarlanırsa bu özellik kullanılamaz.</translation>
 <translation id="4876805738539874299">Etkinleştirilen maksimum SSL sürümü</translation>
 <translation id="4877305769899044884">Varsayılan klavye arka ışığı rengi</translation>
 <translation id="4886138258823889910">Windows'da tarayıcının <ph name="UIA_NAME" /> erişilebilirlik çerçevesi sağlayıcısını etkinleştir</translation>
@@ -10464,6 +10456,12 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 
       JavaScript/ECMAScript medya türleriyle ilgili ayrıntılı bilgi edinmek için https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage adresine göz atın.
       </translation>
+<translation id="8668202868357089313">Yer Paylaşımlı Lens özelliğinde mevcut sayfanın ekran görüntüsü, asıl web içeriğinin üzerine yerleştirilir ve kullanıcılar bu görüntüyle etkileşimde bulunarak Google araması yapabilirler.
+
+Bu özelliği kontrol eden bir kullanıcı ayarı yoktur. Bu politika ile devre dışı bırakılmadığı sürece, genellikle varsayılan arama motoru Google olan herkes tarafından kullanılabilir.
+
+Politika, 0 - Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bu özellik kullanıcılara sunulur.
+Politika, 1 - Devre Dışı değerine ayarlanırsa bu özellik kullanılamaz.</translation>
 <translation id="8668928485126473293"><ph name="PRODUCT_NAME" /> tarayıcının, V8 JavaScript motorunu daha gelişmiş JavaScript optimizasyonları etkinken çalıştırıp çalıştırmayacağını ayarlamanıza olanak tanır.
 
 Bu politikanın değerinin 2'ye ayarlanarak JavaScript optimizasyonlarının devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının web içeriğini daha yavaş oluşturabileceği anlamına gelir.
@@ -10481,17 +10479,6 @@ Bu politika ayarlanmadan bırakılırsa JavaScript optimizasyonları etkin olur.
       Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="8672321184841719703">Hedef Otomatik Güncelleme Sürümü</translation>
 <translation id="867410340948518937">U2F (Evrensel İkinci Faktör)</translation>
-<translation id="8674130752570077671">Yer Paylaşımlı Lens özelliğinde mevcut sayfanın ekran görüntüsü, asıl web içeriğinin üzerine yerleştirilir ve kullanıcılar bu görüntüyle etkileşimde bulunarak Google araması yapabilirler. Ayrıca mevcut sayfanın içeriğine duyarlı Google aramaları yapabilirler. Yer Paylaşımlı Lens, sorguyu kullanıcının bulunduğu sayfanın içeriğine göre yanıtlayarak içeriğe duyarlı yanıtlar vermek için sayfanın içeriğini Google'a gönderir.
-
-Bu özelliği kontrol eden bir kullanıcı ayarı yoktur. Bu politika ile devre dışı bırakılmadığı sürece, genellikle varsayılan arama motoru Google olan herkes tarafından kullanılabilir.
-
-Bu politika, desteği sonlandırılan <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" /> politikasının yerini almıştır.
-
-0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliği devre dışı bırakın.</translation>
 <translation id="8676959842615154675">Politika, Etkin değerine ayarlanırsa uzaktan erişim ana makinesi, ana makine ile ilişkilendirilmiş yerel kullanıcının adını, ana makinenin sahibi olarak kayıtlı Google Hesabının adıyla (ör. ana makinenin sahibi "candogru@example.com" hesabı ise, bu ad "candogru" olur) karşılaştırır. Ana makinenin sahibinin adı, ana makinenin ilişkilendirildiği yerel kullanıcının adından farklı ise bu uzaktan erişim ana makinesi çalışmaz. Ana makine sahibinin Google Hesabının belirli bir alan adıyla ilişkilendirilmesini sağlamak için bu politikayı, <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> politikası ile birlikte kullanın.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa uzaktan erişim ana makinesi herhangi bir yerel kullanıcıyla ilişkilendirilebilir.</translation>

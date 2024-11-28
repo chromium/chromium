@@ -1517,7 +1517,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2037486735086318591">Configura <ph name="FEATURE_NAME" /> para enviarlles ficheiros ás persoas que estean preto de ti e poder recibilos tamén</translation>
 <translation id="2039464276165755892">Ocultar contido das notificacións cando se detecta a presenza doutra persoa</translation>
 <translation id="2040460856718599782">Produciuse un erro ao tentar autenticarte. Volve comprobar as túas credenciais de inicio de sesión e téntao de novo.</translation>
-<translation id="2040822390690632244">Actualizacións, axuda, opcións de programador</translation>
+<translation id="2040822390690632244">Actualizacións, axuda, opcións de programación</translation>
 <translation id="2040894699575719559">Bloqueouse a localización</translation>
 <translation id="2041246176170574368">Deixarás de recibir actualizacións de seguranza en breve. Aforra 50 $ ou máis ao comprar un Chromebook novo.</translation>
 <translation id="2042279886444479655">Perfís activos</translation>
@@ -3598,7 +3598,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3513019849832307207">Unirse e abrir</translation>
 <translation id="3513563267917474897">Control desprazable de ton de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Control de xogo</translation>
-<translation id="3514373592552233661">As redes preferidas terán prioridade ante outras redes coñecidas se hai varias dispoñibles</translation>
 <translation id="3514647716686280777">Contas cun sistema de seguranza estándar. Para obter unha maior protección fronte a sitios web, descargas e extensións perigosos, activa Navegación segura mellorada na configuración de Chrome.</translation>
 <translation id="3514681096978190000">Este ficheiro de arquivo inclúe outros ficheiros que poden ocultar software malicioso</translation>
 <translation id="3515983984924808886">Toca a chave de seguranza de novo para confirmar o seu restablecemento. Eliminarase toda a información almacenada nela, incluídos os PIN.</translation>
@@ -5675,7 +5674,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4975771730019223894">Indicadores de notificacións</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmar acceso</translation>
-<translation id="4979263087381759787">Opcións para programadores</translation>
+<translation id="4979263087381759787">Opcións de programación</translation>
 <translation id="4979510648199782334">Completouse a configuración de Microsoft 365</translation>
 <translation id="4980805016576257426">Esta extensión contén software malicioso.</translation>
 <translation id="4983159853748980742">Non se compartiu o teu contrasinal. Comproba a conexión a Internet e asegúrate de que tes a sesión iniciada en Chrome. Despois, téntao de novo.</translation>
@@ -10288,7 +10287,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8306063480506363120">Quitar acceso a Drive</translation>
 <translation id="8306430106790753902">Rutas de rede de ChromeOS</translation>
 <translation id="8306885873692337975">Goza das últimas funcións e melloras de seguranza.</translation>
-<translation id="8308016398665340540">Estás compartindo esta rede con outros usuarios deste dispositivo</translation>
 <translation id="8308024039615003152">Prado</translation>
 <translation id="8308179586020895837">Preguntar se <ph name="HOST" /> quere acceder á túa cámara</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11190,7 +11188,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8942714513622077633">Queres cancelar a configuración de Microsoft 365?</translation>
 <translation id="894360074127026135">Certificado Step-Up de Netscape International</translation>
 <translation id="8944099748578356325">Consome a batería de forma máis rápida (actualmente <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Limitadas</translation>
 <translation id="8944633700466246631">Crear un PIN de recuperación de 6 díxitos para o xestor de contrasinais de Google</translation>
 <translation id="8944725102565796255">Se queres usar esta conta unha soa vez, podes <ph name="GUEST_LINK_BEGIN" />utilizar o dispositivo como convidado<ph name="GUEST_LINK_END" />. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
 

@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037517125981011456">Chrome-д нэвтрэх сануулгыг харуулна</translation>
 <translation id="3038272154009688107">Бүх сайтыг харах</translation>
-<translation id="3055841435094910999">Таны Chrome-н ашиглалтын талаарх мэдээллийг Google рүү илгээх хэдий ч үүнийг тантай холбохгүй\n\nХэрэв Chrome гэмтвэл тухайн гэмтлийн талаарх дэлгэрэнгүйд зарим хувийн мэдээлэл багтаж магадгүй\n\nХэрэв та синк хийхийг асаавал хэмжигдэхүүнд таны зочилсон URL-н талаарх мэдээлэл багтаж магадгүй</translation>
 <translation id="3059531648236115056">Хураангуйг нэмэх</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
 <translation id="3062802207422175757">Таны сонирхолтой холбоотой Chrome дээрх нийтлэлүүд</translation>
@@ -873,6 +872,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="496607651705915226">Шинэ нууц үгнүүдийг Google Бүртгэлдээ хадгалах болон ашиглахын тулд Google Play үйлчилгээг шинэчилнэ үү</translation>
 <translation id="4971753085054504448">Өөр ямар нэг зүйл хайх эсвэл илүү олон илэрц харахын тулд Chrome-н бүтэн түүхийг нээнэ үү.</translation>
 <translation id="497421865427891073">Цаашаа явах</translation>
+<translation id="498624032394115435">Холбоостой дурын хүн бүх табыг засах боломжтой.</translation>
 <translation id="4987271110129728827">Тухайн хуудсыг олох боломжгүй. Зөв бичсэн эсэхээ шалгах эсвэл веб хайлтыг туршина уу.</translation>
 <translation id="4988526792673242964">Хуудас</translation>
 <translation id="4991110219272367918">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголтыг хаасан</translation>
@@ -959,7 +959,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
 <translation id="5423934151118863508">Таны хамгийн их зочилсон хуудас энд гарч ирэх болно</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ГБ боломжтой</translation>
-<translation id="543121643585717256">Холбоостой дурын хүн бүх табыг засах боломжтой. Хуваалцсан табын бүлгүүдийн талаар мэдэж авах</translation>
 <translation id="543338862236136125">Нууц үг засах</translation>
 <translation id="5433691172869980887">Хэрэглэгчийн нэрийг хуулсан</translation>
 <translation id="5438292632479953702">Дахин татах</translation>
@@ -1154,6 +1153,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6284472661216707937">Таны бүх төхөөрөмж дээрх нууц үгний хуудсыг хаасан</translation>
 <translation id="6295158916970320988">Бүх сайт</translation>
 <translation id="6296366034485697675">Экспортолж, устгах</translation>
+<translation id="629730747756840877">Данс</translation>
 <translation id="6303969859164067831">Гараад синк хийхийг унтраах</translation>
 <translation id="6312687380483398334">Веб программууд (чимээгүй)</translation>
 <translation id="6315386555979018699">Устгаж, үргэлжлүүлэх</translation>
@@ -1317,6 +1317,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6910211073230771657">Устгасан</translation>
 <translation id="6918398787259831832">Хэрэв энэ асуудал тохиолдсоор байвал <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-с <ph name="BEGIN_LINK" />нэмэлт мэдээлэл авна уу<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Та сүүлийн үед зочлоогүй тул Chrome эдгээр зөвшөөрлийг хассан</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 таб}other{<ph name="NUMBER_OF_TABS" /> таб}}</translation>
 <translation id="6929224077895306814">Таны төхөөрөмж болон Google Бүртгэлд хадгалсан аюулгүй байдлын бүх кодыг устгана</translation>
 <translation id="6937524809504266803">Хувийн болгох, холбох</translation>
 <translation id="6937876069006524083">Хоч (заавал биш)</translation>
@@ -1640,6 +1641,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” табыг хассан</translation>
 <translation id="8310451567823644042">Нууц үгнүүд удахгүй ажиллахаа болино</translation>
 <translation id="831192587911042850">Одоогийн веб сайтыг таны дагаж буй веб сайтуудын жагсаалтад нэмнэ.</translation>
+<translation id="8320212361750431956">Саяхны үйл ажиллагаа</translation>
 <translation id="8342727528718219152">Chrome хэт олон мэдэгдэл илгээж байж магадгүй сайтуудын талаар танд мэдэгдэнэ</translation>
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8348430946834215779">Боломжтой үед HTTPS-г ашиглаж, түүнийг дэмждэггүй сайтуудыг ачаалахаас өмнө сануулга аваарай</translation>

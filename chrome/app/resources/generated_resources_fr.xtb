@@ -3598,7 +3598,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3513019849832307207">Rejoindre et ouvrir</translation>
 <translation id="3513563267917474897">Curseur de teinte de <ph name="MIN_VALUE" /> à <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Contrôle du jeu</translation>
-<translation id="3514373592552233661">Les réseaux préférés priment sur les autres réseaux connus lorsque plusieurs réseaux sont disponibles</translation>
 <translation id="3514647716686280777">Vous allez bénéficier de la protection standard. Pour une protection renforcée contre les téléchargements, les extensions et les sites Web dangereux, activez la navigation sécurisée avec protection renforcée dans les paramètres de Chrome.</translation>
 <translation id="3514681096978190000">Ce fichier d'archive contient d'autres fichiers susceptibles de dissimuler des logiciels malveillants</translation>
 <translation id="3515983984924808886">Appuyez à nouveau sur votre clé de sécurité pour confirmer la réinitialisation. Cette opération effacera toutes les informations stockées sur la clé de sécurité, y compris son code.</translation>
@@ -10291,7 +10290,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8306063480506363120">Supprimer l'accès à Drive</translation>
 <translation id="8306430106790753902">Routes réseau ChromeOS</translation>
 <translation id="8306885873692337975">Bénéficiez des dernières fonctionnalités et améliorations de sécurité.</translation>
-<translation id="8308016398665340540">Vous partagez ce réseau avec d'autres utilisateurs de cet appareil</translation>
 <translation id="8308024039615003152">Prairie</translation>
 <translation id="8308179586020895837">Demander si l'accès à votre caméra est requis sur <ph name="HOST" /></translation>
 <translation id="830868413617744215">Bêta</translation>
@@ -11194,7 +11192,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8942714513622077633">Annuler la configuration de Microsoft 365 ?</translation>
 <translation id="894360074127026135">Fonction d'optimisation internationale Netscape </translation>
 <translation id="8944099748578356325">Sollicitera davantage la batterie (<ph name="BATTERY_PERCENTAGE" /> % actuellement)</translation>
-<translation id="8944485226638699751">Limités</translation>
 <translation id="8944633700466246631">Créer un code de récupération à six chiffres pour le Gestionnaire de mots de passe de Google</translation>
 <translation id="8944725102565796255">Si vous souhaitez utiliser ce compte une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />. Pour ajouter le compte d'une autre personne, <ph name="LINK_BEGIN" />ajoutez un nouvel utilisateur<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
 

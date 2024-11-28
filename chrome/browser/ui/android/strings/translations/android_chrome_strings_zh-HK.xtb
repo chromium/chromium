@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
 <translation id="3038272154009688107">查看所有網站</translation>
-<translation id="3055841435094910999">系統會將 Chrome 使用情況傳送給 Google，但不會與您有任何關聯\n\nChrome 當機時，有關當機詳情可能會包括部分個人資料\n\n開啟同步處理功能後，數據可能亦會包括先前瀏覽網址的資料</translation>
 <translation id="3059531648236115056">新增摘要</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">如要在 Google 帳戶中儲存及使用新密碼，請更新 Google Play 服務。</translation>
 <translation id="4971753085054504448">請嘗試搜尋其他內容，或開啟完整 Chrome 記錄以查看更多結果。</translation>
 <translation id="497421865427891073">往前</translation>
+<translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查拼字，或嘗試執行網絡搜尋。</translation>
 <translation id="4988526792673242964">網頁</translation>
 <translation id="4991110219272367918">核准或者唔核准網站嘅選項閂咗</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 將會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權</translation>
 <translation id="5423934151118863508">您最常瀏覽的網頁會在此顯示</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">任何擁有連結的人均可編輯所有分頁。瞭解共用分頁群組</translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5433691172869980887">已複製使用者名稱</translation>
 <translation id="5438292632479953702">再次下載</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">「喺所有裝置度都可以用自己嘅密碼」說明閂咗</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6296366034485697675">匯出並刪除</translation>
+<translation id="629730747756840877">帳戶</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
 <translation id="6315386555979018699">刪除並繼續</translation>
@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">已刪除</translation>
 <translation id="6918398787259831832">如果此問題持續發生，你可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」<ph name="BEGIN_LINK" />取得更多資訊<ph name="END_LINK" />。</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 由於你最近沒有瀏覽過此網站，因此 Chrome 已移除有關權限</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個分頁}other{<ph name="NUMBER_OF_TABS" /> 個分頁}}</translation>
 <translation id="6929224077895306814">系統將刪除已儲存在裝置上和 Google 帳戶中的所有安全碼</translation>
 <translation id="6937524809504266803">個人化和連結</translation>
 <translation id="6937876069006524083">暱稱 (選填)</translation>
@@ -1640,6 +1641,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />已移除「<ph name="TAB_NAME" />」分頁</translation>
 <translation id="8310451567823644042">密碼即將停止運作</translation>
 <translation id="831192587911042850">將目前的網站新增至您正在追蹤的網站清單。</translation>
+<translation id="8320212361750431956">近期活動</translation>
 <translation id="8342727528718219152">如有網站可能傳送太多通知，Chrome 會提示你</translation>
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>

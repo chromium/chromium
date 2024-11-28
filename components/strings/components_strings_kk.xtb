@@ -1240,6 +1240,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3240791268468473923">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ ашылды.</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" сілтемелері блокталған</translation>
+<translation id="3243650379537999343">Сурет салу</translation>
 <translation id="3248329428895535435">Бұл сайтта көрсетпеу</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" /> қызметіне файл жүктеп салу қателермен аяқталды</translation>
 <translation id="3252772880526154546">Сәулет</translation>
@@ -2633,6 +2634,7 @@
 <translation id="5740911612628596808">C9 хатқалтасы</translation>
 <translation id="5742806904559466333">Барлар, клубтар және түнгі өмір</translation>
 <translation id="5743684619253032786">Тырнақ күтіміне арналған өнімдер</translation>
+<translation id="574392208103952083">Орташа</translation>
 <translation id="5745733273847572235">Орналасқан жеріңізді сұрай алады</translation>
 <translation id="5750869797196646528">Қолды бақылау</translation>
 <translation id="5752327398324808817">Бір немесе екі сөз енгізіңіз.</translation>
@@ -3467,6 +3469,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменімен оңаша байланыс орнату мүмкін емес, себебі компьютеріңіздің күні мен уақыты (<ph name="DATE_AND_TIME" />) дұрыс емес.</translation>
 <translation id="7260075294900977274">Қалаулы тауарлардың беттерін бір жерге сақтауға, бағаларды автоматты түрде бақылауға, баға статистикасын алуға және т.б. мүмкіндік беретін жаңа смарт қалта</translation>
 <translation id="7265608370113700582">Мекенжай тек осы құрылғыда қолжетімді</translation>
+<translation id="7269151392155523061">Жылдам пәрмен <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> анықтаған іздеу топтаушысы кілтсөзімен бірдей болмауы керек: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Сіз жүктеп алатын файлдар Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, олар құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
 <translation id="7275334191706090484">Басқарылатын бетбелгілер</translation>
 <translation id="7275808129217605899">Дұрыс тамақтану</translation>

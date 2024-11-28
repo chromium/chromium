@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Bu saytdan çıxarıla bilərsiniz</translation>
 <translation id="6085954183010297841">Fayl redaktə qrantı silinsin? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Aktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənə bilməz.</translation>
-<translation id="6140839633433422817">İcazələri sıfırlamaq, kukiləri və sayt datasını silmək istədiyinizə əminsiniz?</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6171020522141473435">Aktiv ediləndə saytlar Bluetooth cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar Bluetooth cihazlarından istifadə edə bilməz.</translation>
-<translation id="6177111841848151710">Cari axtarış sistemi üçün blok edildi</translation>
 <translation id="6177128806592000436">Bu sayta olan bağlantınız güvənli deyil</translation>
 <translation id="6181444274883918285">Sayt istisnası əlavə edin</translation>
 <translation id="6192792657125177640">İstisnalar</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Saytlara mikrofonunuzu istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="6999131147875565462">Chrome sürətli işləyir və JavaScript istifadə edən funksiyalar nəzərdə tutulan kimi işləməlidir</translation>
 <translation id="7000754031042624318">Android ayarlarında söndürülüb</translation>
-<translation id="7016516562562142042">Cari axtarış sistemi üçün icazə verildi</translation>
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 element seçildi}other{# element seçildi}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsini bloklayın</translation>
 <translation id="8944485226638699751">Məhdud</translation>
 <translation id="8959122750345127698">Naviqasiya əlçatmazdır: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Unudun</translation>
 <translation id="8990043154272859344">Bütün saytlardan çıxacaqsınız</translation>
 <translation id="8993853206419610596">Bütün sorğuları genişləndirin</translation>
 <translation id="9002538116239926534">Aktiv ediləndə saytlar cihazda data saxlaya bilər. Deaktiv ediləndə saytlar cihazda data saxlaya bilməz.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="9138217887606523162">Cari zoom: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>
-<translation id="930525582205581608">Bu sayt unudulsun?</translation>
 <translation id="947156494302904893">Daxil olduğunuz saytlar bot yox, real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="959682366969460160">Sistemləşdirin</translation>
 <translation id="967624055006145463">Yadda saxlanmış data</translation>

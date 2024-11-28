@@ -460,7 +460,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3037177537145227281">Se urmărește prețul</translation>
 <translation id="3037517125981011456">Afișează solicitări pentru conectarea la Chrome</translation>
 <translation id="3038272154009688107">Vezi toate site-urile</translation>
-<translation id="3055841435094910999">Google primește informații despre modul în care folosești Chrome, dar acestea nu pot fi asociate cu tine\n\nDacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal\n\nDacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi</translation>
 <translation id="3059531648236115056">Adaugă un rezumat</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcaj}few{<ph name="BOOKMARKS_COUNT_MANY" /> marcaje}other{<ph name="BOOKMARKS_COUNT_MANY" /> de marcaje}}</translation>
 <translation id="3062802207422175757">Articole despre ceea ce te interesează în Chrome</translation>
@@ -873,6 +872,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="496607651705915226">Pentru a salva și a folosi parole noi în Contul Google, actualizează serviciile Google Play</translation>
 <translation id="4971753085054504448">Caută altceva sau deschide istoricul Chrome complet pentru a vedea mai multe rezultate.</translation>
 <translation id="497421865427891073">Înainte</translation>
+<translation id="498624032394115435">Oricine are linkul poate să editeze toate filele.</translation>
 <translation id="4987271110129728827">Pagina nu a fost găsită. Verifică ortografierea sau încearcă o căutare pe internet.</translation>
 <translation id="4988526792673242964">Pagini</translation>
 <translation id="4991110219272367918">Opțiune pentru a aproba sau nu un site închis</translation>
@@ -959,7 +959,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) va pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Cele mai accesate pagini vor apărea aici</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponibili</translation>
-<translation id="543121643585717256">Oricine are linkul poate să editeze toate filele. Află mai multe despre grupurile de file folosite în comun</translation>
 <translation id="543338862236136125">Editează parola</translation>
 <translation id="5433691172869980887">Numele de utilizator a fost copiat</translation>
 <translation id="5438292632479953702">Descarcă din nou</translation>
@@ -1154,6 +1153,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6284472661216707937">Foaia Parole disponibile pe toate dispozitivele închisă</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6296366034485697675">Exportă și șterge</translation>
+<translation id="629730747756840877">Cont</translation>
 <translation id="6303969859164067831">Deconectează-te și dezactivează sincronizarea</translation>
 <translation id="6312687380483398334">Aplicații web (silențioase)</translation>
 <translation id="6315386555979018699">Șterge și continuă</translation>
@@ -1640,6 +1640,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> a eliminat fila <ph name="TAB_NAME" /></translation>
 <translation id="8310451567823644042">În curând, parolele nu vor mai funcționa</translation>
 <translation id="831192587911042850">Adaugă site-ul actual la lista de site-uri pe care le urmărești.</translation>
+<translation id="8320212361750431956">Activitate recentă</translation>
 <translation id="8342727528718219152">Chrome te va informa despre site-urile care trimit prea multe notificări</translation>
 <translation id="834313815369870491">Nu traduce niciodată site-uri</translation>
 <translation id="8348430946834215779">Folosește HTTPS ori de câte ori este posibil și primește un avertisment înainte de a încărca site-uri care nu acceptă acest protocol</translation>

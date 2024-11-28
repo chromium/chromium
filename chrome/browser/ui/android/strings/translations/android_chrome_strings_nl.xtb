@@ -460,7 +460,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037517125981011456">Toont prompts om in te loggen bij Chrome</translation>
 <translation id="3038272154009688107">Alle sites bekijken</translation>
-<translation id="3055841435094910999">Er wordt informatie naar Google gestuurd over je Chrome-gebruik, maar de informatie wordt niet aan jou gekoppeld\n\nAls Chrome crasht, kunnen de gegevens over de crash wat persoonlijke informatie bevatten\n\nAls je synchronisatie aanzet, kunnen de statistieken ook informatie bevatten over de URL's die je bezoekt</translation>
 <translation id="3059531648236115056">Overzicht toevoegen</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Artikelen over je interesses in Chrome</translation>
@@ -873,6 +872,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="496607651705915226">Update Google Play-services om nieuwe wachtwoorden op te slaan en te gebruiken in je Google-account</translation>
 <translation id="4971753085054504448">Zoek naar iets anders of open de hele Chrome-geschiedenis om meer resultaten te bekijken.</translation>
 <translation id="497421865427891073">Naar voren gaan</translation>
+<translation id="498624032394115435">Iedereen met de link kan alle tabbladen bewerken.</translation>
 <translation id="4987271110129728827">Kan die pagina niet vinden. Check je spelling of voer een online zoekopdracht uit.</translation>
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="4991110219272367918">Optie om een gesloten website wel of niet goed te keuren</translation>
@@ -959,7 +959,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt</translation>
 <translation id="5423934151118863508">Hier zie je de meest bezochte pagina's</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB beschikbaar</translation>
-<translation id="543121643585717256">Iedereen met de link kan alle tabbladen bewerken. Meer informatie over gedeelde tabbladgroepen</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
 <translation id="5433691172869980887">Gebruikersnaam gekopieerd</translation>
 <translation id="5438292632479953702">Opnieuw downloaden</translation>
@@ -1154,6 +1153,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6284472661216707937">Wachtwoorden op al je apparaten gesloten</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6296366034485697675">Exporteren en verwijderen</translation>
+<translation id="629730747756840877">Account</translation>
 <translation id="6303969859164067831">Uitloggen en synchronisatie uitzetten</translation>
 <translation id="6312687380483398334">Web-apps (stil)</translation>
 <translation id="6315386555979018699">Verwijderen en doorgaan</translation>
@@ -1317,6 +1317,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6910211073230771657">Verwijderd</translation>
 <translation id="6918398787259831832">Als dit probleem zich blijft voordoen, kun je <ph name="BEGIN_LINK" />meer informatie krijgen<ph name="END_LINK" /> van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome heeft deze rechten verwijderd omdat je de site niet recent hebt bezocht</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tabblad}other{<ph name="NUMBER_OF_TABS" /> tabbladen}}</translation>
 <translation id="6929224077895306814">Alle beveiligingscodes die zijn opgeslagen op je apparaat en in je Google-account, worden verwijderd</translation>
 <translation id="6937524809504266803">Personalisatie en koppelen</translation>
 <translation id="6937876069006524083">Bijnaam (optioneel)</translation>
@@ -1640,6 +1641,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> heeft het tabblad <ph name="TAB_NAME" /> verwijderd</translation>
 <translation id="8310451567823644042">Wachtwoorden werken binnenkort niet meer</translation>
 <translation id="831192587911042850">Hiermee voeg je de huidige website toe aan de lijst met websites die je volgt.</translation>
+<translation id="8320212361750431956">Recente activiteit</translation>
 <translation id="8342727528718219152">Chrome laat je weten of sites misschien te veel meldingen sturen</translation>
 <translation id="834313815369870491">Sites nooit vertalen</translation>
 <translation id="8348430946834215779">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen</translation>

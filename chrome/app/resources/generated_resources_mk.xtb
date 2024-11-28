@@ -3474,6 +3474,7 @@
 <translation id="3421387094817716717">Јавен клуч на елиптична крива</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“.</translation>
 <translation id="3421835120203732951">Додајте нов профил</translation>
+<translation id="3422989558057853751">Последна избрана ставка, ако го поништите изборот, ќе излезете од режимот на избор</translation>
 <translation id="3423111258700187173">Најдени се резултати во <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Дознајте повеќе за оваа AI-функција</translation>
 <translation id="3423275441470187644">Доверба</translation>
@@ -3612,7 +3613,6 @@
 <translation id="3513019849832307207">Придружете се и отворете</translation>
 <translation id="3513563267917474897">Лизгач за нијанси од <ph name="MIN_VALUE" /> до <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Контрола на игра</translation>
-<translation id="3514373592552233661">Доколку е достапна повеќе од една мрежа, оние што се претпочитани ќе имаат предност пред другите познати мрежи</translation>
 <translation id="3514647716686280777">Добивате стандардна безбедносна заштита. За да добиете поголема заштита од опасни веб-сајтови, преземања и екстензии, вклучете „Подобрено безбедно прелистување“ во поставките за Chrome.</translation>
 <translation id="3514681096978190000">Архивиранава датотека опфаќа други датотеки што можеби кријат злонамерен софтвер</translation>
 <translation id="3515983984924808886">Допрете го безбедносниот клуч повторно за да го потврдите ресетирањето. Ќе се избришат сите информации складирани во безбедносниот клуч, вклучувајќи го и неговиот PIN.</translation>
@@ -4970,6 +4970,7 @@
 <translation id="4461483878391246134">Додајте јазици за кои никогаш не треба да се нуди превод</translation>
 <translation id="4462159676511157176">Сервери со приспособено име</translation>
 <translation id="4465236939126352372">Поставено е временско ограничување од <ph name="TIME" /> за <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Погрешен PIN</translation>
 <translation id="4467561276409486506">&amp;Вклучување/исклучување „Режим на компактност“</translation>
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да изменува датотеки во <ph name="FOLDERNAME" /></translation>
@@ -10306,7 +10307,6 @@
 <translation id="8306063480506363120">Отстрани го пристапот до Drive</translation>
 <translation id="8306430106790753902">Патеки на мрежа на ChromeOS</translation>
 <translation id="8306885873692337975">Преземете ги најновите функции и подобрувања на безбедноста.</translation>
-<translation id="8308016398665340540">Ја споделувате мрежава со други корисници на уредов</translation>
 <translation id="8308024039615003152">Ливада</translation>
 <translation id="8308179586020895837">Прашајте дали <ph name="HOST" /> сака да пристапи до вашиот фотоапарат</translation>
 <translation id="830868413617744215">Бета</translation>
@@ -11209,7 +11209,6 @@
 <translation id="8942714513622077633">Да се откаже поставувањето на Microsoft 365?</translation>
 <translation id="894360074127026135">Меѓународно покачување на Netscape</translation>
 <translation id="8944099748578356325">Ја троши батеријата побрзо (во моментов <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Ограничено</translation>
 <translation id="8944633700466246631">Создајте 6-цифрен PIN за враќање за Google Password Manager</translation>
 <translation id="8944725102565796255">Ако сакате да ја користите сметкава само еднократно, може <ph name="GUEST_LINK_BEGIN" />да го користите уредот како гостин<ph name="GUEST_LINK_END" />. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> на вашиот <ph name="DEVICE_TYPE" />.
 

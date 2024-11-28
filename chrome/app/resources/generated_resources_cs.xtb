@@ -3460,6 +3460,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3421387094817716717">Veřejný klíč založený na eliptické křivce</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K vašim osobním výsledkům nebo Asistentovi by mohl získat přístup někdo s podobným hlasem nebo nahrávkou vašeho hlasu.</translation>
 <translation id="3421835120203732951">Přidat nový profil</translation>
+<translation id="3422989558057853751">Poslední vybraná položka, když její výběr zrušíte, ukončíte tím režim výběru</translation>
 <translation id="3423111258700187173">Výsledky nalezeny ve složce <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Další informace o této AI funkci</translation>
 <translation id="3423275441470187644">Důvěryhodnost</translation>
@@ -3598,7 +3599,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3513019849832307207">Přidat se a otevřít</translation>
 <translation id="3513563267917474897">Posuvník odstínu do <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Ovládání hry</translation>
-<translation id="3514373592552233661">V případě, že bude k dispozici více než jedna síť, budou před ostatními známými sítěmi upřednostněny preferované sítě</translation>
 <translation id="3514647716686280777">Používáte standardní bezpečnostní ochranu. Pokud chcete být lépe chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními, zapněte v nastavení Chromu Vylepšené Bezpečné prohlížení.</translation>
 <translation id="3514681096978190000">Tento archivní soubor obsahuje další soubory, které mohou skrývat malware</translation>
 <translation id="3515983984924808886">Potvrďte reset tím, že se znovu dotknete bezpečnostního klíče. Všechny informace uložené na bezpečnostním klíči, včetně kódu PIN, se vymažou.</translation>
@@ -4955,6 +4955,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4461483878391246134">Přidejte jazyky, u kterých nikdy nemá být nabízen překlad</translation>
 <translation id="4462159676511157176">Vlastní názvové servery</translation>
 <translation id="4465236939126352372">Pro aplikaci <ph name="APP_NAME" /> byl nastaven časový limit <ph name="TIME" /></translation>
+<translation id="4467373268340082204">Nesprávný PIN</translation>
 <translation id="4467561276409486506">&amp;Přepnout kompaktní režim</translation>
 <translation id="4469324811108161144">Poznámky mohou uložit max. <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="4469762931504673593">Web <ph name="ORIGIN" /> může upravovat soubory ve složce <ph name="FOLDERNAME" /></translation>
@@ -10286,7 +10287,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8306063480506363120">Odebrat přístup k Disku</translation>
 <translation id="8306430106790753902">Směrování sítě ChromeOS</translation>
 <translation id="8306885873692337975">Získejte nejnovější funkce a vylepšení zabezpečení.</translation>
-<translation id="8308016398665340540">Tuto síť sdílíte s ostatními uživateli tohoto zařízení</translation>
 <translation id="8308024039615003152">Louka</translation>
 <translation id="8308179586020895837">Zobrazit dotaz, pokud bude chtít web <ph name="HOST" /> používat kameru</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11189,7 +11189,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8942714513622077633">Zrušit nastavování sady Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Bude rychleji vybíjet baterii (aktuálně <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Omezeno</translation>
 <translation id="8944633700466246631">Vytvořte šestimístný PIN pro obnovení pro Správce hesel Google</translation>
 <translation id="8944725102565796255">Pokud chcete tento účet použít pouze jednorázově, můžete <ph name="GUEST_LINK_BEGIN" />zařízení použít jako host<ph name="GUEST_LINK_END" />. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
 

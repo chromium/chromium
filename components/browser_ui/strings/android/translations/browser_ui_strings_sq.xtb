@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Mund të dalësh nga ky sajt</translation>
 <translation id="6085954183010297841">Të fshihet leja për modifikimin e skedarëve? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të mësojnë se kur e përdor ti pajisjen tënde. Kur cilësimi është joaktiv, sajtet nuk mund të mësojnë se kur e përdor ti pajisjen tënde.</translation>
-<translation id="6140839633433422817">E konfirmon që dëshiron të rivendosësh lejet dhe të fshish kukit dhe të dhënat e sajtit?</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6171020522141473435">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet me Bluetooth. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet me Bluetooth.</translation>
-<translation id="6177111841848151710">Bllokuar për motorin aktual të kërkimit</translation>
 <translation id="6177128806592000436">Lidhja jote me këtë sajt nuk është e sigurt</translation>
 <translation id="6181444274883918285">Shto përjashtim për sajt</translation>
 <translation id="6192792657125177640">Përjashtimet</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pyet përpara se sajtet të lejohen të përdorin mikrofonin (rekomandohet)</translation>
 <translation id="6999131147875565462">Chrome funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet</translation>
 <translation id="7000754031042624318">E çaktivizuar te cilësimet e Android</translation>
-<translation id="7016516562562142042">Lejuar për motorin aktual të kërkimit</translation>
 <translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 i zgjedhur}other{# të zgjedhur}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Blloko sajtet që të mos shikojnë dhe ndryshojnë informacionin në pajisjet NFC</translation>
 <translation id="8944485226638699751">Të kufizuara</translation>
 <translation id="8959122750345127698">Lundrimi është i paarritshëm: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Harro</translation>
 <translation id="8990043154272859344">Do të dalësh nga të gjitha sajtet</translation>
 <translation id="8993853206419610596">Zgjero të gjitha kërkesat</translation>
 <translation id="9002538116239926534">Kur cilësimi është aktiv, sajtet mund të ruajnë të dhëna në pajisje. Kur cilësimi është joaktiv, sajtet nuk mund të ruajnë të dhëna në pajisje.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zmadhimi aktual është në <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
-<translation id="930525582205581608">Të harrohet ky sajt?</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="959682366969460160">Organizohu</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>

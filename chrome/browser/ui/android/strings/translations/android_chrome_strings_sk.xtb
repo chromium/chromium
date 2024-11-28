@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Cenu sledujete</translation>
 <translation id="3037517125981011456">Zobrazí výzvy na prihlásenie do Chromu</translation>
 <translation id="3038272154009688107">Zobraziť všetky weby</translation>
-<translation id="3055841435094910999">Informácie o vašom používaní Chromu sa odosielajú Googlu, avšak nie sú s vami spojené.\n\nV prípade pádov Chromu môžu podrobnosti o nich obsahovať určité osobné údaje.\n\nAk vypnete synchronizáciu, môžu metriky zahŕňať aj informácie o webových adresách, ktoré navštevujete.</translation>
 <translation id="3059531648236115056">Pridať súhrn</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> záložka}few{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}many{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}other{<ph name="BOOKMARKS_COUNT_MANY" /> záložiek}}</translation>
 <translation id="3062802207422175757">Články o vašich záujmoch v Chrome</translation>
@@ -873,6 +872,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="496607651705915226">Ak chcete vo svojom účte Google ukladať a používať nové heslá, aktualizujte Služby Google Play</translation>
 <translation id="4971753085054504448">Ak chcete zobraziť ďalšie výsledky, skúste vyhľadať niečo iné alebo otvorte celú históriu Chromu.</translation>
 <translation id="497421865427891073">Ďalej</translation>
+<translation id="498624032394115435">Ktokoľvek s odkazom môže upravovať všetky karty.</translation>
 <translation id="4987271110129728827">Danú stránku sa nepodarilo nájsť. Skontrolujte pravopis alebo vyskúšajte internetové vyhľadávanie.</translation>
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4991110219272367918">Zatvorená možnosť schváliť alebo neschváliť web</translation>
@@ -959,7 +959,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) okamžite stratí prístup ku skupine kariet <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Tu sa zobrazia vaše najnavštevovanejšie stránky.</translation>
 <translation id="5424588387303617268">K dispozícii je <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Ktokoľvek s odkazom môže upravovať všetky karty. Ďalšie informácie o zdieľaných skupinách kariet</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
 <translation id="5433691172869980887">Používateľské meno bolo skopírované</translation>
 <translation id="5438292632479953702">Stiahnuť znova</translation>
@@ -1154,6 +1153,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6284472661216707937">Heslá vo všetkých vašich zariadeniach boli zavreté</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
 <translation id="6296366034485697675">Exportovať a odstrániť</translation>
+<translation id="629730747756840877">Účet</translation>
 <translation id="6303969859164067831">Odhlásiť sa a vypnúť synchronizáciu</translation>
 <translation id="6312687380483398334">Webové aplikácie (ticho)</translation>
 <translation id="6315386555979018699">Odstrániť a pokračovať</translation>
@@ -1640,6 +1640,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8307517230426267469">Používateľ <ph name="GIVEN_NAME" /> odstránil kartu <ph name="TAB_NAME" /></translation>
 <translation id="8310451567823644042">Heslá čoskoro prestanú fungovať</translation>
 <translation id="831192587911042850">Týmto pridáte aktuálny web na zoznam sledovaných webov.</translation>
+<translation id="8320212361750431956">Nedávna aktivita</translation>
 <translation id="8342727528718219152">Chrome vás bude informovať o weboch, ktoré môžu odosielať priveľa upozornení</translation>
 <translation id="834313815369870491">Nikdy neprekladať weby</translation>
 <translation id="8348430946834215779">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú</translation>

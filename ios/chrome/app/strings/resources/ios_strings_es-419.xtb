@@ -432,6 +432,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="288902476966286676">Devolver al remitente</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
+<translation id="2902312830803030883">Más acciones</translation>
 <translation id="2905479111267140204">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas reutilizadas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="291754862089661335">Coloca el código QR o de barras en este recuadro</translation>
 <translation id="2918688092312652908">Marcar como no leído</translation>
@@ -1673,7 +1674,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8560253818350321773">Muestra primero los elementos que se usan con frecuencia.</translation>
 <translation id="8564894539416715395">Página Nueva pestaña</translation>
 <translation id="8569721750632860947">¿Qué URL te gustaría agregar a tu Lista de lectura?</translation>
-<translation id="8571213806525832805">Últimas cuatro semanas</translation>
+<translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar el año de vencimiento <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Apagada</translation>
 <translation id="8590286732816598906">Grupo de pestañas, <ph name="GROUP_TITLE" />, Menú.</translation>

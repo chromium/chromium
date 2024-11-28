@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza aspectul browserului</translation>
 <translation id="3240791268468473923">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este deschisă</translation>
 <translation id="324180406144491771">Linkurile <ph name="HOST_NAME" /> sunt blocate</translation>
+<translation id="3243650379537999343">Desenează</translation>
 <translation id="3248329428895535435">Nu afișa pe acest site</translation>
 <translation id="3249102948665905108">Încărcarea fișierului în <ph name="CLOUD_PROVIDER" /> s-a finalizat cu erori</translation>
 <translation id="3252772880526154546">Arhitectură</translation>
@@ -2634,6 +2635,7 @@
 <translation id="5740911612628596808">Plic C9</translation>
 <translation id="5742806904559466333">Baruri, cluburi și viață de noapte</translation>
 <translation id="5743684619253032786">Produse de îngrijire pentru unghii</translation>
+<translation id="574392208103952083">Mediu</translation>
 <translation id="5745733273847572235">Poate solicita permisiunea de a accesa locația</translation>
 <translation id="5750869797196646528">Urmărirea mâinilor</translation>
 <translation id="5752327398324808817">Introdu un cuvânt sau două</translation>
@@ -3469,6 +3471,7 @@ Detalii suplimentare:
 <translation id="725866823122871198">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora computerului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>
 <translation id="7260075294900977274">Un nou dosar inteligent care te ajută să salvezi toate paginile de cumpărături într-un singur loc și să urmărești automat prețurile, să primești statistici despre prețuri și altele</translation>
 <translation id="7265608370113700582">Adresa este disponibilă doar pe acest dispozitiv</translation>
+<translation id="7269151392155523061">Comanda rapidă nu poate fi identică cu cuvântul cheie al agregatorului de căutare, definit de <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fișierele pe care le descarci sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
 <translation id="7275334191706090484">Marcaje gestionate</translation>
 <translation id="7275808129217605899">Alimentație sănătoasă</translation>

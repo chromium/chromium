@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Môžeme dôjsť k vášmu odhláseniu z tohto webu</translation>
 <translation id="6085954183010297841">Chcete odstrániť povolenie na úpravu súborov? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie zistiť, kedy aktívne používate zariadenie. Keď je táto možnosť vypnutá, weby nemôžu zistiť, kedy aktívne používate zariadenie.</translation>
-<translation id="6140839633433422817">Naozaj chcete resetovať povolenia a odstrániť súbory cookie a dáta webov?</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6171020522141473435">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať zariadenia s rozhraním Bluetooth. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia s rozhraním Bluetooth.</translation>
-<translation id="6177111841848151710">Blokované v aktuálnom vyhľadávači</translation>
 <translation id="6177128806592000436">Spojenie s týmto webom nie je zabezpečené</translation>
 <translation id="6181444274883918285">Pridať výnimku pre web</translation>
 <translation id="6192792657125177640">Výnimky</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pýtať sa, či chcete povoliť webu používať mikrofón (odporúčané)</translation>
 <translation id="6999131147875565462">Chrome je rýchlejší a funkcie používajúce JavaScript by mali fungovať podľa očakávaní</translation>
 <translation id="7000754031042624318">Vypnuté v nastaveniach Androidu</translation>
-<translation id="7016516562562142042">Povolené v aktuálnom vyhľadávači</translation>
 <translation id="702275896380648118">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom. Dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy.</translation>
 <translation id="7053983685419859001">Blokovať</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 vybratá položka}few{# vybraté položky}many{Niekoľko (#) vybratých položiek}other{# vybratých položiek}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Zakázať webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC</translation>
 <translation id="8944485226638699751">Obmedzené</translation>
 <translation id="8959122750345127698">Navigácia je nedostupná: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Odstrániť</translation>
 <translation id="8990043154272859344">Systém vás odhlási zo všetkých webov</translation>
 <translation id="8993853206419610596">Rozbaliť všetky požiadavky</translation>
 <translation id="9002538116239926534">Keď je táto možnosť zapnutá, weby môžu ukladať údaje vo vašom zariadení. Keď je táto možnosť vypnutá, weby nemôžu ukladať údaje vo vašom zariadení.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenia pre aplikáciu <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Aktuálna úroveň lupy je <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
-<translation id="930525582205581608">Chcete tento web odstrániť?</translation>
 <translation id="947156494302904893">Weby, ktoré navštevujete môžu skontrolovať, či ste skutočná osoba a nie robot</translation>
 <translation id="959682366969460160">Usporiadanie položiek</translation>
 <translation id="967624055006145463">Uložené dáta</translation>

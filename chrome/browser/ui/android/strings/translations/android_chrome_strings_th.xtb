@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">กำลังติดตามราคา</translation>
 <translation id="3037517125981011456">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3038272154009688107">ดูเว็บไซต์ทั้งหมด</translation>
-<translation id="3055841435094910999">ข้อมูลการใช้งาน Chrome จะส่งไปยัง Google แต่ไม่เชื่อมโยงกับคุณ\n\nหาก Chrome ขัดข้อง รายละเอียดเกี่ยวกับข้อขัดข้องอาจรวมข้อมูลส่วนบุคคลบางอย่าง\n\nหากคุณเปิดการซิงค์ เมตริกก็อาจรวมข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมไว้ด้วย</translation>
 <translation id="3059531648236115056">เพิ่มสรุป</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_ONE" /> รายการ}other{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="3062802207422175757">บทความที่เกี่ยวข้องกับความสนใจของคุณใน Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">หากต้องการบันทึกและใช้รหัสผ่านใหม่ในบัญชี Google โปรดอัปเดตบริการ Google Play</translation>
 <translation id="4971753085054504448">ลองค้นหาอย่างอื่นหรือเปิดประวัติการเข้าชมใน Chrome แบบเต็มเพื่อดูผลการค้นหาเพิ่มเติม</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
+<translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4987271110129728827">ไม่พบหน้านั้น โปรดตรวจสอบตัวสะกดหรือลองค้นเว็บ</translation>
 <translation id="4988526792673242964">หน้า</translation>
 <translation id="4991110219272367918">ตัวเลือกในการอนุมัติหรือไม่อนุมัติเว็บไซต์ปิดอยู่</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) จะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที</translation>
 <translation id="5423934151118863508">หน้าที่มีการเข้าชมมากที่สุดของคุณจะปรากฏที่นี่</translation>
 <translation id="5424588387303617268">ว่าง <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดูข้อมูลเกี่ยวกับกลุ่มแท็บที่ใช้ร่วมกัน</translation>
 <translation id="543338862236136125">แก้ไขรหัสผ่าน</translation>
 <translation id="5433691172869980887">คัดลอกชื่อผู้ใช้แล้ว</translation>
 <translation id="5438292632479953702">ดาวน์โหลดอีกครั้ง</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">ปิดรหัสผ่านในอุปกรณ์ทุกเครื่องแล้ว</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
 <translation id="6296366034485697675">ส่งออกและลบ</translation>
+<translation id="629730747756840877">บัญชี</translation>
 <translation id="6303969859164067831">ออกจากระบบและปิดการซิงค์</translation>
 <translation id="6312687380483398334">เว็บแอป (ไม่ส่งเสียงหรือแสดงให้เห็น)</translation>
 <translation id="6315386555979018699">ลบและดำเนินการต่อ</translation>
@@ -1225,7 +1225,7 @@
 <translation id="6588043302623806746">ใช้ DNS ที่ปลอดภัย</translation>
 <translation id="6590471736817333463">ประหยัดอินเทอร์เน็ตได้ถึง 60%</translation>
 <translation id="6590680911007613645">ตรวจสอบว่ารหัสผ่านที่คุณจะบันทึกตรงกับรหัสผ่านสำหรับ <ph name="SITE" /></translation>
-<translation id="6593061639179217415">เว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
+<translation id="6593061639179217415">เว็บไซต์แบบเดสก์ท็อป</translation>
 <translation id="6594347733515723558">ตัวเลือกการจัดเรียงและดู</translation>
 <translation id="6595046016124923392">ระบบจะส่งรูปภาพมายัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
 <translation id="6604931690954120417">เมื่อลงชื่อเข้าใช้ Chrome รหัสผ่านที่บันทึกไว้จะอยู่ในบัญชี Google หากต้องการปิดการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ไปที่การตั้งค่า<ph name="END_LINK" /></translation>
@@ -1641,6 +1641,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> นำแท็บ "<ph name="TAB_NAME" />" ออกแล้ว</translation>
 <translation id="8310451567823644042">รหัสผ่านจะหยุดทำงานเร็วๆ นี้</translation>
 <translation id="831192587911042850">เพิ่มเว็บไซต์ปัจจุบันลงในรายการเว็บไซต์ที่คุณกำลังติดตาม</translation>
+<translation id="8320212361750431956">กิจกรรมล่าสุด</translation>
 <translation id="8342727528718219152">Chrome จะแจ้งให้คุณทราบเกี่ยวกับเว็บไซต์ที่อาจส่งการแจ้งเตือนมากเกินไป</translation>
 <translation id="834313815369870491">ไม่ต้องแปลเว็บไซต์</translation>
 <translation id="8348430946834215779">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS</translation>

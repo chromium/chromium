@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” 링크가 차단되었습니다</translation>
+<translation id="3243650379537999343">그리기</translation>
 <translation id="3248329428895535435">이 사이트에서 표시하지 않음</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" />에 파일을 업로드하는 중에 오류가 발생했습니다</translation>
 <translation id="3252772880526154546">아키텍처</translation>
@@ -2634,6 +2635,7 @@
 <translation id="5740911612628596808">봉투 C9</translation>
 <translation id="5742806904559466333">바, 클럽, 밤문화</translation>
 <translation id="5743684619253032786">네일케어 제품</translation>
+<translation id="574392208103952083">보통</translation>
 <translation id="5745733273847572235">위치를 요청할 수 있음</translation>
 <translation id="5750869797196646528">손 추적</translation>
 <translation id="5752327398324808817">단어를 1~2개 입력하세요.</translation>

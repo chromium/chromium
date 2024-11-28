@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">You may be signed out of this site</translation>
 <translation id="6085954183010297841">Delete file editing grant? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">When on, sites can ask to know when you're actively using your device. When off, sites can't know when you're actively using your device.</translation>
-<translation id="6140839633433422817">Are you sure that you want to reset permissions and delete cookies and site data?</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6171020522141473435">When on, sites can ask to use Bluetooth devices. When off, sites can't use Bluetooth devices.</translation>
-<translation id="6177111841848151710">Blocked for current search engine</translation>
 <translation id="6177128806592000436">Your connection to this site is not secure</translation>
 <translation id="6181444274883918285">Add site exception</translation>
 <translation id="6192792657125177640">Exceptions</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="6999131147875565462">Chrome runs faster and features that use JavaScript should work as designed</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>
-<translation id="7016516562562142042">Allowed for current search engine</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selected}other{# selected}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Block sites from seeing and changing information on NFC devices</translation>
 <translation id="8944485226638699751">Limited</translation>
 <translation id="8959122750345127698">Navigation is unreachable: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Forget</translation>
 <translation id="8990043154272859344">You'll be signed out of all sites</translation>
 <translation id="8993853206419610596">Expand all requests</translation>
 <translation id="9002538116239926534">When on, sites can save data on your device. When off, sites can't save data on your device.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Current zoom is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
-<translation id="930525582205581608">Forget this site?</translation>
 <translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
 <translation id="959682366969460160">Get organised</translation>
 <translation id="967624055006145463">Data stored</translation>

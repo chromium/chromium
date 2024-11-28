@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037517125981011456">Будуць паказвацца запыты ўваходу ў Chrome</translation>
 <translation id="3038272154009688107">Паказаць усе сайты</translation>
-<translation id="3055841435094910999">Інфармацыя пра выкарыстанне вамі Chrome адпраўляецца ў Google, але яна не прывязана да вашай асобы\n\nКалі ў Chrome адбываецца збой, падрабязныя звесткі пра яго могуць уключаць у сябе пэўную асабістую інфармацыю\n\nКалі вы ўключылі сінхранізацыю, паказчыкі могуць таксама ўключаць у сябе інфармацыю пра наведаныя вамі URL-адрасы</translation>
 <translation id="3059531648236115056">Дадаць зводку</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
 <translation id="3062802207422175757">Цікавыя для вас артыкулы ў Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">Каб захоўваць і выкарыстоўваць новыя паролі ва Уліковым запісе Google, абнавіце сэрвісы Google Play</translation>
 <translation id="4971753085054504448">Паспрабуйце змяніць пошукавы запыт або адкрыць поўную гісторыю Chrome, каб убачыць больш вынікаў.</translation>
 <translation id="497421865427891073">Наперад</translation>
+<translation id="498624032394115435">Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі.</translation>
 <translation id="4987271110129728827">Не ўдалося знайсці старонку. Праверце правільнасць напісання запыту або паспрабуйце выканаць пошук у інтэрнэце.</translation>
 <translation id="4988526792673242964">Старонкі</translation>
 <translation id="4991110219272367918">Старонка, на якой можна ўхваліць вэб-сайт, закрыта</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) адразу страціць доступ да групы ўкладак "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Тут будуць паказвацца старонкі, якія вы найчасцей наведваеце</translation>
 <translation id="5424588387303617268">Даступна <ph name="GIGABYTES" /> ГБ</translation>
-<translation id="543121643585717256">Любы карыстальнік, які мае спасылку, можа рэдагаваць усе ўкладкі. Даведацца больш пра абагуленыя групы ўкладак</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5433691172869980887">Імя карыстальніка скапіравана</translation>
 <translation id="5438292632479953702">Спампаваць яшчэ раз</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">Аркуш "Паролі на ўсіх вашых прыладах" закрыты</translation>
 <translation id="6295158916970320988">Усе сайты</translation>
 <translation id="6296366034485697675">Экспартаваць і выдаліць</translation>
+<translation id="629730747756840877">Уліковы запіс</translation>
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
 <translation id="6315386555979018699">Выдаліць і працягнуць</translation>
@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">Выдалена</translation>
 <translation id="6918398787259831832">Калі праблема не знікае, <ph name="BEGIN_LINK" />атрымаць больш інфармацыі пра памылку<ph name="END_LINK" /> можна ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 укладка}one{<ph name="NUMBER_OF_TABS" /> укладка}few{<ph name="NUMBER_OF_TABS" /> укладкі}many{<ph name="NUMBER_OF_TABS" /> укладак}other{<ph name="NUMBER_OF_TABS" /> укладкі}}</translation>
 <translation id="6929224077895306814">Усе коды бяспекі, захаваныя на вашай прыладзе і ва Уліковым запісе Google, будуць выдалены</translation>
 <translation id="6937524809504266803">Персаналізацыя і звязванне</translation>
 <translation id="6937876069006524083">Псеўданім (неабавязкова)</translation>
@@ -1640,6 +1641,7 @@
 <translation id="8307517230426267469">Карыстальнік <ph name="GIVEN_NAME" /> перамясціў укладку “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Неўзабаве паролі перастануць працаваць</translation>
 <translation id="831192587911042850">Дадае бягучы вэб-сайт у спіс падпісак.</translation>
+<translation id="8320212361750431956">Нядаўнія дзеянні</translation>
 <translation id="8342727528718219152">Chrome паведаміць вам пра сайты, якія могуць адпраўляць зашмат апавяшчэнняў</translation>
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8348430946834215779">Выкарыстоўваць HTTPS калі магчыма і паказваць папярэджанне перад загрузкай сайтаў, якія не падтрымліваюць гэты пратакол</translation>

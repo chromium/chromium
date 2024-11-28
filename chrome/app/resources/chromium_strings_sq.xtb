@@ -253,6 +253,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> menaxhon Chromium</translation>
+<translation id="444069871276811466">Shto profilin e Chromium</translation>
 <translation id="4447409407328223819">Rreth Chrome for Testing</translation>
 <translation id="4470974262661801543">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", fut frazën tënde të kalimit</translation>
 <translation id="4493028449971051158">Gabim në nisje: ekzekuto instaluesin si administrator.</translation>
@@ -583,6 +584,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chromium në këtë pajisje.</translation>
 <translation id="8852026904190808918">Kjo gjuhë përdoret për të shfaqur menytë, cilësimet, sinjalizimet dhe tekste të tjera në Chromium</translation>
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
+<translation id="8876044221123442390">Shto profilin e Chromium</translation>
 <translation id="8880203542552872219">Nëse po, modifiko fjalëkalimin e ruajtur në Chromium që të përputhet me fjalëkalimin tënd të ri.</translation>
 <translation id="8891709362986793894">Organizata jote kërkon që të identifikohesh në Chromium</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>

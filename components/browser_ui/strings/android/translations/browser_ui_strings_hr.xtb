@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Možda ste odjavljeni s ove web-lokacije</translation>
 <translation id="6085954183010297841">Želite li izbrisati odobrenje za uređivanje datoteke? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kad je ta postavka uključena, web-lokacije mogu tražiti informacije kada aktivno koristite uređaj. Kad je ta postavka isključena, web-lokacije ne mogu znati kad aktivno koristite uređaj.</translation>
-<translation id="6140839633433422817">Jeste li sigurni da želite poništiti dopuštenja i izbrisati kolačiće i podatke web-lokacije?</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu Bluetooth uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati Bluetooth uređaje.</translation>
-<translation id="6177111841848151710">Blokirano za trenutačnu tražilicu</translation>
 <translation id="6177128806592000436">Veza s web-lokacijom nije sigurna</translation>
 <translation id="6181444274883918285">Dodaj iznimku za web-lokaciju</translation>
 <translation id="6192792657125177640">Iznimke</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Web-lokacije moraju tražiti dopuštenje za upotrebu mikrofona (preporučeno)</translation>
 <translation id="6999131147875565462">Chrome se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno</translation>
 <translation id="7000754031042624318">Isključeno u postavkama Androida</translation>
-<translation id="7016516562562142042">Dopušteno za trenutačnu tražilicu</translation>
 <translation id="702275896380648118">Ova web-lokacija određuje što vam se sviđa, a zatim predlaže oglase na drugim web-lokacijama. Ova web-lokacija također prima podatke o temama vaših oglasa iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 odabrana stavka}one{# odabrana stavka}few{# odabrane stavke}other{# odabranih stavki}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Onemogući web-lokacijama da vide i mijenjaju podatke na NFC uređajima</translation>
 <translation id="8944485226638699751">Ograničeno</translation>
 <translation id="8959122750345127698">Otvaranje je nedostupno: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavit ćete se sa svih web-lokacija</translation>
 <translation id="8993853206419610596">Proširi sve zahtjeve</translation>
 <translation id="9002538116239926534">Kad je ta postavka uključena, web-lokacije mogu spremati podatke na vaš uređaj. Kad je ta postavka isključena, web-lokacije ne mogu spremati podatke na vaš uređaj.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Uključite dopuštenja za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Trenutačno je zumiranje <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Ova je stranica opasna</translation>
-<translation id="930525582205581608">Zaboraviti web-lokaciju?</translation>
 <translation id="947156494302904893">Web-lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Organizirajte se</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>

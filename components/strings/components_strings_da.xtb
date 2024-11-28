@@ -1241,6 +1241,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse din browsers udseende</translation>
 <translation id="3240791268468473923">Regneark uden matchende loginoplysninger til sikker betaling er åbent</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />"-links er blokeret</translation>
+<translation id="3243650379537999343">Tegn</translation>
 <translation id="3248329428895535435">Vis ikke for dette website</translation>
 <translation id="3249102948665905108">Filupload til <ph name="CLOUD_PROVIDER" /> er gennemført med fejl</translation>
 <translation id="3252772880526154546">Arkitektur</translation>
@@ -2634,6 +2635,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5740911612628596808">Konvolut C9</translation>
 <translation id="5742806904559466333">Barer, klubber og natteliv</translation>
 <translation id="5743684619253032786">Negleplejeprodukter</translation>
+<translation id="574392208103952083">Mellem</translation>
 <translation id="5745733273847572235">Websitet kan anmode om adgang til din lokation</translation>
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5752327398324808817">Angiv et eller to ord</translation>
@@ -3469,6 +3471,7 @@ Yderligere oplysninger:
 <translation id="725866823122871198">Der kunne ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da dato og tid (<ph name="DATE_AND_TIME" />) på din enhed er forkerte.</translation>
 <translation id="7260075294900977274">En ny smart mappe, der hjælper dig med at gemme alle dine shoppingsider på ét sted, ligesom den også giver dig mulighed for automatisk at overvåge priser, få prisinfo og meget mere</translation>
 <translation id="7265608370113700582">Adressen er kun tilgængelig på denne enhed</translation>
+<translation id="7269151392155523061">Genvejen kan ikke være den samme som søgeordet for søgeaggregatoren, som er defineret af <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">De filer, du downloader, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware, og de kan blive gemt i henhold til virksomhedens politikker og være synlige for din administrator.</translation>
 <translation id="7275334191706090484">Administrerede bogmærker</translation>
 <translation id="7275808129217605899">Sund kost</translation>

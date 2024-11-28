@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037517125981011456">Показывать предложения войти в Chrome</translation>
 <translation id="3038272154009688107">Показать все сайты</translation>
-<translation id="3055841435094910999">В Google отправляется информация об использовании Chrome, которую нельзя связать с вами.\n\nЕсли в работе Chrome произойдет сбой, сведения об ошибке могут содержать некоторые личные данные.\n\nЕсли включить синхронизацию, в статистике может быть также указана информация о URL посещаемых сайтов.</translation>
 <translation id="3059531648236115056">Добавить сводку</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">Чтобы сохранять и использовать новые пароли в аккаунте Google, обновите сервисы Google Play.</translation>
 <translation id="4971753085054504448">Попробуйте изменить поисковый запрос или открыть полную историю Chrome, чтобы увидеть больше результатов.</translation>
 <translation id="497421865427891073">Вперед</translation>
+<translation id="498624032394115435">Все, у кого есть ссылка, могут изменять любые вкладки.</translation>
 <translation id="4987271110129728827">Не удается найти страницу. Проверьте, правильно ли введен запрос, или выполните поиск в интернете.</translation>
 <translation id="4988526792673242964">Страницы</translation>
 <translation id="4991110219272367918">Нижний экран, с помощью которого можно одобрить или заблокировать сайт, закрыт</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) сразу потеряет доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>
 <translation id="5423934151118863508">Здесь появятся страницы, которые вы чаще всего просматриваете.</translation>
 <translation id="5424588387303617268">Доступно: <ph name="GIGABYTES" /> ГБ</translation>
-<translation id="543121643585717256">Все, у кого есть ссылка, могут изменять любые вкладки. Узнать о группах вкладок с общим доступом</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
 <translation id="5438292632479953702">Да</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">Экран "Пароли на всех ваших устройствах" закрыт</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6296366034485697675">Экспортировать и удалить</translation>
+<translation id="629730747756840877">Аккаунт</translation>
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
 <translation id="6315386555979018699">Удалить и продолжить</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8307517230426267469">Пользователь <ph name="GIVEN_NAME" /> удалил вкладку "<ph name="TAB_NAME" />".</translation>
 <translation id="8310451567823644042">Сохраненные пароли скоро перестанут работать</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
+<translation id="8320212361750431956">Недавние действия</translation>
 <translation id="8342727528718219152">Chrome будет предупреждать о сайтах, которые могут отправлять слишком много уведомлений</translation>
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8348430946834215779">По возможности будет использоваться протокол HTTPS. Если сайт его не поддерживает, браузер покажет предупреждение, прежде чем загрузить страницу.</translation>

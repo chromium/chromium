@@ -3601,7 +3601,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3513019849832307207">Pridružite se i otvorite</translation>
 <translation id="3513563267917474897">Klizač za prilagodbu nijanse od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kontrola igre</translation>
-<translation id="3514373592552233661">Preferirane mreže imat će prednost pred ostalim poznatim mrežama ako je dostupno više mreža</translation>
 <translation id="3514647716686280777">Imate standardnu zaštitu sigurnosti. Da biste se bolje zaštitili od opasnih web-lokacija, preuzimanja i proširenja, uključite poboljšano sigurno pregledavanje u postavkama Chromea.</translation>
 <translation id="3514681096978190000">Ta arhivska datoteka uključuje druge datoteke koje mogu skrivati zlonamjerni softver</translation>
 <translation id="3515983984924808886">Još jednom dodirnite sigurnosni ključ da biste potvrdili vraćanje na zadano. Izbrisat će se sve informacije pohranjene na sigurnosnom ključu, uključujući PIN.</translation>
@@ -10292,7 +10291,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8306063480506363120">Ukloni pristup Disku</translation>
 <translation id="8306430106790753902">Rute mreže za ChromeOS</translation>
 <translation id="8306885873692337975">Preuzmite najnovije značajke i sigurnosna poboljšanja.</translation>
-<translation id="8308016398665340540">Dijelite tu mrežu s drugim korisnicima ovog uređaja</translation>
 <translation id="8308024039615003152">Livada</translation>
 <translation id="8308179586020895837">Pitaj ako <ph name="HOST" /> želi pristupiti kameri</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11196,7 +11194,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8942714513622077633">Želite li otkazati postavljanje Microsofta 365?</translation>
 <translation id="894360074127026135">Netscape međunarodni iskorak</translation>
 <translation id="8944099748578356325">brže trošiti bateriju (trenutačno <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Ograničeno</translation>
 <translation id="8944633700466246631">Izradite šesteroznamenkasti PIN za oporavak za Google upravitelj zaporki</translation>
 <translation id="8944725102565796255">Ako ovaj račun želite upotrijebiti samo jednom, možete <ph name="GUEST_LINK_BEGIN" />upotrebljavati uređaj kao gost<ph name="GUEST_LINK_END" />. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
 

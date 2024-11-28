@@ -1242,6 +1242,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="3240791268468473923">সুরক্ষিত পেমেন্ট ক্রেডেনশিয়ালের সাথে মিল নেই এমন পেমেন্ট ক্রেডেনশিয়ালের শিট খোলা আছে</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” লিঙ্ক ব্লক করা হয়েছে</translation>
+<translation id="3243650379537999343">ড্র করুন</translation>
 <translation id="3248329428895535435">এই সাইটে দেখতে চাই না</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" />-এ ফাইল আপলোড হয়ে গেছে তবে কিছু সমস্যা হয়েছে</translation>
 <translation id="3252772880526154546">স্থাপত্যশিল্প</translation>
@@ -2635,6 +2636,7 @@
 <translation id="5740911612628596808">এনভেলপ C9</translation>
 <translation id="5742806904559466333">বার, ক্লাব ও নাইটলাইফ</translation>
 <translation id="5743684619253032786">নখের যত্ন নেওয়ার প্রোডাক্ট</translation>
+<translation id="574392208103952083">মাঝারি</translation>
 <translation id="5745733273847572235">আপনার লোকেশন জানতে চাইতে পারে</translation>
 <translation id="5750869797196646528">হ্যান্ড ট্র্যাকিং</translation>
 <translation id="5752327398324808817">একটি বা দুটি শব্দ লিখুন</translation>
@@ -3469,6 +3471,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
 <translation id="7260075294900977274">নতুন স্মার্ট ফোল্ডার, যা আপনাকে একই জায়গায় কেনাকাটা সম্পর্কিত সব পৃষ্ঠা সেভ করতে এবং অটোমেটিক দাম ট্র্যাক করতে, প্রাইস ইনসাইট পেতে এবং আরও অনেক কিছু করতে সাহায্য করে</translation>
 <translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
+<translation id="7269151392155523061">শর্টকাট ও <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />-এর মাধ্যমে বেছে নেওয়া সার্চ এগ্রিগেটর কীওয়ার্ড দুটি এক হতে পারে না: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">আপনার ডাউনলোড করা ফাইল Google Cloud-এ বা থার্ড-পার্টির কাছে বিশ্লেষণ করার জন্য পাঠানো হয়। যেমন, সংবেদনশীল ব্যক্তিগত তথ্য বা ম্যালওয়্যার রয়েছে কিনা তা জানার জন্য সেগুলি স্ক্যান করা হতে পারে এবং কোম্পানির নীতির উপরে ভিত্তি করে সেভ করা হতে পারে ও আপনার অ্যাডমিনিস্ট্রেটর সেগুলি দেখতে পেতে পারেন।</translation>
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="7275808129217605899">স্বাস্থ্যকর খাদ্যাভ্যাস</translation>

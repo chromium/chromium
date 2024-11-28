@@ -3615,7 +3615,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3513019849832307207">Pridruži se in odpri</translation>
 <translation id="3513563267917474897">Drsnik za odtenek od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Upravljanje iger</translation>
-<translation id="3514373592552233661">Če je na voljo več kot eno omrežje, bodo pred drugimi znanimi omrežji prednostno izbrana prednostna omrežja</translation>
 <translation id="3514647716686280777">Uporabljate standardno varnostno zaščito. Če želite boljšo zaščito proti nevarnim spletnim mestom, prenosom in razširitvam, v Chromovih nastavitvah vklopite izboljšano varno brskanje.</translation>
 <translation id="3514681096978190000">Ta arhivska datoteka vsebuje druge datoteke, ki morda skrivajo zlonamerno programsko opremo</translation>
 <translation id="3515983984924808886">Znova se dotaknite varnostnega ključa, da potrdite ponastavitev. Vsi podatki, shranjeni na varnostnem ključu, vključno s kodo PIN, bodo izbrisani.</translation>
@@ -10315,7 +10314,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8306063480506363120">Odstrani dostop do Googla Drive</translation>
 <translation id="8306430106790753902">Omrežne poti sistema ChromeOS</translation>
 <translation id="8306885873692337975">Prejmite najnovejše funkcije in varnostne izboljšave.</translation>
-<translation id="8308016398665340540">To omrežje si delite z drugimi uporabniki te naprave.</translation>
 <translation id="8308024039615003152">Travnik</translation>
 <translation id="8308179586020895837">Vprašaj, ali <ph name="HOST" /> zahteva dostop do kamere</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11220,7 +11218,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8942714513622077633">Želite preklicati nastavitev storitve Microsoft 365?</translation>
 <translation id="894360074127026135">Nadgradnja Netscape International</translation>
 <translation id="8944099748578356325">Hitrejša poraba energije akumulatorja (trenutno <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Omejeno</translation>
 <translation id="8944633700466246631">Ustvarite 6-mestno kodo PIN za obnovitev za Googlovega upravitelja gesel</translation>
 <translation id="8944725102565796255">Če želite ta račun uporabiti samo enkrat, lahko <ph name="GUEST_LINK_BEGIN" />napravo uporabljate kot gost<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
 

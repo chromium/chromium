@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Je wordt misschien uitgelogd bij deze site</translation>
 <translation id="6085954183010297841">Toestemming voor bewerken van bestanden verwijderen? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Als deze optie aanstaat, kunnen sites vragen om ze mogen weten wanneer je je apparaat actief gebruikt. Staat de optie uit, dan mogen sites niet weten wanneer je je apparaat actief gebruikt.</translation>
-<translation id="6140839633433422817">Weet je zeker dat je de rechten wilt resetten en de cookies en sitegegevens wilt verwijderen?</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6171020522141473435">Als deze optie aanstaat, kunnen sites vragen of ze bluetooth-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen bluetooth-apparaten gebruiken.</translation>
-<translation id="6177111841848151710">Geblokkeerd voor de huidige zoekmachine</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>
 <translation id="6181444274883918285">Site-uitzondering toevoegen</translation>
 <translation id="6192792657125177640">Uitzonderingen</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Eerst vragen voordat sites je microfoon mogen gebruiken (aanbevolen)</translation>
 <translation id="6999131147875565462">Chrome werkt sneller en functies die JavaScript gebruiken, zouden naar behoren moeten werken</translation>
 <translation id="7000754031042624318">Uitgezet in Android-instellingen</translation>
-<translation id="7016516562562142042">Toegestaan voor huidige zoekmachine</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Voorkomen dat sites informatie op NFC-apparaten kunnen zien en wijzigen</translation>
 <translation id="8944485226638699751">Beperkt</translation>
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Vergeten</translation>
 <translation id="8990043154272859344">Je wordt uitgelogd van alle sites</translation>
 <translation id="8993853206419610596">Alle verzoeken uitvouwen</translation>
 <translation id="9002538116239926534">Als deze optie aanstaat, kunnen sites gegevens opslaan op je apparaat. Staat de optie uit, dan kunnen sites geen gegevens opslaan op je apparaat.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Huidig zoomniveau is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
-<translation id="930525582205581608">Deze site vergeten?</translation>
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>

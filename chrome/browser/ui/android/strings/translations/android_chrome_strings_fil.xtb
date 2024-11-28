@@ -460,7 +460,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3037517125981011456">Nagpapakita ng mga prompt na mag-sign in sa Chrome</translation>
 <translation id="3038272154009688107">Tingnan ang lahat ng site</translation>
-<translation id="3055841435094910999">Magpapadala ng impormasyon sa Google tungkol sa iyong paggamit ng Chrome, pero hindi ito iuugnay sa iyo\n\nKung magka-crash ang Chrome, posibleng may kasamang ilang personal na impormasyon ang mga detalye tungkol sa crash\n\nKung io-on mo ang pag-sync, posibleng may kasama ring impormasyon tungkol sa mga URL na binibisita mo ang mga sukatan</translation>
 <translation id="3059531648236115056">Idagdag ang buod</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}one{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> na bookmark}}</translation>
 <translation id="3062802207422175757">Mga artikulo tungkol sa iyong mga interes sa Chrome</translation>
@@ -873,6 +872,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="496607651705915226">Para mag-save at gumamit ng mga bagong password sa iyong Google Account, i-update ang mga serbisyo ng Google Play</translation>
 <translation id="4971753085054504448">Subukang maghanap ng iba pa o buksan ang buong history sa Chrome para tumingin ng higit pang resulta.</translation>
 <translation id="497421865427891073">Sumulong</translation>
+<translation id="498624032394115435">Mae-edit ng sinumang may link ang lahat ng tab.</translation>
 <translation id="4987271110129728827">Hindi makita ang page na iyon. Suriin ang iyong spelling o sumubok ng paghahanap sa web.</translation>
 <translation id="4988526792673242964">Mga Page</translation>
 <translation id="4991110219272367918">Opsyong aprubahan o huwag aprubahan ang isang website na isinara</translation>
@@ -959,7 +959,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="542073632571549028">Mawawalan kaagad ng access si <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sa grupo ng tab na “<ph name="GROUP_NAME" />”</translation>
 <translation id="5423934151118863508">Lalabas dito ang mga page na madalas mong bisitahin</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ang available</translation>
-<translation id="543121643585717256">Mae-edit ng sinumang may link ang lahat ng tab. Matuto tungkol sa mga naka-share na grupo ng tab</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
 <translation id="5433691172869980887">Nakopya ang username</translation>
 <translation id="5438292632479953702">I-download ulit</translation>
@@ -1154,6 +1153,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6284472661216707937">Nakasara ang Mga password sa lahat ng iyong device</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6296366034485697675">I-export at i-delete</translation>
+<translation id="629730747756840877">Account</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
 <translation id="6312687380483398334">Mga web app (tahimik)</translation>
 <translation id="6315386555979018699">I-delete at magpatuloy</translation>
@@ -1317,6 +1317,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6910211073230771657">Na-delete</translation>
 <translation id="6918398787259831832">Kung patuloy na nangyayari ang isyung ito, <ph name="BEGIN_LINK" />kumuha ng higit pang impormasyon<ph name="END_LINK" /> mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil hindi ka bumisita kamakailan</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}one{<ph name="NUMBER_OF_TABS" /> tab}other{<ph name="NUMBER_OF_TABS" /> na tab}}</translation>
 <translation id="6929224077895306814">Made-delete ang lahat ng panseguridad na code na naka-save sa iyong device at sa Google Account mo</translation>
 <translation id="6937524809504266803">Pag-personalize at Pag-link</translation>
 <translation id="6937876069006524083">Nickname (opsyonal)</translation>
@@ -1640,6 +1641,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8307517230426267469">Inalis ni <ph name="GIVEN_NAME" /> ang tab na “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Malapit nang hindi gumana ang mga password</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
+<translation id="8320212361750431956">Kamakailang Aktibidad</translation>
 <translation id="8342727528718219152">Ipapaalam sa iyo ng Chrome ang tungkol sa mga site na posibleng nagpapadala ng masyadong maraming notification</translation>
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>

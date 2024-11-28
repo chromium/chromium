@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037517125981011456">Прикажува prompt за најава на Chrome</translation>
 <translation id="3038272154009688107">Прикажи ги сите сајтови</translation>
-<translation id="3055841435094910999">Испратени се податоци до Google за вашето користење на Chrome, но не се поврзани со вашиот идентитет\n\nАко Chrome има пад, деталите за падот може да вклучуваат одредени лични податоци\n\nАко вклучите синхронизација, метриката може да вклучува и податоци за URL-адресите што ги посетувате</translation>
 <translation id="3059531648236115056">Додај резиме</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележувач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележувач}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележувачи}}</translation>
 <translation id="3062802207422175757">Статии за она што ве интересира на Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">За да ги зачувувате и користите новите лозинки во вашата сметка на Google, ажурирајте ги „Услуги на Google Play“</translation>
 <translation id="4971753085054504448">Обидете се да пребарате нешто друго или отворете ја целосната историја во Chrome за да видите повеќе резултати.</translation>
 <translation id="497421865427891073">Оди напред</translation>
+<translation id="498624032394115435">Секој што го има линкот може да ги изменува сите картички.</translation>
 <translation id="4987271110129728827">Не може да се најде таа страница. Проверете го правописот или пробајте да пребарувате на интернет.</translation>
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4991110219272367918">Опцијата да се одобри или да не се одобри веб-сајт е затворена</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) веднаш ќе го изгуби пристапот до групата картички „<ph name="GROUP_NAME" />“</translation>
 <translation id="5423934151118863508">Најпосетуваните страници ќе се појават тука</translation>
 <translation id="5424588387303617268">Достапни се <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Секој што го има линкот може да ги изменува сите картички. Дознајте повеќе за споделените групи картички</translation>
 <translation id="543338862236136125">Измени ја лозинката</translation>
 <translation id="5433691172869980887">Корисничкото име е копирано</translation>
 <translation id="5438292632479953702">Преземи повторно</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">Лозинките на сите ваши уреди се затворени</translation>
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6296366034485697675">Извези и избриши</translation>
+<translation id="629730747756840877">Сметка</translation>
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
 <translation id="6312687380483398334">Веб-апликации (тивки)</translation>
 <translation id="6315386555979018699">Избриши и продолжи</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ја отстрани картичката „<ph name="TAB_NAME" />“</translation>
 <translation id="8310451567823644042">Лозинките ќе престанат да функционираат наскоро</translation>
 <translation id="831192587911042850">Го додава тековниот веб-сајт на списокот со веб-сајтови што ги следите.</translation>
+<translation id="8320212361750431956">Последна активност</translation>
 <translation id="8342727528718219152">Chrome ќе ве извести за сајтови што можеби испраќаат премногу известувања</translation>
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8348430946834215779">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат</translation>

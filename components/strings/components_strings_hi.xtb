@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
+<translation id="3243650379537999343">ड्रॉ</translation>
 <translation id="3248329428895535435">इस साइट पर न दिखाएं</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" /> में फ़ाइल अपलोड हो गई है. हालांकि, इसमें कुछ गड़बड़ियां हुई हैं</translation>
 <translation id="3252772880526154546">आर्किटेक्चर</translation>
@@ -2634,6 +2635,7 @@
 <translation id="5740911612628596808">C9 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5742806904559466333">बार, क्लब, और नाइटलाइफ़</translation>
 <translation id="5743684619253032786">नाखून की देखभाल से जुड़े प्रॉडक्ट</translation>
+<translation id="574392208103952083">मीडियम</translation>
 <translation id="5745733273847572235">साइट, आपकी जगह की जानकारी जानने की अनुमति मांग सकती है</translation>
 <translation id="5750869797196646528">हाथ ट्रैक करने की सुविधा</translation>
 <translation id="5752327398324808817">एक या दो शब्द डालें</translation>
@@ -3469,6 +3471,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके कंप्‍यूटर का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
 <translation id="7260075294900977274">एक नया स्मार्ट फ़ोल्डर, जो खरीदारी वाले सभी पेजों को एक ही जगह पर सेव करने और कीमतों को अपने-आप ट्रैक करने की सुविधा देता है. इसकी मदद से, कीमत की अहम जानकारी पाने के साथ-साथ और भी बहुत कुछ किया जा सकता है</translation>
 <translation id="7265608370113700582">पता सिर्फ़ इस डिवाइस पर उपलब्ध है</translation>
+<translation id="7269151392155523061">शॉर्टकट और <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> की ओर से तय किया गया सर्च एग्रीगेटर कीवर्ड, दोनों एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">डाउनलोड की गई फ़ाइलों को विश्लेषण के लिए, Google Cloud या तीसरे पक्ष की कंपनियों को भेजा जाता है. उदाहरण के लिए, संवेदनशील जानकारी या मैलवेयर का पता लगाने के लिए, उन फ़ाइलों को स्कैन किया जा सकता है. साथ ही, उन्हें कंपनी की नीतियों के हिसाब से सेव किया जा सकता है और ये आपके एडमिन को दिख सकती हैं.</translation>
 <translation id="7275334191706090484">मैनेज किए गए बुकमार्क</translation>
 <translation id="7275808129217605899">पौष्टिक आहार</translation>

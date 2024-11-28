@@ -1241,6 +1241,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse nettleserens utseende</translation>
 <translation id="3240791268468473923">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon er åpnet</translation>
 <translation id="324180406144491771">«<ph name="HOST_NAME" />»-linker er blokkert</translation>
+<translation id="3243650379537999343">Tegn</translation>
 <translation id="3248329428895535435">Ikke vis på dette nettstedet</translation>
 <translation id="3249102948665905108">Filopplastingen til <ph name="CLOUD_PROVIDER" /> er fullført, men med feil</translation>
 <translation id="3252772880526154546">Arkitektur</translation>
@@ -2634,6 +2635,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5740911612628596808">C9-konvolutt</translation>
 <translation id="5742806904559466333">Barer, nattklubber og uteliv</translation>
 <translation id="5743684619253032786">Neglepleieprodukter</translation>
+<translation id="574392208103952083">Medium</translation>
 <translation id="5745733273847572235">Kan be om posisjonen din</translation>
 <translation id="5750869797196646528">Håndsporing</translation>
 <translation id="5752327398324808817">Skriv inn et ord eller to</translation>
@@ -3468,6 +3470,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="725866823122871198">En privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan ikke opprettes fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) på datamaskinen er feil.</translation>
 <translation id="7260075294900977274">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer</translation>
 <translation id="7265608370113700582">Adressen er bare tilgjengelig på denne enheten</translation>
+<translation id="7269151392155523061">Snarveien kan ikke være lik søkeordet for søkeaggregatoren som er definert av <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Filer du laster ned, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens retningslinjer og være synlige for administratoren din.</translation>
 <translation id="7275334191706090484">Administrerte bokmerker</translation>
 <translation id="7275808129217605899">Helsekost</translation>

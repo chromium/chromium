@@ -3467,6 +3467,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3421387094817716717">Offentlig nøkkel basert på elliptiske kurver</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Det kan hende at lignende stemmer eller opptak av stemmen din kan brukes for å få tilgang til personlige resultater eller assistenten.</translation>
 <translation id="3421835120203732951">Legg til en ny profil</translation>
+<translation id="3422989558057853751">Det siste elementet er valgt. Hvis du velger det bort, avsluttes valgmodus</translation>
 <translation id="3423111258700187173">Fant resultater i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Finn ut mer om denne AI-funksjonen</translation>
 <translation id="3423275441470187644">Tillit</translation>
@@ -3605,7 +3606,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3513019849832307207">Bli med og åpne</translation>
 <translation id="3513563267917474897">Glidebryter for fargetone – går fra <ph name="MIN_VALUE" /> til <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Spillkontroll</translation>
-<translation id="3514373592552233661">Foretrukne nettverk prioriteres fremfor andre kjente nettverk hvis mer enn ett nettverk er tilgjengelig</translation>
 <translation id="3514647716686280777">Du får standard sikkerhetsbeskyttelse. For å få mer beskyttelse mot farlige nettsteder, nedlastinger og utvidelser, slå på Safe Browsing med økt beskyttelse i Chrome-innstillingene.</translation>
 <translation id="3514681096978190000">Denne arkivfilen inneholder andre filer som kan skjule skadelig programvare</translation>
 <translation id="3515983984924808886">Berør sikkerhetsnøkkelen en gang til for å bekrefte tilbakestillingen. All informasjon som er lagret på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet.</translation>
@@ -4961,6 +4961,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4461483878391246134">Legg til språk som Oversetter aldri skal tilby å oversette</translation>
 <translation id="4462159676511157176">Egendefinerte navnetjenere</translation>
 <translation id="4465236939126352372">En tidsgrense på <ph name="TIME" /> er angitt for <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Feil PIN-kode</translation>
 <translation id="4467561276409486506">&amp;Slå av/på kompakt modus</translation>
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
@@ -10291,7 +10292,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8306063480506363120">Fjern Disk-tilgang</translation>
 <translation id="8306430106790753902">ChromeOS-nettverksruter</translation>
 <translation id="8306885873692337975">Få de nyeste funksjonene og sikkerhetsforbedringene.</translation>
-<translation id="8308016398665340540">Du deler dette nettverket med andre brukere av enheten</translation>
 <translation id="8308024039615003152">Eng</translation>
 <translation id="8308179586020895837">Spør om <ph name="HOST" /> vil bruke kameraet ditt</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11193,7 +11193,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8942714513622077633">Vil du avbryte konfigureringen av Microsoft 365?</translation>
 <translation id="894360074127026135">Internasjonal oppgradering av Netscape</translation>
 <translation id="8944099748578356325">bruke opp batteriet raskere (for øyeblikket <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Begrenset</translation>
 <translation id="8944633700466246631">Opprett en sekssifret PIN-kode for gjenoppretting for Google Passordlagring</translation>
 <translation id="8944725102565796255">Hvis du vil bruke denne kontoen kun én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruke enheten som gjest<ph name="GUEST_LINK_END" />. Hvis du vil legge til en konto for noen andre, kan du <ph name="LINK_BEGIN" />legge til en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
 

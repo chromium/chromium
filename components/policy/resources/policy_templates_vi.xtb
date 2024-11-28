@@ -5226,14 +5226,6 @@ Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc 
       Nếu bạn không thiết lập chính sách này, thì chế độ mặc định sẽ được áp dụng cho cả người dùng do doanh nghiệp quản lý và người dùng không được quản lý.</translation>
 <translation id="487460824085252184">Tự động di chuyển, không cần yêu cầu sự chấp thuận của người dùng.</translation>
 <translation id="4874982543810021567">Chặn WebUSB trên các trang web này</translation>
-<translation id="4875557601092081492">Chính sách này không còn được dùng trong M132 nữa. Thay vào đó, chính sách <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> sẽ giúp bạn kiểm soát tính năng này chi tiết hơn. Hãy chuyển sang sử dụng <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />.
-
-Lớp phủ ống kính cho phép người dùng tìm kiếm trên Google bằng cách tương tác với ảnh chụp màn hình trang hiện tại được phủ lên nội dung thực tế trên web.
-
-Tính năng này không bị bất cứ chế độ cài đặt nào của người dùng kiểm soát và thường được cung cấp cho tất cả người dùng đặt Google làm công cụ tìm kiếm mặc định, trừ phi tính năng bị tắt theo chính sách này.
-
-Khi bạn đặt chính sách thành 0 – Bật hoặc không đặt, người dùng sẽ có thể sử dụng tính năng này.
-Khi bạn đặt chính sách này thành 1 – Tắt, người dùng sẽ không thể sử dụng tính năng này.</translation>
 <translation id="4876805738539874299">Đã bật phiên bản SSL tối đa</translation>
 <translation id="4877305769899044884">Màu đèn nền bàn phím mặc định</translation>
 <translation id="4886138258823889910">Bật trình cung cấp khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> của trình duyệt trên Windows</translation>
@@ -10499,6 +10491,12 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 
       Xem https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage để biết chi tiết về các loại phương tiện JavaScript/ECMAScript.
       </translation>
+<translation id="8668202868357089313">Lớp phủ Ống kính cho phép người dùng tìm kiếm trên Google bằng cách tương tác với ảnh chụp màn hình trang hiện tại được phủ lên nội dung thực tế trên web.
+
+Tính năng này không bị kiểm soát bởi bất cứ chế độ cài đặt nào của người dùng và thường được cung cấp cho tất cả người dùng đặt Google làm công cụ tìm kiếm mặc định, trừ phi bị tắt theo chính sách này.
+
+Khi bạn đặt chính sách thành 0 – Bật hoặc không đặt, người dùng sẽ có thể sử dụng tính năng này.
+Khi bạn đặt chính sách này thành 1 – Tắt, người dùng sẽ không thể sử dụng tính năng này.</translation>
 <translation id="8668928485126473293">Cho phép bạn thiết lập liệu <ph name="PRODUCT_NAME" /> có chạy công cụ JavaScript v8 trong khi bật tính năng tối ưu hoá JavaScript nâng cao hơn hay không.
 
 Việc tắt tính năng tối ưu hoá JavaScript (bằng cách đặt giá trị của chính sách này thành 2) có thể khiến <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web chậm hơn.
@@ -10516,17 +10514,6 @@ Nếu bạn không đặt chính sách này thì tính năng tối ưu hoá Java
       Lưu ý: Hãy đọc thêm về Chính sách giảm thiểu quy trình (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="8672321184841719703">Phiên bản cập nhật tự động đích</translation>
 <translation id="867410340948518937">U2F (Hai yếu tố chung)</translation>
-<translation id="8674130752570077671">Lớp phủ ống kính cho phép người dùng tìm kiếm trên Google bằng cách tương tác với ảnh chụp màn hình trang hiện tại được phủ lên nội dung thực tế trên web. Ngoài ra, với tính năng này, người dùng còn có thể tìm kiếm trên Google theo ngữ cảnh của trang hiện tại. Nhằm cung cấp câu trả lời phù hợp với ngữ cảnh, tính năng Lớp phủ ống kính sẽ gửi nội dung trang đến Google để trả lời cụm từ tìm kiếm của người dùng theo ngữ cảnh của trang mà người dùng đang xem.
-
-Tính năng này không bị bất cứ chế độ cài đặt nào của người dùng kiểm soát và thường được cung cấp cho tất cả người dùng đặt Google làm công cụ tìm kiếm mặc định, trừ phi tính năng bị tắt theo chính sách này.
-
-Chính sách này sẽ thay thế chính sách <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" /> đã ngừng hoạt động.
-
-0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. Dữ liệu liên quan có thể bao gồm câu lệnh, dữ liệu đầu vào, dữ liệu đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Các nhân viên có thể sẽ xem xét dữ liệu này nhằm mục đích duy nhất là cải tiến mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
-
-1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
-
-2 = Tắt tính năng này.</translation>
 <translation id="8676959842615154675">Nếu bạn đặt chính sách này thành Bật, máy chủ truy cập từ xa sẽ so sánh tên của người dùng trên máy được liên kết với máy chủ và tên của Tài khoản Google được đăng ký làm chủ sở hữu máy chủ ("johndoe", nếu máy chủ thuộc sở hữu của "johndoe@example.com"). Máy chủ này sẽ không bắt đầu nếu tên của chủ sở hữu máy chủ khác với tên của người dùng trên máy được liên kết với máy chủ. Để đảm bảo rằng Tài khoản Google của chủ sở hữu được liên kết với một miền cụ thể, hãy sử dụng chính sách này với <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì máy chủ truy cập từ xa có thể được liên kết với bất kỳ người dùng nào trên máy.</translation>

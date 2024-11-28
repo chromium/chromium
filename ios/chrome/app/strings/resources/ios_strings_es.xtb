@@ -432,6 +432,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="288902476966286676">Devolución al remitente</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
+<translation id="2902312830803030883">Más acciones</translation>
 <translation id="2905479111267140204">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas reutilizadas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="291754862089661335">Coloca el código QR o de barras en este marco</translation>
 <translation id="2918688092312652908">Marcar como no leído</translation>
@@ -1330,7 +1331,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="7004032350256606903">Tu organización requiere que navegues de forma privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">Establecer como predeterminado en Ajustes…</translation>
+<translation id="7005768247344091502">Definir como predeterminado en Ajustes…</translation>
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tienes 1 contraseña poco segura. Corrige el problema para protegerte.</translation>
 <translation id="7016958933495968912">Opciones de Discover</translation>
@@ -1636,7 +1637,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8402673309244746971">Ir a Siguiendo</translation>
 <translation id="8407669440184693619">No se han encontrado contraseñas para este sitio web</translation>
 <translation id="8407831512155324054">Tus contraseñas son seguras</translation>
-<translation id="842523302461531262">Establecer como predeterminado en la configuración…</translation>
+<translation id="842523302461531262">Definir como predeterminado en Ajustes…</translation>
 <translation id="8428045167754449968">Ciudad/Localidad</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">Entendido</translation>
@@ -1845,7 +1846,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
-<translation id="961856697154696964">Eliminar datos de navegación</translation>
+<translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="963102227019621224">Actividad en la Web y en Aplicaciones</translation>
 <translation id="966593914872420832">Búsqueda por voz</translation>
 <translation id="968653181266955408">Recibe notificaciones de contenido</translation>

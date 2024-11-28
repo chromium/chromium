@@ -993,6 +993,9 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih ha
 <translation id="165769015320654523">Otomatis memberikan izin ke situs ini untuk terhubung ke perangkat HID dengan ID produk dan vendor tertentu.</translation>
 <translation id="1659406551862245683">Perilaku pengubahan ukuran keyboard virtual default diubah untuk mengubah ukuran area pandang tata letak</translation>
 <translation id="166427968280387991">Server proxy</translation>
+<translation id="1665033825018489686">Jika kebijakan ini disetel ke Aktif atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan mengaktifkan login tamu. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan mengizinkan profil tamu dimulai.</translation>
 <translation id="1666001345366986837">Setelan untuk fitur Latar Belakang VC AI Generatif</translation>
 <translation id="1670638264428789878">Aktifkan Set Situs Terkait</translation>
 <translation id="1671405606278443620">Setelan untuk Penelusuran Histori yang didukung AI</translation>
@@ -1565,6 +1568,15 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
         Jika kebijakan disetel ke Aktif atau tidak disetel, update aplikasi Kiosk Chrome dalam sesi akan diaktifkan.
         </translation>
 <translation id="2082205219176343977">Mengonfigurasi versi minimum Chrome yang diizinkan untuk perangkat.</translation>
+<translation id="2083016623552073519">Mengaktifkan terjemahan teks otomatis. Teks akan dikirim ke Google untuk diterjemahkan.
+
+Jika kebijakan ini disetel ke Aktif, fitur Terjemahan Langsung akan selalu diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, fitur Terjemahan Langsung akan selalu dinonaktifkan.
+
+Jika Anda menyetel kebijakan ini sebagai wajib, pengguna tidak akan dapat mengubah atau menggantinya.
+
+Jika kebijakan ini tidak disetel, fitur Terjemahan Langsung mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="2083696311760456171">Jangan izinkan Prediksi Isi Otomatis.</translation>
 <translation id="20838788335877967">Nonaktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="208566302163036794">Blokir fitur yang dinonaktifkan</translation>
@@ -5337,14 +5349,6 @@ Jika kebijakan disetel ke Salah (False), perilaku default akan digunakan.</trans
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="487460824085252184">Migrasi otomatis, jangan tanya persetujuan pengguna.</translation>
 <translation id="4874982543810021567">Blokir WebUSB di situs ini</translation>
-<translation id="4875557601092081492">Kebijakan ini tidak digunakan lagi di M132 dan digantikan oleh <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" /> yang memberikan kontrol yang lebih terperinci atas fitur tersebut. Sebagai gantinya, gunakan <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />.
-
-Overlay Lens memungkinkan pengguna melakukan penelusuran Google dengan berinteraksi menggunakan screenshot halaman saat ini yang ditempatkan di atas konten web yang sebenarnya.
-
-Tidak ada setelan pengguna untuk mengontrol fitur ini. Fitur ini biasanya tersedia bagi semua pengguna yang menggunakan Google sebagai mesin telusur default, kecuali jika dinonaktifkan oleh kebijakan ini.
-
-Jika kebijakan disetel ke 0 - Aktif atau tidak disetel, fitur tersebut akan tersedia bagi pengguna.
-Jika kebijakan disetel ke 1 - Nonaktif, fitur tersebut tidak akan tersedia.</translation>
 <translation id="4876805738539874299">Versi SSL maksimum diaktifkan</translation>
 <translation id="4877305769899044884">Warna lampu latar keyboard default</translation>
 <translation id="4886138258823889910">Mengaktifkan penyedia framework aksesibilitas <ph name="UIA_NAME" /> browser di Windows</translation>
@@ -6826,6 +6830,7 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="588135807064822874">Mengaktifkan Sentuh untuk Menelusuri</translation>
 <translation id="5882345429632338713">Penundaan sebelum meluncurkan browser alternatif (milidetik)</translation>
 <translation id="5883015257301027298">Setelan cookie default</translation>
+<translation id="5883631290631802010">Aktifkan fitur Terjemahan Langsung</translation>
 <translation id="5883754873839596178">Menyetel kebijakan akan menentukan jumlah maksimal koneksi simultan ke server proxy. Beberapa server proxy tidak dapat menangani koneksi serentak tiap klien dalam jumlah besar, yang dapat diselesaikan dengan menyetel kebijakan ini ke nilai yang lebih rendah. Nilai harus lebih rendah dari 100 dan lebih tinggi dari 6. Beberapa aplikasi web diketahui menggunakan banyak koneksi dengan GET yang macet, jadi dengan menyetel nilai lebih rendah dari 32 dapat menyebabkan jaringan browser menjadi macet jika terlalu banyak aplikasi web dengan jaringan macet terbuka. Turunkan di bawah nilai default dengan menanggung sendiri risikonya.
 
       Tidak menyetel kebijakan berarti nilai default 32 akan digunakan.</translation>
@@ -8404,6 +8409,7 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="6938424179790370595">Jika kebijakan disetel ke Tidak Ada (None), pembesar layar akan dinonaktifkan.
 
 Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya. Jika kebijakan tidak disetel, pembesar layar pada awalnya akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
+<translation id="6938524853892166974">Nonaktifkan fitur Terjemahan Langsung</translation>
 <translation id="6940243892299228102">Jangan izinkan pengguna menggunakan template desktop</translation>
 <translation id="6943577887654905793">Nama preferensi Mac/Linux:</translation>
 <translation id="694602410134474029">Mengontrol apakah <ph name="PRODUCT_NAME" /> berinteraksi dengan driver printer dari proses layanan yang terpisah. Panggilan pencetakan platform untuk mengkueri printer yang tersedia, mendapatkan setelan driver cetak, dan mengirim dokumen untuk dicetak ke printer lokal dilakukan dari proses layanan. Memindahkan panggilan tersebut dari proses browser akan membantu meningkatkan stabilitas dan mengurangi perilaku UI yang terhenti dalam Pratinjau Cetak.
@@ -10704,6 +10710,12 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 
       Lihat https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage untuk detail tentang jenis media JavaScript/ECMAScript.
       </translation>
+<translation id="8668202868357089313">Overlay Lens memungkinkan pengguna memunculkan penelusuran Google dengan berinteraksi menggunakan screenshot halaman saat ini yang berada di atas konten web sebenarnya.
+
+Tidak ada setelan pengguna untuk mengontrol fitur ini. Fitur ini biasanya tersedia bagi semua pengguna yang menggunakan Google sebagai mesin telusur default, kecuali jika dinonaktifkan oleh kebijakan ini.
+
+Jika kebijakan disetel ke 0 - Aktif atau tidak disetel, fitur tersebut akan tersedia bagi pengguna.
+Jika kebijakan disetel ke 1 - Nonaktif, fitur tersebut tidak akan tersedia.</translation>
 <translation id="8668928485126473293">Memungkinkan Anda menyetel apakah <ph name="PRODUCT_NAME" />
 akan menjalankan mesin JavaScript v8 yang mengaktifkan pengoptimalan JavaScript yang lebih canggih.
 
@@ -10724,17 +10736,6 @@ Jika kebijakan ini tidak disetel, pengoptimalan JavaScript akan diaktifkan.</tra
       Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="8672321184841719703">Versi Update Otomatis Target</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
-<translation id="8674130752570077671">Overlay Lens memungkinkan pengguna melakukan penelusuran Google dengan berinteraksi menggunakan screenshot halaman saat ini yang ditempatkan di atas konten web yang sebenarnya. Selain itu, memungkinkan pengguna melakukan penelusuran Google yang secara kontekstual mengetahui halaman saat ini. Untuk memberikan jawaban kontekstual, Overlay Lens mengirim konten halaman ke Google untuk menjawab kueri pengguna dengan konteks halaman yang sedang dibuka pengguna.
-
-Tidak ada setelan pengguna untuk mengontrol fitur ini. Fitur ini biasanya tersedia bagi semua pengguna yang menggunakan Google sebagai mesin telusur default, kecuali jika dinonaktifkan oleh kebijakan ini.
-
-Perilaku ini akan menggantikan kebijakan <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" /> yang sudah tidak digunakan lagi.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan mungkin mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini mungkin ditinjau secara manual dengan tujuan meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Menonaktifkan fitur.</translation>
 <translation id="8676959842615154675">Jika kebijakan disetel ke Aktif, host akses jarak jauh akan membandingkan nama pengguna lokal yang dikaitkan dengan host dan nama Akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host dimiliki oleh "johan@example.com"). Host ini tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host. Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> untuk menegaskan bahwa Akun Google pemilik dikaitkan dengan domain tertentu.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host akses jarak jauh akan dapat dikaitkan dengan pengguna lokal mana pun.</translation>

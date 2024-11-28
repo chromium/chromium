@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour personnaliser le style de votre navigateur</translation>
 <translation id="3240791268468473923">La zone de contenu dans le bas de l'écran indiquant qu'aucun authentifiant ne correspond au paiement sécurisé est ouverte</translation>
 <translation id="324180406144491771">Les liens de « <ph name="HOST_NAME" /> » sont bloqués</translation>
+<translation id="3243650379537999343">Dessiner</translation>
 <translation id="3248329428895535435">Ne plus afficher sur ce site</translation>
 <translation id="3249102948665905108">Téléversement du fichier vers <ph name="CLOUD_PROVIDER" /> terminé avec des erreurs</translation>
 <translation id="3252772880526154546">Architecture</translation>
@@ -2634,6 +2635,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5740911612628596808">Enveloppe C9</translation>
 <translation id="5742806904559466333">Bars, clubs et vie nocturne</translation>
 <translation id="5743684619253032786">Produits de soins des ongles</translation>
+<translation id="574392208103952083">Moyenne</translation>
 <translation id="5745733273847572235">Les sites peuvent demander votre position</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5752327398324808817">Saisissez un mot ou deux</translation>
@@ -3468,6 +3470,7 @@ Détails supplémentaires :
 <translation id="725866823122871198">Impossible d'établir une connexion privée à <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car la date et l'heure de votre ordinateur (<ph name="DATE_AND_TIME" />) sont incorrectes.</translation>
 <translation id="7260075294900977274">Un nouveau dossier intelligent qui vous aide à enregistrer toutes vos pages d'achats au même endroit, à suivre automatiquement les prix, à obtenir des statistiques sur les prix, et plus</translation>
 <translation id="7265608370113700582">L'adresse n'est disponible que sur cet appareil</translation>
+<translation id="7269151392155523061">Le raccourci doit être différent du mot clé de l'agrégateur de recherche défini par <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> : <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise et être visibles pour votre administrateur.</translation>
 <translation id="7275334191706090484">Favoris gérés</translation>
 <translation id="7275808129217605899">Alimentation saine</translation>

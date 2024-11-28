@@ -169,7 +169,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1749561566933687563">Sincronize seus favoritos</translation>
 <translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
 <translation id="17513872634828108">Guias abertas</translation>
-<translation id="1755203724116202818">Para medir a performance de um anúncio, tipos limitados de dados são compartilhados entre os sites, por exemplo, se você fez uma compra depois de visitar um site.</translation>
+<translation id="1755203724116202818">Para medir a performance de um anúncio, tipos limitados de dados são compartilhados, por exemplo, se você fez uma compra depois de visitar um site.</translation>
 <translation id="1757620656501361327">Atualização do Gerenciador de senhas do Google</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Páginas: 1 página na lista}one{Páginas: # página na lista}other{Páginas: # páginas na lista}}</translation>
 <translation id="1771929606532798550">São enviadas ao Google informações sobre seu uso do Chrome, mas elas não são vinculadas a você.\n\nSe o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.\n\nSe você sincronizar seu histórico com sua Conta do Google, as métricas também poderão incluir informações sobre os URLs que você acessa.</translation>
@@ -243,7 +243,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2100273922101894616">Login automático</translation>
 <translation id="2109384632594340939">foto do perfil</translation>
 <translation id="2111511281910874386">Ir para a página</translation>
-<translation id="2119609734654412418">Seus favoritos serão salvos aqui</translation>
+<translation id="2119609734654412418">Seus favoritos aparecem aqui</translation>
 <translation id="2122601567107267586">Não foi possível abrir o aplicativo</translation>
 <translation id="2132122640199389833">Remover todos os dispositivos vinculados</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> fechada</translation>
@@ -460,7 +460,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037517125981011456">Mostra solicitações para fazer login no Chrome</translation>
 <translation id="3038272154009688107">Todos os sites</translation>
-<translation id="3055841435094910999">São enviadas ao Google informações sobre seu uso do Chrome, mas elas não são vinculadas a você.\n\nSe o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.\n\nSe você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.</translation>
 <translation id="3059531648236115056">Adicionar resumo</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favorito}one{<ph name="BOOKMARKS_COUNT_MANY" /> favorito}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoritos}}</translation>
 <translation id="3062802207422175757">Artigos sobre seus interesses no Chrome</translation>
@@ -874,6 +873,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="496607651705915226">Para salvar e usar novas senhas na sua Conta do Google, atualize o Google Play Services</translation>
 <translation id="4971753085054504448">Tente pesquisar algo diferente ou abra o histórico completo do Chrome para conferir mais resultados.</translation>
 <translation id="497421865427891073">Avançar</translation>
+<translation id="498624032394115435">Qualquer pessoa com o link pode editar todas as guias.</translation>
 <translation id="4987271110129728827">Não foi possível encontrar a página. Verifique se há erros de ortografia ou faça uma pesquisa na Web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">A opção para aprovar ou não um site foi fechada</translation>
@@ -960,7 +960,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Suas páginas mais visitadas aparecerão aqui</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponível(is)</translation>
-<translation id="543121643585717256">Qualquer pessoa com o link pode editar todas as guias. Saiba mais sobre os grupos de guias compartilhados</translation>
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
 <translation id="5438292632479953702">Fazer o download novamente</translation>
@@ -1155,6 +1154,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6284472661216707937">Senhas fechadas em todos os seus dispositivos</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6296366034485697675">Exportar e excluir</translation>
+<translation id="629730747756840877">Conta</translation>
 <translation id="6303969859164067831">Sair e desativar a sincronização</translation>
 <translation id="6312687380483398334">Apps da Web (silenciosos)</translation>
 <translation id="6315386555979018699">Excluir e continuar</translation>
@@ -1641,6 +1641,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> removeu a guia "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">As senhas vão deixar de funcionar em breve</translation>
 <translation id="831192587911042850">Adiciona o site atual à lista de sites que você está seguindo.</translation>
+<translation id="8320212361750431956">Atividade recente</translation>
 <translation id="8342727528718219152">O Chrome vai avisar se houver sites que podem estar enviando muitas notificações</translation>
 <translation id="834313815369870491">Nunca traduzir estes sites</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo</translation>

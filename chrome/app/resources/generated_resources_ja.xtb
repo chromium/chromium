@@ -3591,7 +3591,6 @@
 <translation id="3513019849832307207">参加して開く</translation>
 <translation id="3513563267917474897">色相スライダー <ph name="MIN_VALUE" />～<ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">ゲームの管理</translation>
-<translation id="3514373592552233661">複数のネットワークを利用できる場合に、優先ネットワークを他の既知のネットワークより優先します</translation>
 <translation id="3514647716686280777">標準のセキュリティ機能で保護します。危険なウェブサイト、ダウンロード、拡張機能からの保護を強化するには、Chrome の設定でセーフ ブラウジング保護強化機能をオンにしてください。</translation>
 <translation id="3514681096978190000">このアーカイブ ファイルには、マルウェアが潜んでいる可能性がある別のファイルが含まれています</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
@@ -10272,7 +10271,6 @@
 <translation id="8306063480506363120">ドライブのアクセス権を削除</translation>
 <translation id="8306430106790753902">ChromeOS のネットワーク ルート</translation>
 <translation id="8306885873692337975">最新の機能を入手しセキュリティを強化しましょう。</translation>
-<translation id="8308016398665340540">このデバイスの他のユーザーとネットワークを共有しています</translation>
 <translation id="8308024039615003152">草地</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> がカメラへのアクセスを必要としているときは確認画面を表示する</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11174,7 +11172,6 @@
 <translation id="8942714513622077633">Microsoft 365 のセットアップをキャンセルしますか？</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">バッテリー消費が速くなります（現在 <ph name="BATTERY_PERCENTAGE" />%）</translation>
-<translation id="8944485226638699751">制限付き</translation>
 <translation id="8944633700466246631">Google パスワード マネージャーの 6 桁のリカバリ PIN を作成</translation>
 <translation id="8944725102565796255">このアカウントを今回だけ使用する場合は、<ph name="GUEST_LINK_BEGIN" />デバイスをゲストとして<ph name="GUEST_LINK_END" />使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
 

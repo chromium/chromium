@@ -3470,6 +3470,7 @@
 <translation id="3421387094817716717">کلید عمومی منحنی بیضوی</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> ممکن است صدای مشابه یا صدای ضبط‌شده هم بتواند به نتایج شخصی یا «دستیار» شما دسترسی یابد.</translation>
 <translation id="3421835120203732951">افزودن نمایه جدید</translation>
+<translation id="3422989558057853751">مورد آخر انتخاب شده است، لغو انتخاب آن باعث خروج از حالت انتخاب می‌شود</translation>
 <translation id="3423111258700187173">نتایج پیداشده در <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">درباره این ویژگی مبتنی بر هوش مصنوعی بیشتر بدانید</translation>
 <translation id="3423275441470187644">اعتماد</translation>
@@ -3608,7 +3609,6 @@
 <translation id="3513019849832307207">پیوستن و باز کردن</translation>
 <translation id="3513563267917474897">لغزنده رنگ‌مایه از <ph name="MIN_VALUE" /> تا <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">کنترل بازی</translation>
-<translation id="3514373592552233661">درصورت در دسترس بودن بیش از یک شبکه، شبکه‌های برگزیده بر سایر شبکه‌های شناخته‌شده ارجحیت خواهد داشت.</translation>
 <translation id="3514647716686280777">‏از محافظت امنیتی استاندارد برخوردار هستید. برای محافظت بیشتر دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک، «مرور ایمن پیشرفته» را در تنظیمات Chrome روشن کنید.</translation>
 <translation id="3514681096978190000">این فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار پنهان داشته باشد</translation>
 <translation id="3515983984924808886">برای تأیید بازنشانی، کلید ایمنی‌تان را لمس کنید. همه اطلاعات ذخیره‌شده در کلید ایمنی (ازجمله پین) پاک می‌شود.</translation>
@@ -4966,6 +4966,7 @@
 <translation id="4461483878391246134">زبان‌های موردنظر را برای اینکه ترجمه برای آن‌ها پیشنهاد نشود اضافه کنید</translation>
 <translation id="4462159676511157176">سرورهای نام سفارشی</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> محدودیت زمانی برای <ph name="APP_NAME" /> تنظیم شده است</translation>
+<translation id="4467373268340082204">پین اشتباه است</translation>
 <translation id="4467561276409486506">&amp;روشن/خاموش کردن «حالت فشرده»</translation>
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> می‌تواند فایل‌های <ph name="FOLDERNAME" /> را ویرایش کند</translation>
@@ -10300,7 +10301,6 @@
 <translation id="8306063480506363120">‏برداشتن دسترسی Drive</translation>
 <translation id="8306430106790753902">‏مسیرهای شبکه ChromeOS</translation>
 <translation id="8306885873692337975">جدیدترین ویژگی‌ها و بهبودهای امنیتی را دریافت می‌کنید.</translation>
-<translation id="8308016398665340540">شما و دیگر کاربران این دستگاه از این شبکه به‌طور مشترک استفاده می‌کنید</translation>
 <translation id="8308024039615003152">چمن‌زار</translation>
 <translation id="8308179586020895837">اگر <ph name="HOST" /> می‌خواهد به دوربین شما دسترسی داشته باشد از من سوال شود</translation>
 <translation id="830868413617744215">بتا</translation>
@@ -11203,7 +11203,6 @@
 <translation id="8942714513622077633">‏راه‌اندازی Microsoft 365 لغو شود؟</translation>
 <translation id="894360074127026135">‏ارتقاء بین‌المللی Netscape</translation>
 <translation id="8944099748578356325">استفاده سریع‌تر از باتری (درحال‌حاضر <ph name="BATTERY_PERCENTAGE" />٪)</translation>
-<translation id="8944485226638699751">محدود</translation>
 <translation id="8944633700466246631">‏پین بازیابی ۶ رقمی برای «مدیر گذرواژه Google» ایجاد کنید</translation>
 <translation id="8944725102565796255">‏اگر می‌خواهید فقط یک‌بار از این حساب استفاده کنید، می‌توانید <ph name="GUEST_LINK_BEGIN" />به‌عنوان مهمان از دستگاه استفاده کنید<ph name="GUEST_LINK_END" />. اگر می‌خواهید برای شخص دیگری حساب اضافه کنید، به <ph name="DEVICE_TYPE" /> خود <ph name="LINK_BEGIN" />شخص جدیدی اضافه کنید<ph name="LINK_END" />.
 

@@ -941,6 +941,9 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandl
 <translation id="165769015320654523">Automatisch rechten aan deze sites geven om verbinding te maken met HID-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="1659406551862245683">Het standaardgedrag voor formaataanpassing van het virtuele toetsenbord is gewijzigd om het formaat van het opmaakkijkvenster aan te passen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
+<translation id="1665033825018489686">Als je dit beleid toepast of niet instelt, zet <ph name="PRODUCT_NAME" /> gastlogins aan. Gastlogins zijn <ph name="PRODUCT_NAME" />-profielen waarbij alle vensters in de incognitomodus zijn.
+
+Als je dit beleid niet toepast, staat <ph name="PRODUCT_NAME" /> niet toe dat er gastprofielen worden gestart.</translation>
 <translation id="1666001345366986837">Instellingen voor de functie VC-achtergrond met generatieve AI</translation>
 <translation id="1670638264428789878">Gerelateerde websitesets aanzetten</translation>
 <translation id="1671405606278443620">Instellingen voor AI-gestuurd zoeken in geschiedenis</translation>
@@ -1487,6 +1490,15 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
         Als je het beleid toepast of niet instelt, kunnen Chrome-kiosk-apps in de sessie worden geüpdatet.
         </translation>
 <translation id="2082205219176343977">Configureer de minimaal toegestane Chrome-versie voor het apparaat.</translation>
+<translation id="2083016623552073519">Zet vertaling van live ondertiteling aan. Ondertiteling wordt naar Google gestuurd voor vertaling.
+
+Als je dit beleid toepast, staat Live vertalen altijd aan.
+
+Als je dit beleid niet toepast, staat Live Translate altijd uit.
+
+Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
+
+Als je dit beleid niet instelt, staat Live vertalen in eerste instantie uit, maar kan de gebruiker deze functie altijd aanzetten.</translation>
 <translation id="2083696311760456171">Voorspellingen voor Automatisch invullen niet toestaan</translation>
 <translation id="20838788335877967">Rapportage van informatie over gebruikersidentificatie uitzetten</translation>
 <translation id="208566302163036794">Uitgezette functies blokkeren</translation>
@@ -5098,14 +5110,6 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
       Als je dit beleid niet instelt, is de standaardoptie toegestaan voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="487460824085252184">Automatisch migreren, niet om toestemming van de gebruiker vragen.</translation>
 <translation id="4874982543810021567">WebUSB blokkeren op deze sites</translation>
-<translation id="4875557601092081492">Dit beleid is beëindigd in M132. Gebruik in plaats daarvan <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />, waarmee je meer controle over de functie krijgt. Gebruik in plaats daarvan <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />.
-
-Met Lensoverlay kunnen gebruikers Google-zoekopdrachten uitvoeren door interactie met een screenshot van de huidige pagina die over de daadwerkelijke webcontent wordt weergegeven.
-
-Er is geen gebruikersinstelling om deze functie te beheren. De functie wordt over het algemeen beschikbaar gemaakt voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij uitgezet op basis van dit beleid.
-
-Als je het beleid instelt op 0 - Enabled of niet instelt, is de functie beschikbaar voor gebruikers.
-Als je het beleid instelt op 1 - Disabled, is de functie niet beschikbaar.</translation>
 <translation id="4876805738539874299">Maximale SSL-versie aangezet</translation>
 <translation id="4877305769899044884">Standaardkleur voor achtergrondverlichting van toetsenbord</translation>
 <translation id="4886138258823889910">De provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework van de browser aanzetten in Windows</translation>
@@ -6514,6 +6518,7 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 <translation id="588135807064822874">'Tikken om te zoeken' toestaan</translation>
 <translation id="5882345429632338713">Vertraging voor starten van alternatieve browser (in milliseconden)</translation>
 <translation id="5883015257301027298">Standaardinstelling voor cookies</translation>
+<translation id="5883631290631802010">Live vertalen aanzetten</translation>
 <translation id="5883754873839596178">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver opgeven. Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen. De waarde moet lager dan 100 en hoger dan 6 zijn. Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend. Het tot onder de standaardwaarde verlagen van deze waarde is daarom op eigen risico.
 
       Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.</translation>
@@ -7981,6 +7986,7 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="6938424179790370595">Als je het beleid instelt op None (Geen), wordt het vergrootglas uitgezet.
 
 Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit, maar kunnen gebruikers dit op elk moment aanzetten.</translation>
+<translation id="6938524853892166974">Live vertalen uitzetten</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="694602410134474029">Bepaalt of <ph name="PRODUCT_NAME" /> interactie heeft met printerstuurprogramma's vanuit een afzonderlijk serviceproces. Platformgebaseerde afdrukaanroepen om beschikbare printers op te vragen, instellingen voor printerstuurprogramma's op te halen en documenten in te dienen om af te drukken op lokale printers worden gedaan vanuit een serviceproces. Als je dit soort aanroepen uit het browserproces verplaatst, verbeter je de stabiliteit en verminder je het vastlopen van de UI in het afdrukvoorbeeld.
@@ -10227,6 +10233,12 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 
       Ga naar https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage voor meer informatie over JavaScript-/ECMAScript-mediatypen.
       </translation>
+<translation id="8668202868357089313">Met Lens Overlay kunnen gebruikers Google-zoekopdrachten uitvoeren door interactie met een screenshot van de huidige pagina die over de daadwerkelijke webcontent wordt weergegeven.
+
+Er is geen gebruikersinstelling om deze functie te beheren. De functie wordt over het algemeen beschikbaar gemaakt voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij uitgezet op basis van dit beleid.
+
+Als je het beleid instelt op 0 - Enabled of niet instelt, is de functie beschikbaar voor gebruikers.
+Als je het beleid instelt op 1 - Disabled, is de functie niet beschikbaar.</translation>
 <translation id="8668928485126473293">Hiermee kun je instellen of <ph name="PRODUCT_NAME" /> de v8 JavaScript-engine uitvoert met meer geavanceerde JavaScript-optimalisaties aangezet.
 
 Als je JavaScript-optimalisaties uitzet (door de waarde van dit beleid in te stellen op 2), doet <ph name="PRODUCT_NAME" /> er langer over om webcontent te renderen.
@@ -10244,17 +10256,6 @@ Als je dit beleid niet instelt, worden JavaScript-optimalisaties aangezet.</tran
       Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="8672321184841719703">Doelversie voor automatische updates</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
-<translation id="8674130752570077671">Met Lensoverlay kunnen gebruikers Google-zoekopdrachten uitvoeren door interactie met een screenshot van de huidige pagina die over de daadwerkelijke webcontent wordt weergegeven. Daarnaast kunnen gebruikers Google-zoekopdrachten uitvoeren die contextafhankelijk zijn van de huidige pagina. Om contextuele antwoorden te geven, stuurt Lensoverlay paginacontent naar Google om de query van de gebruiker te beantwoorden met de context van de pagina waarop de gebruiker zich bevindt.
-
-Er is geen gebruikersinstelling om deze functie te beheren. De functie wordt over het algemeen beschikbaar gemaakt voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij uitgezet op basis van dit beleid.
-
-Dit vervangt het beëindigde beleid <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" />.
-
-0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten.</translation>
 <translation id="8676959842615154675">Als je dit beleid toepast, vergelijkt de host voor externe toegang de naam van de lokale gebruiker waaraan de host is gekoppeld, met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@example.com). Deze host wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld. Als je wilt afdwingen dat het Google-account van de eigenaar wordt gekoppeld aan een specifiek domein, gebruik je het beleid met <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Als je het beleid niet toepast of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>

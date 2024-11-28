@@ -460,7 +460,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037517125981011456">Visar meddelanden om att logga in i Chrome</translation>
 <translation id="3038272154009688107">Visa alla webbplatser</translation>
-<translation id="3055841435094910999">Information om hur du använder Chrome skickas till Google men kopplas inte till dig\n\nIfOm Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen\n\nOm du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker</translation>
 <translation id="3059531648236115056">Lägg till översikt</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
@@ -874,6 +873,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="496607651705915226">Uppdatera Google Play-tjänsterna om du vill spara och använda nya lösenord i Google-kontot</translation>
 <translation id="4971753085054504448">Testa att söka efter något annat eller öppna hela Chrome-historiken om du vill visa fler resultat.</translation>
 <translation id="497421865427891073">Fortsätt</translation>
+<translation id="498624032394115435">Alla som har länken kan redigera alla flikar.</translation>
 <translation id="4987271110129728827">Sidan hittades inte. Kontrollera stavningen eller testa att söka på webben.</translation>
 <translation id="4988526792673242964">Sidor</translation>
 <translation id="4991110219272367918">Alternativ för att godkänna eller inte godkänna en webbplats har stängts</translation>
@@ -960,7 +960,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Dina mest besökta sidor visas här</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tillgängligt</translation>
-<translation id="543121643585717256">Alla som har länken kan redigera alla flikar. Läs mer om delade flikgrupper</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5433691172869980887">Användarnamnet har kopierats</translation>
 <translation id="5438292632479953702">Ladda ned igen</translation>
@@ -1155,6 +1154,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6284472661216707937">Lösenord på alla dina enheter har stängts</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6296366034485697675">Exportera och radera</translation>
+<translation id="629730747756840877">Konto</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
 <translation id="6312687380483398334">Webbappar (tyst)</translation>
 <translation id="6315386555979018699">Radera och fortsätt</translation>
@@ -1641,6 +1641,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har tagit bort fliken <ph name="TAB_NAME" /></translation>
 <translation id="8310451567823644042">Lösenorden slutar snart att fungera</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
+<translation id="8320212361750431956">Senaste aktiviteter</translation>
 <translation id="8342727528718219152">Chrome meddelar dig om webbplatser som kanske skickar för många aviseringar</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>

@@ -3597,7 +3597,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3513019849832307207">Deelnemen en openen</translation>
 <translation id="3513563267917474897">Schuifregelaar voor kleurtinten van <ph name="MIN_VALUE" /> tot <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Gamebesturing</translation>
-<translation id="3514373592552233661">Voorkeursnetwerken krijgen de voorkeur boven andere netwerken als er meer dan één netwerk beschikbaar is</translation>
 <translation id="3514647716686280777">Je krijgt standaardbescherming. Zet de uitgebreide versie van Safe Browsing aan in de Chrome-instellingen voor meer bescherming tegen gevaarlijke websites, downloads en extensies.</translation>
 <translation id="3514681096978190000">Dit archiefbestand heeft andere bestanden die misschien malware verbergen</translation>
 <translation id="3515983984924808886">Tik opnieuw op de beveiligingssleutel om het resetten te bevestigen. Alle informatie die is opgeslagen op de beveiligingssleutel, inclusief de pincode, wordt verwijderd.</translation>
@@ -10281,7 +10280,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8306063480506363120">Drive-toegang intrekken</translation>
 <translation id="8306430106790753902">ChromeOS-netwerkroutes</translation>
 <translation id="8306885873692337975">Krijg de nieuwste functies en beveiligingsverbeteringen.</translation>
-<translation id="8308016398665340540">Je deelt dit netwerk met andere gebruikers van dit apparaat</translation>
 <translation id="8308024039615003152">Weide</translation>
 <translation id="8308179586020895837">Vragen of <ph name="HOST" /> toegang wil tot je camera</translation>
 <translation id="830868413617744215">Bèta</translation>
@@ -11184,7 +11182,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8942714513622077633">Microsoft 365 instellen annuleren?</translation>
 <translation id="894360074127026135">Internationale Netscape-step-up</translation>
 <translation id="8944099748578356325">De batterij sneller gebruiken (momenteel <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Beperkt</translation>
 <translation id="8944633700466246631">Stel een 6-cijferige herstelpincode in voor Google Wachtwoordmanager</translation>
 <translation id="8944725102565796255">Als je dit account maar één keer wilt gebruiken, kun je <ph name="GUEST_LINK_BEGIN" />het apparaat gebruiken als gast<ph name="GUEST_LINK_END" />. Als je een account voor iemand anders wilt toevoegen, kun je <ph name="LINK_BEGIN" />een nieuwe persoon toevoegen<ph name="LINK_END" /> aan je <ph name="DEVICE_TYPE" />.
 

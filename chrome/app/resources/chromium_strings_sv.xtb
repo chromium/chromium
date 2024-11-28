@@ -254,6 +254,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> hanterar Chromium</translation>
+<translation id="444069871276811466">Lägg till Chromium-profil</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4470974262661801543">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
@@ -584,6 +585,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chromium på den här enheten registreras.</translation>
 <translation id="8852026904190808918">Menyer, inställningar, varningar och annan text i Chromium visas på det här språket</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
+<translation id="8876044221123442390">Lägg till Chromium-profil</translation>
 <translation id="8880203542552872219">Om så är fallet ska du redigera det sparade lösenordet i Chromium så att det matchar det nya lösenordet.</translation>
 <translation id="8891709362986793894">Organisationen kräver att du loggar in i Chromium</translation>
 <translation id="8907580949721785412">Skriv ditt lösenord i Windows om du vill tillåta att lösenord visas i Chromium.</translation>

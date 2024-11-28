@@ -460,7 +460,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037517125981011456">Shfaq kërkesa për t'u identifikuar në Chrome</translation>
 <translation id="3038272154009688107">Shiko të gjitha sajtet</translation>
-<translation id="3055841435094910999">Informacioni për përdorimin tënd të Chrome dërgohet te Google, por nuk lidhet me ty\n\nNëse Chrome ndërpritet aksidentalisht, detajet rreth aksidentit mund të përfshijnë disa informacione personale\n\nNëse aktivizon sinkronizimin, metrikat mund të përfshijnë edhe informacione për URL-të që ti viziton</translation>
 <translation id="3059531648236115056">Shto përmbledhjen</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> faqeshënues}other{<ph name="BOOKMARKS_COUNT_MANY" /> faqeshënues}}</translation>
 <translation id="3062802207422175757">Artikuj rreth interesave të tua në Chrome</translation>
@@ -873,6 +872,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="496607651705915226">Për të ruajtur dhe përdorur fjalëkalimet e reja në "Llogarinë tënde të Google", përditëso shërbimet e Google Play</translation>
 <translation id="4971753085054504448">Provo të kërkosh diçka tjetër ose të hapësh historikun e plotë të Chrome për të parë më shumë rezultate.</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
+<translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
 <translation id="4987271110129728827">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në ueb.</translation>
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="4991110219272367918">Opsioni për të miratuar ose jo një uebsajt u mbyll</translation>
@@ -959,7 +959,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) do të humbasë menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Këtu do të shfaqen faqet më të vizituara</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB të disponueshme</translation>
-<translation id="543121643585717256">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat. Mëso rreth grupeve të ndara të skedave</translation>
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
 <translation id="5438292632479953702">Shkarko sërish</translation>
@@ -1154,6 +1153,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6284472661216707937">Fleta "Fjalëkalimet në të gjitha pajisjet e tua" u mbyll</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6296366034485697675">Eksporto dhe fshi</translation>
+<translation id="629730747756840877">Llogaria</translation>
 <translation id="6303969859164067831">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6312687380483398334">Aplikacionet e uebit (në qetësi)</translation>
 <translation id="6315386555979018699">Fshi dhe vazhdo</translation>
@@ -1640,6 +1640,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> hoqi skedën “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Fjalëkalimet nuk do të funksionojnë më së shpejti</translation>
 <translation id="831192587911042850">Shton sajtin aktual të uebit në listën e sajteve të uebit që po ndjek ti.</translation>
+<translation id="8320212361750431956">Aktiviteti i fundit</translation>
 <translation id="8342727528718219152">Chrome do të të informojë për sajtet që mund të dërgojnë shumë njoftime</translation>
 <translation id="834313815369870491">Mos i përkthe asnjëherë sajtet</translation>
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>

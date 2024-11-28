@@ -3600,7 +3600,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3513019849832307207">Unirme y abrir</translation>
 <translation id="3513563267917474897">Control deslizante del tono de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Control de juego</translation>
-<translation id="3514373592552233661">Las redes preferidas se utilizarán en lugar de otras redes conocidas si hay más de una disponible</translation>
 <translation id="3514647716686280777">Estás usando la protección de seguridad estándar. Para aumentar la protección contra las descargas, las extensiones y los sitios web peligrosos, activa Navegación segura mejorada en la configuración de Chrome.</translation>
 <translation id="3514681096978190000">Este archivo incluye otros archivos que pueden ocultar malware</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se eliminará toda la información guardada en la llave de seguridad, incluido el PIN.</translation>
@@ -10289,7 +10288,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8306063480506363120">Quitar acceso a Drive</translation>
 <translation id="8306430106790753902">Rutas de red de ChromeOS</translation>
 <translation id="8306885873692337975">Recibe las últimas funciones y mejoras de seguridad.</translation>
-<translation id="8308016398665340540">Compartes la red con otros usuarios de este dispositivo</translation>
 <translation id="8308024039615003152">Prado</translation>
 <translation id="8308179586020895837">Preguntar si <ph name="HOST" /> quiere acceder a la cámara</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11191,7 +11189,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8942714513622077633">¿Cancelar configuración de Microsoft 365?</translation>
 <translation id="894360074127026135">Certificado Step-Up International de Netscape</translation>
 <translation id="8944099748578356325">Consumirá batería de forma más rápida (carga actual: <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Limitadas</translation>
 <translation id="8944633700466246631">Crea un PIN de recuperación de 6 dígitos para el Gestor de contraseñas de Google</translation>
 <translation id="8944725102565796255">Si quieres usar esta cuenta solo una vez, puedes <ph name="GUEST_LINK_BEGIN" />usar el dispositivo como invitado<ph name="GUEST_LINK_END" />. Si quieres añadir una cuenta para otra persona, <ph name="LINK_BEGIN" />añade una persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
 
@@ -11650,7 +11647,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="957960681186851048">Este sitio web ha intentado descargar varios archivos automáticamente</translation>
 <translation id="958571289841636277">Avanza y retrocede con el gesto de deslizar</translation>
 <translation id="960987915827980018">Aproximadamente 1 hora</translation>
-<translation id="961856697154696964">Eliminar datos de navegación</translation>
+<translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="962802172452141067">Árbol de la carpeta de marcadores</translation>
 <translation id="963000966785016697">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Tu administrador de TI ha inhabilitado el contenido adicional de Chrome para tu dispositivo.</translation>

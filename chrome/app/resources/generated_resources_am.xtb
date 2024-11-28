@@ -3608,7 +3608,6 @@
 <translation id="3513019849832307207">ተቀላቀል እና ክፈት</translation>
 <translation id="3513563267917474897">የለይ ቀለም ተንሸራታች ከ<ph name="MIN_VALUE" /> እስከ <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">የጨዋታ ቁጥጥር</translation>
-<translation id="3514373592552233661">ከአንድ በላይ የሚገኝ ከሆነ ተመራጭ አውታረ መረቦች ከሌላ የታወቁ አውታረ መረቦች ይልቅ ተመራጭ ይሆናሉ</translation>
 <translation id="3514647716686280777">መደበኛ የደህንነት ጥበቃ እያገኙ ነው። ከአደገኛ ድር ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ተጨማሪ ጥበቃ ለማግኘት በChrome ቅንብሮች ውስጥ የተሻሻለ የደህንነት አሰሳን ያብሩ።</translation>
 <translation id="3514681096978190000">ይህ የማህደር ፋይል ተንኮል አዘል ዌር ሊደብቁ የሚችሉ ሌሎች ፋይሎችን ያካትታል</translation>
 <translation id="3515983984924808886">ዳግም ማስጀመርን ለማረጋገጥ የደህንነት ቁልፍዎን ይንኩ። ፒን ጨምሮ በደህንነት ቁልፉ ላይ የተከማቸው ሁሉም መረጃ ይሰረዛል።</translation>
@@ -10305,7 +10304,6 @@ nil</translation>
 <translation id="8306063480506363120">የDrive መዳረሻን አስወግድ</translation>
 <translation id="8306430106790753902">የChromeOS አውታረ መረብ አቅጣጫዎች</translation>
 <translation id="8306885873692337975">የቅርብ ጊዜ ባህሪያትን እና የደህንነት ማሻሻያዎችን ያግኙ።</translation>
-<translation id="8308016398665340540">ይህን አውታረ መረብ ከሌሎች የዚህ መሣሪያ ተጠቃሚዎች ጋር እያጋሩ ነው።</translation>
 <translation id="8308024039615003152">መስክ</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> የእርስዎ ካሜራ መድረስ የሚፈልግ ከሆነ ይጠይቅ</translation>
 <translation id="830868413617744215">ቅድመ-ይሁንታ</translation>
@@ -11208,7 +11206,6 @@ nil</translation>
 <translation id="8942714513622077633">የMicrosoft 365 ውቅረት ይቅር?</translation>
 <translation id="894360074127026135">የNetscape ዓለምአቀፍ አወቃቀር</translation>
 <translation id="8944099748578356325">ባትሪዎን በበለጠ ፍጥነት ይጠቀሙ (በአሁኑ ጊዜ <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">የተወሰነ</translation>
 <translation id="8944633700466246631">ለGoogle የይለፍ ቃል አስተዳዳሪ ባለ 6 አኃዝ መልሶ ማግኛ ፒን ይፍጠሩ</translation>
 <translation id="8944725102565796255">ይህን መሣሪያ አንድ ጊዜ ብቻ መጠቀም ከፈለጉ <ph name="GUEST_LINK_BEGIN" />መሣሪያውን እንደ እንግዳ<ph name="GUEST_LINK_END" /> መጠቀም ይችላሉ። ለሌላ ሰው መለያ ማከል ከፈለጉ ወደ የእርስዎ <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />አዲስ ሰው ያክሉ<ph name="LINK_END" />።
 

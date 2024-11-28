@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Vous pouvez être déconnecté de ce site</translation>
 <translation id="6085954183010297841">Supprimer l'autorisation de modification de fichier? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Lorsque cette option est activée, les sites peuvent vous demander si vous utilisez activement votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas savoir si vous utilisez activement votre appareil.</translation>
-<translation id="6140839633433422817">Voulez-vous vraiment réinitialiser les autorisations et supprimer les témoins et les données relatives à ce site?</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6171020522141473435">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils Bluetooth. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils Bluetooth.</translation>
-<translation id="6177111841848151710">Bloquée pour le moteur de recherche actuel</translation>
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6181444274883918285">Ajouter une exception pour le site</translation>
 <translation id="6192792657125177640">Exceptions</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Demander avant d'autoriser des sites à utiliser votre microphone (recommandé)</translation>
 <translation id="6999131147875565462">Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu</translation>
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
-<translation id="7016516562562142042">Autorisée pour le moteur de recherche actuel</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Empêcher les sites de consulter et de modifier les données stockées sur les appareils CCP</translation>
 <translation id="8944485226638699751">Limités</translation>
 <translation id="8959122750345127698">Navigation inaccessible : <ph name="URL" /></translation>
-<translation id="8986362086234534611">Supprimer</translation>
 <translation id="8990043154272859344">Vous serez déconnecté de tous les sites</translation>
 <translation id="8993853206419610596">Développer toutes les requêtes</translation>
 <translation id="9002538116239926534">Lorsque cette option est activée, les sites peuvent enregistrer des données sur votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas enregistrer de données sur votre appareil.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Vous pouvez activer les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Le zoom actuel est de <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
-<translation id="930525582205581608">Oublier ce site?</translation>
 <translation id="947156494302904893">Les sites que vous visitez peuvent vérifier que vous êtes une personne réelle et non un robot</translation>
 <translation id="959682366969460160">Place à l'organisation</translation>
 <translation id="967624055006145463">Données stockées</translation>

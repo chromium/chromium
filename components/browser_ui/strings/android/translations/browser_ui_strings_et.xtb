@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Teid võidakse sellel saidil välja logida</translation>
 <translation id="6085954183010297841">Kas kustutada faili muutmise luba? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kui see on sisse lülitatud, võivad saidid küsida luba selle teadmiseks, millal seadet aktiivselt kasutate. Kui see on välja lülitatud, ei saa saidid teada, millal seadet aktiivselt kasutate.</translation>
-<translation id="6140839633433422817">Kas olete kindel, et soovite load lähtestada ning küpsisefailid ja saidi andmed kustutada?</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6171020522141473435">Kui see on sisse lülitatud, võivad saidid küsida luba Bluetooth-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid Bluetooth-seadmeid kasutada.</translation>
-<translation id="6177111841848151710">Praeguse otsingumootori puhul blokeeritud</translation>
 <translation id="6177128806592000436">Teie ühendus selle saidiga pole turvaline</translation>
 <translation id="6181444274883918285">Lisa saidi erand</translation>
 <translation id="6192792657125177640">Erandid</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Küsi enne saitidele minu mikrofoni kasutamiseks juurdepääsu lubamist (soovitatav)</translation>
 <translation id="6999131147875565462">Chrome töötab kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil</translation>
 <translation id="7000754031042624318">Androidi seadetes välja lülitatud</translation>
-<translation id="7016516562562142042">Praeguse otsingumootori puhul lubatud</translation>
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 on valitud}other{# on valitud}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Saitidel keelatakse NFC-seadmetes teabe nägemine ja muutmine</translation>
 <translation id="8944485226638699751">Piiratud</translation>
 <translation id="8959122750345127698">Navigeerimine ei ole saadaval: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Unusta</translation>
 <translation id="8990043154272859344">Teid logitakse kõikidelt saitidelt välja</translation>
 <translation id="8993853206419610596">Laienda kõik taotlused</translation>
 <translation id="9002538116239926534">Kui see on sisse lülitatud, saavad saidid teie seadmesse andmeid salvestada. Kui see on välja lülitatud, ei saa saidid teie seadmesse andmeid salvestada.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse load rakendusele <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Praegune suumitase on <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
-<translation id="930525582205581608">Kas unustada see sait?</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>
 <translation id="967624055006145463">Salvestatud andmete maht</translation>

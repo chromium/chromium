@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3037517125981011456">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="3038272154009688107">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="3055841435094910999">ನಿಮ್ಮ Chrome ಬಳಕೆಯ ಮಾಹಿತಿಯನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ, ಆದರೆ ನಿಮ್ಮೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿಲ್ಲ\n\n Chrome ಕ್ರ್ಯಾಶ್ ಆಗಿದ್ದರೆ, ಕ್ರ್ಯಾಶ್‌ನ ವಿವರಗಳು ಕೆಲವು ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಒಳಗೊಂಡಿರಬಹುದು\n\nನೀವು ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿದರೆ, ಮೆಟ್ರಿಕ್‌ಗಳು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳ ಬಗ್ಗೆ ಮಾಹಿತಿಯನ್ನು ಒಳಗೊಂಡಿರಬಹುದು</translation>
 <translation id="3059531648236115056">ಸಾರಾಂಶವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ಬುಕ್‌ಮಾರ್ಕ್‌}one{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="3062802207422175757">Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳಿಗೆ ಅನುಗುಣವಾಗಿರುವ ಲೇಖನಗಳು</translation>
@@ -872,6 +871,7 @@
 <translation id="496607651705915226">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="4971753085054504448">ಹೆಚ್ಚಿನ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಲು ಬೇರೆ ಏನನ್ನಾದರೂ ಹುಡುಕಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಪೂರ್ಣ Chrome ಇತಿಹಾಸವನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="497421865427891073">ಮುಂದಕ್ಕೆ ಹೋಗು</translation>
+<translation id="498624032394115435">ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="4987271110129728827">ಆ ಪುಟ ಕಂಡುಬರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಕಾಗುಣಿತವನ್ನು ಪರಿಶೀಲಿಸಿ ಅಥವಾ ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಿ ನೋಡಿ.</translation>
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
 <translation id="4991110219272367918">ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಅನುಮೋದಿಸುವ ಅಥವಾ ಅನುಮೋದಿಸದಿರುವ ಕುರಿತ ಆಯ್ಕೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -958,7 +958,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ಅವರು ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ</translation>
 <translation id="5423934151118863508">ನಿವು ಹೆಚ್ಚು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ಲಭ್ಯವಿದೆ</translation>
-<translation id="543121643585717256">ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು. ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
 <translation id="543338862236136125">ಪಾಸ್‌ವರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5433691172869980887">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="5438292632479953702">ಪುನಃ ಡೌನ್‍ಲೋಡ್ ಮಾಡಿ</translation>
@@ -1153,6 +1152,7 @@
 <translation id="6284472661216707937">ನಿಮ್ಮ ಎಲ್ಲಾ ಮುಚ್ಚಿದ ಸಾಧನಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6296366034485697675">ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ ಮತ್ತು ಅಳಿಸಿ</translation>
+<translation id="629730747756840877">ಖಾತೆ</translation>
 <translation id="6303969859164067831">ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="6312687380483398334">ವೆಬ್ ಆ್ಯಪ್‌ಗಳು (ನಿಶ್ಶಬ್ದ)</translation>
 <translation id="6315386555979018699">ಅಳಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಿ</translation>
@@ -1316,6 +1316,7 @@
 <translation id="6910211073230771657">ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6918398787259831832">ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಂದ <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ಮಾಹಿತಿ ಪಡೆಯಿರಿ<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{<ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="6929224077895306814">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾದ ಎಲ್ಲಾ ಭದ್ರತಾ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6937524809504266803">ವೈಯಕ್ತೀಕರಣ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="6937876069006524083">ಅಡ್ಡ ಹೆಸರು (ಐಚ್ಛಿಕ)</translation>
@@ -1639,6 +1640,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ಅವರು ತೆಗೆದುಹಾಕಲಾದ ಟ್ಯಾಬ್ “<ph name="TAB_NAME" />” ಆಗಿದೆ</translation>
 <translation id="8310451567823644042">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ</translation>
 <translation id="831192587911042850">ನೀವು ಫಾಲೋ ಮಾಡುತ್ತಿರುವ ವೆಬ್ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಗೆ ಪ್ರಸ್ತುತ ವೆಬ್‌ ಸೈಟ್ ಅನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
+<translation id="8320212361750431956">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
 <translation id="8342727528718219152">ಹಲವಾರು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವ ಸೈಟ್‌ಗಳ ಕುರಿತು Chrome ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>
 <translation id="834313815369870491">ಸೈಟ್‌ಗಳನ್ನು ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
 <translation id="8348430946834215779">ಸಾಧ್ಯವಾದಾಗಲೆಲ್ಲಾ HTTPS ಅನ್ನು ಬಳಸಿ ಹಾಗೂ ಅದನ್ನು ಬೆಂಬಲಿಸದ ಸೈಟ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡುವ ಮೊದಲು ಎಚ್ಚರಿಕೆ ಪಡೆಯಿರಿ</translation>

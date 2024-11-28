@@ -5198,14 +5198,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="487460824085252184">Esegui automaticamente la migrazione senza chiedere il consenso dell'utente</translation>
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
-<translation id="4875557601092081492">Questa policy è deprecata nella versione M132 in favore di <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />, che offre un controllo più granulare sulla funzionalità. Usa invece <ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />.
-
-Overlay di Lens consente agli utenti di eseguire ricerche Google interagendo con uno screenshot della pagina corrente sovrapposto ai contenuti web effettivi.
-
-Non esiste un'impostazione utente per controllare questa funzionalità, che viene generalmente resa disponibile a tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questa policy.
-
-Se la policy viene impostata su 0 - Attivata o se non viene configurata, la funzionalità sarà disponibile per gli utenti.
-Se viene impostata su 1 - Disattivata, la funzionalità non sarà disponibile.</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
 <translation id="4877305769899044884">Colore della retroilluminazione predefinita della tastiera predefinito</translation>
 <translation id="4886138258823889910">Attiva il provider del framework di accessibilità di <ph name="UIA_NAME" /> del browser su Windows</translation>
@@ -10425,6 +10417,12 @@ Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</trans
 
       Per informazioni dettagliate sui tipi di multimediali JavaScript/ECMAScript, consulta la pagina https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
+<translation id="8668202868357089313">Overlay di Lens consente agli utenti di eseguire ricerche su Google interagendo con uno screenshot della pagina corrente sovrapposto ai contenuti web effettivi.
+
+Non esiste un'impostazione utente per controllare questa funzionalità, che viene generalmente resa disponibile a tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questo criterio.
+
+Se il criterio viene impostato su 0 - Attivato o se non viene configurato, la funzionalità sarà disponibile per gli utenti.
+Se il criterio viene impostato su 1 - Disattivato, la funzionalità non sarà disponibile.</translation>
 <translation id="8668928485126473293">Consente di specificare se <ph name="PRODUCT_NAME" /> eseguirà o meno il motore V8 di JavaScript con le ottimizzazioni di JavaScript più avanzate attivate.
 
 Se le ottimizzazioni di JavaScript vengono disattivate (impostando il valore di questo criterio su 2), <ph name="PRODUCT_NAME" /> potrebbe eseguire il rendering dei contenuti web più lentamente.
@@ -10442,17 +10440,6 @@ Se questo criterio non viene configurato, le ottimizzazioni di JavaScript vengon
       Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="8672321184841719703">Scegli versione target dell'aggiornamento automatico</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
-<translation id="8674130752570077671">Overlay di Lens consente agli utenti di eseguire ricerche Google interagendo con uno screenshot della pagina corrente sovrapposto ai contenuti web effettivi. Inoltre, consente agli utenti di eseguire ricerche Google sensibili al contesto della pagina corrente. Per fornire risposte contestuali, Overlay di Lens invia a Google i contenuti della pagina per rispondere alla query dell'utente con il contesto della pagina visualizzata.
-
-Non esiste un'impostazione utente per controllare questa funzionalità, che viene generalmente resa disponibile a tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questa policy.
-
-Questa sostituisce la policy <ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" /> deprecata.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, i dati pertinenti potrebbero includere prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità.</translation>
 <translation id="8676959842615154675">Se il criterio viene impostato su Attivato, l'host di accesso remoto confronta il nome dell'utente locale a cui è associato l'host con il nome dell'Account Google registrato come proprietario dell'host ("mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com"). Questo host non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host. Per forzare l'associazione dell'Account Google del proprietario con un dominio specifico, usa il criterio insieme a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>

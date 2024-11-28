@@ -1241,6 +1241,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to customise the look of your browser</translation>
 <translation id="3240791268468473923">Secure payment credential no matching credential sheet is opened</translation>
 <translation id="324180406144491771">'<ph name="HOST_NAME" />' links are blocked</translation>
+<translation id="3243650379537999343">Draw</translation>
 <translation id="3248329428895535435">Don't show on this site</translation>
 <translation id="3249102948665905108">File upload to <ph name="CLOUD_PROVIDER" /> completed with errors</translation>
 <translation id="3252772880526154546">Architecture</translation>
@@ -2634,6 +2635,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Bars, Clubs and Nightlife</translation>
 <translation id="5743684619253032786">Nail care products</translation>
+<translation id="574392208103952083">Medium</translation>
 <translation id="5745733273847572235">Can ask for your location</translation>
 <translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5752327398324808817">Enter a word or two</translation>

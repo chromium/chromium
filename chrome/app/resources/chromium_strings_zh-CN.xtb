@@ -251,6 +251,7 @@
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" />负责管理 Chromium</translation>
+<translation id="444069871276811466">添加 Chromium 个人资料</translation>
 <translation id="4447409407328223819">关于 Chrome for Testing</translation>
 <translation id="4470974262661801543">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请输入口令</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
@@ -581,6 +582,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chromium 访问过的网站的记录。</translation>
 <translation id="8852026904190808918">使用此语言显示 Chromium 中的菜单、设置、提醒和其他文字</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
+<translation id="8876044221123442390">添加 Chromium 个人资料</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="8891709362986793894">贵组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>

@@ -460,7 +460,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3037177537145227281">Memantau harga</translation>
 <translation id="3037517125981011456">Menampilkan perintah untuk login ke Chrome</translation>
 <translation id="3038272154009688107">Lihat semua situs</translation>
-<translation id="3055841435094910999">Info tentang penggunaan Chrome akan dikirim ke Google, tetapi tidak dikaitkan dengan Anda\n\nJika Chrome mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi\n\nJika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka</translation>
 <translation id="3059531648236115056">Tambahkan ringkasan</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}}</translation>
 <translation id="3062802207422175757">Artikel di Chrome terkait minat Anda</translation>
@@ -873,6 +872,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="496607651705915226">Untuk menyimpan dan menggunakan sandi baru di Akun Google Anda, update layanan Google Play</translation>
 <translation id="4971753085054504448">Coba telusuri hal lain atau buka histori Chrome lengkap untuk melihat hasil lainnya.</translation>
 <translation id="497421865427891073">Maju</translation>
+<translation id="498624032394115435">Siapa saja yang memiliki link ini dapat mengedit semua tab.</translation>
 <translation id="4987271110129728827">Tidak dapat menemukan halaman tersebut. Periksa ejaan Anda atau coba penelusuran web.</translation>
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="4991110219272367918">Opsi untuk menyetujui atau tidak menyetujui situs tertutup</translation>
@@ -959,7 +959,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="5423934151118863508">Halaman yang paling sering dikunjungi akan muncul di sini</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tersedia</translation>
-<translation id="543121643585717256">Siapa saja yang memiliki link ini dapat mengedit semua tab. Pelajari grup tab bersama</translation>
 <translation id="543338862236136125">Edit sandi</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="5438292632479953702">Download lagi</translation>
@@ -1154,6 +1153,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6284472661216707937">Sandi di semua perangkat Anda ditutup</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6296366034485697675">Ekspor dan hapus</translation>
+<translation id="629730747756840877">Akun</translation>
 <translation id="6303969859164067831">Logout dan nonaktifkan sinkronisasi</translation>
 <translation id="6312687380483398334">Aplikasi web (minim notifikasi)</translation>
 <translation id="6315386555979018699">Hapus &amp; lanjutkan</translation>
@@ -1317,6 +1317,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6910211073230771657">Dihapus</translation>
 <translation id="6918398787259831832">Jika masalah ini terus terjadi, <ph name="BEGIN_LINK" />dapatkan informasi selengkapnya<ph name="END_LINK" /> dari <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome menghapus izin ini karena Anda tidak mengunjungi situs tersebut baru-baru ini</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
 <translation id="6929224077895306814">Semua kode keamanan yang disimpan di perangkat dan di Akun Google Anda akan dihapus</translation>
 <translation id="6937524809504266803">Personalisasi &amp; Penautan</translation>
 <translation id="6937876069006524083">Nama panggilan (opsional)</translation>
@@ -1640,6 +1641,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> menghapus tab “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Sandi akan segera berhenti berfungsi</translation>
 <translation id="831192587911042850">Menambahkan situs saat ini ke daftar situs yang Anda ikuti.</translation>
+<translation id="8320212361750431956">Aktivitas Terbaru</translation>
 <translation id="8342727528718219152">Chrome akan memberi tahu Anda terkait situs yang mungkin mengirim terlalu banyak notifikasi</translation>
 <translation id="834313815369870491">Jangan pernah terjemahkan situs</translation>
 <translation id="8348430946834215779">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya</translation>

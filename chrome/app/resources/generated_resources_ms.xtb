@@ -3612,7 +3612,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3513019849832307207">Sertai dan buka</translation>
 <translation id="3513563267917474897">Peluncur rona daripada <ph name="MIN_VALUE" /> hingga <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kawalan Permainan</translation>
-<translation id="3514373592552233661">Rangkaian pilihan akan diutamakan berbanding rangkaian lain yang diketahui jika terdapat lebih daripada satu rangkaian</translation>
 <translation id="3514647716686280777">Anda mendapat perlindungan keselamatan standard. Untuk mendapatkan lebih perlindungan daripada laman web, muat turun dan sambungan berbahaya, hidupkan Penyemakan Imbas Selamat Dipertingkat dalam tetapan Chrome.</translation>
 <translation id="3514681096978190000">Fail arkib ini merangkumi fail lain yang mungkin menyembunyikan perisian hasad</translation>
 <translation id="3515983984924808886">Sentuh kunci keselamatan anda sekali lagi untuk mengesahkan penetapan semula. Semua maklumat yang disimpan pada kunci keselamatan, termasuk PIN kunci keselamatan akan dipadamkan.</translation>
@@ -10304,7 +10303,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8306063480506363120">Alih keluar akses Drive</translation>
 <translation id="8306430106790753902">Laluan Rangkaian ChromeOS</translation>
 <translation id="8306885873692337975">Dapatkan ciri terkini dan peningkatan keselamatan.</translation>
-<translation id="8308016398665340540">Anda berkongsi rangkaian ini dengan pengguna lain bagi peranti ini</translation>
 <translation id="8308024039615003152">Padang rumput</translation>
 <translation id="8308179586020895837">Tanya jika <ph name="HOST" /> mahu mengakses kamera anda</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11207,7 +11205,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8942714513622077633">Batalkan persediaan Microsoft 365?</translation>
 <translation id="894360074127026135">Peningkatan Antarabangsa Netscape</translation>
 <translation id="8944099748578356325">Gunakan bateri dengan lebih cepat (pada masa ini <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Terhad</translation>
 <translation id="8944633700466246631">Buat PIN pemulihan 6 digit untuk Google Password Manager</translation>
 <translation id="8944725102565796255">Jika anda mahu menggunakan akaun ini satu kali sahaja, anda boleh <ph name="GUEST_LINK_BEGIN" />menggunakan peranti sebagai tetamu<ph name="GUEST_LINK_END" />. Jika anda mahu menambahkan akaun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan orang baharu<ph name="LINK_END" /> pada <ph name="DEVICE_TYPE" />.
 

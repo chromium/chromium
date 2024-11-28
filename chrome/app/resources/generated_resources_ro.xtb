@@ -3460,6 +3460,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3421387094817716717">Cheia publică a curburii eliptice</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> o voce asemănătoare sau o înregistrare a vocii tale ar putea accesa rezultatele tale personalizate sau Asistentul.</translation>
 <translation id="3421835120203732951">Adaugă un profil nou</translation>
+<translation id="3422989558057853751">Ultimul element selectat. Dacă îl deselectezi, vei ieși din modul de selectare.</translation>
 <translation id="3423111258700187173">S-au găsit rezultate în <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Află mai multe despre această funcție AI</translation>
 <translation id="3423275441470187644">Încredere</translation>
@@ -3598,7 +3599,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3513019849832307207">Alătură-te și deschide</translation>
 <translation id="3513563267917474897">Glisor de nuanță de la <ph name="MIN_VALUE" /> la <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Controlul jocurilor</translation>
-<translation id="3514373592552233661">Dacă sunt disponibile mai multe rețele, vor fi folosite cele preferate</translation>
 <translation id="3514647716686280777">Beneficiezi de protecție de securitate standard. Pentru a beneficia de mai multă protecție împotriva site-urilor, descărcărilor și extensiilor periculoase, activează Navigarea sigură îmbunătățită în setările Chrome.</translation>
 <translation id="3514681096978190000">Acest fișier arhivă include alte fișiere care pot ascunde programe malware</translation>
 <translation id="3515983984924808886">Atinge cheia de securitate din nou pentru a confirma resetarea. Toate informațiile stocate pe cheia de securitate, inclusiv codul său PIN, vor fi șterse.</translation>
@@ -4956,6 +4956,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4461483878391246134">Adaugă limbi pentru care nu se oferă niciodată traducerea</translation>
 <translation id="4462159676511157176">Servere de nume personalizate</translation>
 <translation id="4465236939126352372">A fost setată o limită de timp de <ph name="TIME" /> pentru <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">PIN greșit</translation>
 <translation id="4467561276409486506">&amp;Schimbă modul compact</translation>
 <translation id="4469324811108161144">Notele pot conține până la <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> poate să modifice fișiere din <ph name="FOLDERNAME" /></translation>
@@ -10289,7 +10290,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8306063480506363120">Elimină accesul la Drive</translation>
 <translation id="8306430106790753902">Rute de rețea ChromeOS</translation>
 <translation id="8306885873692337975">Obține cele mai noi funcții și îmbunătățiri ale securității.</translation>
-<translation id="8308016398665340540">Permiți accesul la această rețea altor utilizatori ai dispozitivului</translation>
 <translation id="8308024039615003152">Pajiște</translation>
 <translation id="8308179586020895837">Întreabă dacă <ph name="HOST" /> solicită acces la cameră</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11192,7 +11192,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8942714513622077633">Anulezi configurarea Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">va consuma bateria mai rapid (în prezent, <ph name="BATTERY_PERCENTAGE" />%);</translation>
-<translation id="8944485226638699751">Limitate</translation>
 <translation id="8944633700466246631">Creează un cod PIN de recuperare din șase cifre pentru Managerul de parole Google</translation>
 <translation id="8944725102565796255">Dacă vrei să folosești contul o singură dată, poți să <ph name="GUEST_LINK_BEGIN" />utilizezi dispozitivul ca invitat<ph name="GUEST_LINK_END" />. Dacă vrei să adaugi un cont pentru altcineva, <ph name="LINK_BEGIN" />adaugă o nouă persoană<ph name="LINK_END" /> pe <ph name="DEVICE_TYPE" />.
 

@@ -1238,6 +1238,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla arakatzailearen itxura pertsonalizatzeko</translation>
 <translation id="3240791268468473923">Ordainketak egiteko kredentzial segurua bat ez datorrela dioen kredentzial-orria irekita dago</translation>
 <translation id="324180406144491771"><ph name="HOST_NAME" /> motako estekak blokeatuta daude</translation>
+<translation id="3243650379537999343">Atera</translation>
 <translation id="3248329428895535435">Ez erakutsi webgune honetan</translation>
 <translation id="3249102948665905108">Osatu da <ph name="CLOUD_PROVIDER" /> zerbitzura fitxategiak kargatzeko prozesua, erroreekin</translation>
 <translation id="3252772880526154546">Arkitektura</translation>
@@ -2630,6 +2631,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5740911612628596808">C9 gutun-azala</translation>
 <translation id="5742806904559466333">Tabernak, klubak eta gaugiroa</translation>
 <translation id="5743684619253032786">Azazkalen zaintzarako produktuak</translation>
+<translation id="574392208103952083">Ertaina</translation>
 <translation id="5745733273847572235">Kokapena eska dezake</translation>
 <translation id="5750869797196646528">Eskuen jarraipena</translation>
 <translation id="5752327398324808817">Idatzi 1-2 hitz</translation>
@@ -3463,6 +3465,7 @@ Xehetasun gehiago:
 <translation id="725866823122871198">Ezin izan da ezarri <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeinurako konexio pribatua ordenagailuaren data eta ordua (<ph name="DATE_AND_TIME" />) okerrak direlako.</translation>
 <translation id="7260075294900977274">Erosketa-orri guztiak toki berean gordetzea, prezioen jarraipena automatikoki egitea, prezioaren informazio xehatua lortzea eta beste gauza asko egitea ahalbidetzen dizun karpeta adimendun berria</translation>
 <translation id="7265608370113700582">Gailu honetan soilik dago erabilgarri helbidea</translation>
+<translation id="7269151392155523061">Lasterbidea ezin da bat etorri <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> gidalerroak definitutako bilaketa-agregatzailearen gako-hitzarekin: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Deskargatu dituzun fitxategiak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke haietan kontuzko datuak edo malwarea bilatzea, eta agian enpresaren gidalerroen arabera gordeko dira baita zure administratzailearentzat ikusgai egon ere.</translation>
 <translation id="7275334191706090484">Kudeatutako laster-markak</translation>
 <translation id="7275808129217605899">Osasuntsu jatea</translation>

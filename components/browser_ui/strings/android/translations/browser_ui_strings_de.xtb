@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Du wirst möglicherweise von dieser Website abgemeldet</translation>
 <translation id="6085954183010297841">Berechtigung zur Dateibearbeitung widerrufen? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie ermitteln dürfen, wann du dein Gerät aktiv nutzt. Wenn er deaktiviert ist, können Websites nicht ermitteln, wann du dein Gerät aktiv nutzt.</translation>
-<translation id="6140839633433422817">Möchtest du die Berechtigungen dieser Website wirklich zurücksetzen und ihre Cookies und Daten löschen?</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6171020522141473435">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Bluetooth-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine Bluetooth-Geräte verwenden.</translation>
-<translation id="6177111841848151710">Für die aktuelle Suchmaschine blockiert</translation>
 <translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
 <translation id="6181444274883918285">Ausnahme für Website hinzufügen</translation>
 <translation id="6192792657125177640">Ausnahmen</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Nachfragen, bevor Websites auf mein Mikrofon zugreifen dürfen (empfohlen)</translation>
 <translation id="6999131147875565462">Chrome wird schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen laufen</translation>
 <translation id="7000754031042624318">In den Android-Einstellungen deaktiviert</translation>
-<translation id="7016516562562142042">Für die aktuelle Suchmaschine zugelassen</translation>
 <translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Websites daran hindern, Informationen auf NFC-Geräten abzurufen und zu ändern</translation>
 <translation id="8944485226638699751">Eingeschränkt</translation>
 <translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
-<translation id="8986362086234534611">Entfernen</translation>
 <translation id="8990043154272859344">Du wirst von allen Websites abgemeldet</translation>
 <translation id="8993853206419610596">Alle Anfragen maximieren</translation>
 <translation id="9002538116239926534">Wenn dieser Schalter aktiviert ist, können Websites Daten auf deinem Gerät speichern. Wenn er deaktiviert ist, können Websites keine Daten auf deinem Gerät speichern.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Die Berechtigungen für <ph name="APP_NAME" /> können in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="9138217887606523162">Die aktuelle Zoomstufe ist <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Diese Seite ist gefährlich</translation>
-<translation id="930525582205581608">Informationen auf dieser Website löschen?</translation>
 <translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist</translation>
 <translation id="959682366969460160">Besser organisiert</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>

@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Unaweza kuondolewa katika akaunti kwenye tovuti hii</translation>
 <translation id="6085954183010297841">Ungependa kufuta ruhusa ya kubadilisha faili? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kujua unapotumia kifaa chako sana. Kikizimwa, tovuti haziwezi kujua unapotumia kifaa chako sana.</translation>
-<translation id="6140839633433422817">Una uhakika ungependa kubadilisha ruhusa na kufuta data ya tovuti na vidakuzi?</translation>
 <translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6171020522141473435">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya Bluetooth. Kikizimwa, tovuti haziwezi kutumia vifaa vya Bluetooth.</translation>
-<translation id="6177111841848151710">Haijaruhusiwa kwa mtambo wa sasa wa kutafuta</translation>
 <translation id="6177128806592000436">Muunganisho wako kwenye tovuti hii si salama</translation>
 <translation id="6181444274883918285">Ongeza tovuti mpya kwenye orodha ya vighairi</translation>
 <translation id="6192792657125177640">Vighairi</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Uliza kwanza kabla ya kuruhusu tovuti zitumie maikrofoni yako (inapendekezwa)</translation>
 <translation id="6999131147875565462">Chrome hufanya kazi haraka zaidi na vipengele vinavyotumia JavaScript vinapaswa kufanya kazi kama vilivyokusudiwa</translation>
 <translation id="7000754031042624318">Imezimwa katika mipangilio ya Android</translation>
-<translation id="7016516562562142042">Imeruhusiwa kwa mtambo wa sasa wa kutafuta</translation>
 <translation id="702275896380648118">Tovuti hii hubainisha mambo unayopendelea na kisha hupendekeza matangazo kwenye tovuti zingine. Tovuti hii pia hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="7053983685419859001">Zuia</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Umechagua 1}other{Umechagua #}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Zuia tovuti zisione wala kubadilisha maelezo kwenye vifaa vya NFC</translation>
 <translation id="8944485226638699751">Kwa wachache</translation>
 <translation id="8959122750345127698">Kudurusu hakufikiki: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Sahau</translation>
 <translation id="8990043154272859344">Utaondolewa kwenye akaunti za tovuti zote</translation>
 <translation id="8993853206419610596">Panua majibu yote</translation>
 <translation id="9002538116239926534">Kikiwashwa, tovuti zinaweza kuhifadhi data kwenye kifaa chako. Kikizimwa, tovuti haziwezi kuhifadhi data kwenye kifaa chako.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Washa ruhusa za <ph name="APP_NAME" /> katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Kiwango cha ukuzaji wa sasa ni asilimia <ph name="ZOOM_LEVEL" /></translation>
 <translation id="9162462602695099906">Ukurasa huu ni hatari</translation>
-<translation id="930525582205581608">Ungependa kusahau tovuti hii?</translation>
 <translation id="947156494302904893">Tovuti unazotembelea zinaweza kuthibitisha kuwa wewe ni mtu halisi na si roboti</translation>
 <translation id="959682366969460160">Weka kwa utaratibu</translation>
 <translation id="967624055006145463">Data iliyohifadhiwa</translation>

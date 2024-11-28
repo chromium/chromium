@@ -3599,7 +3599,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3513019849832307207">Pievienoties un atvērt</translation>
 <translation id="3513563267917474897">Nokrāsas slīdnis diapazonā no <ph name="MIN_VALUE" /> līdz <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Spēļu pārvaldība</translation>
-<translation id="3514373592552233661">Ja būs pieejami vairāki tīkli, priekšroka tiks dota vēlamajiem tīkliem.</translation>
 <translation id="3514647716686280777">Jūs saņemat standarta aizsardzību. Lai uzlabotu aizsardzību pret bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem, Chrome iestatījumos ieslēdziet funkciju “Droša pārlūkošana ar papildu aizsardzību”.</translation>
 <translation id="3514681096978190000">Šajā arhīva failā ir ietverti citi faili, kas, iespējams, slēpj ļaunprātīgu programmatūru.</translation>
 <translation id="3515983984924808886">Vēlreiz pieskarieties drošības atslēgai, lai apstiprinātu atiestatīšanu. Tiks dzēsta visa drošības atslēgā saglabātā informācija, tostarp tās PIN.</translation>
@@ -10290,7 +10289,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8306063480506363120">Noņemt piekļuvi Diskam</translation>
 <translation id="8306430106790753902">ChromeOS tīkla maršruti</translation>
 <translation id="8306885873692337975">Iegūstiet jaunākās funkcijas un drošības uzlabojumus.</translation>
-<translation id="8308016398665340540">Jūs koplietojat šo tīklu ar citiem šīs ierīces lietotājiem</translation>
 <translation id="8308024039615003152">Pļava</translation>
 <translation id="8308179586020895837">Vaicāt, vai vietne <ph name="HOST" /> vēlas piekļūt kamerai</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11194,7 +11192,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8942714513622077633">Vai atcelt Microsoft 365 iestatīšanu?</translation>
 <translation id="894360074127026135">Netscape starptautiskā palielināšana</translation>
 <translation id="8944099748578356325">tiks ātrāk iztērēta akumulatora jauda (pašlaik: <ph name="BATTERY_PERCENTAGE" />%);</translation>
-<translation id="8944485226638699751">Ierobežoti</translation>
 <translation id="8944633700466246631">Izveidojiet sešciparu atkopšanas PIN, ko izmantot Google paroļu pārvaldniekam</translation>
 <translation id="8944725102565796255">Ja vēlaties šo kontu izmantot tikai vienu reizi, varat <ph name="GUEST_LINK_BEGIN" />izmantot ierīci viesa režīmā<ph name="GUEST_LINK_END" />. Ja vēlaties pievienot citas personas kontu, <ph name="LINK_BEGIN" />pievienojiet jaunu personu<ph name="LINK_END" /> savai ierīcei (<ph name="DEVICE_TYPE" />).
 

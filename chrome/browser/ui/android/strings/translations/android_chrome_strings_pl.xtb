@@ -460,7 +460,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037517125981011456">Pokazuje prośby o zalogowanie się w Chrome</translation>
 <translation id="3038272154009688107">Zobacz wszystkie witryny</translation>
-<translation id="3055841435094910999">Informacje o użytkowaniu Chrome są przesyłane do Google, ale nie są z Tobą powiązane\n\nJeśli Chrome ulegnie awarii, dotyczące jej informacje mogą zawierać niektóre dane osobowe\n\nJeśli włączysz synchronizację, dane mogą również zawierać informacje o odwiedzanych przez Ciebie adresach URL</translation>
 <translation id="3059531648236115056">Dodaj podsumowanie</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zakładka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}many{<ph name="BOOKMARKS_COUNT_MANY" /> zakładek}other{<ph name="BOOKMARKS_COUNT_MANY" /> zakładki}}</translation>
 <translation id="3062802207422175757">Artykuły dopasowane do Twoich zainteresowań w Chrome</translation>
@@ -873,6 +872,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="496607651705915226">Aby zapisywać nowe hasła i używać ich na koncie Google, zaktualizuj Usługi Google Play</translation>
 <translation id="4971753085054504448">Aby zobaczyć więcej wyników, wyszukaj coś innego lub otwórz pełną historię Chrome.</translation>
 <translation id="497421865427891073">Dalej</translation>
+<translation id="498624032394115435">Każda osoba, która ma link, może edytować wszystkie karty.</translation>
 <translation id="4987271110129728827">Nie można znaleźć tej strony. Sprawdź pisownię lub spróbuj wyszukać w internecie.</translation>
 <translation id="4988526792673242964">Strony</translation>
 <translation id="4991110219272367918">Opcja zatwierdzenia lub odrzucenia witryny zamknięta</translation>
@@ -959,7 +959,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) natychmiast utraci dostęp do grupy kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="5423934151118863508">Tu pojawią się strony, na które najczęściej wchodzisz</translation>
 <translation id="5424588387303617268">Dostępne <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Każda osoba, która ma link, może edytować wszystkie karty. Więcej informacji o udostępnianych grupach kart</translation>
 <translation id="543338862236136125">Edytuj hasło</translation>
 <translation id="5433691172869980887">Nazwa użytkownika została skopiowana</translation>
 <translation id="5438292632479953702">Pobierz ponownie</translation>
@@ -1154,6 +1153,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6284472661216707937">Hasła na wszystkich urządzeniach zostały zamknięte</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6296366034485697675">Wyeksportuj i usuń</translation>
+<translation id="629730747756840877">Konto</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
 <translation id="6312687380483398334">Aplikacje internetowe (wyciszenie)</translation>
 <translation id="6315386555979018699">Usuń i kontynuuj</translation>
@@ -1317,6 +1317,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6910211073230771657">Usunięto</translation>
 <translation id="6918398787259831832">Jeśli problem będzie się powtarzał, <ph name="BEGIN_LINK" />więcej informacji znajdziesz<ph name="END_LINK" /> w witrynie <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia, ponieważ od jakiegoś czasu nie odwiedzasz tej witryny</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> kart}other{<ph name="NUMBER_OF_TABS" /> karty}}</translation>
 <translation id="6929224077895306814">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
 <translation id="6937524809504266803">Personalizacja i łączenie usług</translation>
 <translation id="6937876069006524083">Pseudonim (opcjonalnie)</translation>
@@ -1640,6 +1641,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> usunął(-ęła) kartę „<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Wkrótce przestaną działać hasła</translation>
 <translation id="831192587911042850">Dodaje otwartą witrynę do listy obserwowanych.</translation>
+<translation id="8320212361750431956">Ostatnia aktywność</translation>
 <translation id="8342727528718219152">Chrome powiadomi Cię o witrynach, które mogą wysyłać zbyt wiele powiadomień</translation>
 <translation id="834313815369870491">Nigdy nie tłumacz stron</translation>
 <translation id="8348430946834215779">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują</translation>

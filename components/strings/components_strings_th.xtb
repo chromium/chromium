@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3240791268468473923">ระบบได้เปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="324180406144491771">ลิงก์ “<ph name="HOST_NAME" />” ถูกบล็อก</translation>
+<translation id="3243650379537999343">วาด</translation>
 <translation id="3248329428895535435">ไม่ต้องแสดงในเว็บไซต์นี้</translation>
 <translation id="3249102948665905108">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> เสร็จสมบูรณ์โดยมีข้อผิดพลาด</translation>
 <translation id="3252772880526154546">สถาปัตยกรรม</translation>
@@ -1857,7 +1858,7 @@
 <translation id="4282346679996504092">ปิดการแจ้งเตือนสำหรับผลิตภัณฑ์นี้และนำบุ๊กมาร์กออกแล้ว</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ลงในบัญชี Google ของคุณแล้ว}other{บันทึกบัตรเหล่านี้ลงในบัญชี Google ของคุณแล้ว}}</translation>
-<translation id="4287495839370498922">ความเป็นส่วนตัวเกี่ยวกับโฆษณาที่เพิ่มขึ้นบน Chrome</translation>
+<translation id="4287495839370498922">ความเป็นส่วนตัวเกี่ยวกับโฆษณาบน Chrome ที่เพิ่มมากขึ้น</translation>
 <translation id="4290920330097335010">ไม่อนุญาต</translation>
 <translation id="4296207570293932800">ฟีเจอร์ใหม่ด้านความเป็นส่วนตัวเกี่ยวกับโฆษณาพร้อมใช้งานแล้ว</translation>
 <translation id="4297502707443874121">ภาพขนาดย่อของหน้า <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2633,6 +2634,7 @@
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">บาร์ คลับ และสถานบันเทิงยามค่ำคืน</translation>
 <translation id="5743684619253032786">ผลิตภัณฑ์ดูแลเล็บ</translation>
+<translation id="574392208103952083">ปานกลาง</translation>
 <translation id="5745733273847572235">สามารถขอตำแหน่งของคุณได้</translation>
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5752327398324808817">ป้อน 1-2 คำ</translation>
@@ -4419,7 +4421,7 @@
 <translation id="9004367719664099443">เซสชัน VR กำลังทำงาน</translation>
 <translation id="9005998258318286617">ไม่สามารถโหลดเอกสาร PDF</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
-<translation id="9014705027639070815">เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยวัดประสิทธิภาพของโฆษณา Chrome ช่วยให้เว็บไซต์รวบรวมข้อมูลบางประเภทได้ เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
+<translation id="9014705027639070815">เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยวัดประสิทธิภาพของโฆษณา Chrome อนุญาตให้เว็บไซต์รวบรวมข้อมูลบางประเภทได้ เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="9018120810758822233">ป้อนรหัสความปลอดภัยสำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">อีเมล</translation>
 <translation id="90196294733273307">มีการแสดงกล่องโต้ตอบที่มีรายละเอียดบัตรเครดิต</translation>

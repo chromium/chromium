@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Może nastąpić wylogowanie z tej strony</translation>
 <translation id="6085954183010297841">Usunąć uprawnienia do edycji pliku? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Gdy ta opcja jest włączona, strony internetowe mogą prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia. Gdy jest wyłączona, strony nie mogą się dowiedzieć, kiedy używasz urządzenia.</translation>
-<translation id="6140839633433422817">Czy na pewno chcesz zresetować uprawnienia oraz wyczyścić pliki cookie i dane witryn?</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6171020522141473435">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na używanie urządzeń Bluetooth. Gdy jest wyłączona, strony nie mogą używać urządzeń Bluetooth.</translation>
-<translation id="6177111841848151710">Zablokowano dostęp obecnej wyszukiwarce</translation>
 <translation id="6177128806592000436">Twoje połączenie z tą witryną nie jest bezpieczne</translation>
 <translation id="6181444274883918285">Dodaj witrynę do wyjątków</translation>
 <translation id="6192792657125177640">Wyjątki</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
 <translation id="6999131147875565462">Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami</translation>
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
-<translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Nie zezwalaj stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC</translation>
 <translation id="8944485226638699751">Z ograniczeniami</translation>
 <translation id="8959122750345127698">Adres nieosiągalny: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Zapomnij</translation>
 <translation id="8990043154272859344">Wylogujemy Cię ze wszystkich stron</translation>
 <translation id="8993853206419610596">Rozwiń wszystkie żądania</translation>
 <translation id="9002538116239926534">Gdy ta opcja jest włączona, strony internetowe mogą zapisywać dane na Twoim urządzeniu. Gdy jest wyłączona, nie mogą tego robić.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Obecne powiększenie: <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
-<translation id="930525582205581608">Zapomnieć tę stronę?</translation>
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="959682366969460160">Większy porządek</translation>
 <translation id="967624055006145463">Zapisane dane</translation>

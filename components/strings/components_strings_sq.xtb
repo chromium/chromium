@@ -1241,6 +1241,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar pamjen e shfletuesit tënd</translation>
 <translation id="3240791268468473923">Kredenciali i pagesës së sigurt pa fletë përkatëse kredenciali është i hapur</translation>
 <translation id="324180406144491771">Lidhjet e "<ph name="HOST_NAME" />" janë bllokuar</translation>
+<translation id="3243650379537999343">Vizato</translation>
 <translation id="3248329428895535435">Mos e shfaq në këtë sajt</translation>
 <translation id="3249102948665905108">Ngarkimi i skedarëve te "<ph name="CLOUD_PROVIDER" />" u përfundua me gabime</translation>
 <translation id="3252772880526154546">Arkitekturë</translation>
@@ -2634,6 +2635,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5740911612628596808">Zarf C9</translation>
 <translation id="5742806904559466333">Bare, klube dhe jeta e natës</translation>
 <translation id="5743684619253032786">Produkte për kujdesin e thonjve</translation>
+<translation id="574392208103952083">Mesatar</translation>
 <translation id="5745733273847572235">Mund të kërkojë vendndodhjen tënde</translation>
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>
 <translation id="5752327398324808817">Fut një ose dy fjalë</translation>
@@ -3467,6 +3469,7 @@ Detaje shtesë:
 <translation id="725866823122871198">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse data dhe ora (<ph name="DATE_AND_TIME" />) e kompjuterit tënd nuk janë të sakta.</translation>
 <translation id="7260075294900977274">Një dosje e re inteligjente që të ndihmon të ruash të gjitha faqet e blerjeve në një vend, si dhe të monitorosh automatikisht çmimet, të marrësh statistika mbi to etj.</translation>
 <translation id="7265608370113700582">Adresa ofrohet vetëm në këtë pajisje</translation>
+<translation id="7269151392155523061">Shkurtorja nuk mund të jetë e njëjtë me fjalën kyçe të përmbledhësit të kërkimit të përcaktuar nga <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Skedarët që shkarkon dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë dhe të jenë të dukshëm për administratorin tënd.</translation>
 <translation id="7275334191706090484">Faqeshënuesit e menaxhuar</translation>
 <translation id="7275808129217605899">Të ushqyerit në mënyrë të shëndetshme</translation>

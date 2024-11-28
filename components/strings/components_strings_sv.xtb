@@ -1241,6 +1241,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa webbläsarens utseende</translation>
 <translation id="3240791268468473923">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är öppet</translation>
 <translation id="324180406144491771"><ph name="HOST_NAME" />-länkarna har blockerats</translation>
+<translation id="3243650379537999343">Rita</translation>
 <translation id="3248329428895535435">Visa inte på den här sidan</translation>
 <translation id="3249102948665905108">Filuppladdningen till <ph name="CLOUD_PROVIDER" /> har slutförts med fel</translation>
 <translation id="3252772880526154546">Arkitektur</translation>
@@ -2634,6 +2635,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5740911612628596808">C9-kuvert</translation>
 <translation id="5742806904559466333">Barer, klubbar och nattliv</translation>
 <translation id="5743684619253032786">Nagelvårdsprodukter</translation>
+<translation id="574392208103952083">Medelstark</translation>
 <translation id="5745733273847572235">Får fråga om din plats</translation>
 <translation id="5750869797196646528">Handspårning</translation>
 <translation id="5752327398324808817">Ange ett eller två ord</translation>
@@ -3469,6 +3471,7 @@ Mer information.
 <translation id="725866823122871198">Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom datorns datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.</translation>
 <translation id="7260075294900977274">En ny smart mapp som hjälper dig att spara alla shoppingsidor på ett ställe och automatiskt bevakar priser, samlar prisinformation med mera</translation>
 <translation id="7265608370113700582">Adressen är endast tillgänglig på den här enheten</translation>
+<translation id="7269151392155523061">Kortkommandot kan inte vara detsamma som sökaggregatorsökordet som definieras av <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Filer som du laddar ned skickas till Google Cloud eller tredje part för analys. De kan till exempel genomsökas i syfte att upptäcka känsliga uppgifter eller skadlig kod, och de kan lagras i enlighet med företagspolicyer och är synliga för administratören.</translation>
 <translation id="7275334191706090484">Hanterade bokmärken</translation>
 <translation id="7275808129217605899">Hälsosam kost</translation>

@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">您可能已从此网站上退出账号</translation>
 <translation id="6085954183010297841">要撤消文件修改权限吗？<ph name="FILE" /></translation>
 <translation id="6120483543004435978">开启此设置后，网站可以请求监测您是否正在使用设备。关闭此设置后，网站无法得知您是否正在使用设备。</translation>
-<translation id="6140839633433422817">确定要重置权限并删除 Cookie 和网站数据吗？</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6171020522141473435">开启此设置后，网站可以请求使用蓝牙设备。关闭此设置后，网站无法使用蓝牙设备。</translation>
-<translation id="6177111841848151710">不允许当前搜索引擎使用</translation>
 <translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
 <translation id="6181444274883918285">添加例外网站</translation>
 <translation id="6192792657125177640">例外</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
 <translation id="6999131147875565462">Chrome 的运行速度会更快，并且使用 JavaScript 的功能能按预期运行</translation>
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
-<translation id="7016516562562142042">允许当前搜索引擎使用</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">禁止网站查看和更改 NFC 设备上的信息</translation>
 <translation id="8944485226638699751">受限</translation>
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
-<translation id="8986362086234534611">不保存</translation>
 <translation id="8990043154272859344">您将会从所有网站上自动退出账号</translation>
 <translation id="8993853206419610596">展开所有请求</translation>
 <translation id="9002538116239926534">开启此设置后，网站可以将数据保存在您的设备上。关闭此设置后，网站无法将数据保存在您的设备上。</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
 <translation id="9138217887606523162">当前缩放比例为 <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">这是一个危险网页</translation>
-<translation id="930525582205581608">移除此网站？</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>
 <translation id="967624055006145463">已存储的数据</translation>

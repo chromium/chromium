@@ -3460,6 +3460,7 @@
 <translation id="3421387094817716717">‏Elliptic Curve عوامی کلید</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> ایک ملتی جلتی آواز یا ریکارڈنگ سے آپ کے ذاتی نتائج یا آپ کی اسسٹنٹ تک رسائی حاصل کی جا سکتی ہے۔</translation>
 <translation id="3421835120203732951">نئی پروفائل شامل کریں</translation>
+<translation id="3422989558057853751">آخری آئٹم منتخب کیا گیا، اسے غیر منتخب کرنے سے انتخاب موڈ سے باہر نکل جائیں گے</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> میں نتائج ملے</translation>
 <translation id="3423226218833787854">‏اس AI خصوصیت کے بارے میں مزید جانیں</translation>
 <translation id="3423275441470187644">ٹرسٹ</translation>
@@ -3598,7 +3599,6 @@
 <translation id="3513019849832307207">شامل ہوں اور کھولیں</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> سے <ph name="MAX_VALUE" /> تک رنگین سلائیڈر</translation>
 <translation id="3514335087372914653">گیم کنٹرول</translation>
-<translation id="3514373592552233661">اگر ایک سے زیادہ نیٹ ورکس دستیاب ہوتے ہیں تو دیگر معلوم نیٹ ورکس پر ترجیحی نیٹ ورکس کو ترجیح دی جائے گی</translation>
 <translation id="3514647716686280777">‏آپ کو معیاری حفاظتی تحفظ مل رہا ہے۔ خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف مزید تحفظ حاصل کرنے کے لیے، Chrome ترتیبات میں بہتر کردہ محفوظ براؤزنگ کو آن کریں۔</translation>
 <translation id="3514681096978190000">اس آرکائیو فائل میں دوسری فائلیں شامل ہیں جو میلوئیر کو چھپا سکتی ہیں</translation>
 <translation id="3515983984924808886">‏دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے اپنی سیکیورٹی کلید کو دوبارہ ٹچ کریں۔ سیکیورٹی کلید کے PIN سمیت اس میں اسٹور کردہ سبھی معلومات کو حذف کر دیا جائے گا۔</translation>
@@ -4956,6 +4956,7 @@
 <translation id="4461483878391246134">کبھی بھی ترجمہ کی پیشکش نہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> کیلئے <ph name="TIME" /> وقت کی حد سیٹ ہے</translation>
+<translation id="4467373268340082204">‏غلط PIN</translation>
 <translation id="4467561276409486506">مختصر وضع کو ٹوگل کریں</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکتا ہے</translation>
@@ -10284,7 +10285,6 @@
 <translation id="8306063480506363120">‏Drive تک رسائی کو ہٹائیں</translation>
 <translation id="8306430106790753902">‏ChromeOS نیٹ ورک کے راستے</translation>
 <translation id="8306885873692337975">تازہ ترین خصوصیات اور سیکیورٹی میں بہتریاں حاصل کریں۔</translation>
-<translation id="8308016398665340540">آپ اس نیٹ ورک کا اس آلہ کے دوسرے صارفین کے ساتھ اشتراک کر رہے ہیں</translation>
 <translation id="8308024039615003152">سبزہ زار</translation>
 <translation id="8308179586020895837">پوچھیں کہ آیا <ph name="HOST" /> آپ کے کیمرے تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="830868413617744215">بی ٹا</translation>
@@ -11186,7 +11186,6 @@
 <translation id="8942714513622077633">‏Microsoft 365 سیٹ اپ منسوخ کریں؟</translation>
 <translation id="894360074127026135">‏Netscape انٹرنیشنل سٹیپ اپ</translation>
 <translation id="8944099748578356325">مزید تیزی سے بیٹری کا استعمال کریں (فی الحال %<ph name="BATTERY_PERCENTAGE" />)</translation>
-<translation id="8944485226638699751">محدود</translation>
 <translation id="8944633700466246631">‏‫Google پاس ورڈ مینیجر کے لیے ایک 6 ہندسی بازیابی PIN تخلیق کریں</translation>
 <translation id="8944725102565796255">‏اگر آپ اس اکاؤنٹ کو صرف ایک بار استعمال کرنا چاہتے ہیں تو آپ <ph name="GUEST_LINK_BEGIN" />آلے کو بطور مہمان استعمال<ph name="GUEST_LINK_END" /> کر سکتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں تو اپنے <ph name="DEVICE_TYPE" /> میں <ph name="LINK_BEGIN" />ایک نیا شخص شامل کریں<ph name="LINK_END" />۔
 

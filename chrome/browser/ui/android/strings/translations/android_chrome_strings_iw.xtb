@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037517125981011456">‏יוצגו הודעות לצורך כניסה אל Chrome</translation>
 <translation id="3038272154009688107">הצגת כל האתרים</translation>
-<translation id="3055841435094910999">‏מידע על אופן השימוש שלך ב-Chrome נשלח אל Google, אבל הוא לא משויך אליך\n\nאם Chrome קורס, הפרטים בנוגע לקריסה עשויים להכיל גם פרטים אישיים\n\nאם הפעלת את הסנכרון, יכול להיות שהמדדים יכללו גם מידע על כתובות ה-URL שבהן ביקרת.</translation>
 <translation id="3059531648236115056">הוספת סיכום</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}one{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">‏כדי לשמור סיסמאות חדשות ולהשתמש בהן בחשבון Google, צריך לעדכן את Google Play Services</translation>
 <translation id="4971753085054504448">‏אפשר לנסות לחפש משהו אחר או לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות תוצאות נוספות.</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
+<translation id="498624032394115435">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות.</translation>
 <translation id="4987271110129728827">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לבצע חיפוש באינטרנט.</translation>
 <translation id="4988526792673242964">דפים</translation>
 <translation id="4991110219272367918">האפשרות לאשר או לא לאשר אתר נסגרה</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028">הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות בשם '<ph name="GROUP_NAME" />' תאבד באופן מיידי</translation>
 <translation id="5423934151118863508">הדפים שבהם ביקרת בתדירות הגבוהה ביותר יופיעו כאן</translation>
 <translation id="5424588387303617268">‏‎<ph name="GIGABYTES" /> GB זמינים</translation>
-<translation id="543121643585717256">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. מידע על קבוצות משותפות של כרטיסיות</translation>
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5433691172869980887">שם המשתמש הועתק</translation>
 <translation id="5438292632479953702">להורדה מחדש</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">גיליונות הסיסמאות בכל המכשירים נסגרו</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6296366034485697675">ייצוא ומחיקה</translation>
+<translation id="629730747756840877">חשבון</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
 <translation id="6315386555979018699">מחיקה והמשך</translation>
@@ -1641,6 +1641,7 @@
 <translation id="8307517230426267469">הכרטיסייה '<ph name="TAB_NAME" />' הוסרה על ידי <ph name="GIVEN_NAME" /></translation>
 <translation id="8310451567823644042">הסיסמאות יפסיקו לפעול בקרוב</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
+<translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>

@@ -3456,6 +3456,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3421387094817716717">Çelësi publik i kurbës eliptike</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale ose në "Asistentin" tënd.</translation>
 <translation id="3421835120203732951">Shto profil të ri</translation>
+<translation id="3422989558057853751">Artikulli i fundit është zgjedhur, anulimi i zgjedhjes së tij do të bëjë të dalësh nga modaliteti i zgjedhjes</translation>
 <translation id="3423111258700187173">Rezultatet e gjetura te "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423226218833787854">Mëso më shumë rreth kësaj veçorie të inteligjencës artificiale</translation>
 <translation id="3423275441470187644">Besimi</translation>
@@ -3594,7 +3595,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3513019849832307207">Bashkohu dhe hap</translation>
 <translation id="3513563267917474897">Rrëshqitësi i nuancës nga <ph name="MIN_VALUE" /> deri në <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kontrolli i lojërave</translation>
-<translation id="3514373592552233661">Rrjetet e preferuara do të preferohen në raport me rrjetet e tjera të njohura nëse ofrohen më shumë se një</translation>
 <translation id="3514647716686280777">Po merr mbrojtjen standarde të sigurisë. Për të marrë më shumë mbrojtje ndaj sajteve të uebit, shkarkimeve dhe shtesave të rrezikshme, aktivizo "Shfletimin e sigurt të përmirësuar" te cilësimet e Chrome.</translation>
 <translation id="3514681096978190000">Ky skedar arkivi përmban skedarë të tjerë që mund të fshehin softuerë keqdashës</translation>
 <translation id="3515983984924808886">Prek përsëri çelësin e sigurisë për të konfirmuar rivendosjen. Të gjitha informacionet e ruajtura në çelësin e sigurisë, duke përfshirë kodin e tij PIN, do të fshihen.</translation>
@@ -4952,6 +4952,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4461483878391246134">Shto gjuhët për të cilat nuk do të ofrohet asnjëherë përkthim</translation>
 <translation id="4462159676511157176">Serverët e personalizuar të emrit</translation>
 <translation id="4465236939126352372">Kufiri kohor prej <ph name="TIME" /> është caktuar për <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Kod PIN i gabuar</translation>
 <translation id="4467561276409486506">&amp;Aktivizo/çaktivizo modalitetin kompakt</translation>
 <translation id="4469324811108161144">Shënimet mund të ruajnë deri në <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> mund t'i modifikojë skedarët në <ph name="FOLDERNAME" /></translation>
@@ -10280,7 +10281,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8306063480506363120">Hiq qasjen te "Disku"</translation>
 <translation id="8306430106790753902">Itineraret e rrjetit të ChromeOS</translation>
 <translation id="8306885873692337975">Merr veçoritë dhe përmirësimet më të fundit të sigurisë.</translation>
-<translation id="8308016398665340540">Po e ndan këtë rrjet me përdoruesit e tjerë të kësaj pajisjeje</translation>
 <translation id="8308024039615003152">Livadh</translation>
 <translation id="8308179586020895837">Pyet nëse <ph name="HOST" /> dëshiron të ketë qasje te kamera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11182,7 +11182,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8942714513622077633">Të anulohet konfigurimi i Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International me rritje</translation>
 <translation id="8944099748578356325">Përdorë baterinë më shpejt (aktualisht <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Të kufizuara</translation>
 <translation id="8944633700466246631">Krijo një kod PIN rikuperimi me 6 shifra për "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="8944725102565796255">Nëse dëshiron ta përdorësh këtë llogari vetëm një herë, mund <ph name="GUEST_LINK_BEGIN" />ta përdorësh pajisjen si vizitor<ph name="GUEST_LINK_END" />. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" />.
 

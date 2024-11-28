@@ -97,7 +97,7 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
-<translation id="1390418506739274310">Es posible que veas el historial de otras apps que abren vínculos en Chrome. Es posible que tu Cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="1390418506739274310">Es posible que veas el historial de otras apps que abren vínculos en Chrome. Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">La hoja inferior de información sobre precios está abierta en su totalidad</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Puedes <ph name="BEGIN_LINK1" />administrar qué datos de Chrome se guardan<ph name="END_LINK1" /> en tu Cuenta de Google.
@@ -460,7 +460,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3037517125981011456">Muestra mensajes para acceder a Chrome</translation>
 <translation id="3038272154009688107">Ver todos los sitios</translation>
-<translation id="3055841435094910999">Se envía información de tu uso de Chrome a Google, pero no está vinculada a ti.\n\nSi Chrome falla, es posible que los detalles de la falla incluyan información personal.\n\nSi activas la sincronización, es posible que las métricas incluyan información de las URL que visitas.</translation>
 <translation id="3059531648236115056">Agregar resumen</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favorito}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoritos}}</translation>
 <translation id="3062802207422175757">Artículos de Chrome relacionados con tus intereses</translation>
@@ -873,6 +872,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="496607651705915226">Para guardar y usar nuevas contraseñas en tu Cuenta de Google, actualiza los Servicios de Google Play</translation>
 <translation id="4971753085054504448">Realiza otra búsqueda o abre el historial completo de Chrome para ver más resultados.</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="498624032394115435">Cualquier persona que tenga el vínculo puede editar todas las pestañas.</translation>
 <translation id="4987271110129728827">No se puede encontrar la página. Revisa la ortografía o intenta realizar una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
@@ -959,7 +959,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá el acceso al grupo de pestañas “<ph name="GROUP_NAME" />” de inmediato</translation>
 <translation id="5423934151118863508">Aquí aparecerán las páginas que visites con más frecuencia</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
-<translation id="543121643585717256">Cualquier persona que tenga el vínculo puede editar todas las pestañas. Obtén más información sobre los grupos de pestañas compartidos</translation>
 <translation id="543338862236136125">Editar contraseña</translation>
 <translation id="5433691172869980887">Se copió el nombre de usuario</translation>
 <translation id="5438292632479953702">Volver a descargar</translation>
@@ -1154,6 +1153,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6284472661216707937">La hoja Contraseñas en todos tus dispositivos está cerrada</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6296366034485697675">Exportar y borrar</translation>
+<translation id="629730747756840877">Cuenta</translation>
 <translation id="6303969859164067831">Salir y desactivar la sincronización</translation>
 <translation id="6312687380483398334">Aplicaciones web (discretas)</translation>
 <translation id="6315386555979018699">Borrar y continuar</translation>
@@ -1640,6 +1640,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> quitó la pestaña “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Las contraseñas dejarán de funcionar pronto</translation>
 <translation id="831192587911042850">Agrega el sitio web actual a la lista de sitios web que sigues.</translation>
+<translation id="8320212361750431956">Actividad reciente</translation>
 <translation id="8342727528718219152">Chrome te informará sobre los sitios que podrían estar enviando demasiadas notificaciones</translation>
 <translation id="834313815369870491">Nunca traducir sitios</translation>
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no lo admitan</translation>
@@ -1704,7 +1705,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8562452229998620586">Las contraseñas guardadas aparecerán aquí.</translation>
 <translation id="8565021320663436446">¿Quieres quitar a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">No es posible descargar el archivo de forma segura</translation>
-<translation id="8571213806525832805">Últimas cuatro semanas</translation>
+<translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8582529315803410153">Aquí encontrarás las pestañas que se abrieron en otros dispositivos</translation>
 <translation id="8585103689515290060">Servicios de autocompletado</translation>
 <translation id="859046281437143747">Desde el botón Más opciones, realiza un seguimiento del precio</translation>

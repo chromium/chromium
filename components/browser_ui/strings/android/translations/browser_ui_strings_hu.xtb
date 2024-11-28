@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Előfordulhat, hogy a rendszer kijelentkezteti erről a webhelyről</translation>
 <translation id="6085954183010297841">Visszavonja a fájlszerkesztési engedélyt? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Ha be van kapcsolva, a webhelyek lekérdezhetik, hogy Ön mikor használja aktívan az eszközét. Ha ki van kapcsolva, a webhelyek nem tudhatják, hogy Ön mikor használja aktívan az eszközt.</translation>
-<translation id="6140839633433422817">Biztosan visszaállítja az engedélyeket, és törölni szeretné cookie-kat és a webhelyadatokat?</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6171020522141473435">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek Bluetooth-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak Bluetooth-eszközöket.</translation>
-<translation id="6177111841848151710">Tiltott a jelenlegi keresőmotor számára</translation>
 <translation id="6177128806592000436">Kapcsolata a webhellyel nem biztonságos</translation>
 <translation id="6181444274883918285">Webhelykivétel hozzáadása</translation>
 <translation id="6192792657125177640">Kivételek</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a mikrofon használatát (ajánlott)</translation>
 <translation id="6999131147875565462">A Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük</translation>
 <translation id="7000754031042624318">Kikapcsolva az Android beállításaiban</translation>
-<translation id="7016516562562142042">Engedélyezett a jelenlegi keresőmotor számára</translation>
 <translation id="702275896380648118">Ez a webhely kikövetkezteti az Ön által kedvelt dolgokat, majd hirdetéseket ajánl más webhelyeknek. Emellett lekéri az Önre vonatkozó hirdetéstémákat a Chrome-ból, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elem kijelölve}other{# elem kijelölve}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">NFC-eszközökön található információk megtekintésének és az ilyen eszközökkel való információcserének a tiltása a webhelyek számára</translation>
 <translation id="8944485226638699751">Korlátozott</translation>
 <translation id="8959122750345127698">Nem érhető el az ide vezető navigáció: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Elfelejt</translation>
 <translation id="8990043154272859344">A rendszer az összes webhelyről kijelentkezteti majd.</translation>
 <translation id="8993853206419610596">Az összes kérelem kibontása</translation>
 <translation id="9002538116239926534">Ha be van kapcsolva, a webhelyek menthetnek adatokat az eszközére. Ha ki van kapcsolva, a webhelyek nem menthetnek adatokat az eszközére.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyeket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="9138217887606523162">Jelenlegi nagyítási szint: <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>
-<translation id="930525582205581608">Szeretné a webhely elfelejtését kérni?</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>
 <translation id="967624055006145463">Tárolt adatok</translation>

@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
 <translation id="3038272154009688107">Переглянути всі сайти</translation>
-<translation id="3055841435094910999">Інформація про ваше використання Chrome надсилається в Google, але не пов’язується з вами\n\nЯкщо в Chrome виникає збій, відомості про нього можуть містити особисту інформацію\n\nЯкщо ви ввімкнете синхронізацію, показники також можуть містити дані про відвідані URL-адреси</translation>
 <translation id="3059531648236115056">Додати короткий переказ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Статті на цікаві вам теми в Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">Щоб зберігати й використовувати нові паролі в обліковому записі Google, оновіть сервіси Google Play</translation>
 <translation id="4971753085054504448">Введіть інший пошуковий запит або відкрийте повну історію Chrome, щоб побачити більше результатів.</translation>
 <translation id="497421865427891073">Перейти вперед</translation>
+<translation id="498624032394115435">Кожен, хто має посилання, може редагувати всі вкладки.</translation>
 <translation id="4987271110129728827">Не вдається знайти цю сторінку. Перевірте написання або спробуйте шукати в Інтернеті.</translation>
 <translation id="4988526792673242964">Сторінки</translation>
 <translation id="4991110219272367918">Екран з опцією схвалити або відхилити запит на доступ до веб-сайту закрито</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) відразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Тут відображатимуться найчастіше відвідувані сторінки</translation>
 <translation id="5424588387303617268">Доступно <ph name="GIGABYTES" /> ГБ</translation>
-<translation id="543121643585717256">Кожен, хто має посилання, може редагувати всі вкладки. Докладніше про спільні групи вкладок</translation>
 <translation id="543338862236136125">Змінити пароль</translation>
 <translation id="5433691172869980887">Ім’я користувача скопійовано</translation>
 <translation id="5438292632479953702">Завантажити знову</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">Екран "Паролі на всіх ваших пристроях" закрито</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6296366034485697675">Експортувати й видалити</translation>
+<translation id="629730747756840877">Обліковий запис</translation>
 <translation id="6303969859164067831">Вийти й вимкнути синхронізацію</translation>
 <translation id="6312687380483398334">Веб-додатки (тихий режим)</translation>
 <translation id="6315386555979018699">Видалити й продовжити</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> вилучає вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Незабаром паролі припинять працювати</translation>
 <translation id="831192587911042850">Поточний веб-сайт буде додано до списку тих, на які ви підписалися.</translation>
+<translation id="8320212361750431956">Останні дії</translation>
 <translation id="8342727528718219152">Chrome повідомлятиме вас про сайти, які надсилають забагато сповіщень</translation>
 <translation id="834313815369870491">Сайти, які не потрібно перекладати</translation>
 <translation id="8348430946834215779">За можливості використовуйте HTTPS і отримуйте попередження перед завантаженням сайтів, які не підтримують цей протокол</translation>

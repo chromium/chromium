@@ -460,7 +460,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3037517125981011456">Prikazuje obavijesti za prijavu u Chrome</translation>
 <translation id="3038272154009688107">Pogledajte sve web-lokacije</translation>
-<translation id="3055841435094910999">Googleu se šalju podaci o vašoj upotrebi Chromea, no ti podaci nisu povezani s vama.\n\nAko se Chrome sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.\n\nAko uključite sinkronizaciju, mjerni podaci mogu uključivati i informacije o URL-ovima koje posjećujete.</translation>
 <translation id="3059531648236115056">Dodaj sažetak</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> oznaka}one{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}few{<ph name="BOOKMARKS_COUNT_MANY" /> oznake}other{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}}</translation>
 <translation id="3062802207422175757">Članci o vašim interesima na Chromeu</translation>
@@ -873,6 +872,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="496607651705915226">Da biste spremali i upotrebljavali nove zaporke na Google računu, ažurirajte usluge za Google Play.</translation>
 <translation id="4971753085054504448">Pokušajte potražiti nešto drugo ili otvorite cijelu povijest u Chromeu da biste vidjeli više rezultata.</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
+<translation id="498624032394115435">Svatko s vezom može uređivati sve kartice.</translation>
 <translation id="4987271110129728827">Nije moguće pronaći stranicu. Provjerite jeste li točno napisali ili pretražite web.</translation>
 <translation id="4988526792673242964">Stranice</translation>
 <translation id="4991110219272367918">Opcija odobravanja ili neodobravanja zatvorene web-lokacije</translation>
@@ -959,7 +959,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) odmah će izgubiti pristup grupi kartica <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Najposjećenije stranice prikazivat će se ovdje</translation>
 <translation id="5424588387303617268">Dostupno: <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Svatko s vezom može uređivati sve kartice. Saznajte više o dijeljenim grupama kartica</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
 <translation id="5433691172869980887">Korisničko je ime kopirano</translation>
 <translation id="5438292632479953702">Ponovno preuzmi</translation>
@@ -1154,6 +1153,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6284472661216707937">Zatvorene su zaporke na svim vašim uređajima</translation>
 <translation id="6295158916970320988">Sve web-lokacije</translation>
 <translation id="6296366034485697675">Izvezi i izbriši</translation>
+<translation id="629730747756840877">Račun</translation>
 <translation id="6303969859164067831">Odjava i isključivanje sinkronizacije</translation>
 <translation id="6312687380483398334">Web-aplikacije (tiho)</translation>
 <translation id="6315386555979018699">Izbriši i nastavi</translation>
@@ -1641,6 +1641,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8307517230426267469">Korisnik <ph name="GIVEN_NAME" /> uklonio je karticu <ph name="TAB_NAME" /></translation>
 <translation id="8310451567823644042">Zaporke će uskoro prestati funkcionirati</translation>
 <translation id="831192587911042850">Dodaje trenutačnu web-lokaciju na popis web-lokacija koje pratite.</translation>
+<translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8342727528718219152">Chrome će vas obavijestiti o web-lokacijama koje možda šalju previše obavijesti</translation>
 <translation id="834313815369870491">Nikad ne prevodi web-lokacije</translation>
 <translation id="8348430946834215779">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju</translation>

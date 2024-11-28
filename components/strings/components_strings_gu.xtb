@@ -1241,6 +1241,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3240791268468473923">ચુકવણીની સુરક્ષિત લૉગ ઇન વિગત, મેળ ખાતી લૉગ ઇન વિગતની કોઈપણ શીટ ખોલવામાં આવી નથી</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”ની લિંક બ્લૉક કરેલી છે</translation>
+<translation id="3243650379537999343">ડ્રો</translation>
 <translation id="3248329428895535435">આ સાઇટ પર બતાવશો નહીં</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" /> પર ફાઇલ અપલોડ કરવાની પ્રક્રિયા ભૂલો સાથે પૂર્ણ થઈ</translation>
 <translation id="3252772880526154546">સ્થાપત્ય</translation>
@@ -2634,6 +2635,7 @@
 <translation id="5740911612628596808">એન્વલપ C9</translation>
 <translation id="5742806904559466333">બાર, ક્લબ અને નાઇટલાઇફ</translation>
 <translation id="5743684619253032786">નખની સંભાળ માટેની પ્રોડક્ટ</translation>
+<translation id="574392208103952083">મધ્યમ</translation>
 <translation id="5745733273847572235">તમારા સ્થાન માટે પૂછી શકે છે</translation>
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
 <translation id="5752327398324808817">એક કે બે શબ્દ દાખલ કરો</translation>
@@ -3469,6 +3471,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> પર ખાનગી કનેક્શન સ્થાપિત કરી શકાતું નથી કારણ કે તમારા ઉપકરણની તારીખ અને સમય (<ph name="DATE_AND_TIME" />) અયોગ્ય છે.</translation>
 <translation id="7260075294900977274">એક નવું સ્માર્ટ ફોલ્ડર જે તમને તમારા તમામ શૉપિંગ પેજ એક જગ્યાએ સાચવવામાં, કિંમતો ઑટોમેટિક રીતે ટ્રૅક કરવામાં, કિંમતો વિશે જાણકારી મેળવવામાં અને બીજું ઘણું કરવામાં સહાય કરે છે</translation>
 <translation id="7265608370113700582">સરનામું ફક્ત આ ડિવાઇસ પર ઉપલબ્ધ છે</translation>
+<translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> દ્વારા વ્યાખ્યાયિત શોધ ઍગ્રિગેટર કીવર્ડ અને શૉર્ટકટ, બન્ને એક સરખો ન હોઈ શકે: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">તમે જે ફાઇલો ડાઉનલોડ કરો તેને Google Cloud અથવા ત્રીજા પક્ષોને વિશ્લેષણ માટે મોકલવામાં આવે છે. ઉદાહરણ તરીકે, તેમને કદાચ સંવેદનશીલ વ્યક્તિગત ડેટા અથવા માલવેર માટે સ્કૅન કરવામાં આવી શકે છે અને કંપનીની પૉલિસીઓના આધારે સ્ટોર કરવામાં આવી શકે છે તથા તમારા ઍડમિનિસ્ટ્રેટર તેને જોઈ શકે છે.</translation>
 <translation id="7275334191706090484">મેનેજ કરેલા બુકમાર્ક</translation>
 <translation id="7275808129217605899">આરોગ્યપ્રદ આહાર</translation>

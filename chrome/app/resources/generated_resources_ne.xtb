@@ -3456,6 +3456,7 @@
 <translation id="3421387094817716717">अण्डाकार कर्भको सार्वजनिक कुञ्जी</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" /> तपाईंको आवाजसँग मिल्दोजुल्दो आवाज वा रेकर्डिङ प्रयोग गरेर पनि तपाईंको व्यक्तिगत परिणाम हेर्न वा तपाईंको सहायकको प्रयोग गर्न सकिने सम्भावना हुन्छ।</translation>
 <translation id="3421835120203732951">नयाँ प्रोफाइल हाल्नुहोस्</translation>
+<translation id="3422989558057853751">चयन गरिएको अन्तिम सामग्री, तपाईंले यो सामग्रीको चयन रद्द गर्नुभयो भने तपाईं छनौट मोडबाट बाहिरिनु हुने छ</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" /> मा परिणामहरू भेटिए</translation>
 <translation id="3423226218833787854">यो AI सुविधाका बारेमा थप जान्नुहोस्</translation>
 <translation id="3423275441470187644">विश्वास</translation>
@@ -3594,7 +3595,6 @@
 <translation id="3513019849832307207">सामेल हुनुहोस् र खोल्नुहोस्</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> देखि <ph name="MAX_VALUE" /> सम्मको ह्यू स्लाइडर</translation>
 <translation id="3514335087372914653">गेम कन्ट्रोल</translation>
-<translation id="3514373592552233661">एक भन्दा बढी नेटवर्कहरू उपलब्ध भएमा रुचाइएको नेटवर्कलाई अन्य ज्ञात नेटवर्कहरूलाई भन्दा बढी प्राथमिकता दिइनेछ</translation>
 <translation id="3514647716686280777">तपाईं सामान्य सुरक्षा प्राप्त गरिराख्नुभएको छ। तपाईं खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट थप सुरक्षा प्राप्त गर्न चाहनुहुन्छ भने Chrome का सेटिङमा गई परिष्कृत Safe Browsing अन गर्नुहोस्।</translation>
 <translation id="3514681096978190000">यो आर्काइभ फाइलमा मालवेयर लुकाउन सक्ने अन्य फाइलहरू समावेश हुन्छन्</translation>
 <translation id="3515983984924808886">रिसेट गर्ने कार्य पुष्टि गर्न आफ्नो सुरक्षा साँचो फेरि छुनुहोस्। सुरक्षा साँचोको PIN लगायत यस साँचोमा भण्डारण गरिएका सबै जानकारी मेटाइने छन्।</translation>
@@ -4951,6 +4951,7 @@
 <translation id="4461483878391246134">तपाईं जुन जुन भाषामा अनुवाद गर्ने विकल्प कहिल्यै प्रदान गर्न चाहनुहुन्छ ती भाषाहरू हाल्नुहोस्</translation>
 <translation id="4462159676511157176">अनुकुल नाम सर्भरहरू</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> का हकमा <ph name="TIME" /> समय सीमा सेट गरिएको छ</translation>
+<translation id="4467373268340082204">गलत PIN</translation>
 <translation id="4467561276409486506">कम्प्याक्ट मोड टगल गर्नुहोस्</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा फाइल सम्पादन गर्न सक्ने छ</translation>
@@ -10281,7 +10282,6 @@
 <translation id="8306063480506363120">Google Drive एक्सेस गर्ने सुविधा हटाउनुहोस्</translation>
 <translation id="8306430106790753902">ChromeOS को नेटवर्कका रुटहरू</translation>
 <translation id="8306885873692337975">नयाँ सुविधा तथा सुरक्षासम्बन्धी सुधारहरू प्राप्त गर्नुहोस्।</translation>
-<translation id="8308016398665340540">तपाईं यस डिभाइसका अन्य प्रयोगकर्ताहरूसँग यो इन्टरनेट सेयर गरिरहनुभएको छ</translation>
 <translation id="8308024039615003152">घाँसे मैदान</translation>
 <translation id="8308179586020895837">Ask if <ph name="HOST" /> wants to access your camera</translation>
 <translation id="830868413617744215">बेटा</translation>
@@ -11183,7 +11183,6 @@
 <translation id="8942714513622077633">Microsoft 365 सेटअप गर्ने कार्य रद्द गर्ने हो?</translation>
 <translation id="894360074127026135">नेटस्केप इन्टरनेश्नल स्टेप-अप</translation>
 <translation id="8944099748578356325">अझ छिटो उक्त ब्याट्री प्रयोग गर्नुहोस् (हाल <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">सीमित</translation>
 <translation id="8944633700466246631">Google पासवर्ड म्यानेजरको ६ अङ्कको रिकभरी PIN बनाउनुहोस्</translation>
 <translation id="8944725102565796255">तपाईं यो खाता एक पटक मात्र प्रयोग गर्न चाहनुहुन्छ भने तपाईं <ph name="GUEST_LINK_BEGIN" />अतिथिका रूपमा यो डिभाइस प्रयोग गर्न<ph name="GUEST_LINK_END" /> सक्नुहुन्छ। तपाईं अरू कसैको खाता लिंक गर्न चाहनुहुन्छ भने उहाँलाई <ph name="LINK_BEGIN" />नयाँ व्यक्तिका रूपमा<ph name="LINK_END" /> आफ्नो <ph name="DEVICE_TYPE" /> मा सामेल गराउनुहोस्।
 

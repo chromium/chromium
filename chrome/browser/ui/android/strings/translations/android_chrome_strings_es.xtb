@@ -460,7 +460,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3037177537145227281">Siguiendo precio</translation>
 <translation id="3037517125981011456">Muestra solicitudes para iniciar sesión en Chrome</translation>
 <translation id="3038272154009688107">Ver todos los sitios</translation>
-<translation id="3055841435094910999">Se envía información a Google sobre el uso que haces de Chrome, pero no está vinculada a ti\n\nSi Chrome falla, los detalles sobre el fallo pueden incluir alguna información personal\n\nSi activas la sincronización, las métricas también pueden incluir información sobre las URLs que visites</translation>
 <translation id="3059531648236115056">Añadir resumen</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artículos sobre tus intereses en Chrome</translation>
@@ -709,7 +708,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4282440837784183472">Tu organización, <ph name="MANAGED_DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chrome. Tu administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en los ajustes de Android<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">Nueva pestaña de Incógnito</translation>
+<translation id="4296252229500326964">Nueva pestaña Incógnito</translation>
 <translation id="4298388696830689168">Sitios web enlazados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Configuración básica</translation>
@@ -873,6 +872,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="496607651705915226">Para guardar y usar nuevas contraseñas en tu cuenta de Google, actualiza Servicios de Google Play</translation>
 <translation id="4971753085054504448">Prueba con otra búsqueda o abre el historial completo de Chrome para ver más resultados.</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="498624032394115435">Cualquier persona que tenga el enlace puede editar todas las pestañas.</translation>
 <translation id="4987271110129728827">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a hacer una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
@@ -959,7 +959,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Aquí aparecerán las páginas a las que accedes con más frecuencia</translation>
 <translation id="5424588387303617268">Disponibilidad: <ph name="GIGABYTES" /> GB</translation>
-<translation id="543121643585717256">Cualquier persona que tenga el enlace puede editar todas las pestañas. Más información sobre los grupos de pestañas compartidos</translation>
 <translation id="543338862236136125">Cambiar contraseña</translation>
 <translation id="5433691172869980887">Se ha copiado el nombre de usuario</translation>
 <translation id="5438292632479953702">Volver a descargar</translation>
@@ -1154,6 +1153,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6284472661216707937">Se ha cerrado la ventana Contraseñas en todos tus dispositivos</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6296366034485697675">Exportar y eliminar</translation>
+<translation id="629730747756840877">Cuenta</translation>
 <translation id="6303969859164067831">Cerrar sesión y desactivar la sincronización</translation>
 <translation id="6312687380483398334">Aplicaciones web (no interrumpir)</translation>
 <translation id="6315386555979018699">Eliminar y continuar</translation>
@@ -1641,6 +1641,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ha quitado la pestaña <ph name="TAB_NAME" /></translation>
 <translation id="8310451567823644042">Las contraseñas dejarán de funcionar pronto</translation>
 <translation id="831192587911042850">Añade el sitio web actual a la lista de sitios que sigues.</translation>
+<translation id="8320212361750431956">Actividad reciente</translation>
 <translation id="8342727528718219152">Chrome te avisará de los sitios que puedan estar enviando demasiadas notificaciones</translation>
 <translation id="834313815369870491">No traducir sitios nunca</translation>
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo</translation>
@@ -1852,7 +1853,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="95817756606698420">Chrome puede utilizar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para hacer búsquedas en China. Puedes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Eliminar datos de navegación</translation>
+<translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="966131775676567255">Eliminando datos de la cuenta</translation>
 <translation id="96681097142096641">¿Ver página simplificada?</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>

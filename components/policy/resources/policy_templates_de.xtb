@@ -5108,14 +5108,6 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
       Wenn diese Richtlinie nicht konfiguriert ist, kann die Funktion von durch Unternehmen verwaltete Nutzer und nicht verwaltete Nutzer standardmäßig verwendet werden.</translation>
 <translation id="487460824085252184">Automatisch migrieren, ohne die Zustimmung des Nutzers einzuholen</translation>
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
-<translation id="4875557601092081492">Diese Richtlinie wird in M132 nicht mehr unterstützt und durch die Richtlinie „<ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />“ ersetzt, die eine detailliertere Steuerung der Funktion ermöglicht. Verwende stattdessen „<ph name="GEN_AI_LENS_OVERLAY_SETTINGS_POLICY_NAME" />“.
-
-Mit „Lens Overlay“ können Nutzer Google-Suchanfragen ausführen, indem sie mit einem über den tatsächlichen Webinhalten eingeblendeten Screenshot der aktuellen Seite interagieren.
-
-Es gibt keine Nutzereinstellung, mit der diese Funktion gesteuert werden kann. Sofern sie nicht durch diese Richtlinie deaktiviert wird, ist sie standardmäßig für alle Nutzer verfügbar, die Google als Standardsuchmaschine verwenden.
-
-Wenn die Richtlinie auf „0 – Aktiviert“ festgelegt oder nicht konfiguriert ist, ist die Funktion für Nutzer verfügbar.
-Ist die Richtlinie auf „1 – Deaktiviert“ festgelegt, ist die Funktion nicht verfügbar.</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
 <translation id="4877305769899044884">Tastaturbeleuchtungsfarbe „Standard“</translation>
 <translation id="4886138258823889910">Anbieter des browsereigenen Bedienungshilfen-Frameworks zur <ph name="UIA_NAME" /> unter Windows aktivieren</translation>
@@ -10263,6 +10255,12 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 
       Weitere Informationen zu den Medientypen JavaScript/ECMAScript findest du unter https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
+<translation id="8668202868357089313">Mit „Lens Overlay“ können Nutzer Google-Suchanfragen ausführen, indem sie mit einem Screenshot der aktuellen Seite interagieren, der über den tatsächlichen Webinhalten eingeblendet wird.
+
+Es gibt keine Nutzereinstellung, mit der diese Funktion gesteuert werden kann. Sie ist für alle Nutzer, die Google als Standardsuchmaschine verwenden, standardmäßig verfügbar, sofern sie nicht durch diese Richtlinie deaktiviert wurde.
+
+Wenn die Richtlinie auf „0 – Aktiviert“ festgelegt oder nicht konfiguriert ist, ist die Funktion für Nutzer verfügbar.
+Ist die Richtlinie auf „1 – Deaktiviert“ festgelegt, ist die Funktion nicht verfügbar.</translation>
 <translation id="8668928485126473293">Mit dieser Richtlinie kannst du festlegen, ob <ph name="PRODUCT_NAME" /> die JavaScript-Engine V8 mit erweiterten JavaScript-Optimierungen ausführt.
 
 Wenn JavaScript-Optimierungen deaktiviert sind (indem du den Wert dieser Richtlinie auf 2 setzt), rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.
@@ -10280,17 +10278,6 @@ Ist diese Richtlinie nicht konfiguriert, sind JavaScript-Optimierungen aktiviert
       Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="8672321184841719703">Automatische Aktualisierung auf Zielversion</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
-<translation id="8674130752570077671">Mit „Lens Overlay“ können Nutzer Google-Suchanfragen ausführen, indem sie mit einem über den tatsächlichen Webinhalten eingeblendeten Screenshot der aktuellen Seite interagieren. Außerdem können sie damit Google-Suchanfragen ausführen, die den Kontext der aktuellen Seite berücksichtigen. Um kontextsensitive Antworten liefern zu können, sendet „Lens Overlay“ die Inhalte der Seite an Google. Die Google Suche kann die Anfragen der Nutzer dann ausgehend vom Kontext der Seite beantworten, auf der sie sich gerade befinden.
-
-Es gibt keine Nutzereinstellung, mit der diese Funktion gesteuert werden kann. Sofern sie nicht durch diese Richtlinie deaktiviert wird, ist sie standardmäßig für alle Nutzer verfügbar, die Google als Standardsuchmaschine verwenden.
-
-Diese Richtlinie ersetzt die nicht mehr unterstützte Richtlinie „<ph name="LENS_OVERLAY_SETTINGS_POLICY_NAME" />“.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. Der Standardwert ist „0“, außer in den unten angegebenen Fällen.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert.</translation>
 <translation id="8676959842615154675">Wenn diese Richtlinie aktiviert ist, vergleicht der Host für den Remote-Zugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. „maxmustermann“, wenn der Hosteigentümer das Google-Konto „maxmustermann@beispiel.de“ ist). Dieser Host wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht. Wenn du erzwingen möchtest, dass das Google-Konto des Eigentümers mit einer bestimmten Domain verknüpft ist, verwende die Richtlinie mit <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remote-Zugriff mit jedem lokalen Nutzer verknüpft sein.</translation>

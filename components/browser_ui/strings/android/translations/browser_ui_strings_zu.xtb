@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Ungase ukhishwe kule sayithi</translation>
 <translation id="6085954183010297841">Susa isibonelelo sokuhlela ifayela? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Lapho ivuliwe, amasayithi angacela ukwazi lapho usebenzisa ngokuqhubekayo idivayisi yakho. Lapho ivaliwe, amasayithi awakwazi ukwazi lapho usebenzisa ngokuqhubekayo idivayisi yakho.</translation>
-<translation id="6140839633433422817">Uqinisekile ukuthi ufuna ukusetha kabusha izimvume, bese usula amakhukhi nedatha yesayithi?</translation>
 <translation id="6165508094623778733">Funda kabanzi</translation>
 <translation id="6171020522141473435">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi e-Bluetooth. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi e-Bluetooth.</translation>
-<translation id="6177111841848151710">Kuvinjelwe injini yokusesha yamanje</translation>
 <translation id="6177128806592000436">Ukuxhumeka kwakho kuleli sayithi akuqinisekisiwe</translation>
 <translation id="6181444274883918285">Engeza okuhlukile kwesayithi</translation>
 <translation id="6192792657125177640">Okungaphandle</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Buza kuqala ngaphambi kokuvumela amasayithi ukuthi asebenzise imakrofoni yakho (kunconyiwe)</translation>
 <translation id="6999131147875565462">IChrome iyashesha ukuqalisa futhi izakhi ezisebenzisa iJavaScript kufanele zisebenze ngendlela eziklanywe ngayo</translation>
 <translation id="7000754031042624318">Kuvaliwe kuzilungiselelo ze-Android</translation>
-<translation id="7016516562562142042">Kuvunyelwe injini yokusesha yamanje</translation>
 <translation id="702275896380648118">LeLI sayithi Linquma izinto ozithandayo bese liphakamisa izikhangiso kwamanye amasayithi. Leli sayithi lithola izihloko zezikhangiso zakho ku-Chrome ukuze likubonise izikhangiso ezihambisana kakhulu.</translation>
 <translation id="7053983685419859001">Vimba</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ekhethiwe}one{# ekhethiwe}other{# ekhethiwe}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Vimba amasayithi ekuboneni nasekuguquleni ulwazi kumadivayisi e-NFC</translation>
 <translation id="8944485226638699751">Kukhawulelwe</translation>
 <translation id="8959122750345127698">Ukuzulazula akufinyeleleki: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Khohlwa</translation>
 <translation id="8990043154272859344">Uzokhishwa ngemvume kuwo wonke amasayithi</translation>
 <translation id="8993853206419610596">Nweba zonke izicelo</translation>
 <translation id="9002538116239926534">Lapho ivuliwe, amasayithi angalondoloza idatha kudivayisi yakho. Lapho ivaliwe, amasayithi awakwazi ukulondoloza idatha kudivayisi yakho.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Vula izimvume ze-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Ukusondeza kwamanje kungu-<ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Leli khasi liyingozi</translation>
-<translation id="930525582205581608">Khohlwa le sayithi?</translation>
 <translation id="947156494302904893">Amasayithi owavakashelayo angaqinisekisa ukuthi ungumuntu wangempela hhayi i-bot</translation>
 <translation id="959682366969460160">Hleleka</translation>
 <translation id="967624055006145463">Idatha ilondoloziwe</translation>

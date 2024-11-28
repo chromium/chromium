@@ -3612,7 +3612,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3513019849832307207">Tham gia và mở</translation>
 <translation id="3513563267917474897">Thanh trượt điều chỉnh màu sắc từ <ph name="MIN_VALUE" /> đến <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kiểm soát trò chơi</translation>
-<translation id="3514373592552233661">Mạng ưa thích sẽ được ưu tiên hơn so với các mạng đã biết khác nếu có nhiều mạng</translation>
 <translation id="3514647716686280777">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn. Để tăng cường khả năng bảo vệ trước các trang web, nội dung tải xuống và tiện ích nguy hiểm, hãy bật tính năng Duyệt web an toàn có tăng cường bảo vệ trong phần cài đặt của Chrome.</translation>
 <translation id="3514681096978190000">Tệp lưu trữ này bao gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
 <translation id="3515983984924808886">Chạm lại vào khóa bảo mật để xác nhận đặt lại. Thao tác này sẽ xóa toàn bộ thông tin lưu trữ trên khóa bảo mật, bao gồm cả mã PIN của khóa.</translation>
@@ -10306,7 +10305,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8306063480506363120">Xoá quyền truy cập Drive</translation>
 <translation id="8306430106790753902">Tuyến mạng ChromeOS</translation>
 <translation id="8306885873692337975">Sử dụng các tính năng mới nhất và cải thiện mức độ bảo mật.</translation>
-<translation id="8308016398665340540">Bạn đang chia sẻ mạng này với những người dùng khác trên thiết bị này</translation>
 <translation id="8308024039615003152">Đồng cỏ</translation>
 <translation id="8308179586020895837">Hỏi nếu <ph name="HOST" /> muốn truy cập máy ảnh của bạn</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11208,7 +11206,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8942714513622077633">Huỷ thiết lập Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Sử dụng pin nhanh hơn (hiện tại là <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Bị giới hạn</translation>
 <translation id="8944633700466246631">Tạo mã PIN khôi phục gồm 6 chữ số để truy cập vào Trình quản lý mật khẩu của Google</translation>
 <translation id="8944725102565796255">Nếu chỉ muốn sử dụng tài khoản này một lần, bạn có thể <ph name="GUEST_LINK_BEGIN" />dùng thiết bị với tư cách khách<ph name="GUEST_LINK_END" />. Nếu bạn muốn thêm tài khoản cho người khác, hãy <ph name="LINK_BEGIN" />thêm người mới<ph name="LINK_END" /> vào <ph name="DEVICE_TYPE" /> của bạn.
 

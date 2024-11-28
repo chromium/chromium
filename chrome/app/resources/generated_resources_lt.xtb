@@ -3615,7 +3615,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3513019849832307207">Prisijungti ir atidaryti</translation>
 <translation id="3513563267917474897">Atspalvio šliaužiklis nuo <ph name="MIN_VALUE" /> iki <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Žaidimų valdiklis</translation>
-<translation id="3514373592552233661">Pageidaujamiems tinklams bus teikiama pirmenybė vietoj kitų žinomų tinklų, jei bus pasiekiamas daugiau nei vienas tinklas</translation>
 <translation id="3514647716686280777">Naudojate įprastos apsaugos funkciją. Kad užtikrintumėte geresnę apsaugą nuo pavojingų svetainių, atsisiuntimų ir plėtinių, „Chrome“ nustatymuose įjunkite „Sustiprinto saugaus naršymo“ funkciją.</translation>
 <translation id="3514681096978190000">Šiame archyvo faile yra kitų failų, kurie gali slėpti kenkėjiškas programas</translation>
 <translation id="3515983984924808886">Palieskite saugos raktą dar kartą patvirtindami nustatymą iš naujo. Visa saugos rakte saugoma informacija, įskaitant jo PIN kodą, bus ištrinta.</translation>
@@ -10314,7 +10313,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8306063480506363120">Pašalinti prieigą prie Disko</translation>
 <translation id="8306430106790753902">„ChromeOS“ tinklo maršrutai</translation>
 <translation id="8306885873692337975">Gaukite naujausias funkcijas ir saugos patobulinimus.</translation>
-<translation id="8308016398665340540">Bendrinate šį tinklą su kitais šio įrenginio naudotojais</translation>
 <translation id="8308024039615003152">Pieva</translation>
 <translation id="8308179586020895837">Klausti, jei <ph name="HOST" /> nori pasiekti fotoaparatą</translation>
 <translation id="830868413617744215">Beta versija</translation>
@@ -11219,7 +11217,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8942714513622077633">Atšaukti „Microsoft 365“ sąranką?</translation>
 <translation id="894360074127026135">„Netscape“ tarptautinė sąranka</translation>
 <translation id="8944099748578356325">Greičiau naudos akumuliatoriaus energiją (šiuo metu <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Apribota</translation>
 <translation id="8944633700466246631">Sukurkite šešių skaitmenų „Google“ slaptažodžių tvarkyklės atkūrimo PIN kodą</translation>
 <translation id="8944725102565796255">Jei norite šią paskyrą naudoti tik vieną kartą, galite <ph name="GUEST_LINK_BEGIN" />naudoti įrenginį kaip svečias<ph name="GUEST_LINK_END" />. Jei norite pridėti paskyrą kitam asmeniui, <ph name="LINK_BEGIN" />pridėkite naują asmenį<ph name="LINK_END" /> prie „<ph name="DEVICE_TYPE" />“.
 

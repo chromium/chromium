@@ -1238,6 +1238,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3240791268468473923">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल खोलियो</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” का लिंकहरू ब्लक गरिएका छन्</translation>
+<translation id="3243650379537999343">चित्र बनाउनुहोस्</translation>
 <translation id="3248329428895535435">यो साइटका हकमा फेरि नदेखाउनुहोस्</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" /> मा फाइल अपलोड गर्ने प्रक्रिया त्रुटिसहित पूरा भएको छ</translation>
 <translation id="3252772880526154546">वास्तुकला</translation>
@@ -2632,6 +2633,7 @@
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">बार, क्लब तथा नाइटलाइफ</translation>
 <translation id="5743684619253032786">नङको हेरचाहसम्बन्धी उत्पादनहरू</translation>
+<translation id="574392208103952083">मध्यम</translation>
 <translation id="5745733273847572235">तपाईंको लोकेसन सोध्न सक्छ</translation>
 <translation id="5750869797196646528">हात ट्र्याक गर्ने सुविधा</translation>
 <translation id="5752327398324808817">एउटा वा दुई वटा शब्द हाल्नुहोस्</translation>
@@ -3466,6 +3468,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एक निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको कम्प्युटरको मिति र समय (<ph name="DATE_AND_TIME" />) गलत छन्।</translation>
 <translation id="7260075294900977274">तपाईंलाई किनमेलसम्बन्धी आफ्ना सबै पेजहरू एकै ठाउँमा सेभ गर्ने, मूल्यहरू स्वतः ट्र्याक गर्ने र मूल्यसम्बन्धी विश्लेषणात्मक जानकारी प्राप्त गर्नेलगायतका अन्य कुराहरू गर्न सघाउने एउटा नयाँ स्मार्ट फोल्डर</translation>
 <translation id="7265608370113700582">यो ठेगाना यस डिभाइसमा मात्र उपलब्ध छ</translation>
+<translation id="7269151392155523061">यो सर्टकट र <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ले परिभाषित गरेको सर्च एग्रिगेटरको किवर्ड उही हुनु हुँदैन: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">तपाईंले डाउनलोड गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्ष समक्ष पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="7275334191706090484">व्यवस्थित पृष्ठमञ्जूषाहरू</translation>
 <translation id="7275808129217605899">स्वस्थ खानपान</translation>

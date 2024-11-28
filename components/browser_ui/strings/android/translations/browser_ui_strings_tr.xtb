@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Bu sitede oturumunuz kapatılabilir</translation>
 <translation id="6085954183010297841">Dosya düzenleme izni silinsin mi? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Bu düğme açıkken siteler cihazınızı etkin olarak kullandığınız zamanı bilmek isteyebilir. Düğme kapalıyken siteler cihazınızı etkin olarak kullandığınız zamanı bilemez.</translation>
-<translation id="6140839633433422817">İzinleri sıfırlayıp çerezleri ve site verilerini silmek istediğinizden emin misiniz?</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6171020522141473435">Bu düğme açıkken siteler Bluetooth cihazları kullanmak isteyebilir. Düğme kapalıyken siteler Bluetooth cihazları kullanamaz.</translation>
-<translation id="6177111841848151710">Geçerli arama motoru için engellendi</translation>
 <translation id="6177128806592000436">Bu siteye bağlantınız güvenli değil</translation>
 <translation id="6181444274883918285">Site istisnası ekle</translation>
 <translation id="6192792657125177640">İstisnalar</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Sitelerin, mikrofonunuzu kullanmasına izin verilmeden önce size sorulsun (önerilen)</translation>
 <translation id="6999131147875565462">Chrome daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır</translation>
 <translation id="7000754031042624318">Android ayarlarından kapatıldı</translation>
-<translation id="7016516562562142042">Geçerli arama motoru için izin verildi</translation>
 <translation id="702275896380648118">Bu site, nelerden hoşlandığınızı belirleyip diğer sitelere reklam önerir. Ayrıca, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı da öğrenir.</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">NFC cihazlarda sitelerin bilgileri görmesini ve değiştirmesini engelle</translation>
 <translation id="8944485226638699751">Sınırlı</translation>
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Unut</translation>
 <translation id="8990043154272859344">Tüm sitelerdeki oturumunuz kapatılacak</translation>
 <translation id="8993853206419610596">Tüm istekleri genişlet</translation>
 <translation id="9002538116239926534">Bu düğme açıkken siteler cihazınıza veri kaydedebilir. Düğme kapalıyken siteler cihazınıza veri kaydedemez.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>
 <translation id="9138217887606523162">Şu anki yakınlaştırma düzeyi %%<ph name="ZOOM_LEVEL" /></translation>
 <translation id="9162462602695099906">Bu sayfa tehlikeli</translation>
-<translation id="930525582205581608">Bu site unutulsun mu?</translation>
 <translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
 <translation id="959682366969460160">Organize çalışın</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>

@@ -432,6 +432,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="288902476966286676">Devolver aos remitente</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894757982205307093">Nova pestana no grupo</translation>
+<translation id="2902312830803030883">Máis accións</translation>
 <translation id="2905479111267140204">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais reutilizados que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="291754862089661335">Coloca o código QR ou o código de barras neste marco</translation>
 <translation id="2918688092312652908">Marcar como elemento non lido</translation>
@@ -1102,7 +1103,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
 <translation id="6064824697233747382">A túa organización esixe que desactives a sincronización.</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
-<translation id="6074656473835429958">Recibir notificacións</translation>
+<translation id="6074656473835429958">Recibe notificacións</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) non se puido cargar</translation>
 <translation id="6077126322656614846">Permítese o acceso á cámara</translation>
 <translation id="6084848228346514841">Seleccionar pestanas</translation>

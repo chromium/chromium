@@ -432,6 +432,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="288902476966286676">Return to sender</translation>
 <translation id="2893168226686371498">Default browser</translation>
 <translation id="2894757982205307093">New tab in group</translation>
+<translation id="2902312830803030883">More actions</translation>
 <translation id="2905479111267140204">You have <ph name="NUMBER_OF_PASSWORDS" /> reused passwords that could put your security at risk.</translation>
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2918688092312652908">Mark as unread</translation>
@@ -544,7 +545,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3517216995152707259">Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK" />sign out of Chrome<ph name="END_LINK" />.</translation>
 <translation id="3519193562722059437">Open a tab to browse the web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Open the tab}other{Open {count} tabs}}</translation>
-<translation id="3523789730715594198">You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
+<translation id="3523789730715594198">You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Not secure</translation>
 <translation id="3530206579861815432">Quickly find open and recently closed tabs across your synced devices.</translation>

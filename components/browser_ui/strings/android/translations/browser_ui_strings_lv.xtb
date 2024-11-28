@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Iespējams, automātiski izrakstīsieties no šīs vietnes.</translation>
 <translation id="6085954183010297841">Vai dzēst faila rediģēšanas atļauju? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt informāciju par to, kad jūs aktīvi lietojat savu ierīci. Kad šis slēdzis ir izslēgts, vietnes nevar iegūt informāciju par to, kad jūs aktīvi lietojat savu ierīci.</translation>
-<translation id="6140839633433422817">Vai tiešām vēlaties atiestatīt atļaujas un izdzēst sīkfailus un vietņu datus?</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6171020522141473435">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot Bluetooth ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot Bluetooth ierīces.</translation>
-<translation id="6177111841848151710">Bloķēta pašreizējai meklētājprogrammai</translation>
 <translation id="6177128806592000436">Savienojums ar šo vietni nav drošs.</translation>
 <translation id="6181444274883918285">Pievienot vietnes izņēmumu</translation>
 <translation id="6192792657125177640">Izņēmumi</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Jautāt, pirms atļaut vietnēm izmantot jūsu mikrofonu (ieteicams)</translation>
 <translation id="6999131147875565462">Chrome darbojas ātrāk, un funkcijas, kurās tiek izmantota valoda JavaScript, darbojas paredzētajā veidā</translation>
 <translation id="7000754031042624318">Izslēgta Android iestatījumos</translation>
-<translation id="7016516562562142042">Atļauta pašreizējai meklētājprogrammai</translation>
 <translation id="702275896380648118">Šī vietne nosaka jūsu intereses un pēc tam iesaka reklāmas citām vietnēm. Turklāt šī vietne iegūst informāciju par jūsu reklāmu tēmām no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Atlasīts 1 vienums}zero{Atlasīti # vienumi}one{Atlasīts # vienums}other{Atlasīti # vienumi}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Liegt vietnēm NFC ierīcēs piekļūt informācijai un to mainīt</translation>
 <translation id="8944485226638699751">Ierobežoti</translation>
 <translation id="8959122750345127698">Navigācija nav sasniedzama: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Aizmirst</translation>
 <translation id="8990043154272859344">Jūs tiksiet izrakstīts no visām vietnēm.</translation>
 <translation id="8993853206419610596">Izvērst visus pieprasījumus</translation>
 <translation id="9002538116239926534">Kad šis slēdzis ir ieslēgts, vietnes var saglabāt datus jūsu ierīcē. Kad šis slēdzis ir izslēgts, vietnes nevar saglabāt datus jūsu ierīcē.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Pašreizējais tālummaiņas iestatījums: <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Šī lapa ir bīstama.</translation>
-<translation id="930525582205581608">Vai aizmirst šo vietni?</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>
 <translation id="967624055006145463">Saglabātie dati</translation>

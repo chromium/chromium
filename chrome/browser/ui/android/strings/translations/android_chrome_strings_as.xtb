@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
 <translation id="3037517125981011456">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে</translation>
 <translation id="3038272154009688107">আটাইবোৰ ছাইট চাওক</translation>
-<translation id="3055841435094910999">আপোনাৰ Chrome ব্যৱহাৰ সম্পৰ্কীয় তথ্য Googleলৈ পঠিওৱা হয় কিন্তু ইয়াত আপোনাৰ ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত কৰা নহয়\n\nChrome ক্ৰেশ্ব হ’লে ক্ৰেশ্বৰ সবিশেষত হয়তো কিছুমান ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে\n\nআপুনি ছিংক কৰা সুবিধাটো অন কৰিলে মেট্ৰিকতো আপুনি চোৱা URLসমূহৰ তথ্য অন্তৰ্ভুক্ত কৰা হ’ব পাৰে</translation>
 <translation id="3059531648236115056">সাৰাংশ যোগ দিয়ক</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টা বুকমাৰ্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}}</translation>
 <translation id="3062802207422175757">Chromeত আপোনাৰ আগ্ৰহৰ বিষয়বস্তু সম্পৰ্কীয় প্ৰবন্ধসমূহ</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">আপোনাৰ Google একাউণ্টত নতুন পাছৱৰ্ড ছেভ আৰু ব্যৱহাৰ কৰিবলৈ Google Play সেৱা আপডে’ট কৰক</translation>
 <translation id="4971753085054504448">অন্য কিবা সন্ধান কৰি চাওক বা অধিক ফলাফল চাবলৈ সম্পূৰ্ণ Chromeত চোৱা ৱেবপেজৰ ইতিহাস খোলক।</translation>
 <translation id="497421865427891073">আগুৱাই যাওক</translation>
+<translation id="498624032394115435">এই লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে।</translation>
 <translation id="4987271110129728827">সেই পৃষ্ঠাখন বিচাৰি পোৱা নাই। আপোনাৰ বানান পৰীক্ষা কৰক অথবা ৱেবত সন্ধান কৰি চাওক।</translation>
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
 <translation id="4991110219272367918">এটা ৱেবছাইট অনুমোদন জনোৱা অথবা নজনোৱাৰ বিকল্প বন্ধ কৰা হৈছে</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />)এ লগে লগে “<ph name="GROUP_NAME" />” টেবৰ গোটৰ এক্সেছ হেৰুৱাব</translation>
 <translation id="5423934151118863508">আপুনি সৰ্বাধিক চোৱা ছাইটবোৰ ইয়াত দেখা যাব।</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> জিবি উপলব্ধ</translation>
-<translation id="543121643585717256">এই লিংকটো থকা যিকোনো লোকে আটাইবোৰ টেব সম্পাদনা কৰিব পাৰে। শ্বেয়াৰ কৰা টেবৰ গোটৰ বিষয়ে জানক</translation>
 <translation id="543338862236136125">পাছৱৰ্ড সম্পাদনা কৰক</translation>
 <translation id="5433691172869980887">ব্যৱহাৰকাৰীৰ নাম প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="5438292632479953702">পুনৰ ডাউনল’ড কৰক</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ডসমূহ বন্ধ কৰা হ’ব</translation>
 <translation id="6295158916970320988">সকলো ছাইট</translation>
 <translation id="6296366034485697675">এক্সপ’ৰ্ট কৰক আৰু মচক</translation>
+<translation id="629730747756840877">একাউণ্ট</translation>
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
 <translation id="6312687380483398334">ৱেব এপ্‌সমূহ (নীৰৱ)</translation>
 <translation id="6315386555979018699">মচক আৰু অব্যাহত ৰাখক</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />এ “<ph name="TAB_NAME" />” টেবটো আঁতৰাইছে</translation>
 <translation id="8310451567823644042">পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব</translation>
 <translation id="831192587911042850">বৰ্তমানৰ ৱেবছাইটটোক আপুনি ফ’ল’ কৰি থকা ৱেবছাইটসমূহৰ সূচীত যোগ দিয়ে।</translation>
+<translation id="8320212361750431956">শেহতীয়া কাৰ্যকলাপ</translation>
 <translation id="8342727528718219152">Chromeএ আপোনাক অতি বেছিসংখ্যক জাননী পঠিয়াব পৰা ছাইটসমূহৰ বিষয়ে জনাব</translation>
 <translation id="834313815369870491">কেতিয়াও অনুবাদ কৰিব নলগীয়া ছাইট</translation>
 <translation id="8348430946834215779">সম্ভৱ হ’লে HTTPS ব্যৱহাৰ কৰক আৰু এইটো সমৰ্থন নকৰা ছাইটসমূহ ল’ড কৰাৰ পূৰ্বে সকীয়নি লাভ কৰক</translation>

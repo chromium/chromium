@@ -3474,6 +3474,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3421387094817716717">Ukhiye osesidlangalaleni wejika le-elliptic</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Qaphela:<ph name="END_BOLD" />: Izwi elifanayo noma ukurekhoda kungakwazi ukufinyelela kumiphumela yakho yomuntu siqu noma Kumsizi wakho.</translation>
 <translation id="3421835120203732951">Engeza Iphrofayela Entsha</translation>
+<translation id="3422989558057853751">Into yokugcina ikhethiwe, ukungayikhethi kuzokukhipha kumodi yokukhetha</translation>
 <translation id="3423111258700187173">Imiphumela etholwe ku-<ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Funda kabanzi mayelana nalesi sakhi se-AI</translation>
 <translation id="3423275441470187644">Themba</translation>
@@ -3612,7 +3613,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3513019849832307207">Joyina futhi vula</translation>
 <translation id="3513563267917474897">Islayida sehue esisuka ku-<ph name="MIN_VALUE" /> ukuya ku-<ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Ukulawula Igeyimu</translation>
-<translation id="3514373592552233661">Amanethiwekhi ancanyelwayo azoncanyelwa ngaphezulu kwamanye amanethiwekhi uma kutholakala engaphezulu kweyodwa</translation>
 <translation id="3514647716686280777">Uthola ukuvikeleka okujwayelekile. Ukuze uthole ukuvikeleka okwengeziwe kumawebhusayithi ayingozi, okudawunilodiwe, nezandiso, vula Ukuphequlula Ngokuphepha Okugqamile kumasethingi e-Chrome.</translation>
 <translation id="3514681096978190000">Leli fayela lengobo yomlando lihlanganisa namanye amafayela angase afihle uhlelo olungayilungele ikhompuyutha</translation>
 <translation id="3515983984924808886">Thinta ukhiye wakho wokuqinisekisa ubunikazi futhi ukuze uqinisekise ukusetha kabusha. Lonke ulwazi olugcinwe kukhiye wokuqinisekisa ubunikazi, olufaka IPHINIKHODI yalo luzosuswa.</translation>
@@ -4969,6 +4969,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="4461483878391246134">Engeza izilimi ukuze ungalokothi unikeze ukuhumusha</translation>
 <translation id="4462159676511157176">Amaseva wegama langokwezifiso</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> umkhawulo wesikhathi esisethelwe i-<ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Iphinikhodi okungeyona</translation>
 <translation id="4467561276409486506">Guqula Imodi Ecinene</translation>
 <translation id="4469324811108161144">Amanothi angalondoloza kuze kufike ezinhlamvini ezingu-<ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">I-<ph name="ORIGIN" /> ingahlela amafayela ku-<ph name="FOLDERNAME" /></translation>
@@ -10302,7 +10303,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8306063480506363120">Susa ukufinyelela kwe-Drive</translation>
 <translation id="8306430106790753902">Imizila Yenethiwekhi ye-ChromeOS</translation>
 <translation id="8306885873692337975">Thola izakhi zakamuva nokuthuthukiswa kokuvikeleka.</translation>
-<translation id="8308016398665340540">Wabelana ngale nethiwekhi nabanye abasebenzisi bale divayisi</translation>
 <translation id="8308024039615003152">IMeadow</translation>
 <translation id="8308179586020895837">Buza uma ngabe i-<ph name="HOST" /> ifuna ukufinyelela kukhamela yakho</translation>
 <translation id="830868413617744215">I-Beta</translation>
@@ -11205,7 +11205,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="8942714513622077633">Khansela ukusethwa kwe-Microsoft 365?</translation>
 <translation id="894360074127026135">Ukukhuphula isitebhisi kwamazwe ngamazwe kwe-Netscape</translation>
 <translation id="8944099748578356325">Sebenzisa ibhethri ngokushesha (okwamanje <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Kukhawulelwe</translation>
 <translation id="8944633700466246631">Sungula Iphinikhodi yokuthola enamadijithi angu-6 Yomphathi Wephasiwedi YeGoogle</translation>
 <translation id="8944725102565796255">Uma ufuna ukusebenzisa le akhawunti kanye kuphela, <ph name="GUEST_LINK_BEGIN" />ungasebenzisa idivayisi njengesivakashi<ph name="GUEST_LINK_END" />. Uma ufuna ukwengeza i-akhawunti yothile, <ph name="LINK_BEGIN" />engeza umuntu omusha<ph name="LINK_END" /> ku-<ph name="DEVICE_TYPE" /> yakho.
 

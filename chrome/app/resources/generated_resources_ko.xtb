@@ -3614,7 +3614,6 @@
 <translation id="3513019849832307207">참여하고 열기</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />에서 <ph name="MAX_VALUE" />까지의 색조 슬라이더</translation>
 <translation id="3514335087372914653">게임 컨트롤</translation>
-<translation id="3514373592552233661">두 개 이상의 네트워크를 사용할 수 있는 경우 기본 설정된 네트워크가 다른 알려진 네트워크보다 우선 사용됩니다.</translation>
 <translation id="3514647716686280777">표준 보호 조치를 사용하고 있습니다. 위험한 웹사이트, 다운로드 항목, 확장 프로그램에 대응하여 보안을 강화하려면 Chrome 설정에서 향상된 세이프 브라우징을 사용 설정하세요.</translation>
 <translation id="3514681096978190000">이 보관 파일에는 멀웨어를 숨길 수 있는 기타 파일이 포함되어 있습니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
@@ -10305,7 +10304,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8306063480506363120">Drive 액세스 권한 삭제</translation>
 <translation id="8306430106790753902">ChromeOS 네트워크 경로</translation>
 <translation id="8306885873692337975">최신 기능과 보안 개선 사항을 받습니다.</translation>
-<translation id="8308016398665340540">기기의 다른 사용자와 공유 중인 네트워크입니다.</translation>
 <translation id="8308024039615003152">초원</translation>
 <translation id="8308179586020895837"><ph name="HOST" />에서 카메라에 액세스하려는 경우 메시지 표시</translation>
 <translation id="830868413617744215">베타</translation>
@@ -11207,7 +11205,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8942714513622077633">Microsoft 365 설정을 취소하시겠어요?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">배터리 소모가 빨라짐(현재 <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">제한됨</translation>
 <translation id="8944633700466246631">Google 비밀번호 관리자에 사용할 6자리 복구 PIN을 만드세요</translation>
 <translation id="8944725102565796255">이 계정을 한 번만 사용하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
 

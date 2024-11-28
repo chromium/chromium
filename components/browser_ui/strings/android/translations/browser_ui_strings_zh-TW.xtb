@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">系統可能會將你登出這個網站</translation>
 <translation id="6085954183010297841">要刪除檔案編輯權限嗎？<ph name="FILE" /></translation>
 <translation id="6120483543004435978">如果啟用，網站就可以要求偵測你是否正在使用裝置。如果停用，網站將無法得知你是否正在使用裝置。</translation>
-<translation id="6140839633433422817">確定要重設權限，並且刪除 Cookie 和網站資料嗎？</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6171020522141473435">如果啟用，網站就可以要求使用藍牙裝置。如果停用，網站將無法使用藍牙裝置。</translation>
-<translation id="6177111841848151710">禁止目前的搜尋引擎存取位置資訊</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>
 <translation id="6181444274883918285">新增例外網站</translation>
 <translation id="6192792657125177640">例外</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">允許網站使用你的麥克風前，必須先詢問你 (建議)</translation>
 <translation id="6999131147875565462">提高 Chrome 執行速度，使用 JavaScript 的功能應該會正常運作</translation>
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
-<translation id="7016516562562142042">允許目前的搜尋引擎存取位置資訊</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資訊</translation>
 <translation id="8944485226638699751">限制使用</translation>
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>
-<translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">系統會將你登出所有網站</translation>
 <translation id="8993853206419610596">展開所有要求</translation>
 <translation id="9002538116239926534">如果啟用，網站就可以在裝置上儲存資料。如果停用，網站將無法在裝置上儲存資料。</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
 <translation id="9138217887606523162">目前的縮放比例為 <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">這是危險網頁</translation>
-<translation id="930525582205581608">要清除這個網站的資料嗎？</translation>
 <translation id="947156494302904893">你造訪的網站可驗證你是真人，而不是機器人</translation>
 <translation id="959682366969460160">保持井然有序</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

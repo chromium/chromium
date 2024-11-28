@@ -491,7 +491,7 @@
 <translation id="1842969606798536927">ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="184517536440397176">ଏହି ୱେବସାଇଟ ଭିଜିଟ କରିବା ତୁମ ପାଇଁ ଠିକ ବୋଲି ଜଣେ ବାପା କିମ୍ବା ମା ବା ଅଭିଭାବକ କହିବା ଆବଶ୍ୟକ। ତୁମେ ତାଙ୍କୁ ପଚାରିବା ପୂର୍ବରୁ ଏହା ତୁମେ ଅଟ ବୋଲି ଆମକୁ ସୁନିଶ୍ଚିତ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1846432862466000825">ପ୍ଲାଷ୍ଟିକ (ଆର୍କାଇଭାଲ)</translation>
-<translation id="1848640291751752317">ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
+<translation id="1848640291751752317">ଡାଉନଲୋଡ</translation>
 <translation id="1848982255014129637">ଫଟୋ (ହାଇ-ଗ୍ଲସ)</translation>
 <translation id="1853392626017747777">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1239,6 +1239,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3240791268468473923">ସୁରକ୍ଷିତ ପେମେଣ୍ଟ କ୍ରେଡେନସିଆଲ୍ ସହ ମେଳ ହେଉଥିବା କୌଣସି କ୍ରେଡେନସିଆଲ୍ ସିଟ୍ ଖୋଲାଯାଇନାହିଁ</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ଲିଙ୍କଗୁଡ଼ିକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
+<translation id="3243650379537999343">ଡ୍ର କରନ୍ତୁ</translation>
 <translation id="3248329428895535435">ଏହି ସାଇଟରେ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" />ରେ ଫାଇଲ ଅପଲୋଡ କରିବା ତ୍ରୁଟି ସହିତ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3252772880526154546">ଆର୍କିଟେକଚର</translation>
@@ -2631,6 +2632,7 @@
 <translation id="5740911612628596808">ଏନଭେଲପ C9</translation>
 <translation id="5742806904559466333">ବାର, କ୍ଲବ ଏବଂ ନାଇଟଲାଇଫ</translation>
 <translation id="5743684619253032786">ନେଲ କେୟାର ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
+<translation id="574392208103952083">ମଧ୍ୟମ</translation>
 <translation id="5745733273847572235">ଆପଣଙ୍କ ଲୋକେସନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="5750869797196646528">ହେଣ୍ଡ ଟ୍ରାକିଂ</translation>
 <translation id="5752327398324808817">ଗୋଟିଏ କିମ୍ବା ଦୁଇଟି ଶବ୍ଦ ଲେଖନ୍ତୁ</translation>
@@ -3464,6 +3466,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ରୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ର ତାରିଖ ଓ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ୍‍ ଅଟେ।</translation>
 <translation id="7260075294900977274">ଆପଣଙ୍କୁ ଆପଣଙ୍କର ସମସ୍ତ ପୃଷ୍ଠାକୁ ଗୋଟିଏ ସ୍ଥାନରେ ସେଭ କରିବାରେ, ସ୍ୱତଃ ମୂଲ୍ୟ ଟ୍ରାକ କରିବାରେ, ମୂଲ୍ୟ ଇନସାଇଟ ପାଇବାରେ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାରେ ସାହାଯ୍ୟ କରୁଥିବା ଏକ ନୂଆ ସ୍ମାର୍ଟ ଫୋଲ୍ଡର</translation>
 <translation id="7265608370113700582">ଠିକଣାଟି କେବଳ ଏହି ଡିଭାଇସରେ ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ସର୍ଚ୍ଚ ଏଗ୍ରିଗେଟର କୀୱାର୍ଡ ସହ ସର୍ଟକଟ ସମାନ ହୋଇପାରିବ ନାହିଁ: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">ଆପଣ ଡାଉନଲୋଡ କରୁଥିବା ଫାଇଲଗୁଡ଼ିକୁ ବିଶ୍ଳେଷଣ ପାଇଁ Google Cloud କିମ୍ବା ତୃତୀୟ ପକ୍ଷଗୁଡ଼ିକୁ ପଠାଯାଏ। ଉଦାହରଣ ସ୍ଵରୂପ, ସେଗୁଡ଼ିକୁ ସମ୍ବେଦନଶୀଳ ଡାଟା କିମ୍ବା ମାଲୱେର ପାଇଁ ସ୍କାନ କରାଯାଇପାରେ ଏବଂ କମ୍ପାନୀ ନୀତିଗୁଡ଼ିକ ଆଧାରରେ ଷ୍ଟୋର କରାଯାଇପାରେ ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଦେଖାଯାଇପାରେ।</translation>
 <translation id="7275334191706090484">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକୁ ପରିଚାଳନା କରାଯାଇଛି</translation>
 <translation id="7275808129217605899">ସ୍ୱାସ୍ଥ୍ୟକର ଖାଦ୍ୟ</translation>

@@ -3458,6 +3458,7 @@
 <translation id="3421387094817716717">એલિપ્ટિક કર્વ સાર્વજનિક કી</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />નોંધ<ph name="END_BOLD" />: સમાન વૉઇસ અથવા રેકોર્ડિંગ કદાચ તમારા વ્યક્તિગત પરિણામો અથવા તમારા Assistantને ઍક્સેસ કરી શકે છે.</translation>
 <translation id="3421835120203732951">નવી પ્રોફાઇલ ઉમેરો</translation>
+<translation id="3422989558057853751">છેલ્લી આઇટમ પસંદ કરી છે, તેને નાપસંદ કરવાથી તે પસંદગી મોડમાંથી બહાર નીકળી જશે</translation>
 <translation id="3423111258700187173"><ph name="FOLDER_TITLE" />માં પરિણામો મળ્યા</translation>
 <translation id="3423226218833787854">આ AI સુવિધા વિશે વધુ જાણો</translation>
 <translation id="3423275441470187644">વિશ્વાસ</translation>
@@ -3596,7 +3597,6 @@
 <translation id="3513019849832307207">જોડાઓ અને ખોલો</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" />થી <ph name="MAX_VALUE" /> સુધીનું રંગ છટાનું સ્લાઇડર</translation>
 <translation id="3514335087372914653">ગેમ કન્ટ્રોલ</translation>
-<translation id="3514373592552233661">એક કરતાં વધુ જાણીતા નેટવર્ક ઉપલબ્ધ હોવા પર પસંદગીના નેટવર્કને અન્ય જાણીતા નેટવર્ક પર પ્રાથમિકતા આપવામાં આવશે</translation>
 <translation id="3514647716686280777">તમે માનક સુરક્ષા સંરક્ષણ મેળવી રહ્યાં છો. જોખમી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે વધુ સંરક્ષણ મેળવવા માટે, Chrome સેટિંગમાં Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ કરો.</translation>
 <translation id="3514681096978190000">આ આર્કાઇવ ફાઇલમાં એવી અન્ય ફાઇલો છે જે કદાચ માલવેર છુપાવી શકે</translation>
 <translation id="3515983984924808886">રીસેટ કન્ફર્મ કરવા માટે તમારી સિક્યુરિટી કીને સ્પર્શ કરો. સિક્યુરિટી કી પરની, તેના પિન સહિતની તેમાં સ્ટોર કરેલી બધી માહિતી ડિલીટ કરવામાં આવશે.</translation>
@@ -4954,6 +4954,7 @@
 <translation id="4461483878391246134">ક્યારેય અનુવાદ ઑફર ન કરવા માટેની ભાષાઓ ઉમેરો</translation>
 <translation id="4462159676511157176">કસ્ટમ નામ સર્વર્સ</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> માટે <ph name="TIME" />ની સમય મર્યાદા સેટ કરી છે</translation>
+<translation id="4467373268340082204">ખોટો પિન</translation>
 <translation id="4467561276409486506">કૉમ્પૅક્ટ મોડ પર ટૉગલ કરો</translation>
 <translation id="4469324811108161144">પાસવર્ડની નોંધમાં <ph name="CHARACTER_LIMIT" /> જેટલા અક્ષર સાચવી શકાય છે.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માં ફાઇલોમાં ફેરફાર કરી શકતા નથી</translation>
@@ -10285,7 +10286,6 @@ USB ડિવાઇસ</translation>
 <translation id="8306063480506363120">Drive ઍક્સેસ કાઢી નાખો</translation>
 <translation id="8306430106790753902">ChromeOS નેટવર્ક રુટ</translation>
 <translation id="8306885873692337975">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો.</translation>
-<translation id="8308016398665340540">તમે આ નેટવર્કને આ ડિવાઇસના અન્ય વપરાશકર્તાઓ સાથે શેર કરી રહ્યાં છો</translation>
 <translation id="8308024039615003152">ઘાસનું મેદાન</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> તમારા કૅમેરાને ઍક્સેસ કરવા માંગે છે કે કેમ તે પૂછો</translation>
 <translation id="830868413617744215">બીટા</translation>
@@ -11188,7 +11188,6 @@ USB ડિવાઇસ</translation>
 <translation id="8942714513622077633">Microsoft 365 સેટઅપ રદ કરીએ?</translation>
 <translation id="894360074127026135">નેટસ્કેપ ઇન્ટરનેશનલ સ્ટેપ-અપ</translation>
 <translation id="8944099748578356325">વધુ ઝડપથી બૅટરીનો ઉપયોગ કરો (હાલમાં <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">મર્યાદિત</translation>
 <translation id="8944633700466246631">Google Password Manager માટે 6-ડિજિટનો રિકવરી પિન બનાવો</translation>
 <translation id="8944725102565796255">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે <ph name="GUEST_LINK_BEGIN" />અતિથિ તરીકે ડિવાઇસનો ઉપયોગ કરી<ph name="GUEST_LINK_END" /> શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
 

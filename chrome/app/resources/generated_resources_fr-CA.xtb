@@ -3463,6 +3463,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3421387094817716717">Clé publique à courbe elliptique</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Remarque :<ph name="END_BOLD" /> Une personne ayant une voix semblable à la vôtre ou disposant d'un enregistrement de celle-ci pourrait aussi accéder à vos résultats personnalisés ou à votre Assistant.</translation>
 <translation id="3421835120203732951">Ajouter un nouveau profil</translation>
+<translation id="3422989558057853751">Dernier élément sélectionné, en le désélectionnant, vous quittez le mode de sélection</translation>
 <translation id="3423111258700187173">Résultats trouvés dans <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">En savoir plus sur cette fonctionnalité d'IA</translation>
 <translation id="3423275441470187644">Faire confiance</translation>
@@ -3601,7 +3602,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3513019849832307207">Se joindre et ouvrir</translation>
 <translation id="3513563267917474897">Curseur de teinte de <ph name="MIN_VALUE" /> à <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Commandes de jeu</translation>
-<translation id="3514373592552233661">Si plusieurs réseaux sont disponibles, les réseaux préférés seront prioritaires par rapport aux autres réseaux connus</translation>
 <translation id="3514647716686280777">Vous bénéficiez d'une protection de sécurité standard. Pour obtenir une meilleure protection contre les sites Web, les extensions et les téléchargements dangereux, activez la navigation sécurisée améliorée dans les paramètres de Chrome.</translation>
 <translation id="3514681096978190000">Ce fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="3515983984924808886">Touchez votre clé de sécurité à nouveau pour confirmer la réinitialisation. Toutes les données stockées sur la clé de sécurité, y compris son NIP, seront supprimées.</translation>
@@ -4959,6 +4959,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4461483878391246134">Ajouter des langues pour lesquelles ne jamais proposer de traduction</translation>
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465236939126352372">Une limite de temps de <ph name="TIME" /> a été définie pour <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">NIP incorrect</translation>
 <translation id="4467561276409486506">&amp;Basculer en mode Compact</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> peut modifier les fichiers dans le dossier <ph name="FOLDERNAME" /></translation>
@@ -10290,7 +10291,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8306063480506363120">Retirer l'accès à Disque</translation>
 <translation id="8306430106790753902">Routes réseaux de ChromeOS</translation>
 <translation id="8306885873692337975">Bénéficiez des dernières fonctionnalités et améliorations de sécurité.</translation>
-<translation id="8308016398665340540">Vous partagez ce réseau avec d'autres utilisateurs de cet appareil</translation>
 <translation id="8308024039615003152">Pré</translation>
 <translation id="8308179586020895837">Demander mon autorisation si <ph name="HOST" /> veut accéder à la caméra</translation>
 <translation id="830868413617744215">Bêta</translation>
@@ -11192,7 +11192,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8942714513622077633">Annuler la configuration de Microsoft 365?</translation>
 <translation id="894360074127026135">Fonction d'optimisation internationale Netscape</translation>
 <translation id="8944099748578356325">Épuisera plus rapidement la pile (actuellement à <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Limités</translation>
 <translation id="8944633700466246631">Créer un code NIP de récupération à six chiffres pour le gestionnaire de mots de passe Google</translation>
 <translation id="8944725102565796255">Si vous ne souhaitez utiliser ce compte qu'une seule fois, vous pouvez <ph name="GUEST_LINK_BEGIN" />utiliser l'appareil en tant qu'invité<ph name="GUEST_LINK_END" />. Si vous souhaitez ajouter un compte pour quelqu'un d'autre, <ph name="LINK_BEGIN" />ajoutez une nouvelle personne<ph name="LINK_END" /> à votre <ph name="DEVICE_TYPE" />.
 

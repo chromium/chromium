@@ -17,7 +17,7 @@
 <translation id="104491362976654916">离线网页</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
-<translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
+<translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
 <translation id="1066060668811609597">管理同步数据</translation>
@@ -432,6 +432,7 @@
 <translation id="288902476966286676">退回给发件人</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2894757982205307093">在组内添加新标签页</translation>
+<translation id="2902312830803030883">更多操作</translation>
 <translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2918688092312652908">标为未读</translation>

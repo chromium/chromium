@@ -3474,6 +3474,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3421387094817716717">Offentlig nøgle med elliptisk kurve</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis bruges til at få adgang til dine personlige resultater eller Google Assistent.</translation>
 <translation id="3421835120203732951">Tilføj ny profil</translation>
+<translation id="3422989558057853751">Det sidste element er valgt. Hvis du fjerner markeringen, afsluttes tilstanden for markering</translation>
 <translation id="3423111258700187173">Der blev fundet resultater i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Få flere oplysninger om denne AI-funktion</translation>
 <translation id="3423275441470187644">Pålidelighed</translation>
@@ -3612,7 +3613,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3513019849832307207">Deltag og åbn</translation>
 <translation id="3513563267917474897">Skyder til farvetone fra <ph name="MIN_VALUE" /> til <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Spilstyring</translation>
-<translation id="3514373592552233661">Favoritter netværk prioriteres frem for andre kendte netværk, hvis der er mere end ét tilgængeligt netværk</translation>
 <translation id="3514647716686280777">Du får standardsikkerhedsbeskyttelse. Hvis du vil have mere beskyttelse mod farlige websites, downloads og udvidelser, skal du aktivere "Udvidet beskyttet browsing" i indstillingerne for Chrome.</translation>
 <translation id="3514681096978190000">Denne arkivfil indeholder andre filer, som muligvis skjuler malware</translation>
 <translation id="3515983984924808886">Tryk på din sikkerhedsnøgle igen for at bekræfte nulstillingen. Alle de oplysninger, der er gemt på sikkerhedsnøglen, bl.a. pinkoden, slettes.</translation>
@@ -4970,6 +4970,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4461483878391246134">Tilføj sprog, så der aldrig tilbydes oversættelse</translation>
 <translation id="4462159676511157176">Tilpassede navneservere</translation>
 <translation id="4465236939126352372">En tidsgrænse på <ph name="TIME" /> blev indstillet for <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Forkert pinkode</translation>
 <translation id="4467561276409486506">&amp;Slå kompakt tilstand til/fra</translation>
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
@@ -10304,7 +10305,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8306063480506363120">Fjern Drev-adgang</translation>
 <translation id="8306430106790753902">Routing til ChromeOS-netværket</translation>
 <translation id="8306885873692337975">Få de nyeste funktion og sikkerhedsforbedringer.</translation>
-<translation id="8308016398665340540">Du deler dette netværk med andre brugere af enheden</translation>
 <translation id="8308024039615003152">Eng</translation>
 <translation id="8308179586020895837">Spørg, om <ph name="HOST" /> vil have adgang til dit kamera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11208,7 +11208,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8942714513622077633">Vil du annullere konfigurationen af Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape, international optrapning</translation>
 <translation id="8944099748578356325">Batteriet bruges hurtigere (i øjeblikket <ph name="BATTERY_PERCENTAGE" /> %)</translation>
-<translation id="8944485226638699751">Begrænset</translation>
 <translation id="8944633700466246631">Opret en 6-cifret pinkode til gendannelse for Google Adgangskodeadministrator</translation>
 <translation id="8944725102565796255">Hvis du kun vil bruge denne konto én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruge enheden som gæst<ph name="GUEST_LINK_END" />. Hvis du vil tilføje en konto for en anden person, kan du <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
 

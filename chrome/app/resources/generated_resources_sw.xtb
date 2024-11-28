@@ -3470,6 +3470,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3421387094817716717">Ufunguo wa Umma wa Kizingo cha Mviringo</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" /> Huenda sauti au rekodi ya sauti inayolingana na yako ikaweza pia kufikia matokeo yako ya binafsi au programu yako ya Mratibu.</translation>
 <translation id="3421835120203732951">Weka Wasifu Mpya</translation>
+<translation id="3422989558057853751">Kipengee cha mwisho ulichochagua, ukiacha kukichagua utafunga hali ya kuchagua</translation>
 <translation id="3423111258700187173">Matokeo yaliyopatikana kwenye <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Pata maelezo zaidi kuhusu kipengele hiki cha AI</translation>
 <translation id="3423275441470187644">Kuaminika</translation>
@@ -3608,7 +3609,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3513019849832307207">Jiunge na ufungue</translation>
 <translation id="3513563267917474897">Kitelezi cha rangi kutoka <ph name="MIN_VALUE" /> hadi <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kidhibiti Mchezo</translation>
-<translation id="3514373592552233661">Mitandao inayopendelewa itatumiwa badala ya mitandao mingine inayojulikana ikiwa kuna zaidi ya mtandao mmoja</translation>
 <translation id="3514647716686280777">Unapata ulinzi wa kawaida wa usalama. Ili upate ulinzi zaidi dhidi ya tovuti, vipakuliwa na viendelezi hatari, washa Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye mipangilio ya Chrome.</translation>
 <translation id="3514681096978190000">Faili hii iliyo kwenye kumbukumbu ina faili nyinginezo ambazo huenda zikaficha programu hasidi</translation>
 <translation id="3515983984924808886">Gusa ufunguo wako wa usalama tena ili uthibitishe hatua ya kuubadilisha. Maelezo yote yaliyohifadhiwa kwenye ufunguo wa usalama, ikiwa ni pamoja na PIN, yatafutwa.</translation>
@@ -4964,6 +4964,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4461483878391246134">Weka lugha kwenye orodha ya lugha ambazo kamwe zisiwe chaguo za kutafsiri</translation>
 <translation id="4462159676511157176">Seva za jina maalum</translation>
 <translation id="4465236939126352372">Umeweka kikomo cha <ph name="TIME" /> cha kutumia <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">PIN si sahihi</translation>
 <translation id="4467561276409486506">Geuza Hali ya Kushikamana</translation>
 <translation id="4469324811108161144">Vidokezo vinaweza kuhifadhi hadi herufi <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> inaweza kubadilisha faili katika <ph name="FOLDERNAME" /></translation>
@@ -10298,7 +10299,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8306063480506363120">Ondoa Idhini ya Kufikia Hifadhi</translation>
 <translation id="8306430106790753902">Njia za Mtandao wa ChromeOS</translation>
 <translation id="8306885873692337975">Pata vipengele vipya zaidi na maboresho ya kiusalama.</translation>
-<translation id="8308016398665340540">Unatumia mtandao huu pamoja na watumiaji wengine wa kifaa hiki.</translation>
 <translation id="8308024039615003152">Malisho</translation>
 <translation id="8308179586020895837">Uliza kama <ph name="HOST" /> anataka kufikia kamera yako</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11200,7 +11200,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8942714513622077633">Ungependa kughairi mipangilio ya Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Tumia betri kwa haraka zaidi (kwa sasa <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Kwa wachache</translation>
 <translation id="8944633700466246631">Tunga PIN ya kurejesha yenye tarakimu 6 ya Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="8944725102565796255">Iwapo unataka kutumia akaunti hii mara moja tu, unaweza <ph name="GUEST_LINK_BEGIN" />kutumia kifaa kama mgeni<ph name="GUEST_LINK_END" />. Iwapo unataka kuongeza akaunti ya mtu mwingine, <ph name="LINK_BEGIN" />mwongeze mtu mpya<ph name="LINK_END" /> kwenye <ph name="DEVICE_TYPE" /> yako.
 

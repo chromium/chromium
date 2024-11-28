@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Du kan loggas ut från den här webbplatsen</translation>
 <translation id="6085954183010297841">Vill du radera behörigheten för filredigering? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">När detta är aktiverat kan webbplatser be om att få veta om du använder enheten aktivt. När detta är inaktiverat får webbplatser inte veta om du använder enheten aktivt.</translation>
-<translation id="6140839633433422817">Vill du återställa behörigheter och radera cookies och webbplatsdata?</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6171020522141473435">När detta är aktiverat kan webbplatser be om att få använda Bluetooth-enheter. När detta är inaktiverat får webbplatser inte använda Bluetooth-enheter.</translation>
-<translation id="6177111841848151710">Blockerad för den nuvarande sökmotorn</translation>
 <translation id="6177128806592000436">Anslutningen till webbplatsen är inte säker</translation>
 <translation id="6181444274883918285">Lägg till en webbplats i undantagen</translation>
 <translation id="6192792657125177640">Undantag</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Fråga innan webbplatser tillåts att använda mikrofonen (rekommenderas)</translation>
 <translation id="6999131147875565462">Chrome körs snabbare och funktioner som använder JavaScript bör fungera som de ska</translation>
 <translation id="7000754031042624318">Inaktiverad i Android-inställningarna</translation>
-<translation id="7016516562562142042">Tillåt för den nuvarande sökmotorn</translation>
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 har valts}other{# har valts}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Förhindra att webbplatser visar och ändrar information på NFC-enheter</translation>
 <translation id="8944485226638699751">Begränsade</translation>
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Glöm</translation>
 <translation id="8990043154272859344">Du loggas ut från alla webbplatser</translation>
 <translation id="8993853206419610596">Utöka alla begäranden</translation>
 <translation id="9002538116239926534">När detta är aktiverat kan webbplatser spara data på enheten. När detta är inaktiverat får webbplatser inte spara data på enheten.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Aktivera behörigheter för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Nuvarande zoom är <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Den här sidan är farlig</translation>
-<translation id="930525582205581608">Vill du glömma den här webbplatsen?</translation>
 <translation id="947156494302904893">Webbplatser du besöker kan verifiera att du är en riktig person och inte en bot</translation>
 <translation id="959682366969460160">Håll ordning</translation>
 <translation id="967624055006145463">Sparad data</translation>

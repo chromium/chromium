@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Anda mungkin akan dilog keluar dari laman ini</translation>
 <translation id="6085954183010297841">Padamkan kebenaran pengeditan fail? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Apabila dihidupkan, laman dapat meminta untuk mengetahui waktu anda menggunakan peranti secara aktif. Apabila dimatikan, laman tidak dapat mengetahui waktu anda menggunakan peranti secara aktif.</translation>
-<translation id="6140839633433422817">Adakah anda pasti mahu menetapkan semula kebenaran dan memadamkan kuki serta data laman?</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6171020522141473435">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti Bluetooth. Apabila dimatikan, laman tidak dapat menggunakan peranti Bluetooth.</translation>
-<translation id="6177111841848151710">Disekat untuk enjin carian semasa</translation>
 <translation id="6177128806592000436">Sambungan anda ke tapak ini tidak selamat</translation>
 <translation id="6181444274883918285">Tambah pengecualian tapak</translation>
 <translation id="6192792657125177640">Pengecualian</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Tanya dahulu sebelum membenarkan tapak menggunakan mikrofon anda (disyorkan)</translation>
 <translation id="6999131147875565462">Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya.</translation>
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
-<translation id="7016516562562142042">Dibenarkan untuk enjin carian semasa</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Sekat laman daripada melihat dan menukar maklumat pada peranti NFC</translation>
 <translation id="8944485226638699751">Terhad</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Lupa</translation>
 <translation id="8990043154272859344">Anda akan dilog keluar daripada semua laman</translation>
 <translation id="8993853206419610596">Kembangkan semua permintaan</translation>
 <translation id="9002538116239926534">Apabila dihidupkan, laman dapat menyimpan data pada peranti anda. Apabila dimatikan, laman tidak dapat menyimpan data pada peranti anda.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zum semasa ialah <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
-<translation id="930525582205581608">Lupakan laman ini?</translation>
 <translation id="947156494302904893">Laman yang anda lawati boleh mengesahkan bahawa anda orang sebenar dan bukan bot</translation>
 <translation id="959682366969460160">Jadi teratur</translation>
 <translation id="967624055006145463">Data disimpan</translation>

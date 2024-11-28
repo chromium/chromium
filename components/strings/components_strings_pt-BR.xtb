@@ -442,7 +442,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1751544761369730824">Excluir o site <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Caixa de e-mails 8</translation>
 <translation id="1753706481035618306">Numero da página</translation>
-<translation id="1755203724116202818">Para medir a performance de um anúncio, tipos limitados de dados são compartilhados entre os sites, por exemplo, se você fez uma compra depois de visitar um site.</translation>
+<translation id="1755203724116202818">Para medir a performance de um anúncio, tipos limitados de dados são compartilhados, por exemplo, se você fez uma compra depois de visitar um site.</translation>
 <translation id="1755621011177747277">Adoção</translation>
 <translation id="1756026472674246267">Abrir link em uma nova guia</translation>
 <translation id="1756555787993603971">Agora você pode usar um cartão virtual para finalizar compras com mais segurança usando o preenchimento automático.</translation>
@@ -1241,6 +1241,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar a aparência do navegador</translation>
 <translation id="3240791268468473923">A página de credenciais para pagamento seguro sem correspondência está aberta</translation>
 <translation id="324180406144491771">Os links de “<ph name="HOST_NAME" />” são bloqueados</translation>
+<translation id="3243650379537999343">Desenhar</translation>
 <translation id="3248329428895535435">Não mostrar neste site</translation>
 <translation id="3249102948665905108">O upload do arquivo para <ph name="CLOUD_PROVIDER" /> foi concluído com erros</translation>
 <translation id="3252772880526154546">Arquitetura</translation>
@@ -1291,7 +1292,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="333839153442689579">Treino intervalado de alta intensidade</translation>
 <translation id="3339446062576134663">Nuvem (Ash)</translation>
 <translation id="3340978935015468852">configurações</translation>
-<translation id="3342018947887487892">Depois, um site que você visitar poderá pedir essa informação, sejam os temas ou anúncios sugeridos em sites acessados.</translation>
+<translation id="3342018947887487892">Depois, um site que você visitar poderá pedir os temas ou anúncios sugeridos em sites acessados.</translation>
 <translation id="334438173029876234">Equipamentos de skate</translation>
 <translation id="3347146863028219517">Esqui e snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -2634,6 +2635,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="5742806904559466333">Bares, danceterias e vida noturna</translation>
 <translation id="5743684619253032786">Produtos de cuidados com as unhas</translation>
+<translation id="574392208103952083">Médio</translation>
 <translation id="5745733273847572235">Pode pedir sua localização</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5752327398324808817">Insira 1 ou 2 palavras</translation>
@@ -3469,6 +3471,7 @@ Mais detalhes:
 <translation id="725866823122871198">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda você a salvar todas as suas páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais</translation>
 <translation id="7265608370113700582">O endereço está disponível somente neste dispositivo</translation>
+<translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Os arquivos baixados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="7275334191706090484">Favoritos gerenciados</translation>
 <translation id="7275808129217605899">Alimentação saudável</translation>
@@ -4508,7 +4511,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}one{<ph name="FILE_COUNT" /> arquivo pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> arquivos podem incluir conteúdo sensível}}</translation>
-<translation id="9165305804774426672">Os sites que você acessa também podem determinar o que você gosta com base na sua atividade no site. Por exemplo, se você acessar um site que vende tênis de corrida de longa distância, ele pode concluir que você tem interesse em correr maratonas.</translation>
+<translation id="9165305804774426672">Os sites que você acessa também podem determinar o que você gosta com base na sua atividade. Por exemplo, se você acessar um site que vende tênis de corrida de longa distância, ele pode concluir que você tem interesse em correr maratonas.</translation>
 <translation id="9166851138617700776">Mais informações sobre anúncios sugeridos pelo site e medição de anúncios</translation>
 <translation id="9167054383925257837">Informações do SO e do navegador do dispositivo, como as versões</translation>
 <translation id="9167594211215946097">Ter acesso direto às suas impressoras</translation>

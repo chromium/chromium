@@ -3613,7 +3613,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3513019849832307207">Sumali at buksan</translation>
 <translation id="3513563267917474897">Slider ng hue mula <ph name="MIN_VALUE" /> hanggang <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kontrol sa Laro</translation>
-<translation id="3514373592552233661">Mas pipiliin ang mga gustong network kaysa sa iba pang kilalang network kung may mahigit sa isang available</translation>
 <translation id="3514647716686280777">Ang standard na proteksyon sa seguridad ang nakukuha mo. Para makakuha ng higit pang proteksyon laban sa mga mapanganib na website, download, at extension, i-on ang Pinahusay na Ligtas na Pag-browse sa mga setting ng Chrome.</translation>
 <translation id="3514681096978190000">Ang archive file na ito ay may iba pang file na posibleng may itinatagong malware</translation>
 <translation id="3515983984924808886">Pindutin ulit ang iyong security key para kumpirmahin ang pag-reset. Made-delete ang lahat ng impormasyong naka-store sa security key, kabilang ang PIN nito.</translation>
@@ -10307,7 +10306,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8306063480506363120">Alisin ang access sa Drive</translation>
 <translation id="8306430106790753902">Mga Ruta ng Network ng ChromeOS</translation>
 <translation id="8306885873692337975">Makuha ang mga pinakabagong feature at pagpapahusay sa seguridad.</translation>
-<translation id="8308016398665340540">Ibinabahagi mo ang network na ito sa iba pang user ng device na ito</translation>
 <translation id="8308024039615003152">Parang</translation>
 <translation id="8308179586020895837">Itanong kung gusto ng <ph name="HOST" /> na i-access ang iyong camera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11212,7 +11210,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8942714513622077633">Kanselahin ang pag-set up ng Microsoft 365?</translation>
 <translation id="894360074127026135">International Step-Up ng Netscape</translation>
 <translation id="8944099748578356325">Mas mabilis na mauubos ang baterya (kasalukuyang <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Limitado</translation>
 <translation id="8944633700466246631">Gumawa ng PIN sa pag-recover na may 6 na digit para sa Google Password Manager</translation>
 <translation id="8944725102565796255">Kung isang beses mo lang gustong gamitin ang account na ito, puwede mong <ph name="GUEST_LINK_BEGIN" />gamitin ang device bilang bisita<ph name="GUEST_LINK_END" />. Kung gusto mong magdagdag ng account para sa ibang tao, <ph name="LINK_BEGIN" />magdagdag ng bagong tao<ph name="LINK_END" /> sa iyong <ph name="DEVICE_TYPE" />.
 

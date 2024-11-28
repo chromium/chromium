@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">ระบบอาจนำคุณออกจากระบบเว็บไซต์นี้</translation>
 <translation id="6085954183010297841">ลบสิทธิ์การแก้ไขไฟล์ไหม <ph name="FILE" /></translation>
 <translation id="6120483543004435978">เมื่อเปิด เว็บไซต์จะขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้ เมื่อปิด เว็บไซต์จะไม่ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
-<translation id="6140839633433422817">คุณแน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ รวมถึงลบคุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6171020522141473435">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์บลูทูธได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์บลูทูธไม่ได้</translation>
-<translation id="6177111841848151710">ถูกบล็อกสำหรับเครื่องมือค้นหาปัจจุบัน</translation>
 <translation id="6177128806592000436">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัย</translation>
 <translation id="6181444274883918285">เพิ่มข้อยกเว้นของเว็บไซต์</translation>
 <translation id="6192792657125177640">ข้อยกเว้น</translation>
@@ -379,7 +377,7 @@
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
 <translation id="6561560012278703671">ใช้การส่งข้อความแบบไม่ส่งเสียง (บล็อกข้อความแจ้งเตือนไม่ให้รบกวนคุณ)</translation>
-<translation id="6593061639179217415">เว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
+<translation id="6593061639179217415">เว็บไซต์แบบเดสก์ท็อป</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">ถามก่อน ก่อนที่จะอนุญาตให้เว็บไซต์ใช้ไมโครโฟน (แนะนำ)</translation>
 <translation id="6999131147875565462">Chrome ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้</translation>
 <translation id="7000754031042624318">ปิดในการตั้งค่า Android</translation>
-<translation id="7016516562562142042">อนุญาตสำหรับเครื่องมือค้นหาปัจจุบัน</translation>
 <translation id="702275896380648118">เว็บไซต์นี้จะระบุสิ่งที่คุณชื่นชอบแล้วแนะนําโฆษณาในเว็บไซต์อื่น เว็บไซต์นี้ยังรับหัวข้อโฆษณาของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้นด้วย</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{เลือก 1 รายการ}other{เลือก # รายการ}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">บล็อกเว็บไซต์ไม่ให้ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC</translation>
 <translation id="8944485226638699751">จำกัด</translation>
 <translation id="8959122750345127698">ไม่สามารถเข้าถึงการนำทางได้: <ph name="URL" /></translation>
-<translation id="8986362086234534611">เลิกจำ</translation>
 <translation id="8990043154272859344">คุณจะออกจากระบบของเว็บไซต์ทั้งหมด</translation>
 <translation id="8993853206419610596">ขยายคำขอทั้งหมด</translation>
 <translation id="9002538116239926534">เมื่อเปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณได้ เมื่อปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณไม่ได้</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="9138217887606523162">ระดับการซูมปัจจุบันคือ <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">หน้านี้อันตราย</translation>
-<translation id="930525582205581608">เลิกจำเว็บไซต์นี้ใช่ไหม</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>

@@ -3579,7 +3579,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3513019849832307207">Dołącz i otwórz</translation>
 <translation id="3513563267917474897">Suwak odcienia od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Sterowanie grą</translation>
-<translation id="3514373592552233661">Jeśli będzie dostępnych więcej sieci, sieci preferowane będą wybierane przed innymi znanymi sieciami</translation>
 <translation id="3514647716686280777">Korzystasz ze standardowej ochrony. Aby lepiej chronić się przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami, włącz Ulepszone Bezpieczne przeglądanie w ustawieniach Chrome.</translation>
 <translation id="3514681096978190000">Ten plik archiwum zawiera inne pliki, które mogą ukrywać złośliwe oprogramowanie</translation>
 <translation id="3515983984924808886">Jeszcze raz dotknij klucza bezpieczeństwa, by potwierdzić resetowanie. Wszystkie informacje zapisane w kluczu, w tym jego kod PIN, zostaną usunięte.</translation>
@@ -10269,7 +10268,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8306063480506363120">Usuń dostęp do Dysku</translation>
 <translation id="8306430106790753902">Trasy sieciowe ChromeOS</translation>
 <translation id="8306885873692337975">Pobieraj najnowsze funkcje i poprawki zabezpieczeń.</translation>
-<translation id="8308016398665340540">Udostępniasz tę sieć innym użytkownikom urządzenia</translation>
 <translation id="8308024039615003152">Łąka</translation>
 <translation id="8308179586020895837">Pytaj, gdy witryna <ph name="HOST" /> chce mieć dostęp do kamery</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11171,7 +11169,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8942714513622077633">Anulować konfigurację Microsoft 365?</translation>
 <translation id="894360074127026135">Dostęp międzynarodowy firmy Netscape</translation>
 <translation id="8944099748578356325">szybciej zużyje baterię (obecnie <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Z ograniczeniami</translation>
 <translation id="8944633700466246631">Utwórz 6-cyfrowy kod PIN przywracania do Menedżera haseł Google</translation>
 <translation id="8944725102565796255">Jeśli chcesz użyć tego konta tylko raz, możesz <ph name="GUEST_LINK_BEGIN" />skorzystać z trybu gościa na urządzeniu<ph name="GUEST_LINK_END" />. Jeśli chcesz dodać konto innej osoby, <ph name="LINK_BEGIN" />dodaj nową osobę<ph name="LINK_END" /> do urządzenia <ph name="DEVICE_TYPE" />.
 

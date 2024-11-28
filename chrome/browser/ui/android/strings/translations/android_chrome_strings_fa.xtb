@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037517125981011456">‏درخواست‌هایی برای ورود به سیستم Chrome نشان می‌دهد</translation>
 <translation id="3038272154009688107">دیدن همه سایت‌ها</translation>
-<translation id="3055841435094910999">‏اطلاعات مربوط به استفاده شما از Chrome به Google ارسال می‌شود، اما با شما مرتبط نمی‌شود\n\nاگر Chrome خراب شود، ممکن است برخی‌از اطلاعات شخصی در جزئیات آن خرابی لحاظ شود\n\nاگر همگام‌سازی را روشن کنید، ممکن است اطلاعات مربوط به نشانی‌های وبی که بازدید کرده‌اید در سنجه‌ها لحاظ شود</translation>
 <translation id="3059531648236115056">افزودن خلاصه</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> نشانک}one{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}other{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}}</translation>
 <translation id="3062802207422175757">‏مقاله‌های مربوط با علایقتان در Chrome</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">‏برای ذخیره و استفاده از گذرواژه‌های جدید در «حساب Google»، «خدمات Google Play» را به‌روز کنید</translation>
 <translation id="4971753085054504448">‏چیز دیگری را جستجو کنید یا برای دیدن نتایج بیشتر، سابقه کامل Chrome را باز کنید.</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
+<translation id="498624032394115435">هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند.</translation>
 <translation id="4987271110129728827">صفحه پیدا نشد. املای واژه‌های تایپ‌شده را بررسی کنید یا جستجوی وب انجام دهید.</translation>
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4991110219272367918">گزینه تأیید کردن یا نکردن وب‌سایت بسته شد</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028">‫<ph name="MEMBER_FULL_NAME" />‏ (<ph name="EMAIL" />) دسترسی به گروه برگه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهد</translation>
 <translation id="5423934151118863508">صفحاتی که بیشترین بازدید را از آنها داشته‌اید در اینجا نمایان می‌شوند</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> گیگابایت در دسترس</translation>
-<translation id="543121643585717256">هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند. آشنایی با گروه‌های برگه هم‌رسانی‌شده</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5433691172869980887">نام کاربری کپی شد</translation>
 <translation id="5438292632479953702">بارگیری مجدد</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">برگه «گذرواژه‌ها در همه دستگاه‌ها دردسترس است» بسته شد</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6296366034485697675">صادر و حذف کردن</translation>
+<translation id="629730747756840877">حساب</translation>
 <translation id="6303969859164067831">خروج از سیستم و خاموش کردن همگام‌سازی</translation>
 <translation id="6312687380483398334">برنامه‌های وب (بی‌صدا)</translation>
 <translation id="6315386555979018699">حذف و ادامه</translation>
@@ -1317,6 +1317,7 @@
 <translation id="6910211073230771657">حذف شد</translation>
 <translation id="6918398787259831832">اگر این مشکل باز هم اتفاق افتاد، از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="BEGIN_LINK" />اطلاعات بیشتری دریافت کنید<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567">‏<ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome این اجازه‌ها را برداشت زیرا اخیراً بازدیدی نداشته‌اید</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{‫۱ برگه}one{‫<ph name="NUMBER_OF_TABS" /> برگه}other{‫<ph name="NUMBER_OF_TABS" /> برگه}}</translation>
 <translation id="6929224077895306814">‏همه کدهای امنیتی ذخیره‌شده در «حساب Google» و دستگاهتان حذف خواهد شد</translation>
 <translation id="6937524809504266803">شخصی‌سازی و پیونددهی</translation>
 <translation id="6937876069006524083">نام مستعار (اختیاری)</translation>
@@ -1640,6 +1641,7 @@
 <translation id="8307517230426267469">‫<ph name="GIVEN_NAME" /> برگه «<ph name="TAB_NAME" />» را برداشت</translation>
 <translation id="8310451567823644042">«گذرواژه‌ها» به‌زودی ازکار خواهد افتاد</translation>
 <translation id="831192587911042850">وب‌سایت فعلی را به فهرست وب‌سایت‌هایی که دنبال می‌کنید اضافه می‌کند.</translation>
+<translation id="8320212361750431956">فعالیت اخیر</translation>
 <translation id="8342727528718219152">‏‫Chrome درباره سایت‌هایی که ممکن است اعلان‌های زیادی ارسال کنند به شما اطلاع می‌دهد</translation>
 <translation id="834313815369870491">سایت‌هایی که هرگز ترجمه نمی‌شوند</translation>
 <translation id="8348430946834215779">‏درصورت امکان از HTTPS استفاده می‌شود و قبل‌از بار شدن سایت‌هایی که از آن پشتیبانی نمی‌کنند هشدار دریافت می‌کنید</translation>

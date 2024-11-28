@@ -460,7 +460,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
 <translation id="3037517125981011456">Aufforderungen für die Anmeldung in Chrome werden angezeigt</translation>
 <translation id="3038272154009688107">Alle Websites anzeigen</translation>
-<translation id="3055841435094910999">Es werden Informationen zur Chrome-Nutzung, die deiner Person nicht zugeordnet werden können, an Google gesendet\n\nFalls Chrome abstürzt, können die Details zum Absturz auch personenbezogene Daten enthalten\n\nWenn du die Synchronisierung aktivierst, können Messwerte auch Informationen zu besuchten URLs enthalten</translation>
 <translation id="3059531648236115056">Zusammenfassung hinzufügen</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> Lesezeichen}other{<ph name="BOOKMARKS_COUNT_MANY" /> Lesezeichen}}</translation>
 <translation id="3062802207422175757">Artikel zu deinen Interessen in Chrome</translation>
@@ -873,6 +872,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="496607651705915226">Aktualisiere die Google Play-Dienste, um neue Passwörter in deinem Google-Konto zu speichern und zu verwenden</translation>
 <translation id="4971753085054504448">Such nach etwas anderem oder öffne den vollständigen Chrome-Verlauf, um weitere Ergebnisse zu sehen.</translation>
 <translation id="497421865427891073">Weiter</translation>
+<translation id="498624032394115435">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten.</translation>
 <translation id="4987271110129728827">Diese Seite konnte nicht gefunden werden. Prüfe die Schreibweise oder versuche es mit einer Internetsuche.</translation>
 <translation id="4988526792673242964">Seiten</translation>
 <translation id="4991110219272367918">Ansicht für die Option, eine Website zu genehmigen oder nicht zu genehmigen (geschlossen)</translation>
@@ -959,7 +959,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) verliert dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“</translation>
 <translation id="5423934151118863508">Hier werden deine am meisten aufgerufenen Seiten angezeigt.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB verfügbar</translation>
-<translation id="543121643585717256">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten. Informationen zu geteilten Tabgruppen</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5433691172869980887">Nutzername kopiert</translation>
 <translation id="5438292632479953702">Noch einmal herunterladen</translation>
@@ -1154,6 +1153,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6284472661216707937">Die Ansicht „Deine Passwörter auf allen deinen Geräten abrufen“ ist geschlossen</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6296366034485697675">Exportieren und löschen</translation>
+<translation id="629730747756840877">Konto</translation>
 <translation id="6303969859164067831">Abmelden und die Synchronisierung ausschalten</translation>
 <translation id="6312687380483398334">Web-Apps (stumm)</translation>
 <translation id="6315386555979018699">Löschen und fortfahren</translation>
@@ -1640,6 +1640,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> hat den Tab „<ph name="TAB_NAME" />“ entfernt</translation>
 <translation id="8310451567823644042">Deine Passwörter funktionieren bald nicht mehr</translation>
 <translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen du folgst.</translation>
+<translation id="8320212361750431956">Letzte Aktivität</translation>
 <translation id="8342727528718219152">Chrome informiert dich über Websites, die möglicherweise zu viele Benachrichtigungen senden</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8348430946834215779">Nach Möglichkeit HTTPS verwenden und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>

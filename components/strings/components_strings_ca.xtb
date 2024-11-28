@@ -1241,6 +1241,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar l'aspecte del teu navegador</translation>
 <translation id="3240791268468473923">S'ha obert el full de credencials no coincidents de credencials de pagament segur</translation>
 <translation id="324180406144491771">Els enllaços de "<ph name="HOST_NAME" />" estan bloquejats</translation>
+<translation id="3243650379537999343">Dibuixa</translation>
 <translation id="3248329428895535435">No ho mostris en aquest lloc web</translation>
 <translation id="3249102948665905108">La pujada dels fitxers a <ph name="CLOUD_PROVIDER" /> s'ha completat amb errors</translation>
 <translation id="3252772880526154546">Arquitectura</translation>
@@ -2634,6 +2635,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5740911612628596808">Sobre C9</translation>
 <translation id="5742806904559466333">Bars, discoteques i vida nocturna</translation>
 <translation id="5743684619253032786">Productes de manicura</translation>
+<translation id="574392208103952083">Mitja</translation>
 <translation id="5745733273847572235">Pot demanar la teva ubicació</translation>
 <translation id="5750869797196646528">Seguiment de mans</translation>
 <translation id="5752327398324808817">Introdueix una o dues paraules</translation>

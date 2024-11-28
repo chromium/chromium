@@ -3473,6 +3473,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3421387094817716717">Elliptiesekurwe- publieke sleutel</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Let wel<ph name="END_BOLD" />: 'n Soortgelyke stem of opname kan dalk toegang tot jou persoonlike resultate of jou Assistent kry.</translation>
 <translation id="3421835120203732951">Voeg nuwe profiel by</translation>
+<translation id="3422989558057853751">Laaste item is gekies. As jy dit ontkies, sal jy uit die keusemodus uit gaan</translation>
 <translation id="3423111258700187173">Resultate gevind in <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Meer inligting oor hierdie AI-kenmerk</translation>
 <translation id="3423275441470187644">Vertrou</translation>
@@ -3611,7 +3612,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3513019849832307207">Sluit aan en maak oop</translation>
 <translation id="3513563267917474897">Kleurglyer vanaf <ph name="MIN_VALUE" /> tot <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Speletjiebeheer</translation>
-<translation id="3514373592552233661">Voorkeurnetwerke sal verkies word bo ander bekende netwerke indien meer as een beskikbaar is</translation>
 <translation id="3514647716686280777">Jy kry standaardsekuriteitbeskerming. Skakel Verbeterde Veiligblaai in Chrome-instellings aan om meer beskerming teen gevaarlike webwerwe, aflaaie en uitbreidings te kry.</translation>
 <translation id="3514681096978190000">Hierdie argieflêer sluit ander lêers in wat wanware kan versteek</translation>
 <translation id="3515983984924808886">Raak weer jou sekuriteitsleutel om terugstelling te bevestig. Alle inligting wat op die sekuriteitsleutel geberg is, insluitend sy PIN, sal uitgevee word.</translation>
@@ -4969,6 +4969,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4461483878391246134">Voeg tale by waarvoor daar nooit vertalings aangebied moet word nie</translation>
 <translation id="4462159676511157176">Gepasmaakte naambedieners</translation>
 <translation id="4465236939126352372">Tydlimiet van <ph name="TIME" /> gestel vir <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">Verkeerde PIN</translation>
 <translation id="4467561276409486506">&amp;Wissel Kompakmodus</translation>
 <translation id="4469324811108161144">Notas kan tot <ph name="CHARACTER_LIMIT" /> karakters stoor.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan lêers in <ph name="FOLDERNAME" /> wysig</translation>
@@ -10301,7 +10302,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8306063480506363120">Verwyder toegang tot Drive</translation>
 <translation id="8306430106790753902">ChromeOS-netwerkroetes</translation>
 <translation id="8306885873692337975">Kry die jongste kenmerke en veiligheidverbeterings.</translation>
-<translation id="8308016398665340540">Jy deel hierdie netwerk tans met ander gebruikers van hierdie toestel</translation>
 <translation id="8308024039615003152">Weiland</translation>
 <translation id="8308179586020895837">Vra of <ph name="HOST" /> by jou kamera wil ingaan</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11203,7 +11203,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8942714513622077633">Kanselleer Microsoft 365-opstelling?</translation>
 <translation id="894360074127026135">Netscape Internasionale Opstap</translation>
 <translation id="8944099748578356325">Gebruik die battery vinniger (tans <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Beperk</translation>
 <translation id="8944633700466246631">Skep ’n 6-syfer-terugstel-PIN vir Google Wagwoordbestuurder</translation>
 <translation id="8944725102565796255">As jy hierdie rekening net een keer wil gebruik, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
 

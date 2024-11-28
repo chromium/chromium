@@ -342,10 +342,8 @@
 <translation id="6071501408666570960">יכול להיות שתבוצע יציאה מהחשבון באתר הזה</translation>
 <translation id="6085954183010297841">למחוק את ההרשאה לעריכת הקובץ? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לדעת מתי משתמשים במכשיר הזה בפועל. כשהאפשרות מושבתת, אתרים לא יכולים לדעת מתי משתמשים במכשיר הזה בפועל.</translation>
-<translation id="6140839633433422817">‏בחרת לאפס את ההרשאות ולמחוק את קובצי ה-Cookie והנתונים מאתרים. להמשיך?</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6171020522141473435">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי Bluetooth.</translation>
-<translation id="6177111841848151710">חסוּם למנוע החיפוש הנוכחי</translation>
 <translation id="6177128806592000436">החיבור שלך לאתר הזה לא מאובטח</translation>
 <translation id="6181444274883918285">להוספת אתר להחרגה</translation>
 <translation id="6192792657125177640">יוצאי דופן</translation>
@@ -412,7 +410,6 @@
 <translation id="6992289844737586249">יש לשאול לפני שמאפשרים לאתרים להשתמש במיקרופון (מומלץ)</translation>
 <translation id="6999131147875565462">‏דפדפן Chrome פועל מהר יותר ותכונות שמשתמשות ב-JavaScript אמורות לפעול כמו שצריך</translation>
 <translation id="7000754031042624318">‏ההרשאה מושבתת בהגדרות Android</translation>
-<translation id="7016516562562142042">מופעל למנוע החיפוש הנוכחי</translation>
 <translation id="702275896380648118">‏האתר הזה מזהה אילו דברים אהבת ולאחר מכן מציע מודעות לאתרים אחרים. האתר הזה גם מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר.</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{נבחר אחד}one{נבחרו #}two{נבחרו #}other{נבחרו #}}</translation>
@@ -547,7 +544,6 @@
 <translation id="8928445016601307354">‏לאתרים אין הרשאה לראות ולשנות מידע במכשירי NFC.</translation>
 <translation id="8944485226638699751">יש הגבלה</translation>
 <translation id="8959122750345127698">הניווט לא אפשרי: <ph name="URL" /></translation>
-<translation id="8986362086234534611">לשכוח</translation>
 <translation id="8990043154272859344">תתבצע יציאה מכל האתרים</translation>
 <translation id="8993853206419610596">הרחבת כל הבקשות</translation>
 <translation id="9002538116239926534">כשהאפשרות מופעלת, אתרים יכולים לשמור נתונים במכשיר. כשהאפשרות מושבתת, אתרים לא יכולים לשמור נתונים במכשיר.</translation>
@@ -560,7 +556,6 @@
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">הזום הנוכחי: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">הדף הזה מסוכן</translation>
-<translation id="930525582205581608">לשכוח את האתר הזה?</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>

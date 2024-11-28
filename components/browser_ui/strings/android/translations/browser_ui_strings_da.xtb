@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Du bliver muligvis logget ud af dette website</translation>
 <translation id="6085954183010297841">Vil du slette tilladelsen til filredigering? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
-<translation id="6140839633433422817">Er du sikker på, at du vil nulstille tilladelser og slette cookies og websitedata?</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6171020522141473435">Når dette er slået til, kan websites anmode om tilladelse til at bruge Bluetooth-enheder. Når dette er slået fra, kan websites ikke bruge Bluetooth-enheder.</translation>
-<translation id="6177111841848151710">Blokeret for den nuværende søgemaskine</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>
 <translation id="6181444274883918285">Tilføj en undtagelse for et website</translation>
 <translation id="6192792657125177640">Undtagelser</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Spørg, før websites bruger din mikrofon (anbefales)</translation>
 <translation id="6999131147875565462">Chrome kører hurtigere, og funktioner, der anvender JavaScript, bør fungere som forventet</translation>
 <translation id="7000754031042624318">Deaktiveret i indstillingerne for Android</translation>
-<translation id="7016516562562142042">Tilladt for den nuværende søgemaskine</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Bloker websites, så de ikke kan få adgang til og ændre oplysninger på NFC-enheder</translation>
 <translation id="8944485226638699751">Begrænset</translation>
 <translation id="8959122750345127698">Navigationen er ikke mulig: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
 <translation id="8993853206419610596">Udvid alle anmodninger</translation>
 <translation id="9002538116239926534">Når dette er slået til, kan websites gemme data på din enhed. Når dette er slået fra, kan websites ikke gemme data på din enhed.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Aktivér tilladelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Det aktuelle zoomniveau er <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
-<translation id="930525582205581608">Vil du glemme dette website?</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
 <translation id="967624055006145463">Lagrede data</translation>

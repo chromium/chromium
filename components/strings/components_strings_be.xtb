@@ -1242,6 +1242,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць выгляд браўзера, націсніце Tab, затым Enter</translation>
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="324180406144491771">Спасылкі "<ph name="HOST_NAME" />" заблакіраваны</translation>
+<translation id="3243650379537999343">Рысаваць</translation>
 <translation id="3248329428895535435">Не паказваць на гэтым сайце</translation>
 <translation id="3249102948665905108">Запампоўванне файла ў воблака "<ph name="CLOUD_PROVIDER" />" завершана з памылкамі</translation>
 <translation id="3252772880526154546">Архітэктура</translation>
@@ -2633,6 +2634,7 @@
 <translation id="5740911612628596808">Канверт C9</translation>
 <translation id="5742806904559466333">Бары, клубы і начныя забавы</translation>
 <translation id="5743684619253032786">Тавары для догляду пазногцяў</translation>
+<translation id="574392208103952083">Сярэдні</translation>
 <translation id="5745733273847572235">Сайт можа запытваць ваша месцазнаходжанне</translation>
 <translation id="5750869797196646528">Адсочванне рухаў рук</translation>
 <translation id="5752327398324808817">Увядзіце адно ці два словы</translation>
@@ -3467,6 +3469,7 @@
 <translation id="725866823122871198">Памылка прыватнага падключэння да дамена <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />: дата і час на вашым камп’ютары (<ph name="DATE_AND_TIME" />) няправільныя.</translation>
 <translation id="7260075294900977274">Новая разумная папка, якая дазваляе трымаць усе старонкі пакупак у адным месцы, аўтаматычна адсочваць цэны, глядзець статыстыку цэн і г. д.</translation>
 <translation id="7265608370113700582">Адрас даступны толькі на гэтай прыладзе</translation>
+<translation id="7269151392155523061">Хуткая каманда "<ph name="SHORTCUT_NAME" />" не павінна супадаць з ключавым словам пошукавага агрэгатара, якое вызначана палітыкай <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /></translation>
 <translation id="7273111226200291353">Спампаваныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам. У прыватнасці, яны могуць быць правераны на наяўнасць канфідэнцыяльных даных або шкодных праграм альбо адпраўлены на захоўванне ў адпаведнасці з палітыкамі кампаніі і іх зможа пабачыць адміністратар.</translation>
 <translation id="7275334191706090484">Кіруемыя закладкі</translation>
 <translation id="7275808129217605899">Здаровае харчаванне</translation>

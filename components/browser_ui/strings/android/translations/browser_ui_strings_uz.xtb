@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Bu saytda hisobingizdan chiqasiz</translation>
 <translation id="6085954183010297841">Fayllarni tahrirlash ruxsati oʻchirilsinmi? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Yoqilsa, saytlar qachon qurilmadan faol foydalanishingizni soʻrashi mumkin. Oʻchirilsa, saytlar bu maʼlumotlarni bila olmaydi.</translation>
-<translation id="6140839633433422817">Ruxsatlar qayta tiklanib, cookie fayllar va sayt maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6171020522141473435">Yoqilsa, saytlar Bluetooth qurilmalardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
-<translation id="6177111841848151710">Joriy qidiruv tizimiga taqiqlangan</translation>
 <translation id="6177128806592000436">Bu sayt bilan o‘rnatilgan aloqa himoyalanmagan.</translation>
 <translation id="6181444274883918285">Istisno sayt qo‘shish</translation>
 <translation id="6192792657125177640">Istisno saytlar</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Mikrofondan foydalanishga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="6999131147875565462">Chrome tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi</translation>
 <translation id="7000754031042624318">Android sozlamalari orqali faolsizlantirilgan</translation>
-<translation id="7016516562562142042">Joriy qidiruv tizimiga ruxsat berilgan</translation>
 <translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{ 1 ta belgilandi}other{# ta belgilandi}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Saytlarga NFC qurilmalarni koʻrish va ulardagi axborotni oʻzgartirishni taqiqlash</translation>
 <translation id="8944485226638699751">Cheklangan</translation>
 <translation id="8959122750345127698">Sahifa topilmadi: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Olib tashlash</translation>
 <translation id="8990043154272859344">Barcha saytlardagi hisobingizdan chiqib ketasiz</translation>
 <translation id="8993853206419610596">Barcha soʻrovlarni kengaytirish</translation>
 <translation id="9002538116239926534">Yoqilsa, saytlar maʼlumotlarni qurilmangizga saqlashi mumkin. Oʻchirilsa, saqlay olmaydi.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
 <translation id="9138217887606523162">Joriy zum: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
-<translation id="930525582205581608">Bu sayt olib tashlansinmi?</translation>
 <translation id="947156494302904893">Siz ochadigan va real odam ekaningiz haqidagi axborotni tekshirishi mumkin saytlar</translation>
 <translation id="959682366969460160">Ishni tashkillash</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>

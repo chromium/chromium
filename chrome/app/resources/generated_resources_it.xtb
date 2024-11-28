@@ -3460,6 +3460,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3421387094817716717">Chiave pubblica della curva ellittica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente.</translation>
 <translation id="3421835120203732951">Aggiungi nuovo profilo</translation>
+<translation id="3422989558057853751">Ultimo elemento selezionato, deselezionandolo si uscirà dalla modalità di selezione</translation>
 <translation id="3423111258700187173">Risultati trovati in: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Scopri di più su questa funzionalità di IA</translation>
 <translation id="3423275441470187644">Attendibile</translation>
@@ -3598,7 +3599,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3513019849832307207">Entra e apri</translation>
 <translation id="3513563267917474897">Cursore di tonalità da <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Controllo dei giochi</translation>
-<translation id="3514373592552233661">Le reti preferite avranno precedenza su altre reti note se ne sono disponibili più di una</translation>
 <translation id="3514647716686280777">È attiva la protezione standard. Per aumentare la protezione da estensioni, download e siti web pericolosi, attiva Navigazione sicura avanzata nelle impostazioni di Chrome.</translation>
 <translation id="3514681096978190000">Questo file di archivio include altri file che potrebbero nascondere malware</translation>
 <translation id="3515983984924808886">Tocca nuovamente il token di sicurezza per confermare la reimpostazione. Tutte le informazioni memorizzate sul token di sicurezza, nonché il suo PIN, verranno eliminate.</translation>
@@ -4956,6 +4956,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4461483878391246134">Aggiungi lingue per le quali non proporre mai la traduzione</translation>
 <translation id="4462159676511157176">Assegna nomi personalizzati a server</translation>
 <translation id="4465236939126352372">Limite di tempo di <ph name="TIME" /> impostato per <ph name="APP_NAME" /></translation>
+<translation id="4467373268340082204">PIN errato</translation>
 <translation id="4467561276409486506">&amp;Attiva/Disattiva modalità compatta</translation>
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> può modificare i file nella cartella <ph name="FOLDERNAME" /></translation>
@@ -10285,7 +10286,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8306063480506363120">Rimuovi l'accesso a Drive</translation>
 <translation id="8306430106790753902">Route di rete ChromeOS</translation>
 <translation id="8306885873692337975">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti.</translation>
-<translation id="8308016398665340540">Stai condividendo questa rete con altri utenti di questo dispositivo</translation>
 <translation id="8308024039615003152">Prato</translation>
 <translation id="8308179586020895837">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11187,7 +11187,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8942714513622077633">Vuoi annullare la configurazione di Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Consumerà più velocemente la batteria (attualmente con <ph name="BATTERY_PERCENTAGE" />% di carica)</translation>
-<translation id="8944485226638699751">Limitati</translation>
 <translation id="8944633700466246631">Crea un PIN di recupero di 6 cifre per il Gestore delle password di Google</translation>
 <translation id="8944725102565796255">Se vuoi usare questo account una sola volta, puoi <ph name="GUEST_LINK_BEGIN" />utilizzare il dispositivo come ospite<ph name="GUEST_LINK_END" />. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
 

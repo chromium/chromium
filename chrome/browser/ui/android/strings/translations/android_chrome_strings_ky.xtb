@@ -460,7 +460,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3037177537145227281">Баасына көз салуу</translation>
 <translation id="3037517125981011456">Chrome'го кирүү үчүн билдирмелерди көрсөтөт</translation>
 <translation id="3038272154009688107">Бардык сайттарды көрүү</translation>
-<translation id="3055841435094910999">Chrome'дун колдонулушу жөнүндө маалымат Google'га жөнөтүлөт, бирок ал сиз менен байланыштырылбайт\n\nЭгер Chrome бузулса, ал бузулуунун чоо-жайында жеке маалымат камтылышы мүмкүн\n\nЭгер шайкештирүү күйгүзүлсө, көрсөткүчтөрдө сиз баш баккан URL даректери да камтылышы ыктымал</translation>
 <translation id="3059531648236115056">Корутундуну кошуу</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> кыстарма}other{<ph name="BOOKMARKS_COUNT_MANY" /> кыстарма}}</translation>
 <translation id="3062802207422175757">Chrome'догу сизди кызыктырган макалалар</translation>
@@ -873,6 +872,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="496607651705915226">Жаңы сырсөздөрдү Google аккаунтуңузга сактоо жана колдонуу үчүн Google Play кызматтарын жаңыртыңыз</translation>
 <translation id="4971753085054504448">Башка нерсени издеп көрүңүз же көбүрөөк натыйжаларды көрүү үчүн толук Chrome таржымалын ачыңыз.</translation>
 <translation id="497421865427891073">Алга</translation>
+<translation id="498624032394115435">Шилтемеси бар колдонуучулардын баары бардык өтмөктөрдү түзөтө алышат.</translation>
 <translation id="4987271110129728827">Ал бет табылбай жатат. Ал туура жазылганын текшериңиз же Интернеттен издеп көрүңүз.</translation>
 <translation id="4988526792673242964">Барактар</translation>
 <translation id="4991110219272367918">Вебсайтты ырастоо же ырастабоо параметри жабылды</translation>
@@ -959,7 +959,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот</translation>
 <translation id="5423934151118863508">Эң көп каралган беттер бул жерде көрүнөт</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> Гб жеткиликтүү</translation>
-<translation id="543121643585717256">Шилтемеси бар колдонуучулардын баары бардык өтмөктөрдү түзөтө алышат. Жалпы өтмөк топтору тууралуу маалымат</translation>
 <translation id="543338862236136125">Сырсөздү түзөтүү</translation>
 <translation id="5433691172869980887">Колдонуучунун аты көчүрүлдү</translation>
 <translation id="5438292632479953702">Кайра жүктөп алуу</translation>
@@ -1154,6 +1153,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6284472661216707937">Бардык түзмөктөрдөгү сырсөздөр барагы жабылды</translation>
 <translation id="6295158916970320988">Бардык сайттар</translation>
 <translation id="6296366034485697675">Өткөрүп берип, өчүрүү</translation>
+<translation id="629730747756840877">Аккаунт</translation>
 <translation id="6303969859164067831">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
 <translation id="6312687380483398334">Веб колдонмолор (добушсуз)</translation>
 <translation id="6315386555979018699">Өчүрүү жана улантуу</translation>
@@ -1317,6 +1317,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6910211073230771657">Жок кылынды</translation>
 <translation id="6918398787259831832">Эгер бул маселе кайталана берсе, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> камсыздоочусунан <ph name="BEGIN_LINK" />көбүрөөк маалымат алыңыз<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Акыркы убакта сайтка кирбегениңизден улам, Chrome бул уруксаттарды өчүрдү</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 өтмөк}other{<ph name="NUMBER_OF_TABS" /> өтмөк}}</translation>
 <translation id="6929224077895306814">Түзмөгүңүздө жана Google аккаунтуңузда сакталган бардык коопсуздук коддору өчүрүлөт</translation>
 <translation id="6937524809504266803">Жекелештирүү жана байланыштыруу</translation>
 <translation id="6937876069006524083">Ылакап ат (милдеттүү эмес)</translation>
@@ -1640,6 +1641,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> "<ph name="TAB_NAME" />" өтмөгүн алып салды</translation>
 <translation id="8310451567823644042">Жакында сырсөздөр иштебей калышат</translation>
 <translation id="831192587911042850">Учурдагы вебсайтты жазылган вебсайттардын тизмесине кошуңуз.</translation>
+<translation id="8320212361750431956">Соңку аракеттер</translation>
 <translation id="8342727528718219152">Chrome сизге өтө көп билдирмелерди жөнөтүп жаткан сайттар жөнүндө кабарлап турат</translation>
 <translation id="834313815369870491">Сайттар эч качан которулбасын</translation>
 <translation id="8348430946834215779">HTTPS кеңейтүүсүн мүмкүн болгон учурларда колдонуп, аны колдоого албаган сайттарды жүктөөдөн мурда эскертүү алыңыз</translation>

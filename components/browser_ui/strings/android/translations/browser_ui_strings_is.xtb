@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Þú skráist hugsanlega út af þessu vefsvæði</translation>
 <translation id="6085954183010297841">Eyða leyfi til að breyta skrám? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að vita hvenær þú ert að nota tækið með virkum hætti. Þegar slökkt er á þessu geta vefsvæði ekki vitað hvenær þú ert að nota tækið með virkum hætti.</translation>
-<translation id="6140839633433422817">Viltu örugglega endurstilla heimildir og eyða fótsporum og vefsvæðagögnum?</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6171020522141473435">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota Bluetooth-tæki. Þegar slökkt er á þessu geta vefsvæði ekki notað Bluetooth-tæki.</translation>
-<translation id="6177111841848151710">Á bannlista á núverandi leitarvél</translation>
 <translation id="6177128806592000436">Tenging þín við þetta vefsvæði er ekki örugg</translation>
 <translation id="6181444274883918285">Bæta við undantekningu</translation>
 <translation id="6192792657125177640">Undantekningar</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Spyrja áður en vefsvæðum er veitt heimild til að nota hljóðnemann þinn (ráðlagt)</translation>
 <translation id="6999131147875565462">Chrome virkar hraðar og eiginleikar sem nota JavaScript ættu að virka sem skyldi</translation>
 <translation id="7000754031042624318">Slökkt í stillingum Android</translation>
-<translation id="7016516562562142042">Leyft á núverandi leitarvél</translation>
 <translation id="702275896380648118">Þetta vefsvæði áætlar áhugasvið þitt og sendir svo öðrum vefsvæðum auglýsingatillögur. Þetta vefsvæði fær einnig upplýsingar um umfjöllunarefni auglýsinga frá Chrome til að birta þér viðeigandi auglýsingar.</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valið}one{# valið}other{# valin}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Loka á að vefsvæði sjái og breyti upplýsingum í NFC-tækjum</translation>
 <translation id="8944485226638699751">Takmarkað</translation>
 <translation id="8959122750345127698">Ekki næst samband: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Gleyma</translation>
 <translation id="8990043154272859344">Þú verður skráð(ur) út af öllum vefsvæðum</translation>
 <translation id="8993853206419610596">Stækka allar beiðnir</translation>
 <translation id="9002538116239926534">Þegar kveikt er á þessu geta vefsvæði vistað gögn í tækinu þínu. Þegar slökkt er á þessu geta vefsvæði ekki vistað gögn í tækinu þínu.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Aðdráttur er nú <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Þessi síða er hættuleg</translation>
-<translation id="930525582205581608">Gleyma þessu vefsvæði?</translation>
 <translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
 <translation id="959682366969460160">Skipulag</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>

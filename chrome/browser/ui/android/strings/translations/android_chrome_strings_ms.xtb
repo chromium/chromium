@@ -460,7 +460,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3037517125981011456">Memaparkan gesaan untuk log masuk ke Chrome</translation>
 <translation id="3038272154009688107">Lihat semua laman</translation>
-<translation id="3055841435094910999">Maklumat tentang penggunaan Chrome anda dihantar kepada Google, tetapi maklumat itu tidak terikat dengan anda\n\nJika berlaku ranap sistem pada Chrome, butiran tentang ranap sistem mungkin termasuk beberapa maklumat peribadi\n\nJika anda menghidupkan penyegerakan, metrik juga mungkin termasuk maklumat tentang URL yang anda lawati</translation>
 <translation id="3059531648236115056">Tambahkan ringkasan</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
 <translation id="3062802207422175757">Artikel tentang minat anda di Chrome</translation>
@@ -873,6 +872,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="496607651705915226">Untuk menyimpan dan menggunakan kata laluan baharu dalam Google Account anda, kemas kinikan perkhidmatan Google Play</translation>
 <translation id="4971753085054504448">Cuba cari perkara lain atau buka sejarah penuh Chrome untuk melihat lebih banyak hasil carian.</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
+<translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
 <translation id="4987271110129728827">Tidak menemukan halaman itu. Semak ejaan anda atau cuba carian web.</translation>
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="4991110219272367918">Pilihan untuk meluluskan atau tidak meluluskan laman web yang ditutup</translation>
@@ -959,7 +959,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta</translation>
 <translation id="5423934151118863508">Halaman yang paling kerap anda kunjungi akan muncul di sini</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tersedia</translation>
-<translation id="543121643585717256">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab. Ketahui kumpulan tab dikongsi</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="5438292632479953702">Muat turun sekali lagi</translation>
@@ -1154,6 +1153,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6284472661216707937">Kata laluan pada semua peranti anda ditutup</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6296366034485697675">Eksport dan padamkan</translation>
+<translation id="629730747756840877">Akaun</translation>
 <translation id="6303969859164067831">Log keluar dan matikan penyegerakan</translation>
 <translation id="6312687380483398334">Apl web (senyap)</translation>
 <translation id="6315386555979018699">Padam &amp; teruskan</translation>
@@ -1317,6 +1317,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6910211073230771657">Dipadamkan</translation>
 <translation id="6918398787259831832">Jika masalah ini tetap berlaku, <ph name="BEGIN_LINK" />dapatkan lebih banyak maklumat<ph name="END_LINK" /> daripada <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana anda belum melawati laman web ini baru-baru ini</translation>
+<translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
 <translation id="6929224077895306814">Semua kod keselamatan yang disimpan pada peranti anda dan dalam Google Account akan dipadamkan</translation>
 <translation id="6937524809504266803">Pemeribadian &amp; Pemautan</translation>
 <translation id="6937876069006524083">Nama panggilan (pilihan)</translation>
@@ -1640,6 +1641,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> telah mengalih keluar tab “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Kata laluan akan berhenti berfungsi tidak lama lagi</translation>
 <translation id="831192587911042850">Menambahkan laman web semasa pada senarai laman web yang anda ikuti.</translation>
+<translation id="8320212361750431956">Aktiviti Baru-baru Ini</translation>
 <translation id="8342727528718219152">Chrome akan memaklumi anda tentang laman yang mungkin menghantar terlalu banyak pemberitahuan</translation>
 <translation id="834313815369870491">Jangan terjemah laman</translation>
 <translation id="8348430946834215779">Jika boleh, gunakan HTTPS dan dapatkan amaran sebelum memuatkan laman yang tidak menyokong tetapan ini</translation>

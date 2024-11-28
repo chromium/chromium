@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037517125981011456">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে</translation>
 <translation id="3038272154009688107">সব সাইট দেখুন</translation>
-<translation id="3055841435094910999">আপনার Chrome ব্যবহার সম্পর্কে তথ্য Google-এ পাঠানো হয়েছে, কিন্তু এটি আপনার সাথে সংযুক্ত নয়\n\nChrome ক্র্যাশ হলে, ক্র্যাশের বিবরণে কিছু ব্যক্তিগত তথ্য অন্তর্ভুক্ত থাকতে পারে\n\nআপনি সিঙ্ক চালু করলে, মেট্রিক্সে আপনার দেখা URL সম্পর্কে তথ্যও অন্তর্ভুক্ত থাকতে পারে</translation>
 <translation id="3059531648236115056">সারাংশ যোগ করুন</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টি বুকমার্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}}</translation>
 <translation id="3062802207422175757">Chrome-এ আপনি যেসব নিবন্ধগুলি পড়তে পছন্দ করেন</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">আপনার Google অ্যাকাউন্টে নতুন পাসওয়ার্ড সেভ ও ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন</translation>
 <translation id="4971753085054504448">অন্য কিছু সার্চ করে দেখুন বা আরও ফলাফল দেখতে সম্পূর্ণ Chrome ইতিহাস খুলুন।</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
+<translation id="498624032394115435">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন।</translation>
 <translation id="4987271110129728827">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা ওয়েব সার্চ করুন।</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
 <translation id="4991110219272367918">ওয়েবসাইট বন্ধ করা হবে কিনা তা অনুমোদন করা বা না করার বিকল্প</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) সঙ্গে সঙ্গে “<ph name="GROUP_NAME" />” ট্যাব গ্রুপের অ্যাক্সেস হারাবেন</translation>
 <translation id="5423934151118863508">আপনার সর্বাধিক দেখা পৃষ্ঠাগুলি এখানে দেখা যাবে</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> জিবি উপলব্ধ</translation>
-<translation id="543121643585717256">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন। শেয়ার করা ট্যাব গ্রুপ সম্পর্কে আরও জানুন</translation>
 <translation id="543338862236136125">পাসওয়ার্ড এডিট করুন</translation>
 <translation id="5433691172869980887">ইউজারনেম কপি করা হয়েছে</translation>
 <translation id="5438292632479953702">আবার ডাউনলোড করুন</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">পাসওয়ার্ড আপনার সব ডিভাইসে বন্ধ আছে</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6296366034485697675">এক্সপোর্ট করুন ও মুছে দিন</translation>
+<translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
 <translation id="6315386555979018699">মুছুন এবং এগিয়ে যান</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" />, “<ph name="TAB_NAME" />” ট্যাব সরিয়ে দিয়েছেন</translation>
 <translation id="8310451567823644042">পাসওয়ার্ড শীঘ্রই কাজ করা বন্ধ করে দেবে</translation>
 <translation id="831192587911042850">আপনার ফলো করা ওয়েবসাইটের তালিকায় বর্তমান ওয়েব সাইট যোগ করে।</translation>
+<translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="8342727528718219152">যেসব সাইট অনেক বেশি বিজ্ঞপ্তি পাঠাতে পারে, Chrome আপনাকে তার সম্পর্কে জানাবে</translation>
 <translation id="834313815369870491">সাইট কখনও অনুবাদ করবেন না</translation>
 <translation id="8348430946834215779">যখনই সম্ভব, তখনই HTTPS ব্যবহার করুন এবং এখানে কাজ করে না এমন সাইট লোড করার আগে সতর্কতা পান</translation>

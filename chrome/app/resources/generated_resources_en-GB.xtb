@@ -3612,7 +3612,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3513019849832307207">Join and open</translation>
 <translation id="3513563267917474897">Hue slider from <ph name="MIN_VALUE" /> to <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Game control</translation>
-<translation id="3514373592552233661">Preferred networks will be preferred over other known networks if more than one is available</translation>
 <translation id="3514647716686280777">You're getting standard security protection. To get more protection against dangerous websites, downloads and extensions, turn on Enhanced Safe Browsing in Chrome settings.</translation>
 <translation id="3514681096978190000">This archive file includes other files that may hide malware</translation>
 <translation id="3515983984924808886">Touch your security key again to confirm reset. All information stored on the security key, including its PIN, will be deleted.</translation>
@@ -10304,7 +10303,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8306063480506363120">Remove Drive access</translation>
 <translation id="8306430106790753902">ChromeOS Network Routes</translation>
 <translation id="8306885873692337975">Get the latest features and security improvements.</translation>
-<translation id="8308016398665340540">You are sharing this network with other users of this device</translation>
 <translation id="8308024039615003152">Meadow</translation>
 <translation id="8308179586020895837">Ask if <ph name="HOST" /> wants to access your camera</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11206,7 +11204,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8942714513622077633">Cancel Microsoft 365 setup?</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Use the battery more quickly (currently <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Limited</translation>
 <translation id="8944633700466246631">Create a six-digit recovery PIN for Google Password Manager</translation>
 <translation id="8944725102565796255">If you'd just like to use this account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />. If you'd like to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
 

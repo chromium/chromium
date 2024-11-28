@@ -106,7 +106,7 @@
 <translation id="1445276840641906250">جميع علامات التبويب في متصفِّح واحد</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
 <translation id="1455660774629812862">عدم الإخفاء</translation>
-<translation id="1460751212339734034">وفِّر وقت الكتابة</translation>
+<translation id="1460751212339734034">وقت أكثر، كتابة أقلّ</translation>
 <translation id="1466035273550360103">ليست هناك أي علامات تبويب مفتوحة</translation>
 <translation id="1469381646033328562">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -432,6 +432,7 @@
 <translation id="288902476966286676">تم الإرجاع إلى المُرسِل</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2894757982205307093">علامة تبويب جديدة في مجموعة</translation>
+<translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2905479111267140204">لديك كلمات مرور يبلغ عددها <ph name="NUMBER_OF_PASSWORDS" /> مستخدَمة لحساب آخر ويمكن أن تعرّضك لمشاكل أمنية.</translation>
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2918688092312652908">وضع علامة "غير مقروء"</translation>

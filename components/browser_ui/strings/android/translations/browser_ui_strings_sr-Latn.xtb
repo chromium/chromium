@@ -341,10 +341,8 @@
 <translation id="6071501408666570960">Možda ćete biti odjavljeni sa ovog sajta</translation>
 <translation id="6085954183010297841">Želite da izbrišete dozvolu za izmene fajlova? <ph name="FILE" /></translation>
 <translation id="6120483543004435978">Kada je uključeno, sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj. Kada je isključeno, sajtovi ne mogu da znaju kada aktivno koristite uređaj.</translation>
-<translation id="6140839633433422817">Želite stvarno da resetujete dozvole i izbrišete kolačiće i podatke o sajtovima?</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kada je uključeno, sajtovi mogu da traže da koriste Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da koriste Bluetooth uređaje.</translation>
-<translation id="6177111841848151710">Blokirano je za aktuelni pretraživač</translation>
 <translation id="6177128806592000436">Veza sa ovim sajtom nije bezbedna</translation>
 <translation id="6181444274883918285">Dodaj izuzetak za sajtove</translation>
 <translation id="6192792657125177640">Izuzeci</translation>
@@ -411,7 +409,6 @@
 <translation id="6992289844737586249">Pitaj pre nego što dozvoliš sajtovima da koriste mikrofon (preporučeno)</translation>
 <translation id="6999131147875565462">Chrome radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno</translation>
 <translation id="7000754031042624318">Isključeno je u Android podešavanjima</translation>
-<translation id="7016516562562142042">Dozvoljeno je za aktuelni pretraživač</translation>
 <translation id="702275896380648118">Ovaj sajt određuje stvari koje vam se sviđaju, a zatim predlaže oglase za druge sajtove. Ovaj sajt takođe prima podatke o vašim temama oglasa iz Chrome-a da bi vam prikazivao relevantnije oglase.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Izabrano: 1}one{Izabrano: #}few{Izabrano: #}other{Izabrano: #}}</translation>
@@ -546,7 +543,6 @@
 <translation id="8928445016601307354">Sprečite sajtove da vide i menjaju informacije na NFC uređajima</translation>
 <translation id="8944485226638699751">Ograničeno</translation>
 <translation id="8959122750345127698">Navigacija je nedostupna: <ph name="URL" /></translation>
-<translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavićete se sa svih sajtova</translation>
 <translation id="8993853206419610596">Proširi sve zahteve</translation>
 <translation id="9002538116239926534">Kada je uključeno, sajtovi mogu da čuvaju podatke na uređaju. Kada je isključeno, sajtovi ne mogu da čuvaju podatke na uređaju.</translation>
@@ -559,7 +555,6 @@
 <translation id="913657688200966289">Uključite dozvole za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Aktuelno zumiranje je <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Ova stranica je opasna</translation>
-<translation id="930525582205581608">Želite da zaboravite ovaj sajt?</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Bolja organizacija</translation>
 <translation id="967624055006145463">Sačuvani podaci</translation>

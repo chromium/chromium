@@ -460,7 +460,6 @@
 <translation id="3037177537145227281">किमतीचा माग ठेवत आहे</translation>
 <translation id="3037517125981011456">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते</translation>
 <translation id="3038272154009688107">सर्व साइट पहा</translation>
-<translation id="3055841435094910999">तुमच्या Chrome वापराबद्दलची माहिती Google ला पाठवली जाते, पण Chrome क्रॅश झाल्यास, ती तुमच्याशी जोडलेली नाही\n\nक्रॅशबद्दलच्या तपशिलांमध्ये काही वैयक्तिक माहितीचा समावेश असू शकतो\n\nतुम्ही सिंक करणे सुरू केल्यास, मेट्रिक्समध्ये तुम्ही भेट दिलेल्या URL ची माहितीचादेखील समावेश असू शकतो</translation>
 <translation id="3059531648236115056">सारांश जोडा</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome वरील तुमच्या स्वारस्यांविषयी लेख</translation>
@@ -873,6 +872,7 @@
 <translation id="496607651705915226">तुमच्या Google खाते मध्ये नवीन पासवर्ड सेव्ह करून ते वापरण्यासाठी, Google Play सेवा अपडेट करा</translation>
 <translation id="4971753085054504448">काहीतरी वेगळे शोधण्याचा प्रयत्न करा किंवा आणखी परिणाम पाहण्यासाठी संपूर्ण Chrome इतिहास उघडा.</translation>
 <translation id="497421865427891073">पुढे जा</translation>
+<translation id="498624032394115435">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते.</translation>
 <translation id="4987271110129728827">ते पेज सापडले नाही. तुमचे शब्दलेखन तपासा किंवा वेब शोध वापरून पहा.</translation>
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4991110219272367918">वेबसाइटला मंजुरी द्यायची की नाही यासाठीचा पर्याय बंद आहे</translation>
@@ -959,7 +959,6 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवतील</translation>
 <translation id="5423934151118863508">तुमची सर्वाधिक भेट दिलेली पेज येथे दिसतील</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB उपलब्ध आहे</translation>
-<translation id="543121643585717256">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते. शेअर केलेल्या टॅब गटांबद्दल जाणून घ्या</translation>
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
 <translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
@@ -1154,6 +1153,7 @@
 <translation id="6284472661216707937">तुमच्या सर्व डिव्हाइसवरील पासवर्ड बंद आहेत</translation>
 <translation id="6295158916970320988">सर्व साइट</translation>
 <translation id="6296366034485697675">एक्सपोर्ट करा आणि हटवा</translation>
+<translation id="629730747756840877">खाते</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
 <translation id="6312687380483398334">वेब अ‍ॅप्स (शांत)</translation>
 <translation id="6315386555979018699">हटवा आणि पुढे सुरू ठेवा</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> यांनी “<ph name="TAB_NAME" />” टॅब काढून टाकला आहे</translation>
 <translation id="8310451567823644042">पासवर्ड लवकरच काम करणे थांबवतील</translation>
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
+<translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="8342727528718219152">Chrome हे अशा साइटविषयी तुम्हाला कळवू शकते, ज्या कदाचित खूप जास्त नोटिफिकेशन पाठवत असतील</translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8348430946834215779">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा</translation>

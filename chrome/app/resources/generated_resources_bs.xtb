@@ -3472,7 +3472,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3421387094817716717">Javni ključ eliptične krivulje</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Neko sa sličnim glasom ili snimkom može pristupiti vašim ličnim rezultatima ili Asistentu.</translation>
 <translation id="3421835120203732951">Dodajte novi profil</translation>
-<translation id="3422989558057853751">Posljednja odabrana stavka, ako se poništi odabir, izlazi se iz načina odabira</translation>
+<translation id="3422989558057853751">Odabrana je posljednja stavka. Napuštanje načina rada za odabir poništavanjem njenog odabira</translation>
 <translation id="3423111258700187173">Rezultati pronađeni u folderu <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Više informacija o ovoj AI funkciji</translation>
 <translation id="3423275441470187644">Pouzdanost</translation>
@@ -3611,7 +3611,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3513019849832307207">Pridružite se i otvorite</translation>
 <translation id="3513563267917474897">Klizač nijanse od <ph name="MIN_VALUE" /> do <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Kontrola igre</translation>
-<translation id="3514373592552233661">Preferirane mreže će imati prednost u odnosu na druge poznate mreže ako je dostupno više od jedne mreže</translation>
 <translation id="3514647716686280777">Dobijate standardnu sigurnosnu zaštitu. Da dobijete bolju zaštitu od opasnih web lokacija, preuzimanja i ekstenzija, uključite Poboljšano sigurno pregledanje u postavkama Chromea.</translation>
 <translation id="3514681096978190000">Ovaj arhivski fajl uključuje druge fajlove koji mogu sakrivati zlonamjerni softver</translation>
 <translation id="3515983984924808886">Dodirnite ponovo svoj sigurnosni ključ da potvrdite vraćanje na zadano. Izbrisat će se sve informacije koje su pohranjene na sigurnosnom ključu, uključujući njegov PIN.</translation>
@@ -10307,7 +10306,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8306063480506363120">Ukloni pristup Disku</translation>
 <translation id="8306430106790753902">Mrežne rute ChromeOS-a</translation>
 <translation id="8306885873692337975">Preuzmite najnovije funkcije i poboljšanja sigurnosti.</translation>
-<translation id="8308016398665340540">Ovu mrežu dijelite s drugim korisnicima ovog uređaja</translation>
 <translation id="8308024039615003152">Livada</translation>
 <translation id="8308179586020895837">Pitajte me ako <ph name="HOST" /> želi pristupiti mojoj kameri</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -11211,7 +11209,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8942714513622077633">Otkazati postavljanje aplikacije Microsoft 365?</translation>
 <translation id="894360074127026135">Netscape međunarodna nadogradnja</translation>
 <translation id="8944099748578356325">Brže troši bateriju (trenutno je na <ph name="BATTERY_PERCENTAGE" />%)</translation>
-<translation id="8944485226638699751">Ograničeno</translation>
 <translation id="8944633700466246631">Kreiranje 6-cifrenog PIN-a za oporavak za Google upravitelj lozinki</translation>
 <translation id="8944725102565796255">Ako želite koristiti ovaj račun samo jedanput, možete <ph name="GUEST_LINK_BEGIN" />koristiti uređaj kao gost<ph name="GUEST_LINK_END" />. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
 
