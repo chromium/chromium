@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
@@ -80,6 +81,17 @@ export class InkBrushSelectorElement extends CrLitElement {
                                'pdf:ink-highlighter';
       case AnnotationBrushType.PEN:
         return isCurrentType ? 'pdf:ink-pen-fill' : 'pdf:ink-pen';
+    }
+  }
+
+  protected getLabel_(type: AnnotationBrushType): string {
+    switch (type) {
+      case AnnotationBrushType.ERASER:
+        return loadTimeData.getString('annotationEraser');
+      case AnnotationBrushType.HIGHLIGHTER:
+        return loadTimeData.getString('annotationHighlighter');
+      case AnnotationBrushType.PEN:
+        return loadTimeData.getString('annotationPen');
     }
   }
 

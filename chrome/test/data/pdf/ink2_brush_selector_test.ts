@@ -52,6 +52,16 @@ function assertBrushIcons(
 }
 
 /**
+ * Tests that `element` have the correct tooltip and aria labels.
+ * @param element The element that has labels.
+ * @param label The expected tooltip and aria label.
+ */
+function assertLabels(element: HTMLElement, label: string) {
+  chrome.test.assertEq(label, element.ariaLabel);
+  chrome.test.assertEq(label, element.title);
+}
+
+/**
  * Tests that the brushes have correct values for the selected attribute. The
  * brush type matching `selectedBrushType` should be selected.
  * @param selector The ink brush selector element.
@@ -87,6 +97,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
+    assertLabels(selector.$.pen, 'Pen');
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 0);
     chrome.test.succeed();
@@ -99,6 +110,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.HIGHLIGHTER);
+    assertLabels(selector.$.highlighter, 'Highlighter');
     assertSelectedBrush(selector, AnnotationBrushType.HIGHLIGHTER);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_HIGHLIGHTER, 1);
     chrome.test.succeed();
@@ -111,6 +123,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.ERASER);
+    assertLabels(selector.$.eraser, 'Eraser');
     assertSelectedBrush(selector, AnnotationBrushType.ERASER);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
     chrome.test.succeed();
@@ -126,6 +139,7 @@ chrome.test.runTests([
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
+    assertLabels(selector.$.pen, 'Pen');
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
     mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 1);
