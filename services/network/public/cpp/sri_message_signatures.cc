@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "net/http/structured_headers.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace network {
 
@@ -315,6 +316,44 @@ std::optional<std::string> ConstructSignatureBase(
   }
 
   return signature_base.str();
+}
+
+bool ValidateSRIMessageSignaturesOverHeaders(
+    const std::vector<mojom::SRIMessageSignaturePtr>& message_signatures,
+    const net::HttpResponseHeaders& headers) {
+  // If no signatures are present, validation automatically succeeds.
+  if (!message_signatures.size()) {
+    return true;
+  }
+
+  // Loop through the signatures, validating each. Validation fails if any
+  // given signature fails to validate.
+  for (const auto& message_signature : message_signatures) {
+    // Generate the signature base:
+    std::optional<std::string> signature_base =
+        ConstructSignatureBase(message_signature, headers).value_or("");
+
+    // Decode the public key, and validate that both the public key and the
+    // message's signature are the correct length for Ed25519 (32 and 64 bits,
+    // respectively).
+    std::string encoded_key = message_signature->keyid.value_or("");
+    std::vector<uint8_t> public_key =
+        base::Base64Decode(encoded_key).value_or(std::vector<uint8_t>{});
+    if (public_key.size() != kEd25519KeyLength ||
+        message_signature->signature.size() != kEd25519SigLength) {
+      return false;
+    }
+
+    // Verify the key and the signature over the signature base:
+    if (!ED25519_verify(
+            reinterpret_cast<const uint8_t*>(signature_base->data()),
+            signature_base->size(), message_signature->signature.data(),
+            public_key.data())) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace network

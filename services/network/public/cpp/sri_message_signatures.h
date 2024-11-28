@@ -35,6 +35,16 @@ std::optional<std::string> ConstructSignatureBase(
     const mojom::SRIMessageSignaturePtr& signature,
     const net::HttpResponseHeaders& headers);
 
+// Validates a response's SRI-relevant HTTP Message Signatures.
+//
+// HTTP Message Signatures that meet the validation requirements noted above can
+// be validated as soon as response headers are available. This function does
+// that work, returning `true` if validation succeeds.
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ValidateSRIMessageSignaturesOverHeaders(
+    const std::vector<mojom::SRIMessageSignaturePtr>& signatures,
+    const net::HttpResponseHeaders& headers);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_SRI_MESSAGE_SIGNATURES_H_
