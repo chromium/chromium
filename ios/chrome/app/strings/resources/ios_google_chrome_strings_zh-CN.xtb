@@ -130,13 +130,13 @@
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4798859546468762093">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chrome</translation>
-<translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
+<translation id="4819268619367838612">为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4830799082179398588">将 Chrome 设为默认浏览器？</translation>
 <translation id="484033449593719797">在 Chrome Beta 版中不受支持</translation>
 <translation id="4840404732697892756">您需要先登录 Google 账号，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 可以帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
-<translation id="49200511069271369">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
+<translation id="49200511069271369">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="4925322001044117929">默认在 iPad 上使用 Chrome</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可为您提供保护，帮助您免受数据泄露、不安全网站等问题的影响。</translation>

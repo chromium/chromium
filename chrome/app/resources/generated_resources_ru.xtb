@@ -4960,6 +4960,7 @@
 <translation id="4461483878391246134">Добавить языки, для которых никогда не предлагать перевод</translation>
 <translation id="4462159676511157176">Другие серверы имен</translation>
 <translation id="4465236939126352372">Для приложения "<ph name="APP_NAME" />" установлен лимит <ph name="TIME" />.</translation>
+<translation id="4467373268340082204">Неверный PIN-код.</translation>
 <translation id="4467561276409486506">&amp;Включить или отключить компактный режим</translation>
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> может изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>

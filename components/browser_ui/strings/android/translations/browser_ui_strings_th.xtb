@@ -373,7 +373,7 @@
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
 <translation id="6561560012278703671">ใช้การส่งข้อความแบบไม่ส่งเสียง (บล็อกข้อความแจ้งเตือนไม่ให้รบกวนคุณ)</translation>
-<translation id="6593061639179217415">เว็บไซต์เวอร์ชันเดสก์ท็อป</translation>
+<translation id="6593061639179217415">เว็บไซต์แบบเดสก์ท็อป</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
