@@ -31,7 +31,7 @@ DriveServiceOnWorker::DriveServiceOnWorker(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-DriveServiceOnWorker::~DriveServiceOnWorker() {}
+DriveServiceOnWorker::~DriveServiceOnWorker() = default;
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::AddNewDirectory(
     const std::string& parent_resource_id,

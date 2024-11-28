@@ -32,7 +32,7 @@ namespace drive_backend {
 ConflictResolver::ConflictResolver(SyncEngineContext* sync_context)
     : sync_context_(sync_context) {}
 
-ConflictResolver::~ConflictResolver() {}
+ConflictResolver::~ConflictResolver() = default;
 
 void ConflictResolver::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   token->InitializeTaskLog("Conflict Resolution");

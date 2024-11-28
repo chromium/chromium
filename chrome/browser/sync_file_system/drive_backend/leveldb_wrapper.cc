@@ -25,7 +25,7 @@ LevelDBWrapper::Iterator::Iterator(LevelDBWrapper* db)
       db_iterator_(db->db_->NewIterator(leveldb::ReadOptions())),
       map_iterator_(db->pending_.end()) {}
 
-LevelDBWrapper::Iterator::~Iterator() {}
+LevelDBWrapper::Iterator::~Iterator() = default;
 
 bool LevelDBWrapper::Iterator::Valid() {
   return map_iterator_ != db_->pending_.end() ||
@@ -150,7 +150,7 @@ LevelDBWrapper::LevelDBWrapper(std::unique_ptr<leveldb::DB> db)
   DCHECK(db_);
 }
 
-LevelDBWrapper::~LevelDBWrapper() {}
+LevelDBWrapper::~LevelDBWrapper() = default;
 
 void LevelDBWrapper::Put(const std::string& key, const std::string& value) {
   pending_[key] = Transaction(PUT_OPERATION, value);

@@ -36,12 +36,12 @@ namespace drive_backend {
 
 class SyncEngineTest : public testing::Test {
  public:
-  SyncEngineTest() {}
+  SyncEngineTest() = default;
 
   SyncEngineTest(const SyncEngineTest&) = delete;
   SyncEngineTest& operator=(const SyncEngineTest&) = delete;
 
-  ~SyncEngineTest() override {}
+  ~SyncEngineTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());

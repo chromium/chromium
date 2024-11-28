@@ -32,7 +32,7 @@ struct TestData {
 
 class LevelDBWrapperTest : public testing::Test {
  public:
-  ~LevelDBWrapperTest() override {}
+  ~LevelDBWrapperTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

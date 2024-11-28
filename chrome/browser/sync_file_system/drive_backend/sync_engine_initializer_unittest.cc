@@ -48,13 +48,13 @@ class SyncEngineInitializerTest : public testing::Test {
     FileTracker tracker;
   };
 
-  SyncEngineInitializerTest() {}
+  SyncEngineInitializerTest() = default;
 
   SyncEngineInitializerTest(const SyncEngineInitializerTest&) = delete;
   SyncEngineInitializerTest& operator=(const SyncEngineInitializerTest&) =
       delete;
 
-  ~SyncEngineInitializerTest() override {}
+  ~SyncEngineInitializerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

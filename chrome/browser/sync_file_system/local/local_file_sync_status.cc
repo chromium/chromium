@@ -74,9 +74,9 @@ bool ContainsChildOrParent(const Container& paths,
 
 }  // namespace
 
-LocalFileSyncStatus::LocalFileSyncStatus() {}
+LocalFileSyncStatus::LocalFileSyncStatus() = default;
 
-LocalFileSyncStatus::~LocalFileSyncStatus() {}
+LocalFileSyncStatus::~LocalFileSyncStatus() = default;
 
 void LocalFileSyncStatus::StartWriting(const FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);

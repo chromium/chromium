@@ -51,7 +51,7 @@ class RegisterAppTaskTest : public testing::Test {
   RegisterAppTaskTest(const RegisterAppTaskTest&) = delete;
   RegisterAppTaskTest& operator=(const RegisterAppTaskTest&) = delete;
 
-  ~RegisterAppTaskTest() override {}
+  ~RegisterAppTaskTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());
