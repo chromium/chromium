@@ -62,6 +62,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        StartingPasswordChangeOpensNewTab) {
   // Assert that there is a single tab.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_FALSE(
+      password_change_service()->IsPasswordChangeOngoing(WebContents()));
 
   GURL main_url("https://example.com/"),
       change_pwd_url("https://example.com/password/");
@@ -71,11 +73,17 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   password_change_service()->StartPasswordChange(main_url, u"test", u"password",
                                                  WebContents());
 
-  // Verify a new tab is added while the focus remained on the initial tab.
+  // Verify a new tab is added, although the focus remained on the initial tab.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 
   // Verify a new tab is opened with a change pwd url.
   EXPECT_EQ(change_pwd_url,
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+
+  // Verify that IsPasswordChangeOngoing() returns true for both tabs.
+  EXPECT_TRUE(password_change_service()->IsPasswordChangeOngoing(
+      browser()->tab_strip_model()->GetWebContentsAt(0)));
+  EXPECT_TRUE(password_change_service()->IsPasswordChangeOngoing(
+      browser()->tab_strip_model()->GetWebContentsAt(1)));
 }

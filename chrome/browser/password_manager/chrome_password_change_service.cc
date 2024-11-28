@@ -39,6 +39,10 @@ void ChromePasswordChangeService::StartPasswordChange(
 
 bool ChromePasswordChangeService::IsPasswordChangeOngoing(
     content::WebContents* web_contents) {
-  NOTIMPLEMENTED();
-  return false;
+  return base::ranges::any_of(
+      password_change_controllers_,
+      [web_contents](
+          const std::unique_ptr<PasswordChangeController>& controller) {
+        return controller->IsPasswordChangeOngoing(web_contents);
+      });
 }

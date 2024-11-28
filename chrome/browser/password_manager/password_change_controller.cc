@@ -51,5 +51,11 @@ PasswordChangeController::PasswordChangeController(
 
 PasswordChangeController::~PasswordChangeController() = default;
 
+bool PasswordChangeController::IsPasswordChangeOngoing(
+    content::WebContents* web_contents) {
+  return (originator_ && originator_.get() == web_contents) ||
+         (executor_ && executor_.get() == web_contents);
+}
+
 void PasswordChangeController::OnPasswordFormParsed(
     password_manager::PasswordFormManager* form_manager) {}

@@ -31,6 +31,8 @@ class PasswordChangeController
   PasswordChangeController(const PasswordChangeController&) = delete;
   PasswordChangeController& operator=(const PasswordChangeController&) = delete;
 
+  bool IsPasswordChangeOngoing(content::WebContents* web_contents);
+
  private:
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(
