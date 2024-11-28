@@ -4793,7 +4793,11 @@ if (is_android) {
       "android/java/src/org/chromium/base/JavaUtils.java",
       "android/java/src/org/chromium/base/Log.java",
     ]
-    deps = [ "//build/android:build_java" ]
+    enable_nullaway = true
+    deps = [
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
   }
 
   generate_jni("command_line_jni") {

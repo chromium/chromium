@@ -1339,6 +1339,7 @@ if (!is_robolectric && enable_java_templates) {
   #
   #   chromium_code: If true, extra analysis warning/errors will be enabled.
   #   enable_errorprone: If true, enables the errorprone compiler.
+  #   enable_nullaway: Requires enable_errorprone. Enables NullAway plugin.
   #   skip_build_server: If true, avoids sending tasks to the build server.
   #
   #   jar_excluded_patterns: List of patterns of .class files to exclude.

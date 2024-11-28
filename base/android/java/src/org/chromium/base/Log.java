@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.AlwaysInline;
 
@@ -12,14 +14,11 @@ import java.util.Locale;
 /**
  * Utility class for Logging.
  *
- * <p>
- * Defines logging access points for each feature. They format and forward the logs to
- * {@link android.util.Log}, allowing to standardize the output, to make it easy to identify
- * the origin of logs, and enable or disable logging in different parts of the code.
- * </p>
- * <p>
- * Usage documentation: {@code //docs/android_logging.md}.
- * </p>
+ * <p>Defines logging access points for each feature. They format and forward the logs to {@link
+ * android.util.Log}, allowing to standardize the output, to make it easy to identify the origin of
+ * logs, and enable or disable logging in different parts of the code.
+ *
+ * <p>Usage documentation: {@code //docs/android_logging.md}.
  */
 public class Log {
     /** Convenience property, same as {@link android.util.Log#ASSERT}. */
@@ -44,8 +43,9 @@ public class Log {
         // Static only access
     }
 
-    /** Returns a formatted log message, using the supplied format and arguments.*/
-    private static String formatLog(String messageTemplate, Throwable tr, Object... params) {
+    /** Returns a formatted log message, using the supplied format and arguments. */
+    private static String formatLog(
+            String messageTemplate, @Nullable Throwable tr, @Nullable Object... params) {
         if ((params != null) && ((tr == null && params.length > 0) || params.length > 1)) {
             messageTemplate = String.format(Locale.US, messageTemplate, params);
         }
@@ -863,7 +863,7 @@ public class Log {
         return android.util.Log.getStackTraceString(tr);
     }
 
-    private static Throwable getThrowableToLog(Object[] args) {
+    private static @Nullable Throwable getThrowableToLog(Object[] args) {
         if (args == null || args.length == 0) return null;
 
         Object lastArg = args[args.length - 1];

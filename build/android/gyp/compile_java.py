@@ -635,6 +635,9 @@ def _ParseOptions(argv):
       '--enable-errorprone',
       action='store_true',
       help='Enable errorprone checks')
+  parser.add_option('--enable-nullaway',
+                    action='store_true',
+                    help='Enable NullAway (requires --enable-errorprone)')
   parser.add_option('--testonly',
                     action='store_true',
                     help='Disable some Error Prone checks')
@@ -731,10 +734,40 @@ def main(argv):
   if options.enable_errorprone:
     # All errorprone args are passed space-separated in a single arg.
     errorprone_flags = ['-Xplugin:ErrorProne']
+
+    if options.enable_nullaway:
+      # See: https://github.com/uber/NullAway/wiki/Configuration
+      # Treat these packages as @NullMarked by default.
+      # These apply to both .jars in classpath as well as code being compiled.
+      errorprone_flags += [
+          '-XepOpt:NullAway:AnnotatedPackages=android,java,org.chromium'
+      ]
+      # Detect "assert foo != null" as a null check.
+      errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
+      # Do not ignore @Nullable in non-annotated packages.
+      errorprone_flags += [
+          '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true'
+      ]
+      # Treat @RecentlyNullable the same as @Nullable.
+      errorprone_flags += ['-XepOpt:Nullaway:AcknowledgeAndroidRecent=true']
+      # Treat these the same as constructors.
+      init_methods = [
+          'android.app.Application.onCreate',
+          'android.app.Activity.onCreate',
+          'android.app.Service.onCreate',
+          'android.app.backup.BackupAgent.onCreate',
+          'android.content.ContentProvider.attachInfo',
+          'android.content.ContentProvider.onCreate',
+          'android.content.ContentWrapper.attachBaseContext',
+      ]
+      errorprone_flags += [
+          '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)
+      ]
+
     # Make everything a warning so that when treat_warnings_as_errors is false,
     # they do not fail the build.
     errorprone_flags += ['-XepAllErrorsAsWarnings']
-    # Don't check generated files.
+    # Don't check generated files (those tagged with @Generated).
     errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
     errorprone_flags.extend('-Xep:{}:OFF'.format(x)
                             for x in ERRORPRONE_WARNINGS_TO_DISABLE)
