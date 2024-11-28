@@ -59,9 +59,9 @@ std::u16string FormatMonth(int month) {
 
 // MonthComboboxModel ----------------------------------------------------------
 
-MonthComboboxModel::MonthComboboxModel() {}
+MonthComboboxModel::MonthComboboxModel() = default;
 
-MonthComboboxModel::~MonthComboboxModel() {}
+MonthComboboxModel::~MonthComboboxModel() = default;
 
 size_t MonthComboboxModel::GetItemCount() const {
   // 12 months plus the empty entry.
@@ -88,7 +88,7 @@ std::optional<size_t> MonthComboboxModel::GetDefaultIndex() const {
 YearComboboxModel::YearComboboxModel(int additional_year)
     : ui::SimpleComboboxModel(GetExpirationYearItems(additional_year)) {}
 
-YearComboboxModel::~YearComboboxModel() {}
+YearComboboxModel::~YearComboboxModel() = default;
 
 void YearComboboxModel::SetDefaultIndexByYear(int year) {
   const std::u16string& year_value = base::NumberToString16(year);

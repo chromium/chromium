@@ -31,7 +31,7 @@ class CreditCardScannerView {
       const base::WeakPtr<CreditCardScannerViewDelegate>& delegate,
       content::WebContents* web_contents);
 
-  virtual ~CreditCardScannerView() {}
+  virtual ~CreditCardScannerView() = default;
 
   // Shows the UI for scanning credit cards.
   virtual void Show() = 0;
