@@ -206,7 +206,7 @@ void SyncHandler::HandleGetLocalPasswordCount(const base::Value::List& args) {
 
   syncer::SyncService* sync_service = GetSyncService();
   if (!sync_service) {
-    ResolveJavascriptCallback(callback_id, base::Value(false));
+    ResolveJavascriptCallback(callback_id, base::Value(0));
     return;
   }
 
