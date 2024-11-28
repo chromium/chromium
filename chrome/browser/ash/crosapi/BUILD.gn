@@ -531,7 +531,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/drive",
-    "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
