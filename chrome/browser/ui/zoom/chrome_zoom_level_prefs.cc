@@ -76,7 +76,7 @@ ChromeZoomLevelPrefs::ChromeZoomLevelPrefs(
   partition_key_ = GetPartitionKey(partition_relative_path);
 }
 
-ChromeZoomLevelPrefs::~ChromeZoomLevelPrefs() {}
+ChromeZoomLevelPrefs::~ChromeZoomLevelPrefs() = default;
 
 std::string ChromeZoomLevelPrefs::GetPartitionKeyForTesting(
     const base::FilePath& relative_path) {
