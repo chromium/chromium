@@ -62,14 +62,14 @@ Network.responseReceived{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 261
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 441
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -98,14 +98,14 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    } 
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 441
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -119,7 +119,7 @@ Network.responseReceivedExtraInfo{
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 702
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
@@ -194,13 +194,13 @@ Network.requestWillBeSent{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 226
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Connection : Keep-Alive
-            Content-Length : 0
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             Keep-Alive : timeout=10
@@ -247,13 +247,13 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    } 
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
     headers : {
         Connection : Keep-Alive
-        Content-Length : 0
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         Keep-Alive : timeout=10
@@ -301,14 +301,14 @@ Network.responseReceived{
         charset : 
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 257
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : true
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 0
+            Content-Length : <string>
             Content-Type : text/html
             Date : <string>
             ETag : <string>
@@ -337,14 +337,14 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    } 
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 0
+        Content-Length : <string>
         Content-Type : text/html
         Date : <string>
         ETag : <string>
@@ -358,7 +358,7 @@ Network.responseReceivedExtraInfo{
     statusCode : 200
 }
 Network.loadingFinished{
-    encodedDataLength : 257
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
