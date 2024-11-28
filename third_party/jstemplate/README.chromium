@@ -1,16 +1,20 @@
 Name: google-jstemplate
-URL: http://code.google.com/p/google-jstemplate/
+URL: This is the canonical public repository
 License: Apache-2.0
 License File: COPYING
 Security Critical: yes
 Shipped: yes
 Version: unknown
 
+Description:
 "Template processing that is more suitable for the specific development-time
 and runtime requirements of AJAX based web applications.
 
 Specifically, support the case to update a previous template processing
 output with an incremental change to the original input data."
+
+This code was originally from http://code.google.com/p/google-jstemplate/, but
+is no longer maintained there.
 
 Uncalled functions have been removed from util.js to make the resulting
 javascript smaller.
