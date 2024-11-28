@@ -156,15 +156,17 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
 // * Mailboxing is not supported : cannot be directly composited.
 class CanvasResourceProviderBitmap : public CanvasResourceProvider {
  public:
-  CanvasResourceProviderBitmap(
-      const SkImageInfo& info,
-      cc::PaintFlags::FilterQuality filter_quality,
-      CanvasResourceHost* resource_host)
+  CanvasResourceProviderBitmap(gfx::Size size,
+                               SkColorType sk_color_type,
+                               SkAlphaType alpha_type,
+                               sk_sp<SkColorSpace> sk_color_space,
+                               cc::PaintFlags::FilterQuality filter_quality,
+                               CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kBitmap,
-                               gfx::Size(info.width(), info.height()),
-                               info.colorType(),
-                               info.alphaType(),
-                               info.refColorSpace(),
+                               size,
+                               sk_color_type,
+                               alpha_type,
+                               std::move(sk_color_space),
                                filter_quality,
                                /*context_provider_wrapper=*/nullptr,
                                resource_host) {}
@@ -202,11 +204,17 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
                                            public BitmapGpuChannelLostObserver {
  public:
   CanvasResourceProviderSharedBitmap(
-      const SkImageInfo& info,
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       cc::PaintFlags::FilterQuality filter_quality,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProviderBitmap(info,
+      : CanvasResourceProviderBitmap(size,
+                                     sk_color_type,
+                                     alpha_type,
+                                     std::move(sk_color_space),
                                      filter_quality,
                                      resource_host),
         shared_image_interface_provider_(
@@ -1047,7 +1055,8 @@ CanvasResourceProvider::CreateBitmapProvider(
     ShouldInitialize should_initialize,
     CanvasResourceHost* resource_host) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
-      info, filter_quality, resource_host);
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), info.refColorSpace(), filter_quality, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1075,7 +1084,10 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSharedBitmap>(
-      info, filter_quality, shared_image_interface_provider, resource_host);
+      gfx::Size(info.width(), info.height()), info.colorType(),
+      info.alphaType(), info.refColorSpace(),
+
+      filter_quality, shared_image_interface_provider, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
