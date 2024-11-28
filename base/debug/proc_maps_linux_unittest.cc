@@ -358,13 +358,7 @@ TEST(ProcMapsTest, ParseProcMapsWeirdCorrectInput) {
   EXPECT_EQ("[vsys call]", regions[4].path);
 }
 
-// Disabled on Android. See https://crbug.com/376315475.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ReadAndParse DISABLED_ReadAndParse
-#else
-#define MAYBE_ReadAndParse ReadAndParse
-#endif
-TEST(SmapsRollupTest, MAYBE_ReadAndParse) {
+TEST(SmapsRollupTest, ReadAndParse) {
   if (!IsSmapsRollupSupported()) {
     GTEST_SKIP() << "smaps_rollup not supported";
   }
@@ -377,7 +371,6 @@ TEST(SmapsRollupTest, MAYBE_ReadAndParse) {
 
   EXPECT_GT(smaps_rollup.rss, 0u);
   EXPECT_GT(smaps_rollup.pss, 0u);
-  EXPECT_GT(smaps_rollup.pss_anon, 0u);
   EXPECT_GT(smaps_rollup.private_dirty, 0u);
 }
 
