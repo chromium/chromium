@@ -20,7 +20,7 @@ UrlFilterBridge::UrlFilterBridge(
           Java_UrlFilterBridge_create(base::android::AttachCurrentThread(),
                                       reinterpret_cast<uintptr_t>(this))) {}
 
-UrlFilterBridge::~UrlFilterBridge() {}
+UrlFilterBridge::~UrlFilterBridge() = default;
 
 void UrlFilterBridge::Destroy(JNIEnv* env,
                               const JavaParamRef<jobject>& obj) {
