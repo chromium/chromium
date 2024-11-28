@@ -99,7 +99,6 @@
 -components/query_parser/
 -components/segmentation_platform/
 -components/sharing_message/
--components/signin/
 -components/system_cpu/
 -components/url_formatter/
 -components/url_pattern_index/

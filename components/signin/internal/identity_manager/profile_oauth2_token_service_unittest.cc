@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 
 #include <optional>
@@ -909,7 +904,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestParametersOrderTest) {
 
   const CoreAccountId account_id0 = CoreAccountId::FromGaiaId("0");
   const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("1");
-  OAuth2AccessTokenManager::RequestParameters params[] = {
+  auto params = std::to_array<OAuth2AccessTokenManager::RequestParameters>({
       OAuth2AccessTokenManager::RequestParameters("0", account_id0, set_0),
       OAuth2AccessTokenManager::RequestParameters("0", account_id0, set_1),
       OAuth2AccessTokenManager::RequestParameters("0", account_id1, set_0),
@@ -918,7 +913,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestParametersOrderTest) {
       OAuth2AccessTokenManager::RequestParameters("1", account_id0, set_1),
       OAuth2AccessTokenManager::RequestParameters("1", account_id1, set_0),
       OAuth2AccessTokenManager::RequestParameters("1", account_id1, set_1),
-  };
+  });
 
   for (size_t i = 0; i < std::size(params); i++) {
     for (size_t j = 0; j < std::size(params); j++) {
