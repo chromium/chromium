@@ -14,11 +14,13 @@ and pass Cronet tests in Android infra. The CL will not be submitted.
 """
 
 import argparse
+import hashlib
 import os
 import pathlib
 import subprocess
 import sys
 import tempfile
+import time
 from typing import List, Set
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -120,13 +122,19 @@ def _run_copybara_to_aosp(config: str = _COPYBARA_CONFIG_PATH,
        'https://android.googlesource.com/platform/external/cronet '
        '| grep "refs/heads/main$" | cut -f 1'), shell=True)
   parent_commit = parent_commit_raw.decode('utf-8').strip('\n')
-  print(f'AOSP parent commit: {parent_commit}')
+  print(f'AOSP {parent_commit=}')
+  # TODO(crbug.com/349099325): Generate gerrit change id until
+  # --gerrit-new-change flag is fixed.
+  msg = f'gn2bp{time.time_ns()}'
+  change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
+  print(f'Generated {change_id=}')
   return cronet_utils.run([
       _JAVA_PATH, '-jar', copybara_binary, config, workflow, REPOSITORY_ROOT,
       '--baseline-for-merge-import', '',
       '--change-request-parent', parent_commit,
       '--git-push-option', 'nokeycheck', '--git-push-option',
-      'uploadvalidator~skip', '--ignore-noop'])
+      'uploadvalidator~skip', '--ignore-noop',
+      '--gerrit-change-id', change_id])
 
 
 def main():
