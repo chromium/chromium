@@ -69,6 +69,16 @@ def __step_config(ctx, step_config):
             "name": "android/compile_java",
             "command_prefix": "python3 ../../build/android/gyp/compile_java.py",
             "handler": "android_compile_java",
+            "exclude_input_patterns": [
+                "*.a",
+                "*.cc",
+                "*.h",
+                "*.inc",
+                "*.info",
+                "*.o",
+                "*.pak",
+                "*.sql",
+            ],
             # Don't include files under --generated-dir.
             # This is probably optimization for local incrmental builds.
             # However, this is harmful for remote build cache hits.
@@ -83,6 +93,16 @@ def __step_config(ctx, step_config):
             "name": "android/compile_kt",
             "command_prefix": "python3 ../../build/android/gyp/compile_kt.py",
             "handler": "android_compile_java",
+            "exclude_input_patterns": [
+                "*.a",
+                "*.cc",
+                "*.h",
+                "*.inc",
+                "*.info",
+                "*.o",
+                "*.pak",
+                "*.sql",
+            ],
             # Don't include files under --generated-dir.
             # This is probably optimization for local incrmental builds.
             # However, this is harmful for remote build cache hits.
