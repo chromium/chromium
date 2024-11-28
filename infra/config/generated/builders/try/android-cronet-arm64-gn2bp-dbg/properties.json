@@ -50,11 +50,6 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-arm64-gn2bp-dbg/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder",

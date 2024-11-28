@@ -42,11 +42,6 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/leak_detection_linux/targets"
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder",
