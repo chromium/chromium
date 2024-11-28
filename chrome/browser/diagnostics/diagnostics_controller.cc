@@ -27,7 +27,7 @@ DiagnosticsController* DiagnosticsController::GetInstance() {
 
 DiagnosticsController::DiagnosticsController() : writer_(nullptr) {}
 
-DiagnosticsController::~DiagnosticsController() {}
+DiagnosticsController::~DiagnosticsController() = default;
 
 const DiagnosticsModel& DiagnosticsController::GetResults() const {
   return *model_;

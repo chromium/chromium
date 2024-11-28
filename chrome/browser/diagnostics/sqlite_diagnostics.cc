@@ -199,7 +199,7 @@ class SqliteIntegrityTest : public DiagnosticsTest {
 
    private:
     friend class base::RefCounted<ErrorRecorder>;
-    ~ErrorRecorder() {}
+    ~ErrorRecorder() = default;
 
     bool has_error_ = false;
     int sqlite_error_ = 0;

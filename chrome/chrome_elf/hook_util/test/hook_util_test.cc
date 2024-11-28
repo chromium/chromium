@@ -30,7 +30,7 @@ void IATHookedExportedApiTwo() {
 
 class HookTest : public testing::Test {
  protected:
-  HookTest() {}
+  HookTest() = default;
 };
 
 //------------------------------------------------------------------------------
