@@ -67,10 +67,10 @@
     [HighEntropy] void stroke(Path2D path);
     [HighEntropy] void clip(optional CanvasFillRule winding);
     [HighEntropy] void clip(Path2D path, optional CanvasFillRule winding);
-    [HighEntropy, MeasureAs=OffscreenCanvasIsPointInPath] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
-    [HighEntropy, MeasureAs=OffscreenCanvasIsPointInPath] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
-    [HighEntropy, MeasureAs=OffscreenCanvasIsPointInStroke] boolean isPointInStroke(unrestricted double x, unrestricted double y);
-    [HighEntropy, MeasureAs=OffscreenCanvasIsPointInStroke] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInPath] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInPath] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInStroke] boolean isPointInStroke(unrestricted double x, unrestricted double y);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInStroke] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
 
     // text (see also the CanvasDrawingStyles interface)
     [HighEntropy, MeasureAs=Canvas2DDrawText] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
@@ -95,8 +95,8 @@
     [RaisesException] ImageData createImageData(ImageData imagedata);
     [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh);
     [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
-    [HighEntropy, MeasureAs=OffscreenCanvasGetImageData, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
-    [HighEntropy, MeasureAs=OffscreenCanvasGetImageData, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
+    [HighEntropy, MeasureAs=Canvas2DGetImageData, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
+    [HighEntropy, MeasureAs=Canvas2DGetImageData, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
 

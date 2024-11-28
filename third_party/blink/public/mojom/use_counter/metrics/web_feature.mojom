@@ -2019,10 +2019,10 @@ enum WebFeature {
   kV8SVGGeometryElement_GetTotalLength_Method = 2667,
   kV8SVGGeometryElement_GetPointAtLength_Method = 2668,
   kOffscreenCanvasTransferToImageBitmap = 2669,
-  kOffscreenCanvasIsPointInPath = 2670,
-  kOffscreenCanvasIsPointInStroke = 2671,
+  kOBSOLETE_OffscreenCanvasIsPointInPath = 2670,
+  kOBSOLETE_OffscreenCanvasIsPointInStroke = 2671,
   kOBSOLETE_OffscreenCanvasMeasureText = 2672,
-  kOffscreenCanvasGetImageData = 2673,
+  kOBSOLETE_OffscreenCanvasGetImageData = 2673,
   kV8SVGTextContentElement_GetComputedTextLength_Method = 2674,
   kV8SVGTextContentElement_GetEndPositionOfChar_Method = 2675,
   kV8SVGTextContentElement_GetExtentOfChar_Method = 2676,
@@ -4577,6 +4577,9 @@ enum WebFeature {
   kSharedWorkerScriptUnderServiceWorkerControlIsBlob = 5203,
   kDisableThirdPartyStoragePartitioning3 = 5204,
   kControlledFrameElement = 5205,
+  kCanvas2DIsPointInPath = 5206,
+  kCanvas2DIsPointInStroke = 5207,
+  kCanvas2DGetImageData = 5208,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

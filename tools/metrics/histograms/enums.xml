@@ -8176,10 +8176,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2667" label="V8SVGGeometryElement_GetTotalLength_Method"/>
   <int value="2668" label="V8SVGGeometryElement_GetPointAtLength_Method"/>
   <int value="2669" label="OffscreenCanvasTransferToImageBitmap"/>
-  <int value="2670" label="OffscreenCanvasIsPointInPath"/>
-  <int value="2671" label="OffscreenCanvasIsPointInStroke"/>
+  <int value="2670" label="OBSOLETE_OffscreenCanvasIsPointInPath"/>
+  <int value="2671" label="OBSOLETE_OffscreenCanvasIsPointInStroke"/>
   <int value="2672" label="OBSOLETE_OffscreenCanvasMeasureText"/>
-  <int value="2673" label="OffscreenCanvasGetImageData"/>
+  <int value="2673" label="OBSOLETE_OffscreenCanvasGetImageData"/>
   <int value="2674"
       label="V8SVGTextContentElement_GetComputedTextLength_Method"/>
   <int value="2675"
@@ -10914,6 +10914,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
   <int value="5204" label="DisableThirdPartyStoragePartitioning3"/>
   <int value="5205" label="ControlledFrameElement"/>
+  <int value="5206" label="Canvas2DIsPointInPath"/>
+  <int value="5207" label="Canvas2DIsPointInStroke"/>
+  <int value="5208" label="Canvas2DGetImageData"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
