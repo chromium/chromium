@@ -930,6 +930,8 @@ void QuickInsertView::ResetSelectedCategory(bool reset_query) {
   selected_category_ = std::nullopt;
   if (reset_query) {
     UpdateSearchQueryAndActivePage(u"");
+  } else {
+    UpdateActivePage();
   }
 }
 

@@ -3342,6 +3342,7 @@ TEST_F(QuickInsertViewTest, UncheckingGifButtonSearchesNormally) {
   ViewDrawnWaiter().Wait(gifs_button);
   LeftClickOn(gifs_button);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  future.Clear();
 
   LeftClickOn(gifs_button);
   auto [query, search_callback] = future.Take();
@@ -3361,6 +3362,25 @@ TEST_F(QuickInsertViewTest, UncheckingGifButtonSearchesNormally) {
       ElementsAre(Pointee(Property(
           "item views", &QuickInsertSectionView::item_views_for_testing,
           ElementsAre(Truly(&views::IsViewClass<QuickInsertListItemView>))))));
+}
+
+TEST_F(QuickInsertViewTest, UncheckingGifButtonWithoutQueryShowsZeroState) {
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
+  FakeQuickInsertViewDelegate delegate({
+      .available_categories = {QuickInsertCategory::kEmojisGifs,
+                               QuickInsertCategory::kGifs},
+  });
+  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  QuickInsertView* quick_insert_view = GetQuickInsertViewFromWidget(*widget);
+  views::Button* gifs_button = quick_insert_view->emoji_bar_view_for_testing()
+                                   ->gifs_button_for_testing();
+  ViewDrawnWaiter().Wait(gifs_button);
+  LeftClickOn(gifs_button);
+
+  LeftClickOn(gifs_button);
+
+  EXPECT_TRUE(quick_insert_view->zero_state_view_for_testing().GetVisible());
 }
 
 TEST_F(QuickInsertViewTest, CheckingGifButtonDoesNotShowBackButton) {
