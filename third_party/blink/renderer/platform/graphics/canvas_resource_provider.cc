@@ -292,7 +292,10 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
 class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
  public:
   CanvasResourceProviderSharedImage(
-      const SkImageInfo& info,
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
@@ -300,10 +303,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSharedImage,
-                               gfx::Size(info.width(), info.height()),
-                               info.colorType(),
-                               info.alphaType(),
-                               info.refColorSpace(),
+                               size,
+                               sk_color_type,
+                               alpha_type,
+                               std::move(sk_color_space),
                                filter_quality,
                                std::move(context_provider_wrapper),
                                resource_host),
@@ -1177,8 +1180,10 @@ CanvasResourceProvider::CreateSharedImageProvider(
 #endif
 
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      adjusted_info, filter_quality, context_provider_wrapper, is_accelerated,
-      shared_image_usage_flags, resource_host);
+      gfx::Size(adjusted_info.width(), adjusted_info.height()),
+      adjusted_info.colorType(), adjusted_info.alphaType(),
+      adjusted_info.refColorSpace(), filter_quality, context_provider_wrapper,
+      is_accelerated, shared_image_usage_flags, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
