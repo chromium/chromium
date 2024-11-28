@@ -563,19 +563,14 @@ class FetchManager::Loader final
         }
         if (!integrity_failed && !integrity_metadata_.empty()) {
           IntegrityReport integrity_report;
-          bool body_is_null = !updater_;
-          if (body_is_null || (response_type_ != FetchResponseType::kBasic &&
-                               response_type_ != FetchResponseType::kCors &&
-                               response_type_ != FetchResponseType::kDefault)) {
-            integrity_report.AddConsoleErrorMessage(
-                "Subresource Integrity: The resource '" + url_.ElidedString() +
-                "' has an integrity attribute, but the response is not "
-                "eligible for integrity validation.");
-            integrity_failed = true;
-          } else {
-            integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
-                integrity_metadata_, &buffer_, url_, integrity_report);
-          }
+          IntegrityMetadataSet metadata_set;
+          SubresourceIntegrity::ParseIntegrityAttribute(
+              integrity_metadata_, metadata_set, &integrity_report);
+
+          FetchResponseType type =
+              !updater_ ? FetchResponseType::kError : response_type_;
+          integrity_failed = !SubresourceIntegrity::CheckSubresourceIntegrity(
+              metadata_set, &buffer_, url_, type, integrity_report);
           integrity_report.SendReports(loader_->GetExecutionContext());
         }
         if (!integrity_failed) {

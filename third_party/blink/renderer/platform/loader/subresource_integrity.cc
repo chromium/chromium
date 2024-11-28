@@ -71,15 +71,23 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
-    const String& integrity_metadata,
+    const IntegrityMetadataSet& metadata_set,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
+    FetchResponseType response_type,
     IntegrityReport& integrity_report) {
-  if (integrity_metadata.empty())
-    return true;
+  // We're only going to check the integrity of non-errors, and
+  // non-opaque responses.
+  if (response_type != FetchResponseType::kBasic &&
+      response_type != FetchResponseType::kCors &&
+      response_type != FetchResponseType::kDefault) {
+    integrity_report.AddConsoleErrorMessage(
+        "Subresource Integrity: The resource '" + resource_url.ElidedString() +
+        "' has an integrity attribute, but the response is not eligible for "
+        "integrity validation.");
+    return false;
+  }
 
-  IntegrityMetadataSet metadata_set;
-  ParseIntegrityAttribute(integrity_metadata, metadata_set, &integrity_report);
   return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
                                        integrity_report);
 }
