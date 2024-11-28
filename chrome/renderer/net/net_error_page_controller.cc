@@ -15,8 +15,8 @@
 gin::WrapperInfo NetErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
-NetErrorPageController::Delegate::Delegate() {}
-NetErrorPageController::Delegate::~Delegate() {}
+NetErrorPageController::Delegate::Delegate() = default;
+NetErrorPageController::Delegate::~Delegate() = default;
 
 // static
 void NetErrorPageController::Install(content::RenderFrame* render_frame,
@@ -102,7 +102,7 @@ NetErrorPageController::NetErrorPageController(base::WeakPtr<Delegate> delegate)
     : delegate_(delegate) {
 }
 
-NetErrorPageController::~NetErrorPageController() {}
+NetErrorPageController::~NetErrorPageController() = default;
 
 gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {

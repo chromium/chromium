@@ -114,7 +114,7 @@ class NetErrorHelperCore {
 #endif
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   explicit NetErrorHelperCore(Delegate* delegate);
