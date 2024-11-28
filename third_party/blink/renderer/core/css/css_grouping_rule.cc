@@ -125,8 +125,7 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
 
     bool allow_nested_declarations =
         nesting_context.nesting_type != CSSNestingType::kNone;
-    if (!new_rule && allow_nested_declarations &&
-        RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+    if (!new_rule && allow_nested_declarations) {
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(

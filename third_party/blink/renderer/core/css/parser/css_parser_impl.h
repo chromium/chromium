@@ -323,17 +323,6 @@ class CORE_EXPORT CSSParserImpl {
       const CSSParserContext*,
       CSSParserTokenStream&);
 
-  // Create an implicit & {} rule to wrap properties in, and insert every
-  // property from parsed_properties_ in it. Used when there are properties
-  // directly in @media, @supports or similar (which cannot hold properties
-  // by themselves, only rules; see
-  // https://github.com/w3c/csswg-drafts/issues/7850).
-  //
-  // If CSSNestingType::kScope is provided, an implicit :scope {} rule
-  // is created instead.
-  StyleRule* CreateImplicitNestedRule(CSSNestingType,
-                                      StyleRule* parent_rule_for_nesting);
-
   // CSSNestedDeclarations
   // =====================
   //

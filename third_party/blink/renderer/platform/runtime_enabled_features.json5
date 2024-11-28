@@ -1108,10 +1108,6 @@
       name: "CSSMixins",
     },
     {
-      name: "CSSNestedDeclarations",
-      status: "stable",
-    },
-    {
       name: "CSSNestedPseudoElements",
       status: "stable",
     },
