@@ -31,9 +31,9 @@
 #include "components/crash/core/app/crashpad.h"
 #include "components/version_info/channel.h"
 
-ChromeCrashReporterClient::ChromeCrashReporterClient() {}
+ChromeCrashReporterClient::ChromeCrashReporterClient() = default;
 
-ChromeCrashReporterClient::~ChromeCrashReporterClient() {}
+ChromeCrashReporterClient::~ChromeCrashReporterClient() = default;
 
 // static
 void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {

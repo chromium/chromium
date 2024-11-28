@@ -73,7 +73,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   GalleryWatchManagerTest(const GalleryWatchManagerTest&) = delete;
   GalleryWatchManagerTest& operator=(const GalleryWatchManagerTest&) = delete;
 
-  ~GalleryWatchManagerTest() override {}
+  ~GalleryWatchManagerTest() override = default;
 
   void SetUp() override {
     monitor_ = storage_monitor::TestStorageMonitor::CreateAndInstall();

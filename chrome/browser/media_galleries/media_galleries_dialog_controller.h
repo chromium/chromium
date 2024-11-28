@@ -51,7 +51,7 @@ class MediaGalleriesDialogController {
         : pref_info(pref_info),
           selected(selected) {
     }
-    Entry() {}
+    Entry() = default;
 
     MediaGalleryPrefInfo pref_info;
     bool selected;

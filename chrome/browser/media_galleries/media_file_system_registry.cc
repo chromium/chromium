@@ -80,7 +80,7 @@ class MediaFileSystemRegistryShutdownNotifierFactory
             "MediaFileSystemRegistry") {
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
   }
-  ~MediaFileSystemRegistryShutdownNotifierFactory() override {}
+  ~MediaFileSystemRegistryShutdownNotifierFactory() override = default;
 };
 
 struct InvalidatedGalleriesInfo {
@@ -127,10 +127,10 @@ MediaFileSystemInfo::MediaFileSystemInfo(const std::u16string& fs_name,
       removable(removable),
       media_device(media_device) {}
 
-MediaFileSystemInfo::MediaFileSystemInfo() {}
+MediaFileSystemInfo::MediaFileSystemInfo() = default;
 MediaFileSystemInfo::MediaFileSystemInfo(const MediaFileSystemInfo& other) =
     default;
-MediaFileSystemInfo::~MediaFileSystemInfo() {}
+MediaFileSystemInfo::~MediaFileSystemInfo() = default;
 
 // The main owner of this class is
 // |MediaFileSystemRegistry::extension_hosts_map_|, but a callback may
@@ -499,13 +499,13 @@ void MediaFileSystemRegistry::OnRemovableStorageDetached(
 class MediaFileSystemRegistry::MediaFileSystemContextImpl
     : public MediaFileSystemContext {
  public:
-  MediaFileSystemContextImpl() {}
+  MediaFileSystemContextImpl() = default;
 
   MediaFileSystemContextImpl(const MediaFileSystemContextImpl&) = delete;
   MediaFileSystemContextImpl& operator=(const MediaFileSystemContextImpl&) =
       delete;
 
-  ~MediaFileSystemContextImpl() override {}
+  ~MediaFileSystemContextImpl() override = default;
 
   bool RegisterFileSystem(const std::string& device_id,
                           const std::string& fs_name,

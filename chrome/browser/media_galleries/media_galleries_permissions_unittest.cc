@@ -39,8 +39,8 @@ void AddGalleryPermission(MediaGalleryPrefId gallery,
 // Test the MediaGalleries permissions functions.
 class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
  protected:
-  MediaGalleriesPermissionsTest() {}
-  ~MediaGalleriesPermissionsTest() override {}
+  MediaGalleriesPermissionsTest() = default;
+  ~MediaGalleriesPermissionsTest() override = default;
 
   // This is the same implementation as ExtensionPrefsTest::TearDown(), except
   // for also resetting the ExtensionPrefs used by |gallery_prefs_| after

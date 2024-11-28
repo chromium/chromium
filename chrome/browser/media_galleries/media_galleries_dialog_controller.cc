@@ -4,5 +4,5 @@
 
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 
-MediaGalleriesDialogController::MediaGalleriesDialogController() {}
-MediaGalleriesDialogController::~MediaGalleriesDialogController() {}
+MediaGalleriesDialogController::MediaGalleriesDialogController() = default;
+MediaGalleriesDialogController::~MediaGalleriesDialogController() = default;
