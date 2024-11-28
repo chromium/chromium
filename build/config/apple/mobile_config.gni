@@ -4,10 +4,7 @@
 
 declare_args() {
   # Configure the environment for which to build. Could be either "device",
-  # "simulator" or "catalyst". If unspecified, then it will be assumed to be
-  # "simulator" if the target_cpu is "x68" or "x64", "device" otherwise. The
-  # default is only there for compatibility reasons and will be removed (see
-  # crbug.com/1138425 for more details).
+  # "simulator" or "catalyst". Must be specified.
   target_environment = ""
 
   # Control whether codesiging is enabled (ignored for simulator builds).
@@ -55,14 +52,6 @@ shared_bundle_id_for_test_apps =
 # the variables can only be executed if building for ios or watchos (as they
 # either have no meaning or depend on tools that are only available on macOS).
 if (is_ios || is_watchos) {
-  if (target_environment == "") {
-    if (current_cpu == "x86" || current_cpu == "x64") {
-      target_environment = "simulator"
-    } else {
-      target_environment = "device"
-    }
-  }
-
   # Check that target_environment is set to a supported value.
   _target_environments = [
     "simulator",
