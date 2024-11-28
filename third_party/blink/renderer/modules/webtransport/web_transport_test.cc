@@ -952,7 +952,7 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   }
 
   Vector<uint8_t> result;
-  result.Append(array->Data(), base::checked_cast<wtf_size_t>(array->length()));
+  result.AppendSpan(array->ByteSpan());
   return result;
 }
 
