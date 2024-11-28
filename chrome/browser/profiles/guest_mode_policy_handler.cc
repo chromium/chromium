@@ -17,7 +17,7 @@ GuestModePolicyHandler::GuestModePolicyHandler()
     : TypeCheckingPolicyHandler(key::kBrowserGuestModeEnabled,
                                 base::Value::Type::BOOLEAN) {}
 
-GuestModePolicyHandler::~GuestModePolicyHandler() {}
+GuestModePolicyHandler::~GuestModePolicyHandler() = default;
 
 void GuestModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {

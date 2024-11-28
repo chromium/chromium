@@ -33,7 +33,7 @@ class ProfileDownloaderDelegate {
     INVALID_PROFILE_PICTURE_URL  // The profile picture URL is invalid.
   };
 
-  virtual ~ProfileDownloaderDelegate() {}
+  virtual ~ProfileDownloaderDelegate() = default;
 
   // Whether the delegate need profile picture to be downloaded.
   virtual bool NeedsProfilePicture() const = 0;

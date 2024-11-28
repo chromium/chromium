@@ -189,7 +189,7 @@ class ProfileAttributesStorageTest : public testing::Test {
 #endif
   }
 
-  ~ProfileAttributesStorageTest() override {}
+  ~ProfileAttributesStorageTest() override = default;
 
  protected:
   void SetUp() override {

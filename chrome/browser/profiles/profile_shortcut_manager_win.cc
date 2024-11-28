@@ -417,7 +417,7 @@ struct CreateOrUpdateShortcutsParams {
         profile_path(profile_path),
         single_profile(single_profile),
         incognito(incognito) {}
-  ~CreateOrUpdateShortcutsParams() {}
+  ~CreateOrUpdateShortcutsParams() = default;
 
   ProfileShortcutManagerWin::CreateOrUpdateMode create_mode;
   ProfileShortcutManagerWin::NonProfileShortcutAction action;
