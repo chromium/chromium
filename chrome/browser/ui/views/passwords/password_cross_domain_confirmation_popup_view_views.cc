@@ -42,7 +42,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
             controller,
         views::Widget* parent_widget,
         const GURL& domain,
-        const std::u16string& password_origin,
+        const std::u16string& password_hostname,
         base::OnceClosure confirmation_callback,
         base::OnceClosure cancel_callback)
     : autofill::PopupBaseView(controller,
@@ -92,7 +92,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
           .Build());
   EmphasizeTokens(label, views::style::TextStyle::STYLE_BODY_3_BOLD,
                   /*tokens=*/
-                  {password_origin, base::ASCIIToUTF16(domain.host())});
+                  {password_hostname, base::ASCIIToUTF16(domain.host())});
 
   auto* controls = AddChildView(
       views::Builder<views::BoxLayoutView>()
@@ -151,14 +151,14 @@ PasswordCrossDomainConfirmationPopupView::Show(
     base::WeakPtr<PasswordCrossDomainConfirmationPopupControllerInterface>
         controller,
     const GURL& domain,
-    const std::u16string& password_origin,
+    const std::u16string& password_hostname,
     base::OnceClosure confirmation_callback,
     base::OnceClosure cancel_callback) {
   auto* view = new PasswordCrossDomainConfirmationPopupViewViews(
       controller, /*parent_widget=*/
       views::Widget::GetTopLevelWidgetForNativeView(
           controller->container_view()),
-      domain, password_origin, std::move(confirmation_callback),
+      domain, password_hostname, std::move(confirmation_callback),
       std::move(cancel_callback));
   view->Show();
   return view->GetWeakPtr();

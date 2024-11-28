@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
 #include "base/types/pass_key.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,8 +26,8 @@ class AcknowledgeGroupedCredentialSheetBridge {
 
     virtual void Create(const gfx::NativeWindow window_android,
                         AcknowledgeGroupedCredentialSheetBridge* bridge) = 0;
-    virtual void Show(std::string current_origin,
-                      std::string credential_origin) = 0;
+    virtual void Show(const std::string& current_hostname,
+                      const std::string& credential_hostname) = 0;
     virtual void Dismiss() = 0;
   };
   // Represents all possible ways to resolve the sheet: acceptance, clicking
@@ -57,8 +59,8 @@ class AcknowledgeGroupedCredentialSheetBridge {
 
   ~AcknowledgeGroupedCredentialSheetBridge();
 
-  void Show(std::string current_origin,
-            std::string credential_origin,
+  void Show(const std::string& current_hostname,
+            const std::string& credential_hostname,
             gfx::NativeWindow window,
             base::OnceCallback<void(DismissReason)> closure_callback);
   void OnDismissed(JNIEnv* env, int dismiss_reason);

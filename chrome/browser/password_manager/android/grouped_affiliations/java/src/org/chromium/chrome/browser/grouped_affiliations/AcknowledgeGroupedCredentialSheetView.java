@@ -25,18 +25,18 @@ import org.chromium.ui.text.SpanApplier;
 class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     private static final float URL_IN_TITLE_MAX_LINES = 1.5f;
     private final View mContent;
-    private final String mCurrentOrigin;
-    private String mCredentialOrigin;
+    private final String mCurrentHostname;
+    private String mCredentialHostname;
     private final Callback<Integer> mInterationCallback;
 
     public AcknowledgeGroupedCredentialSheetView(
             View content,
-            String currentOrigin,
-            String credentialOrigin,
+            String currentHostname,
+            String credentialHostname,
             Callback<Integer> interactionCallback) {
         mContent = content;
-        mCurrentOrigin = currentOrigin;
-        mCredentialOrigin = credentialOrigin;
+        mCurrentHostname = currentHostname;
+        mCredentialHostname = credentialHostname;
         mInterationCallback = interactionCallback;
         mContent.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
         setHeaderIcon();
@@ -57,7 +57,7 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
         TextView titleView = mContent.findViewById(R.id.sheet_title);
         titleView.setText(
                 mContent.getResources()
-                        .getString(R.string.ack_grouped_cred_sheet_title, mCredentialOrigin));
+                        .getString(R.string.ack_grouped_cred_sheet_title, mCredentialHostname));
         titleView.post(
                 () -> {
                     View sheetItemList = mContent.findViewById(R.id.sheet_item_list);
@@ -65,7 +65,7 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
                     float maxWidth = URL_IN_TITLE_MAX_LINES * sheetItemList.getWidth();
                     CharSequence ellipsizedUrl =
                             TextUtils.ellipsize(
-                                    mCredentialOrigin,
+                                    mCredentialHostname,
                                     titleView.getPaint(),
                                     maxWidth,
                                     TextUtils.TruncateAt.START);
@@ -82,8 +82,8 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
                 mContent.getResources()
                         .getString(
                                 R.string.ack_grouped_cred_sheet_desc,
-                                mCredentialOrigin,
-                                mCurrentOrigin);
+                                mCredentialHostname,
+                                mCurrentHostname);
         // There are 3 spans that should be bold, so applying it 3 times.
         SpannableString formattedString =
                 SpanApplier.applySpans(

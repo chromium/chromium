@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -35,11 +36,11 @@ class JniDelegateImpl : public JniDelegate {
         reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
   }
 
-  void Show(std::string current_origin,
-            std::string credential_origin) override {
+  void Show(const std::string& current_hostname,
+            const std::string& credential_hostname) override {
     Java_AcknowledgeGroupedCredentialSheetBridge_show(
-        base::android::AttachCurrentThread(), java_bridge_, current_origin,
-        credential_origin);
+        base::android::AttachCurrentThread(), java_bridge_, current_hostname,
+        credential_hostname);
   }
 
   void Dismiss() override {
@@ -83,8 +84,8 @@ AcknowledgeGroupedCredentialSheetBridge::
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::Show(
-    std::string current_origin,
-    std::string credential_origin,
+    const std::string& current_hostname,
+    const std::string& credential_hostname,
     gfx::NativeWindow window,
     base::OnceCallback<void(DismissReason)> closure_callback) {
   if (!window) {
@@ -92,7 +93,7 @@ void AcknowledgeGroupedCredentialSheetBridge::Show(
   }
   closure_callback_ = std::move(closure_callback);
   jni_delegate_->Create(window, this);
-  jni_delegate_->Show(std::move(current_origin), std::move(credential_origin));
+  jni_delegate_->Show(current_hostname, credential_hostname);
 }
 
 void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,

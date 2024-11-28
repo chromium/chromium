@@ -329,7 +329,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                 last_popup_open_args_.element_bounds,
                 last_popup_open_args_.text_direction,
                 /*domain=*/password_manager_driver_->GetLastCommittedURL(),
-                /*password_origin=*/
+                /*password_hostname=*/
                 password_manager_util::GetHumanReadableRealm(
                     password_credential->realm),
                 /*confirmation_callback=*/

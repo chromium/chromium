@@ -33,8 +33,8 @@ class AcknowledgeGroupedCredentialSheetController
   ~AcknowledgeGroupedCredentialSheetController() override;
 
   void ShowAcknowledgeSheet(
-      std::string current_origin,
-      std::string credential_origin,
+      const std::string& current_hostname,
+      const std::string& credential_hostname,
       gfx::NativeWindow window,
       base::OnceCallback<
           void(AcknowledgeGroupedCredentialSheetBridge::DismissReason)>

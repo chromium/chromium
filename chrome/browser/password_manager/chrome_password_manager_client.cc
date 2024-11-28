@@ -1327,14 +1327,13 @@ void ChromePasswordManagerClient::OpenPasswordDetailsBubble(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO: crbug.com/372635361 - Rename `password_origin` to more suitable name.
 std::unique_ptr<
     password_manager::PasswordCrossDomainConfirmationPopupController>
 ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
     const GURL& domain,
-    const std::u16string& password_origin,
+    const std::u16string& password_hostname,
     base::OnceClosure confirmation_callback) {
 #if BUILDFLAG(IS_ANDROID)
   auto controller =
@@ -1343,7 +1342,7 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
           : std::make_unique<AcknowledgeGroupedCredentialSheetController>();
   controller->ShowAcknowledgeSheet(
       GetDisplayOrigin(url::Origin::Create(domain)),
-      base::UTF16ToUTF8(password_origin),
+      base::UTF16ToUTF8(password_hostname),
       web_contents()->GetTopLevelNativeWindow(),
       base::BindOnce(
           [](base::OnceClosure confirmation_callback,
@@ -1369,7 +1368,8 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
                 web_contents());
 
   controller->Show(element_bounds_in_screen_space, text_direction, domain,
-                   password_origin, std::move(confirmation_callback));
+                   password_hostname, std::move(confirmation_callback));
+
   return controller;
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -98,7 +98,7 @@ class PasswordCrossDomainConfirmationPopupViewBrowsertest
         views::Widget::GetWidgetForNativeWindow(
             browser()->window()->GetNativeWindow()),
         /*domain=*/GURL("https://a.com"),
-        /*password_origin=*/u"b.com", base::DoNothing(), base::DoNothing());
+        /*password_hostname=*/u"b.com", base::DoNothing(), base::DoNothing());
   }
 };
 

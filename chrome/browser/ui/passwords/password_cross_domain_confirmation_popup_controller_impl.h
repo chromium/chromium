@@ -29,7 +29,7 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
       base::WeakPtr<PasswordCrossDomainConfirmationPopupView>(
           base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
           const GURL& domain,
-          const std::u16string& password_origin,
+          const std::u16string& password_hostname,
           base::OnceClosure confirmation_callback,
           base::OnceClosure cancel_callback)>;
 
@@ -51,7 +51,7 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   void Show(const gfx::RectF& element_bounds,
             base::i18n::TextDirection text_direction,
             const GURL& domain,
-            const std::u16string& password_origin,
+            std::u16string password_hostname,
             base::OnceClosure confirmation_callback);
 
   // autofill::AutofillPopupViewDelegate:

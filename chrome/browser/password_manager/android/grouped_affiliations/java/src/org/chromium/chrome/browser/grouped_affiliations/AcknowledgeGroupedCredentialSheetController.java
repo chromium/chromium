@@ -44,10 +44,10 @@ public class AcknowledgeGroupedCredentialSheetController {
         mOnSheetDismissed = onSheetDismissed;
     }
 
-    public void show(String currentOrigin, String credentialOrigin) {
+    public void show(String currentHostname, String credentialHostname) {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mBottomSheetController.requestShowContent(
-                createView(currentOrigin, credentialOrigin), true);
+                createView(currentHostname, credentialHostname), true);
     }
 
     public void dismiss() {
@@ -72,13 +72,13 @@ public class AcknowledgeGroupedCredentialSheetController {
     }
 
     private AcknowledgeGroupedCredentialSheetView createView(
-            String currentOrigin, String credentialOrigin) {
+            String currentHostname, String credentialHostname) {
         View contentView =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.acknowledge_grouped_credential_sheet_content, null);
         mView =
                 new AcknowledgeGroupedCredentialSheetView(
-                        contentView, currentOrigin, credentialOrigin, this::onClick);
+                        contentView, currentHostname, credentialHostname, this::onClick);
         return mView;
     }
 }

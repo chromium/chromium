@@ -27,14 +27,14 @@ AcknowledgeGroupedCredentialSheetController::
     ~AcknowledgeGroupedCredentialSheetController() = default;
 
 void AcknowledgeGroupedCredentialSheetController::ShowAcknowledgeSheet(
-    std::string current_origin,
-    std::string credential_origin,
+    const std::string& current_hostname,
+    const std::string& credential_hostname,
     gfx::NativeWindow window,
     base::OnceCallback<
         void(AcknowledgeGroupedCredentialSheetBridge::DismissReason)>
         on_close_callback) {
-  CHECK(!current_origin.empty());
-  CHECK(!credential_origin.empty());
-  bridge_->Show(std::move(current_origin), std::move(credential_origin), window,
+  CHECK(!current_hostname.empty());
+  CHECK(!credential_hostname.empty());
+  bridge_->Show(current_hostname, credential_hostname, window,
                 std::move(on_close_callback));
 }

@@ -29,7 +29,7 @@ class PasswordCrossDomainConfirmationPopupViewViews
           controller,
       views::Widget* parent_widget,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
       base::OnceClosure confirmation_callback,
       base::OnceClosure cancel_callback);
 

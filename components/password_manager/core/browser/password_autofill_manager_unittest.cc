@@ -224,7 +224,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
       (const gfx::RectF& element_bounds,
        base::i18n::TextDirection text_direction,
        const GURL& domain,
-       const std::u16string& password_origin,
+       const std::u16string& password_hostname,
        base::OnceClosure confirmation_callback),
       (override));
 #endif

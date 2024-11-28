@@ -29,12 +29,12 @@ class MockPasswordCrossDomainConfirmationPopupView
   MockPasswordCrossDomainConfirmationPopupView(
       base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
       base::OnceClosure confirmation_callback,
       base::OnceClosure cancel_callback)
       : delegate_(delegate),
         domain_(domain),
-        password_origin_(password_origin),
+        password_hostname_(password_hostname),
         confirmation_callback_(std::move(confirmation_callback)),
         cancel_callback_(std::move(cancel_callback)) {}
 
@@ -44,7 +44,7 @@ class MockPasswordCrossDomainConfirmationPopupView
 
   const GURL& domain() const { return domain_; }
 
-  const std::u16string& password_origin() const { return password_origin_; }
+  const std::u16string& password_hostname() const { return password_hostname_; }
 
   base::OnceClosure& confirmation_callback() { return confirmation_callback_; }
 
@@ -60,7 +60,7 @@ class MockPasswordCrossDomainConfirmationPopupView
  private:
   base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate_;
   GURL domain_;
-  std::u16string password_origin_;
+  std::u16string password_hostname_;
   base::OnceClosure confirmation_callback_;
   base::OnceClosure cancel_callback_;
 
@@ -109,9 +109,9 @@ class PasswordCrossDomainConfirmationPopupControllerImplTest
             base::i18n::TextDirection text_direction =
                 base::i18n::TextDirection::LEFT_TO_RIGHT,
             const GURL& domain = GURL(u"google.com"),
-            const std::u16string& password_origin = u"google.de",
+            const std::u16string& password_hostname = u"google.de",
             base::OnceClosure confirmation_callback = base::DoNothing()) {
-    controller().Show(element_bounds, text_direction, domain, password_origin,
+    controller().Show(element_bounds, text_direction, domain, password_hostname,
                       std::move(confirmation_callback));
   }
 
@@ -119,13 +119,13 @@ class PasswordCrossDomainConfirmationPopupControllerImplTest
   base::WeakPtr<PasswordCrossDomainConfirmationPopupView> CreateView(
       base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
       base::OnceClosure confirmation_callback,
       base::OnceClosure cancel_callback) {
     last_created_view_ =
         std::make_unique<MockPasswordCrossDomainConfirmationPopupView>(
-            delegate, domain, password_origin, std::move(confirmation_callback),
-            std::move(cancel_callback));
+            delegate, domain, password_hostname,
+            std::move(confirmation_callback), std::move(cancel_callback));
     return last_created_view_->GetWeakPtr();
   }
 
@@ -143,15 +143,15 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
 
   gfx::RectF element_bounds(100, 100, 1000, 1000);
   GURL domain(u"google.com");
-  std::u16string password_origin(u"google.de");
+  std::u16string password_hostname(u"google.de");
   auto text_direction(base::i18n::TextDirection::LEFT_TO_RIGHT);
 
-  Show(element_bounds, text_direction, domain, password_origin,
+  Show(element_bounds, text_direction, domain, password_hostname,
        base::DoNothing());
 
   ASSERT_NE(last_created_view(), nullptr);
   EXPECT_EQ(last_created_view()->domain(), domain);
-  EXPECT_EQ(last_created_view()->password_origin(), password_origin);
+  EXPECT_EQ(last_created_view()->password_hostname(), password_hostname);
   EXPECT_EQ(controller().element_bounds(), element_bounds);
   EXPECT_EQ(controller().GetElementTextDirection(), text_direction);
 }

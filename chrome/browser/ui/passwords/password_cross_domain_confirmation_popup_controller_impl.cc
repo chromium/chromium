@@ -28,7 +28,7 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
     const GURL& domain,
-    const std::u16string& password_origin,
+    std::u16string password_hostname,
     base::OnceClosure confirmation_callback) {
   if (!web_contents()) {
     return;
@@ -41,7 +41,7 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
   element_bounds_ = element_bounds;
   text_direction_ = text_direction;
   domain_ = domain;
-  password_hostname_ = password_origin;
+  password_hostname_ = std::move(password_hostname);
   confirmation_callback_ = std::move(confirmation_callback);
 
   auto on_view_confirm = base::BindOnce(
@@ -52,10 +52,10 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
       weak_ptr_factory_.GetWeakPtr());
   view_ = view_factory_for_testing_
               ? view_factory_for_testing_.Run(
-                    weak_ptr_factory_.GetWeakPtr(), domain_, password_hostname_,
+                    weak_ptr_factory_.GetWeakPtr(), domain, password_hostname_,
                     std::move(on_view_confirm), std::move(on_view_cancel))
               : PasswordCrossDomainConfirmationPopupView::Show(
-                    weak_ptr_factory_.GetWeakPtr(), domain_, password_hostname_,
+                    weak_ptr_factory_.GetWeakPtr(), domain, password_hostname_,
                     std::move(on_view_confirm), std::move(on_view_cancel));
 
   content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
