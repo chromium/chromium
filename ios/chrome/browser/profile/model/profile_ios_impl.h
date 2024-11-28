@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "ios/chrome/browser/profile/model/profile_ios_impl_io_data.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -56,7 +57,7 @@ class ProfileIOSImpl final : public ProfileIOS {
 
   // BrowserState:
   bool IsOffTheRecord() const override;
-  const std::string& GetWebKitStorageID() const override;
+  const base::Uuid& GetWebKitStorageID() const override;
 
  private:
   friend class ProfileIOS;
@@ -113,7 +114,7 @@ class ProfileIOSImpl final : public ProfileIOS {
 
   // `storage_uuid_` can be empty if the profile already existed and no value is
   // stored in PrefService. Use a default data store if it's empty.
-  std::string storage_uuid_;
+  base::Uuid storage_uuid_;
 
   base::WeakPtrFactory<ProfileIOSImpl> weak_ptr_factory_{this};
 

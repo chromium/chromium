@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/threading/thread_restrictions.h"
+#import "base/uuid.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -334,7 +335,7 @@ bool ProfileIOSImpl::IsOffTheRecord() const {
   return false;
 }
 
-const std::string& ProfileIOSImpl::GetWebKitStorageID() const {
+const base::Uuid& ProfileIOSImpl::GetWebKitStorageID() const {
   return storage_uuid_;
 }
 
@@ -415,10 +416,13 @@ void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
   //
   // TODO(crbug.com/346754380): Remove when all Profile use a non-default
   // storage (since there is no automatic migration, this could take years).
-  storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
-  if (storage_uuid_.empty() && init_info.is_new_profile) {
-    storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
-    GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
+  const std::string& uuid_string =
+      GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
+  if (!uuid_string.empty()) {
+    storage_uuid_ = base::Uuid::ParseCaseInsensitive(uuid_string);
+    DCHECK(storage_uuid_.is_valid());
+  } else if (init_info.is_new_profile) {
+    storage_uuid_ = base::Uuid::GenerateRandomV4();
   }
 
   // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
