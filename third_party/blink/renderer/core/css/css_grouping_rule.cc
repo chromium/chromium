@@ -53,7 +53,7 @@ StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent) {
   return FindClosestParentStyleRuleOrNull(parent->parentRule());
 }
 
-CSSRule* FindClosestStyleOrScopeRule(CSSRule* parent) {
+const CSSRule* FindClosestStyleOrScopeRule(const CSSRule* parent) {
   if (parent == nullptr) {
     return nullptr;
   }
@@ -69,29 +69,28 @@ CSSRule* FindClosestStyleOrScopeRule(CSSRule* parent) {
 // the ancestor chain.
 //
 // [1] https://drafts.csswg.org/css-nesting-1/#nested-group-rules
-void CalculateNestingContext(CSSRule& parent_rule,
-                             CSSNestingType& nesting_type,
-                             StyleRule*& parent_rule_for_nesting) {
-  nesting_type = CSSNestingType::kNone;
-  parent_rule_for_nesting = nullptr;
-
-  if (CSSRule* closest_style_or_scope_rule =
-          FindClosestStyleOrScopeRule(&parent_rule)) {
-    if (auto* style_rule =
+NestingContext CalculateNestingContext(const CSSRule* parent_rule) {
+  if (const CSSRule* closest_style_or_scope_rule =
+          FindClosestStyleOrScopeRule(parent_rule)) {
+    if (const auto* style_rule =
             DynamicTo<CSSStyleRule>(closest_style_or_scope_rule)) {
-      nesting_type = CSSNestingType::kNesting;
-      parent_rule_for_nesting = style_rule->GetStyleRule();
-    } else if (auto* scope_rule =
+      return {.nesting_type = CSSNestingType::kNesting,
+              .parent_rule_for_nesting = style_rule->GetStyleRule()};
+    } else if (const auto* scope_rule =
                    DynamicTo<CSSScopeRule>(closest_style_or_scope_rule)) {
-      nesting_type = CSSNestingType::kScope;
       // The <scope-start> selector acts as the parent style rule.
       // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
-      parent_rule_for_nesting =
-          scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting();
+      return {
+          .nesting_type = CSSNestingType::kScope,
+          .parent_rule_for_nesting =
+              scope_rule->GetStyleRuleScope().GetStyleScope().RuleForNesting()};
     } else {
       NOTREACHED();
     }
   }
+
+  return {.nesting_type = CSSNestingType::kNone,
+          .parent_rule_for_nesting = nullptr};
 }
 
 StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
@@ -117,21 +116,22 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     new_rule = CSSParser::ParseMarginRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
   } else {
-    CSSNestingType nesting_type;
-    StyleRule* parent_rule_for_nesting;
-    CalculateNestingContext(parent_rule, nesting_type, parent_rule_for_nesting);
+    NestingContext nesting_context = CalculateNestingContext(&parent_rule);
 
     new_rule = CSSParser::ParseRule(
-        context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
-        parent_rule_for_nesting, rule_string);
+        context, style_sheet ? style_sheet->Contents() : nullptr,
+        nesting_context.nesting_type, nesting_context.parent_rule_for_nesting,
+        rule_string);
 
-    bool allow_nested_declarations = nesting_type != CSSNestingType::kNone;
+    bool allow_nested_declarations =
+        nesting_context.nesting_type != CSSNestingType::kNone;
     if (!new_rule && allow_nested_declarations &&
         RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(
-          context, nesting_type, parent_rule_for_nesting, rule_string);
+          context, nesting_context.nesting_type,
+          nesting_context.parent_rule_for_nesting, rule_string);
     }
   }
 
