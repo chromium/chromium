@@ -9,6 +9,8 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -64,6 +66,9 @@ OAuthMultiloginResponseStatus ParseOAuthMultiloginResponseStatus(
 
 class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
  public:
+  using CookieDecryptor =
+      base::RepeatingCallback<std::string(std::string_view)>;
+
   struct FailedAccount {
     std::string gaia_id;
 
@@ -76,7 +81,12 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
   // Parses cookies and status from JSON response. Maps status to
   // GoogleServiceAuthError::State values or sets error to
   // UNEXPECTED_SERVER_RESPONSE if JSON string cannot be parsed.
-  OAuthMultiloginResult(const std::string& raw_data, int http_response_code);
+  // `cookie_decryptor` is optional and used only if the JSON response contains
+  // "token_binding_directed_response" object.
+  OAuthMultiloginResult(
+      const std::string& raw_data,
+      int http_response_code,
+      const CookieDecryptor& cookie_decryptor = base::NullCallback());
 
   explicit OAuthMultiloginResult(OAuthMultiloginResponseStatus status);
   OAuthMultiloginResult(const OAuthMultiloginResult& other);
@@ -94,7 +104,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest,
                            ParseRealResponseFromGaia_2021_10);
 
-  void TryParseCookiesFromValue(const base::Value::Dict& json_value);
+  void TryParseCookiesFromValue(
+      const base::Value::Dict& json_value,
+      const CookieDecryptor& decryptor = base::NullCallback());
 
   // If `status_` is `kInvalidTokens` or `kRetryWithTokenBindingChallenge`, the
   // response is expected to have a list of failed accounts for which tokens are

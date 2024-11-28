@@ -60,6 +60,10 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
 
   ~OAuthMultiloginHelper() override;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  void SetEphemeralKeyForTesting(HybridEncryptionKey ephemeral_key);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
  private:
   // Starts fetching tokens with OAuthMultiloginTokenFetcher.
   void StartFetchingTokens();

@@ -15,7 +15,6 @@
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
-#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -27,6 +26,8 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #endif
 
 namespace signin {
@@ -93,6 +94,13 @@ OAuthMultiloginHelper::OAuthMultiloginHelper(
 
 OAuthMultiloginHelper::~OAuthMultiloginHelper() = default;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+void OAuthMultiloginHelper::SetEphemeralKeyForTesting(
+    HybridEncryptionKey ephemeral_key) {
+  ephemeral_key_ = std::move(ephemeral_key);
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 void OAuthMultiloginHelper::StartFetchingTokens() {
   DCHECK(!token_fetcher_);
   DCHECK(tokens_.empty());
@@ -116,7 +124,10 @@ void OAuthMultiloginHelper::StartFetchingTokens() {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::string ephemeral_public_key;
   if (!token_binding_challenges_.empty()) {
-    ephemeral_key_.emplace();
+    // Create a new key if we don't have one.
+    if (!ephemeral_key_.has_value()) {
+      ephemeral_key_.emplace();
+    }
     ephemeral_public_key = ephemeral_key_->ExportPublicKey();
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -169,10 +180,21 @@ void OAuthMultiloginHelper::StartFetchingMultiLogin() {
                                         std::move(token_binding_assertion));
   }
 
+  OAuthMultiloginResult::CookieDecryptor decryptor;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (ephemeral_key_.has_value()) {
+    decryptor = base::BindRepeating(&DecryptValueWithEphemeralKey,
+                                    std::move(ephemeral_key_).value());
+    // std::move() above doesn't invalidate `ephemeral_key_`, so call reset()
+    // explicitly.
+    ephemeral_key_.reset();
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
       this, gaia_source_);
-  gaia_auth_fetcher_->StartOAuthMultilogin(mode_, multilogin_credentials,
-                                           external_cc_result_);
+  gaia_auth_fetcher_->StartOAuthMultilogin(
+      mode_, multilogin_credentials, external_cc_result_, std::move(decryptor));
 }
 
 void OAuthMultiloginHelper::OnOAuthMultiloginFinished(

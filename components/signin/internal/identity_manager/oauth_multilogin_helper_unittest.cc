@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,6 +19,7 @@
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -32,6 +35,11 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 namespace signin {
 
@@ -156,6 +164,26 @@ const char kMultiloginRetryWithTokenBindingAssertionResponseFormat[] =
              "token_binding_retry_response": {
                "challenge": "%s"
              }
+           }
+         ]
+       }
+      )";
+
+const char kMultiloginSuccessWithEncryptedCookieResponseFormat[] =
+    R"()]}'
+       {
+         "status": "OK",
+         "token_binding_directed_response": {},
+         "cookies":[
+           {
+             "name":"SID",
+             "value":"%s",
+             "domain":".google.fr",
+             "path":"/",
+             "isSecure":true,
+             "isHttpOnly":false,
+             "priority":"HIGH",
+             "maxAge":63070000
            }
          ]
        }
@@ -853,6 +881,59 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
 
   url_loader()->SimulateResponseForPendingRequest(multilogin_url(),
                                                   kMultiloginSuccessResponse);
+  EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_TRUE(callback_called_);
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
+TEST_F(OAuthMultiloginHelperTest,
+       BoundTokenSuccessWithChallengeAndEncryptedCookies) {
+  // Do not use char[] because `base::as_byte_span()` will include '\0' in the
+  // encrypted string.
+  static constexpr std::string_view kCookieValue = "SID_value";
+  HybridEncryptionKey ephemeral_key = CreateHybridEncryptionKeyForTesting();
+  std::string base64_encrypted_cookie =
+      EncryptValueWithEphemeralKey(ephemeral_key, kCookieValue);
+
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+  base::RunLoop wait_for_request_loop;
+  url_loader()->SetInterceptor(
+      base::IgnoreArgs<const network::ResourceRequest&>(
+          wait_for_request_loop.QuitClosure()));
+  OAuthMultiloginHelper* helper = CreateHelper({{kAccountId, kGaiaId}});
+  // Ephemeral key must be set after the first request is sent. Otherwise, the
+  // ephemeral key would be consumed by the first request.
+  wait_for_request_loop.Run();
+  helper->SetEphemeralKeyForTesting(std::move(ephemeral_key));
+
+  // First Multilogin call returns a token binding challenge.
+  url_loader()->SimulateResponseForPendingRequest(
+      multilogin_url(),
+      base::StringPrintf(
+          kMultiloginRetryWithTokenBindingAssertionResponseFormat, kGaiaId,
+          "test_challenge"),
+      net::HTTP_BAD_REQUEST);
+
+  EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
+  EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
+  // Configure mock cookie manager:
+  // - check that the cookie is the expected one
+  // - immediately invoke the callback
+  EXPECT_CALL(*cookie_manager(),
+              SetCanonicalCookie(
+                  CookieMatcher("SID", kCookieValue, ".google.fr"),
+                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+
+  std::string response =
+      base::StringPrintf(kMultiloginSuccessWithEncryptedCookieResponseFormat,
+                         base64_encrypted_cookie);
+  url_loader()->SimulateResponseForPendingRequest(multilogin_url(), response);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);

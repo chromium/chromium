@@ -7,12 +7,15 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_status_code.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::net::CanonicalCookie;
@@ -21,6 +24,7 @@ using ::testing::DoubleNear;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::FieldsAre;
+using ::testing::IsEmpty;
 using ::testing::Property;
 
 namespace {
@@ -51,6 +55,37 @@ constexpr char kInvalidTokensResponseFormat[] =
             {
               "status": "NON_RECOVERABLE",
               "obfuscated_id": "account4"
+            }
+          ]
+        }
+      )";
+
+constexpr char kResponseWithEncryptedCookiesFormat[] =
+    R"()]}'
+        {
+          "status": "OK",
+          "token_binding_directed_response": {},
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"%s",
+              "domain":".google.com",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            },
+            {
+              "name":"SAPISID",
+              "value":"%s",
+              "host":"google.com",
+              "path":"/",
+              "isSecure":false,
+              "isHttpOnly":true,
+              "priority":"HIGH",
+              "maxAge":63070000,
+              "sameSite":"Lax"
             }
           ]
         }
@@ -852,4 +887,94 @@ TEST(OAuthMultiloginResultTest,
               ElementsAre(FieldsAre("account1", std::string()),
                           FieldsAre("account3", std::string()),
                           FieldsAre("account4", std::string())));
+}
+
+// Decryptor is successfully used if cookies in the response are encrypted.
+TEST(OAuthMultiloginResultTest, ParseEncryptedCookies) {
+  std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
+                                            "vAlUe1", "vAlUe2");
+  auto decryptor = [](std::string_view encrypted_cookie) {
+    return base::StrCat({encrypted_cookie, ".decrypted"});
+  };
+
+  OAuthMultiloginResult result(response, net::HTTP_OK,
+                               base::BindRepeating(decryptor));
+
+  EXPECT_THAT(
+      result.cookies(),
+      ElementsAre(Property(&CanonicalCookie::Value, "vAlUe1.decrypted"),
+                  Property(&CanonicalCookie::Value, "vAlUe2.decrypted")));
+}
+
+// Decryptor is ignored if cookies in the response are not encrypted.
+TEST(OAuthMultiloginResultTest, ParseCookiesIgnoresDecryptor) {
+  constexpr char kResponseWithNonEncryptedCookiesFormat[] =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name":"SID",
+              "value":"%s",
+              "domain":".google.com",
+              "path":"/",
+              "isSecure":true,
+              "isHttpOnly":false,
+              "priority":"HIGH",
+              "maxAge":63070000
+            },
+            {
+              "name":"SAPISID",
+              "value":"%s",
+              "host":"google.com",
+              "path":"/",
+              "isSecure":false,
+              "isHttpOnly":true,
+              "priority":"HIGH",
+              "maxAge":63070000,
+              "sameSite":"Lax"
+            }
+          ]
+        }
+      )";
+  std::string response = base::StringPrintf(
+      kResponseWithNonEncryptedCookiesFormat, "vAlUe1", "vAlUe2");
+  auto decryptor = [](std::string_view encrypted_cookie) {
+    return base::StrCat({encrypted_cookie, ".decrypted"});
+  };
+
+  OAuthMultiloginResult result(response, net::HTTP_OK,
+                               base::BindRepeating(decryptor));
+
+  EXPECT_THAT(result.cookies(),
+              ElementsAre(Property(&CanonicalCookie::Value, "vAlUe1"),
+                          Property(&CanonicalCookie::Value, "vAlUe2")));
+}
+
+// Result is set to failure if cookies are encrypted but a decryptor is not set.
+TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesFailsWithoutDecryptor) {
+  std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
+                                            "vAlUe1", "vAlUe2");
+
+  OAuthMultiloginResult result(response, net::HTTP_OK, base::NullCallback());
+
+  EXPECT_EQ(result.status(), OAuthMultiloginResponseStatus::kUnknownStatus);
+  EXPECT_THAT(result.cookies(), IsEmpty());
+}
+
+// Cookies that failed to decrypt are omitted from the result.
+TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
+  std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
+                                            "vAlUe1", "vAlUe2");
+  auto decryptor = [](std::string_view encrypted_cookie) {
+    return encrypted_cookie == "vAlUe1"
+               ? std::string()
+               : base::StrCat({encrypted_cookie, ".decrypted"});
+  };
+
+  OAuthMultiloginResult result(response, net::HTTP_OK,
+                               base::BindRepeating(decryptor));
+
+  EXPECT_THAT(result.cookies(), ElementsAre(Property(&CanonicalCookie::Value,
+                                                     "vAlUe2.decrypted")));
 }

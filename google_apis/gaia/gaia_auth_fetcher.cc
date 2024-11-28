@@ -493,7 +493,8 @@ void GaiaAuthFetcher::StartListAccounts() {
 void GaiaAuthFetcher::StartOAuthMultilogin(
     gaia::MultiloginMode mode,
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
-    const std::string& external_cc_result) {
+    const std::string& external_cc_result,
+    OAuthMultiloginResult::CookieDecryptor cookie_decryptor) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   UMA_HISTOGRAM_COUNTS_100("Signin.Multilogin.NumberOfAccounts",
@@ -518,6 +519,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
         &parameters, "&externalCcResult=%s",
         base::EscapeUrlEncodedData(external_cc_result, true).c_str());
   }
+  oauth_multilogin_cookie_decryptor_ = std::move(cookie_decryptor);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("gaia_auth_multilogin", R"(
@@ -827,7 +829,8 @@ void GaiaAuthFetcher::OnOAuthMultiloginFetched(const std::string& data,
                                                int response_code) {
   OAuthMultiloginResult result =
       (net_error == net::Error::OK)
-          ? OAuthMultiloginResult(data, response_code)
+          ? OAuthMultiloginResult(data, response_code,
+                                  oauth_multilogin_cookie_decryptor_)
           : OAuthMultiloginResult(OAuthMultiloginResponseStatus::kRetry);
   consumer_->OnOAuthMultiloginFinished(result);
 }

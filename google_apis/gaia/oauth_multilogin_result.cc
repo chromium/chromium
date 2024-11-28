@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -102,11 +103,20 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
 }
 
 void OAuthMultiloginResult::TryParseCookiesFromValue(
-    const base::Value::Dict& json_value) {
+    const base::Value::Dict& json_value,
+    const CookieDecryptor& cookie_decryptor) {
   CHECK_EQ(status_, OAuthMultiloginResponseStatus::kOk);
   const base::Value::List* cookie_list = json_value.FindList("cookies");
   if (cookie_list == nullptr) {
     VLOG(1) << "No cookies found in the response.";
+    status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
+    return;
+  }
+  bool are_cookies_encrypted =
+      json_value.Find("token_binding_directed_response") != nullptr;
+  if (are_cookies_encrypted && cookie_decryptor.is_null()) {
+    VLOG(1) << "The response unexpectedly contains encrypted cookies";
+    // TODO(crbug.com/372648645): record a histogram.
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
@@ -122,6 +132,16 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     const std::string* priority = cookie_dict.FindString("priority");
     std::optional<double> expiration_delta = cookie_dict.FindDouble("maxAge");
     const std::string* same_site = cookie_dict.FindString("sameSite");
+
+    std::string cookie_value = value ? *value : "";
+    if (!cookie_value.empty() && are_cookies_encrypted) {
+      cookie_value = cookie_decryptor.Run(cookie_value);
+      if (cookie_value.empty()) {
+        VLOG(1) << "Failed to decrypt a cookie.";
+        // TODO(crbug.com/372648645): record a histogram.
+        continue;
+      }
+    }
 
     base::Time now = base::Time::Now();
     // TODO(crbug.com/40800807) If CreateSanitizedCookie were used below, this
@@ -150,8 +170,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     // TODO(crbug.com/40160040) Consider using CreateSanitizedCookie instead.
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
-            name ? *name : "", value ? *value : "", cookie_domain,
-            path ? *path : "", /*creation=*/now, expiration,
+            name ? *name : "", cookie_value, cookie_domain, path ? *path : "",
+            /*creation=*/now, expiration,
             /*last_access=*/now, /*last_update=*/now, is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
@@ -168,8 +188,10 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
   }
 }
 
-OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data,
-                                             int http_response_code) {
+OAuthMultiloginResult::OAuthMultiloginResult(
+    const std::string& raw_data,
+    int http_response_code,
+    const CookieDecryptor& cookie_decryptor) {
   std::string_view data = StripXSSICharacters(raw_data);
   status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
   std::optional<base::Value> json_data = base::JSONReader::Read(data);
@@ -189,7 +211,7 @@ OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data,
       ParseOAuthMultiloginResponseStatus(*status_string, http_response_code);
   if (status_ == OAuthMultiloginResponseStatus::kOk) {
     // Sets status_ to `kUnknownStatus` if cookies cannot be parsed.
-    TryParseCookiesFromValue(json_dict);
+    TryParseCookiesFromValue(json_dict, cookie_decryptor);
   } else if (status_ == OAuthMultiloginResponseStatus::kInvalidTokens ||
              status_ == OAuthMultiloginResponseStatus::
                             kRetryWithTokenBindingChallenge) {
