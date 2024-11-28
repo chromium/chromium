@@ -271,7 +271,7 @@ BASE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername,
 // TODO(crbug.com/347698797): Cleanup when launched.
 BASE_FEATURE(kAutofillImportFromAutocompleteUnrecognized,
              "AutofillImportFromAutocompleteUnrecognized",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the autofill suggestion labels are more more descriptive and
 // relevant.

@@ -2119,26 +2119,6 @@
             ]
         }
     ],
-    "AutofillImportFromAutocompleteUnrecognized": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillImportFromAutocompleteUnrecognized"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillImproveSubmissionDetectionV2": [
         {
             "platforms": [

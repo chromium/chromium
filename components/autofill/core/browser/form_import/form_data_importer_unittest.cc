@@ -3718,6 +3718,9 @@ TEST_F(FormDataImporterTest, FormAssociator) {
 
 // Tests that ac=unrecognized fields have a prediction, but are not imported.
 TEST_F(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillImportFromAutocompleteUnrecognized);
   // Create a `form_structure` where the email field has ac=unrecognized.
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -4122,6 +4125,9 @@ TEST_F(FormDataImporterTest,
   field.SetTypeTo(AutofillType(NAME_FIRST));
   field.set_value(u"First");
   {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kAutofillImportFromAutocompleteUnrecognized);
     base::flat_map<FieldType, std::u16string> observed_field_types =
         test_api(form_data_importer())
             .GetObservedFieldValues(
