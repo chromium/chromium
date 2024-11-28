@@ -3664,7 +3664,7 @@ test("base_unittests") {
       "-sectcreate",
       "__TEXT",
       "__info_plist",
-      rebase_path("mac/base_unittests-Info.plist"),
+      rebase_path("mac/base_unittests-Info.plist", root_build_dir),
     ]
   }
 
