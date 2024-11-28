@@ -41,7 +41,7 @@ class SharedSamplerTest : public testing::Test {
 
   SharedSamplerTest(const SharedSamplerTest&) = delete;
   SharedSamplerTest& operator=(const SharedSamplerTest&) = delete;
-  ~SharedSamplerTest() override {}
+  ~SharedSamplerTest() override = default;
 
  protected:
   base::Time start_time() const { return start_time_; }

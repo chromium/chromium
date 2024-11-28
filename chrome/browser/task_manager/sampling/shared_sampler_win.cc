@@ -58,7 +58,7 @@ class ByteBuffer {
   ByteBuffer(const ByteBuffer&) = delete;
   ByteBuffer& operator=(const ByteBuffer&) = delete;
 
-  ~ByteBuffer() {}
+  ~ByteBuffer() = default;
 
   BYTE* data() { return data_.get(); }
 
@@ -251,7 +251,7 @@ SharedSampler::SharedSampler(
   DETACH_FROM_SEQUENCE(worker_pool_sequenced_checker_);
 }
 
-SharedSampler::~SharedSampler() {}
+SharedSampler::~SharedSampler() = default;
 
 int64_t SharedSampler::GetSupportedFlags() const {
   return REFRESH_TYPE_IDLE_WAKEUPS | REFRESH_TYPE_START_TIME |

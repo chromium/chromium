@@ -33,7 +33,7 @@ class SystemLogsMemoryHandler : public MemoryDetails {
   }
 
  private:
-  ~SystemLogsMemoryHandler() override {}
+  ~SystemLogsMemoryHandler() override = default;
   SysLogsSourceCallback callback_;
 };
 

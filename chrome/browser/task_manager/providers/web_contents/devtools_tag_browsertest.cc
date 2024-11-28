@@ -37,7 +37,7 @@ class DevToolsTagTest : public InProcessBrowserTest {
 
   DevToolsTagTest(const DevToolsTagTest&) = delete;
   DevToolsTagTest& operator=(const DevToolsTagTest&) = delete;
-  ~DevToolsTagTest() override {}
+  ~DevToolsTagTest() override = default;
 
   void LoadTestPage(const std::string& test_page) {
     GURL url = embedded_test_server()->GetURL(test_page);

@@ -25,7 +25,7 @@ FencedFrameTask::FencedFrameTask(content::RenderFrameHost* render_frame_host,
   set_title(GetTitle());
 }
 
-FencedFrameTask::~FencedFrameTask() {}
+FencedFrameTask::~FencedFrameTask() = default;
 
 void FencedFrameTask::Activate() {
   embedder_task_->Activate();

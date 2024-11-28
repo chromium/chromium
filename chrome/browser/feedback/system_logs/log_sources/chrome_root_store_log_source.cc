@@ -45,7 +45,7 @@ void PopulateChromeRootStoreLogsAsync(
 ChromeRootStoreLogSource::ChromeRootStoreLogSource()
     : SystemLogsSource("ChromeRootStore") {}
 
-ChromeRootStoreLogSource::~ChromeRootStoreLogSource() {}
+ChromeRootStoreLogSource::~ChromeRootStoreLogSource() = default;
 
 void ChromeRootStoreLogSource::Fetch(
     system_logs::SysLogsSourceCallback callback) {
