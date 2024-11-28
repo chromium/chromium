@@ -248,25 +248,27 @@ bool ToggleHasExpectedValue(const BrowserState::Services& services,
 }  // namespace
 
 BrowserState::~BrowserState() = default;
-BrowserState::BrowserState(const Intent* intent) : intent_(intent) {}
+BrowserState::BrowserState(std::unique_ptr<Intent> intent) {
+  intent_ = std::move(intent);
+}
 
 BrowserState BrowserState::Reset() {
-  return BrowserState(new ResetIntent());
+  return BrowserState(std::make_unique<ResetIntent>());
 }
 BrowserState BrowserState::EnableSafeSites() {
-  return BrowserState(new DefineManualSiteListIntent());
+  return BrowserState(std::make_unique<DefineManualSiteListIntent>());
 }
 BrowserState BrowserState::AllowSite(const GURL& gurl) {
-  return BrowserState(new DefineManualSiteListIntent(
+  return BrowserState(std::make_unique<DefineManualSiteListIntent>(
       DefineManualSiteListIntent::AllowUrl(gurl)));
 }
 BrowserState BrowserState::BlockSite(const GURL& gurl) {
-  return BrowserState(new DefineManualSiteListIntent(
+  return BrowserState(std::make_unique<DefineManualSiteListIntent>(
       DefineManualSiteListIntent::BlockUrl(gurl)));
 }
 BrowserState BrowserState::AdvancedSettingsToggles(
     std::list<FamilyLinkToggleConfiguration> toggle_list) {
-  return BrowserState(new ToggleIntent(std::move(toggle_list)));
+  return BrowserState(std::make_unique<ToggleIntent>(std::move(toggle_list)));
 }
 
 BrowserState BrowserState::SetAdvancedSettingsDefault() {
@@ -283,6 +285,7 @@ BrowserState BrowserState::SetAdvancedSettingsDefault() {
       {extensions_toggle, permissions_toggle, cookies_toggle});
 }
 
+#if !BUILDFLAG(IS_IOS)
 void BrowserState::Seed(
     signin::IdentityManager& caller_identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
@@ -302,13 +305,13 @@ void BrowserState::Seed(
       version_info::Channel::UNKNOWN);
   run_loop.Run();
 }
+#endif
 
 #if BUILDFLAG(IS_IOS)
-void BrowserState::SeedWithCompletion(
+void BrowserState::StartSeeding(
     signin::IdentityManager& caller_identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
-    std::string_view subject_account_id,
-    base::OnceClosure completion) {
+    std::string_view subject_account_id) {
   // Do not override the current fetch.
   CHECK(fetcher_ == nullptr);
 
@@ -319,7 +322,7 @@ void BrowserState::SeedWithCompletion(
       base::BindOnce([](const ProtoFetcherStatus& status,
                         std::unique_ptr<std::string> response) {
         CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
-      }).Then(std::move(completion)),
+      }),
       intent_->GetConfig(), {std::string(subject_account_id)},
       version_info::Channel::UNKNOWN);
 }

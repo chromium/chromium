@@ -16,8 +16,15 @@
 // TestFamilyLinkBrowserStateHelper singleton is successfully seeded.
 + (BOOL)isBrowserStateSeeded;
 
-// Sets up and seeds the BrowserState that resets Family Link settings.
-+ (void)resetFamilyLinkStateWithCompletion:(ProceduralBlock)completion;
+// Manages Family Link settings.
+// For subsequent calls to any of these methods, callers must wait for
+// the BrowserState singleton to be seeded
+// (i.e., [SupervisedUserFamilyLinkAppInterface isBrowserStateSeeded]
+// returns YES).
++ (void)seedDefaultFamilyLinkSettings;
++ (void)seedSafeSitesFiltering;
++ (void)seedAllowSite:(NSString*)url;
++ (void)seedBlockSite:(NSString*)url;
 
 // Tears down the TestFamilyLinkBrowserStateHelper singleton.
 + (void)tearDownTestFamilyLinkBrowserStateHelper;

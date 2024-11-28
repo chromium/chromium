@@ -137,9 +137,10 @@ class BrowserState {
 
   // TODO(370932512): Make this constructor private. Use static constructors
   // instead.
-  explicit BrowserState(const Intent* intent);
+  explicit BrowserState(std::unique_ptr<Intent> intent);
 
   // Use those static constructors to request state as indicated by name.
+  // LINT.IfChange
   // Clears url filter lists and filter settings to server-side defaults. After
   // issuing, url filter lists are empty. FilteringLevel is unset.
   static BrowserState Reset();
@@ -154,17 +155,18 @@ class BrowserState {
   // Sets the Advanced Setting toggles (Permissions, Extensions, Cookies) to
   // their default values.
   static BrowserState SetAdvancedSettingsDefault();
+  // LINT.ThenChange(/ios/chrome/browser/ui/settings/supervised_user_family_link_app_interface.mm:TestFamilyLinkBrowserStateHelper)
   // After issuing, Permissions, Extensions and Cookies toggles are set to the
   // given values, if such a value is provided on the input list.
   static BrowserState AdvancedSettingsToggles(
       std::list<FamilyLinkToggleConfiguration> toggle_list);
-
   ~BrowserState();
 
   // Tests whether the browser is in the intended state. The state is checked
   // for `member`'s browser, which typically should be the child.
   bool Check(const Services& services) const;
 
+#if !BUILDFLAG(IS_IOS)
   // Seeds the `target_state_` by issuing a RPC.
   // `caller_identity_manager` and `caller_url_loader_factory` are associated
   // with the browser making the rpc call. They might origin from the parent's
@@ -176,16 +178,16 @@ class BrowserState {
       signin::IdentityManager& caller_identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
       std::string_view subject_account_id) const;
+#endif
 
 #if BUILDFLAG(IS_IOS)
   // Seeds the `target_state_` by issuing a RPC, similar to `Seed()`.
   // This method returns immediately, but fetching continues as long as the
-  // BrowserState is alive. Once the fetch completes, `completion` is executed.
-  void SeedWithCompletion(
+  // BrowserState is alive.
+  void StartSeeding(
       signin::IdentityManager& caller_identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
-      std::string_view subject_account_id,
-      base::OnceClosure completion);
+      std::string_view subject_account_id);
 #endif  // BUILDFLAG(IS_IOS)
 
   // Textual representation of this instance (for logging).
@@ -195,7 +197,7 @@ class BrowserState {
   std::unique_ptr<const Intent> intent_;
 
 #if BUILDFLAG(IS_IOS)
-  // ProtoFetcher used for SeedWithCompletion().
+  // ProtoFetcher used for StartSeeding().
   std::unique_ptr<ProtoFetcher<std::string>> fetcher_;
 #endif  // BUILDFLAG(IS_IOS)
 };
