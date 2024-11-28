@@ -46,7 +46,7 @@ class FakeContextObserver : public EditorContext::Observer {
 
 class FakeSystem : public EditorContext::System {
  public:
-  FakeSystem() {}
+  FakeSystem() = default;
 
   explicit FakeSystem(ukm::SourceId ukm_source_id)
       : ukm_source_id_(ukm_source_id) {}

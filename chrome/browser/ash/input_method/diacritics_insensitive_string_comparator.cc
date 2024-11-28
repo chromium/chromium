@@ -40,7 +40,7 @@ DiacriticsInsensitiveStringComparator::DiacriticsInsensitiveStringComparator() {
 }
 
 DiacriticsInsensitiveStringComparator::
-    ~DiacriticsInsensitiveStringComparator() {}
+    ~DiacriticsInsensitiveStringComparator() = default;
 
 bool DiacriticsInsensitiveStringComparator::Equal(
     const std::u16string& a,
