@@ -521,9 +521,6 @@ String StylePropertySerializer::SerializeShorthand(
   switch (property_id) {
     case CSSPropertyID::kAnimation:
       return GetLayeredShorthandValue(animationShorthand());
-    case CSSPropertyID::kAlternativeAnimationWithTimeline:
-      return GetLayeredShorthandValue(
-          alternativeAnimationWithTimelineShorthand());
     case CSSPropertyID::kAnimationRange:
       return AnimationRangeShorthandValue();
     case CSSPropertyID::kBorderSpacing:
@@ -1636,7 +1633,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             (ident->GetValueID() !=
              CSSAnimationData::InitialTimeline().GetKeyword()) ||
             layer > 0) {
-          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         omit_value = true;
@@ -1645,7 +1641,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() != CSSValueID::kNormal) ||
             layer > 0) {
-          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         omit_value = true;
@@ -1654,7 +1649,6 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
         if (!ident || (ident->GetValueID() != CSSValueID::kNormal) ||
             layer > 0) {
-          DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
         omit_value = true;

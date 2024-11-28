@@ -1017,12 +1017,6 @@ AnimationTimeline* Animation::timeline() {
 void Animation::setTimeline(AnimationTimeline* timeline) {
   // https://www.w3.org/TR/web-animations-1/#setting-the-timeline
 
-  // Unfortunately cannot mark the setter only as being conditionally enabled
-  // via a feature flag. Conditionally making the feature a no-op is nearly
-  // equivalent.
-  if (!RuntimeEnabledFeatures::ScrollTimelineEnabled())
-    return;
-
   // 1. Let the old timeline be the current timeline of the animation, if any.
   AnimationTimeline* old_timeline = timeline_;
 

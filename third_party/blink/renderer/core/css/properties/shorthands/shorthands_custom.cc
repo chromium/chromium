@@ -89,7 +89,6 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationRangeEnd:
       // New animation-* properties are  "reset only", see
       // IsResetOnlyAnimationProperty.
-      DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
       return nullptr;
     default:
       NOTREACHED();
@@ -228,27 +227,6 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
                                        style.Animations());
 }
 
-bool AlternativeAnimationWithTimeline::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseAnimationShorthand(alternativeAnimationWithTimelineShorthand(),
-                                 important, stream, context, local_context,
-                                 properties);
-}
-
-const CSSValue*
-AlternativeAnimationWithTimeline::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSValueFromComputedAnimation(
-      alternativeAnimationWithTimelineShorthand(), style.Animations());
-}
-
 namespace {
 
 // Consume a single <animation-range-start> and a single
@@ -302,8 +280,6 @@ bool AnimationRange::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
-
   using css_parsing_utils::AddProperty;
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
   using css_parsing_utils::IsImplicitProperty;

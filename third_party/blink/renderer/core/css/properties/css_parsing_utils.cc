@@ -4154,10 +4154,8 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeAnimationDuration(CSSParserTokenStream& stream,
                                    const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::ScrollTimelineEnabled()) {
-    if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(stream)) {
-      return ident;
-    }
+  if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(stream)) {
+    return ident;
   }
   return ConsumeTime(stream, context,
                      CSSPrimitiveValue::ValueRange::kNonNegative);
@@ -4194,7 +4192,6 @@ CSSValue* ConsumeAnimationDelay(CSSParserTokenStream& stream,
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
                                 double default_offset_percent) {
-  DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
   if (CSSValue* ident = ConsumeIdent<CSSValueID::kNormal>(stream)) {
     return ident;
   }

@@ -973,7 +973,6 @@
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "animation-range-end",
@@ -988,7 +987,6 @@
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "animation-timeline",
@@ -1001,7 +999,6 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
-      runtime_flag: "ScrollTimeline",
       is_animation_property: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
@@ -5121,7 +5118,6 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "scroll-timeline-name",
@@ -5133,7 +5129,6 @@
       wrapper_pointer_name: "Member",
       converter: "ConvertViewTimelineName",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "shape-image-threshold",
@@ -5933,7 +5928,6 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-inset",
@@ -5945,7 +5939,6 @@
       type_name: "Vector<TimelineInset>",
       converter: "ConvertViewTimelineInset",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-timeline-name",
@@ -5957,7 +5950,6 @@
       wrapper_pointer_name: "Member",
       converter: "ConvertViewTimelineName",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "view-transition-capture-mode",
@@ -7654,27 +7646,12 @@
       longhands: [
         "animation-duration", "animation-timing-function", "animation-delay",
         "animation-iteration-count", "animation-direction",
-        "animation-fill-mode", "animation-play-state", "animation-name"
-      ],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      supports_incremental_style: false,
-      valid_for_keyframe: false,
-    },
-    {
-      // Variant of the "animation" shorthand which includes the
-      // animation-timeline and animation-range-* longhands.
-      name: "-alternative-animation-with-timeline",
-      alternative_of: "animation",
-      longhands: [
-        "animation-duration", "animation-timing-function",
-        "animation-delay", "animation-iteration-count", "animation-direction",
         "animation-fill-mode", "animation-play-state", "animation-name",
         "animation-timeline", "animation-range-start", "animation-range-end"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: 'ScrollTimeline',
     },
     {
       name: "animation-range",
@@ -7684,7 +7661,6 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
-      runtime_flag: 'ScrollTimeline',
     },
     {
       name: "background",
@@ -8239,7 +8215,6 @@
       name: "scroll-timeline",
       longhands: ["scroll-timeline-name", "scroll-timeline-axis"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "text-decoration",
@@ -8263,7 +8238,6 @@
       name: "view-timeline",
       longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-inset"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-border-after",
@@ -8838,18 +8812,6 @@
     {
       name: "-webkit-animation",
       alias_for: "animation",
-    },
-    {
-      // Since "animation" has an alternative property, "-webkit-animation"
-      // also needs to have an alternative property that is an alias of
-      // animation's alternative property. Unfortunately we can't just resolve
-      // -webkit-animation directly to animation's alternative, because we have
-      // to remember the -webkit-ness of the property to enable legacy parsing
-      // behavior. (See CSSParserLocalContext::UseAliasParsing).
-      name: "-webkit-alternative-animation-with-timeline",
-      alias_for: "-alternative-animation-with-timeline",
-      alternative_of: "-webkit-animation",
-      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-animation-delay",

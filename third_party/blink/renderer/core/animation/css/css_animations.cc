@@ -3125,7 +3125,6 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
   }
 
   switch (property.PropertyID()) {
-    case CSSPropertyID::kAlternativeAnimationWithTimeline:
     case CSSPropertyID::kAnimation:
     case CSSPropertyID::kAnimationComposition:
     case CSSPropertyID::kAnimationDelay:
