@@ -37,6 +37,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   std::vector<ProfileIOS*> GetLoadedProfiles() const override;
   bool HasProfileWithName(std::string_view name) const override;
   bool CanCreateProfileWithName(std::string_view name) const override;
+  std::string ReserveNewProfileName() override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;

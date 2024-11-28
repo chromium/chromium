@@ -48,7 +48,8 @@ void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   // Inserts an empty dictionary for the profile in the preferences.
   {
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, base::Value::Dict());
+    ProfileAttributesIOS profile = ProfileAttributesIOS::CreateNew(name);
+    update->Set(name, std::move(profile).GetStorage());
   }
 
   // Update the number of created profile.

@@ -19,6 +19,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "base/uuid.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/profile/model/constants.h"
@@ -215,6 +216,11 @@ bool ProfileManagerIOSImpl::HasProfileWithName(std::string_view name) const {
 bool ProfileManagerIOSImpl::CanCreateProfileWithName(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Cannot create a profile with the same name as an existing profile.
+  if (HasProfileWithName(name)) {
+    return false;
+  }
+
   // Cannot create a profile with the same name as a legacy profile.
   if (local_state_->GetDict(prefs::kLegacyProfileMap).Find(name)) {
     return false;
@@ -226,21 +232,29 @@ bool ProfileManagerIOSImpl::CanCreateProfileWithName(
   return true;
 }
 
+std::string ProfileManagerIOSImpl::ReserveNewProfileName() {
+  std::string profile_name;
+  do {
+    const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+    profile_name = uuid.AsLowercaseString();
+  } while (!CanCreateProfileWithName(profile_name));
+
+  DCHECK(!profile_name.empty());
+  DCHECK(!HasProfileWithName(profile_name));
+  profile_attributes_storage_.AddProfile(profile_name);
+
+  return profile_name;
+}
+
 bool ProfileManagerIOSImpl::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasProfileWithName(name)) {
-    // Must not create the ProfileIOS if it does not already exist, so fail.
-    if (!initialized_callback.is_null()) {
-      std::move(initialized_callback).Run(nullptr);
-    }
-    return false;
-  }
-
-  return CreateProfileAsync(name, std::move(initialized_callback),
-                            std::move(created_callback));
+  return CreateProfileWithMode(name, CreationMode::kAsynchronous,
+                               /* load_only_do_not_create */ true,
+                               std::move(initialized_callback),
+                               std::move(created_callback));
 }
 
 bool ProfileManagerIOSImpl::CreateProfileAsync(
@@ -249,23 +263,31 @@ bool ProfileManagerIOSImpl::CreateProfileAsync(
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return CreateProfileWithMode(name, CreationMode::kAsynchronous,
+                               /* load_only_do_not_create */ false,
                                std::move(initialized_callback),
                                std::move(created_callback));
 }
 
 ProfileIOS* ProfileManagerIOSImpl::LoadProfile(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasProfileWithName(name)) {
-    // Must not create the ProfileIOS if it does not already exist, so fail.
+  if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
+                             /* load_only_do_not_create */ true,
+                             /* initialized_callback */ {},
+                             /* created_callback */ {})) {
     return nullptr;
   }
 
-  return CreateProfile(name);
+  auto iter = profiles_map_.find(name);
+  DCHECK(iter != profiles_map_.end());
+
+  DCHECK(iter->second.is_loaded());
+  return iter->second.profile();
 }
 
 ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CreateProfileWithMode(name, CreationMode::kSynchronous,
+                             /* load_only_do_not_create */ false,
                              /* initialized_callback */ {},
                              /* created_callback */ {})) {
     return nullptr;
@@ -343,19 +365,28 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   DCHECK(iter != profiles_map_.end());
   auto callbacks = iter->second.TakeCallbacks();
 
+  // Update the ProfileAttributesStorageIOS before notifying the observers
+  // and callbacks of the success or failure of the operation.
+  const std::string& name = profile->GetProfileName();
+  if (is_new_profile) {
+    if (success) {
+      profile_attributes_storage_.UpdateAttributesForProfileWithName(
+          name, base::BindOnce([](ProfileAttributesIOS attrs) {
+            attrs.ClearIsNewProfile();
+            return attrs;
+          }));
+    } else {
+      // TODO(crbug.com/335630301): Mark the data for removal and prevent the
+      // creation of a profile with the same name until the data has been
+      // deleted.
+      profile_attributes_storage_.RemoveProfile(name);
+    }
+  }
+
   if (success) {
     DoFinalInit(profile);
     iter->second.SetIsLoaded();
   } else {
-    if (is_new_profile) {
-      // TODO(crbug.com/335630301): Mark the data for removal and prevent the
-      // creation of a profile with the same name until the data has been
-      // deleted.
-      const std::string& name = profile->GetProfileName();
-      profile_attributes_storage_.RemoveProfile(name);
-      DCHECK(!HasProfileWithName(name));
-    }
-
     profile = nullptr;
     profiles_map_.erase(iter);
   }
@@ -377,15 +408,34 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
 bool ProfileManagerIOSImpl::CreateProfileWithMode(
     std::string_view name,
     CreationMode creation_mode,
+    bool load_only_do_not_create,
     ProfileLoadedCallback initialized_callback,
     ProfileLoadedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = false;
   bool existing = HasProfileWithName(name);
 
+  // As the name may have been registered with ProfileAttributesStorageIOS,
+  // a profile is considered as a new profile if the storage does not know
+  // about it, or if the IsNewProfile() flag is still set. The flag will be
+  // cleared the first time the profile is successfully loaded.
+  bool is_new_profile = !existing;
+  if (existing) {
+    const ProfileAttributesIOS attrs =
+        profile_attributes_storage_.GetAttributesForProfileWithName(name);
+    is_new_profile = attrs.IsNewProfile();
+  }
+
+  // Profile creation is forbidden either via `load_only_do_not_create` or
+  // if CanCreateProfileWithName(...) return false.
+  bool can_create = !load_only_do_not_create;
+  if (!existing) {
+    can_create &= CanCreateProfileWithName(name);
+  }
+
   auto iter = profiles_map_.find(name);
   if (iter == profiles_map_.end()) {
-    if (!CanCreateProfileWithName(name)) {
+    if (is_new_profile && !can_create) {
       if (!initialized_callback.is_null()) {
         std::move(initialized_callback).Run(nullptr);
       }
@@ -441,7 +491,7 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
   // of the ProfileInfo. Thus it is necessary to call the method again here.
   if (inserted && creation_mode == CreationMode::kSynchronous) {
     OnProfileCreationFinished(profile_info.profile(),
-                              CreationMode::kAsynchronous, !existing,
+                              CreationMode::kAsynchronous, is_new_profile,
                               /* success */ true);
   }
 

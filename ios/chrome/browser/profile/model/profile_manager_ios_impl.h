@@ -45,6 +45,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   std::vector<ProfileIOS*> GetLoadedProfiles() const override;
   bool HasProfileWithName(std::string_view name) const override;
   bool CanCreateProfileWithName(std::string_view name) const override;
+  std::string ReserveNewProfileName() override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;
@@ -72,12 +73,14 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   using CreationMode = ProfileIOS::CreationMode;
   using ProfileMap = std::map<std::string, ProfileInfo, std::less<>>;
 
-  // Creates or loads the Profile known by `name` using the `creation_mode`. The
-  // callbacks have the same meaning as the method CreateProfileAsync(...).
+  // Creates or loads the Profile known by `name` using the `creation_mode`.
+  // The callbacks have the same meaning as the method CreateProfileAsync().
   // Returns whether a Profile with that name already exists or it can be
-  // created.
+  // created. If `load_only_do_not_create` is true, then the method will fail
+  // if the profile does not exists on disk yet.
   bool CreateProfileWithMode(std::string_view name,
                              CreationMode creation_mode,
+                             bool load_only_do_not_create,
                              ProfileLoadedCallback initialized_callback,
                              ProfileLoadedCallback created_callback);
 

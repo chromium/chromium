@@ -85,6 +85,9 @@ TEST_F(ProfileAttributesStorageIOSTest, AddProfile) {
     ProfileAttributesIOS attr =
         storage.GetAttributesForProfileWithName(account.name);
     EXPECT_EQ(attr.GetProfileName(), account.name);
+    EXPECT_TRUE(attr.IsNewProfile());
+
+    attr.ClearIsNewProfile();
     EXPECT_EQ(std::move(attr).GetStorage(), base::Value::Dict());
   }
 
@@ -155,7 +158,6 @@ TEST_F(ProfileAttributesStorageIOSTest, RemoveProfileDisconnectScenes) {
 // Tests that settings and getting the attributes using ProfileAttributesIOS
 // works as expected, and they are correctly stored in the local preferences
 // when committed.
-// Note that this implicitly tests UpdateAttributesForProfileAtIndex(...).
 TEST_F(ProfileAttributesStorageIOSTest, UpdateAttributesForProfileWithName) {
   {
     ProfileAttributesStorageIOS storage(pref_service());

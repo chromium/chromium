@@ -8,6 +8,7 @@
 #import "base/scoped_observation.h"
 #import "base/test/test_file_util.h"
 #import "base/threading/thread_restrictions.h"
+#import "base/uuid.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -15,6 +16,8 @@
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -213,6 +216,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   // Pretends that a Profile named `kProfileName1` exists. Required as
   // LoadProfileAsync(...) won't create new Profiles.
   attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().UpdateAttributesForProfileWithName(
+      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   base::RunLoop run_loop;
   ProfileIOS* created_profile = nullptr;
@@ -252,6 +260,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
   // Pretends that a Profile named `kProfileName1` exists. Required as
   // LoadProfileAsync(...) won't create new Profiles.
   attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().UpdateAttributesForProfileWithName(
+      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   // Load the Profile a first time.
   {
@@ -467,6 +480,11 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
   // Pretends that a Profile named `kProfileName1` exists. Required as
   // LoadProfile(...) won't create new Profiles.
   attributes_storage().AddProfile(kProfileName1);
+  attributes_storage().UpdateAttributesForProfileWithName(
+      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+        attrs.ClearIsNewProfile();
+        return attrs;
+      }));
 
   // Load the Profile synchronously.
   ProfileIOS* profile = profile_manager().LoadProfile(kProfileName1);
@@ -615,4 +633,22 @@ TEST_F(ProfileManagerIOSImplTest, UnloadAllProfiles_LoadPending) {
 
   EXPECT_FALSE(observer.on_profile_unloaded_called());
   EXPECT_FALSE(loaded_profile);
+}
+
+// Tests that ReserveNewProfileName(...) returns a new profile name that is
+// randomly generated, and register it with ProfileAttributesStorageIOS. The
+// name must also be a valid UUID.
+TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
+  ASSERT_EQ(attributes_storage().GetNumberOfProfiles(), 0u);
+
+  const std::string name = profile_manager().ReserveNewProfileName();
+  EXPECT_FALSE(name.empty());
+
+  const base::Uuid uuid = base::Uuid::ParseLowercase(name);
+  EXPECT_TRUE(uuid.is_valid());
+
+  ASSERT_TRUE(attributes_storage().HasProfileWithName(name));
+  ProfileAttributesIOS attrs =
+      attributes_storage().GetAttributesForProfileWithName(name);
+  EXPECT_TRUE(attrs.IsNewProfile());
 }

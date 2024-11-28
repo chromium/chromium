@@ -147,6 +147,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     return true;
   }
 
+  std::string ReserveNewProfileName() override { NOTREACHED(); }
+
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override {

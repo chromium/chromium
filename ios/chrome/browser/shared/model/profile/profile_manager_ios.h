@@ -44,6 +44,17 @@ class ProfileManagerIOS {
   // Returns whether a profile with `name` can be created.
   virtual bool CanCreateProfileWithName(std::string_view name) const = 0;
 
+  // Reserves a new randomly generated name that can be used to create a new
+  // profile and returns the new name. The profile will be registered in the
+  // ProfileAttributesStorageIOS and its attributes can be set before the
+  // storage on disk is created via CreateProfileAsync() or CreateProfile().
+  //
+  // After this call, passing the returned value to HasProfileWithName(...)
+  // will return true, but passing it to GetProfileWithName(...) will still
+  // return a null pointer as the profile has not been created. Loading the
+  // profile with LoadProfileAsync() or LoadProfile() will also fail.
+  virtual std::string ReserveNewProfileName() = 0;
+
   // Asynchronously loads a Profile known by `name` if it exists. The
   // `created_callback` will be called with the Profile when it has been created
   // (but not yet initialised) and `initialised_callback` will be called once

@@ -80,6 +80,10 @@ bool TestProfileManagerIOS::CanCreateProfileWithName(
   return true;
 }
 
+std::string TestProfileManagerIOS::ReserveNewProfileName() {
+  NOTREACHED();
+}
+
 bool TestProfileManagerIOS::LoadProfileAsync(
     std::string_view name,
     ProfileLoadedCallback initialized_callback,
