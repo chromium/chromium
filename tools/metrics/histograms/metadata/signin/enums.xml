@@ -216,15 +216,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Was deferred"/>
 </enum>
 
-<!-- LINT.IfChange(BoundOAuth2TokenFetchEncryptionError) -->
-
-<enum name="BoundOAuth2TokenFetchEncryptionError">
-  <int value="0" label="Response is unexpectedly encrypted"/>
-  <int value="1" label="Decryption failed"/>
-</enum>
-
-<!-- LINT.ThenChange(//google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.cc:EncryptionError) -->
-
 <enum name="BoundSessionCredentialsCookieRotationGenerateAssertionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to load the key"/>
@@ -1118,6 +1109,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/internal/identity_manager/token_binding_helper.h:Error) -->
+
+<!-- LINT.IfChange(TokenBindingResponseEncryptionError) -->
+
+<enum name="TokenBindingResponseEncryptionError">
+  <int value="0" label="Response is unexpectedly encrypted"/>
+  <int value="1" label="Decryption failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//google_apis/gaia/token_binding_response_encryption_error.h:TokenBindingResponseEncryptionError) -->
 
 </enums>
 

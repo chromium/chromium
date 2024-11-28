@@ -1894,14 +1894,14 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.OAuth2MintToken.BoundFetchEncryptionError"
-    enum="BoundOAuth2TokenFetchEncryptionError" expires_after="2025-02-10">
+    enum="TokenBindingResponseEncryptionError" expires_after="2025-02-10">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records an encryption failure that occured during OAuth2MintToken API fetch
     with a bound refresh token. Recorded after the response is processed and
-    only of the fetch failed due to such an error. Desktop only.
+    only if the fetch failed due to such an error. Desktop only.
   </summary>
 </histogram>
 
@@ -1927,6 +1927,17 @@ tokens and is needed for as long as Chrome is fetching access tokens. -->
   <owner>droger@chromium.org</owner>
   <summary>
     Reason fetching an OAuth2 Token is being retried. Available on all OSes.
+  </summary>
+</histogram>
+
+<histogram name="Signin.OAuthMultiloginResponseEncryptionError"
+    enum="TokenBindingResponseEncryptionError" expires_after="2025-02-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an encryption failure that occured during OAuthMultilogin API fetch
+    with a bound refresh token. Recorded while the response is being processed.
+    Desktop only.
   </summary>
 </histogram>
 

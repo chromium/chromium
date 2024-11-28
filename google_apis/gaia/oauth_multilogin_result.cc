@@ -12,8 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/http/http_status_code.h"
 
@@ -27,7 +28,13 @@ std::string_view StripXSSICharacters(std::string_view raw_data) {
 }
 
 void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.OAuthMultiloginResponseStatus", status);
+  base::UmaHistogramEnumeration("Signin.OAuthMultiloginResponseStatus", status);
+}
+
+void RecordMultiloginResponseEncryptionError(
+    TokenBindingResponseEncryptionError error) {
+  base::UmaHistogramEnumeration("Signin.OAuthMultiloginResponseEncryptionError",
+                                error);
 }
 
 }  // namespace
@@ -116,7 +123,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       json_value.Find("token_binding_directed_response") != nullptr;
   if (are_cookies_encrypted && cookie_decryptor.is_null()) {
     VLOG(1) << "The response unexpectedly contains encrypted cookies";
-    // TODO(crbug.com/372648645): record a histogram.
+    RecordMultiloginResponseEncryptionError(
+        TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted);
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
@@ -138,7 +146,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       cookie_value = cookie_decryptor.Run(cookie_value);
       if (cookie_value.empty()) {
         VLOG(1) << "Failed to decrypt a cookie.";
-        // TODO(crbug.com/372648645): record a histogram.
+        RecordMultiloginResponseEncryptionError(
+            TokenBindingResponseEncryptionError::kDecryptionFailed);
         continue;
       }
     }

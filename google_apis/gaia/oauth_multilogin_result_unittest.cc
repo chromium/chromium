@@ -11,8 +11,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,6 +92,9 @@ constexpr char kResponseWithEncryptedCookiesFormat[] =
           ]
         }
       )";
+
+static constexpr char kEncryptionErrorHistogram[] =
+    "Signin.OAuthMultiloginResponseEncryptionError";
 
 }  // namespace
 
@@ -891,6 +896,7 @@ TEST(OAuthMultiloginResultTest,
 
 // Decryptor is successfully used if cookies in the response are encrypted.
 TEST(OAuthMultiloginResultTest, ParseEncryptedCookies) {
+  base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
                                             "vAlUe1", "vAlUe2");
   auto decryptor = [](std::string_view encrypted_cookie) {
@@ -904,6 +910,7 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookies) {
       result.cookies(),
       ElementsAre(Property(&CanonicalCookie::Value, "vAlUe1.decrypted"),
                   Property(&CanonicalCookie::Value, "vAlUe2.decrypted")));
+  histogram_tester.ExpectTotalCount(kEncryptionErrorHistogram, 0);
 }
 
 // Decryptor is ignored if cookies in the response are not encrypted.
@@ -953,6 +960,7 @@ TEST(OAuthMultiloginResultTest, ParseCookiesIgnoresDecryptor) {
 
 // Result is set to failure if cookies are encrypted but a decryptor is not set.
 TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesFailsWithoutDecryptor) {
+  base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
                                             "vAlUe1", "vAlUe2");
 
@@ -960,10 +968,15 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesFailsWithoutDecryptor) {
 
   EXPECT_EQ(result.status(), OAuthMultiloginResponseStatus::kUnknownStatus);
   EXPECT_THAT(result.cookies(), IsEmpty());
+  histogram_tester.ExpectUniqueSample(
+      kEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted,
+      /*expected_bucket_count=*/1);
 }
 
 // Cookies that failed to decrypt are omitted from the result.
 TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
+  base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
                                             "vAlUe1", "vAlUe2");
   auto decryptor = [](std::string_view encrypted_cookie) {
@@ -977,4 +990,8 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
 
   EXPECT_THAT(result.cookies(), ElementsAre(Property(&CanonicalCookie::Value,
                                                      "vAlUe2.decrypted")));
+  histogram_tester.ExpectUniqueSample(
+      kEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kDecryptionFailed,
+      /*expected_bucket_count=*/1);
 }

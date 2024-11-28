@@ -163,6 +163,7 @@ component("google_apis") {
     "gaia/oauth_multilogin_result.h",
     "gaia/oauth_request_signer.cc",
     "gaia/oauth_request_signer.h",
+    "gaia/token_binding_response_encryption_error.h",
     "google_api_keys.cc",
     "google_api_keys.h",
   ]
