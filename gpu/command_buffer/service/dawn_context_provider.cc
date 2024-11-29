@@ -431,6 +431,13 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
+  void LogInitFailure(std::string_view reason) {
+    LOG(ERROR) << reason;
+
+    SCOPED_CRASH_KEY_STRING256("dawn-shared-context", "init-failure", reason);
+    base::debug::DumpWithoutCrashing();
+  }
+
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -558,12 +565,13 @@ bool DawnSharedContext::Initialize(
 #endif
 
   if (adapters.empty()) {
-    LOG(ERROR) << "No adapters found.";
+    LogInitFailure("No adapters found.");
     return false;
   }
   adapter_ = wgpu::Adapter(adapters[0].Get());
 
   if (!validate_adapter_fn(backend_type, adapter_)) {
+    LogInitFailure("Validate adapter failed.");
     return false;
   }
 
@@ -603,7 +611,7 @@ bool DawnSharedContext::Initialize(
   // Use best limits for the device.
   wgpu::SupportedLimits supportedLimits = {};
   if (adapter_.GetLimits(&supportedLimits) != wgpu::Status::Success) {
-    LOG(ERROR) << "Failed to call adapter.GetLimits().";
+    LogInitFailure("Failed to call adapter.GetLimits().");
     return false;
   }
 
@@ -643,7 +651,7 @@ bool DawnSharedContext::Initialize(
   }
 
   if (!device_) {
-    LOG(ERROR) << "Failed to create device.";
+    LogInitFailure("Failed to create device.");
     return false;
   }
 
