@@ -407,20 +407,6 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
   TargetMap touchscreen_gesture_target_map_;
   raw_ptr<RenderWidgetHostViewInput> touch_target_ = nullptr;
   base::WeakPtr<RenderWidgetHostViewInput> touchscreen_gesture_target_;
-#if defined(USE_AURA)
-  // TODO(https://crbug.com/380896827): Once GestureBegin/End are reliably
-  // generated on all platforms, remove the restriction to Aura, and also
-  // remove `last_event_type_` as the restriction to GestureTapCancel will be
-  // unnecessary.
-  // Used to keep track of matching GestureBegin/Gesture end pairs, so the
-  // the touchscreen_gesture_target can be cleared when not in a sequence.
-  unsigned touchscreen_gesture_begin_end_count_ = 0;
-  // Keep track of the type of the most recently seen event so we can detect
-  // GestureTapCancel followed by a terminal GestureEnd.
-  blink::mojom::EventType last_event_type_ =
-      blink::WebInputEvent::Type::kUndefined;
-#endif
-
   bool touchscreen_gesture_target_moved_recently_ = false;
   bool touchscreen_gesture_target_moved_recently_for_iov2_ = false;
   raw_ptr<RenderWidgetHostViewInput> touchpad_gesture_target_ = nullptr;
