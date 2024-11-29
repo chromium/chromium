@@ -169,41 +169,20 @@ def __clang_link(ctx, cmd):
     inputs = []
     sysroot = ""
     target = ""
-    args = cmd.args
-    if args[0] == "/bin/sh":
-        args = args[2].split(" ")
-    for i, arg in enumerate(args):
-        if i == 1:
-            driver = ctx.fs.canonpath(arg)  # driver script
-            if ctx.fs.exists(driver):
-                inputs.append(driver + ":link")
-            continue
+    for i, arg in enumerate(cmd.args):
         if arg.startswith("--sysroot="):
             sysroot = arg.removeprefix("--sysroot=")
             sysroot = ctx.fs.canonpath(sysroot)
-            inputs.append(sysroot + ":link")
-        elif arg == "-isysroot":
-            sysroot = ctx.fs.canonpath(args[i + 1])
-            inputs.append(sysroot + ":link")
         elif arg.startswith("--target="):
             target = arg.removeprefix("--target=")
         elif arg.startswith("-L"):
             lib_path = ctx.fs.canonpath(arg.removeprefix("-L"))
             inputs.append(lib_path + ":link")
-        elif arg.startswith("-Wl,-exported_symbols_list,"):
-            export_path = ctx.fs.canonpath(arg.removeprefix("-Wl,-exported_symbols_list,"))
-            inputs.append(export_path)
-        elif arg == "-sectcreate":
-            # -sectcreate <arg1> <arg2> <arg3>
-            inputs.append(ctx.fs.canonpath(args[i + 3]))
-        elif arg.startswith("-Wcrl,"):
-            crls = arg.removeprefix("-Wcrl,").split(",")
-            crl = ctx.fs.canonpath(crls[1])
-            if ctx.fs.exists(crl):
-                inputs.append(crl + ":link")
         elif arg == "--":
             clang_base = ctx.fs.canonpath(path.dir(path.dir(cmd.args[i + 1])))
             inputs.append(clang_base + ":link")
+    if sysroot:
+        inputs.extend([sysroot + ":link"])
 
     for arch in android_archs:
         if target.startswith(arch):
@@ -365,9 +344,17 @@ def __step_config(ctx, step_config):
             "accumulate": True,
         },
         {
-            "name": "clang/solink",
+            "name": "clang/solink/gcc_solink_wrapper",
             "action": "(.*_)?solink",
+            "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
             "handler": "clang_link",
+            "inputs": [
+                # TODO: b/316267242 - Add inputs to GN config.
+                "build/toolchain/gcc_solink_wrapper.py",
+                # TODO: Choose either amd64 sysroot or i386 sysroot
+                # appropriately.
+                "build/linux/debian_bullseye_amd64-sysroot:link",
+            ],
             "exclude_input_patterns": [
                 "*.cc",
                 "*.h",
@@ -382,9 +369,17 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
-            "name": "clang/link",
+            "name": "clang/link/gcc_link_wrapper",
             "action": "(.*_)?link",
+            "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
             "handler": "clang_link",
+            "inputs": [
+                # TODO: b/316267242 - Add inputs to GN config.
+                "build/toolchain/gcc_link_wrapper.py",
+                # TODO: Choose either amd64 sysroot or i386 sysroot
+                # appropriately.
+                "build/linux/debian_bullseye_amd64-sysroot:link",
+            ],
             "exclude_input_patterns": [
                 "*.cc",
                 "*.h",
