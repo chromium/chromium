@@ -923,25 +923,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
   VerifyBoundSession(params);
 }
 
-// This test is specific to `kMultipleBoundSessionsEnabled` being disabled.
-// BoundSessionCookieRefreshServiceImplMultiSessionTest.RegisterBoundSessionSameSessionKey
-// tests a similar scenario with `kMultipleBoundSessionsEnabled` enabled.
-TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kMultipleBoundSessionsEnabled);
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  service->RegisterNewBoundSession(CreateTestBoundSessionParams());
-
-  auto new_params = CreateTestBoundSessionParams();
-  new_params.set_session_id("test_session_id_2");
-
-  service->RegisterNewBoundSession(new_params);
-
-  VerifyBoundSession(new_params);
-  VerifySessionTerminationTriggerRecorded(
-      SessionTerminationTrigger::kSessionOverride);
-}
-
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        OverrideExistingBoundSessionSameSessionId) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
@@ -1110,39 +1091,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_FALSE(registration_fetcher());
 }
 
-// This test is specific to `kMultipleBoundSessionsEnabled` being disabled.
-// BoundSessionCookieRefreshServiceImplMultiSessionTest.CreateRegistrationRequest
-// tests a similar scenario with `kMultipleBoundSessionsEnabled` enabled.
-TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       CreateRegistrationRequestMultipleRequests) {
-  // Turn path restrictions off to test with two different paths.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{switches::kEnableBoundSessionCredentials,
-        {{"exclusive-registration-path", ""}}}},
-      {kMultipleBoundSessionsEnabled});
-
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  const std::string kFirstPath = "/First";
-  const std::string kSecondPath = "/Second";
-
-  service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams(kFirstPath));
-  // The second registration request should be ignored.
-  service->CreateRegistrationRequest(
-      CreateTestRegistrationFetcherParams(kSecondPath));
-  ASSERT_TRUE(registration_fetcher());
-  EXPECT_THAT(registration_fetcher(),
-              IsBoundSessionRegistrationFetcher(kFirstPath, true));
-
-  // Verify that a request can complete normally.
-  bound_session_credentials::BoundSessionParams params =
-      CreateTestBoundSessionParams();
-  registration_fetcher()->SimulateRegistrationFetchCompleted(params);
-  EXPECT_FALSE(registration_fetcher());
-  VerifyBoundSession(params);
-}
-
 // Test suite for tests involving multiple sessions.
 class BoundSessionCookieRefreshServiceImplMultiSessionTest
     : public BoundSessionCookieRefreshServiceImplTestBase {
@@ -1226,9 +1174,6 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
       cookie_controllers_;
   std::vector<base::WeakPtr<FakeBoundSessionRegistrationFetcher>>
       registration_fetchers_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kMultipleBoundSessionsEnabled};
 };
 
 TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest, Initialize) {
