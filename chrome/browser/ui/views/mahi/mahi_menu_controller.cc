@@ -52,6 +52,12 @@ SelectedTextState SelectedTextStateForElucidation(const std::u16string& text) {
 
 // Whether the selected text is eligible for a summary.
 SelectedTextState SelectedTextStateForSummary(const std::u16string& text) {
+  // If the summary of selection feature is disabled, we simply treat the text
+  // empty, which falls back to summary of whole document option.
+  if (!features::IsMahiSummarizeSelectedEnabled()) {
+    return SelectedTextState::kEmpty;
+  }
+
   if (text.empty()) {
     return SelectedTextState::kEmpty;
   } else if (text.length() < kMinCharForSummary) {

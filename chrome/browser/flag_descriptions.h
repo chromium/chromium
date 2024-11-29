@@ -4095,6 +4095,9 @@ extern const char kMahiDescription[];
 extern const char kMahiPanelResizableName[];
 extern const char kMahiPanelResizableDescription[];
 
+extern const char kMahiSummarizeSelectedName[];
+extern const char kMahiSummarizeSelectedDescription[];
+
 extern const char kMahiDebuggingName[];
 extern const char kMahiDebuggingDescription[];
 

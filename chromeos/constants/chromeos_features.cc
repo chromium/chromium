@@ -188,6 +188,11 @@ BASE_FEATURE(kMahiDebugging,
 // Controls enabling / disabling the pompano feature.
 BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the summary of selected text feature.
+BASE_FEATURE(kMahiSummarizeSelected,
+             "MahiSummarizeSelected",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
 // TODO(crbug.com/40233408): Remove if the change is fully launched.
@@ -511,6 +516,10 @@ bool IsPlatformKeysChangesWave1Enabled() {
 
 bool IsPompanoEnabled() {
   return base::FeatureList::IsEnabled(kPompano);
+}
+
+bool IsMahiSummarizeSelectedEnabled() {
+  return base::FeatureList::IsEnabled(kMahiSummarizeSelected);
 }
 
 bool IsNotificationWidthIncreaseEnabled() {
