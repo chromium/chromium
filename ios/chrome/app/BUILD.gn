@@ -466,7 +466,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_util",

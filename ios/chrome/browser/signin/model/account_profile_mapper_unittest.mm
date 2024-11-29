@@ -13,7 +13,6 @@
 #import "base/test/test_file_util.h"
 #import "base/test/test_future.h"
 #import "base/uuid.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"

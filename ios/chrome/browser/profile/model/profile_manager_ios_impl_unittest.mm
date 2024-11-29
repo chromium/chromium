@@ -12,7 +12,6 @@
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

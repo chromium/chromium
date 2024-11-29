@@ -4,8 +4,6 @@
 
 #include "ios/chrome/browser/profile/model/constants.h"
 
-const char kIOSChromeInitialProfile[] = "Default";
-
 const base::FilePath::CharType kIOSChromeCacheDirname[] =
     FILE_PATH_LITERAL("Cache");
 const base::FilePath::CharType kIOSChromeCookieFilename[] =

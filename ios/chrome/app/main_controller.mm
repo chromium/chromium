@@ -92,7 +92,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"

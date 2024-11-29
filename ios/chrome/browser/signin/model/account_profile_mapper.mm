@@ -8,7 +8,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

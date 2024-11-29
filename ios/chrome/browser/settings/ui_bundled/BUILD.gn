@@ -143,7 +143,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/photos/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/prerender/model:prerender_pref",
-    "//ios/chrome/browser/profile/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:ui_util",

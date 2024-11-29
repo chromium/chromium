@@ -22,7 +22,6 @@
 #import "base/uuid.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_metrics.h"
