@@ -530,6 +530,7 @@ void WaylandInputMethodContext::OnPreeditString(
     const gfx::Range& preedit_cursor) {
   CompositionText composition_text;
   composition_text.text = base::UTF8ToUTF16(text);
+  bool has_composition_style = false;
   for (const auto& span : spans) {
     auto start_offset = OffsetFromUTF8Offset(text, span.index);
     if (!start_offset)
@@ -540,8 +541,17 @@ void WaylandInputMethodContext::OnPreeditString(
     const auto& style = span.style;
     if (!style.has_value())
       continue;
+    if (style->type == ImeTextSpan::Type::kComposition) {
+      has_composition_style = true;
+    }
     composition_text.ime_text_spans.emplace_back(style->type, *start_offset,
                                                  *end_offset, style->thickness);
+  }
+  if (!composition_text.text.empty() && !has_composition_style) {
+    // If no explicit composition style is specified, add default composition
+    // style to the composition text.
+    composition_text.ime_text_spans.emplace_back(
+        ImeTextSpan::Type::kComposition, 0, composition_text.text.length());
   }
   if (!preedit_cursor.IsValid()) {
     // This is the case if a preceding preedit_cursor event in text-input-v1 was
