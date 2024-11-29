@@ -53,10 +53,11 @@ def __filegroups(ctx):
             fg[ctx.fs.canonpath("./" + gn_logs_data.get("mac_sdk_path")) + ":link"] = {
                 "type": "glob",
                 "includes": [
+                    "*.framework",
+                    "*.o",
                     "*.tbd",
                     "Current",
                     "Frameworks",
-                    "*.o",
                 ],
             }
         if gn_logs_data.get("ios_sdk_path"):
