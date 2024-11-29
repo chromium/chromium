@@ -1243,7 +1243,10 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
 
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreatePassThroughProvider(
-    const SkImageInfo& info,
+    gfx::Size size,
+    SkColorType sk_color_type,
+    SkAlphaType alpha_type,
+    sk_sp<SkColorSpace> sk_color_space,
     cc::PaintFlags::FilterQuality filter_quality,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     CanvasResourceHost* resource_host) {
@@ -1255,8 +1258,8 @@ CanvasResourceProvider::CreatePassThroughProvider(
 
   const auto& capabilities =
       context_provider_wrapper->ContextProvider().GetCapabilities();
-  if (info.width() > capabilities.max_texture_size ||
-      info.height() > capabilities.max_texture_size) {
+  if (size.width() > capabilities.max_texture_size ||
+      size.height() > capabilities.max_texture_size) {
     return nullptr;
   }
 
@@ -1267,8 +1270,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
   // Either swap_chain or gpu memory buffer should be enabled for this be used
   if (!shared_image_capabilities.shared_image_swap_chain &&
       (!IsGMBAllowed(
-           gfx::Size(info.width(), info.height()),
-           viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
+           size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
            capabilities) ||
        !Platform::Current()->GetGpuMemoryBufferManager())) {
     return nullptr;
@@ -1280,9 +1282,8 @@ CanvasResourceProvider::CreatePassThroughProvider(
   // fact that it simply delegates the internal parts of the resource to other
   // classes).
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
-      gfx::Size(info.width(), info.height()), info.colorType(),
-      info.alphaType(), info.refColorSpace(), filter_quality,
-      context_provider_wrapper, resource_host);
+      size, sk_color_type, alpha_type, std::move(sk_color_space),
+      filter_quality, context_provider_wrapper, resource_host);
   CHECK(provider->IsValid());
   return provider;
 }

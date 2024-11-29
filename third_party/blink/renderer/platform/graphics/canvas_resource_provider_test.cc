@@ -677,7 +677,8 @@ TEST_F(CanvasResourceProviderTest,
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      kInfo, cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
+      kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
+      cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -782,15 +783,18 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
+      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB(),
       cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
+      gfx::Size(kMaxTextureSize, kMaxTextureSize), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB(),
       cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
+      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), kN32_SkColorType,
+      kPremul_SkAlphaType, SkColorSpace::MakeSRGB(),
       cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_);
   // The CanvasResourceProvider for PassThrough should not be created or valid
   // if the texture size is greater than the maximum value
