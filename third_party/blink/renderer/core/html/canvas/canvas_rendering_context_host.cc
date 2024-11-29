@@ -227,7 +227,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, this);
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        this);
   }
 
   ReplaceResourceProvider(std::move(provider));
@@ -319,7 +321,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize, this);
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
+        this);
   }
 
   ReplaceResourceProvider(std::move(provider));

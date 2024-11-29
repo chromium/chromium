@@ -109,7 +109,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   enum class ShouldInitialize { kNo, kCallClear };
 
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
-      const SkImageInfo& info,
+      gfx::Size size,
+      SkColorType sk_color_type,
+      SkAlphaType alpha_type,
+      sk_sp<SkColorSpace> sk_color_space,
       cc::PaintFlags::FilterQuality filter_quality,
       ShouldInitialize initialize_provider,
       CanvasResourceHost* resource_host = nullptr);
