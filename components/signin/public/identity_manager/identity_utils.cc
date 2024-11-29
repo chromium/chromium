@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace signin {
@@ -111,7 +112,7 @@ base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
       identity_manager
           ? identity_manager
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .gaia
+                .gaia.ToString()
           : std::string();
   if (!primary_account_gaia_id.empty()) {
     gaia_ids.insert(primary_account_gaia_id);

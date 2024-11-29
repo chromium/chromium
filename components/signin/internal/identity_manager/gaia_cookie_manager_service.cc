@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
@@ -579,7 +580,7 @@ void GaiaCookieManagerService::LogOutAllAccounts(
 }
 
 void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
-    const std::string& gaia_id) {
+    const GaiaId& gaia_id) {
   VLOG(1) << "GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId";
 
   if (list_accounts_stale_) {

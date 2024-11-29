@@ -19,7 +19,7 @@ namespace {
 const char* kPrimaryAccount = "primary@gmail.com";
 const char* kSecondaryAccount = "secondary@gmail.com";
 
-gaia::ListedAccount BuildListedAccount(const std::string& gaia_id) {
+gaia::ListedAccount BuildListedAccount(const GaiaId& gaia_id) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
   gaia::ListedAccount gaia_account;
   gaia_account.id = account_id;
@@ -81,9 +81,10 @@ MirrorLandingAccountReconcilorDelegateTest::
 
 TEST_F(MirrorLandingAccountReconcilorDelegateTest,
        GetChromeAccountsForReconcile) {
-  CoreAccountId kPrimaryAccountId = CoreAccountId::FromGaiaId("primary");
-  CoreAccountId kOtherAccountId1 = CoreAccountId::FromGaiaId("1");
-  CoreAccountId kOtherAccountId2 = CoreAccountId::FromGaiaId("2");
+  CoreAccountId kPrimaryAccountId =
+      CoreAccountId::FromGaiaId(GaiaId("primary"));
+  CoreAccountId kOtherAccountId1 = CoreAccountId::FromGaiaId(GaiaId("1"));
+  CoreAccountId kOtherAccountId2 = CoreAccountId::FromGaiaId(GaiaId("2"));
   gaia::ListedAccount gaia_account_primary = BuildListedAccount("primary");
   gaia::ListedAccount gaia_account_1 = BuildListedAccount("1");
   gaia::ListedAccount gaia_account_2 = BuildListedAccount("2");
@@ -153,7 +154,7 @@ TEST_F(MirrorLandingAccountReconcilorDelegateTest, DeleteCookieSyncingProfile) {
   EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
   EXPECT_FALSE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          CoreAccountId::FromGaiaId("primary")));
+          CoreAccountId::FromGaiaId(GaiaId("primary"))));
 }
 
 // Tests that delete cookies in main profile does nothing
@@ -168,7 +169,7 @@ TEST_F(MirrorLandingAccountReconcilorDelegateTest, DeleteCookieMainProfile) {
   EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
   EXPECT_FALSE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
-          CoreAccountId::FromGaiaId("primary")));
+          CoreAccountId::FromGaiaId(GaiaId("primary"))));
 }
 
 }  // namespace signin

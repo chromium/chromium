@@ -742,7 +742,7 @@ void IdentityTestEnvironment::EnableRemovalOfExtendedAccountInfo() {
 void IdentityTestEnvironment::SimulateSuccessfulFetchOfAccountInfo(
     const CoreAccountId& account_id,
     const std::string& email,
-    const std::string& gaia,
+    const GaiaId& gaia,
     const std::string& hosted_domain,
     const std::string& full_name,
     const std::string& given_name,

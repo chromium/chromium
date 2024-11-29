@@ -6,12 +6,12 @@
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACTIVE_PRIMARY_ACCOUNTS_METRICS_RECORDER_H_
 
 #include <memory>
-#include <string_view>
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 
+class GaiaId;
 class PrefService;
 class PrefRegistrySimple;
 
@@ -31,13 +31,13 @@ class ActivePrimaryAccountsMetricsRecorder {
   // profile, and then with some frequency while the account is being used. (The
   // exact points in time or frequency with which this is called don't matter
   // much, as long as there's at least one update every 24 hours or so.)
-  void MarkAccountAsActiveNow(std::string_view gaia_id);
+  void MarkAccountAsActiveNow(const GaiaId& gaia_id);
 
   // Returns the last know active-time for the given account. If the account has
   // never been marked as active, or it was too long ago so that the entry has
   // expired, returns nullopt.
   std::optional<base::Time> GetLastActiveTimeForAccount(
-      std::string_view gaia_id) const;
+      const GaiaId& gaia_id) const;
 
  private:
   void OnTimerFired();

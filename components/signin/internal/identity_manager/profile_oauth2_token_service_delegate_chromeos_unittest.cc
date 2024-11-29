@@ -245,7 +245,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     return {"object-guid", account_manager::AccountType::kActiveDirectory};
   }
 
-  AccountInfo CreateAccountInfoTestFixture(const std::string& gaia_id,
+  AccountInfo CreateAccountInfoTestFixture(const GaiaId& gaia_id,
                                            const std::string& email) {
     AccountInfo account_info;
 

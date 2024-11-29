@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 using signin::PrimaryAccountChangeEvent;
@@ -254,7 +255,7 @@ PrimaryAccountManager::PrimaryAccountManager(
       // primary account. The last signed-in account data is written inside
       // SetPrimaryAccountInternal().
       scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   account_info.gaia);
+                                   account_info.gaia.ToString());
       scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    account_info.email);
     } else if (ShouldSigninAllowedPrefAffectPrimaryAccount(
@@ -387,8 +388,8 @@ PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
   }
 
   PrefService* prefs = client_->GetPrefs();
-  std::string last_syncing_gaia_id =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+  const GaiaId last_syncing_gaia_id =
+      GaiaId(prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
   if (last_syncing_gaia_id.empty()) {
     return std::make_pair(CoreAccountInfo(),
                           InitializeAccountInfoState::
@@ -533,7 +534,7 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
   // user is signed in the corresponding preferences should match. Doing it here
   // as opposed to on signin allows us to catch the upgrade scenario.
   scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                               account_info.gaia);
+                               account_info.gaia.ToString());
   scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
                                account_info.email);
 }
@@ -779,8 +780,8 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       PrimaryAccountChangeEvent::Type::kCleared) {
     SigninPrefs(*client_->GetPrefs())
-        .SetChromeLastSignoutTime(previous_state.primary_account.gaia,
-                                  base::Time::Now());
+        .SetChromeLastSignoutTime(
+            previous_state.primary_account.gaia.ToString(), base::Time::Now());
   }
 #endif
 

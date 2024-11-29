@@ -22,6 +22,7 @@
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -440,7 +441,7 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
 }
 
 std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
-  const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+  const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
     return std::string();
   }
@@ -451,7 +452,7 @@ std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
 
 void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
-  const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+  const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
     // TODO(crbug.com/40945692): Convert to NOTREACHED.
     DUMP_WILL_BE_NOTREACHED() << "Must not set passphrase while signed out";

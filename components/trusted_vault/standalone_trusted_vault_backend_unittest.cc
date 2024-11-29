@@ -100,7 +100,7 @@ base::FilePath CreateUniqueTempDir(base::ScopedTempDir* temp_dir) {
   return temp_dir->GetPath();
 }
 
-CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
+CoreAccountInfo MakeAccountInfoWithGaiaId(const GaiaId& gaia_id) {
   CoreAccountInfo account_info;
   account_info.gaia = gaia_id;
   return account_info;

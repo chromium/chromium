@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class FakeProfileOAuth2TokenService;
 class IdentityTestEnvironmentBrowserStateAdaptor;
@@ -65,7 +66,7 @@ struct SimpleAccountAvailabilityOptions {
   bool set_cookie = false;
 
   // If non-empty, the Gaia ID to use when adding the account.
-  std::string_view gaia_id;
+  GaiaId gaia_id;
 };
 
 // Class that creates an IdentityManager for use in testing contexts and
@@ -354,7 +355,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // network requests.
   void SimulateSuccessfulFetchOfAccountInfo(const CoreAccountId& account_id,
                                             const std::string& email,
-                                            const std::string& gaia,
+                                            const GaiaId& gaia,
                                             const std::string& hosted_domain,
                                             const std::string& full_name,
                                             const std::string& given_name,

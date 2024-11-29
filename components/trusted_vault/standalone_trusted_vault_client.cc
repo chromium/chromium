@@ -335,7 +335,7 @@ void StandaloneTrustedVaultClient::FetchKeys(
 }
 
 void StandaloneTrustedVaultClient::StoreKeys(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -371,7 +371,7 @@ void StandaloneTrustedVaultClient::GetIsRecoverabilityDegraded(
 }
 
 void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
@@ -414,7 +414,7 @@ void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
 }
 
 void StandaloneTrustedVaultClient::FetchIsDeviceRegisteredForTesting(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
@@ -453,7 +453,7 @@ void StandaloneTrustedVaultClient::
 }
 
 void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     base::OnceCallback<void(int last_key_version)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);

@@ -42,7 +42,7 @@ std::optional<AccountInfo> AccountInfoFromUserInfo(
 
   AccountInfo account_info;
   account_info.email = *email_value;
-  account_info.gaia = *gaia_id_value;
+  account_info.gaia = GaiaId(*gaia_id_value);
 
   // All other fields are optional, some with default values.
   const std::string* hosted_domain_value =

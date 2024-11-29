@@ -194,7 +194,7 @@ class SyncEngineImplTest : public testing::Test {
 
   // Synchronously initializes the backend.
   void InitializeBackend(bool expect_success = true,
-                         const std::string& gaia_id = kTestGaiaId) {
+                         const GaiaId& gaia_id = kTestGaiaId) {
     SyncEngine::InitParams params;
     params.host = &mock_host_;
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);

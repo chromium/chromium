@@ -201,7 +201,7 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
         GetIdentityTestEnvironment()->MakeAccountAvailable(
             signin::AccountAvailabilityOptionsBuilder()
                 .AsPrimary(consent_level_)
-                .WithGaiaId(FakeGaia::kDefaultGaiaId)
+                .WithGaiaId(FakeGaia::GetDefaultGaiaId())
                 .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
                 .Build(email_));
     CHECK(!account_info.account_id.empty());

@@ -13,6 +13,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
     signin::IdentityManager* identity_manager,
@@ -48,7 +49,7 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
 
   bool clear_profile = account_info.IsEmpty();
 
-  if (account_info.gaia != entry->GetGAIAId() ||
+  if (account_info.gaia.ToString() != entry->GetGAIAId() ||
       !gaia::AreEmailsSame(account_info.email,
                            base::UTF16ToUTF8(entry->GetUserName()))) {
     // Reset prefs. Note: this will also update the |ProfileAttributesEntry|.
@@ -61,7 +62,7 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
                        /*is_consented_primary_account=*/false);
   } else {
     entry->SetAuthInfo(
-        account_info.gaia, base::UTF8ToUTF16(account_info.email),
+        account_info.gaia.ToString(), base::UTF8ToUTF16(account_info.email),
         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
 }

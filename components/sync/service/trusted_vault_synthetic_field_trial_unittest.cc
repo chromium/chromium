@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,7 +144,7 @@ TEST(TrustedVaultSyntheticFieldTrialTest,
   // Expected values have been computed empirically. They are all between zero
   // and one as expected and appear to be uniformly distributed.
   struct {
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::string salt;
     float expected_value;
   } test_cases[] = {

@@ -20,6 +20,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/cookie_access_result.h"
 
 class GaiaAuthFetcher;
@@ -43,7 +44,7 @@ class BoundSessionOAuthMultiLoginDelegate;
 // It is safe to delete this object from within the callbacks.
 class OAuthMultiloginHelper : public GaiaAuthConsumer {
  public:
-  using AccountIdGaiaIdPair = std::pair<CoreAccountId, std::string>;
+  using AccountIdGaiaIdPair = std::pair<CoreAccountId, GaiaId>;
 
   OAuthMultiloginHelper(
       SigninClient* signin_client,

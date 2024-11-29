@@ -72,14 +72,14 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
       override;
-  void StoreKeys(const std::string& gaia_id,
+  void StoreKeys(const GaiaId& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version) override;
   void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
                             base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+  void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure cb) override;
@@ -91,7 +91,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       base::OnceCallback<void(const std::optional<CoreAccountInfo>&)> callback)
       const;
   void FetchIsDeviceRegisteredForTesting(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       base::OnceCallback<void(bool)> callback);
   void AddDebugObserverForTesting(DebugObserver* debug_observer);
   void RemoveDebugObserverForTesting(DebugObserver* debug_observer);
@@ -100,7 +100,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void GetLastAddedRecoveryMethodPublicKeyForTesting(
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
   void GetLastKeyVersionForTesting(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       base::OnceCallback<void(int last_key_version)> callback);
 
  private:

@@ -67,6 +67,9 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   static CoreAccountId FromGaiaId(std::string gaia_id) {
     return FromGaiaId(GaiaId(std::move(gaia_id)));
   }
+  static CoreAccountId FromGaiaId(const char gaia_id[]) {
+    return FromGaiaId(GaiaId(gaia_id));
+  }
 #endif  // defined(UNIT_TEST)
 
   // Create a CoreAccountId object from an email of a robot account.

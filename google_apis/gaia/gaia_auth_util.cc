@@ -224,7 +224,7 @@ bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
   }
 
   *approved = parsed_result.approved();
-  *gaia_id = parsed_result.obfuscated_id();
+  *gaia_id = GaiaId(parsed_result.obfuscated_id());
   return true;
 }
 

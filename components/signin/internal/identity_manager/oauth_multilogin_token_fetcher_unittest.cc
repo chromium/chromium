@@ -62,7 +62,8 @@ MATCHER(HasTheSameAccountIdTokenPair, "") {
 
 class OAuthMultiloginTokenFetcherTest : public testing::Test {
  public:
-  const CoreAccountId kAccountId{CoreAccountId::FromGaiaId("account_id")};
+  const CoreAccountId kAccountId{
+      CoreAccountId::FromGaiaId(GaiaId("account_id"))};
 
   OAuthMultiloginTokenFetcherTest()
       : test_signin_client_(&pref_service_), token_service_(&pref_service_) {}
@@ -199,9 +200,12 @@ TEST_F(OAuthMultiloginTokenFetcherTest, OneAccountTransientErrorMaxRetries) {
 
 // The flow succeeds even if requests are received out of order.
 TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsSuccess) {
-  const CoreAccountId account_1 = CoreAccountId::FromGaiaId("account_1");
-  const CoreAccountId account_2 = CoreAccountId::FromGaiaId("account_2");
-  const CoreAccountId account_3 = CoreAccountId::FromGaiaId("account_3");
+  const CoreAccountId account_1 =
+      CoreAccountId::FromGaiaId(GaiaId("account_1"));
+  const CoreAccountId account_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_2"));
+  const CoreAccountId account_3 =
+      CoreAccountId::FromGaiaId(GaiaId("account_3"));
   token_service().UpdateCredentials(account_1, "refresh_token");
   token_service().UpdateCredentials(account_2, "refresh_token");
   token_service().UpdateCredentials(account_3, "refresh_token");
@@ -227,9 +231,12 @@ TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsSuccess) {
 }
 
 TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsTransientError) {
-  const CoreAccountId account_1 = CoreAccountId::FromGaiaId("account_1");
-  const CoreAccountId account_2 = CoreAccountId::FromGaiaId("account_2");
-  const CoreAccountId account_3 = CoreAccountId::FromGaiaId("account_3");
+  const CoreAccountId account_1 =
+      CoreAccountId::FromGaiaId(GaiaId("account_1"));
+  const CoreAccountId account_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_2"));
+  const CoreAccountId account_3 =
+      CoreAccountId::FromGaiaId(GaiaId("account_3"));
   token_service().UpdateCredentials(account_1, "refresh_token");
   token_service().UpdateCredentials(account_2, "refresh_token");
   token_service().UpdateCredentials(account_3, "refresh_token");
@@ -267,9 +274,12 @@ TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsTransientError) {
 }
 
 TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsPersistentError) {
-  const CoreAccountId account_1 = CoreAccountId::FromGaiaId("account_1");
-  const CoreAccountId account_2 = CoreAccountId::FromGaiaId("account_2");
-  const CoreAccountId account_3 = CoreAccountId::FromGaiaId("account_3");
+  const CoreAccountId account_1 =
+      CoreAccountId::FromGaiaId(GaiaId("account_1"));
+  const CoreAccountId account_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_2"));
+  const CoreAccountId account_3 =
+      CoreAccountId::FromGaiaId(GaiaId("account_3"));
   token_service().UpdateCredentials(account_1, "refresh_token");
   token_service().UpdateCredentials(account_2, "refresh_token");
   token_service().UpdateCredentials(account_3, "refresh_token");

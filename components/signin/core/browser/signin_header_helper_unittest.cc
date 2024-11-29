@@ -22,6 +22,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -97,7 +98,7 @@ class SigninHeaderHelperTest : public testing::Test {
   void TearDown() override { settings_map_->ShutdownOnUIThread(); }
 
   void CheckMirrorCookieRequest(const GURL& url,
-                                const std::string& gaia_id,
+                                const GaiaId& gaia_id,
                                 const std::string& expected_request) {
     EXPECT_EQ(expected_request,
               BuildMirrorRequestCookieIfPossible(
@@ -106,7 +107,7 @@ class SigninHeaderHelperTest : public testing::Test {
   }
 
   net::HttpRequestHeaders CreateRequest(const GURL& url,
-                                        const std::string& gaia_id,
+                                        const GaiaId& gaia_id,
                                         Tribool is_child_account) {
     net::HttpRequestHeaders original_headers;
     RequestAdapterWrapper request_adapter(url, original_headers);
@@ -132,7 +133,7 @@ class SigninHeaderHelperTest : public testing::Test {
   }
 
   void CheckMirrorHeaderRequest(const GURL& url,
-                                const std::string& gaia_id,
+                                const GaiaId& gaia_id,
                                 Tribool is_child_account,
                                 const std::string& expected_request) {
     net::HttpRequestHeaders headers =
@@ -143,7 +144,7 @@ class SigninHeaderHelperTest : public testing::Test {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void CheckDiceHeaderRequest(const GURL& url,
-                              const std::string& gaia_id,
+                              const GaiaId& gaia_id,
                               Tribool is_child_account,
                               const std::string& expected_mirror_request,
                               const std::string& expected_dice_request) {
@@ -742,7 +743,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderEligibleRedirectURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://docs.google.com/document");
   const GURL redirect_url("https://www.google.com");
-  const std::string gaia_id = "0123456789";
+  const GaiaId gaia_id("0123456789");
   net::HttpRequestHeaders original_headers;
   RequestAdapterWrapper request_adapter(url, original_headers);
   AppendOrRemoveMirrorRequestHeader(
@@ -760,7 +761,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderNonEligibleRedirectURL) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://docs.google.com/document");
   const GURL redirect_url("http://www.foo.com");
-  const std::string gaia_id = "0123456789";
+  const GaiaId gaia_id("0123456789");
   net::HttpRequestHeaders original_headers;
   original_headers.SetHeader(kChromeConnectedHeader, "foo,bar");
   RequestAdapterWrapper request_adapter(url, original_headers);
@@ -779,7 +780,7 @@ TEST_F(SigninHeaderHelperTest, TestIgnoreMirrorHeaderNonEligibleURLs) {
   account_consistency_ = AccountConsistencyMethod::kMirror;
   const GURL url("https://www.bar.com");
   const GURL redirect_url("http://www.foo.com");
-  const std::string gaia_id = "0123456789";
+  const GaiaId gaia_id("0123456789");
   const std::string fake_header = "foo,bar";
   net::HttpRequestHeaders original_headers;
   original_headers.SetHeader(kChromeConnectedHeader, fake_header);

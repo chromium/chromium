@@ -72,9 +72,9 @@ class AccountsCookieMutatorTest
 
   AccountsCookieMutatorTest()
       : kTestUnavailableAccountId(
-            CoreAccountId::FromGaiaId("unavailable_account_id")),
+            CoreAccountId::FromGaiaId(GaiaId("unavailable_account_id"))),
         kTestOtherUnavailableAccountId(
-            CoreAccountId::FromGaiaId("other_unavailable_account_id")),
+            CoreAccountId::FromGaiaId(GaiaId("other_unavailable_account_id"))),
         test_signin_client_(&prefs_),
         identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &prefs_,

@@ -17,6 +17,7 @@
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -51,7 +52,7 @@ SyncTransportDataPrefs::SyncTransportDataPrefs(
   // the legacy prefs.
   // TODO(crbug.com/360888481): Clean up this migration after 2025-05 or so.
   // As a sanity check, ensure that the Gaia IDs match.
-  std::string old_gaia_id = pref_service_->GetString(kSyncGaiaId);
+  GaiaId old_gaia_id(pref_service_->GetString(kSyncGaiaId));
   if (signin::GaiaIdHash::FromGaiaId(old_gaia_id) == gaia_id_hash_ &&
       !pref_service_->HasPrefPath(kSyncTransportDataPerAccount)) {
     ScopedDictPrefUpdate update_account_dict(pref_service_,
@@ -169,10 +170,9 @@ void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
                                base::TimeDeltaToValue(interval));
 }
 
-void SyncTransportDataPrefs::SetCurrentSyncingGaiaId(
-    const std::string& gaia_id) {
+void SyncTransportDataPrefs::SetCurrentSyncingGaiaId(const GaiaId& gaia_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(kSyncGaiaId, gaia_id);
+  pref_service_->SetString(kSyncGaiaId, gaia_id.ToString());
 }
 
 std::string SyncTransportDataPrefs::GetCurrentSyncingGaiaId() const {

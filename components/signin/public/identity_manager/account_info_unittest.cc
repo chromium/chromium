@@ -17,7 +17,8 @@ TEST_F(AccountInfoTest, IsEmpty) {
   }
   {
     AccountInfo info_with_account_id;
-    info_with_account_id.account_id = CoreAccountId::FromGaiaId("test_id");
+    info_with_account_id.account_id =
+        CoreAccountId::FromGaiaId(GaiaId("test_id"));
     EXPECT_FALSE(info_with_account_id.IsEmpty());
   }
   {
@@ -40,7 +41,7 @@ TEST_F(AccountInfoTest, IsValid) {
   EXPECT_FALSE(info.IsValid());
 
   info.gaia = info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId("test_id");
+  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   EXPECT_FALSE(info.IsValid());
 
   info.full_name = info.given_name = "test_name";
@@ -53,11 +54,11 @@ TEST_F(AccountInfoTest, IsValid) {
 // account / id.
 TEST_F(AccountInfoTest, UpdateWithDifferentAccountId) {
   AccountInfo info;
-  info.account_id = CoreAccountId::FromGaiaId("test_id");
+  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
 
   AccountInfo other;
   other.gaia = other.email = "test_other_id";
-  other.account_id = CoreAccountId::FromGaiaId("test_other_id");
+  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_other_id"));
 
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_TRUE(info.gaia.empty());
@@ -69,14 +70,14 @@ TEST_F(AccountInfoTest, UpdateWithDifferentAccountId) {
 TEST_F(AccountInfoTest, UpdateWithNoModification) {
   AccountInfo info;
   info.gaia = info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId("test_id");
+  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   info.is_child_account = signin::Tribool::kTrue;
   info.is_under_advanced_protection = true;
   info.locale = "en";
   info.access_point = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
 
   AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId("test_id");
+  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   other.gaia = other.email = "test_id";
   EXPECT_EQ(signin::Tribool::kUnknown, other.is_child_account);
   EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
@@ -98,10 +99,10 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
 TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   AccountInfo info;
   info.gaia = info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId("test_id");
+  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
 
   AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId("test_id");
+  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   other.full_name = other.given_name = "test_name";
   other.locale = "fr";
   other.is_child_account = signin::Tribool::kTrue;
@@ -130,10 +131,10 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
 TEST_F(AccountInfoTest, UpdateWithDefaultValues) {
   AccountInfo info;
   info.gaia = info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId("test_id");
+  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
 
   AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId("test_id");
+  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   other.hosted_domain = kNoHostedDomainFound;
   other.picture_url = kNoPictureURLFound;
 
@@ -147,12 +148,12 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValues) {
 TEST_F(AccountInfoTest, UpdateWithDefaultValuesNoOverride) {
   AccountInfo info;
   info.gaia = info.email = "test_id";
-  info.account_id = CoreAccountId::FromGaiaId("test_id");
+  info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   info.hosted_domain = "test_domain";
   info.picture_url = "test_url";
 
   AccountInfo other;
-  other.account_id = CoreAccountId::FromGaiaId("test_id");
+  other.account_id = CoreAccountId::FromGaiaId(GaiaId("test_id"));
   other.hosted_domain = kNoHostedDomainFound;
   other.picture_url = kNoPictureURLFound;
 

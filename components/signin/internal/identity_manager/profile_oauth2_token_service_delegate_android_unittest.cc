@@ -76,7 +76,7 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     return AccountTrackerService();
   }
 
-  AccountInfo CreateAccountInfo(const std::string& gaia_id,
+  AccountInfo CreateAccountInfo(const GaiaId& gaia_id,
                                 const std::string& email) {
     AccountInfo account_info;
 

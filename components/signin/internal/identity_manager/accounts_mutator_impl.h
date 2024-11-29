@@ -40,7 +40,7 @@ class AccountsMutatorImpl : public AccountsMutator {
 
   // AccountsMutator:
   CoreAccountId AddOrUpdateAccount(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
@@ -68,7 +68,7 @@ class AccountsMutatorImpl : public AccountsMutator {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  CoreAccountId SeedAccountInfo(const std::string& gaia,
+  CoreAccountId SeedAccountInfo(const GaiaId& gaia,
                                 const std::string& email) override;
 #endif
 

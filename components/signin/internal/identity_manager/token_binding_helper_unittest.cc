@@ -88,7 +88,7 @@ class TokenBindingHelperTest : public testing::Test {
 };
 
 TEST_F(TokenBindingHelperTest, SetBindingKey) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
   EXPECT_FALSE(helper().HasBindingKey(account_id));
 
@@ -99,7 +99,7 @@ TEST_F(TokenBindingHelperTest, SetBindingKey) {
 }
 
 TEST_F(TokenBindingHelperTest, SetBindingKeyToEmpty) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
   helper().SetBindingKey(account_id, wrapped_key);
 
@@ -108,8 +108,9 @@ TEST_F(TokenBindingHelperTest, SetBindingKeyToEmpty) {
 }
 
 TEST_F(TokenBindingHelperTest, ClearAllKeys) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
-  CoreAccountId account_id2 = CoreAccountId::FromGaiaId("test_gaia_id2");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  CoreAccountId account_id2 =
+      CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2"));
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
   std::vector<uint8_t> wrapped_key2 = GetWrappedKey(GenerateNewKey());
   helper().SetBindingKey(account_id, wrapped_key);
@@ -122,10 +123,10 @@ TEST_F(TokenBindingHelperTest, ClearAllKeys) {
 
 TEST_F(TokenBindingHelperTest, GetBoundTokenCount) {
   EXPECT_EQ(helper().GetBoundTokenCount(), 0u);
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
                          GetWrappedKey(GenerateNewKey()));
   EXPECT_EQ(helper().GetBoundTokenCount(), 1u);
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id2"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2")),
                          GetWrappedKey(GenerateNewKey()));
   EXPECT_EQ(helper().GetBoundTokenCount(), 2u);
 }
@@ -137,18 +138,18 @@ TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfEmpty) {
 }
 
 TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfOnlyOne) {
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
                          GetWrappedKey(GenerateNewKey()));
   EXPECT_TRUE(helper().AreAllBindingKeysSame());
 }
 
 TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfAllSame) {
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
                          wrapped_key);
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id2"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2")),
                          wrapped_key);
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id3"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id3")),
                          wrapped_key);
   EXPECT_TRUE(helper().AreAllBindingKeysSame());
 }
@@ -156,17 +157,17 @@ TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfAllSame) {
 TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, FalseIfDifferent) {
   std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
   // Two accounts share the same key but the third one is different.
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")),
                          wrapped_key);
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id2"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id2")),
                          wrapped_key);
-  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id3"),
+  helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id3")),
                          GetWrappedKey(GenerateNewKey()));
   EXPECT_FALSE(helper().AreAllBindingKeysSame());
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
   std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   helper().SetBindingKey(account_id, wrapped_key);
@@ -188,7 +189,7 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoBindingKey) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
 
   GenerateAssertionFuture sign_future;
   HybridEncryptionKey ephemeral_key = CreateHybridEncryptionKeyForTesting();
@@ -203,7 +204,7 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoBindingKey) {
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
-  CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
   const std::vector<uint8_t> kInvalidWrappedKey = {1, 2, 3};
   helper().SetBindingKey(account_id, kInvalidWrappedKey);
 

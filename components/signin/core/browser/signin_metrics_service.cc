@@ -24,6 +24,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kExplicitSigninMigrationHistogramName[] =
@@ -483,11 +484,11 @@ void SigninMetricsService::MaybeRecordWebSigninToChromeSigninMetrics(
 }
 
 void SigninMetricsService::RecordSigninInterceptionMetrics(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     signin_metrics::AccessPoint access_point) {
   ChromeSigninUserChoice signin_choice =
       SigninPrefs(pref_service_.get())
-          .GetChromeSigninInterceptionUserChoice(gaia_id);
+          .GetChromeSigninInterceptionUserChoice(gaia_id.ToString());
   base::UmaHistogramEnumeration("Signin.Settings.ChromeSignin.OnSignin",
                                 signin_choice);
   if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {

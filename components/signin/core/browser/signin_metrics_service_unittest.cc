@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,7 +72,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
   AccountInfo Signin(
       const std::string& email,
       signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint,
-      const std::string& gaia_id = "") {
+      const GaiaId& gaia_id = "") {
     signin::AccountAvailabilityOptionsBuilder builder;
     builder.AsPrimary(signin::ConsentLevel::kSignin)
         .WithAccessPoint(access_point);
@@ -637,7 +638,7 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SigninMetricsServiceTest, UpdatesAccountLastActiveTimeOnSignin) {
-  const std::string gaia_id("gaia_id");
+  const GaiaId gaia_id("gaia_id");
 
   CreateSigninMetricsService();
 

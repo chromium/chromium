@@ -249,8 +249,7 @@ void FakeGaia::SetSyncTrustedVaultKeys(
 
 GaiaId FakeGaia::GetGaiaIdOfEmail(const std::string& email) const {
   const auto it = email_to_gaia_id_map_.find(email);
-  return it == email_to_gaia_id_map_.end() ? GaiaId(kDefaultGaiaId)
-                                           : it->second;
+  return it == email_to_gaia_id_map_.end() ? GetDefaultGaiaId() : it->second;
 }
 
 std::string FakeGaia::GetEmailOfGaiaId(const GaiaId& gaia_id) const {
@@ -777,10 +776,10 @@ void FakeGaia::HandleListAccounts(const HttpRequest& request,
   std::vector<std::string> listed_accounts;
   listed_accounts.push_back(base::StringPrintf(
       kIndividualListedAccountResponseFormat, configuration_.email.c_str(),
-      kDefaultGaiaId, kAccountIsSignedIn));
+      GetDefaultGaiaId().ToString(), kAccountIsSignedIn));
 
   for (const GaiaId& gaia_id : configuration_.signed_out_gaia_ids) {
-    DCHECK_NE(GaiaId(kDefaultGaiaId), gaia_id);
+    DCHECK_NE(GetDefaultGaiaId(), gaia_id);
 
     const std::string email = GetEmailOfGaiaId(gaia_id);
     listed_accounts.push_back(base::StringPrintf(
@@ -925,7 +924,7 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
 
   std::string gaia_id_str;
   GetQueryParameter(request.GetURL().query(), "gaia_id", &gaia_id_str);
-  GaiaId gaia_id = GaiaId(gaia_id_str);
+  GaiaId gaia_id(gaia_id_str);
 
   if (!std::erase(configuration_.signed_out_gaia_ids, gaia_id)) {
     http_response->set_code(net::HTTP_BAD_REQUEST);

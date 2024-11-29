@@ -28,7 +28,7 @@ namespace {
 using testing::_;
 using testing::Eq;
 
-CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
+CoreAccountInfo MakeAccountInfoWithGaiaId(const GaiaId& gaia_id) {
   CoreAccountInfo account_info;
   account_info.gaia = gaia_id;
   return account_info;

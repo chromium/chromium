@@ -39,7 +39,7 @@ AccountsMutatorImpl::AccountsMutatorImpl(
 AccountsMutatorImpl::~AccountsMutatorImpl() = default;
 
 CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& email,
     const std::string& refresh_token,
     bool is_under_advanced_protection,
@@ -154,7 +154,7 @@ void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-CoreAccountId AccountsMutatorImpl::SeedAccountInfo(const std::string& gaia_id,
+CoreAccountId AccountsMutatorImpl::SeedAccountInfo(const GaiaId& gaia_id,
                                                    const std::string& email) {
   return account_tracker_service_->SeedAccountInfo(gaia_id, email);
 }

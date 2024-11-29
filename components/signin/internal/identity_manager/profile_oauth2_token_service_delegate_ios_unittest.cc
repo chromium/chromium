@@ -140,7 +140,7 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,
   EXPECT_EQ(1, token_revoked_count_);
   EXPECT_EQ(0U, oauth2_delegate_->GetAccounts().size());
   EXPECT_FALSE(oauth2_delegate_->RefreshTokenIsAvailable(
-      CoreAccountId::FromGaiaId("another_account")));
+      CoreAccountId::FromGaiaId(GaiaId("another_account"))));
 }
 
 TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,
@@ -341,9 +341,9 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, GetAuthError) {
   oauth2_delegate_->UpdateAuthError(GetAccountId(account1), error);
   EXPECT_EQ(error, oauth2_delegate_->GetAuthError(GetAccountId(account1)));
   // Unknown account has no error.
-  EXPECT_EQ(
-      GoogleServiceAuthError::AuthErrorNone(),
-      oauth2_delegate_->GetAuthError(CoreAccountId::FromGaiaId("gaia_2")));
+  EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
+            oauth2_delegate_->GetAuthError(
+                CoreAccountId::FromGaiaId(GaiaId("gaia_2"))));
 }
 
 TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,

@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Bucket;
@@ -102,7 +103,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   // Seed the account tracker with information from logged in user.  Normally
   // this is done by UI code before calling PrimaryAccountManager.
   // Returns the string to use as the account_id.
-  CoreAccountId AddToAccountTracker(const std::string& gaia_id,
+  CoreAccountId AddToAccountTracker(const GaiaId& gaia_id,
                                     const std::string& email) {
     account_tracker_->SeedAccountInfo(gaia_id, email);
     return account_tracker_->PickAccountIdForAccount(gaia_id, email);
@@ -522,7 +523,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
   std::string email = "user@gmail.com";
-  std::string gaia_id = "account_gaia_id";
+  GaiaId gaia_id("account_gaia_id");
 
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
@@ -551,7 +552,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
   std::string email = "user@gmail.com";
-  std::string gaia_id = "account_gaia_id";
+  GaiaId gaia_id("account_gaia_id");
 
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,

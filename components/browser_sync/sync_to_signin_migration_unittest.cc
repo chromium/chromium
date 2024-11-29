@@ -25,6 +25,7 @@
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -167,7 +168,7 @@ TEST_P(SyncToSigninMigrationTest, SyncActive) {
             syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
 
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
 
   // Save the above state to prefs.
@@ -275,7 +276,7 @@ TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
             syncer::SyncService::TransportState::DISABLED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
 
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
 
   // Save the above state to prefs.
@@ -324,7 +325,7 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
 
   // Attempt to migrate.
@@ -387,7 +388,7 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayPassed) {
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
   RecordStateToPrefs();
   MaybeMigrateSyncingUserToSignedInWrapper(
@@ -438,7 +439,7 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_AuthErrorResolved) {
   ASSERT_TRUE(
       pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
           .empty());
-  const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
   RecordStateToPrefs();
   MaybeMigrateSyncingUserToSignedInWrapper(

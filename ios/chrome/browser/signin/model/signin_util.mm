@@ -14,6 +14,7 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -49,7 +50,10 @@ AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
   if (account_id_str) {
     account.account_id = CoreAccountId::FromString(*account_id_str);
   }
-  CopyStringFromDict(account.gaia, dict, kAccountInfoKeyGaia);
+  const std::string* gaia_id_str = dict.FindString(kAccountInfoKeyGaia);
+  if (gaia_id_str) {
+    account.gaia = GaiaId(*gaia_id_str);
+  }
   CopyStringFromDict(account.email, dict, kAccountInfoKeyEmail);
   CopyStringFromDict(account.full_name, dict, kAccountInfoKeyFullName);
   CopyStringFromDict(account.given_name, dict, kAccountInfoKeyGivenName);

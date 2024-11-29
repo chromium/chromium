@@ -50,6 +50,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -252,7 +253,7 @@ MockAccountReconcilor::MockAccountReconcilor(
 }
 
 struct Cookie {
-  std::string gaia_id;
+  GaiaId gaia_id;
   bool is_valid;
 
   bool operator==(const Cookie& other) const = default;
@@ -320,7 +321,7 @@ class AccountReconcilorTest : public ::testing::Test {
 
   AccountInfo ConnectProfileToAccount(const std::string& email);
 
-  CoreAccountId PickAccountIdForAccount(const std::string& gaia_id,
+  CoreAccountId PickAccountIdForAccount(const GaiaId& gaia_id,
                                         const std::string& username);
 
   void SimulateSetAccountsInCookieCompleted(
@@ -456,7 +457,7 @@ AccountInfo AccountReconcilorTest::ConnectProfileToAccount(
 }
 
 CoreAccountId AccountReconcilorTest::PickAccountIdForAccount(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& username) {
   return identity_test_env()->identity_manager()->PickAccountIdForAccount(
       gaia_id, username);
@@ -547,11 +548,11 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
 
   struct Account {
     std::string email;
-    std::string gaia_id;
+    GaiaId gaia_id;
   };
 
   struct Token {
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::string email;
     bool is_authenticated;
     bool has_error;
@@ -649,7 +650,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
   void ConfigureCookieManagerService(const std::vector<Cookie>& cookies) {
     std::vector<signin::CookieParams> cookie_params;
     for (const auto& cookie : cookies) {
-      std::string gaia_id = cookie.gaia_id;
+      GaiaId gaia_id = cookie.gaia_id;
 
       // Figure the account token of this specific account id,
       // ie 'A', 'B', or 'C'.
@@ -692,7 +693,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
             {GetAccount(account_id).gaia_id, true});
       }
     } else {
-      std::vector<std::string> gaia_ids;
+      std::vector<GaiaId> gaia_ids;
       for (const auto& account_id : parameters.accounts_to_send)
         gaia_ids.push_back(GetAccount(account_id).gaia_id);
       cookies_after_reconcile = cookies_before_reconcile;
@@ -704,8 +705,9 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
           DCHECK(!cookie.is_valid);
         }
       }
-      for (const std::string& gaia_id : gaia_ids)
-        cookies_after_reconcile.push_back({gaia_id, true});
+      for (const GaiaId& gaia_id : gaia_ids) {
+        cookies_after_reconcile.emplace_back(gaia_id, true);
+      }
     }
     return cookies_after_reconcile;
   }
@@ -2634,7 +2636,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileAddToCookieTwice) {
   const CoreAccountId account_id2 = account_info2.account_id;
 
   const std::string email3 = "third@gmail.com";
-  const std::string gaia_id3 = signin::GetTestGaiaIdForEmail(email3);
+  const GaiaId gaia_id3 = signin::GetTestGaiaIdForEmail(email3);
   const CoreAccountId account_id3 = PickAccountIdForAccount(gaia_id3, email3);
 
   signin::SetListAccountsResponseOneAccount(

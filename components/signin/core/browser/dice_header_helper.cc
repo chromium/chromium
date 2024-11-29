@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 
 namespace signin {
@@ -93,7 +94,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     if (key_name == kSigninActionAttrName) {
       // Do nothing, this was already parsed.
     } else if (key_name == kSigninIdAttrName) {
-      info->gaia_id = value;
+      info->gaia_id = GaiaId(value);
     } else if (key_name == kSigninEmailAttrName) {
       info->email = value;
     } else if (key_name == kSigninAuthUserAttrName) {
@@ -155,7 +156,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
   DCHECK(!header_value.empty());
   DiceResponseParams params;
   params.user_intention = DiceAction::SIGNOUT;
-  std::vector<std::string> gaia_ids;
+  std::vector<GaiaId> gaia_ids;
   std::vector<std::string> emails;
   std::vector<int> session_indices;
   ResponseHeaderDictionary header_dictionary =
@@ -165,9 +166,10 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
     const std::string key_name(it->first);
     const std::string value(it->second);
     if (key_name == kSignoutObfuscatedIDAttrName) {
-      gaia_ids.push_back(value);
+      std::string trimmed_value = value;
       // The Gaia ID is wrapped in quotes.
-      base::TrimString(value, "\"", &gaia_ids.back());
+      base::TrimString(value, "\"", &trimmed_value);
+      gaia_ids.push_back(GaiaId(std::move(trimmed_value)));
     } else if (key_name == kSignoutEmailAttrName) {
       // The email is wrapped in quotes.
       emails.push_back(value);
@@ -216,9 +218,8 @@ bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {
   return gaia::HasGaiaSchemeHostPort(url);
 }
 
-std::string DiceHeaderHelper::BuildRequestHeader(
-    const std::string& sync_gaia_id,
-    const std::string& device_id) {
+std::string DiceHeaderHelper::BuildRequestHeader(const GaiaId& sync_gaia_id,
+                                                 const std::string& device_id) {
   std::vector<std::string> parts;
   parts.push_back(base::StringPrintf("version=%s", kDiceProtocolVersion));
   parts.push_back("client_id=" +
@@ -226,7 +227,7 @@ std::string DiceHeaderHelper::BuildRequestHeader(
   if (!device_id.empty())
     parts.push_back("device_id=" + device_id);
   if (!sync_gaia_id.empty())
-    parts.push_back("sync_account_id=" + sync_gaia_id);
+    parts.push_back("sync_account_id=" + sync_gaia_id.ToString());
 
   // Restrict Signin to Sync account only when fixing auth errors.
   std::string signin_mode = kRequestSigninAll;

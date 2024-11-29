@@ -32,6 +32,7 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -321,7 +322,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
-    const std::string gaia_id =
+    const GaiaId gaia_id =
         account_tracker_service_->GetAccountInfo(account_id).gaia;
     CHECK(!gaia_id.empty());
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.

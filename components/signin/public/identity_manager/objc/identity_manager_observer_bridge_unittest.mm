@@ -91,7 +91,7 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
         identity_test_env_->identity_manager();
     observer_bridge_ = std::make_unique<signin::IdentityManagerObserverBridge>(
         identity_manager, observer_bridge_delegate_);
-    account_info_.account_id = CoreAccountId::FromGaiaId("joegaia");
+    account_info_.account_id = CoreAccountId::FromGaiaId(GaiaId("joegaia"));
     account_info_.gaia = "joegaia";
     account_info_.email = "joe@example.com";
   }

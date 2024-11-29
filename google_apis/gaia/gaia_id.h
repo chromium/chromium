@@ -36,12 +36,16 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaId {
 
   // Temporary implicit conversion to allow splitting code changes.
   // TODO(crbug.com/380416867): Remove implicit conversions.
-  operator const std::string&() const { return ToString(); }
+  GaiaId(const char gaia_id[]) { id_ = gaia_id; }
+  operator const std::string&() const { return id_; }
+  operator std::string_view() const { return id_; }
 
-  // Convenience function to allow a more gradual adoption of this class where
+  // Convenience functions to allow a more gradual adoption of this class where
   // std::string was used previously.
-  // TODO(crbug.com/380416867): Remove convenience function.
+  // TODO(crbug.com/380416867): Remove convenience functions.
   const char* c_str() const { return id_.c_str(); }
+  std::string::const_iterator begin() const { return id_.begin(); }
+  std::string::const_iterator end() const { return id_.end(); }
 
   // Checks if the ID is valid or not.
   bool empty() const;

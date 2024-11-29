@@ -17,6 +17,7 @@ enum class SourceForRefreshTokenOperation;
 }
 
 struct CoreAccountId;
+class GaiaId;
 
 namespace signin {
 
@@ -38,7 +39,7 @@ class AccountsMutator {
   // Passing `signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN` preserves the
   // current access point if it's already set.
   virtual CoreAccountId AddOrUpdateAccount(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
@@ -88,7 +89,7 @@ class AccountsMutator {
   // manually seed the primary account before credentials are loaded.
   // TODO(crbug.com/40176006): Remove after adding an account cache to
   // AccountManagerFacade.
-  virtual CoreAccountId SeedAccountInfo(const std::string& gaia,
+  virtual CoreAccountId SeedAccountInfo(const GaiaId& gaia,
                                         const std::string& email) = 0;
 #endif
 };

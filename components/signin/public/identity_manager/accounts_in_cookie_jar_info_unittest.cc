@@ -37,7 +37,7 @@ class AccountsInCookieJarInfoTest : public testing::Test {
 
  private:
   static gaia::ListedAccount CreateListedAccount(const std::string& email,
-                                                 const std::string& gaia_id) {
+                                                 const GaiaId& gaia_id) {
     gaia::ListedAccount result;
     result.id = CoreAccountId::FromGaiaId(gaia_id);
     result.email = email;
