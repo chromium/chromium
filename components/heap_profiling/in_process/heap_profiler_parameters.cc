@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -121,28 +120,29 @@ BASE_FEATURE(kHeapProfilerReporting,
              "HeapProfilerReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHeapProfilerCentralControl,
-             "HeapProfilerCentralControl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(crbug.com/40840943): The process sampling probabilities are separate
+// FeatureParams, but other per-process parameters are parsed from a JSON string
+// in a single FeatureParam. The JSON parameters are too complicated: split them
+// up into separate FeatureParams.
 
-const base::FeatureParam<int> kGpuSnapshotProbability{
-    &kHeapProfilerCentralControl, "gpu-prob-pct", 100};
+const base::FeatureParam<int> kGpuSnapshotProbability{&kHeapProfilerReporting,
+                                                      "gpu-prob-pct", 100};
 
 const base::FeatureParam<int> kNetworkSnapshotProbability{
-    &kHeapProfilerCentralControl, "network-prob-pct", 100};
+    &kHeapProfilerReporting, "network-prob-pct", 100};
 
 // Sample 10% of renderer processes by default, because last time this was
 // evaluated (2024-08) the 50th %ile of renderer process count
 // (Memory.RenderProcessHost.Count.All) ranged from 8 on Windows to 18 on Mac.
 // 10% is an easy default between 1/18 and 1/8.
 const base::FeatureParam<int> kRendererSnapshotProbability{
-    &kHeapProfilerCentralControl, "renderer-prob-pct", 10};
+    &kHeapProfilerReporting, "renderer-prob-pct", 10};
 
 // Sample 50% of utility processes by default, because last time this was
 // evaluated (2024-08) the profiler collected 1.8x as many snapshots on Mac and
 // 2.4x as many snapshots on Windows for each browser process snapshot.
 const base::FeatureParam<int> kUtilitySnapshotProbability{
-    &kHeapProfilerCentralControl, "utility-prob-pct", 50};
+    &kHeapProfilerReporting, "utility-prob-pct", 50};
 
 // static
 void HeapProfilerParameters::RegisterJSONConverter(
@@ -195,47 +195,31 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
       params.is_supported = true;
       break;
     case Process::kNetworkService:
-      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-        params.is_supported = true;
-      }
+      params.is_supported = true;
       break;
     case Process::kGpu:
-      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-        params.is_supported = true;
-        // Use half the threshold used in the browser process, because last time
-        // it was validated the GPU process allocated a bit over half as much
-        // memory at the median.
-        params.sampling_rate_bytes = params.sampling_rate_bytes / 2;
-      }
+      params.is_supported = true;
+      // Use half the threshold used in the browser process, because last time
+      // it was validated the GPU process allocated a bit over half as much
+      // memory at the median.
+      params.sampling_rate_bytes = params.sampling_rate_bytes / 2;
       break;
     case Process::kRenderer:
-      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-        params.is_supported = true;
-      }
+      params.is_supported = true;
       break;
     case Process::kUtility:
-      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-        params.is_supported = true;
-        // Use 1/10th the threshold used in the browser process, because last
-        // time it was validated with the default sampling rate (2024-08) the
-        // sampler collected 6% to 11% as many samples per snapshot in the
-        // utility process, depending on platform.
-        params.sampling_rate_bytes = params.sampling_rate_bytes / 10;
-      }
+      params.is_supported = true;
+      // Use 1/10th the threshold used in the browser process, because last time
+      // it was validated with the default sampling rate (2024-08) the sampler
+      // collected 6% to 11% as many samples per snapshot in the utility
+      // process, depending on platform.
+      params.sampling_rate_bytes = params.sampling_rate_bytes / 10;
       break;
     case Process::kUnknown:
     default:
       // Do nothing. Profiler hasn't been tested in these process types.
       break;
   }
-
-#if BUILDFLAG(IS_MAC)
-  // On Mac, child processes may not set the channel correctly
-  // (https://crbug.com/329286893) so the profiler must only be enabled in the
-  // browser process unless kHeapProfilerCentralControl is set.
-  CHECK(process_type == Process::kBrowser || !params.is_supported ||
-        base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
-#endif
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           variations::switches::kEnableBenchmarking) ||

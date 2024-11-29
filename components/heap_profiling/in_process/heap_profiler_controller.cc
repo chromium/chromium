@@ -17,10 +17,8 @@
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -134,8 +132,7 @@ std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
     ProcessType process_type) {
   // Check the feature before the process type so that users are assigned to
   // groups in the browser process.
-  if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl) &&
-      process_type != ProcessType::kBrowser) {
+  if (process_type != ProcessType::kBrowser) {
     // The browser process decided whether profiling is enabled and used
     // AppendCommandLineSwitchForChildProcess() to pass on the decision.
     const bool is_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -225,8 +222,7 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
   // TODO(crbug.com/40062835): Remove this after diagnosing reentry crashes.
   base::allocator::dispatcher::ReentryGuard::RecordTLSSlotToCrashKey();
 
-  if (profiling_enabled_ && process_type_ == ProcessType::kBrowser &&
-      base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+  if (profiling_enabled_ && process_type_ == ProcessType::kBrowser) {
     browser_process_snapshot_controller_ =
         std::make_unique<BrowserProcessSnapshotController>(
             snapshot_task_runner_);
@@ -271,8 +267,7 @@ bool HeapProfilerController::StartIfEnabled() {
   }
   base::SamplingHeapProfiler::Get()->Start();
 
-  if (process_type_ != ProcessType::kBrowser &&
-      base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+  if (process_type_ != ProcessType::kBrowser) {
     // ChildProcessSnapshotController will trigger snapshots.
     return true;
   }
@@ -282,13 +277,9 @@ bool HeapProfilerController::StartIfEnabled() {
       profiler_params.collection_interval,
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
       process_type_, creation_time_, std::move(on_first_snapshot_callback_));
-  if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-    params.trigger_child_process_snapshot_closure = base::BindRepeating(
-        &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
-        browser_process_snapshot_controller_->GetWeakPtr());
-  } else {
-    params.trigger_child_process_snapshot_closure = base::DoNothing();
-  }
+  params.trigger_child_process_snapshot_closure = base::BindRepeating(
+      &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
+      browser_process_snapshot_controller_->GetWeakPtr());
   snapshot_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&HeapProfilerController::ScheduleNextSnapshot,
                                 std::move(params)));
@@ -328,9 +319,6 @@ void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
     int child_process_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(process_type_, ProcessType::kBrowser);
-  if (!base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-    return;
-  }
   // If profiling is disabled in the browser process, pass a null
   // BrowserProcessSnapshotController to disable it in the child process too.
   BrowserProcessSnapshotController* snapshot_controller = nullptr;
@@ -354,7 +342,6 @@ void HeapProfilerController::TakeSnapshotInChildProcess(
     size_t process_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(process_type_, ProcessType::kBrowser);
-  CHECK(base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
   snapshot_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TakeSnapshot,
@@ -380,7 +367,6 @@ void HeapProfilerController::AppendCommandLineSwitchInternal(
     int child_process_id,
     BrowserProcessSnapshotController* snapshot_controller) {
   CHECK_NE(child_process_type, ProcessType::kBrowser);
-  CHECK(base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
   if (snapshot_controller &&
       GetHeapProfilerParametersForProcess(child_process_type).is_supported) {
     command_line->AppendSwitch(switches::kSubprocessHeapProfiling);

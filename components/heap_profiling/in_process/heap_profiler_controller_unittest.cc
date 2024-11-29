@@ -608,10 +608,7 @@ struct FeatureTestParams {
   const ProcessTypeSet supported_processes;
   ChannelParams stable;
   ChannelParams nonstable;
-  // Whether HeapProfilerCentralControl is enabled.
-  bool central_control_feature_enabled = false;
-  // Probabilities for snapshotting child processes. Only used of
-  // HeapProfilerCentralControl is enabled.
+  // Probabilities for snapshotting child processes.
   int gpu_snapshot_prob = 100;
   int network_snapshot_prob = 100;
   int renderer_snapshot_prob = 100;
@@ -626,7 +623,12 @@ struct FeatureTestParams {
 // Converts the test params to field trial parameters for the
 // HeapProfilerReporting feature.
 base::FieldTrialParams FeatureTestParams::ToFieldTrialParams() const {
-  base::FieldTrialParams field_trial_params;
+  base::FieldTrialParams field_trial_params{
+      {"gpu-prob-pct", base::NumberToString(gpu_snapshot_prob)},
+      {"network-prob-pct", base::NumberToString(network_snapshot_prob)},
+      {"renderer-prob-pct", base::NumberToString(renderer_snapshot_prob)},
+      {"utility-prob-pct", base::NumberToString(utility_snapshot_prob)},
+  };
 
   // Add the default params.
   base::Value::Dict dict;
@@ -683,16 +685,6 @@ std::vector<FeatureRefAndParams> FeatureTestParams::GetEnabledFeatures() const {
     enabled_features.push_back(
         FeatureRefAndParams(kHeapProfilerReporting, ToFieldTrialParams()));
   }
-  if (central_control_feature_enabled) {
-    enabled_features.push_back(FeatureRefAndParams(
-        kHeapProfilerCentralControl,
-        {
-            {"gpu-prob-pct", base::NumberToString(gpu_snapshot_prob)},
-            {"network-prob-pct", base::NumberToString(network_snapshot_prob)},
-            {"renderer-prob-pct", base::NumberToString(renderer_snapshot_prob)},
-            {"utility-prob-pct", base::NumberToString(utility_snapshot_prob)},
-        }));
-  }
   return enabled_features;
 }
 
@@ -701,34 +693,24 @@ std::vector<FeatureRef> FeatureTestParams::GetDisabledFeatures() const {
   if (!feature_enabled) {
     disabled_features.push_back(FeatureRef(kHeapProfilerReporting));
   }
-  if (!central_control_feature_enabled) {
-    disabled_features.push_back(FeatureRef(kHeapProfilerCentralControl));
-  }
   return disabled_features;
 }
 
 // Formats the test params for error messages.
 std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
-  os << "{";
-  os << "enabled:" << params.feature_enabled << ",";
-  os << "field_trial_params:{";
+  os << "enabled: " << params.feature_enabled << std::endl;
+  os << "field_trial_params: {" << std::endl;
   for (const auto& field_trial_param : params.ToFieldTrialParams()) {
-    os << field_trial_param.first << " : " << field_trial_param.second;
+    os << field_trial_param.first << ": " << field_trial_param.second
+       << std::endl;
   }
-  os << "},";
-  os << "expect_samples:{";
-  os << "stable/browser:" << params.stable.expect_browser_sample << ",";
-  os << "stable/child:" << params.stable.expect_child_sample << ",";
-  os << "nonstable/browser:" << params.stable.expect_browser_sample << ",";
-  os << "nonstable/child:" << params.stable.expect_child_sample;
-  os << "},";
-  os << "central_control:" << params.central_control_feature_enabled;
-  if (params.central_control_feature_enabled) {
-    os << ",gpu-prob:" << params.gpu_snapshot_prob << ",";
-    os << "network-prob:" << params.network_snapshot_prob << ",";
-    os << "renderer-prob:" << params.renderer_snapshot_prob << ",";
-    os << "utility-prob:" << params.utility_snapshot_prob;
-  }
+  os << "}" << std::endl;
+  os << "expect_samples: {" << std::endl;
+  os << "stable/browser: " << params.stable.expect_browser_sample << std::endl;
+  os << "stable/child: " << params.stable.expect_child_sample << std::endl;
+  os << "nonstable/browser: " << params.stable.expect_browser_sample
+     << std::endl;
+  os << "nonstable/child: " << params.stable.expect_child_sample << std::endl;
   os << "}";
   return os;
 }
@@ -1074,38 +1056,20 @@ constexpr FeatureTestParams kProcessConfigs[] = {
     {
         .supported_processes = {ProcessType::kBrowser},
         .stable = {.expect_browser_sample = true, .expect_child_sample = false},
-        .central_control_feature_enabled = false,
-    },
-    {
-        .supported_processes = {ProcessType::kBrowser},
-        .stable = {.expect_browser_sample = true, .expect_child_sample = false},
-        .central_control_feature_enabled = true,
     },
     // Enabled in child process only.
+    // Central control only samples child processes when the browser process is
+    // sampled, so no samples are expected even though sampling is supported in
+    // the child process.
     {
-        .supported_processes = {ProcessType::kUtility},
-        .stable = {.expect_browser_sample = false, .expect_child_sample = true},
-        .central_control_feature_enabled = false,
-    },
-    {
-        // Central control only samples child processes when the browser process
-        // is sampled, so no samples are expected even though sampling is
-        // supported in the child process.
         .supported_processes = {ProcessType::kUtility},
         .stable = {.expect_browser_sample = false,
                    .expect_child_sample = false},
-        .central_control_feature_enabled = true,
     },
     // Enabled in parent and child processes.
     {
         .supported_processes = {ProcessType::kBrowser, ProcessType::kUtility},
         .stable = {.expect_browser_sample = true, .expect_child_sample = true},
-        .central_control_feature_enabled = false,
-    },
-    {
-        .supported_processes = {ProcessType::kBrowser, ProcessType::kUtility},
-        .stable = {.expect_browser_sample = true, .expect_child_sample = true},
-        .central_control_feature_enabled = true,
     },
 };
 
@@ -1121,9 +1085,7 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
   ScopedCallbacks callbacks = CreateScopedCallbacks(
       /*expect_take_snapshot=*/profiling_enabled,
       GetParam().stable.expect_browser_sample,
-      /*use_other_process_callback=*/
-      GetParam().central_control_feature_enabled &&
-          GetParam().stable.expect_child_sample);
+      /*use_other_process_callback=*/GetParam().stable.expect_child_sample);
 
   // Mock the child end of the SnapshotController mojo pipe. (Only used when
   // central control is enabled.)
@@ -1140,7 +1102,7 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
                                        profiling_enabled, 1);
 
   constexpr int kTestChildProcessId = 1;
-  if (profiling_enabled && GetParam().central_control_feature_enabled) {
+  if (profiling_enabled) {
     ASSERT_TRUE(controller_->GetBrowserProcessSnapshotController());
 
     // This callback should be invoked from
@@ -1157,25 +1119,23 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
     EXPECT_FALSE(controller_->GetBrowserProcessSnapshotController());
   }
 
-  if (GetParam().central_control_feature_enabled) {
-    // Simulate a child process launch. If profiling is enabled in both browser
-    // and child processes, this will bind the browser end of the mojo pipe to
-    // the BrowserProcessSnapshotController and use the above callback to bind
-    // the child end to `mock_child_snapshot_controller`.
-    base::CommandLine child_command_line(base::CommandLine::NO_PROGRAM);
-    controller_->AppendCommandLineSwitchForChildProcess(
-        &child_command_line, ProcessType::kUtility, kTestChildProcessId);
+  // Simulate a child process launch. If profiling is enabled in both browser
+  // and child processes, this will bind the browser end of the mojo pipe to the
+  // BrowserProcessSnapshotController and use the above callback to bind the
+  // child end to `mock_child_snapshot_controller`.
+  base::CommandLine child_command_line(base::CommandLine::NO_PROGRAM);
+  controller_->AppendCommandLineSwitchForChildProcess(
+      &child_command_line, ProcessType::kUtility, kTestChildProcessId);
 
-    if (GetParam().stable.expect_child_sample) {
-      EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(100, 0))
-          .WillOnce([&] {
-            // Record that BrowserProcessSnapshotController triggered a fake
-            // snapshot in the child process.
-            callbacks.other_process_callback().Run();
-          });
-    } else {
-      EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(_, _)).Times(0);
-    }
+  if (GetParam().stable.expect_child_sample) {
+    EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(100, 0))
+        .WillOnce([&] {
+          // Record that BrowserProcessSnapshotController triggered a fake
+          // snapshot in the child process.
+          callbacks.other_process_callback().Run();
+        });
+  } else {
+    EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(_, _)).Times(0);
   }
 
   AddOneSampleAndWait();
@@ -1185,57 +1145,50 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
 TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
   const bool profiling_enabled =
       base::Contains(GetParam().supported_processes, ProcessType::kUtility);
-  // If HeapProfilingCentralControl is enabled, TakeSnapshot() is only called in
-  // the child process when the browser process triggers it. Otherwise it's
-  // always called when profiling is enabled for the process.
+  // TakeSnapshot() is only called in the child process when the browser process
+  // triggers it.
   ScopedCallbacks callbacks = CreateScopedCallbacks(
-      /*expect_take_snapshot=*/GetParam().central_control_feature_enabled
-          ? GetParam().stable.expect_child_sample
-          : profiling_enabled,
+      /*expect_take_snapshot=*/GetParam().stable.expect_child_sample,
       /*expect_sampled_profile=*/GetParam().stable.expect_child_sample,
-      /*use_other_process_callback=*/
-      GetParam().central_control_feature_enabled);
+      /*use_other_process_callback=*/true);
 
   // Simulate the browser side of child process launching.
+  constexpr int kTestChildProcessId = 1;
+
+  // Create a snapshot controller to hold the browser end of the mojo pipe.
+  auto snapshot_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  auto fake_browser_snapshot_controller =
+      std::make_unique<BrowserProcessSnapshotController>(snapshot_task_runner);
+
+  // This callback should be invoked from AppendCommandLineSwitchForTesting to
+  // bind the child end of the mojo pipe.
+  fake_browser_snapshot_controller->SetBindRemoteForChildProcessCallback(
+      base::BindLambdaForTesting(
+          [&](int child_process_id,
+              mojo::PendingReceiver<mojom::SnapshotController> receiver) {
+            EXPECT_EQ(child_process_id, kTestChildProcessId);
+            ChildProcessSnapshotController::CreateSelfOwnedReceiver(
+                std::move(receiver));
+          }));
+
   base::test::ScopedCommandLine scoped_command_line;
-  if (GetParam().central_control_feature_enabled) {
-    constexpr int kTestChildProcessId = 1;
+  HeapProfilerController::AppendCommandLineSwitchForTesting(
+      scoped_command_line.GetProcessCommandLine(), ProcessType::kUtility,
+      kTestChildProcessId, fake_browser_snapshot_controller.get());
 
-    // Create a snapshot controller to hold the browser end of the mojo pipe.
-    auto snapshot_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-    auto fake_browser_snapshot_controller =
-        std::make_unique<BrowserProcessSnapshotController>(
-            snapshot_task_runner);
-
-    // This callback should be invoked from AppendCommandLineSwitchForTesting to
-    // bind the child end of the mojo pipe.
-    fake_browser_snapshot_controller->SetBindRemoteForChildProcessCallback(
-        base::BindLambdaForTesting(
-            [&](int child_process_id,
-                mojo::PendingReceiver<mojom::SnapshotController> receiver) {
-              EXPECT_EQ(child_process_id, kTestChildProcessId);
-              ChildProcessSnapshotController::CreateSelfOwnedReceiver(
-                  std::move(receiver));
-            }));
-
-    HeapProfilerController::AppendCommandLineSwitchForTesting(
-        scoped_command_line.GetProcessCommandLine(), ProcessType::kUtility,
-        kTestChildProcessId, fake_browser_snapshot_controller.get());
-
-    // Simulate the browser process taking a sample after a delay. If profiling
-    // isn't enabled in the browser process, just quit waiting after the delay.
-    base::OnceClosure browser_snapshot_callback = base::DoNothing();
-    if (base::Contains(GetParam().supported_processes, ProcessType::kBrowser)) {
-      browser_snapshot_callback = base::BindOnce(
-          &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
-          std::move(fake_browser_snapshot_controller));
-    }
-    snapshot_task_runner->PostDelayedTask(
-        FROM_HERE,
-        std::move(browser_snapshot_callback)
-            .Then(callbacks.other_process_callback()),
-        TestTimeouts::action_timeout());
+  // Simulate the browser process taking a sample after a delay. If profiling
+  // isn't enabled in the browser process, just quit waiting after the delay.
+  base::OnceClosure browser_snapshot_callback = base::DoNothing();
+  if (base::Contains(GetParam().supported_processes, ProcessType::kBrowser)) {
+    browser_snapshot_callback = base::BindOnce(
+        &BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence,
+        std::move(fake_browser_snapshot_controller));
   }
+  snapshot_task_runner->PostDelayedTask(
+      FROM_HERE,
+      std::move(browser_snapshot_callback)
+          .Then(callbacks.other_process_callback()),
+      TestTimeouts::action_timeout());
 
   StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUtility,
                      profiling_enabled, callbacks.first_snapshot_callback(),
@@ -1279,13 +1232,11 @@ auto GetProfileMetadataFunc(std::string_view name) {
   return get_metadata;
 }
 
-// End-to-end test of the HeapProfilerCentralControl feature with multiple child
-// processes.
+// End-to-end test with multiple child processes.
 constexpr FeatureTestParams kMultipleChildConfigs[] = {
     {
         .supported_processes = {ProcessType::kBrowser, ProcessType::kGpu,
                                 ProcessType::kUtility, ProcessType::kRenderer},
-        .central_control_feature_enabled = true,
         .renderer_snapshot_prob = 66,
         .utility_snapshot_prob = 50,
     },
