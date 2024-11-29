@@ -198,7 +198,7 @@ void AppendEncodedContributionToCborArray(
       AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes == 8);
   std::array<uint8_t, 8u> encoded_id;
   encoded_id.fill(0);
-  base::make_span(encoded_id).copy_from(base::U64ToBigEndian(filtering_id));
+  base::span(encoded_id).copy_from(base::U64ToBigEndian(filtering_id));
 
   // Note that the payload will have a length dependent on the choice of
   // `filtering_id_max_bytes` here. APIs using this field should ensure that
@@ -956,7 +956,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   std::string authenticated_info_str =
       base::StrCat({kDomainSeparationPrefix, encoded_shared_info});
   base::span<const uint8_t> authenticated_info =
-      base::as_bytes(base::make_span(authenticated_info_str));
+      base::as_byte_span(authenticated_info_str);
 
   std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
   CHECK_EQ(unencrypted_payloads.size(), num_processing_urls);
@@ -1108,7 +1108,7 @@ std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(
                  EVP_HPKE_CTX_max_overhead(sender_context.get()));
 
   base::span<uint8_t> ciphertext =
-      base::make_span(payload).subspan(encapsulated_shared_secret_len);
+      base::span(payload).subspan(encapsulated_shared_secret_len);
   size_t ciphertext_len;
 
   if (!EVP_HPKE_CTX_seal(

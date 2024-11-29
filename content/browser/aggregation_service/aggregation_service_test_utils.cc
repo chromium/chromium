@@ -384,7 +384,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
       base::StrCat({AggregatableReport::kDomainSeparationPrefix,
                     expected_serialized_shared_info});
   base::span<const uint8_t> authenticated_info =
-      base::as_bytes(base::make_span(authenticated_info_str));
+      base::as_byte_span(authenticated_info_str);
 
   // No null terminators should have been copied when concatenating the strings.
   CHECK(!base::Contains(authenticated_info_str, '\0'));

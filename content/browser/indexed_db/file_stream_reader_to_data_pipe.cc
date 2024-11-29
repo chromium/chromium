@@ -109,8 +109,7 @@ void FileStreamReaderToDataPipe::ReadMore() {
         std::min(static_cast<uint64_t>(pending_write_->size()),
                  read_length_ - transferred_bytes_));
     base::span<uint8_t> buffer =
-        base::as_writable_bytes(base::make_span(*pending_write_))
-            .first(read_bytes);
+        base::as_writable_byte_span(*pending_write_).first(read_bytes);
     std::optional<size_t> result =
         file_.Read(offset_ + transferred_bytes_, buffer);
 

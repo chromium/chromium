@@ -34,7 +34,7 @@ TEST(MessagePayloadTest, SelfTest_ArrayBuffer) {
   EXPECT_EQ(data.size(), array_buffer->GetLength());
   EXPECT_FALSE(array_buffer->GetAsSpanIfPossible());
   std::vector<uint8_t> copied_data(data.size());
-  array_buffer->CopyInto(base::make_span(copied_data));
+  array_buffer->CopyInto(base::span(copied_data));
   EXPECT_EQ(data, copied_data);
 
   // Encode the message and decode it again. This time the ArrayBuffer should be
@@ -47,7 +47,7 @@ TEST(MessagePayloadTest, SelfTest_ArrayBuffer) {
   EXPECT_EQ(data.size(), array_buffer2->GetLength());
   copied_data.clear();
   copied_data.resize(data.size());
-  array_buffer->CopyInto(base::make_span(copied_data));
+  array_buffer->CopyInto(base::span(copied_data));
   EXPECT_EQ(data, copied_data);
 }
 

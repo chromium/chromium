@@ -59,7 +59,7 @@ TEST_P(SimpleLruCacheTest, PutAndGet) {
   EXPECT_FALSE(cache.Has(kKey3));
   EXPECT_FALSE(cache.Has(kKey4));
 
-  cache.Put(kKey1, kResponseTime1, base::make_span(kData1));
+  cache.Put(kKey1, kResponseTime1, base::span(kData1));
   EXPECT_EQ(cache.GetSize(), 1 + 4 + kEmptyEntrySize);
   EXPECT_TRUE(cache.Has(kKey1));
   EXPECT_FALSE(cache.Has(kKey2));
@@ -67,14 +67,14 @@ TEST_P(SimpleLruCacheTest, PutAndGet) {
   EXPECT_FALSE(cache.Has(kKey4));
 
   // Updates the entry.
-  cache.Put(kKey1, kResponseTime2, base::make_span(kData2));
+  cache.Put(kKey1, kResponseTime2, base::span(kData2));
   EXPECT_EQ(cache.GetSize(), 2 + 4 + kEmptyEntrySize);
   EXPECT_TRUE(cache.Has(kKey1));
   EXPECT_FALSE(cache.Has(kKey2));
   EXPECT_FALSE(cache.Has(kKey3));
   EXPECT_FALSE(cache.Has(kKey4));
 
-  cache.Put(kKey2, kResponseTime3, base::make_span(kData3));
+  cache.Put(kKey2, kResponseTime3, base::span(kData3));
   EXPECT_EQ(cache.GetSize(), 5 + 8 + 2 * kEmptyEntrySize);
   EXPECT_TRUE(cache.Has(kKey1));
   EXPECT_TRUE(cache.Has(kKey2));
@@ -82,7 +82,7 @@ TEST_P(SimpleLruCacheTest, PutAndGet) {
   EXPECT_FALSE(cache.Has(kKey4));
 
   // We don't create an entry for `kKey3` intentionally.
-  cache.Put(kKey4, kResponseTime4, base::make_span(kData4));
+  cache.Put(kKey4, kResponseTime4, base::span(kData4));
   EXPECT_EQ(cache.GetSize(), 9 + 12 + 3 * kEmptyEntrySize);
   const auto result1 = cache.Get(kKey1);
   ASSERT_TRUE(result1.has_value());
@@ -122,17 +122,17 @@ TEST_P(SimpleLruCacheTest, PutAndEvict) {
   EXPECT_FALSE(cache.Has(kKey));
 
   // This entry is immediately evicted because the size excceeds the capacity.
-  cache.Put(kKey, kResponseTime1, base::make_span(kData1));
+  cache.Put(kKey, kResponseTime1, base::span(kData1));
   EXPECT_EQ(cache.GetSize(), 0u);
   EXPECT_FALSE(cache.Has(kKey));
 
   // This entry stays.
-  cache.Put(kKey, kResponseTime2, base::make_span(kData2));
+  cache.Put(kKey, kResponseTime2, base::span(kData2));
   EXPECT_EQ(cache.GetSize(), 1 + kKey.size() + kEmptyEntrySize);
   EXPECT_TRUE(cache.Has(kKey));
 
   // An updated entry can also be evicted.
-  cache.Put(kKey, kResponseTime3, base::make_span(kData3));
+  cache.Put(kKey, kResponseTime3, base::span(kData3));
   EXPECT_EQ(cache.GetSize(), 0u);
   EXPECT_FALSE(cache.Has(kKey));
 }
@@ -194,10 +194,10 @@ TEST_P(SimpleLruCacheTest, Delete) {
 
   SimpleLruCache cache(/*capacity=*/1024 * 1024);
 
-  cache.Put(kKey1, kResponseTime, base::make_span(kData1));
-  cache.Put(kKey2, kResponseTime, base::make_span(kData2));
-  cache.Put(kKey3, kResponseTime, base::make_span(kData3));
-  cache.Put(kKey4, kResponseTime, base::make_span(kData4));
+  cache.Put(kKey1, kResponseTime, base::span(kData1));
+  cache.Put(kKey2, kResponseTime, base::span(kData2));
+  cache.Put(kKey3, kResponseTime, base::span(kData3));
+  cache.Put(kKey4, kResponseTime, base::span(kData4));
 
   EXPECT_EQ(cache.GetSize(), 4 * kEmptyEntrySize + 16 + 10);
   EXPECT_TRUE(cache.Has(kKey1));
@@ -237,7 +237,7 @@ TEST_P(SimpleLruCacheTest, Clear) {
 
   SimpleLruCache cache(/*capacity=*/1024 * 1024);
 
-  cache.Put(kKey, kResponseTime, base::make_span(kData));
+  cache.Put(kKey, kResponseTime, base::span(kData));
 
   EXPECT_TRUE(cache.Has(kKey));
   EXPECT_GT(cache.GetSize(), 0u);

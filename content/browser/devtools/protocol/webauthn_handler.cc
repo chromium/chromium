@@ -449,7 +449,7 @@ void WebAuthnHandler::GetCredential(
             }
             callback->sendSuccess(std::move(registration));
           },
-          BuildCredentialFromRegistration(base::make_span(registration->first),
+          BuildCredentialFromRegistration(base::span(registration->first),
                                           &registration->second),
           std::move(callback)));
 }
@@ -471,7 +471,7 @@ void WebAuthnHandler::GetCredentials(
         registration.first,
         base::BindOnce(
             &GetCredentialCallbackAggregator::OnLargeBlob, aggregator,
-            BuildCredentialFromRegistration(base::make_span(registration.first),
+            BuildCredentialFromRegistration(base::span(registration.first),
                                             &registration.second)));
   }
 }

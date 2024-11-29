@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
 
   // Send message to parent and child frames and get result back.
   constexpr char kMsg[] = R"({"id":0,"method":"incorrect.method"})";
-  auto message = base::as_bytes(base::make_span(kMsg, strlen(kMsg)));
+  auto message = base::byte_span_from_cstring(kMsg);
   child_host->DispatchProtocolMessage(&child_client, message);
   child_client.WaitForReply();
   parent_host->DispatchProtocolMessage(&parent_client, message);
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDownloadDevToolsBrowserTest,
   TestClient client;
   agent->AttachClient(&client);
   constexpr char kMsg[] = R"({"id":0,"method":"incorrect.method"})";
-  auto message = base::as_bytes(base::make_span(kMsg, strlen(kMsg)));
+  auto message = base::byte_span_from_cstring(kMsg);
   // Check that client is responsive.
   agent->DispatchProtocolMessage(&client, message);
   client.WaitForReply();

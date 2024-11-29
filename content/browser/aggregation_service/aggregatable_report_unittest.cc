@@ -188,7 +188,7 @@ void VerifyReport(
 
           CHECK_LE(expected_payload_contents.filtering_id_max_bytes, 8u);
           uint64_t filtering_id = base::U64FromBigEndian(
-              base::make_span(padded_filtering_id_bytestring));
+              base::span(padded_filtering_id_bytestring));
 
           EXPECT_EQ(filtering_id,
                     expected_contributions[j].filtering_id.value_or(0));

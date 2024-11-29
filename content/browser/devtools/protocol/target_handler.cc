@@ -234,8 +234,8 @@ class BrowserToPageConnector {
     base::Value message(std::move(message_dict));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
-    page_host_->DispatchProtocolMessage(
-        page_host_client_.get(), base::as_bytes(base::make_span(json_message)));
+    page_host_->DispatchProtocolMessage(page_host_client_.get(),
+                                        base::as_byte_span(json_message));
   }
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
@@ -269,9 +269,8 @@ class BrowserToPageConnector {
       if (!payload) {
         return;
       }
-      browser_host_->DispatchProtocolMessage(
-          browser_host_client_.get(),
-          base::as_bytes(base::make_span(*payload)));
+      browser_host_->DispatchProtocolMessage(browser_host_client_.get(),
+                                             base::as_byte_span(*payload));
       return;
     }
     DCHECK(agent_host == browser_host_.get());
@@ -1116,7 +1115,7 @@ Response TargetHandler::SendMessageToTarget(
         "When using flat protocol, messages are routed to the target "
         "via the sessionId attribute.");
   }
-  session->SendMessageToAgentHost(base::as_bytes(base::make_span(message)));
+  session->SendMessageToAgentHost(base::as_byte_span(message));
   return Response::Success();
 }
 
