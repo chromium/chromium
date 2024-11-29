@@ -182,8 +182,9 @@ void DeclareProperty(Document& document,
 
 CSSVariableData* CreateVariableData(String s) {
   bool is_animation_tainted = false;
+  bool is_attr_tainted = false;
   bool needs_variable_resolution = false;
-  return CSSVariableData::Create(s, is_animation_tainted,
+  return CSSVariableData::Create(s, is_animation_tainted, is_attr_tainted,
                                  needs_variable_resolution);
 }
 

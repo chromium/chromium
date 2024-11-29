@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
-#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -1692,7 +1691,7 @@ CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
     return CSSParserToken(kEOFToken);
   }
   wtf_size_t value_end_offset = stream.LookAheadOffset();
-  if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
+  if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
     return CSSParserToken(kEOFToken);
   }
   return IsFetchRestricted(token.Value(), context)
@@ -3379,7 +3378,7 @@ CSSValue* ConsumeImage(
     String uri_string = ConsumeStringAsString(stream);
     if (!uri_string.IsNull()) {
       wtf_size_t value_end_offset = stream.LookAheadOffset();
-      if (IsAttrTainted(stream, value_start_offset, value_end_offset)) {
+      if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
         // https://drafts.csswg.org/css-values-5/#attr-security
         // “Additionally, attr() is not allowed to be used in any <url> value,
         // whether directly or indirectly. Doing so makes the property it’s used

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_CASCADE_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -269,15 +271,25 @@ class CORE_EXPORT StyleCascade {
     String OriginalText() { return original_text_.ToString(); }
 
     bool Append(StringView str,
+                bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     bool Append(CSSVariableData* data,
+                bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
     bool Append(const CSSValue* data,
+                bool is_attr_tainted,
                 wtf_size_t byte_limit = std::numeric_limits<wtf_size_t>::max());
-    void Append(const CSSParserToken&, StringView string);
+    void Append(const CSSParserToken&, bool is_attr_tainted, StringView string);
 
     // NOTE: Strips trailing whitespace.
-    bool AppendFallback(const TokenSequence&, wtf_size_t byte_limit);
+    bool AppendFallback(const TokenSequence&,
+                        bool is_attr_tainted,
+                        wtf_size_t byte_limit);
+
+    const Vector<std::pair<wtf_size_t, wtf_size_t>>* GetAttrTaintedRanges()
+        const {
+      return &attr_taint_ranges_;
+    }
 
     CSSVariableData* BuildVariableData();
 
@@ -310,6 +322,8 @@ class CORE_EXPORT StyleCascade {
     bool has_font_units_ = false;
     bool has_root_font_units_ = false;
     bool has_line_height_units_ = false;
+    // Attr tainted intervals [start, end).
+    Vector<std::pair<wtf_size_t, wtf_size_t>> attr_taint_ranges_;
   };
 
   // Resolving Values
@@ -415,8 +429,6 @@ class CORE_EXPORT StyleCascade {
                                            CascadeResolver&,
                                            const CSSParserContext&,
                                            TokenSequence&);
-
-  void AppendTaintToken(TokenSequence& out);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to

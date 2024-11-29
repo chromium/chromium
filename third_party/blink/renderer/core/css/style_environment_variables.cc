@@ -127,6 +127,7 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
                                             const String& value) {
   data_.Set(name,
             CSSVariableData::Create(value, false /* is_animation_tainted */,
+                                    false /* is_attr_tainted */,
                                     false /* needs_variable_resolution */));
   InvalidateVariable(name);
 }
@@ -147,9 +148,9 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
     return;
   }
 
-  CSSVariableData* variable_data =
-      CSSVariableData::Create(value, false /* is_animation_tainted */,
-                              false /* needs_variable_resolution */);
+  CSSVariableData* variable_data = CSSVariableData::Create(
+      value, false /* is_animation_tainted */, false /* is_attr_tainted */,
+      false /* needs_variable_resolution */);
 
   TwoDimensionVariableValues* values_to_set = nullptr;
   auto it = two_dimension_data_.find(name);

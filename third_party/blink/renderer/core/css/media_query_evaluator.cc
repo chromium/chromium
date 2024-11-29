@@ -1806,7 +1806,7 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
     if (computed == query_computed ||
         (computed && query_computed &&
-         computed->EqualsIgnoringTaint(*query_computed))) {
+         computed->EqualsIgnoringAttrTainting(*query_computed))) {
       return KleeneValue::kTrue;
     }
     return KleeneValue::kFalse;

@@ -3,13 +3,7 @@ This is a testharness.js-based test.
   assert_equals: 'background-image: src("https://does-not-exist.test/404.png")' with data-foo='https://does-not-exist.test/404.png' expected "src(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
 [FAIL] CSS Values and Units Test: attr() security limitations 8
   assert_equals: 'background-image: src(string("https://does-not-exist.test/""404.png"))' with data-foo='/404.png' expected "src(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
-[FAIL] CSS Values and Units Test: attr() security limitations 10
-  assert_equals: '--some-url: attr(data-foo type(<url>))' with data-foo='url(https://does-not-exist.test/404.png)' expected "none" but got "url(\\"https://does-not-exist.test/404.png\\")"
-[FAIL] CSS Values and Units Test: attr() security limitations 15
+[FAIL] CSS Values and Units Test: attr() security limitations 14
   assert_equals: 'background-image: image("https://does-not-exist.test/404.png")' with data-foo='https://does-not-exist.test/404.png' expected "image(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
-[FAIL] CSS Values and Units Test: attr() security limitations 24
-  assert_equals: 'background-image: attr(data-foo type(*))' with data-foo='url(https://does-not-exist.test/404.png), linear-gradient(black, white)' expected "none" but got "url(\\"https://does-not-exist.test/404.png\\"), linear-gradient(rgb(0, 0, 0), rgb(255, 255, 255))"
-[FAIL] CSS Values and Units Test: attr() security limitations 25
-  assert_equals: 'background-image: image-set(var(--image-set-valid))' with data-foo='image/jpeg' expected "none" but got "image-set(url(\\"https://does-not-exist.test/404.png\\") 1dppx type(\\"image/jpeg\\"))"
 Harness: the test ran to completion.
 

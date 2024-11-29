@@ -3914,7 +3914,8 @@
       "external/wpt/css/css-values/attr-length-valid-zero-nofallback.html",
       "external/wpt/css/css-values/attr-notype-fallback.html",
       "external/wpt/css/css-values/attr-pseudo-elem-invalidation.html",
-      "external/wpt/css/css-values/attr-security.html"
+      "external/wpt/css/css-values/attr-security.html",
+      "external/wpt/css/css-values/attr-universal-selector.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
