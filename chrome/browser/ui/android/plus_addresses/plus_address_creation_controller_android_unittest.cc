@@ -24,8 +24,8 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_prefs.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/mock_plus_address_setting_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -194,6 +194,18 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
 // Tests that no notice is shown if the onboarding feature is disabled.
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
        NoNoticeIfOnboardingFeatureIsDisabled) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  // Simulate that the user has created 3 plus profiles. This is only relevant
+  // for the HaTS survey testing.
+  plus_address_service().add_plus_profile(
+      test::CreatePlusProfile("example1@gmail.com", /*is_confirmed=*/true));
+  plus_address_service().add_plus_profile(
+      test::CreatePlusProfile("example2@gmail.com", /*is_confirmed=*/true));
+  plus_address_service().add_plus_profile(
+      test::CreatePlusProfile("example3@gmail.com", /*is_confirmed=*/true));
+
   ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
       .WillByDefault(Return(false));
   EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice).Times(0);
@@ -204,8 +216,10 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
       url::Origin::Create(GURL("https://mattwashere.example")),
       /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey)
-      .Times(0);
+  EXPECT_CALL(
+      autofill_client(),
+      TriggerPlusAddressUserPerceptionSurvey(
+          plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses));
   controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
 }

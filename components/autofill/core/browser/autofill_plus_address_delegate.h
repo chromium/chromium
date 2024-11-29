@@ -141,6 +141,10 @@ class AutofillPlusAddressDelegate {
   // Called when a plus address was filled into a web input field.
   virtual void DidFillPlusAddress() = 0;
 
+  // Returns the number of the plus addresses created by the user for the
+  // current profile.
+  virtual size_t GetPlusAddressesCount() = 0;
+
   using UpdateSuggestionsCallback =
       base::OnceCallback<void(std::vector<Suggestion>,
                               AutofillSuggestionTriggerSource)>;

@@ -220,6 +220,15 @@ void LaunchPlusAddressUserPerceptionSurvey(
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
       break;
+    case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
+      if (!base::FeatureList::IsEnabled(
+              autofill::features::
+                  kPlusAddressUserCreatedMultiplePlusAddressesSurvey)) {
+        return;
+      }
+      survey_trigger =
+          kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses;
+      break;
     case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
       if (!base::FeatureList::IsEnabled(
               autofill::features::
@@ -256,8 +265,6 @@ void LaunchPlusAddressUserPerceptionSurvey(
       survey_trigger =
           kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
       break;
-    default:
-      NOTREACHED();
   }
 
   hats_service->LaunchSurveyForWebContents(

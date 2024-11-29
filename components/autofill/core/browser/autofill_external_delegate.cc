@@ -1458,6 +1458,11 @@ PlusAddressCallback AutofillExternalDelegate::CreateInlinePlusAddressCallback(
               client->TriggerPlusAddressUserPerceptionSurvey(
                   plus_addresses::hats::SurveyType::
                       kCreatedPlusAddressViaManualFallback);
+            } else if (client->GetPlusAddressDelegate()
+                           ->GetPlusAddressesCount() > 2) {
+              client->TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::
+                      kCreatedMultiplePlusAddresses);
             }
           },
           manager_->client().GetWeakPtr(),

@@ -117,9 +117,6 @@ class PlusAddressService : public KeyedService,
 
   // Returns true if the feature is supported for the user.
   virtual bool IsEnabled() const = 0;
-
-  // Triggers the HaTS survey of the `survey_type`.
-  virtual void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) = 0;
 };
 
 }  // namespace plus_addresses

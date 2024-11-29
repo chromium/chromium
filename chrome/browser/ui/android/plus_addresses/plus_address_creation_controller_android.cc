@@ -342,6 +342,10 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
       } else if (is_manual_fallback_) {
         TriggerUserPerceptionSurvey(
             hats::SurveyType::kCreatedPlusAddressViaManualFallback);
+      } else if (PlusAddressService* service = GetPlusAddressService();
+                 service && service->GetPlusAddressesCount() > 2) {
+        TriggerUserPerceptionSurvey(
+            hats::SurveyType::kCreatedMultiplePlusAddresses);
       }
       std::move(callback_).Run(*maybe_plus_profile->plus_address);
       RecordModalShownOutcome(

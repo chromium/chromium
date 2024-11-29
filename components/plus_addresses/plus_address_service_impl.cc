@@ -119,8 +119,7 @@ PlusAddressServiceImpl::PlusAddressServiceImpl(
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service,
     affiliations::AffiliationService* affiliation_service,
-    FeatureEnabledForProfileCheck feature_enabled_for_profile_check,
-    LaunchHatsSurvey launch_hats_survey)
+    FeatureEnabledForProfileCheck feature_enabled_for_profile_check)
     : pref_service_(CHECK_DEREF(pref_service)),
       identity_manager_(CHECK_DEREF(identity_manager)),
       setting_service_(CHECK_DEREF(setting_service)),
@@ -132,8 +131,7 @@ PlusAddressServiceImpl::PlusAddressServiceImpl(
       webdata_service_(std::move(webdata_service)),
       plus_address_match_helper_(this, affiliation_service),
       feature_enabled_for_profile_check_(
-          std::move(feature_enabled_for_profile_check)),
-      launch_hats_survey_(launch_hats_survey) {
+          std::move(feature_enabled_for_profile_check)) {
   // The allocator is created in the body of the constructor to avoid that it
   // calls into `this` before all members are assigned.
   plus_address_allocator_ =
@@ -402,9 +400,6 @@ void PlusAddressServiceImpl::ConfirmPlusAddress(
       origin, plus_address,
       base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
                      base::Unretained(this))
-          .Then(base::BindOnce(
-              &PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey,
-              base::Unretained(this), plus_address))
           .Then(std::move(on_completed)));
 }
 
@@ -412,25 +407,6 @@ const PlusProfileOrError& PlusAddressServiceImpl::HandleCreateOrConfirmResponse(
     const PlusProfileOrError& maybe_profile) {
   if (maybe_profile.has_value() && maybe_profile->is_confirmed) {
     SavePlusProfile(*maybe_profile);
-  }
-  return maybe_profile;
-}
-
-const PlusProfileOrError&
-PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey(
-    const PlusAddress& requested_address,
-    const PlusProfileOrError& maybe_profile) {
-  // If `maybe_profile` contains a confirmed plus profile, it might different
-  // from the requested plus address. This can happen if the user tries to
-  // create a plus address for a domain, for which they already have an
-  // affiliated plus address. In this case, the HaTS survey should not be
-  // triggered because no new plus address was created.
-  if (maybe_profile.has_value() && maybe_profile->is_confirmed &&
-      requested_address == maybe_profile->plus_address) {
-    if (GetPlusProfiles().size() > 2) {
-      TriggerUserPerceptionSurvey(
-          hats::SurveyType::kCreatedMultiplePlusAddresses);
-    }
   }
   return maybe_profile;
 }
@@ -459,11 +435,6 @@ bool PlusAddressServiceImpl::IsEnabled() const {
          identity_manager_
                  ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
                  .state() == GoogleServiceAuthError::State::NONE;
-}
-
-void PlusAddressServiceImpl::TriggerUserPerceptionSurvey(
-    hats::SurveyType survey_type) {
-  launch_hats_survey_.Run(survey_type);
 }
 
 void PlusAddressServiceImpl::OnWebDataChangedBySync(
@@ -626,6 +597,10 @@ void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
 
 void PlusAddressServiceImpl::DidFillPlusAddress() {
   pref_service_->SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
+}
+
+size_t PlusAddressServiceImpl::GetPlusAddressesCount() {
+  return GetPlusProfiles().size();
 }
 
 void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(

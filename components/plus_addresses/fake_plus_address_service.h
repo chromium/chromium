@@ -53,6 +53,7 @@ class FakePlusAddressService : public PlusAddressService {
       autofill::PasswordFormClassification::Type form_type,
       autofill::SuggestionType suggestion_type) override;
   void DidFillPlusAddress() override;
+  size_t GetPlusAddressesCount() override;
   void OnClickedRefreshInlineSuggestion(
       const url::Origin& last_committed_primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
@@ -99,7 +100,6 @@ class FakePlusAddressService : public PlusAddressService {
                                 bool is_off_the_record) const override;
   void SavePlusProfile(const PlusProfile& profile) override;
   bool IsEnabled() const override;
-  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) override;
 
   // Resets the state of the class.
   void ClearState();

@@ -1881,6 +1881,8 @@ TEST_F(AutofillExternalDelegatePlusAddressTest, PlusAddressInlineAccepted) {
   {
     InSequence s;
 
+    ON_CALL(plus_address_delegate(), GetPlusAddressesCount)
+        .WillByDefault(Return(3));
     // `MoveArg` only supports moving out a single argument and cannot be
     // combined via `DoAll` - therefore use a helper.
     EXPECT_CALL(plus_address_delegate(),
@@ -1917,6 +1919,10 @@ TEST_F(AutofillExternalDelegatePlusAddressTest, PlusAddressInlineAccepted) {
                                    plus_address,
                                    SuggestionType::kCreateNewPlusAddressInline,
                                    std::optional(EMAIL_ADDRESS)));
+    EXPECT_CALL(
+        client(),
+        TriggerPlusAddressUserPerceptionSurvey(
+            plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses));
   }
 
   external_delegate().DidAcceptSuggestion(suggestions()[0],
