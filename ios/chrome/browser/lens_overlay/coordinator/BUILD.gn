@@ -61,6 +61,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/lens_overlay/model:metrics_recorder",
     "//ios/chrome/browser/lens_overlay/ui:network_issue_alert_presenter",
     "//ios/chrome/browser/lens_overlay/ui:protocols",
+    "//ios/chrome/browser/lens_overlay/ui:results_page_presenter",
     "//ios/chrome/browser/lens_overlay/ui:view_controller",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/omnibox/ui_bundled",

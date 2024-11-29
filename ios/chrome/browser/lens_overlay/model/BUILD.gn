@@ -34,6 +34,7 @@ source_set("model") {
   public_deps = [
     ":configuration_factory",
     ":detent_state_header",
+    ":detents_manager",
     ":overflow_menu_factory",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
