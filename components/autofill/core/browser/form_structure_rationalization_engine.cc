@@ -492,6 +492,33 @@ void ApplyRationalizationEngineRules(
                 },
             })
             .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_HOUSE_NUMBER_AND_APT for NL")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("NL")})
+                    .SetFeature(&features::kAutofillUseNLAddressModel)
+                    .Build())
+            .SetTriggerField(
+                FieldCondition{.possible_overall_types =
+                                   FieldTypeSet{ADDRESS_HOME_HOUSE_NUMBER}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_APT_NUM}},
+                FieldCondition{
+                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_APT_NUM}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                },
+            })
+            .Build(),
     });
   };
   static const base::NoDestructor<decltype(create_rules())>
