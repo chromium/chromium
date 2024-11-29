@@ -92,8 +92,6 @@ class CORE_EXPORT FetchLaterManager final
   size_t NumLoadersForTesting() const;
   void RecreateTimerForTesting(scoped_refptr<base::SingleThreadTaskRunner>,
                                const base::TickClock*);
-  static ResourceLoadPriority ComputeLoadPriorityForTesting(
-      const FetchParameters& params);
 
  private:
   class DeferredLoader;

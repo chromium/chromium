@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_later_result.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/place_holder_bytes_consumer.h"
@@ -125,7 +126,6 @@ namespace {
 // 64 kilobytes.
 constexpr uint64_t kMaxScheduledDeferredBytesPerOrigin = 64 * 1024;
 
-constexpr ResourceType kFetchLaterResourceType = ResourceType::kRaw;
 constexpr TextResourceDecoderOptions::ContentType kFetchLaterContentType =
     TextResourceDecoderOptions::kPlainTextContent;
 
@@ -235,18 +235,6 @@ void HistogramNetErrorForTrustTokensOperation(
       base::StrCat({"Net.TrustTokens.NetErrorForFetchFailure", ".",
                     SerializeTrustTokenOperationType(operation_type)}),
       net_error);
-}
-
-ResourceLoadPriority ComputeFetchLaterLoadPriority(
-    const FetchParameters& params) {
-  // FetchLater's ResourceType is ResourceType::kRaw, which should default to
-  // ResourceLoadPriority::kHigh priority. See also TypeToPriority() in
-  // resource_fetcher.cc
-  return AdjustPriorityWithPriorityHintAndRenderBlocking(
-      ResourceLoadPriority::kHigh, kFetchLaterResourceType,
-      params.GetResourceRequest().GetFetchPriorityHint(),
-      params.GetRenderBlockingBehavior());
-  // TODO(crbug.com/1465781): Apply kLow when IsSubframeDeprioritizationEnabled.
 }
 
 class FetchManagerResourceRequestContext final : public ResourceRequestContext {
@@ -1891,12 +1879,6 @@ void FetchLaterManager::RecreateTimerForTesting(
   for (auto& deferred_loader : deferred_loaders_) {
     deferred_loader->RecreateTimerForTesting(task_runner, tick_clock);
   }
-}
-
-// static
-ResourceLoadPriority FetchLaterManager::ComputeLoadPriorityForTesting(
-    const FetchParameters& params) {
-  return ComputeFetchLaterLoadPriority(params);
 }
 
 std::unique_ptr<network::ResourceRequest>
