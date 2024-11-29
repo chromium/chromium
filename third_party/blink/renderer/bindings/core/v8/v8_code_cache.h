@@ -180,6 +180,14 @@ class CORE_EXPORT V8CodeCache final {
                             bool can_use_crowdsourced_compile_hints);
 };
 
+inline base::span<const uint8_t> ToSpan(
+    const v8::ScriptCompiler::CachedData& data) {
+  // SAFETY: v8::ScriptCompiler::CachedData ensures its `data` and `length`
+  // are safe.
+  return UNSAFE_BUFFERS(
+      base::span(data.data, static_cast<size_t>(data.length)));
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_CODE_CACHE_H_

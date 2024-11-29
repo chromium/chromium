@@ -29,28 +29,26 @@ bool CheckSizeAndMarker(const DataType& data) {
 }
 
 Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
-                                  const uint8_t* data,
-                                  wtf_size_t size,
+                                  base::span<const uint8_t> data,
                                   uint64_t tag) {
   // Don't allow an ID of 0, it is used internally to indicate errors.
   DCHECK(data_type_id);
-  DCHECK(data);
+  DCHECK(data.data());
 
   Vector<uint8_t> vector =
-      CachedMetadata::GetSerializedDataHeader(data_type_id, size, tag);
-  vector.Append(data, size);
+      CachedMetadata::GetSerializedDataHeader(data_type_id, data.size(), tag);
+  vector.AppendSpan(data);
   return vector;
 }
 
 }  // namespace
 
-scoped_refptr<CachedMetadata> CachedMetadata::Create(uint32_t data_type_id,
-                                                     const uint8_t* data,
-                                                     size_t size,
-                                                     uint64_t tag) {
-  return base::MakeRefCounted<CachedMetadata>(
-      data_type_id, data, base::checked_cast<wtf_size_t>(size), tag,
-      base::PassKey<CachedMetadata>());
+scoped_refptr<CachedMetadata> CachedMetadata::Create(
+    uint32_t data_type_id,
+    base::span<const uint8_t> data,
+    uint64_t tag) {
+  return base::MakeRefCounted<CachedMetadata>(data_type_id, data, tag,
+                                              base::PassKey<CachedMetadata>());
 }
 
 scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
@@ -78,11 +76,10 @@ CachedMetadata::CachedMetadata(Vector<uint8_t> data,
     : buffer_(std::move(data)) {}
 
 CachedMetadata::CachedMetadata(uint32_t data_type_id,
-                               const uint8_t* data,
-                               wtf_size_t size,
+                               base::span<const uint8_t> data,
                                uint64_t tag,
                                base::PassKey<CachedMetadata>)
-    : buffer_(GetSerializedData(data_type_id, data, size, tag)) {}
+    : buffer_(GetSerializedData(data_type_id, data, tag)) {}
 
 CachedMetadata::CachedMetadata(mojo_base::BigBuffer data,
                                uint32_t offset,

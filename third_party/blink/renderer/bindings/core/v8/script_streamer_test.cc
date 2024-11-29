@@ -401,7 +401,7 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // GeneratedCodeCacheHost for testing.
   cache_handler->SetCachedMetadata(/*code_cache_host*/ nullptr,
                                    V8CodeCache::TagForCodeCache(cache_handler),
-                                   reinterpret_cast<const uint8_t*>("X"), 1);
+                                   base::byte_span_from_cstring("X"));
 
   AppendData("function foo() {");
   Finish();
@@ -445,8 +445,7 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
 
   cache_handler->SetCachedMetadata(
       /*code_cache_host*/ nullptr,
-      V8CodeCache::TagForCompileHints(cache_handler), cached_data->data,
-      cached_data->length);
+      V8CodeCache::TagForCompileHints(cache_handler), ToSpan(*cached_data));
 
   // Checks for debugging failures in this test.
   EXPECT_TRUE(V8CodeCache::HasCompileHints(
@@ -934,7 +933,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheData() {
   uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
-      reinterpret_cast<const uint8_t*>("X"), 1);
+      base::byte_span_from_cstring("X"));
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(data_type_id);
   mojo_base::BigBuffer cached_metadata_buffer =
@@ -950,7 +949,7 @@ mojo_base::BigBuffer CreateDummyTimeStampData() {
   uint64_t now_ms = 11111;
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
-      reinterpret_cast<uint8_t*>(&now_ms), sizeof(now_ms));
+      base::as_bytes(base::span_from_ref(now_ms)));
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(data_type_id);
   mojo_base::BigBuffer cached_metadata_buffer =
@@ -968,7 +967,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheDataWithHash(
   uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
-      reinterpret_cast<const uint8_t*>("X"), 1);
+      base::byte_span_from_cstring("X"));
   return mojo_base::BigBuffer(cache_handler->GetSerializedCachedMetadata());
 }
 

@@ -25,8 +25,7 @@ void ScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
 void ScriptCachedMetadataHandler::SetCachedMetadata(
     CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
-    const uint8_t* data,
-    size_t size) {
+    base::span<const uint8_t> data) {
   DCHECK(!cached_metadata_);
   // Having been discarded once, the further attempts to overwrite the
   // CachedMetadata are ignored. This behavior is necessary to avoid clearing
@@ -35,7 +34,7 @@ void ScriptCachedMetadataHandler::SetCachedMetadata(
   // cache.
   if (cached_metadata_discarded_)
     return;
-  cached_metadata_ = CachedMetadata::Create(data_type_id, data, size);
+  cached_metadata_ = CachedMetadata::Create(data_type_id, data);
   if (!disable_send_to_platform_for_testing_)
     CommitToPersistentStorage(code_cache_host);
 }

@@ -88,8 +88,7 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
   }
 
   static scoped_refptr<CachedMetadata> Create(uint32_t data_type_id,
-                                              const uint8_t* data,
-                                              size_t size,
+                                              base::span<const uint8_t> data,
                                               uint64_t tag = 0);
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(
       Vector<uint8_t> data);
@@ -99,8 +98,7 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
 
   CachedMetadata(Vector<uint8_t> data, base::PassKey<CachedMetadata>);
   CachedMetadata(uint32_t data_type_id,
-                 const uint8_t* data,
-                 wtf_size_t size,
+                 base::span<const uint8_t> data,
                  uint64_t tag,
                  base::PassKey<CachedMetadata>);
   CachedMetadata(mojo_base::BigBuffer data,

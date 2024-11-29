@@ -71,8 +71,8 @@ TEST(CachedMetadataTest, GetSerializedDataHeader) {
 }
 
 TEST(CachedMetadataTest, CreateFromBufferWithDataTypeIdAndTag) {
-  CheckTestCachedMetadata(CachedMetadata::Create(kTestDataTypeId, kTestData,
-                                                 sizeof(kTestData), kTestTag));
+  CheckTestCachedMetadata(
+      CachedMetadata::Create(kTestDataTypeId, base::span(kTestData), kTestTag));
 }
 
 TEST(CachedMetadataTest, CreateFromSerializedDataVector) {
