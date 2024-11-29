@@ -3751,11 +3751,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-save-to-photos",
-    "owners": [ "qpubert@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "enable-save-to-photos-improvements",
     "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 135

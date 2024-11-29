@@ -478,10 +478,6 @@ BASE_FEATURE(kIOSSaveToDrive,
              "IOSSaveToDrive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSSaveToPhotos,
-             "IOSSaveToPhotos",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              "IOSDownloadNoUIUpdateInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
