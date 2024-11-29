@@ -4,16 +4,48 @@
 
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 
-@implementation YoutubeIncognitoCoordinator
+#import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet.h"
+
+namespace {
+
+// Custom radius for the half sheet presentation.
+CGFloat const kHalfSheetCornerRadius = 20;
+
+}  // namespace
+
+@implementation YoutubeIncognitoCoordinator {
+  YoutubeIncognitoSheet* _viewController;
+}
 
 - (void)start {
-  // TODO(crbug.com/374935670): Present the corresponding view controller when
-  // available, and start the coordinator.
+  _viewController = [[YoutubeIncognitoSheet alloc] init];
+  _viewController.sheetPresentationController.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  _viewController.sheetPresentationController.preferredCornerRadius =
+      kHalfSheetCornerRadius;
+  _viewController.sheetPresentationController
+      .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  _viewController.sheetPresentationController
+      .prefersEdgeAttachedInCompactHeight = YES;
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)stop {
-  // TODO(crbug.com/374935670): Dimiss the view controller and stop the
-  // coordinator.
+  [super stop];
+  [self dismissViewController];
+}
+
+#pragma mark - Private
+
+// Dismisses the YoutubeIncognitoCoordinator's view controller.
+- (void)dismissViewController {
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  _viewController = nil;
 }
 
 @end
