@@ -1,6 +1,6 @@
 [
     RuntimeEnabled=LanguageDetectionAPI,
-    Exposed=(Window,Worker),
+    Exposed=(Window),
     SecureContext
 ]
 interface AILanguageDetector {
