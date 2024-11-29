@@ -951,10 +951,6 @@ ExternalCanvasResource::ExternalCanvasResource(
   CHECK(client_si_);
   CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
   DCHECK(!release_callback_ || transferable_resource_.sync_token().HasData());
-  // Not all call-sites set TransferableResource::origin yet, so we set it here.
-  // TODO(crbug.com/378688985): Move this all the way to TransferableResource
-  // creation.
-  transferable_resource_.origin = client_si_->surface_origin();
 }
 
 // CanvasResourceSwapChain

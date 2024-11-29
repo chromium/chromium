@@ -251,6 +251,10 @@ bool GPUCanvasContext::PushFrame() {
   // If it was possible to prepare the transferable resource, the
   // ClientSharedImage must also be valid.
   CHECK(client_si);
+
+  // TODO(crbug.com/378688985): Move this inside PrepareTransferableResource.
+  transferable_resource.origin = client_si->surface_origin();
+
   auto canvas_resource = ExternalCanvasResource::Create(
       std::move(client_si), transferable_resource, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
