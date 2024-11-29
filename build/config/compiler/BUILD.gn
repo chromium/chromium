@@ -1993,10 +1993,8 @@ config("default_warnings") {
         # TODO(crbug.com/356172342): Fix and re-enable.
         cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
 
-        if (llvm_force_head_revision) {
-          # TODO(crbug.com/376641662): Fix and re-enable.
-          cflags += [ "-Wno-nontrivial-memaccess" ]
-        }
+        # TODO(crbug.com/376641662): Fix and re-enable.
+        cflags += [ "-Wno-nontrivial-memaccess" ]
       }
     }
 

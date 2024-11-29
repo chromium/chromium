@@ -757,40 +757,6 @@ def main():
                     '9f69da35e2e5438d0c042f76277fff397f6a1505',
                     git_remote_name='github-llvm')
 
-    if sys.platform == 'win32' and not args.llvm_force_head_revision:
-      # Apply https://github.com/zmodem/llvm-project/commit/802b816836f1 which
-      # adds printfs to the win/asan runtime which get printed at high verbosity
-      # level or on errors such as CHECK failure.
-      # TODO(crbug.com/341936875): Remove once debugging is done.
-      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
-                    '802b816836f1dcf9544f250ee5c6977b4cb2bb41')
-
-      # Apply https://github.com/zmodem/llvm-project/commit/89a723c438a5 which
-      # should fix the issue of win/asan failing to allocate memory for
-      # trampoline functions.
-      # TODO(crbug.com/341936875): Land this upstream and remove after debugging.
-      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
-                    '89a723c438a50a34507a71159ba37f6e60afcea9')
-
-      # Apply https://github.com/zmodem/llvm-project/commit/72112845b8e3 which
-      # fixes an issue in the previous patch and adds more printfs.
-      # TODO(crbug.com/341936875): Remove after debugging.
-      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
-                    '72112845b8e37ba5296858d0224f916f0afbf88b')
-
-      # Apply https://github.com/zmodem/llvm-project/commit/723a2efebddf which
-      # tries to speed up the runtime by removing calls to GetModuleFileName and
-      # VPrintfs for contigous_containers.
-      # TODO(crbug.com/341936875): Remove after debugging.
-      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
-                    '723a2efebddf250b58c2dd3bd064c1cd0f57b85f')
-
-      # Apply https://github.com/zmodem/llvm-project/commit/a86b7e95a8a7 which
-      # adds proper clamping of {min,max}_addr in AllocateTrampolineRegion.
-      # TODO(crbug.com/341936875): Remove after debugging.
-      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
-                    'a86b7e95a8a7a7de750d19e4d189e9a9497e31e8')
-
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
     PACKAGE_VERSION = '%s-0' % CLANG_REVISION
