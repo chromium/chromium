@@ -168,7 +168,7 @@ TEST(SharedBufferTest, constructorWithFlatData) {
   Vector<char> data;
 
   while (data.size() < 10000ul) {
-    data.Append("FooBarBaz", 9ul);
+    data.AppendSpan(base::span_from_cstring("FooBarBaz"));
     auto shared_buffer = SharedBuffer::Create(base::span(data));
 
     Vector<Vector<char>> segments;

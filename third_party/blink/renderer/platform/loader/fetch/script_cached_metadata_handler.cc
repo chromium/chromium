@@ -208,12 +208,11 @@ ScriptCachedMetadataHandlerWithHashing::GetSerializedCachedMetadata() const {
     uint32_t marker = CachedMetadataHandler::kSingleEntryWithHashAndPadding;
     CHECK_EQ(serialized_data.size(),
              offsetof(CachedMetadataHeaderWithHash, marker));
-    serialized_data.Append(reinterpret_cast<uint8_t*>(&marker), sizeof(marker));
+    serialized_data.AppendSpan(base::as_bytes(base::span_from_ref(marker)));
     uint32_t padding = 0;
     CHECK_EQ(serialized_data.size(),
              offsetof(CachedMetadataHeaderWithHash, padding));
-    serialized_data.Append(reinterpret_cast<uint8_t*>(&padding),
-                           sizeof(padding));
+    serialized_data.AppendSpan(base::as_bytes(base::span_from_ref(padding)));
     CHECK_EQ(serialized_data.size(),
              offsetof(CachedMetadataHeaderWithHash, hash));
     serialized_data.AppendSpan(base::span(hash_));

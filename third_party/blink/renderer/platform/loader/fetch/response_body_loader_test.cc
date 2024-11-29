@@ -355,11 +355,11 @@ TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   const size_t kMax = network::kMaxNumConsumedBytesInTask;
 
-  consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
-  consumer->Add(Command(Command::kData, std::string(2, 'b').data()));
+  consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a')));
+  consumer->Add(Command(Command::kData, std::string(2, 'b')));
   consumer->Add(Command(Command::kWait));
-  consumer->Add(Command(Command::kData, std::string(kMax, 'c').data()));
-  consumer->Add(Command(Command::kData, std::string(kMax + 3, 'd').data()));
+  consumer->Add(Command(Command::kData, std::string(kMax, 'c')));
+  consumer->Add(Command(Command::kData, std::string(kMax + 3, 'd')));
   consumer->Add(Command(Command::kDone));
 
   auto* client = MakeGarbageCollected<TestClient>();
@@ -668,7 +668,7 @@ TEST_P(ResponseBodyLoaderLoadingTasksUnfreezableTest,
   // Suspend, then add a long response body to |consumer|.
   body_loader->Suspend(LoaderFreezeMode::kBufferIncoming);
   std::string body(70000, '*');
-  consumer->Add(Command(Command::kDataAndDone, body.c_str()));
+  consumer->Add(Command(Command::kDataAndDone, body));
 
   // ResponseBodyLoader will buffer data when deferred, and won't notify the
   // client until it's resumed.

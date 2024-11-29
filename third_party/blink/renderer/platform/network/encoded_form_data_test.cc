@@ -52,7 +52,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
                                               std::move(remote)));
 
   Vector<char> boundary_vector;
-  boundary_vector.Append("----boundaryForTest", 19);
+  boundary_vector.AppendSpan(base::span_from_cstring("----boundaryForTest"));
   original->SetIdentifier(45678);
   original->SetBoundary(boundary_vector);
   original->SetContainsPasswordData(true);
@@ -63,7 +63,7 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   ASSERT_EQ(3ul, copy_elements.size());
 
   Vector<char> foo_vector;
-  foo_vector.Append("Foo", 3);
+  foo_vector.AppendSpan(base::span_from_cstring("Foo"));
 
   EXPECT_EQ(FormDataElement::kData, copy_elements[0].type_);
   EXPECT_EQ(foo_vector, copy_elements[0].data_);
