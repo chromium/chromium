@@ -451,10 +451,10 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LargestContentfulPaint) {
     double soft_nav_2_lcp = std::next(source_id_to_lcp.cbegin())->second;
 
     EXPECT_NEAR(soft_nav_1_start_time + soft_nav_1_lcp,
-                soft_nav_1_web_exposed_lcp, 2);
+                soft_nav_1_web_exposed_lcp, 6);
 
     EXPECT_NEAR(soft_nav_2_start_time + soft_nav_2_lcp,
-                soft_nav_2_web_exposed_lcp, 2);
+                soft_nav_2_web_exposed_lcp, 6);
   }
 
   // Verify 2 LCP discovery time timings are reported.

@@ -1709,7 +1709,7 @@
     },
     {
       name: "ExposeCoarsenedRenderTime",
-      status: "test",
+      status: "stable",
     },
     {
       name: "ExposeRenderTimeNonTaoDelayedImage",
