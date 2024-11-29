@@ -50,6 +50,11 @@ export function connectToMahiUntrustedService(fileName?: string) {
   return mahiUntrustedService;
 }
 
+export async function isMantisAvailable() {
+  const {result} = await factoryRemote.isMantisAvailable();
+  return result;
+}
+
 export async function connectToMantisUntrustedService() {
   const {result} = await factoryRemote.createMantisUntrustedService();
   return result;

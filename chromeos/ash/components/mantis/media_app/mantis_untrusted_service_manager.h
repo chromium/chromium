@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -32,9 +33,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
       const MantisUntrustedServiceManager&) = delete;
   ~MantisUntrustedServiceManager();
 
+  void IsAvailable(base::OnceCallback<void(bool)> callback);
   void Create(CreateCallback callback);
 
  private:
+  void OnQueryDone(
+      base::OnceCallback<void(bool)> callback,
+      chromeos::mojo_service_manager::mojom::ErrorOrServiceStatePtr result);
   void OnInitializeDone(
       CreateCallback callback,
       mojo::PendingRemote<mantis::mojom::MantisProcessor> processor,

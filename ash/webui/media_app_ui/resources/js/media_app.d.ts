@@ -296,6 +296,11 @@ declare interface ClientApiDelegate {
    */
   viewportUpdated(viewportBox: RectF, scaleFactor: number): void;
   /**
+   * Checks Mantis feature availability, which can be restricted based on
+   * device, user type, and others.
+   */
+  isMantisAvailable(): Promise<boolean>;
+  /**
    * Loads Mantis' assets from DLC and initializes the processor for subsequent
    * queries.
    */

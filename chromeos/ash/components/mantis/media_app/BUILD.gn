@@ -15,6 +15,7 @@ component("media_app") {
     "mantis_untrusted_service_manager.h",
   ]
   deps = [
+    "//ash/constants",
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
     "//base",
     "//chromeos/ash/components/mantis/mojom",

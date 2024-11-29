@@ -86,6 +86,8 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
       mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedService> receiver,
       mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name) override;
+  void OnMantisAvailableDone(IsMantisAvailableCallback callback, bool result);
+  void IsMantisAvailable(IsMantisAvailableCallback callback) override;
   void CreateMantisUntrustedService(
       CreateMantisUntrustedServiceCallback callback) override;
 
@@ -104,6 +106,7 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   bool app_navigation_committed_ = false;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  std::optional<bool> is_mantis_available_;
   std::unique_ptr<MantisUntrustedServiceManager>
       mantis_untrusted_service_manager_;
   mojo::Receiver<media_app_ui::mojom::UntrustedServiceFactory>

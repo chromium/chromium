@@ -32,6 +32,10 @@ interface UntrustedServiceFactory {
                              pending_remote<MahiUntrustedPage> page,
                              string file_name);
 
+  // Checks Mantis feature availability, which can be restricted based on
+  // device, user type, and others.
+  IsMantisAvailable() => (bool result);
+
   // Exposes Mantis related APIs between the untrusted frame and the browser via
   // `receiver`. When called multiple times, the previous connection will be
   // closed. Therefore, it should be called once per WebUIController lifetime or

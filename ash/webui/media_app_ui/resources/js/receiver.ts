@@ -14,7 +14,7 @@ import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 import {InitializeResult} from './mantis_service.mojom-webui.js';
 import {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
-import {connectToMahiUntrustedService, connectToMantisUntrustedService, connectToOcrUntrustedService, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
+import {connectToMahiUntrustedService, connectToMantisUntrustedService, connectToOcrUntrustedService, isMantisAvailable, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -433,6 +433,9 @@ const DELEGATE: ClientApiDelegate = {
   },
   async onPdfContextMenuHide() {
     await mahiUntrustedService?.onPdfContextMenuHide();
+  },
+  async isMantisAvailable() {
+    return isMantisAvailable();
   },
   async initializeMantis() {
     mantisUntrustedService?.$.close();
