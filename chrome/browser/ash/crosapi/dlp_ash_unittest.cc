@@ -51,7 +51,7 @@ class DlpAshTest : public ash::AshTestBase {
   explicit DlpAshTest(
       std::unique_ptr<base::test::TaskEnvironment> task_environment)
       : ash::AshTestBase(std::move(task_environment)) {}
-  DlpAshTest() {}
+  DlpAshTest() = default;
 
   DlpAsh* dlp_ash() { return &dlp_ash_; }
 
