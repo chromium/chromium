@@ -654,7 +654,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   ClientHintsBrowserTest(const ClientHintsBrowserTest&) = delete;
   ClientHintsBrowserTest& operator=(const ClientHintsBrowserTest&) = delete;
 
-  ~ClientHintsBrowserTest() override {}
+  ~ClientHintsBrowserTest() override = default;
 
   virtual void SetUpScopedFeatureList(
       base::test::ScopedFeatureList& scoped_feature_list) {
