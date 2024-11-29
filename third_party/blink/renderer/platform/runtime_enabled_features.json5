@@ -1212,7 +1212,7 @@
     },
     {
       name: "CSSScrollableContainerQueries",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
@@ -1262,7 +1262,7 @@
     },
     {
       name: "CSSSnapContainerQueries",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
@@ -1271,7 +1271,7 @@
     },
     {
       name: "CSSStickyContainerQueries",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSSupportsAtRuleFunction",
