@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/byte_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -149,10 +148,6 @@ void ConvertToTiledOzoneOverlaySurface(
   ozone_candidate->rounded_corners = overlay_candidate.rounded_corners;
   ozone_candidate->native_pixmap = nullptr;
   ozone_candidate->overlay_type = overlay_candidate.overlay_type;
-}
-
-uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
-  return base::U32FromBigEndian(base::as_byte_span(mailbox.name).first<4>());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -544,7 +539,7 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
   }
 
   candidate->native_pixmap = std::move(native_pixmap);
-  candidate->native_pixmap_unique_id = MailboxToUInt32(mailbox);
+  candidate->native_pixmap_unique_id = mailbox.ToU32();
   return true;
 }
 
