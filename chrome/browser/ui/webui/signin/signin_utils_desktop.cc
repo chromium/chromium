@@ -83,6 +83,9 @@ SigninUIError CanOfferSignin(Profile* profile,
           if (entry->IsOmitted() || entry->GetPath() == profile->GetPath()) {
             continue;
           }
+          if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
+            continue;
+          }
 
           if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {

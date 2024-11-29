@@ -66,6 +66,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   friend class ProfilePickerHandlerTest;
   friend class ProfilePickerHandlerInUserProfileTest;
   friend class ProfilePickerCreationFlowBrowserTest;
+  friend class ProfilePickerEnterpriseCreationFlowBrowserTest;
   friend class StartupBrowserCreatorPickerInfobarTest;
   friend class SupervisedProfilePickerHideGuestModeTest;
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerHandlerInUserProfileTest,
@@ -76,10 +77,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            DeleteProfileFromOwnTab);
   FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerEnterpriseCreationFlowWithSyncParamBrowserTest,
+      ProfilePickerEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch);
   FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerEnterpriseCreationFlowWithSyncParamBrowserTest,
+      ProfilePickerEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_CancelSwitch);
 
   void HandleMainViewInitialize(const base::Value::List& args);
