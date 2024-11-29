@@ -222,7 +222,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/shimless_rma:unit_tests",
     "//chrome/browser/ash/smb_client:unit_tests",
     "//chrome/browser/ash/smb_client/discovery:unit_tests",
-    "//chrome/browser/ash/sparky:unit_tests",
     "//chrome/browser/ash/sync:unit_tests",
     "//chrome/browser/ash/system:unit_tests",
     "//chrome/browser/ash/system_logs:unit_tests",

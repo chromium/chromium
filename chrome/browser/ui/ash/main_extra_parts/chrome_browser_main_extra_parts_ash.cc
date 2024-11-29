@@ -453,8 +453,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
   mobile_data_notifications_ = std::make_unique<MobileDataNotifications>();
 
-  if (chromeos::features::IsMahiEnabled() &&
-      !chromeos::features::IsSparkyEnabled()) {
+  if (chromeos::features::IsMahiEnabled()) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             chromeos::switches::kUseFakeMahiManager)) {
       mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
