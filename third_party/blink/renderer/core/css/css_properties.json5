@@ -5735,7 +5735,6 @@
       wrapper_pointer_name: "Member",
       converter: "ConvertTimelineScope",
       separator: ",",
-      runtime_flag: "TimelineScope",
     },
     {
       name: "top",

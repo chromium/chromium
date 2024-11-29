@@ -4217,13 +4217,6 @@
       status: "experimental",
     },
     {
-      // Support for the timeline-scope property.
-      //
-      // https://drafts.csswg.org/scroll-animations-1/#timeline-scope
-      name: "TimelineScope",
-      status: "stable",
-    },
-    {
       name: "TimerThrottlingForBackgroundTabs",
       public: true,
       status: "stable",
