@@ -16,11 +16,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter ondownloadprogress
 [Worker]     method constructor
 [Worker]     setter ondownloadprogress
-[Worker] interface AILanguageDetectorCapabilities
-[Worker]     attribute @@toStringTag
-[Worker]     getter available
-[Worker]     method constructor
-[Worker]     method languageAvailable
 [Worker] interface AILanguageModel : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter maxTokens

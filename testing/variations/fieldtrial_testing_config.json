@@ -13111,6 +13111,27 @@
             ]
         }
     ],
+    "LanguageDetectionAPI": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "LanguageDetectionAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "LauncherGameSearchStudy": [
         {
             "platforms": [

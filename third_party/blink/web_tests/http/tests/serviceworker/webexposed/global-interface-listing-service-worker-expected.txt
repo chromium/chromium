@@ -11,11 +11,6 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
-interface AILanguageDetectorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languageAvailable
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
     getter maxTokens
