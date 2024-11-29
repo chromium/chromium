@@ -4,6 +4,12 @@
 
 # Defines the configuration of Remote Build Execution (RBE).
 
+use_remoteexec_default =
+    exec_script(rebase_path("//build/toolchain/use_remoteexec_value.py"),
+                [],
+                "value",
+                [])
+
 declare_args() {
   # Deprecated: Please use reclient_bin_dir instead.
   rbe_bin_dir = ""
@@ -21,7 +27,7 @@ declare_args() {
   rbe_exec_root = rebase_path("//")
 
   # Set to true to enable remote executions.
-  use_remoteexec = false
+  use_remoteexec = use_remoteexec_default
 }
 
 use_reclient_default = false
