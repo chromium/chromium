@@ -198,6 +198,13 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
 
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
 
+const char kHistogramEventCreationTimeToProcessingStartPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart";
+const char kHistogramEventQueueTimeToProcessingStartPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart";
+const char kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime";
+
 base::TimeTicks WindowPerformance::GetTimeOrigin(LocalDOMWindow* window) {
   DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
   return loader->GetTiming().ReferenceMonotonicTime();
@@ -755,24 +762,32 @@ void WindowPerformance::ReportEventTimings() {
       break;
     }
 
+    auto* first_event_reporting_info =
+        first->Get()->GetEventTimingReportingInfo();
+    auto first_event_creation_time = first_event_reporting_info->creation_time;
+    auto first_event_enqueued_to_main_thread_time =
+        first_event_reporting_info->enqueued_to_main_thread_time;
+    auto first_event_processing_start =
+        first_event_reporting_info->processing_start_time;
+
     if (tracing_enabled) {
       auto scope = perfetto::Track::ThreadScoped(this);
       auto flowid = perfetto::Flow::ProcessScoped(presentation_index);
 
-      auto* first_event_reporting_info =
-          first->Get()->GetEventTimingReportingInfo();
-      auto frame_start_time = first_event_reporting_info->processing_start_time;
-
       TRACE_EVENT_BEGIN("devtools.timeline", "EventsInAnimationFrame", scope,
-                        frame_start_time, flowid);
+                        first_event_processing_start, flowid);
 
       TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", scope,
-                          first_event_reporting_info->creation_time, flowid);
+                          first_event_creation_time, flowid);
     }
 
     // Report all the events in this frame
+    bool had_interaction_in_animation_frame = false;
     std::for_each(first, last, [&](auto entry) {
       ReportEvent(interactive_detector, entry);
+      if (entry->HasKnownInteractionID() && entry->interactionId() != 0u) {
+        had_interaction_in_animation_frame = true;
+      }
     });
 
     if (tracing_enabled) {
@@ -806,6 +821,23 @@ void WindowPerformance::ReportEventTimings() {
                                 ->fallback_time.value(),
                             flowid);
       }
+    }
+
+    // Report INP breakdown metrics into UMA per animation frame.
+    if (had_interaction_in_animation_frame) {
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          kHistogramEventCreationTimeToProcessingStartPerAnimationFrame,
+          first_event_processing_start - first_event_creation_time,
+          base::Milliseconds(1), base::Seconds(60), 50);
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame,
+          first_event_enqueued_to_main_thread_time - first_event_creation_time,
+          base::Milliseconds(1), base::Seconds(60), 50);
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          kHistogramEventQueueTimeToProcessingStartPerAnimationFrame,
+          first_event_processing_start -
+              first_event_enqueued_to_main_thread_time,
+          base::Milliseconds(1), base::Seconds(60), 50);
     }
 
     // Remove reported EventData objects.
