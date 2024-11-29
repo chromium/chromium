@@ -436,6 +436,12 @@
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP" desc="The tooltip of summary button.">
         Click to summarize the webpage/PDF file
       </message>
+      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION" desc="The tooltip of summary button for selected text.">
+        Click to summarize the selected text
+      </message>
+      <message name="IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT" desc="The tooltip of summary button when selected text is too short.">
+        Too few words to summarize
+      </message>
       <message name="IDS_MAHI_SIMPLIFY_BUTTON_LABEL_TEXT" desc="The text label for the simplify button inside the Mahi menu">
         Simplify
       </message>

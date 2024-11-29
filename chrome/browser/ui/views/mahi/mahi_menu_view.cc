@@ -123,6 +123,22 @@ std::u16string GetSimplifyButtonTooltipText(SelectedTextState text_state) {
   return std::u16string();
 }
 
+std::u16string GetSummaryButtonTooltipText(SelectedTextState text_state) {
+  switch (text_state) {
+    case SelectedTextState::kEmpty:
+      return l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP);
+    case SelectedTextState::kEligible:
+      return l10n_util::GetStringUTF16(
+          IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION);
+    case SelectedTextState::kTooShort:
+      return l10n_util::GetStringUTF16(
+          IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT);
+    case SelectedTextState::kTooLong:
+    case SelectedTextState::kUnknown:
+      return std::u16string();
+  }
+}
+
 // Custom widget to ensure the MahiMenuView follows the same theme as the
 // browser context menu.
 class MahiMenuWidget : public views::Widget {
@@ -302,9 +318,8 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
     elucidation_button_->SetTooltipText(elucidation_button_tooltip);
   }
 
-  // TODO(b:374629795): set tooltip for summary button accordingly.
-  summary_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
+  summary_button_->SetTooltipText(GetSummaryButtonTooltipText(
+      button_status.summary_of_selection_eligibility));
 
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
   // TODO(b:374172642): update the icon

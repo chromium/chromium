@@ -233,27 +233,35 @@ TEST_F(MahiMenuViewTest, SummaryButtonAvailability) {
   auto menu_widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
-  // TODO(b:374629795): check tooltips that reflects the purpose / availability
-  // of the button after we add it accordingly.
-
   // kEmpty enables the button for whole document.
   MahiMenuView::ButtonStatus button_status{.summary_of_selection_eligibility =
                                                SelectedTextState::kEmpty};
   auto* menu_view = menu_widget->SetContentsView(
       std::make_unique<MahiMenuView>(button_status));
   EXPECT_TRUE(menu_view->GetViewByID(ViewID::kSummaryButton)->GetEnabled());
+  EXPECT_EQ(
+      menu_view->GetViewByID(ViewID::kSummaryButton)->GetCachedTooltipText(),
+      l10n_util::GetStringUTF16(IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP));
 
   // kTooShort shows the button but disabled.
   button_status.summary_of_selection_eligibility = SelectedTextState::kTooShort;
   menu_view = menu_widget->SetContentsView(
       std::make_unique<MahiMenuView>(button_status));
   EXPECT_FALSE(menu_view->GetViewByID(ViewID::kSummaryButton)->GetEnabled());
+  EXPECT_EQ(
+      menu_view->GetViewByID(ViewID::kSummaryButton)->GetCachedTooltipText(),
+      l10n_util::GetStringUTF16(
+          IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION_TOO_SHORT));
 
   // kEligible enables the button for summary of selection.
   button_status.summary_of_selection_eligibility = SelectedTextState::kEligible;
   menu_view = menu_widget->SetContentsView(
       std::make_unique<MahiMenuView>(button_status));
   EXPECT_TRUE(menu_view->GetViewByID(ViewID::kSummaryButton)->GetEnabled());
+  EXPECT_EQ(
+      menu_view->GetViewByID(ViewID::kSummaryButton)->GetCachedTooltipText(),
+      l10n_util::GetStringUTF16(
+          IDS_MAHI_SUMMARIZE_BUTTON_TOOL_TIP_FOR_SELECTION));
 }
 
 TEST_F(MahiMenuViewTest, ElucidationButtonVisibilityAvailability) {
