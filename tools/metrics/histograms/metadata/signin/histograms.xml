@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
     Recorded when an extended account info is updated and the account info has
     Capabilities during displaying of the sync consent screen.
 
-    Recorded only in Android and iOS. Recording in Desktop ceased since M132.
+    Pre-stable M132 and M133 Desktop binaries have missing data.
   </summary>
 </histogram>
 
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
     displayed, the user is signed in and not syncing, and the primary account
     info has Capabilities.
 
-    Recorded only in Android and iOS. Recording in Desktop ceased since M132.
+    Pre-stable M132 and M133 Desktop binaries have missing data.
   </summary>
 </histogram>
 
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
     displayed, the user is signed in and not syncing, and the primary account
     info has Capabilities.
 
-    Recorded only in Android and iOS. Recording in Desktop ceased since M132.
+    Pre-stable M132 and M133 Desktop binaries have missing data.
   </summary>
 </histogram>
 
@@ -2558,7 +2558,7 @@ kept as long as profile signout is possible -->
     Warning: Buckets related to the History Sync Screen are recorded incorrectly
     on Android pre-M128, see https://crbug.com/352495951.
 
-    Recorded only in Android and iOS. Recording in Desktop ceased since M132.
+    Pre-stable M132 and M133 Desktop binaries have missing data.
   </summary>
 </histogram>
 
@@ -2584,7 +2584,7 @@ kept as long as profile signout is possible -->
     to see the count of equally weighted buttons that resulted in some user
     decision.
 
-    Recorded only in Android and iOS. Recording in Desktop ceased since M132.
+    Pre-stable M132 and M133 Desktop binaries have missing data.
   </summary>
 </histogram>
 

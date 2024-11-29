@@ -425,6 +425,8 @@ TEST_F(SyncConfirmationHandlerTest,
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
   base::Value::List args;
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
+
   handler()->HandleUndo(args);
   did_user_explicitly_interact_ = true;
 
@@ -451,6 +453,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleConfirm(args);
   did_user_explicitly_interact_ = true;
@@ -489,6 +492,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleGoToSettings(args);
   did_user_explicitly_interact_ = true;
@@ -511,4 +515,128 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
 
   EXPECT_EQ(account_info_.account_id, consent_auditor()->account_id());
 }
+
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {
+  if (!IsMinorModeEnabled()) {
+    GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
+  }
+
+  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              base::BucketsInclude(base::Bucket(/*min=*/0, /*count=*/1)));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.FetchLatency"),
+              ::testing::IsEmpty());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.ImmediatelyAvailable"),
+              base::BucketsInclude(base::Bucket(/*min=*/true, /*count=*/1)));
+}
+
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedLater) {
+  if (!IsMinorModeEnabled()) {
+    GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
+  }
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.ImmediatelyAvailable"),
+              base::BucketsInclude(base::Bucket(/*min=*/false, /*count=*/1)));
+
+  // Latencies are yet to be recorded.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              ::testing::IsEmpty());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.FetchLatency"),
+              ::testing::IsEmpty());
+
+  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
+
+  // Latency is finally recorded but let's not assert any specific value to
+  // avoid flakiness.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              ::testing::SizeIs(1));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.FetchLatency"),
+              ::testing::SizeIs(1));
+}
+
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsNotRecordedTwice) {
+  if (!IsMinorModeEnabled()) {
+    GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
+  }
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  // Verify how many times latency was recorded by looking at UserVisibleLatency
+  // only.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              ::testing::IsEmpty());
+
+  AccountCapabilitiesTestMutator mutator(&account_info_.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info_);
+
+  // After update latency is recorded.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              ::testing::SizeIs(1));
+
+  // This triggers OnExtendedAccountInfoUpdated again but this time should not
+  // record any latency.
+  identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
+      account_info_.account_id, account_info_.email, account_info_.gaia, "",
+      "full_name", "given_name", "locale",
+      "http://picture.example.com/picture.jpg");
+
+  // So assert that sample count is unchanged.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              ::testing::SizeIs(1));
+}
+
+TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedPastDeadline) {
+  if (!IsMinorModeEnabled()) {
+    GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
+  }
+
+  base::Value::List args;
+  args.Append(kDefaultDialogHeight);
+  handler()->HandleInitializedWithSize(args);
+
+  // Advance clock by amount of time larger than any sane fetch timeout.
+  task_environment()->FastForwardBy(base::Minutes(1));
+
+  // Even though capability was not received, latency is recorded, because the
+  // minor-safe behaviour was imposed by reaching the fetch deadline.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.UserVisibleLatency"),
+              ::testing::SizeIs(1));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Signin.AccountCapabilities.FetchLatency"),
+              ::testing::SizeIs(1));
+}
+
 }  // namespace
