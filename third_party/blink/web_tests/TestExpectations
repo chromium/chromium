@@ -8685,3 +8685,4 @@ crbug.com/381428629 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/va
 crbug.com/381428629 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
 crbug.com/381428629 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
 crbug.com/381335068 [ Linux ] external/wpt/webdriver/tests/bidi/network/auth_required/unsubscribe.py [ Failure Pass ]
+crbug.com/381444317 [ Linux ] external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html [ Failure Pass ]
