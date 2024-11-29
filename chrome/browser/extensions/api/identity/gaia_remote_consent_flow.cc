@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/url_constants.h"
@@ -82,7 +83,7 @@ void GaiaRemoteConsentFlow::Stop() {
 void GaiaRemoteConsentFlow::ReactToConsentResult(
     const std::string& consent_result) {
   bool consent_approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   if (!gaia::ParseOAuth2MintTokenConsentResult(consent_result,
                                                &consent_approved, &gaia_id)) {
     GaiaRemoteConsentFlowFailed(GaiaRemoteConsentFlow::INVALID_CONSENT_RESULT);
@@ -95,7 +96,8 @@ void GaiaRemoteConsentFlow::ReactToConsentResult(
   }
 
   RecordResultHistogram(GaiaRemoteConsentFlow::NONE);
-  delegate_->OnGaiaRemoteConsentFlowApproved(consent_result, gaia_id);
+  delegate_->OnGaiaRemoteConsentFlowApproved(consent_result,
+                                             gaia_id.ToString());
 }
 
 void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {

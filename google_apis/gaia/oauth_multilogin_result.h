@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
@@ -70,7 +71,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
       base::RepeatingCallback<std::string(std::string_view)>;
 
   struct FailedAccount {
-    std::string gaia_id;
+    GaiaId gaia_id;
 
     // If `token_binding_challenge` is not empty, an account error might be
     // recovered by retrying the request with a token binding assertion signed

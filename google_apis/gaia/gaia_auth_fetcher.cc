@@ -146,7 +146,7 @@ std::string CreateMultiBearerAuthorizationHeader(
   std::ranges::transform(
       accounts, std::back_inserter(authorization_header_parts),
       [](const auto& account) {
-        return base::StrCat({account.token, ":", account.gaia_id});
+        return base::StrCat({account.token, ":", account.gaia_id.ToString()});
       });
 
   return "Authorization: MultiBearer " +

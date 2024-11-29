@@ -1780,7 +1780,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -1811,7 +1811,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account1.id);
-  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account1.email);
 
   gaia::ListedAccount account_info2 =
@@ -1819,7 +1819,7 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId2, kTestEmail2),
       account_info2.id);
-  EXPECT_EQ(kTestGaiaId2, account_info2.gaia_id);
+  EXPECT_EQ(kTestGaiaId2, account_info2.gaia_id.ToString());
   EXPECT_EQ(kTestEmail2, account_info2.email);
 }
 
@@ -1873,7 +1873,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
       EXPECT_EQ(
           identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
           listed_account1.id);
-    EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
+    EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
     EXPECT_EQ(kTestEmail, listed_account1.email);
 
     gaia::ListedAccount listed_account2 =
@@ -1885,7 +1885,7 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
       EXPECT_EQ(identity_manager()->PickAccountIdForAccount(kTestGaiaId2,
                                                             kTestEmail2),
                 listed_account2.id);
-    EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
+    EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
     EXPECT_EQ(kTestEmail2, listed_account2.email);
   }
 }
@@ -1979,7 +1979,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithOneAccount) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account.id);
-  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account.email);
 }
 
@@ -2021,7 +2021,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
       listed_account1.id);
-  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id);
+  EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
   EXPECT_EQ(kTestEmail, listed_account1.email);
 
   gaia::ListedAccount listed_account2 =
@@ -2029,7 +2029,7 @@ TEST_F(IdentityManagerTest, GetAccountsInCookieJarWithTwoAccounts) {
   EXPECT_EQ(
       identity_manager()->PickAccountIdForAccount(kTestGaiaId2, kTestEmail2),
       listed_account2.id);
-  EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id);
+  EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
   EXPECT_EQ(kTestEmail2, listed_account2.email);
 }
 

@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "google_apis/gaia/token_binding_response_encryption_error.h"
@@ -162,7 +163,7 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
   std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> CreateFetcher() {
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         &mock_consumer_, url_loader_factory_.GetSafeWeakWrapper(),
-        kTestUserGaiaId, kTestRefreshToken, kTestDeviceId, kTestVersion,
+        GaiaId(kTestUserGaiaId), kTestRefreshToken, kTestDeviceId, kTestVersion,
         kTestChannel);
     fetcher->SetOAuth2MintTokenFlowFactoryForTesting(base::BindRepeating(
         &OAuth2MintAccessTokenFetcherAdapterTest::CreateMockFlow,
@@ -212,7 +213,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Params) {
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
   expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
-      kTestUserGaiaId, kTestRefreshToken, kAssertionSentinel);
+      GaiaId(kTestUserGaiaId), kTestRefreshToken, kAssertionSentinel);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 
@@ -230,7 +231,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsWithBindingKeyAssertion) {
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
   expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
-      kTestUserGaiaId, kTestRefreshToken, kTestAssertion);
+      GaiaId(kTestUserGaiaId), kTestRefreshToken, kTestAssertion);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 

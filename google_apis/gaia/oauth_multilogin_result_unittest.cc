@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_status_code.h"
@@ -416,7 +417,7 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
                                 net::HTTP_FORBIDDEN);
   EXPECT_EQ(result4.status(), OAuthMultiloginResponseStatus::kInvalidTokens);
   EXPECT_THAT(result4.failed_accounts(),
-              ElementsAre(FieldsAre("account1", "")));
+              ElementsAre(FieldsAre(GaiaId("account1"), "")));
 
   // Unknown status.
   OAuthMultiloginResult unknown_status(R"()]}'
@@ -876,9 +877,9 @@ TEST(OAuthMultiloginResultTest, ParseRetryResponseWithTokenBindingChallenge) {
   EXPECT_EQ(result.status(),
             OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge);
   EXPECT_THAT(result.failed_accounts(),
-              ElementsAre(FieldsAre("account1", "test_challenge1"),
-                          FieldsAre("account3", "test_challenge3"),
-                          FieldsAre("account4", std::string())));
+              ElementsAre(FieldsAre(GaiaId("account1"), "test_challenge1"),
+                          FieldsAre(GaiaId("account3"), "test_challenge3"),
+                          FieldsAre(GaiaId("account4"), std::string())));
 }
 
 TEST(OAuthMultiloginResultTest,
@@ -889,9 +890,9 @@ TEST(OAuthMultiloginResultTest,
       net::HTTP_FORBIDDEN);
   EXPECT_EQ(result.status(), OAuthMultiloginResponseStatus::kInvalidTokens);
   EXPECT_THAT(result.failed_accounts(),
-              ElementsAre(FieldsAre("account1", std::string()),
-                          FieldsAre("account3", std::string()),
-                          FieldsAre("account4", std::string())));
+              ElementsAre(FieldsAre(GaiaId("account1"), std::string()),
+                          FieldsAre(GaiaId("account3"), std::string()),
+                          FieldsAre(GaiaId("account4"), std::string())));
 }
 
 // Decryptor is successfully used if cookies in the response are encrypted.

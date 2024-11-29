@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -20,7 +21,7 @@ ListedAccount ValidListedAccount(const std::string& raw_email,
                                  const std::string& gaia_id) {
   gaia::ListedAccount result;
   result.email = CanonicalizeEmail(raw_email);
-  result.gaia_id = gaia_id;
+  result.gaia_id = GaiaId(gaia_id);
   result.raw_email = raw_email;
   return result;
 }
@@ -318,11 +319,11 @@ TEST(GaiaAuthUtilTest, ParseConsentResultApproved) {
   EXPECT_EQ(kApprovedConsent,
             GenerateOAuth2MintTokenConsentResult(true, "ENCRYPTED", kGaiaId));
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kApprovedConsent, &approved, &gaia_id));
   EXPECT_TRUE(approved);
-  EXPECT_EQ(gaia_id, kGaiaId);
+  EXPECT_EQ(gaia_id.ToString(), kGaiaId);
 }
 
 TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyData) {
@@ -330,11 +331,11 @@ TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyData) {
   EXPECT_EQ(kApprovedConsent,
             GenerateOAuth2MintTokenConsentResult(true, std::nullopt, kGaiaId));
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kApprovedConsent, &approved, &gaia_id));
   EXPECT_TRUE(approved);
-  EXPECT_EQ(gaia_id, kGaiaId);
+  EXPECT_EQ(gaia_id.ToString(), kGaiaId);
 }
 
 TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyGaiaId) {
@@ -342,7 +343,7 @@ TEST(GaiaAuthUtilTest, ParseConsentResultApprovedEmptyGaiaId) {
   EXPECT_EQ(kApprovedConsent, GenerateOAuth2MintTokenConsentResult(
                                   true, "ENCRYPTED", std::nullopt));
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kApprovedConsent, &approved, &gaia_id));
   EXPECT_TRUE(approved);
@@ -354,18 +355,18 @@ TEST(GaiaAuthUtilTest, ParseConsentResultNotApproved) {
   EXPECT_EQ(kNoGrantConsent,
             GenerateOAuth2MintTokenConsentResult(false, std::nullopt, kGaiaId));
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   ASSERT_TRUE(
       ParseOAuth2MintTokenConsentResult(kNoGrantConsent, &approved, &gaia_id));
   EXPECT_FALSE(approved);
-  EXPECT_EQ(gaia_id, kGaiaId);
+  EXPECT_EQ(gaia_id.ToString(), kGaiaId);
 }
 
 TEST(GaiaAuthUtilTest, ParseConsentResultEmpty) {
   EXPECT_EQ("", GenerateOAuth2MintTokenConsentResult(std::nullopt, std::nullopt,
                                                      std::nullopt));
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   ASSERT_TRUE(ParseOAuth2MintTokenConsentResult("", &approved, &gaia_id));
   // false is the default value for a bool in proto.
   EXPECT_FALSE(approved);
@@ -380,7 +381,7 @@ TEST(GaiaAuthUtilTest, ParseConsentResultBase64UrlDisallowedPadding) {
                 true, std::nullopt, std::nullopt,
                 base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   EXPECT_FALSE(ParseOAuth2MintTokenConsentResult(kApprovedConsentWithPadding,
                                                  &approved, &gaia_id));
 }
@@ -389,7 +390,7 @@ TEST(GaiaAuthUtilTest, ParseConsentResultInvalidBase64Url) {
   const char kMalformedConsent[] =
       "+/";  // '+' and '/' are disallowed in base64url alphabet.
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   EXPECT_FALSE(ParseOAuth2MintTokenConsentResult(kMalformedConsent, &approved,
                                                  &gaia_id));
 }
@@ -398,7 +399,7 @@ TEST(GaiaAuthUtilTest, ParseConsentResultInvalidProto) {
   const char kMalformedConsent[] =
       "ab";  // Valid base64url string but invalid proto.
   bool approved = false;
-  std::string gaia_id;
+  GaiaId gaia_id;
   EXPECT_FALSE(ParseOAuth2MintTokenConsentResult(kMalformedConsent, &approved,
                                                  &gaia_id));
 }
@@ -413,15 +414,15 @@ TEST(GaiaAuthUtilTest, CreateBoundOAuthToken) {
   // }
   const char kExpected[] =
       "Cgx0ZXN0X2dhaWFfaWQSCnRlc3RfdG9rZW4aDnRlc3RfYXNzZXJ0aW9u";
-  std::string actual =
-      CreateBoundOAuthToken("test_gaia_id", "test_token", "test_assertion");
+  std::string actual = CreateBoundOAuthToken(GaiaId("test_gaia_id"),
+                                             "test_token", "test_assertion");
   EXPECT_EQ(actual, kExpected);
 }
 
 TEST(GaiaAuthUtilTest, CreateBoundOAuthTokenEmpty) {
   const char kExpected[] =
       "CgASABoA";  // Encodes a proto with all fields being empty.
-  std::string actual = CreateBoundOAuthToken("", "", "");
+  std::string actual = CreateBoundOAuthToken(GaiaId(), "", "");
   EXPECT_EQ(actual, kExpected);
 }
 
@@ -440,7 +441,7 @@ TEST(GaiaAuthUtilTest, CreateMultiOAuthHeader) {
   const char kExpected[] =
       "CioKDHRlc3RfZ2FpYV9pZBIKdGVzdF90b2tlbhoOdGVzdF9hc3NlcnRpb24";
   std::string actual = CreateMultiOAuthHeader({MultiloginAccountAuthCredentials(
-      "test_gaia_id", "test_token", "test_assertion")});
+      GaiaId("test_gaia_id"), "test_token", "test_assertion")});
   EXPECT_EQ(actual, kExpected);
 }
 
@@ -468,9 +469,9 @@ TEST(GaiaAuthUtilTest, CreateMultiOAuthHeaderMultipleRequests) {
   const char kExpected[] =
       "CgwKAmcxEgJ0MRoCYTEKCAoCZzISAnQyCgwKAmczEgJ0MxoCYTM";
   std::string actual = CreateMultiOAuthHeader(
-      {MultiloginAccountAuthCredentials("g1", "t1", "a1"),
-       MultiloginAccountAuthCredentials("g2", "t2", ""),
-       MultiloginAccountAuthCredentials("g3", "t3", "a3")});
+      {MultiloginAccountAuthCredentials(GaiaId("g1"), "t1", "a1"),
+       MultiloginAccountAuthCredentials(GaiaId("g2"), "t2", ""),
+       MultiloginAccountAuthCredentials(GaiaId("g3"), "t3", "a3")});
   EXPECT_EQ(actual, kExpected);
 }
 
@@ -486,8 +487,8 @@ TEST(GaiaAuthUtilTest, CreateMultiOAuthHeaderEmpty) {
   //  ]
   // }
   const char kExpected[] = "CgQKABIA";
-  std::string actual =
-      CreateMultiOAuthHeader({MultiloginAccountAuthCredentials("", "", "")});
+  std::string actual = CreateMultiOAuthHeader(
+      {MultiloginAccountAuthCredentials(GaiaId(), "", "")});
   EXPECT_EQ(actual, kExpected);
 }
 

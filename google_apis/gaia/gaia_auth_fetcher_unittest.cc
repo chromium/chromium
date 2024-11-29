@@ -26,6 +26,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
@@ -363,8 +364,8 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   std::vector<gaia::MultiloginAccountAuthCredentials> accounts;
-  accounts.emplace_back("id1", "token1", "");
-  accounts.emplace_back("id2", "token2", "");
+  accounts.emplace_back(GaiaId("id1"), "token1", "");
+  accounts.emplace_back(GaiaId("id2"), "token2", "");
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
       "cc_result");
@@ -395,9 +396,9 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   std::vector<gaia::MultiloginAccountAuthCredentials> accounts;
-  accounts.emplace_back("id1", "token1", "assertion1");
-  accounts.emplace_back("id2", "token2", "");
-  accounts.emplace_back("id3", "token3", "assertion3");
+  accounts.emplace_back(GaiaId("id1"), "token1", "assertion1");
+  accounts.emplace_back(GaiaId("id2"), "token2", "");
+  accounts.emplace_back(GaiaId("id3"), "token3", "assertion3");
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
       "cc_result");

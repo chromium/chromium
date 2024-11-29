@@ -38,7 +38,7 @@ void RecordFetchAuthError(const GoogleServiceAuthError& error) {
 OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& user_gaia_id,
+    const GaiaId& user_gaia_id,
     const std::string& refresh_token,
     const std::string& device_id,
     const std::string& client_version,

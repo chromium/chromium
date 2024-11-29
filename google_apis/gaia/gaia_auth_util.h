@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class GURL;
 
@@ -22,7 +23,7 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) ListedAccount {
   // CookieManagerService.
   CoreAccountId id;
   std::string email;
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::string raw_email;
   bool valid = true;
   bool signed_out = false;
@@ -38,11 +39,11 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) ListedAccount {
 };
 
 struct COMPONENT_EXPORT(GOOGLE_APIS) MultiloginAccountAuthCredentials {
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::string token;
   std::string token_binding_assertion;
 
-  MultiloginAccountAuthCredentials(std::string gaia_id,
+  MultiloginAccountAuthCredentials(GaiaId gaia_id,
                                    std::string token,
                                    std::string token_binding_assertion);
 };
@@ -104,13 +105,13 @@ bool ParseListAccountsData(std::string_view data,
 COMPONENT_EXPORT(GOOGLE_APIS)
 bool ParseOAuth2MintTokenConsentResult(std::string_view consent_result,
                                        bool* approved,
-                                       std::string* gaia_id);
+                                       GaiaId* gaia_id);
 
 // Creates a base64url encoded value representing a bound OAuth token that can
 // be used in an Authorization header with the "BoundOAuthToken" type.
 // Returns an empty string if the token creation fails.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string CreateBoundOAuthToken(const std::string& gaia_id,
+std::string CreateBoundOAuthToken(const GaiaId& gaia_id,
                                   const std::string& refresh_token,
                                   const std::string& binding_key_assertion);
 

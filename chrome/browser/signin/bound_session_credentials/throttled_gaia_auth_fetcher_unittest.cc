@@ -15,6 +15,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -187,7 +188,8 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleMultilogin) {
 
   fetcher()->StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
-      {{"id1", "token1", ""}, {"id2", "token2", ""}}, "cc_result");
+      {{GaiaId("id1"), "token1", ""}, {GaiaId("id2"), "token2", ""}},
+      "cc_result");
   ASSERT_TRUE(unblock_callback);
   std::move(unblock_callback).Run(UnblockAction::kResume, kResumeTrigger);
   EXPECT_CALL(consumer(), OnOAuthMultiloginFinished(_));

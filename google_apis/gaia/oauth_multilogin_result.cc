@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/http/http_status_code.h"
@@ -101,7 +102,7 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
     }
 
     failed_accounts_.push_back(OAuthMultiloginResult::FailedAccount{
-        .gaia_id = *gaia_id,
+        .gaia_id = GaiaId(*gaia_id),
         .token_binding_challenge = challenge ? *challenge : std::string()});
   }
   if (failed_accounts_.empty()) {

@@ -27,6 +27,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/http/http_status_code.h"
@@ -426,8 +427,8 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiBearerAuthorizationHeader(
-                {gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
-                                                        kNoAssertion)}));
+                {gaia::MultiloginAccountAuthCredentials(
+                    GaiaId(kGaiaId), kAccessToken, kNoAssertion)}));
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
@@ -459,7 +460,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiBearerAuthorizationHeader(
                 {gaia::MultiloginAccountAuthCredentials(
-                    kGaiaId, "refresh_token", kNoAssertion)}));
+                    GaiaId(kGaiaId), "refresh_token", kNoAssertion)}));
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
@@ -500,10 +501,10 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiBearerAuthorizationHeader({
-                gaia::MultiloginAccountAuthCredentials(kGaiaId2, kAccessToken2,
-                                                       kNoAssertion),
-                gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
-                                                       kNoAssertion),
+                gaia::MultiloginAccountAuthCredentials(
+                    GaiaId(kGaiaId2), kAccessToken2, kNoAssertion),
+                gaia::MultiloginAccountAuthCredentials(
+                    GaiaId(kGaiaId), kAccessToken, kNoAssertion),
             }));
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
@@ -821,11 +822,12 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
   EXPECT_FALSE(callback_called_);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
-  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
-            CreateMultiOAuthAuthorizationHeader({
-                gaia::MultiloginAccountAuthCredentials(
-                    kGaiaId, "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
-            }));
+  EXPECT_EQ(
+      multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+      CreateMultiOAuthAuthorizationHeader({
+          gaia::MultiloginAccountAuthCredentials(
+              GaiaId(kGaiaId), "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
+      }));
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
@@ -847,11 +849,12 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   EXPECT_FALSE(callback_called_);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
-  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
-            CreateMultiOAuthAuthorizationHeader({
-                gaia::MultiloginAccountAuthCredentials(
-                    kGaiaId, "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
-            }));
+  EXPECT_EQ(
+      multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+      CreateMultiOAuthAuthorizationHeader({
+          gaia::MultiloginAccountAuthCredentials(
+              GaiaId(kGaiaId), "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
+      }));
   url_loader()->SimulateResponseForPendingRequest(
       multilogin_url(),
       base::StringPrintf(
@@ -864,8 +867,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiOAuthAuthorizationHeader({
-                gaia::MultiloginAccountAuthCredentials(kGaiaId, "refresh_token",
-                                                       "test_challenge.signed"),
+                gaia::MultiloginAccountAuthCredentials(
+                    GaiaId(kGaiaId), "refresh_token", "test_challenge.signed"),
             }));
 
   // Configure mock cookie manager:
@@ -952,11 +955,12 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   EXPECT_FALSE(callback_called_);
   const network::ResourceRequest* multilogin_request = nullptr;
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
-  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
-            CreateMultiOAuthAuthorizationHeader({
-                gaia::MultiloginAccountAuthCredentials(
-                    kGaiaId, "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
-            }));
+  EXPECT_EQ(
+      multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+      CreateMultiOAuthAuthorizationHeader({
+          gaia::MultiloginAccountAuthCredentials(
+              GaiaId(kGaiaId), "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
+      }));
   url_loader()->SimulateResponseForPendingRequest(
       multilogin_url(),
       base::StringPrintf(
@@ -971,8 +975,8 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
   EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
             CreateMultiOAuthAuthorizationHeader({
-                gaia::MultiloginAccountAuthCredentials(kGaiaId, "refresh_token",
-                                                       "test_challenge.signed"),
+                gaia::MultiloginAccountAuthCredentials(
+                    GaiaId(kGaiaId), "refresh_token", "test_challenge.signed"),
             }));
   EXPECT_CALL(*token_service(),
               MockInvalidateTokenForMultilogin(kAccountId, "refresh_token"));

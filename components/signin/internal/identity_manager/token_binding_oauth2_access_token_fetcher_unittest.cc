@@ -35,7 +35,7 @@ class MockOAuth2MintAccessTokenFetcherAdapter
   explicit MockOAuth2MintAccessTokenFetcherAdapter()
       : OAuth2MintAccessTokenFetcherAdapter(nullptr,
                                             nullptr,
-                                            "",
+                                            GaiaId(),
                                             "",
                                             "",
                                             "",

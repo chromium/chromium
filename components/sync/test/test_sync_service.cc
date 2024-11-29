@@ -16,6 +16,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_token_status.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -37,7 +38,7 @@ CoreAccountInfo GetDefaultAccountInfo() {
   CoreAccountInfo account;
   account.email = "foo@bar.com";
   account.gaia = "foo-gaia-id";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  account.account_id = CoreAccountId::FromGaiaId(GaiaId(account.gaia));
   return account;
 }
 

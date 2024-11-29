@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
@@ -37,7 +38,8 @@ CreateSampleBubbleParameters() {
       "+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
 
   AccountInfo intercepted_account;
-  intercepted_account.account_id = CoreAccountId::FromGaiaId("intercepted_ID");
+  intercepted_account.account_id =
+      CoreAccountId::FromGaiaId(GaiaId("intercepted_ID"));
   intercepted_account.given_name = "Sam";
   intercepted_account.full_name = "Sam Sample";
   intercepted_account.email = "sam.sample@intercepted.com";
@@ -45,7 +47,7 @@ CreateSampleBubbleParameters() {
   intercepted_account.hosted_domain = kNoHostedDomainFound;
 
   AccountInfo primary_account;
-  primary_account.account_id = CoreAccountId::FromGaiaId("primary_ID");
+  primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("primary_ID"));
   primary_account.given_name = "Tessa";
   primary_account.full_name = "Tessa Tester";
   primary_account.email = "tessa.tester@primary.com";

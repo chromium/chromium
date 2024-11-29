@@ -94,14 +94,15 @@ base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
   // Get all accounts in Chrome; both signed in and signed out accounts in
   // cookies.
 
-  // `base::flat_set` has an optimized constructor from a vector.
-  base::flat_set<std::string> gaia_ids(base::ToVector(
-      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
-      &gaia::ListedAccount::gaia_id));
+  base::flat_set<std::string> gaia_ids;
+  for (const gaia::ListedAccount& account :
+       accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
+    gaia_ids.insert(account.gaia_id.ToString());
+  }
 
   for (const gaia::ListedAccount& account :
        accounts_in_cookie_jar_info.GetSignedOutAccounts()) {
-    gaia_ids.insert(account.gaia_id);
+    gaia_ids.insert(account.gaia_id.ToString());
   }
 
   // If there is a Primary account, also keep it even if it was removed (not in
