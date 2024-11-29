@@ -2115,8 +2115,9 @@ void StoragePartitionImpl::OnAuthRequired(
 
   FrameTreeNodeId frame_tree_node_id;
   if (auto* navigation_or_document = context.navigation_or_document()) {
-    frame_tree_node_id =
-        navigation_or_document->GetFrameTreeNode()->frame_tree_node_id();
+    if (auto* frame_tree_node = navigation_or_document->GetFrameTreeNode()) {
+      frame_tree_node_id = frame_tree_node->frame_tree_node_id();
+    }
   }
 
   WebContents* current_web_contents = context.GetWebContents();
