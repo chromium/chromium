@@ -995,16 +995,7 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
 
 void FedCmAccountSelectionView::Close() {
   if (!GetDialogWidget()) {
-    // Normally this object is owned by the dialog widget, but here there
-    // is no widget. We need to store the pointer before calling OnDismiss,
-    // because OnDismiss might destroy this object.
-    auto* view = account_selection_view_.get();
-    account_selection_view_ = nullptr;
-    delete view;
-
-    if (delegate_ && notify_delegate_of_dismiss_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-    }
+    CHECK(!account_selection_view_);
     return;
   }
 

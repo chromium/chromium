@@ -50,6 +50,14 @@ class TabInterface;
 // Construction and destruction of the widget/view are simultaneous and
 // synchronous. There are no other states or edge cases with regards to
 // dialog widget/view existence.
+//
+// The purpose of this class is to show some UI to the user in response to a
+// website calling navigator.credentials.get(). At most one piece of UI can be
+// showing for a tab at any given point in time. When this class is created, the
+// owner of this class is expected to call at least one of the Show*() methods.
+// This creates the dialog widget. There are a few flows where the widget is
+// destroyed and immediately recreated. But aside from those cases, if the
+// widget is destroyed, then the UI flow is finished.
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
