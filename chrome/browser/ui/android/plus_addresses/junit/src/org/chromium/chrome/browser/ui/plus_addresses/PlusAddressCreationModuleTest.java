@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.plus_addresses.PlusAddressCreationBottomSheetErrorType;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
