@@ -572,6 +572,8 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // Sign-in is not supported on automotive devices.
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
