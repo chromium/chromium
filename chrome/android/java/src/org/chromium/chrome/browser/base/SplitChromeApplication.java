@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
+import android.util.ArrayMap;
 
 import dagger.hilt.internal.GeneratedComponentManager;
 import dagger.hilt.internal.GeneratedComponentManagerHolder;
@@ -35,6 +36,7 @@ public class SplitChromeApplication extends SplitCompatApplication
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
     private static final Object sSplitLock = new Object();
+    private static final ArrayMap<String, Context> sCachedContexts = new ArrayMap<>();
 
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;
@@ -76,19 +78,24 @@ public class SplitChromeApplication extends SplitCompatApplication
     }
 
     private Context createContextForSplitNoWait(String name) {
-        try {
-            long startTime = SystemClock.uptimeMillis();
-            Context context;
-            synchronized (sSplitLock) {
-                context = super.createContextForSplit(name);
+        synchronized (sSplitLock) {
+            Context context = sCachedContexts.get(name);
+            if (context == null) {
+                try {
+                    long startTime = SystemClock.uptimeMillis();
+                    context = super.createContextForSplit(name);
+                    // It is possible that the framework will load the split for us and cache the
+                    // ClassLoader, making this unnaturally quick. Locally we could not reproduce
+                    // this, but these entry points almost certainly exist.
+                    RecordHistogram.recordTimesHistogram(
+                            "Android.IsolatedSplits.ContextCreateTime2." + name,
+                            SystemClock.uptimeMillis() - startTime);
+                } catch (PackageManager.NameNotFoundException e) {
+                    JavaUtils.throwUnchecked(e);
+                }
+                sCachedContexts.put(name, context);
             }
-            RecordHistogram.recordTimesHistogram(
-                    "Android.IsolatedSplits.ContextCreateTime." + name,
-                    SystemClock.uptimeMillis() - startTime);
             return context;
-        } catch (PackageManager.NameNotFoundException e) {
-            JavaUtils.throwUnchecked(e);
-            return null;
         }
     }
 
