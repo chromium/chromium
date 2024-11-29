@@ -445,6 +445,29 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
             set(), self.calculate(old_include_rules, {}, new_include_rules,
                                   {}))
 
+    def testFindAddedDepsThatRequireReview(self):
+        caring = ['new_usages_require_review = True']
+        self.input_api.InitFiles([
+            MockAffectedFile('cares/DEPS', caring),
+            MockAffectedFile('cares/inherits/DEPS', []),
+            MockAffectedFile('willynilly/DEPS', []),
+            MockAffectedFile('willynilly/butactually/DEPS', caring),
+        ])
+
+        expected = {
+            'cares': True,
+            'cares/sub/sub': True,
+            'cares/inherits': True,
+            'cares/inherits/sub': True,
+            'willynilly': False,
+            'willynilly/butactually': True,
+            'willynilly/butactually/sub': True,
+        }
+        results = PRESUBMIT._FindAddedDepsThatRequireReview(
+            self.input_api, set(expected))
+        actual = {k: k in results for k in expected}
+        self.assertEqual(expected, actual)
+
     class FakeOwnersClient(object):
         APPROVED = "APPROVED"
         PENDING = "PENDING"
@@ -487,6 +510,7 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
     def testApprovedAdditionalDep(self):
         self.input_api.InitFiles([
             MockAffectedFile('pdf/DEPS', ['include_rules=["+v8/123"]']),
+            MockAffectedFile('v8/DEPS', ['new_usages_require_review=True']),
         ])
 
         # mark the additional dep as approved.
@@ -501,6 +525,7 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
     def testUnapprovedAdditionalDep(self):
         self.input_api.InitFiles([
             MockAffectedFile('pdf/DEPS', ['include_rules=["+v8/123"]']),
+            MockAffectedFile('v8/DEPS', ['new_usages_require_review=True']),
         ])
 
         # pending.
