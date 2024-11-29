@@ -65,8 +65,6 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   if (!error.message().empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
-    } else if (from_profile_picker) {
-      ProfilePickerForceSigninDialog::DisplayErrorMessage();
     } else {
       LOG(ERROR) << "Unable to show Login error message: " << error.message();
     }
