@@ -2450,8 +2450,8 @@ class WebAppFrameToolbarBrowserTest_OriginText
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
-// TODO(crbug.com/381106937): Re-enable this test on linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/381106937): Re-enable this test on linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_InScopeNavigation DISABLED_InScopeNavigation
 #else
 #define MAYBE_InScopeNavigation InScopeNavigation
