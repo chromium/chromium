@@ -92,7 +92,7 @@ public class BundleUtils {
      * from the base context will be returned.
      */
     public static Context createIsolatedSplitContext(String splitName) {
-        if (!BuildConfig.IS_BUNDLE || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (!BuildConfig.IS_BUNDLE) {
             return ContextUtils.getApplicationContext();
         }
         try {
@@ -108,15 +108,6 @@ public class BundleUtils {
         } catch (PackageManager.NameNotFoundException e) {
             throw JavaUtils.throwUnchecked(e);
         }
-    }
-
-    public static Context createIsolatedSplitContext(Context base, String splitName) {
-        // Isolated splits are only supported in O+, so just return the base context on other
-        // versions, since this will have access to all splits.
-        if (!BuildConfig.IS_BUNDLE || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return base;
-        }
-        return createIsolatedSplitContext(splitName);
     }
 
     public static void cacheAndValidateSplitClassLoader(Context splitContext, String splitName) {
@@ -285,7 +276,7 @@ public class BundleUtils {
 
         if (ret == null) {
             // Do not hold lock since split loading can be slow.
-            createIsolatedSplitContext(ContextUtils.getApplicationContext(), splitName);
+            createIsolatedSplitContext(splitName);
             synchronized (sCachedClassLoaders) {
                 ret = sCachedClassLoaders.get(splitName);
                 assert ret != null;

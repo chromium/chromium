@@ -27,11 +27,11 @@ public class SplitCompatBackupAgent extends BackupAgent {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        context = SplitCompatApplication.createChromeContext(context);
-        mImpl = (Impl) BundleUtils.newInstance(context, mBackupAgentClassName);
+    protected void attachBaseContext(Context unused) {
+        Context splitContext = SplitCompatApplication.createChromeContext();
+        mImpl = (Impl) BundleUtils.newInstance(splitContext, mBackupAgentClassName);
         mImpl.setBackupAgent(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(splitContext);
     }
 
     @Override

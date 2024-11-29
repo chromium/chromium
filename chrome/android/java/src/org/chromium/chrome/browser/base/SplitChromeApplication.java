@@ -66,7 +66,7 @@ public class SplitChromeApplication extends SplitCompatApplication
             }
             setImplSupplier(
                     () -> {
-                        Context chromeContext = createChromeContext(this);
+                        Context chromeContext = createChromeContext();
                         return (Impl)
                                 BundleUtils.newInstance(chromeContext, mChromeApplicationClassName);
                     });

@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.collection.SimpleArrayMap;
 
 import org.chromium.base.BundleUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -102,9 +101,7 @@ public class SplitPreloader {
                     // for the preloader to finish, causing a deadlock.
                     context = mPreloadHooks.createIsolatedSplitContext(mName);
                 } else {
-                    context =
-                            BundleUtils.createIsolatedSplitContext(
-                                    ContextUtils.getApplicationContext(), mName);
+                    context = BundleUtils.createIsolatedSplitContext(mName);
                 }
                 if (GlobalAppLocaleController.getInstance().isOverridden()) {
                     Configuration config =

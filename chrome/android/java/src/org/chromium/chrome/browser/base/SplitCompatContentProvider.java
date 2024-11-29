@@ -33,7 +33,7 @@ public class SplitCompatContentProvider extends ContentProvider {
         // when it is created.
         synchronized (mImplLock) {
             if (mImpl == null) {
-                Context context = SplitCompatApplication.createChromeContext(getContext());
+                Context context = SplitCompatApplication.createChromeContext();
                 mImpl = (Impl) BundleUtils.newInstance(context, mContentProviderClassName);
                 mImpl.setContentProvider(this);
             }
