@@ -1864,6 +1864,18 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.IncognitoLockSettingStartupState"
+    enum="IncognitoLockSettingStartupState" expires_after="2025-03-31">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Logged once per app launch. Logs incognito lock setting state. This metric
+    is designed to measure % of users who have the setting enabled by using
+    &quot;group by users&quot; in UMA.
+  </summary>
+</histogram>
+
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
