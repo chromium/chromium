@@ -82,18 +82,16 @@ T GetCallbackResult(
 // A pref store that can have its read_error property changed for testing.
 class TestingPrefStoreWithCustomReadError : public TestingPrefStore {
  public:
-  TestingPrefStoreWithCustomReadError()
-      : read_error_(PersistentPrefStore::PREF_READ_ERROR_NO_FILE) {
-    // By default the profile is "new" (NO_FILE means that the profile
-    // wasn't found on disk, so it was created).
-  }
   PrefReadError GetReadError() const override { return read_error_; }
   bool IsInitializationComplete() const override { return true; }
   void set_read_error(PrefReadError read_error) { read_error_ = read_error; }
 
  private:
-  ~TestingPrefStoreWithCustomReadError() override {}
-  PrefReadError read_error_;
+  ~TestingPrefStoreWithCustomReadError() override = default;
+
+  // By default the profile is "new" (NO_FILE means that the profile wasn't
+  // found on disk, so it was created).
+  PrefReadError read_error_ = PersistentPrefStore::PREF_READ_ERROR_NO_FILE;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
