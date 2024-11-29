@@ -1485,20 +1485,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
           "runMochaSuite('UnusedSitePermissionsReview')");
 }
 
-// TODO(crbug.com/40884439): Flaky.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_UnusedSitePermissionsReviewDisabled \
-  DISABLED_UnusedSitePermissionsReviewDisabled
-#else
-#define MAYBE_UnusedSitePermissionsReviewDisabled \
-  UnusedSitePermissionsReviewDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
-                       MAYBE_UnusedSitePermissionsReviewDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('UnusedSitePermissionsReviewDisabled')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        UnusedSitePermissionsReviewSafetyHubDisabled) {
   RunTest("settings/site_settings_page_test.js",
@@ -1508,14 +1494,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('SafetyHubDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SettingsSiteSettingsPageTest,
-    AbusiveNotificationsEnabledUnusedSitePermissionsDisabled) {
-  RunTest("settings/site_settings_page_test.js",
-          "runMochaSuite('"
-          "AbusiveNotificationsEnabledUnusedSitePermissionsDisabled')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

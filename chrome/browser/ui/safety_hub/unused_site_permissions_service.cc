@@ -1014,12 +1014,12 @@ base::WeakPtr<SafetyHubService> UnusedSitePermissionsService::GetAsWeakRef() {
 }
 
 bool UnusedSitePermissionsService::IsUnusedSiteAutoRevocationEnabled() {
-  // If kSafetyHub is disabled, then the auto-revocation directly depends on
-  // kSafetyCheckUnusedSitePermissions.
+#if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
-    return base::FeatureList::IsEnabled(
-        content_settings::features::kSafetyCheckUnusedSitePermissions);
+    return false;
   }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   return pref_change_registrar_->prefs()->GetBoolean(
       safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled);
 }

@@ -505,11 +505,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           base::FeatureList::IsEnabled(network::features::kFledgePst));
 
   html_source->AddBoolean(
-      "safetyCheckUnusedSitePermissionsEnabled",
-      base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions));
-
-  html_source->AddBoolean(
       "safetyHubAbusiveNotificationRevocationEnabled",
       base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation));
