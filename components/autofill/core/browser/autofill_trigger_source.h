@@ -50,7 +50,9 @@ enum class AutofillTriggerSource {
   // Autofill was triggered with prediction improvements.
   kPredictionImprovements = 10,
   // Autofill was triggered with devtools trigger command.
-  kDevtools = 11
+  kDevtools = 11,
+  // Autofill was triggered by successfully scanning a credit card.
+  kScanCreditCard = 12
 };
 
 }  // namespace autofill

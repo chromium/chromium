@@ -1084,12 +1084,10 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AutofillExternalDelegate::OnCreditCardScanned(
-    const AutofillTriggerSource trigger_source,
-    const CreditCard& card) {
-  manager_->FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
-                                        query_form_, query_field_.global_id(),
-                                        card, trigger_source);
+void AutofillExternalDelegate::OnCreditCardScanned(const CreditCard& card) {
+  manager_->FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
+      card, AutofillTriggerSource::kScanCreditCard);
 }
 
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
@@ -1426,8 +1424,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
     case SuggestionType::kScanCreditCard:
       manager_->client().GetPaymentsAutofillClient()->ScanCreditCard(
           base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
-                         GetWeakPtr(),
-                         AutofillTriggerSource::kKeyboardAccessory));
+                         GetWeakPtr()));
       break;
     case SuggestionType::kBnplEntry:
       // TODO(crbug.com/365774376): Wire up BNPL suggestion to

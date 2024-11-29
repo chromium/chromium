@@ -184,8 +184,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
       const Suggestion& suggestion);
 
   // Called when a credit card is scanned using device camera.
-  void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
-                           const CreditCard& card);
+  void OnCreditCardScanned(const CreditCard& card);
 
   // Returns the last Autofill triggering field. Derived from the `form` and
   // `field` parameters of `OnQuery(). Returns nullptr if called before
