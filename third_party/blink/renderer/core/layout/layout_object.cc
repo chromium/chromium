@@ -894,6 +894,29 @@ LayoutObject* LayoutObject::GetScrollMarkerGroup() const {
   return nullptr;
 }
 
+LayoutBlock* LayoutObject::ScrollerFromScrollMarkerGroup() const {
+  NOT_DESTROYED();
+  DCHECK(IsScrollMarkerGroup());
+  auto* pseudo_element = DynamicTo<PseudoElement>(GetNode());
+  if (const Element* originating_element = pseudo_element->parentElement()) {
+    if (LayoutObject* object = originating_element->GetLayoutObject()) {
+      if (object->IsFieldset()) {
+        object = To<LayoutFieldset>(object)->FindAnonymousFieldsetContentBox();
+        if (!object) {
+          return nullptr;
+        }
+      }
+      if (!object->IsScrollContainer()) {
+        // TODO(crbug.com/381444307): This shouldn't happen. If there's a scroll
+        // marker group, the originating element should be a scroll container.
+        return nullptr;
+      }
+      return DynamicTo<LayoutBlock>(object);
+    }
+  }
+  return nullptr;
+}
+
 bool LayoutObject::IsListMarkerForSummary() const {
   if (!IsListMarker()) {
     return false;

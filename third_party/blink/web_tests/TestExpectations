@@ -1441,9 +1441,6 @@ crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattene
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattened-004.tentative.html [ Failure ]
 crbug.com/369883705 external/wpt/css/css-scoping/has-slotted-functional-flattened-006.tentative.html [ Failure ]
 
-# ::scroll-markers
-crbug.com/380623037 wpt_internal/css/css-overflow/scroll-marker-group-add-dynamic.html [ Failure ]
-
 # ====== Style team owned tests to here ======
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
