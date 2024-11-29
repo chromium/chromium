@@ -298,6 +298,20 @@ TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketTimedout) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
 }
 
+// Test that a group is destroyed when closing an idle stream that is the last
+// stream in the group.
+TEST_F(HttpStreamPoolGroupTest, DestroyGroupAfterCloseOneIdleStream) {
+  Group& group = GetOrCreateTestGroup();
+
+  auto stream_socket = std::make_unique<FakeStreamSocket>();
+  group.AddIdleStreamSocket(std::move(stream_socket));
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  ASSERT_TRUE(group.CloseOneIdleStreamSocket());
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(GetTestGroup());
+}
+
 TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
   auto stream_socket = std::make_unique<FakeStreamSocket>();
 

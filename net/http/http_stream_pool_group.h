@@ -126,7 +126,8 @@ class HttpStreamPool::Group {
   // Tries to process a pending request.
   void ProcessPendingRequest();
 
-  // Closes one idle stream socket. Returns true if it closed a stream.
+  // Closes one idle stream socket. Returns true if it closed a stream. Called
+  // when the pool reached the stream count limit.
   bool CloseOneIdleStreamSocket();
 
   // Returns the number of handed out streams.
@@ -203,6 +204,9 @@ class HttpStreamPool::Group {
                                 std::string_view net_log_close_reason_utf8);
 
   void EnsureAttemptManager();
+
+  // Returns true when `this` can be deleted.
+  bool CanComplete() const;
 
   void MaybeComplete();
 

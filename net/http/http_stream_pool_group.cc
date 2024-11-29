@@ -251,8 +251,17 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
     return false;
   }
 
+  RecordNetLogClosingSocket(*idle_stream_sockets_.front().stream_socket,
+                            kExceededSocketLimits);
   idle_stream_sockets_.pop_front();
   pool_->DecrementTotalIdleStreamCount();
+  if (CanComplete()) {
+    // Use PostTask since MaybeComplete() may delete `this`, and this method
+    // could be called while iterating all groups.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
   return true;
 }
 
@@ -304,11 +313,13 @@ void HttpStreamPool::Group::Refresh(
 void HttpStreamPool::Group::CloseIdleStreams(
     std::string_view net_log_close_reason_utf8) {
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
-  // Use PostTask since MaybeComplete() may delete `this`, and this method could
-  // be called while iterating all groups.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  if (CanComplete()) {
+    // Use PostTask since MaybeComplete() may delete `this`, and this method
+    // could be called while iterating all groups.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
@@ -374,8 +385,12 @@ void HttpStreamPool::Group::EnsureAttemptManager() {
       std::make_unique<AttemptManager>(this, http_network_session()->net_log());
 }
 
+bool HttpStreamPool::Group::CanComplete() const {
+  return ActiveStreamSocketCount() == 0 && !attempt_manager_;
+}
+
 void HttpStreamPool::Group::MaybeComplete() {
-  if (ActiveStreamSocketCount() > 0 || attempt_manager_) {
+  if (!CanComplete()) {
     return;
   }
 
