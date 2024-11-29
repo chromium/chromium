@@ -77,9 +77,12 @@ public class DigitalIdentityProvider {
      * @param request The request.
      */
     @CalledByNative
-    void request(WindowAndroid window, String origin, String request) {
+    void request(
+            WindowAndroid window,
+            @JniType("url::Origin") Origin origin,
+            @JniType("std::string") String request) {
         sCredentials
-                .get(window.getActivity().get(), origin, request)
+                .get(window.getActivity().get(), origin.toString(), request)
                 .then(
                         data -> {
                             if (mDigitalIdentityProvider != 0) {

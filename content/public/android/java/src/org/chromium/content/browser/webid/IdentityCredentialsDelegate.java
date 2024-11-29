@@ -31,6 +31,9 @@ import java.util.Arrays;
 public class IdentityCredentialsDelegate {
     private static final String TAG = "IdentityCredentials";
 
+    // Arbitrary request code that is used when invoking the GMSCore API.
+    private static final int REQUEST_CODE_DIGITAL_CREDENTIALS = 777;
+
     public Promise<String> get(String origin, String request) {
         // TODO(crbug.com/40257092): implement this.
         return null;
@@ -100,7 +103,7 @@ public class IdentityCredentialsDelegate {
                                 startIntentSenderForResult(
                                         /* activity= */ window,
                                         /* intent= */ response.getPendingIntent().getIntentSender(),
-                                        /* requestCode= */ 777,
+                                        REQUEST_CODE_DIGITAL_CREDENTIALS,
                                         /* fillInIntent= */ null,
                                         /* flagsMask= */ 0,
                                         /* flagsValues= */ 0,
