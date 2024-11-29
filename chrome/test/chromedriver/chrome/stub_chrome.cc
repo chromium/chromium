@@ -6,9 +6,9 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
-StubChrome::StubChrome() {}
+StubChrome::StubChrome() = default;
 
-StubChrome::~StubChrome() {}
+StubChrome::~StubChrome() = default;
 
 Status StubChrome::GetAsDesktop(ChromeDesktopImpl** desktop) {
   return Status(kUnknownError, "not supported");

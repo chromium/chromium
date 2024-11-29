@@ -218,7 +218,7 @@ DeviceManager::DeviceManager(Adb* adb) : adb_(adb) {
   CHECK(adb_);
 }
 
-DeviceManager::~DeviceManager() {}
+DeviceManager::~DeviceManager() = default;
 
 Status DeviceManager::AcquireDevice(std::unique_ptr<Device>* device) {
   std::vector<std::string> devices;

@@ -22,7 +22,7 @@ std::string SessionIdJson(const std::string& session_id) {
 LogReplaySocket::LogReplaySocket(const base::FilePath& log_path)
     : connected_(false), log_reader_(log_path) {}
 
-LogReplaySocket::~LogReplaySocket() {}
+LogReplaySocket::~LogReplaySocket() = default;
 
 void LogReplaySocket::SetId(const std::string& socket_id) {
   socket_id_ = socket_id;

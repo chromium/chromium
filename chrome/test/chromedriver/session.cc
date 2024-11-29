@@ -136,7 +136,7 @@ Session::Session(const std::string& id, const std::string& host) : Session(id) {
   this->host = host;
 }
 
-Session::~Session() {}
+Session::~Session() = default;
 
 Status Session::GetTargetWindow(WebView** web_view) {
   if (!chrome) {

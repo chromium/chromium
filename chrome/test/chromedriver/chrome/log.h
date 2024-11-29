@@ -31,7 +31,7 @@ class Log {
   static bool truncate_logged_params;
   static IsVLogOnFunc is_vlog_on_func;
 
-  virtual ~Log() {}
+  virtual ~Log() = default;
 
   // Adds an entry to the log.
   virtual void AddEntryTimestamped(const base::Time& timestamp,

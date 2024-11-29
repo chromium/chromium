@@ -11,7 +11,7 @@
 DevToolsEventsLogger::DevToolsEventsLogger(Log* log, const base::Value& prefs)
     : log_(log), prefs_(prefs) {}
 
-inline DevToolsEventsLogger::~DevToolsEventsLogger() {}
+inline DevToolsEventsLogger::~DevToolsEventsLogger() = default;
 
 Status DevToolsEventsLogger::OnConnected(DevToolsClient* client) {
   for (const auto& entry : prefs_->GetList())
