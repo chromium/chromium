@@ -1,30 +1,27 @@
 # Benchmark tl;dr:
 
-1. The time for JNI calls is trivial (50-150 ns) on a fast device and (500-1000
-ns) on a slow device so unless you are doing JNI in a big loop, you can ignore
-its cost.
-
-1. Primitive arrays are the most performant way to transfer lots of data across,
-even if java has to convert List to array + unbox first.
-
-1. Traversing Java arrays is 2x faster than doing the same for Java Lists but it is
-still much faster to convert all the way to c++ vector.
-
-1. Converting a java List to a c++ vector before iterating is ~10x faster than
-traversing the java List directly and 5x faster than traversing a java array directly (for arrays
-~= 10,000 long). This includes the time for type conversion.
-
-1. Direct access to primitive arrays is incredibly fast (eg: `ByteArrayView` or
-direct JNI API calls from `<jni.h>`).
-
-1. non-ASCII utf-16 strings are the fastest to convert to java strings, followed
-by ASCII strings in general and finally the slowest is non-ASCII utf-16 to utf-8
-conversion (because optimizations).
-
-1. Integer boxing and unboxing is comparatively expensive if done through JNI
-and very cheap when done on java's side.
-
+1. The time for JNI calls is negligible, comparable to a main memory load so
+   unless you are doing JNI in a big loop, you can ignore its cost.
 1. `AttachCurrentThread()` costs the same as a trivial JNI call.
+1. Sending a few parameters (< 50bytes) in a JNI call might only add 25-50%
+   extra latency.
+1. For sending a lot of data, primitive arrays are the most performant way,
+   even if java has to convert a List to array + unbox first.
+1. If you need to traverse in java vs copying it over, traversing Java arrays is
+   2x faster than doing the same for Java Lists but it is still much faster to
+   convert all the way to c++ vector.
+1. Converting a java List to a c++ vector before iterating is ~10x faster than
+   traversing the java List directly and 5x faster than traversing a java array
+   directly (for arrays ~= 10,000 long). This includes the time for type
+   conversion.
+1. Direct access to primitive arrays is incredibly fast (eg: `ByteArrayView` or
+   direct JNI API calls from `<jni.h>`).
+1. non-ASCII utf-16 strings are the fastest to convert to java strings, followed
+   by ASCII strings in general and finally the slowest is non-ASCII utf-16 to utf-8
+   conversion (because optimizations).
+1. Integer boxing and unboxing is could be expensive if done through JNI
+   and very cheap when done on java's side.
+
 
 # How to run the benchmarks
 
@@ -42,6 +39,10 @@ The generated classes benchmark uses a large number of generated classes and thu
 
 # Benchmark Detailed Results:
 
+The numbers here are not exact since its hard to control for things like garbage
+collection and how busy was the phone was at the time. Trivial benchmarks show the
+most variance.
+
 ## Trivial calls without parameters or return values
 ### Java -> C++
 
@@ -58,7 +59,7 @@ static void JNI_Benchmark_CallMe(JNIEnv* env) {}
 
 |                | Pixel 7A    | Samsung Galaxy A13 |
 | -------------- | :---------: | :----------------: |
-| Time per Call  | 60 ns      |  1000 ns             |
+| Time per Call  | 30 ns      |  130 ns             |
 
 
 ### C++ -> Java
@@ -77,7 +78,7 @@ static void callMe() {}
 
 |                | Pixel 7A    | Samsung Galaxy A13 |
 | -------------- | :---------: | :----------------: |
-| Time per Call  | 135 ns      |  380 ns             |
+| Time per Call  | 50 ns      |  380 ns             |
 
 ### AttachCurrentThread()
 
@@ -278,8 +279,8 @@ static void JNI_Benchmark_SendSingleInt(JNIEnv* env, jint param) {
 
 |                           | Pixel 7A      | Samsung Galaxy A13 |
 | --------------            | :---------:   | :----------------: |
-| Time per 10000 ints       | 230,000 ns   |  700,000 ns       |
-| Time per int              | 23 ns        |  70 ns             |
+| Time per 10000 ints       | 300,000 ns   |  1,400,000 ns       |
+| Time per int              | 40 ns        |  140 ns             |
 
 
 ### Sending 10000 ints from C++ -> Java one at a time (each call sends a single int as a parameter).
@@ -303,8 +304,8 @@ static void receiveSingleInt(int param) {
 
 |                           | Pixel 7A      | Samsung Galaxy A13 |
 | --------------            | :---------:   | :----------------: |
-| Time per 10000 ints       | 452,000 ns    |  5,900,000 ns       |
-| Time per int              | 45.2 ns       |  590 ns             |
+| Time per 10000 ints       | 452,000 ns    |  3,400,000 ns       |
+| Time per int              | 45.2 ns       |  340 ns             |
 
 ### Sending 100000 ints 10 at a time from Java -> C++
 
@@ -336,8 +337,8 @@ static void JNI_Benchmark_Send10Ints(JNIEnv* env,
 
 |                           | Pixel 7A      | Samsung Galaxy A13 |
 | --------------            | :---------:   | :----------------: |
-| Time per 10 ints          | 37 ns         | 100 ns       |
-| Time per int              | 3.7 ns        | 10 ns             |
+| Time per 10 ints          | 60 ns         | 170 ns       |
+| Time per int              | 6 ns          | 17 ns             |
 
 
 ### Sending 100000 ints 10 at a time from C++ -> Java
@@ -361,8 +362,8 @@ static void receive10Ints(
 
 |                           | Pixel 7A      | Samsung Galaxy A13 |
 | --------------            | :---------:   | :----------------: |
-| Time per 10 ints          | 150 ns        | 900 ns            |
-| Time per int              | 15 ns         | 90 ns             |
+| Time per 10 ints          | 100 ns        | 550 ns            |
+| Time per int              | 10 ns         | 55 ns             |
 
 ### Sending 10000 Integers from Java -> C++ ints converted using @JniType one at a time (each call sends a single Integer as a parameter).
 
@@ -385,8 +386,8 @@ static void JNI_Benchmark_SendSingleInteger(
 
 |                           | Pixel 7A      | Samsung Galaxy A13 |
 | --------------            | :---------:   | :----------------: |
-| Time per 10000 Integers   | 918,000 ns    | 5,900,000 ns       |
-| Time per Integer          | 92 ns         | 590 ns             |
+| Time per 10000 Integers   | 1,100,000 ns   | 6,500,000 ns       |
+| Time per Integer          | 110 ns         | 650 ns             |
 
 
 ### Sending 10000 ints from C++ -> Java Integers converted using @JniType one at a time (each call sends a single int as a parameter).
@@ -488,8 +489,8 @@ static void receive10IntegersConverted(
 
 |                           | Pixel 7A      | Samsung Galaxy A13 |
 | --------------            | :---------:   | :----------------: |
-| Time per 10 Integers      | 1300 ns       | 7,300 ns           |
-| Time per Integer          | 130 ns        | 730 ns             |
+| Time per 10 Integers      | 1400 ns       | 7,000 ns           |
+| Time per Integer          | 140 ns        | 700 ns             |
 
 
 ## Sending Strings

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.jni_zero.benchmark;
 
-import android.content.Context;
 import android.os.Environment;
 
 import org.jni_zero.AccessedByNative;
@@ -30,7 +29,7 @@ public class Benchmark {
     // So it is not optimized away.
     @AccessedByNative private static long count = 0;
 
-    public static void runBenchmark(Context context) {
+    public static void runBenchmark() {
         Log.i(TAG, "===============Start of Benchmarks===============");
         // Warmup the native lib.
         BenchmarkJni.get().callMe();
