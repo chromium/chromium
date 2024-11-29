@@ -4,20 +4,23 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.JavaUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -66,12 +69,6 @@ public class PermissionPromptRenderTest {
         mPermissionRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
     }
 
-    @Before
-    public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
-    }
-
     @After
     public void tearDown() throws TimeoutException {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
@@ -87,11 +84,24 @@ public class PermissionPromptRenderTest {
                 mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
     }
 
+    private static void executeShellCommand(String command) {
+        try {
+            InstrumentationRegistry.getInstrumentation()
+                    .getUiAutomation()
+                    .executeShellCommand(command)
+                    .close();
+        } catch (IOException e) {
+            JavaUtils.throwUnchecked(e);
+        }
+    }
+
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
     @Features.DisableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testGeolocationRegularPrompt() throws Exception {
+        mPermissionRule.setUpActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
@@ -105,10 +115,21 @@ public class PermissionPromptRenderTest {
     @Feature({"Prompt", "RenderTest"})
     @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testGeolocationOneTimePrompt() throws Exception {
+        mPermissionRule.setUpActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
         mPermissionRule.setUpUrl(TEST_FILE);
+
+        var histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen",
+                                false)
+                        .build();
+
         testPrompt(/* goldenViewId= */ "oneTimePrompt");
+        histogramExpectation.assertExpected("Should record negative button on screen");
     }
 
     @Test
@@ -118,6 +139,8 @@ public class PermissionPromptRenderTest {
             PermissionsAndroidFeatureList.ONE_TIME_PERMISSION
                     + ":show_allow_always_as_first_button/true")
     public void testGeolocationOneTimePromptWithAllowAlwaysFirst() throws Exception {
+        mPermissionRule.setUpActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
         mPermissionRule.setUpUrl(TEST_FILE);
@@ -133,6 +156,8 @@ public class PermissionPromptRenderTest {
                     + "/use_stronger_prompt_language/true"
                     + "/use_while_visiting_language/true")
     public void testGeolocationOneTimePromptWithAllowWhileVisitingFirst() throws Exception {
+        mPermissionRule.setUpActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
         mPermissionRule.setUpUrl(TEST_FILE);
@@ -145,6 +170,8 @@ public class PermissionPromptRenderTest {
     @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
     public void testGeolocationOneTimePromptLongOriginWrapsToNextLineAndIsNotElided()
             throws Exception {
+        mPermissionRule.setUpActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
 
@@ -152,5 +179,29 @@ public class PermissionPromptRenderTest {
                 "unelided.long.wrapping.hostname.with.subdomains.com", TEST_FILE);
 
         testPrompt(/* goldenViewId= */ "oneTimePromptLongOrigin");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Prompt", "RenderTest"})
+    @DisableIf.Build(supported_abis_includes = "x86")
+    @Features.EnableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
+    public void testGeolocationNegativeButtonOutOfScreen() throws Exception {
+        executeShellCommand("wm density 1000");
+        mPermissionRule.setUpActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        mPermissionRule.setUpUrl(TEST_FILE);
+        var histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen",
+                                true)
+                        .build();
+
+        testPrompt(/* goldenViewId= */ "oneTimePromptNegativeButtonOutOfScreen");
+        histogramExpectation.assertExpected("Should record negative button out of screen");
+        executeShellCommand("wm density reset");
     }
 }

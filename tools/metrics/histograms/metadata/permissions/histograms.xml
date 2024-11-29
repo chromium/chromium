@@ -599,6 +599,17 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
+<histogram
+    name="Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen"
+    enum="Boolean" expires_after="2025-04-13">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever the negative button is shown on one time permission prompt
+    Records whether the button is out of screen or not. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.OneTimePermission.{PermissionType}.Event"
     enum="OneTimePermissionEvent" expires_after="2025-05-04">
   <owner>fjacky@chromium.org</owner>
