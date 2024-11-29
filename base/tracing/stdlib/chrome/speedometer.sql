@@ -26,13 +26,13 @@ LIMIT 1;
 -- There are two intervals that are measured for every test: sync and async
 CREATE PERFETTO TABLE chrome_speedometer_measure(
   -- Start timestamp of the measure slice
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the measure slice
-  dur INT,
+  dur DURATION,
   -- Full measure name
   name STRING,
   -- Speedometer iteration the slice belongs to.
-  iteration INT,
+  iteration LONG,
   -- Suite name
   suite_name STRING,
   -- Test name
@@ -58,13 +58,13 @@ WHERE version = _chrome_speedometer_version();
 -- a bit.
 CREATE PERFETTO TABLE chrome_speedometer_iteration(
   -- Start timestamp of the iteration
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the iteration
-  dur INT,
+  dur DURATION,
   -- Iteration name
   name STRING,
   -- Iteration number
-  iteration INT,
+  iteration LONG,
   -- Geometric mean of the suite durations for this iteration.
   geomean DOUBLE,
   -- Speedometer score for this iteration (The total score for a run in the
@@ -95,7 +95,7 @@ SELECT
 -- Returns the utid for the main thread that ran Speedometer 3
 CREATE PERFETTO FUNCTION chrome_speedometer_renderer_main_utid()
 -- Renderer main utid
-RETURNS INT
+RETURNS LONG
 AS
 SELECT
   IIF(

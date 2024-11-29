@@ -17,17 +17,17 @@ INCLUDE PERFETTO MODULE slices.with_context;
 --   * STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME
 CREATE PERFETTO TABLE chrome_graphics_pipeline_surface_frame_steps(
   -- Slice Id of the `Graphics.Pipeline` slice.
-  id INT,
+  id LONG,
   -- The start timestamp of the slice/step.
-  ts INT,
+  ts TIMESTAMP,
   -- The duration of the slice/step.
-  dur INT,
+  dur DURATION,
   -- Step name of the `Graphics.Pipeline` slice.
   step STRING,
   -- Id of the graphics pipeline, pre-surface aggregation.
-  surface_frame_trace_id INT,
+  surface_frame_trace_id LONG,
   -- Utid of the thread where this slice exists.
-  utid INT,
+  utid LONG,
   -- Start time of the parent Chrome scheduler task (if any) of this step.
   task_start_time_ts INT)
 AS
@@ -53,17 +53,17 @@ WHERE name = 'Graphics.Pipeline' AND surface_frame_trace_id IS NOT NULL;
 --   * STEP_SWAP_BUFFERS_ACK
 CREATE PERFETTO TABLE chrome_graphics_pipeline_display_frame_steps(
   -- Slice Id of the `Graphics.Pipeline` slice.
-  id INT,
+  id LONG,
   -- The start timestamp of the slice/step.
-  ts INT,
+  ts TIMESTAMP,
   -- The duration of the slice/step.
-  dur INT,
+  dur DURATION,
   -- Step name of the `Graphics.Pipeline` slice.
   step STRING,
   -- Id of the graphics pipeline, post-surface aggregation.
-  display_trace_id INT,
+  display_trace_id LONG,
   -- Utid of the thread where this slice exists.
-  utid INT,
+  utid LONG,
   -- Start time of the parent Chrome scheduler task (if any) of this step.
   task_start_time_ts INT)
 AS
@@ -85,9 +85,9 @@ WHERE name = 'Graphics.Pipeline' AND display_trace_id IS NOT NULL;
 -- `surface_frame_trace_id`s will correspond to one `display_trace_id`.
 CREATE PERFETTO TABLE chrome_graphics_pipeline_aggregated_frames(
   -- Id of the graphics pipeline, pre-surface aggregation.
-  surface_frame_trace_id INT,
+  surface_frame_trace_id LONG,
   -- Id of the graphics pipeline, post-surface aggregation.
-  display_trace_id INT)
+  display_trace_id LONG)
 AS
 SELECT
   args.int_value AS surface_frame_trace_id,
@@ -108,9 +108,9 @@ WHERE
 -- `surface_frame_trace_id`.
 CREATE PERFETTO TABLE chrome_graphics_pipeline_inputs_to_surface_frames(
   -- Id corresponding to the input pipeline.
-  latency_id INT,
+  latency_id LONG,
   -- Id of the graphics pipeline, post-surface aggregation.
-  surface_frame_trace_id INT)
+  surface_frame_trace_id LONG)
 AS
 SELECT
   args.int_value AS latency_id,

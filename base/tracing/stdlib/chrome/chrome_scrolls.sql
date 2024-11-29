@@ -16,18 +16,18 @@ INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
 -- definition of scrolls should resolve this.
 CREATE PERFETTO TABLE chrome_scrolls(
   -- The unique identifier of the scroll.
-  id INT,
+  id LONG,
   -- The start timestamp of the scroll.
-  ts INT,
+  ts TIMESTAMP,
   -- The duration of the scroll.
-  dur INT,
+  dur DURATION,
   -- The earliest timestamp of the EventLatency slice of the GESTURE_SCROLL_BEGIN type for the
   -- corresponding scroll id.
-  gesture_scroll_begin_ts INT,
+  gesture_scroll_begin_ts TIMESTAMP,
   -- The earliest timestamp of the EventLatency slice of the GESTURE_SCROLL_END type /
   -- the latest timestamp of the EventLatency slice of the GESTURE_SCROLL_UPDATE type for the
   -- corresponding scroll id.
-  gesture_scroll_end_ts INT
+  gesture_scroll_end_ts TIMESTAMP
 ) AS
 WITH all_scrolls AS (
   SELECT
@@ -61,7 +61,7 @@ scroll_ends AS (
 SELECT
   sa.scroll_id AS id,
   MIN(ts) AS ts,
-  CAST(MAX(ts + dur) - MIN(ts) AS INT) AS dur,
+  cast_int!(MAX(ts + dur) - MIN(ts)) AS dur,
   ss.gesture_scroll_begin_ts AS gesture_scroll_begin_ts,
   se.gesture_scroll_end_ts AS gesture_scroll_end_ts
 FROM all_scrolls sa

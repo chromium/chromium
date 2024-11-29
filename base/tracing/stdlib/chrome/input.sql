@@ -7,21 +7,21 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- Processing steps of the Chrome input pipeline.
 CREATE PERFETTO TABLE _chrome_input_pipeline_steps_no_input_type(
   -- Id of this Chrome input pipeline (LatencyInfo).
-  latency_id INT,
+  latency_id LONG,
   -- Slice id
-  slice_id INT,
+  slice_id LONG,
   -- The step timestamp.
-  ts INT,
+  ts TIMESTAMP,
   -- Step duration.
-  dur INT,
+  dur DURATION,
   -- Utid of the thread.
-  utid INT,
+  utid LONG,
   -- Step name (ChromeLatencyInfo.step).
   step STRING,
   -- Input type.
   input_type STRING,
   -- Start time of the parent Chrome scheduler task (if any) of this step.
-  task_start_time_ts INT
+  task_start_time_ts TIMESTAMP
 ) AS
 SELECT
   EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.trace_id') AS latency_id,
@@ -42,7 +42,7 @@ ORDER BY slice_id, ts;
 -- Each row represents one input pipeline.
 CREATE PERFETTO TABLE chrome_inputs(
   -- Id of this Chrome input pipeline (LatencyInfo).
-  latency_id INT,
+  latency_id LONG,
    -- Input type.
   input_type STRING
 ) AS
@@ -60,21 +60,21 @@ GROUP BY latency_id;
 -- populate input type for steps where it would be NULL.
 CREATE PERFETTO TABLE chrome_input_pipeline_steps(
   -- Id of this Chrome input pipeline (LatencyInfo).
-  latency_id INT,
+  latency_id LONG,
   -- Slice id
-  slice_id INT,
+  slice_id LONG,
   -- The step timestamp.
-  ts INT,
+  ts TIMESTAMP,
   -- Step duration.
-  dur INT,
+  dur DURATION,
   -- Utid of the thread.
-  utid INT,
+  utid LONG,
   -- Step name (ChromeLatencyInfo.step).
   step STRING,
   -- Input type.
   input_type STRING,
   -- Start time of the parent Chrome scheduler task (if any) of this step.
-  task_start_time_ts INT
+  task_start_time_ts TIMESTAMP
 ) AS
 SELECT
   latency_id,
@@ -95,9 +95,9 @@ WHERE chrome_inputs.input_type IS NOT NULL;
 -- For each input, get the latency id of the input that it was coalesced into.
 CREATE PERFETTO TABLE chrome_coalesced_inputs(
   -- The `latency_id` of the coalesced input.
-  coalesced_latency_id INT,
+  coalesced_latency_id LONG,
   -- The `latency_id` of the input that the current input was coalesced into.
-  presented_latency_id INT
+  presented_latency_id LONG
 ) AS
 SELECT
   args.int_value AS coalesced_latency_id,
@@ -112,9 +112,9 @@ WHERE step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
 -- that were converted into gesture scroll updates.
 CREATE PERFETTO TABLE chrome_touch_move_to_scroll_update(
   -- Latency id of the touch move input (LatencyInfo).
-  touch_move_latency_id INT,
+  touch_move_latency_id LONG,
   -- Latency id of the corresponding scroll update input (LatencyInfo).
-  scroll_update_latency_id INT
+  scroll_update_latency_id LONG
 ) AS
 SELECT
   scroll_update_step.latency_id AS scroll_update_latency_id,

@@ -17,7 +17,7 @@ CREATE PERFETTO TABLE chrome_interactions(
   -- Identifier of the interaction; this is not guaranteed to be unique to the table -
   -- rather, it is unique within an individual interaction type. Combine with type to get
   -- a unique identifier in this table.
-  scoped_id INT,
+  scoped_id LONG,
   -- Type of this interaction, which together with scoped_id uniquely identifies this
   -- interaction. Also corresponds to a SQL table name containing more details specific
   -- to this type of interaction.
@@ -26,9 +26,9 @@ CREATE PERFETTO TABLE chrome_interactions(
   -- stored in other tables.
   name STRING,
   -- Timestamp of the CUI event.
-  ts INT,
+  ts TIMESTAMP,
   -- Duration of the CUI event.
-  dur INT
+  dur DURATION
 ) AS
 SELECT
   id AS scoped_id,

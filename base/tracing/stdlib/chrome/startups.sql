@@ -71,19 +71,19 @@ WHERE name = 'Startup.LaunchCause';
 -- Chrome startups, including launch cause.
 CREATE PERFETTO TABLE chrome_startups(
   -- Unique ID
-  id INT,
+  id LONG,
   -- Chrome Activity event id of the launch.
-  activity_id INT,
+  activity_id LONG,
   -- Name of the launch start event.
   name STRING,
   -- Timestamp that the startup occurred.
-  startup_begin_ts INT,
+  startup_begin_ts TIMESTAMP,
   -- Timestamp to the first visible content.
-  first_visible_content_ts INT,
+  first_visible_content_ts TIMESTAMP,
   -- Launch cause. See Startup.LaunchCauseType in chrome_track_event.proto.
   launch_cause STRING,
   -- Process ID of the Browser where the startup occurred.
-  browser_upid INT
+  browser_upid LONG
 ) AS
 SELECT
   ROW_NUMBER() OVER (ORDER BY start_events.startup_begin_ts) AS id,
