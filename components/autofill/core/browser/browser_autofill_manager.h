@@ -385,8 +385,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Method containing logic to be run in `OnFormSubmittedImpl()` after any
   // import attempts of the submitted form occurred.
-  void OnFormSubmittedAfterImport(const FormData& form,
-                                  std::unique_ptr<FormStructure> submitted_form,
+  void OnFormSubmittedAfterImport(std::unique_ptr<FormStructure> submitted_form,
                                   mojom::SubmissionSource source,
                                   base::TimeTicks form_submitted_timestamp);
 

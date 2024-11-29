@@ -551,7 +551,13 @@ bool WasEmailOverrideAppliedOnSuggestions(
 void MaybeImportFromSubmittedForm(AutofillClient& client,
                                   ukm::SourceId ukm_source_id,
                                   const FormStructure& form_structure,
+                                  const FormData& form_data,
                                   bool autofill_ai_shows_bubble) {
+  // This intentionally happens prior to `ImportAndProcessFormData()`. See
+  // crbug.com/381205586.
+  ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
+      form_structure, form_data, client.GetPersonalDataManager());
+
   if (!autofill_ai_shows_bubble && form_structure.IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client.GetFormDataImporter()->ImportAndProcessFormData(
@@ -853,15 +859,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                bool autofill_ai_shows_bubble) {
               if (client) {
                 MaybeImportFromSubmittedForm(*client, ukm_source_id,
-                                             *submitted_form,
+                                             *submitted_form, form,
                                              autofill_ai_shows_bubble);
               }
               // The manager may have been destroyed already.
               // See crbug.com/373831707#comment5.
               if (manager) {
-                manager->OnFormSubmittedAfterImport(
-                    form, std::move(submitted_form), source,
-                    form_submitted_timestamp);
+                manager->OnFormSubmittedAfterImport(std::move(submitted_form),
+                                                    source,
+                                                    form_submitted_timestamp);
               }
             },
             client().GetWeakPtr(), driver().GetPageUkmSourceId(),
@@ -876,15 +882,14 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     //   hard to see that all codepaths in
     //   AutofillAiDelegate::MaybeImportForm() calls it.
     MaybeImportFromSubmittedForm(client(), driver().GetPageUkmSourceId(),
-                                 *submitted_form,
+                                 *submitted_form, form,
                                  /*autofill_ai_shows_bubble=*/false);
-    OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
+    OnFormSubmittedAfterImport(std::move(submitted_form), source,
                                form_submitted_timestamp);
   }
 }
 
 void BrowserAutofillManager::OnFormSubmittedAfterImport(
-    const FormData& form,
     std::unique_ptr<FormStructure> submitted_form,
     SubmissionSource source,
     base::TimeTicks form_submitted_timestamp) {
@@ -901,9 +906,6 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
   }
 
   LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
-
-  ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
-      *submitted_form, form, client().GetPersonalDataManager());
 
   MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
   votes_uploader_->MaybeStartVoteUploadProcess(

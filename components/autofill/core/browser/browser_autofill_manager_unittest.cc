@@ -7443,8 +7443,11 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
 
-  // Create and fill an address form with profile `kElvisProfileGuid`.
-  FormData form = test::CreateTestAddressFormData();
+  // Create and fill an address form with the `profile`.
+  FormData form =
+      test::GetFormData({.fields = {{.role = NAME_FULL},
+                                    {.role = ADDRESS_HOME_LINE1},
+                                    {.role = ADDRESS_HOME_COUNTRY}}});
   FormsSeen({form});
   FormData filled_form = FillAutofillFormDataAndGetResults(
       form, form.fields()[0], pdm_profile->guid());
