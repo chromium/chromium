@@ -83,14 +83,14 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
 
   // Report safe browsing event through real-time reporting channel, if enabled.
   // Declared as virtual for tests.
-  virtual void ReportRealtimeEvent(const std::string&,
+  virtual void ReportRealtimeEvent(const std::string& name,
                                    const ReportingSettings& settings,
                                    base::Value::Dict event);
 
   // Report safe browsing events that have occurred in the past but has not yet
   // been reported. This is currently used for browser crash events, which are
   // polled at a fixed time interval. Declared as virtual for tests.
-  virtual void ReportPastEvent(const std::string&,
+  virtual void ReportPastEvent(const std::string& name,
                                const ReportingSettings& settings,
                                base::Value::Dict event,
                                const base::Time& time);
