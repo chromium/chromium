@@ -80,9 +80,12 @@ def __filegroups(ctx):
             "includes": [
                 "clang*",
                 "ld.lld",
+                "ld64.lld",
                 "lld",
                 "llvm-nm",
                 "llvm-objcopy",
+                "llvm-objdump",
+                "llvm-otool",
                 "llvm-readelf",
                 "llvm-readobj",
                 "llvm-strip",
@@ -241,6 +244,9 @@ def __step_config(ctx, step_config):
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
+        ],
+        "third_party/llvm-build/Release+Asserts/bin/clang++:link": [
+            "third_party/llvm-build/Release+Asserts/bin:llddeps",
         ],
     })
     step_config["input_deps"].update(clang_all.input_deps)
