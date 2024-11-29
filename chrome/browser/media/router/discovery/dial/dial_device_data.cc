@@ -21,7 +21,7 @@ DialDeviceData::DialDeviceData(const std::string& device_id,
 
 DialDeviceData::DialDeviceData(const DialDeviceData& other) = default;
 
-DialDeviceData::~DialDeviceData() {}
+DialDeviceData::~DialDeviceData() = default;
 
 const GURL& DialDeviceData::device_description_url() const {
   return device_description_url_;

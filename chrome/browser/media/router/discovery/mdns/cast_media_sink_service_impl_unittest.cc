@@ -63,7 +63,7 @@ MATCHER_P(OpenParamEq, expected, "") {
 
 class MockObserver : public MediaSinkServiceBase::Observer {
  public:
-  MockObserver() {}
+  MockObserver() = default;
   ~MockObserver() override = default;
 
   MOCK_METHOD1(OnSinkAddedOrUpdated, void(const MediaSinkInternal&));

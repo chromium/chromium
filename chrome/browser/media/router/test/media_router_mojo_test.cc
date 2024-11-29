@@ -61,9 +61,9 @@ class SinkResponseCallbackHandler {
 
 }  // namespace
 
-MockMediaRouteProvider::MockMediaRouteProvider() {}
+MockMediaRouteProvider::MockMediaRouteProvider() = default;
 
-MockMediaRouteProvider::~MockMediaRouteProvider() {}
+MockMediaRouteProvider::~MockMediaRouteProvider() = default;
 
 void MockMediaRouteProvider::RouteRequestSuccess(RouteCallback& cb) const {
   DCHECK(route_);
@@ -94,7 +94,7 @@ MockMediaStatusObserver::MockMediaStatusObserver(
     mojo::PendingReceiver<mojom::MediaStatusObserver> receiver)
     : receiver_(this, std::move(receiver)) {}
 
-MockMediaStatusObserver::~MockMediaStatusObserver() {}
+MockMediaStatusObserver::~MockMediaStatusObserver() = default;
 
 MockMediaController::MockMediaController() = default;
 

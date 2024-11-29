@@ -74,7 +74,7 @@ CastMediaController::CastMediaController(AppActivity* activity)
     : sender_id_("sender-" + base::NumberToString(base::RandUint64())),
       activity_(activity) {}
 
-CastMediaController::~CastMediaController() {}
+CastMediaController::~CastMediaController() = default;
 
 void CastMediaController::Play() {
   if (session_id_.empty())

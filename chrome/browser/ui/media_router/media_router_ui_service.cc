@@ -33,7 +33,7 @@ MediaRouterUIService::MediaRouterUIService(
   ConfigureService();
 }
 
-MediaRouterUIService::~MediaRouterUIService() {}
+MediaRouterUIService::~MediaRouterUIService() = default;
 
 void MediaRouterUIService::Shutdown() {
   DisableService();

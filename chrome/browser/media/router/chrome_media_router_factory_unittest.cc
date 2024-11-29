@@ -15,8 +15,8 @@ namespace media_router {
 
 class ChromeMediaRouterFactoryTest : public testing::Test {
  protected:
-  ChromeMediaRouterFactoryTest() {}
-  ~ChromeMediaRouterFactoryTest() override {}
+  ChromeMediaRouterFactoryTest() = default;
+  ~ChromeMediaRouterFactoryTest() override = default;
 
   void SetUp() override {
     ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(

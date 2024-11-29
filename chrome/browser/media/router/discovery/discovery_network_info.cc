@@ -6,13 +6,13 @@
 
 namespace media_router {
 
-DiscoveryNetworkInfo::DiscoveryNetworkInfo() {}
+DiscoveryNetworkInfo::DiscoveryNetworkInfo() = default;
 
 DiscoveryNetworkInfo::DiscoveryNetworkInfo(const std::string& name,
                                            const std::string& network_id)
     : name(name), network_id(network_id) {}
 
-DiscoveryNetworkInfo::~DiscoveryNetworkInfo() {}
+DiscoveryNetworkInfo::~DiscoveryNetworkInfo() = default;
 
 DiscoveryNetworkInfo::DiscoveryNetworkInfo(const DiscoveryNetworkInfo&) =
     default;
