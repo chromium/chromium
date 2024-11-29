@@ -832,7 +832,7 @@ ProfileMenuView::GetIdentitySectionParams() {
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
-  CoreAccountInfo account_info =
+  CoreAccountInfo primary_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignedOut:
@@ -858,7 +858,27 @@ ProfileMenuView::GetIdentitySectionParams() {
           base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
                                 ? account_info_for_promos.given_name
                                 : account_info_for_promos.email));
-      // TODO(crbug.com/356603651): Set `params.button_image`.
+      gfx::Image account_image;
+      if (account_info_for_promos.account_image.IsEmpty()) {
+        // No account image, use a placeholder.
+        ProfileAttributesEntry* profile_attributes =
+            g_browser_process->profile_manager()
+                ->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(profile->GetPath());
+        account_image = profile_attributes->GetAvatarIcon(
+            /*size_for_placeholder_avatar=*/kIdentityImageSizeForButton,
+            /*use_high_res_file=*/true,
+            GetPlaceholderAvatarIconParamsVisibleAgainstColor(
+                browser()->window()->GetColorProvider()->GetColor(
+                    ui::kColorButtonBackgroundProminent)));
+      } else {
+        account_image = account_info_for_promos.account_image;
+      }
+      params.button_image =
+          ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+              account_image,
+              /*width=*/kIdentityImageSizeForButton,
+              /*height=*/kIdentityImageSizeForButton, profiles::SHAPE_CIRCLE));
       break;
     }
     case signin_util::SignedInState::kSignedIn:
@@ -888,7 +908,7 @@ ProfileMenuView::GetIdentitySectionParams() {
   if (!params.button_text.empty()) {
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
-        account_info, button_type, access_point);
+        primary_account_info, button_type, access_point);
   }
 
   return params;

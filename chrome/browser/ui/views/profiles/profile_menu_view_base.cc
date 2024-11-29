@@ -822,6 +822,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_bottom(kButtonBottomMargin -
                                                 kIdentityContainerBorder))
+          .SetImageModel(views::Button::STATE_NORMAL, button_image)
           .Build());
 }
 
