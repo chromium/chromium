@@ -425,9 +425,6 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
 
-# Flaky, but if it fails, retries also always fail.
-crbug.com/1494227 [ asan graphite-enabled intel mac no-clang-coverage release ] Pixel_CSSFilterEffects [ Failure ]
-crbug.com/1494227 [ graphite-enabled intel mac no-asan no-clang-coverage ] Pixel_CSSFilterEffects [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
@@ -480,7 +477,7 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 # Flaky on Mac ASAN
-crbug.com/372055518 [ mac asan ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 # Flaky failure on Pixel 6
 crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vulkan ] Pixel_Video_HEVC [ Failure ]
