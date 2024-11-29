@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -60,6 +61,13 @@ StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
              : StreamSocketHandle::SocketReuseType::kUnusedIdle;
 }
 
+std::string_view GetResultHistogramPrefix(std::optional<int> result) {
+  if (result.has_value()) {
+    return *result == OK ? "Success" : "Failure";
+  }
+  return "Canceled";
+}
+
 }  // namespace
 
 // Represents an in-flight stream attempt.
@@ -71,18 +79,31 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   InFlightAttempt(const InFlightAttempt&) = delete;
   InFlightAttempt& operator=(const InFlightAttempt&) = delete;
 
-  ~InFlightAttempt() override = default;
+  ~InFlightAttempt() override {
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
+                      GetResultHistogramPrefix(result_)}),
+        base::TimeTicks::Now() - start_time_);
+  }
 
   int Start(std::unique_ptr<StreamAttempt> attempt) {
     CHECK(!attempt_);
     attempt_ = std::move(attempt);
+    start_time_ = base::TimeTicks::Now();
     // SAFETY: `manager_` owns `this` so using base::Unretained() is safe.
     return attempt_->Start(
         base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
                        base::Unretained(manager_), this));
   }
 
+  void SetResult(int rv) {
+    CHECK(!result_.has_value());
+    result_ = rv;
+  }
+
   StreamAttempt* attempt() { return attempt_.get(); }
+
+  base::TimeTicks start_time() const { return start_time_; }
 
   const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
 
@@ -109,6 +130,8 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
  private:
   const raw_ptr<AttemptManager> manager_;
   std::unique_ptr<StreamAttempt> attempt_;
+  base::TimeTicks start_time_;
+  std::optional<int> result_;
   // Timer to start a next attempt. When fired, `this` is treated as a slow
   // attempt but `this` is not timed out yet.
   base::OneShotTimer slow_timer_;
@@ -621,6 +644,21 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
   dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
   dict.Set("is_stalled", IsStalledByPoolLimit());
+
+  base::Value::List in_flight_attempts;
+  for (const auto& entry : in_flight_attempts_) {
+    base::Value::Dict attempt_dict;
+    attempt_dict.Set("ip_endpoint", entry->attempt()->ip_endpoint().ToString());
+    attempt_dict.Set("is_slow", entry->is_slow());
+    attempt_dict.Set("is_aborted", entry->is_aborted());
+    base::TimeDelta elapsed = base::TimeTicks::Now() - entry->start_time();
+    attempt_dict.Set("elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
+    in_flight_attempts.Append(std::move(attempt_dict));
+  }
+  if (!in_flight_attempts.empty()) {
+    dict.Set("in_flight_attempts", std::move(in_flight_attempts));
+  }
+
   return dict;
 }
 
@@ -1383,9 +1421,11 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END, [&] {
         base::Value::Dict dict = GetStatesAsNetLogParams();
+        dict.Set("net_error", rv);
         raw_attempt->attempt()->net_log().source().AddToEventParameters(dict);
         return dict;
       });
+  raw_attempt->SetResult(rv);
   raw_attempt->slow_timer().Stop();
   if (raw_attempt->is_slow()) {
     CHECK_GT(slow_attempt_count_, 0u);
