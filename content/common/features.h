@@ -132,7 +132,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
     kServiceWorkerBypassFetchHandlerBypassedHashStrings;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTextInputClient);
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>

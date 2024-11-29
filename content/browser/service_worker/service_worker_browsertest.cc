@@ -4362,133 +4362,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBrowserTestWithStoragePartitioning,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-enum class SpeculativeStartupNavigationType {
-  kBrowserInitiatedNavigation,
-  kRendererInitiatedNavigation
-};
-
-// This is a test class to verify an optimization to speculatively start a
-// service worker for navigation before the "beforeunload" event.
-class ServiceWorkerSpeculativeStartupBrowserTest
-    : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<SpeculativeStartupNavigationType> {
- public:
-  ServiceWorkerSpeculativeStartupBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSpeculativeServiceWorkerStartup);
-  }
-  ~ServiceWorkerSpeculativeStartupBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    ServiceWorkerBrowserTest::SetUpOnMainThread();
-    StartServerAndNavigateToSetup();
-  }
-
-  WebContents* web_contents() const { return shell()->web_contents(); }
-
-  RenderFrameHost* GetPrimaryMainFrame() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::HistogramTester histogram_tester_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerSpeculativeStartupBrowserTest,
-    testing::Values(
-        SpeculativeStartupNavigationType::kBrowserInitiatedNavigation,
-        SpeculativeStartupNavigationType::kRendererInitiatedNavigation));
-
-IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
-                       NavigationWillBeCanceledByBeforeUnload) {
-  const GURL create_service_worker_url(embedded_test_server()->GetURL(
-      "/service_worker/create_service_worker.html"));
-  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
-  const GURL in_scope_url(
-      embedded_test_server()->GetURL("/service_worker/empty.html"));
-
-  // Register a service worker.
-  WorkerRunningStatusObserver observer1(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-  EXPECT_EQ("DONE",
-            EvalJs(GetPrimaryMainFrame(), "register('fetch_event.js');"));
-  observer1.WaitUntilRunning();
-
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-
-  // Stop the current running service worker.
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Navigate away from the service worker's scope.
-  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-
-  // Cancel the next navigation with beforeunload.
-  EXPECT_TRUE(
-      ExecJs(GetPrimaryMainFrame(), "window.onbeforeunload = () => 'x';"));
-  EXPECT_TRUE(web_contents()->NeedToFireBeforeUnloadOrUnloadEvents());
-  PrepContentsForBeforeUnloadTest(web_contents());
-  SetShouldProceedOnBeforeUnload(shell(),
-                                 /*proceed=*/true,
-                                 /*success=*/false);
-
-  // Confirm that the service worker speculatively started even when the
-  // navigation was canceled.
-  WorkerRunningStatusObserver observer2(public_context());
-  AppModalDialogWaiter dialog_waiter(shell());
-  switch (GetParam()) {
-    case SpeculativeStartupNavigationType::kBrowserInitiatedNavigation:
-      shell()->LoadURL(in_scope_url);
-      break;
-    case SpeculativeStartupNavigationType::kRendererInitiatedNavigation:
-      EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", in_scope_url)));
-      break;
-  }
-  dialog_waiter.Wait();
-  EXPECT_TRUE(dialog_waiter.WasDialogRequestedCallbackCalled());
-  observer2.WaitUntilRunning();
-  EXPECT_EQ(
-      blink::EmbeddedWorkerStatus::kRunning,
-      wrapper()->GetLiveVersion(observer2.version_id())->running_status());
-  histogram_tester().ExpectBucketCount(
-      "ServiceWorker.StartWorker.Purpose",
-      static_cast<int>(ServiceWorkerMetrics::EventType::NAVIGATION_HINT), 1);
-  histogram_tester().ExpectBucketCount(
-      "ServiceWorker.StartWorker.StatusByPurpose_NAVIGATION_HINT",
-      static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
-}
-
-class ServiceWorkerSpeculativeStartupWithoutParamBrowserTest
-    : public ServiceWorkerBrowserTest {
- public:
-  ServiceWorkerSpeculativeStartupWithoutParamBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSpeculativeServiceWorkerStartup);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Regression test for https://crbug.com/1440062.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerSpeculativeStartupWithoutParamBrowserTest,
-                       NavigatingToAboutSrcdocDoesNotCrash) {
-  StartServerAndNavigateToSetup();
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(NavigateToURL(shell(), GURL("about:srcdoc")));
-  histogram_tester.ExpectBucketCount(
-      "ServiceWorker.StartWorker.Purpose",
-      static_cast<int>(ServiceWorkerMetrics::EventType::NAVIGATION_HINT), 0);
-}
-
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   base::HistogramTester histogram_tester;
   StartServerAndNavigateToSetup();
@@ -4754,7 +4627,7 @@ class ServiceWorkerWarmUpOnIdleTimeoutBrowserTest
         {{blink::features::kSpeculativeServiceWorkerWarmUp,
           {{blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.name,
             "true"}}}},
-        {features::kSpeculativeServiceWorkerStartup});
+        {});
   }
   ~ServiceWorkerWarmUpOnIdleTimeoutBrowserTest() override = default;
 
@@ -4855,7 +4728,7 @@ class ServiceWorkerWarmUpByPointerBrowserTest
                    .name,
                GetParam().enable_warm_up_by_pointerdown ? "true" : "false"},
           }}},
-        {features::kSpeculativeServiceWorkerStartup});
+        {});
   }
   ~ServiceWorkerWarmUpByPointerBrowserTest() override = default;
 

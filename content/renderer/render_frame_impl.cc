@@ -5627,9 +5627,7 @@ void RenderFrameImpl::BeginNavigation(
       (base::FeatureList::IsEnabled(
            blink::features::kHttpDiskCachePrewarming) ||
        base::FeatureList::IsEnabled(
-           blink::features::kSpeculativeServiceWorkerWarmUp) ||
-       base::FeatureList::IsEnabled(
-           features::kSpeculativeServiceWorkerStartup))) {
+           blink::features::kSpeculativeServiceWorkerWarmUp))) {
     frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 

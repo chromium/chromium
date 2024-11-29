@@ -6480,15 +6480,13 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 
 void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
     const std::vector<GURL>& urls) {
-  static const bool kStartupEnabled =
-      base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerStartup);
   static const bool kWarmUpEnabled = base::FeatureList::IsEnabled(
       blink::features::kSpeculativeServiceWorkerWarmUp);
   static const bool kHttpDiskCachePrewarmingEnabled =
       base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
       !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
 
-  if (!kStartupEnabled && !kWarmUpEnabled && !kHttpDiskCachePrewarmingEnabled) {
+  if (!kWarmUpEnabled && !kHttpDiskCachePrewarmingEnabled) {
     return;
   }
 
@@ -6531,16 +6529,6 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
 
     if (!context->MaybeHasRegistrationForStorageKey(key)) {
       continue;
-    }
-
-    // Ask the service worker context to speculatively start a service worker
-    // for the request URL if necessary for optimization purposes. There are
-    // cases where we have already started the service worker (e.g, Prerendering
-    // or the previous navigation already started the service worker), but this
-    // call does nothing if the service worker already started for the URL.
-    if (kStartupEnabled) {
-      context->StartServiceWorkerForNavigationHint(filtered_url, key,
-                                                   base::DoNothing());
     }
 
     // Ask the service worker context to speculatively warm-up a service worker

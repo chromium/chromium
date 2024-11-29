@@ -2077,31 +2077,6 @@ NavigationRequest::NavigationRequest(
         context->CheckHasServiceWorker(GetURL(), key, base::DoNothing());
       }
     }
-
-    // Ask the service worker context to speculatively start a service worker
-    // for the request URL if necessary for optimization purposes. Don't ask to
-    // do that if this request is for ReloadType::BYPASSING_CACHE that is
-    // supposed to skip a service worker. There are cases where we have already
-    // started the service worker (e.g, Prerendering or the previous navigation
-    // already started the service worker), but this call does nothing if the
-    // service worker already started for the URL.
-    if (reload_type_ != ReloadType::BYPASSING_CACHE &&
-        base::FeatureList::IsEnabled(
-            features::kSpeculativeServiceWorkerStartup)) {
-      if (ServiceWorkerContext* context =
-              frame_tree_node_->navigator()
-                  .controller()
-                  .GetBrowserContext()
-                  ->GetStoragePartition(site_info_.storage_partition_config())
-                  ->GetServiceWorkerContext()) {
-        const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
-            GetTentativeOriginAtRequestTime());
-        if (context->MaybeHasRegistrationForStorageKey(key)) {
-          context->StartServiceWorkerForNavigationHint(GetURL(), key,
-                                                       base::DoNothing());
-        }
-      }
-    }
   }
 
   // Only update the BackForwardCacheMetrics if this is for a navigation that

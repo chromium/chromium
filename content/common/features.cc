@@ -541,11 +541,6 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
              "SkipEarlyCommitPendingForCrashedFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
-BASE_FEATURE(kSpeculativeServiceWorkerStartup,
-             "SpeculativeServiceWorkerStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kTextInputClient,
              "TextInputClient",
