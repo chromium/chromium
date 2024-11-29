@@ -8,10 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "components/data_sharing/public/data_sharing_ui_delegate.h"
 
-namespace collaboration {
-class CollaborationService;
-}  // namespace collaboration
-
 class ShareKitService;
 
 namespace data_sharing {
@@ -19,9 +15,7 @@ namespace data_sharing {
 // IOS implementation of DataSharingUIDelegate.
 class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
  public:
-  explicit DataSharingUIDelegateIOS(
-      ShareKitService* share_kit_service,
-      collaboration::CollaborationService* collaboration_service);
+  explicit DataSharingUIDelegateIOS(ShareKitService* share_kit_service);
   ~DataSharingUIDelegateIOS() override;
 
   DataSharingUIDelegateIOS(const DataSharingUIDelegateIOS&) = delete;
@@ -36,7 +30,6 @@ class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
 
  private:
   raw_ptr<ShareKitService> share_kit_service_;
-  raw_ptr<collaboration::CollaborationService> collaboration_service_;
 };
 
 }  // namespace data_sharing
