@@ -861,10 +861,15 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-  // `data_sharing_service_` is null on iOS WebView.
-  if (data_sharing_service_.value() &&
+  // TODO(crbug.com/381505059): Check if it is worth having a helper to check
+  // both flags.
+  bool data_sharing_enabled =
       base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) &&
+          data_sharing::features::kDataSharingFeature) ||
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingJoinOnly);
+  // `data_sharing_service_` is null on iOS WebView.
+  if (data_sharing_service_.value() && data_sharing_enabled &&
       !disabled_types.Has(syncer::COLLABORATION_GROUP)) {
     syncer::DataTypeControllerDelegate* delegate =
         data_sharing_service_.value()
