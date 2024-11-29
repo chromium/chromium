@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/page_info/core/page_info_types.h"
 #include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
@@ -41,7 +42,7 @@ class MerchantTrustService : public KeyedService {
   MerchantTrustService& operator=(const MerchantTrustService&) = delete;
 
   // Returns merchant trust information for the website with |url|.
-  virtual std::optional<page_info::proto::MerchantTrustSignalsV3>
+  virtual std::optional<page_info::MerchantData>
   GetMerchantTrustInfo(const GURL& url, ukm::SourceId source_id) const;
 
  private:
@@ -55,6 +56,9 @@ class MerchantTrustService : public KeyedService {
   virtual optimization_guide::OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       optimization_guide::OptimizationMetadata* optimization_metadata) const;
+
+  std::optional<page_info::MerchantData> GetMerchantDataFromProto(
+      const std::optional<proto::MerchantTrustSignalsV3>& metadata) const;
 };
 
 }  // namespace page_info

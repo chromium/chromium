@@ -21,7 +21,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_service.h"
-#include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -37,13 +36,13 @@ const char kMerchantReviewsUrl[] = "reviews.test";
 const char kUrlWithMerchantTrustData[] = "merchant.test";
 const char kUrlWithoutMerchantTrustData[] = "no-merchant.test";
 
-page_info::proto::MerchantTrustSignalsV3 CreateValidProto() {
-  page_info::proto::MerchantTrustSignalsV3 proto;
-  proto.set_star_rating(3.8);
-  proto.set_count_rating(45);
-  proto.set_page_url(kMerchantReviewsUrl);
-  proto.set_overall_summary("Test summary");
-  return proto;
+page_info::MerchantData CreateValidMerchantData() {
+  page_info::MerchantData merchant_data;
+  merchant_data.star_rating = 3.8;
+  merchant_data.count_rating = 45;
+  merchant_data.page_url = GURL(kMerchantReviewsUrl);
+  merchant_data.reviews_summary = "Test summary";
+  return merchant_data;
 }
 }  // namespace
 
@@ -51,7 +50,7 @@ class MockMerchantTrustService : public page_info::MerchantTrustService {
  public:
   explicit MockMerchantTrustService()
       : MerchantTrustService(nullptr, false, nullptr) {}
-  MOCK_METHOD(std::optional<page_info::proto::MerchantTrustSignalsV3>,
+  MOCK_METHOD(std::optional<page_info::MerchantData>,
               GetMerchantTrustInfo,
               (const GURL&, ukm::SourceId),
               (const, override));
@@ -78,13 +77,12 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
 
     // Mock GetMerchanTrustInfo based on the requested URL.
     ON_CALL(*service(), GetMerchantTrustInfo(_, _))
-        .WillByDefault(
-            [](const GURL& url, ukm::SourceId source_id)
-                -> std::optional<page_info::proto::MerchantTrustSignalsV3> {
-              return url == GURL(kUrlWithMerchantTrustData)
-                         ? std::make_optional(CreateValidProto())
-                         : std::nullopt;
-            });
+        .WillByDefault([](const GURL& url, ukm::SourceId source_id)
+                           -> std::optional<page_info::MerchantData> {
+          return url == GURL(kUrlWithMerchantTrustData)
+                     ? std::make_optional(CreateValidMerchantData())
+                     : std::nullopt;
+        });
   }
 
   GURL CreateUrl(const std::string& host) {

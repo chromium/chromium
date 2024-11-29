@@ -36,6 +36,8 @@ static_library("core") {
     "page_info_action.h",
     "page_info_history_data_source.cc",
     "page_info_history_data_source.h",
+    "page_info_types.cc",
+    "page_info_types.h",
   ]
 
   deps = [

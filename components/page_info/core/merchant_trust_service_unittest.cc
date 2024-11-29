@@ -97,11 +97,11 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionTrue) {
   EXPECT_CALL(*service(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionTrue));
 
-  std::optional<page_info::proto::MerchantTrustSignalsV3> info =
+  std::optional<page_info::MerchantData> info =
       service()->GetMerchantTrustInfo(GURL("https://foo.com"),
                                       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
-  EXPECT_EQ(info->page_url(), "https://page_url.com");
+  EXPECT_EQ(info->page_url, GURL("https://page_url.com"));
 }
 
 // Tests that proto are not returned correctly when optimization guide decision
@@ -110,7 +110,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionUnknown) {
   EXPECT_CALL(*service(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionUnknown));
 
-  std::optional<page_info::proto::MerchantTrustSignalsV3> info =
+  std::optional<page_info::MerchantData> info =
       service()->GetMerchantTrustInfo(GURL("https://foo.com"),
                                       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
@@ -119,7 +119,7 @@ TEST_F(MerchantTrustServiceTest, OptimizationGuideDecisionUnknown) {
 // Tests with optimization guide not allowed
 TEST_F(MerchantTrustServiceTest, NoOptimizationGuideNotAllowed) {
   SetOptimizationGuideAllowed(false);
-  std::optional<page_info::proto::MerchantTrustSignalsV3> info =
+  std::optional<page_info::MerchantData> info =
       service()->GetMerchantTrustInfo(GURL("https://foo.com"),
                                       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
@@ -135,13 +135,13 @@ TEST_F(MerchantTrustServiceTest, SampleData) {
   EXPECT_CALL(*service(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnOptimizationGuideDecisionUnknown));
 
-  std::optional<page_info::proto::MerchantTrustSignalsV3> info =
+  std::optional<page_info::MerchantData> info =
       service()->GetMerchantTrustInfo(GURL("https://foo.com"),
                                       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
   EXPECT_EQ(
-      info->page_url(),
-      "https://customerreviews.google.com/v/merchant?q=amazon.com&c=AE&v=19");
+      info->page_url,
+      GURL("https://customerreviews.google.com/v/merchant?q=amazon.com&c=AE&v=19"));
 }
 
 }  // namespace page_info

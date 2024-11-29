@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
+#include "components/page_info/core/page_info_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -90,7 +90,7 @@ class MerchantTrustSidePanelCoordinator
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  std::optional<page_info::proto::MerchantTrustSignalsV3>
+  std::optional<page_info::MerchantData>
   GetMerchantTrustInfo(const GURL& url) const;
 };
 

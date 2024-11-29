@@ -142,7 +142,7 @@ GURL MerchantTrustSidePanelCoordinator::GetOpenInNewTabUrl() {
   return last_url_info_.value().new_tab_url;
 }
 
-std::optional<page_info::proto::MerchantTrustSignalsV3>
+std::optional<page_info::MerchantData>
 MerchantTrustSidePanelCoordinator::GetMerchantTrustInfo(const GURL& url) const {
   auto* service = MerchantTrustServiceFactory::GetForProfile(GetProfile());
   return service->GetMerchantTrustInfo(
@@ -181,7 +181,7 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
     // with query params if needed.
     auto merchant_info = GetMerchantTrustInfo(navigation_handle->GetURL());
     if (merchant_info.has_value()) {
-      RegisterEntryAndShow(GURL(merchant_info->page_url()));
+      RegisterEntryAndShow(merchant_info->page_url);
     } else {
       side_panel_ui->Close();
     }

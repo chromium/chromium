@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/page_info_types.h"
 #include "components/page_info/core/proto/merchant_trust_metadata.pb.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -19,16 +20,16 @@ using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
 
 namespace {
 
-std::optional<page_info::proto::MerchantTrustSignalsV3> GetSampleData() {
-  page_info::proto::MerchantTrustSignalsV3 merchant_trust_signals;
+std::optional<page_info::MerchantData> GetSampleData() {
+  page_info::MerchantData merchant_data;
 
-  merchant_trust_signals.set_star_rating(4.5);
-  merchant_trust_signals.set_count_rating(100);
-  merchant_trust_signals.set_page_url(
+  merchant_data.star_rating = 4.5;
+  merchant_data.count_rating = 100;
+  merchant_data.page_url = GURL(
       "https://customerreviews.google.com/v/merchant?q=amazon.com&c=AE&v=19");
-  merchant_trust_signals.set_overall_summary(
-      "This is a test summary for the merchant trust side panel.");
-  return merchant_trust_signals;
+  merchant_data.reviews_summary =
+      "This is a test summary for the merchant trust side panel.";
+  return merchant_data;
 }
 }  // namespace
 
@@ -45,7 +46,7 @@ MerchantTrustService::MerchantTrustService(
   }
 }
 
-std::optional<page_info::proto::MerchantTrustSignalsV3>
+std::optional<page_info::MerchantData>
 MerchantTrustService::GetMerchantTrustInfo(const GURL& url,
                                            ukm::SourceId source_id) const {
   if (!optimization_guide::IsValidURLForURLKeyedHint(url)) {
@@ -63,10 +64,10 @@ MerchantTrustService::GetMerchantTrustInfo(const GURL& url,
   merchant_trust_metadata =
       metadata.ParsedMetadata<proto::MerchantTrustSignalsV3>();
 
-  if(decision != optimization_guide::OptimizationGuideDecision::kUnknown) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kUnknown) {
     // TODO(tommasin): Add and log validation for
-    // MerchantTrustSignalsV3.
-    return merchant_trust_metadata;
+    // the proto.
+    return GetMerchantDataFromProto(merchant_trust_metadata);
   }
 
   if (kMerchantTrustEnabledWithSampleData.Get()) {
@@ -93,6 +94,42 @@ MerchantTrustService::CanApplyOptimization(
   return optimization_guide_decider_->CanApplyOptimization(
       url, optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V3,
       optimization_metadata);
+}
+
+std::optional<page_info::MerchantData>
+MerchantTrustService::GetMerchantDataFromProto(
+    const std::optional<proto::MerchantTrustSignalsV3>& metadata) const {
+  if (!metadata.has_value()) {
+    return std::nullopt;
+  }
+
+  std::optional<page_info::MerchantData> merchant_data;
+
+  page_info::proto::MerchantTrustSignalsV3 merchant_proto = metadata.value();
+  if (metadata.has_value() && merchant_proto.IsInitialized()) {
+    merchant_data.emplace();
+
+    if (merchant_proto.has_star_rating()) {
+      merchant_data->star_rating = merchant_proto.star_rating();
+    }
+
+    if (merchant_proto.has_count_rating()) {
+      merchant_data->count_rating = merchant_proto.count_rating();
+    }
+
+    if (merchant_proto.has_page_url()) {
+      GURL page_url = GURL(merchant_proto.page_url());
+      if (page_url.is_valid()) {
+        merchant_data->page_url = page_url;
+      }
+    }
+
+    if (merchant_proto.has_overall_summary()) {
+      merchant_data->reviews_summary = merchant_proto.overall_summary();
+    }
+  }
+
+  return merchant_data;
 }
 
 }  // namespace page_info
