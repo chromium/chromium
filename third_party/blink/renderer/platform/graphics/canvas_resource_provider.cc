@@ -1126,6 +1126,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     CanvasResourceHost* resource_host) {
+  gfx::Size size = gfx::Size(info.width(), info.height());
+
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -1141,33 +1143,32 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
   const auto& capabilities =
       context_provider_wrapper->ContextProvider().GetCapabilities();
-  if ((info.width() < 1 || info.height() < 1 ||
-       info.width() > capabilities.max_texture_size ||
-       info.height() > capabilities.max_texture_size)) {
+  if ((size.width() < 1 || size.height() < 1 ||
+       size.width() > capabilities.max_texture_size ||
+       size.height() > capabilities.max_texture_size)) {
     return nullptr;
   }
 
   const bool is_accelerated = raster_mode == RasterMode::kGPU;
 
-  SkImageInfo adjusted_info = info;
+  SkColorType adjusted_color_type = info.colorType();
   // TODO(https://crbug.com/1210946): Pass in info as is for all cases.
   // Overriding the info to use RGBA instead of N32 is needed because code
   // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
   // somewhere in the later pipeline but for offscreen canvas only.
   if (!shared_image_usage_flags.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                                        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
-    adjusted_info = adjusted_info.makeColorType(
-        is_accelerated && info.colorType() != kRGBA_F16_SkColorType
-            ? kRGBA_8888_SkColorType
-            : info.colorType());
+    if (is_accelerated && info.colorType() != kRGBA_F16_SkColorType) {
+      adjusted_color_type = kRGBA_8888_SkColorType;
+    }
   }
 
   const bool is_gpu_memory_buffer_image_allowed =
       is_gpu_compositing_enabled &&
-      IsGMBAllowed(gfx::Size(adjusted_info.width(), adjusted_info.height()),
-                   viz::SkColorTypeToSinglePlaneSharedImageFormat(
-                       adjusted_info.colorType()),
-                   capabilities) &&
+      IsGMBAllowed(
+          size,
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(adjusted_color_type),
+          capabilities) &&
       SharedGpuContext::GetGpuMemoryBufferManager();
 
   if (raster_mode == RasterMode::kCPU && !is_gpu_memory_buffer_image_allowed)
@@ -1192,18 +1193,17 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
 #if BUILDFLAG(IS_MAC)
   if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
-      is_accelerated && adjusted_info.colorType() == kRGBA_8888_SkColorType) {
+      is_accelerated && adjusted_color_type == kRGBA_8888_SkColorType) {
     // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
     // RGBA_8888 to BGRA_8888 in that case.
-    adjusted_info = adjusted_info.makeColorType(kBGRA_8888_SkColorType);
+    adjusted_color_type = kBGRA_8888_SkColorType;
   }
 #endif
 
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      gfx::Size(adjusted_info.width(), adjusted_info.height()),
-      adjusted_info.colorType(), adjusted_info.alphaType(),
-      adjusted_info.refColorSpace(), filter_quality, context_provider_wrapper,
-      is_accelerated, shared_image_usage_flags, resource_host);
+      size, adjusted_color_type, info.alphaType(), info.refColorSpace(),
+      filter_quality, context_provider_wrapper, is_accelerated,
+      shared_image_usage_flags, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
