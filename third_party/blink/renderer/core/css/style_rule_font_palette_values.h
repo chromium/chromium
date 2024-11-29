@@ -26,7 +26,8 @@ class CORE_EXPORT StyleRuleFontPaletteValues : public StyleRuleBase {
   const CSSValue* GetOverrideColors() const;
 
   FontPalette::BasePaletteValue GetBasePaletteIndex() const;
-  Vector<FontPalette::FontPaletteOverride> GetOverrideColorsAsVector() const;
+  Vector<FontPalette::FontPaletteOverride> GetOverrideColorsAsVector(
+      const Document& document) const;
 
   MutableCSSPropertyValueSet& MutableProperties();
   StyleRuleFontPaletteValues* Copy() const {
