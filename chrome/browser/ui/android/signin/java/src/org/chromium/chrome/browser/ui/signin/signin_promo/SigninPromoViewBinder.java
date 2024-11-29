@@ -38,6 +38,9 @@ final class SigninPromoViewBinder {
             view.getSecondaryButton()
                     .setOnClickListener(
                             model.get(SigninPromoProperties.ON_SECONDARY_BUTTON_CLICKED));
+        } else if (key == SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED) {
+            view.getDismissButton()
+                    .setOnClickListener(model.get(SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED));
         } else if (key == SigninPromoProperties.TITLE_TEXT) {
             view.getTitle().setText(model.get(SigninPromoProperties.TITLE_TEXT));
         } else if (key == SigninPromoProperties.DESCRIPTION_TEXT) {

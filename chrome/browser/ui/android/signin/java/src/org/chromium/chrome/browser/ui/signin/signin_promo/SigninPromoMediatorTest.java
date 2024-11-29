@@ -30,6 +30,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninPromoMediatorTest {
@@ -43,6 +44,7 @@ public class SigninPromoMediatorTest {
     // sign-out events.
     private @Mock IdentityManager mIdentityManager;
     private @Mock SigninManager mSigninManager;
+    private @Mock SyncService mSyncService;
     private @Mock SigninPromoDelegate mDelegate;
     private ProfileDataCache mProfileDataCache;
 
@@ -115,6 +117,7 @@ public class SigninPromoMediatorTest {
                 new SigninPromoMediator(
                         mIdentityManager,
                         mSigninManager,
+                        mSyncService,
                         AccountManagerFacadeProvider.getInstance(),
                         mProfileDataCache,
                         mDelegate);

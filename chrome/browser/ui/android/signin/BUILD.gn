@@ -112,6 +112,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncProperties.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/BookmarkSigninPromoDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/NtpSigninPromoDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/RecentTabsSigninPromoDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediator.java",
@@ -190,6 +193,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoDelegateTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoLauncherTest.java",

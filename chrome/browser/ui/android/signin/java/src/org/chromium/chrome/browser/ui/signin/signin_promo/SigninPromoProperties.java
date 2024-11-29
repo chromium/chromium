@@ -22,6 +22,10 @@ final class SigninPromoProperties {
             ON_SECONDARY_BUTTON_CLICKED =
                     new PropertyModel.WritableObjectPropertyKey<>("on_secondary_button_clicked");
 
+    static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            ON_DISMISS_BUTTON_CLICKED =
+                    new PropertyModel.WritableObjectPropertyKey<>("on_dismiss_button_clicked");
+
     static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_TEXT =
             new PropertyModel.ReadableObjectPropertyKey<>("title_text");
 
@@ -45,6 +49,7 @@ final class SigninPromoProperties {
                 PROFILE_DATA,
                 ON_PRIMARY_BUTTON_CLICKED,
                 ON_SECONDARY_BUTTON_CLICKED,
+                ON_DISMISS_BUTTON_CLICKED,
                 TITLE_TEXT,
                 DESCRIPTION_TEXT,
                 PRIMARY_BUTTON_TEXT,
@@ -57,8 +62,9 @@ final class SigninPromoProperties {
 
     static PropertyModel createModel(
             DisplayableProfileData profileData,
-            Runnable onAcceptClicked,
-            Runnable onDeclineClicked,
+            Runnable onPrimaryButtonClicked,
+            Runnable onSecondaryButtonClicked,
+            Runnable onDismissButtonClicked,
             String titleString,
             String descriptionString,
             String primaryButtonString,
@@ -67,8 +73,9 @@ final class SigninPromoProperties {
             boolean shouldHideDismissButton) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
-                .with(ON_PRIMARY_BUTTON_CLICKED, (unusedView) -> onAcceptClicked.run())
-                .with(ON_SECONDARY_BUTTON_CLICKED, (unusedView) -> onDeclineClicked.run())
+                .with(ON_PRIMARY_BUTTON_CLICKED, (unusedView) -> onPrimaryButtonClicked.run())
+                .with(ON_SECONDARY_BUTTON_CLICKED, (unusedView) -> onSecondaryButtonClicked.run())
+                .with(ON_DISMISS_BUTTON_CLICKED, (unusedView) -> onDismissButtonClicked.run())
                 .with(TITLE_TEXT, titleString)
                 .with(DESCRIPTION_TEXT, descriptionString)
                 .with(PRIMARY_BUTTON_TEXT, primaryButtonString)
