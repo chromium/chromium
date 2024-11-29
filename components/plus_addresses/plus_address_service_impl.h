@@ -112,7 +112,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
       const url::Origin& primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
       size_t current_suggestion_index,
-      bool is_manual_fallback,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
@@ -144,7 +143,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
                           const PlusAddress& plus_address,
-                          bool is_manual_fallback,
                           PlusAddressRequestCallback on_completed) override;
   bool IsRefreshingSupported(const url::Origin& origin) override;
   std::optional<PlusAddress> GetPlusAddress(
@@ -179,11 +177,9 @@ class PlusAddressServiceImpl : public PlusAddressService,
   // * plus address was confirmed successfully.
   // * it's identical to the `requested_address` (it might be different if there
   //   is an affiliation error).
-  // * the user has created the plus address using a manual fallback or has
-  //   created 3 or more plus addresses.
+  // * the user has created 3 or more plus addresses.
   const PlusProfileOrError& MaybeTriggerUserPerceptionSurvey(
       const PlusAddress& requested_address,
-      bool is_manual_fallback,
       const PlusProfileOrError& maybe_profile);
 
   // Checks whether the `origin` supports plus address.

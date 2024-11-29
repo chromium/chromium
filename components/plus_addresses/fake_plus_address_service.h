@@ -66,7 +66,6 @@ class FakePlusAddressService : public PlusAddressService {
       const url::Origin& primary_main_frame_origin,
       base::span<const autofill::Suggestion> current_suggestions,
       size_t current_suggestion_index,
-      bool is_manual_fallback,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,
@@ -89,7 +88,6 @@ class FakePlusAddressService : public PlusAddressService {
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
                           const PlusAddress& plus_address,
-                          bool is_manual_fallback,
                           PlusAddressRequestCallback on_completed) override;
   bool IsRefreshingSupported(const url::Origin& origin) override;
   std::optional<PlusAddress> GetPlusAddress(

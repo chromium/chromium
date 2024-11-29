@@ -1631,7 +1631,6 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                       kCreateNewPlusAddressChosen));
   EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress).Times(0);
   EXPECT_CALL(client(), TriggerPlusAddressUserPerceptionSurvey).Times(0);
-
   // Mock out the plus address creation logic to ensure it is deterministic and
   // independent of the client implementations in //chrome or //ios.
   EXPECT_CALL(client(),
@@ -1887,12 +1886,11 @@ TEST_F(AutofillExternalDelegatePlusAddressTest, PlusAddressInlineAccepted) {
     EXPECT_CALL(plus_address_delegate(),
                 OnAcceptedInlineSuggestion(
                     _, base::span<const Suggestion>(suggestions()),
-                    /*current_suggestion_index=*/0,
-                    /*is_manual_fallback=*/false, _, _, _, _, _, _))
+                    /*current_suggestion_index=*/0, _, _, _, _, _, _))
         .WillOnce(
             [&](const url::Origin& primary_main_frame_origin,
                 base::span<const Suggestion> current_suggestions,
-                size_t current_suggestion_index, bool is_manual_fallback,
+                size_t current_suggestion_index,
                 UpdateSuggestionsCallback update_suggestions_callback,
                 HideSuggestionsCallback hide_suggestions_callback,
                 PlusAddressCallback fill_field_callback,
@@ -1952,9 +1950,8 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   EXPECT_CALL(plus_address_delegate(),
               OnAcceptedInlineSuggestion(
                   _, base::span<const Suggestion>(suggestions()),
-                  /*current_suggestion_index=*/0, /*is_manual_fallback=*/false,
-                  _, _, _, _, _, _))
-      .WillOnce(MoveArg<7>(&show_affiliation_error_callback));
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<6>(&show_affiliation_error_callback));
   // Simulate accepting the dialog.
   EXPECT_CALL(client(), ShowPlusAddressAffiliationError(
                             affiliated_domain, affiliated_plus_address, _))
@@ -1986,9 +1983,8 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   EXPECT_CALL(plus_address_delegate(),
               OnAcceptedInlineSuggestion(
                   _, base::span<const Suggestion>(suggestions()),
-                  /*current_suggestion_index=*/0, /*is_manual_fallback=*/false,
-                  _, _, _, _, _, _))
-      .WillOnce(MoveArg<8>(&show_error_callback));
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<7>(&show_error_callback));
   EXPECT_CALL(
       client(),
       ShowPlusAddressError(
@@ -2012,9 +2008,8 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   EXPECT_CALL(plus_address_delegate(),
               OnAcceptedInlineSuggestion(
                   _, base::span<const Suggestion>(suggestions()),
-                  /*current_suggestion_index=*/0, /*is_manual_fallback=*/false,
-                  _, _, _, _, _, _))
-      .WillOnce(MoveArg<9>(&reshow_suggestions));
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<8>(&reshow_suggestions));
   EXPECT_CALL(
       driver(),
       RendererShouldTriggerSuggestions(
@@ -2038,12 +2033,11 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
 
   base::OnceClosure reshow_suggestions;
-  EXPECT_CALL(
-      plus_address_delegate(),
-      OnAcceptedInlineSuggestion(_, base::span<const Suggestion>(suggestions()),
-                                 /*current_suggestion_index=*/0,
-                                 /*is_manual_fallback=*/true, _, _, _, _, _, _))
-      .WillOnce(MoveArg<9>(&reshow_suggestions));
+  EXPECT_CALL(plus_address_delegate(),
+              OnAcceptedInlineSuggestion(
+                  _, base::span<const Suggestion>(suggestions()),
+                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
+      .WillOnce(MoveArg<8>(&reshow_suggestions));
   EXPECT_CALL(
       driver(),
       RendererShouldTriggerSuggestions(

@@ -159,10 +159,11 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
   base::test::TestFuture<const std::string&> future;
   controller().OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      /*is_manual_fallback=*/false, future.GetCallback());
+      /*is_manual_fallback=*/true, future.GetCallback());
   FastForwardBy(kDuration);
-  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey)
-      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPlusAddressUserPerceptionSurvey(
+                                     plus_addresses::hats::SurveyType::
+                                         kCreatedPlusAddressViaManualFallback));
   controller().OnConfirmed();
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(

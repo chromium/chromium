@@ -1449,6 +1449,22 @@ PlusAddressCallback AutofillExternalDelegate::CreatePlusAddressCallback(
       .Then(CreateSingleFieldFillCallback(suggestion_type, EMAIL_ADDRESS));
 }
 
+PlusAddressCallback AutofillExternalDelegate::CreateInlinePlusAddressCallback(
+    SuggestionType suggestion_type) {
+  return CreatePlusAddressCallback(suggestion_type)
+      .Then(base::BindRepeating(
+          [](base::WeakPtr<AutofillClient> client, bool is_manual_fallback) {
+            if (is_manual_fallback) {
+              client->TriggerPlusAddressUserPerceptionSurvey(
+                  plus_addresses::hats::SurveyType::
+                      kCreatedPlusAddressViaManualFallback);
+            }
+          },
+          manager_->client().GetWeakPtr(),
+          trigger_source_ ==
+              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
+}
+
 void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
     const Suggestion& suggestion) {
   AutofillPlusAddressDelegate* delegate =
@@ -1510,10 +1526,9 @@ void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
   delegate->OnAcceptedInlineSuggestion(
       manager_->client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
       /*current_suggestion_index=*/it - suggestions.begin(),
-      /*is_manual_fallback=*/trigger_source_ ==
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
       CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
-      CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddressInline),
+      CreateInlinePlusAddressCallback(
+          SuggestionType::kCreateNewPlusAddressInline),
       std::move(show_affiliation_error), std::move(show_error),
       std::move(reshow_suggestions));
 }

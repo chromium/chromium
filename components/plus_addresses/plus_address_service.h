@@ -87,7 +87,6 @@ class PlusAddressService : public KeyedService,
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
                                   const PlusAddress& plus_address,
-                                  bool is_manual_fallback,
                                   PlusAddressRequestCallback on_completed) = 0;
 
   // Returns whether refreshing a plus address on `origin` is supported.

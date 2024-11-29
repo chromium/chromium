@@ -89,13 +89,12 @@ enum class PlusAddressAction {
         handlePlusAddressResult:maybePlusProfile
                       forAction:PlusAddressAction::kPlusAddressActionConfirm];
   });
-  // `is_manual_fallback` is used to conditionally launch a HaTS survey, which
-  // is not possible to iOS.
+
   _plusAddressService->ConfirmPlusAddress(
       _mainFrameOrigin,
       plus_addresses::PlusAddress(
           base::SysNSStringToUTF8(_reservedPlusAddress)),
-      /*is_manual_fallback=*/false, std::move(callback));
+      std::move(callback));
 }
 
 - (NSString*)primaryEmailAddress {

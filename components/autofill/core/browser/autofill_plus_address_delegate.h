@@ -178,7 +178,6 @@ class AutofillPlusAddressDelegate {
       const url::Origin& primary_main_frame_origin,
       base::span<const Suggestion> current_suggestions,
       size_t current_suggestion_index,
-      bool is_manual_fallback,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,

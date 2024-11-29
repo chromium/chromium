@@ -258,7 +258,7 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
-        relevant_origin_, plus_profile_->plus_address, is_manual_fallback_,
+        relevant_origin_, plus_profile_->plus_address,
         base::BindOnce(
             &PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed,
             GetWeakPtr()));
@@ -339,6 +339,9 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
             ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
         GetPlusAddressSettingService()->SetHasAcceptedNotice();
         TriggerUserPerceptionSurvey(hats::SurveyType::kAcceptedFirstTimeCreate);
+      } else if (is_manual_fallback_) {
+        TriggerUserPerceptionSurvey(
+            hats::SurveyType::kCreatedPlusAddressViaManualFallback);
       }
       std::move(callback_).Run(*maybe_plus_profile->plus_address);
       RecordModalShownOutcome(
