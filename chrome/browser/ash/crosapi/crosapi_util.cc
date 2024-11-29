@@ -716,15 +716,6 @@ void InjectBrowserInitParams(
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();
 
-  // Syncing the randomization seed ensures that the group membership of the
-  // limited entropy synthetic trial will be the same between Ash Chrome and
-  // Lacros.
-  // TODO(crbug.com/40948861): Remove after completing the trial.
-  variations::LimitedEntropySyntheticTrial limited_entropy_synthetic_trial(
-      local_state, ash::GetChannel());
-  params->limited_entropy_synthetic_trial_seed =
-      limited_entropy_synthetic_trial.GetRandomizationSeed(local_state);
-
   // |metrics_service| could be nullptr in tests.
   if (auto* metrics_service = g_browser_process->metrics_service()) {
     // Send metrics service client id to Lacros if it's present.

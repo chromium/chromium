@@ -309,17 +309,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.LimitedEntropyTrial.AshSeedIsValid.OnSyncToLacros"
-    enum="BooleanValid" expires_after="2025-01-07">
-  <owner>yulunz@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Whether the seed value to randomize the limited entropy synthetic trial is
-    valid. This is only emitted from LaCrOS clients when reading the seed value
-    from the Ash Chrome client.
-  </summary>
-</histogram>
-
 <histogram name="Variations.Limits.VariationKeySize.{Size}" units="KiB"
     expires_after="2025-05-04">
   <owner>caitlinfischer@google.com</owner>
