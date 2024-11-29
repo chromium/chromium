@@ -8677,3 +8677,4 @@ crbug.com/380534434 [ Win ] external/wpt/css/css-scroll-snap/snap-fling-in-large
 crbug.com/381428629 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass Timeout ]
 crbug.com/381428629 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
 crbug.com/381428629 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
+crbug.com/381335068 [ Linux ] external/wpt/webdriver/tests/bidi/network/auth_required/unsubscribe.py [ Failure Pass ]
