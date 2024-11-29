@@ -567,21 +567,21 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void AppendDataImpl(base::span<const char>);
 
   ResourceType type_;
-  ResourceStatus status_;
+  ResourceStatus status_ = ResourceStatus::kNotStarted;
 
   std::optional<ResourceError> error_;
 
   base::TimeTicks load_response_end_;
   base::TimeTicks memory_cache_last_accessed_;
 
-  size_t encoded_size_;
-  size_t decoded_size_;
+  size_t encoded_size_ = 0u;
+  size_t decoded_size_ = 0u;
 
   String cache_identifier_;
 
-  bool link_preload_;
-  bool is_alive_;
-  bool is_add_remove_client_prohibited_;
+  bool link_preload_ = false;
+  bool is_alive_ = false;
+  bool is_add_remove_client_prohibited_ = false;
   bool is_revalidation_start_forbidden_ = false;
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
@@ -594,9 +594,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
                               // network response
     kRevalidated,             // revalidate success by 304 Not Modified
   };
-  RevalidationStatus revalidation_status_;
+  RevalidationStatus revalidation_status_ =
+      RevalidationStatus::kNoRevalidatingOrFailed;
 
-  ResourceIntegrityDisposition integrity_disposition_;
+  ResourceIntegrityDisposition integrity_disposition_ =
+      ResourceIntegrityDisposition::kNotChecked;
   class IntegrityReport integrity_report_;
 
   // Ordered list of all redirects followed while fetching this resource.
