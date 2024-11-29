@@ -44,17 +44,17 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
     base::TimeTicks processing_end_time;
 
     // This is the timestamp when the commit has finished on compositor thread.
-    // Only not null for event timings that have a next paint.
-    base::TimeTicks commit_finish_time;
+    // Only set for event timings that have a next paint.
+    std::optional<base::TimeTicks> commit_finish_time;
 
     // Other than reporting to UKM, this is also used by eventTiming trace
     // events to report accurate ending time.
-    // Only not null for event timing that have a next paint.
-    base::TimeTicks presentation_time;
+    // Only set for event timing that have a next paint.
+    std::optional<base::TimeTicks> presentation_time;
 
     // The fallback timestamp used to calculate event duration. It is set only
     // when fallback time is used.  Some events might still have a next paint.
-    base::TimeTicks fallback_time;
+    std::optional<base::TimeTicks> fallback_time = std::nullopt;
 
     // Keycode for the event. If the event is not a keyboard event, the keycode
     // wouldn't be set.
@@ -106,8 +106,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   bool HasKnownEndTime() const;
 
   base::TimeTicks GetEndTime() const;
-
-  void UpdateFallbackTime(base::TimeTicks fallback_time);
 
   uint32_t interactionOffset() const;
 

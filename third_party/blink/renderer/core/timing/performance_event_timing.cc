@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 
-#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -118,23 +117,16 @@ bool PerformanceEventTiming::HasKnownInteractionID() const {
 }
 
 bool PerformanceEventTiming::HasKnownEndTime() const {
-  return !reporting_info_.presentation_time.is_null() ||
-         !reporting_info_.fallback_time.is_null();
+  return reporting_info_.presentation_time.has_value() ||
+         reporting_info_.fallback_time.has_value();
 }
 
 base::TimeTicks PerformanceEventTiming::GetEndTime() const {
   CHECK(HasKnownEndTime());
-  if (!reporting_info_.fallback_time.is_null()) {
-    return reporting_info_.fallback_time;
+  if (reporting_info_.fallback_time.has_value()) {
+    return reporting_info_.fallback_time.value();
   }
-  return reporting_info_.presentation_time;
-}
-
-void PerformanceEventTiming::UpdateFallbackTime(base::TimeTicks fallback_time) {
-  if (reporting_info_.fallback_time.is_null() ||
-      fallback_time < reporting_info_.fallback_time) {
-    reporting_info_.fallback_time = fallback_time;
-  }
+  return reporting_info_.presentation_time.value();
 }
 
 uint32_t PerformanceEventTiming::interactionOffset() const {
@@ -296,9 +288,9 @@ void PerformanceEventTiming::SetPerfettoData(
   event_timing->set_node_id(target_ ? target_->GetDomNodeId()
                                     : kInvalidDOMNodeId);
   event_timing->set_frame(GetFrameIdForTracing(frame).Ascii());
-  if (!reporting_info_.fallback_time.is_null()) {
+  if (reporting_info_.fallback_time.has_value()) {
     event_timing->set_fallback_time_us(
-        (reporting_info_.fallback_time - time_origin).InMicroseconds());
+        (reporting_info_.fallback_time.value() - time_origin).InMicroseconds());
   }
   if (reporting_info_.key_code.has_value()) {
     event_timing->set_key_code(reporting_info_.key_code.value());
@@ -347,10 +339,11 @@ std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue(
       (reporting_info_.enqueued_to_main_thread_time - origin_time)
           .InMillisecondsF());
 
-  if (!reporting_info_.commit_finish_time.is_null()) {
+  if (reporting_info_.commit_finish_time.has_value()) {
     traced_value->SetDouble(
         "commitFinishTime",
-        (reporting_info_.commit_finish_time - origin_time).InMillisecondsF());
+        (reporting_info_.commit_finish_time.value() - origin_time)
+            .InMillisecondsF());
   }
   return traced_value;
 }

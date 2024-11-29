@@ -84,9 +84,6 @@ class WindowPerformanceTest : public testing::Test {
   }
 
   void SimulatePaint() { performance_->OnPaintFinished(); }
-  void SimulateCommit(base::TimeTicks commit_time) {
-    performance_->SetCommitFinishTimeStampForPendingEvents(commit_time);
-  }
   void SimulateResolvePresentationPromise(uint64_t presentation_index,
                                           base::TimeTicks timestamp) {
     viz::FrameTimingDetails presentation_details;
@@ -103,16 +100,16 @@ class WindowPerformanceTest : public testing::Test {
     uint64_t presentation_promise_index =
         performance_->event_presentation_promise_count_;
     SimulatePaint();
-    SimulateCommit(timestamp);
     SimulateResolvePresentationPromise(presentation_promise_index, timestamp);
   }
 
   void SimulateInteractionId(PerformanceEventTiming* entry) {
     ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        entry->GetEventTimingReportingInfo()->creation_time,
-        entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
-        entry->GetEventTimingReportingInfo()->commit_finish_time,
-        entry->GetEndTime()};
+        entry->GetEventTimingReportingInfo()->creation_time, base::TimeTicks(),
+        base::TimeTicks(),
+        entry->GetEventTimingReportingInfo()->fallback_time.has_value()
+            ? entry->GetEventTimingReportingInfo()->fallback_time.value()
+            : entry->GetEventTimingReportingInfo()->presentation_time.value()};
     performance_->SetInteractionIdAndRecordLatency(entry, event_timestamps);
   }
 
@@ -468,20 +465,17 @@ TEST_F(WindowPerformanceTest,
   auto* event_timing_entries = GetWindowPerformanceEventTimingEntries();
   EXPECT_EQ(event_timing_entries->size(), 3u);
   for (const auto event_data : *event_timing_entries) {
-    EXPECT_TRUE(event_data->GetEventTimingReportingInfo()
-                    ->commit_finish_time.is_null());
     EXPECT_FALSE(event_data->GetEventTimingReportingInfo()
-                     ->processing_end_time.is_null());
-    EXPECT_TRUE(
-        event_data->GetEventTimingReportingInfo()->fallback_time.is_null());
+                     ->commit_finish_time.has_value());
   }
   base::TimeTicks commit_finish_time = GetTimeOrigin() + base::Seconds(2);
   performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
   for (const auto event_data : *event_timing_entries) {
-    EXPECT_FALSE(event_data->GetEventTimingReportingInfo()
-                     ->commit_finish_time.is_null());
-    EXPECT_EQ(event_data->GetEventTimingReportingInfo()->commit_finish_time,
-              commit_finish_time);
+    EXPECT_TRUE(event_data->GetEventTimingReportingInfo()
+                    ->commit_finish_time.has_value());
+    EXPECT_EQ(
+        event_data->GetEventTimingReportingInfo()->commit_finish_time.value(),
+        commit_finish_time);
   }
 }
 
@@ -493,28 +487,25 @@ TEST_F(WindowPerformanceTest, NewCommitNotOverwritePreviousEventTimings) {
   base::TimeTicks processing_end = start_time + base::Milliseconds(200);
   RegisterPointerEvent(event_type_names::kClick, start_time, processing_start,
                        processing_end, 4);
-  base::TimeTicks commit_finish_time_1 = GetTimeOrigin() + base::Seconds(2);
-  performance_->OnPaintFinished();
-  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time_1);
+  base::TimeTicks commit_finish_time = GetTimeOrigin() + base::Seconds(2);
+  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
   auto* event_timing_entries = GetWindowPerformanceEventTimingEntries();
   EXPECT_EQ(event_timing_entries->size(), 1u);
   EXPECT_EQ(event_timing_entries->at(0)
                 ->GetEventTimingReportingInfo()
                 ->commit_finish_time,
-            commit_finish_time_1);
-
+            commit_finish_time);
   // Set a new commit finish timestamp.
-  base::TimeTicks commit_finish_time_2 =
-      commit_finish_time_1 + base::Seconds(1);
-  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time_2);
+  base::TimeTicks commit_finish_time_1 = commit_finish_time + base::Seconds(1);
+  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time_1);
   EXPECT_EQ(event_timing_entries->at(0)
                 ->GetEventTimingReportingInfo()
                 ->commit_finish_time,
-            commit_finish_time_1);
+            commit_finish_time);
   EXPECT_NE(event_timing_entries->at(0)
                 ->GetEventTimingReportingInfo()
                 ->commit_finish_time,
-            commit_finish_time_2);
+            commit_finish_time_1);
 }
 
 // Test for existence of 'first-input' given different types of first events.
@@ -1631,8 +1622,8 @@ class InteractionIdTest : public WindowPerformanceTest {
         const AtomicString& name,
         std::optional<int> key_code,
         std::optional<PointerId> pointer_id,
-        base::TimeTicks event_timestamp = GetTimeStamp(1),
-        base::TimeTicks presentation_timestamp = GetTimeStamp(2))
+        base::TimeTicks event_timestamp = base::TimeTicks(),
+        base::TimeTicks presentation_timestamp = base::TimeTicks())
         : name_(name),
           key_code_(key_code),
           pointer_id_(pointer_id),
