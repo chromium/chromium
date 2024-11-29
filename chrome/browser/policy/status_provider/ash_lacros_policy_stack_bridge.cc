@@ -19,7 +19,7 @@ AshLacrosPolicyStackBridge::AshLacrosPolicyStackBridge() {
   LoadDevicePolicy();
 }
 
-AshLacrosPolicyStackBridge::~AshLacrosPolicyStackBridge() {}
+AshLacrosPolicyStackBridge::~AshLacrosPolicyStackBridge() = default;
 
 base::Value::Dict AshLacrosPolicyStackBridge::GetStatus() {
   base::Value::Dict device_policy_status = device_policy_status_.Clone();

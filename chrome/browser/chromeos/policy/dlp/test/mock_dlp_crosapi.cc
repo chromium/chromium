@@ -6,7 +6,7 @@
 
 namespace policy {
 
-MockDlpCrosapi::MockDlpCrosapi() {}
+MockDlpCrosapi::MockDlpCrosapi() = default;
 
 MockDlpCrosapi::~MockDlpCrosapi() = default;
 

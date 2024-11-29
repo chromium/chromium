@@ -142,7 +142,7 @@ class DataTransferDlpControllerTest
     : public ::testing::TestWithParam<
           std::tuple<std::optional<ui::EndpointType>, bool>> {
  protected:
-  DataTransferDlpControllerTest() {}
+  DataTransferDlpControllerTest() = default;
 
   ~DataTransferDlpControllerTest() override = default;
 

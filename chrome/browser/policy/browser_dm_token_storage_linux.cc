@@ -88,7 +88,7 @@ bool DeleteDMTokenFromUserDataDir(const std::string& client_id) {
 BrowserDMTokenStorageLinux::BrowserDMTokenStorageLinux()
     : task_runner_(base::ThreadPool::CreateTaskRunner({base::MayBlock()})) {}
 
-BrowserDMTokenStorageLinux::~BrowserDMTokenStorageLinux() {}
+BrowserDMTokenStorageLinux::~BrowserDMTokenStorageLinux() = default;
 
 std::string BrowserDMTokenStorageLinux::InitClientId() {
   if (!client_id_.empty())

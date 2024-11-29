@@ -26,6 +26,6 @@ SchemaRegistryService::SchemaRegistryService(
     global_registry->Track(registry_.get());
 }
 
-SchemaRegistryService::~SchemaRegistryService() {}
+SchemaRegistryService::~SchemaRegistryService() = default;
 
 }  // namespace policy

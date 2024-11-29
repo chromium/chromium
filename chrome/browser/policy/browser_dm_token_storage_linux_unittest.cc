@@ -126,7 +126,7 @@ TEST_F(BrowserDMTokenStorageLinuxTest, InitDMTokenWithoutDirectory) {
 class TestStoreDMTokenDelegate {
  public:
   TestStoreDMTokenDelegate() : called_(false), success_(false) {}
-  ~TestStoreDMTokenDelegate() {}
+  ~TestStoreDMTokenDelegate() = default;
 
   void OnDMTokenUpdated(bool success) {
     run_loop_.Quit();

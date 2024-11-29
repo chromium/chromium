@@ -15,7 +15,7 @@ namespace policy {
 // Sets the hardware acceleration mode policy before the browser is started.
 class HardwareAccelerationModePolicyTest : public PolicyTest {
  public:
-  HardwareAccelerationModePolicyTest() {}
+  HardwareAccelerationModePolicyTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();

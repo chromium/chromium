@@ -206,7 +206,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     scoped_feature_list_.InitWithFeatures(GetParam().enabled_features,
                                           GetParam().disabled_features);
   }
-  ~CloudPolicyTest() override {}
+  ~CloudPolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     PlatformBrowserTest::SetUpOnMainThread();
