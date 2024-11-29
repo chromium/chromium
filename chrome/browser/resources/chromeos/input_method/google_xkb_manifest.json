@@ -13,7 +13,6 @@
     "audioCapture",
     "crashReportPrivate",
     "https://clients4.google.com/",
-    // TODO: crbug.com/381133799 - Remove dl and edgedl once they are no longer used from the extension.
     "https://dl.google.com/",
     "https://edgedl.me.gvt1.com/",
     "https://handwriting.googleapis.com/",
