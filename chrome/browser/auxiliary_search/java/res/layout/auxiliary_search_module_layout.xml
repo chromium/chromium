@@ -18,7 +18,7 @@ found in the LICENSE file.
     android:paddingStart="@dimen/single_tab_module_padding_top"
     android:paddingEnd="@dimen/single_tab_module_padding_top"
     android:paddingTop="@dimen/single_tab_module_padding_top"
-    android:paddingBottom="@dimen/single_tab_module_padding_top"
+    android:paddingBottom="@dimen/auxiliary_search_module_padding_bottom"
     android:background="@drawable/home_surface_ui_background"
     android:foreground="@drawable/single_tab_card_ripple"
     android:orientation="vertical">
@@ -59,13 +59,18 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:maxLines="3"
           android:text="@string/auxiliary_search_module_content"
-          android:layout_height="0dp"
-          android:layout_weight="1"
+          android:layout_height="wrap_content"
           android:layout_gravity="top"
           android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
     </LinearLayout>
   </LinearLayout>
+
+  <Space
+      android:id="@+id/auxiliary_search_middle_space"
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="match_parent" />
 
   <LinearLayout
       android:id="@+id/button_container"
@@ -84,9 +89,11 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/auxiliary_search_first_button"
-        android:layout_width="@dimen/auxiliary_search_module_first_button_width"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
+        android:paddingStart="@dimen/auxiliary_search_module_icon_size"
+        android:paddingEnd="@dimen/auxiliary_search_module_icon_size"
+        android:gravity="center_vertical|center_horizontal"
         android:layout_gravity="bottom"
         android:singleLine="true"
         android:text="@string/auxiliary_search_module_button_go_to_settings"
@@ -95,9 +102,11 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/auxiliary_search_second_button"
         style="@style/FilledButton"
-        android:layout_width="@dimen/auxiliary_search_module_second_button_width"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/auxiliary_search_module_icon_size"
+        android:paddingStart="@dimen/auxiliary_search_module_icon_size"
+        android:paddingEnd="@dimen/auxiliary_search_module_icon_size"
+        android:layout_marginStart="@dimen/auxiliary_search_module_button_padding_middle"
         android:singleLine="true"
         android:layout_gravity="bottom|end"
         android:textAppearance="@style/TextAppearance.Button.Text.Filled"

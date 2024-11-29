@@ -11,9 +11,9 @@ found in the LICENSE file.
     <dimen name="auxiliary_search_favicon_size_small">18dp</dimen>
 
     <!-- Auxiliary search module dimensions. -->
+    <dimen name="auxiliary_search_module_padding_bottom">12dp</dimen>
     <dimen name="auxiliary_search_module_info_height">104dp</dimen>
     <dimen name="auxiliary_search_module_icon_size">24dp</dimen>
     <dimen name="auxiliary_search_module_icon_margin_end">8dp</dimen>
-    <dimen name="auxiliary_search_module_first_button_width">141dp</dimen>
-    <dimen name="auxiliary_search_module_second_button_width">101dp</dimen>
+    <dimen name="auxiliary_search_module_button_padding_middle">16dp</dimen>
 </resources>
