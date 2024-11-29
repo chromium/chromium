@@ -81,35 +81,6 @@ class CORE_EXPORT ResponsivenessMetrics
     Vector<EventTimestamps> timestamps_;
   };
 
-  // Wrapper class to store PerformanceEventTiming and timestamps
-  // on a HeapHashMap.
-  class KeyboardEntryAndTimestamps
-      : public GarbageCollected<KeyboardEntryAndTimestamps> {
-   public:
-    KeyboardEntryAndTimestamps(PerformanceEventTiming* entry,
-                               EventTimestamps timestamps)
-        : entry_(entry), timestamps_({timestamps}) {}
-
-    static KeyboardEntryAndTimestamps* Create(PerformanceEventTiming* entry,
-                                              EventTimestamps timestamps) {
-      return MakeGarbageCollected<KeyboardEntryAndTimestamps>(entry,
-                                                              timestamps);
-    }
-    ~KeyboardEntryAndTimestamps() = default;
-    void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
-    EventTimestamps GetTimeStamps() { return timestamps_; }
-
-   private:
-    // The PerformanceEventTiming entry that has not been sent to observers
-    // yet: the event dispatch has been completed but the presentation promise
-    // used to determine |duration| has not yet been resolved, or the
-    // interactionId has not yet been computed yet.
-    Member<PerformanceEventTiming> entry_;
-    // Timestamps associated with the entry.
-    EventTimestamps timestamps_;
-  };
-
   // Wrapper class to store PerformanceEventTiming, pointerdown and pointerup
   // timestamps, and whether drag has been detected on a HeapHashMap.
   class PointerEntryAndInfo : public GarbageCollected<PointerEntryAndInfo> {

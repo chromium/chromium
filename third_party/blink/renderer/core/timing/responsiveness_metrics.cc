@@ -831,11 +831,6 @@ void ResponsivenessMetrics::FlushAllEventsForTesting() {
   FlushSequenceBasedKeyboardEvents();
 }
 
-void ResponsivenessMetrics::KeyboardEntryAndTimestamps::Trace(
-    Visitor* visitor) const {
-  visitor->Trace(entry_);
-}
-
 void ResponsivenessMetrics::PointerEntryAndInfo::Trace(Visitor* visitor) const {
   visitor->Trace(entry_);
 }

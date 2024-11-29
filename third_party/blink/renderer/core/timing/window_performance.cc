@@ -879,6 +879,11 @@ void WindowPerformance::ReportEvent(
     NotifyAndAddEventTimingBuffer(event_timing_entry);
   }
 
+  ReportFirstInputTiming(event_timing_entry);
+}
+
+void WindowPerformance::ReportFirstInputTiming(
+    PerformanceEventTiming* event_timing_entry) {
   // First Input
   //
   // See also ./First_input_state_machine.md

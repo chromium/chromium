@@ -205,6 +205,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // the fallback value in the PerformanceEventTiming::EventTimingReportingInfo.
   void SetFallbackTime(PerformanceEventTiming* entry);
 
+  void ReportFirstInputTiming(PerformanceEventTiming* event_timing_entry);
+
   // The last time the page visibility was changed.
   base::TimeTicks last_hidden_timestamp_;
 
