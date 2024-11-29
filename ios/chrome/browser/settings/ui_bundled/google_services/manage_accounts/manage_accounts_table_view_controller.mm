@@ -141,6 +141,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   item.accessibilityIdentifier = identityViewItem.accessibilityIdentifier;
   item.mode = TableViewAccountModeNonTappable;
   item.accessoryType = UITableViewCellAccessoryNone;
+  item.accessibilityTraits = UIAccessibilityTraitStaticText;
 }
 
 - (TableViewItem*)removeAccountItemWithIdentityViewItem:
@@ -152,6 +153,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
       [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
           stringByAppendingString:identityViewItem.accessibilityIdentifier];
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
 
@@ -162,6 +164,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
   item.accessibilityIdentifier = kSettingsAccountsTableViewAddAccountCellId;
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
 
@@ -172,6 +175,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
       l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
   item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
 
