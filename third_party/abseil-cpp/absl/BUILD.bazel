@@ -84,9 +84,25 @@ config_setting(
 
 config_setting(
     name = "ppc",
-    constraint_values = [
-        "@platforms//cpu:ppc",
-    ],
+    values = {
+        "cpu": "ppc",
+    },
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
+    name = "cpu_wasm",
+    values = {
+        "cpu": "wasm",
+    },
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
+    name = "cpu_wasm32",
+    values = {
+        "cpu": "wasm32",
+    },
     visibility = [":__subpackages__"],
 )
 
@@ -109,6 +125,8 @@ config_setting(
 selects.config_setting_group(
     name = "wasm",
     match_any = [
+        ":cpu_wasm",
+        ":cpu_wasm32",
         ":platforms_wasm32",
         ":platforms_wasm64",
     ],
@@ -117,9 +135,9 @@ selects.config_setting_group(
 
 config_setting(
     name = "fuchsia",
-    constraint_values = [
-        "@platforms//os:fuchsia",
-    ],
+    values = {
+        "cpu": "fuchsia",
+    },
     visibility = [":__subpackages__"],
 )
 

@@ -18,7 +18,6 @@
 #include "absl/strings/numbers.h"
 
 #include <algorithm>
-#include <array>
 #include <cassert>
 #include <cfloat>  // for DBL_DIG and FLT_DIG
 #include <cmath>   // for HUGE_VAL
@@ -675,7 +674,7 @@ namespace {
 // Represents integer values of digits.
 // Uses 36 to indicate an invalid character since we support
 // bases up to 36.
-static constexpr std::array<int8_t, 256> kAsciiToInt = {
+static const int8_t kAsciiToInt[256] = {
     36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,  // 16 36s.
     36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
     36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 0,  1,  2,  3,  4,  5,

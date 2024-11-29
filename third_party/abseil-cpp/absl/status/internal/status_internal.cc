@@ -28,7 +28,6 @@
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
-#include "absl/debugging/leak_check.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/debugging/symbolize.h"
 #include "absl/memory/memory.h"
@@ -235,15 +234,12 @@ absl::StatusCode MapToLocalCode(int value) {
   }
 }
 
-absl::Nonnull<const char*> MakeCheckFailString(
+absl::Nonnull<std::string*> MakeCheckFailString(
     absl::Nonnull<const absl::Status*> status,
     absl::Nonnull<const char*> prefix) {
-  // There's no need to free this string since the process is crashing.
-  return absl::IgnoreLeak(
-             new std::string(absl::StrCat(
-                 prefix, " (",
-                 status->ToString(StatusToStringMode::kWithEverything), ")")))
-      ->c_str();
+  return new std::string(
+      absl::StrCat(prefix, " (",
+                   status->ToString(StatusToStringMode::kWithEverything), ")"));
 }
 
 }  // namespace status_internal

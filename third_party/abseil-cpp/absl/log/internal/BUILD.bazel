@@ -64,7 +64,6 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:nullability",
-        "//absl/debugging:leak_check",
         "//absl/strings",
     ],
 )
