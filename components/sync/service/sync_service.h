@@ -158,6 +158,12 @@ class SyncService : public KeyedService {
     // Sync is paused because there is a persistent auth error (e.g. user signed
     // out on the web on desktop), and the engine is inactive.
     PAUSED,
+
+    // States above require user action to resolve.
+    // States below should usually eventually lead to ACTIVE without any further
+    // user action. (Exception: PENDING_DESIRED_CONFIGURATION, i.e. the advanced
+    // setup flow for Sync-the-feature, still requires a user confirmation.)
+
     // Sync's startup was deferred, so that it doesn't slow down browser
     // startup. Once the deferral time (usually 10s) expires, or something
     // requests immediate startup, Sync will actually start.
