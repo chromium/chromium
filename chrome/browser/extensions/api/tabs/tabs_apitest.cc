@@ -262,7 +262,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 }
 
 // https://crbug.com/1450933 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
+#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
