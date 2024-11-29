@@ -13,6 +13,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "cc/mojom/paint_flags_mojom_traits.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
@@ -380,6 +381,20 @@ struct StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad> {
     const viz::SurfaceDrawQuad* quad =
         viz::SurfaceDrawQuad::MaterialCast(&input);
     return quad->allow_merge;
+  }
+
+  static std::optional<cc::PaintFlags::FilterQuality>
+  override_child_filter_quality(const viz::DrawQuad& input) {
+    const viz::SurfaceDrawQuad* quad =
+        viz::SurfaceDrawQuad::MaterialCast(&input);
+    return quad->override_child_filter_quality;
+  }
+
+  static std::optional<cc::PaintFlags::DynamicRangeLimitMixture>
+  override_child_dynamic_range_limit(const viz::DrawQuad& input) {
+    const viz::SurfaceDrawQuad* quad =
+        viz::SurfaceDrawQuad::MaterialCast(&input);
+    return quad->override_child_dynamic_range_limit;
   }
 
   static bool Read(viz::mojom::SurfaceQuadStateDataView data,

@@ -63,6 +63,7 @@ mojom("mojom") {
     ":singleplanar_format",
     "//cc/mojom:element_id",
     "//cc/mojom:layer_type",
+    "//cc/mojom:paint_flags",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",

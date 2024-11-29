@@ -13,6 +13,7 @@
 #include <optional>
 
 #include "base/notreached.h"
+#include "cc/mojom/paint_flags_mojom_traits.h"
 #include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
@@ -141,6 +142,14 @@ bool StructTraits<viz::mojom::SurfaceQuadStateDataView, viz::DrawQuad>::Read(
   quad->stretch_content_to_fill_bounds = data.stretch_content_to_fill_bounds();
   quad->is_reflection = data.is_reflection();
   quad->allow_merge = data.allow_merge();
+  if (!data.ReadOverrideChildFilterQuality(
+          &quad->override_child_filter_quality)) {
+    return false;
+  }
+  if (!data.ReadOverrideChildDynamicRangeLimit(
+          &quad->override_child_dynamic_range_limit)) {
+    return false;
+  }
   return data.ReadSurfaceRange(&quad->surface_range);
 }
 

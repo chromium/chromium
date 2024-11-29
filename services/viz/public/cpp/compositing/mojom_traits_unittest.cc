@@ -972,6 +972,10 @@ TEST_F(StructTraitsTest, RenderPass) {
             out_surface_quad->stretch_content_to_fill_bounds);
   EXPECT_EQ(surface_quad->allow_merge, out_surface_quad->allow_merge);
   EXPECT_EQ(surface_quad->is_reflection, out_surface_quad->is_reflection);
+  EXPECT_EQ(surface_quad->override_child_filter_quality,
+            out_surface_quad->override_child_filter_quality);
+  EXPECT_EQ(surface_quad->override_child_dynamic_range_limit,
+            out_surface_quad->override_child_dynamic_range_limit);
 }
 
 TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
@@ -1050,6 +1054,10 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   primary_surface_quad->SetNew(
       sqs, rect3, rect3, SurfaceRange(fallback_surface_id, primary_surface_id),
       SkColors::kBlue, false);
+  primary_surface_quad->override_child_filter_quality =
+      cc::PaintFlags::FilterQuality::kHigh;
+  primary_surface_quad->override_child_dynamic_range_limit =
+      cc::PaintFlags::DynamicRangeLimitMixture(0.25f, 0.5f);
 
   const gfx::Rect rect4(1234, 5678, 91012, 13141);
   const bool needs_blending = true;
@@ -1150,6 +1158,10 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect3, out_primary_surface_draw_quad->rect);
   EXPECT_EQ(rect3, out_primary_surface_draw_quad->visible_rect);
   EXPECT_TRUE(out_primary_surface_draw_quad->needs_blending);
+  EXPECT_EQ(primary_surface_quad->override_child_filter_quality,
+            out_primary_surface_draw_quad->override_child_filter_quality);
+  EXPECT_EQ(primary_surface_quad->override_child_dynamic_range_limit,
+            out_primary_surface_draw_quad->override_child_dynamic_range_limit);
   EXPECT_EQ(primary_surface_id,
             out_primary_surface_draw_quad->surface_range.end());
   EXPECT_EQ(SkColors::kBlue,
