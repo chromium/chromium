@@ -24,6 +24,7 @@ public class Account {
     private final Bitmap mPictureBitmap;
     private final boolean mIsSignIn;
     private final boolean mIsBrowserTrustedSignIn;
+    private final boolean mIsFilteredOut;
 
     /**
      * @param id The account ID.
@@ -38,6 +39,8 @@ public class Account {
      * @param isBrowserTrustedSignIn Whether this account's login state is sign in or sign up,
      *     trusted by the browser and either observed by the browser or claimed by IDP if the IDP
      *     has third-party cookie access.
+     * @param isFilteredOut Whether this account is filtered out or not. If true, the account must
+     *     be shown disabled since it cannot be used by the user.
      */
     @CalledByNative
     public Account(
@@ -48,7 +51,8 @@ public class Account {
             GURL pictureUrl,
             Bitmap pictureBitmap,
             boolean isSignIn,
-            boolean isBrowserTrustedSignIn) {
+            boolean isBrowserTrustedSignIn,
+            boolean isFilteredOut) {
         mId = id;
         mEmail = email;
         mName = name;
@@ -57,6 +61,7 @@ public class Account {
         mPictureBitmap = pictureBitmap;
         mIsSignIn = isSignIn;
         mIsBrowserTrustedSignIn = isBrowserTrustedSignIn;
+        mIsFilteredOut = isFilteredOut;
     }
 
     public String getEmail() {
@@ -85,6 +90,10 @@ public class Account {
 
     public boolean isBrowserTrustedSignIn() {
         return mIsBrowserTrustedSignIn;
+    }
+
+    public boolean isFilteredOut() {
+        return mIsFilteredOut;
     }
 
     // Return all the String fields. Note that this excludes non-string fields, in particular

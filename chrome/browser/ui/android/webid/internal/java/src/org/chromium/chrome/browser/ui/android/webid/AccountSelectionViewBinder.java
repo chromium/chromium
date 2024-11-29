@@ -76,12 +76,15 @@ class AccountSelectionViewBinder {
     static final String TEMPORARILY_UNAVAILABLE = "temporarily_unavailable";
     static final String SERVER_ERROR = "server_error";
 
+    static final float DISABLED_OPACITY = 0.38f;
+
     /**
      * Returns bitmap with the maskable bitmap's safe zone as defined in
      * https://www.w3.org/TR/appmanifest/ cropped in a circle.
+     *
      * @param resources the Resources used to set initial target density.
      * @param bitmap the maskable bitmap. It should adhere to the maskable icon spec as defined in
-     * https://www.w3.org/TR/appmanifest/
+     *     https://www.w3.org/TR/appmanifest/
      * @param outBitmapSize the target bitmap size in pixels.
      * @return the cropped bitmap.
      */
@@ -171,14 +174,20 @@ class AccountSelectionViewBinder {
                         });
             }
         } else if (key == AccountProperties.ACCOUNT) {
-            TextView name = view.findViewById(R.id.title);
+            if (account.isFilteredOut()) {
+                view.setAlpha(DISABLED_OPACITY);
+            }
+            TextView title = view.findViewById(R.id.title);
             // Name is not shown in the account chip of the request permission dialog. The name is
             // shown in the Continue button instead.
-            if (name != null) {
-                name.setText(account.getName());
+            if (title != null) {
+                title.setText(account.isFilteredOut() ? account.getEmail() : account.getName());
             }
-            TextView email = view.findViewById(R.id.description);
-            email.setText(account.getEmail());
+            TextView description = view.findViewById(R.id.description);
+            description.setText(
+                    account.isFilteredOut()
+                            ? view.getContext().getString(R.string.filtered_account_message)
+                            : account.getEmail());
         } else {
             assert false : "Unhandled update to property:" + key;
         }

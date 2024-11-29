@@ -53,7 +53,8 @@ public class AccountSelectionIntegrationTestBase {
                     TEST_PROFILE_PIC,
                     null,
                     /* isSignIn= */ true,
-                    /* isBrowserTrustedSignIn= */ true);
+                    /* isBrowserTrustedSignIn= */ true,
+                    /* isFilteredOut= */ false);
     protected static final Account NEW_BOB =
             new Account(
                     "Bob",
@@ -63,7 +64,8 @@ public class AccountSelectionIntegrationTestBase {
                     TEST_PROFILE_PIC,
                     null,
                     /* isSignIn= */ false,
-                    /* isBrowserTrustedSignIn= */ false);
+                    /* isBrowserTrustedSignIn= */ false,
+                    /* isFilteredOut= */ false);
 
     protected static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(

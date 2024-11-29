@@ -149,6 +149,7 @@ public class AccountSelectionJUnitTestBase {
     Account mCarlAccount;
     Account mNewUserAccount;
     Account mNoOneAccount;
+    Account mFilteredOutAccount;
 
     IdentityCredentialTokenError mTokenError;
     IdentityCredentialTokenError mTokenErrorEmptyUrl;
@@ -194,7 +195,8 @@ public class AccountSelectionJUnitTestBase {
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true);
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false);
         mBobAccount =
                 new Account(
                         "Bob",
@@ -204,7 +206,8 @@ public class AccountSelectionJUnitTestBase {
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true);
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false);
         mCarlAccount =
                 new Account(
                         "Carl",
@@ -214,7 +217,8 @@ public class AccountSelectionJUnitTestBase {
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true);
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false);
         mNewUserAccount =
                 new Account(
                         "602214076",
@@ -224,7 +228,8 @@ public class AccountSelectionJUnitTestBase {
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ false,
-                        /* isBrowserTrustedSignIn= */ false);
+                        /* isBrowserTrustedSignIn= */ false,
+                        /* isFilteredOut= */ false);
         mNoOneAccount =
                 new Account(
                         "",
@@ -234,7 +239,19 @@ public class AccountSelectionJUnitTestBase {
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true,
-                        /* isBrowserTrustedSignIn= */ true);
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false);
+        mFilteredOutAccount =
+                new Account(
+                        "ID123",
+                        "nicolas@example.com",
+                        "Nicolas Pena",
+                        "Nicolas",
+                        mTestProfilePicUrl,
+                        /* pictureBitmap= */ null,
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ true);
 
         mTokenError = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestErrorUrl);
         mTokenErrorEmptyUrl = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestEmptyErrorUrl);

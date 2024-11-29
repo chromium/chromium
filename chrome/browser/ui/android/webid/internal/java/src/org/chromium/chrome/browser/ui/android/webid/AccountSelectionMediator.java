@@ -1081,7 +1081,9 @@ class AccountSelectionMediator {
                         .with(AccountProperties.ACCOUNT, account)
                         .with(
                                 AccountProperties.ON_CLICK_LISTENER,
-                                isAccountClickable ? this::onClickAccountSelected : null)
+                                isAccountClickable && !account.isFilteredOut()
+                                        ? this::onClickAccountSelected
+                                        : null)
                         .build();
         requestAvatarImage(model);
         return model;

@@ -30,6 +30,10 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -695,6 +699,45 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
         // Account chooser is shown for multiple newly signed-in accounts.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testFilteredOutAccountNoClickListener() {
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount, mFilteredOutAccount),
+                mIdpData,
+                /* isAutoReauthn= */ false,
+                /* newAccounts= */ Collections.EMPTY_LIST);
+
+        // Account chooser is shown.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+        assertEquals(2, mSheetAccountItems.size());
+        // First account has a click listener.
+        assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+        // Second account is filtered out, so does not.
+        assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        assertEquals(2, sheetItemListView.getAdapter().getItemCount());
+
+        View anaRow = sheetItemListView.getChildAt(0);
+        float delta = 0.00001f;
+        assertEquals(anaRow.getAlpha(), 1.f, delta);
+        TextView textView = anaRow.findViewById(R.id.title);
+        assertEquals("Ana Doe", textView.getText());
+        textView = anaRow.findViewById(R.id.description);
+        assertEquals("ana@email.example", textView.getText());
+
+        View nicolasRow = sheetItemListView.getChildAt(1);
+        assertEquals(nicolasRow.getAlpha(), AccountSelectionViewBinder.DISABLED_OPACITY, delta);
+        textView = nicolasRow.findViewById(R.id.title);
+        assertEquals("nicolas@example.com", textView.getText());
+        textView = nicolasRow.findViewById(R.id.description);
+        assertEquals("You can’t sign in using this account", textView.getText());
     }
 
     private void pressBack() {
