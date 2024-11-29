@@ -300,7 +300,7 @@ jboolean FaviconHelper::GetForeignFaviconImageForURL(
   return true;
 }
 
-FaviconHelper::~FaviconHelper() {}
+FaviconHelper::~FaviconHelper() = default;
 
 // Return the index of |sizes| whose area is largest but not exceeds int type
 // range. If all |sizes|'s area exceed int type range, return the first one.

@@ -39,7 +39,7 @@ ServiceTabLauncher* ServiceTabLauncher::GetInstance() {
 ServiceTabLauncher::ServiceTabLauncher() {
 }
 
-ServiceTabLauncher::~ServiceTabLauncher() {}
+ServiceTabLauncher::~ServiceTabLauncher() = default;
 
 void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
                                    const content::OpenURLParams& params,

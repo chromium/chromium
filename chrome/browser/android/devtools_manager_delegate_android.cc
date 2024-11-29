@@ -37,7 +37,7 @@ class ClientProxy : public content::DevToolsAgentHostClient {
   ClientProxy(const ClientProxy&) = delete;
   ClientProxy& operator=(const ClientProxy&) = delete;
 
-  ~ClientProxy() override {}
+  ~ClientProxy() override = default;
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
@@ -69,7 +69,7 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
   TabProxyDelegate(const TabProxyDelegate&) = delete;
   TabProxyDelegate& operator=(const TabProxyDelegate&) = delete;
 
-  ~TabProxyDelegate() override {}
+  ~TabProxyDelegate() override = default;
 
   void Attach(content::DevToolsExternalAgentProxy* proxy) override {
     proxies_[proxy] = std::make_unique<ClientProxy>(proxy);
