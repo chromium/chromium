@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -258,27 +257,21 @@ namespace {
 
 struct ContentSettingsImageDetails {
   ContentSettingsType content_type;
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
   int blocked_tooltip_id;
   int blocked_explanatory_text_id;
   int accessed_tooltip_id;
 };
 
-const ContentSettingsImageDetails kImageDetails[] = {
-    {ContentSettingsType::COOKIES, vector_icons::kCookieIcon,
-     IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE, 0,
+constexpr ContentSettingsImageDetails kImageDetails[] = {
+    {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE, 0,
      IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
-    {ContentSettingsType::IMAGES, vector_icons::kPhotoIcon,
-     IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
-    {ContentSettingsType::JAVASCRIPT, vector_icons::kCodeIcon,
-     IDS_BLOCKED_JAVASCRIPT_MESSAGE, 0, 0},
-    {ContentSettingsType::MIXEDSCRIPT, kMixedContentIcon,
-     IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT, 0, 0},
-    {ContentSettingsType::SOUND, kTabAudioIcon, IDS_BLOCKED_SOUND_TITLE, 0, 0},
-    {ContentSettingsType::ADS, vector_icons::kAdsIcon,
-     IDS_BLOCKED_ADS_PROMPT_TOOLTIP, IDS_BLOCKED_ADS_PROMPT_TITLE, 0},
+    {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
+    {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_MESSAGE, 0, 0},
+    {ContentSettingsType::MIXEDSCRIPT, IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT,
+     0, 0},
+    {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_TITLE, 0, 0},
+    {ContentSettingsType::ADS, IDS_BLOCKED_ADS_PROMPT_TOOLTIP,
+     IDS_BLOCKED_ADS_PROMPT_TITLE, 0},
 };
 
 const ContentSettingsImageDetails* GetImageDetails(ContentSettingsType type) {
