@@ -566,10 +566,7 @@ void SubAppsServiceImpl::RemoveSubApp(
   // its parent_app is the one doing the current call.
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
-      !provider->registrar_unsafe().IsInstallState(
-          sub_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+      provider->registrar_unsafe().IsNotInRegistrar(sub_app_id)) {
     return std::move(callback).Run(SubAppsServiceRemoveResult::New(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }

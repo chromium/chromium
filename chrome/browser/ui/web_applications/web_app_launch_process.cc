@@ -99,11 +99,7 @@ WebAppLaunchProcess::WebAppLaunchProcess(
 content::WebContents* WebAppLaunchProcess::Run() {
   if (Browser::GetCreationStatusForProfile(&profile_.get()) !=
           Browser::CreationStatus::kOk ||
-      !registrar_->IsInstallState(
-          params_->app_id,
-          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+      registrar_->IsNotInRegistrar(params_->app_id)) {
     return nullptr;
   }
 

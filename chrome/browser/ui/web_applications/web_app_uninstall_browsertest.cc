@@ -155,10 +155,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
 
   // Trigger app uninstall without waiting for result.
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider->registrar_unsafe().GetInstallState(app_id));
   DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
@@ -196,10 +194,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
       }));
 
   run_loop.Run();
-  EXPECT_FALSE(provider->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(app_id));
 }
 
 }  // namespace web_app

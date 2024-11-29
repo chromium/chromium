@@ -1642,10 +1642,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   run_loop_install.Run();
   app_loaded_observer.Wait();
 
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider->registrar_unsafe().GetInstallState(app_id));
   EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
             GetInstallableAppName());
 
@@ -1691,10 +1689,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RunOnOsLoginMetrics) {
   auto* provider = WebAppProvider::GetForTest(profile());
   const webapps::AppId& app_id = InstallPWA(pwa_url);
 
-  ASSERT_TRUE(provider->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider->registrar_unsafe().GetInstallState(app_id));
 
   base::HistogramTester tester;
   base::RunLoop run_loop;
@@ -1774,10 +1770,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   EXPECT_EQ(shortcut_info->title, u"test_app_2");
 
   test::UninstallAllWebApps(profile());
-  EXPECT_FALSE(provider->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(app_id));
 }
 
 // Tests that reparenting a display: browser app tab results in a minimal-ui
@@ -2434,10 +2427,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PRE_UninstallIncompleteUninstall) {
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
 
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider->registrar_unsafe().GetInstallState(app_id));
   EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
             GetInstallableAppName());
   // This does NOT uninstall the web app, it just flags it for uninstall on

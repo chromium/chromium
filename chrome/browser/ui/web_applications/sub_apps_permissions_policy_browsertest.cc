@@ -125,10 +125,8 @@ class SubAppsPermissionsPolicyBrowserTest
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(parent_app_id_);
 
-    EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
-        parent_app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+    EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              provider().registrar_unsafe().GetInstallState(parent_app_id_));
     EXPECT_TRUE(provider().registrar_unsafe().IsIsolated(parent_app_id_));
 
     ASSERT_THAT(web_app, Pointee(test::Property(
