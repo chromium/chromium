@@ -1756,7 +1756,7 @@ void BeginMemoryExperimentationAfterDelay() {
   if (profileName.empty()) {
     profileName = localState->GetString(prefs::kLastUsedProfile);
     if (profileName.empty()) {
-      profileName = kIOSChromeInitialProfile;
+      profileName = manager->ReserveNewProfileName();
       localState->SetString(prefs::kLastUsedProfile, profileName);
     }
   }
