@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_BROWSER_STATE_MANAGEMENT_H_
-#define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_BROWSER_STATE_MANAGEMENT_H_
+#ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_FAMILY_LINK_SETTINGS_STATE_MANAGEMENT_H_
+#define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_FAMILY_LINK_SETTINGS_STATE_MANAGEMENT_H_
 
 #include <memory>
 #include <optional>
@@ -47,13 +47,13 @@ struct FamilyLinkToggleConfiguration {
   const FamilyLinkToggleState state;
 };
 
-// Utility that can seed (request) the browser state, and check if the browser
-// is in that state. Under the hood, seeding is done by sending an RPC to Google
-// backend that modifies the internal sync state, and the change is propagated
-// via sync service.
-class BrowserState {
+// Utility that can seed (request) the Family Link state, and check if the
+// browser's Family Link settings are in that state. Under the hood, seeding is
+// done by sending an RPC to Google backend that modifies the internal sync
+// state, and the change is propagated via sync service.
+class FamilyLinkSettingsState {
  public:
-  // Groups services that might be used to verify the browser state.
+  // Groups services that might be used to verify if seeding is successful.
   struct Services {
     Services(const SupervisedUserService& supervised_user_service,
              const PrefService& pref_service,
@@ -80,8 +80,8 @@ class BrowserState {
     // Textual representation of this intent for debugging purposes.
     virtual std::string ToString() const = 0;
 
-    // Function that is checking `browser_user`'s browser whether it is in the
-    // intended state.
+    // Function that checks if the `browser_user`'s Family Link setting is in
+    // the intended state.
     virtual bool Check(const Services& services) const = 0;
   };
 
@@ -137,33 +137,34 @@ class BrowserState {
 
   // TODO(370932512): Make this constructor private. Use static constructors
   // instead.
-  explicit BrowserState(std::unique_ptr<Intent> intent);
+  explicit FamilyLinkSettingsState(std::unique_ptr<Intent> intent);
 
   // Use those static constructors to request state as indicated by name.
   // LINT.IfChange
   // Clears url filter lists and filter settings to server-side defaults. After
   // issuing, url filter lists are empty. FilteringLevel is unset.
-  static BrowserState Reset();
+  static FamilyLinkSettingsState Reset();
   // After issuing, FilteringLevel is set to SAFE_SITES
-  static BrowserState EnableSafeSites();
+  static FamilyLinkSettingsState EnableSafeSites();
   // After issuing, FilteringLevel is set to SAFE_SITES and gurl is added to
   // allow list of filtered urls.
-  static BrowserState AllowSite(const GURL& gurl);
+  static FamilyLinkSettingsState AllowSite(const GURL& gurl);
   // After issuing, FilteringLevel is set to SAFE_SITES and gurl is added to
   // block list of filtered urls.
-  static BrowserState BlockSite(const GURL& gurl);
+  static FamilyLinkSettingsState BlockSite(const GURL& gurl);
   // Sets the Advanced Setting toggles (Permissions, Extensions, Cookies) to
   // their default values.
-  static BrowserState SetAdvancedSettingsDefault();
-  // LINT.ThenChange(/ios/chrome/browser/ui/settings/supervised_user_family_link_app_interface.mm:TestFamilyLinkBrowserStateHelper)
+  static FamilyLinkSettingsState SetAdvancedSettingsDefault();
+  // LINT.ThenChange(/ios/chrome/browser/ui/settings/supervised_user_family_link_app_interface.mm:TestFamilyLinkFamilyLinkSettingsStateHelper)
   // After issuing, Permissions, Extensions and Cookies toggles are set to the
   // given values, if such a value is provided on the input list.
-  static BrowserState AdvancedSettingsToggles(
+  static FamilyLinkSettingsState AdvancedSettingsToggles(
       std::list<FamilyLinkToggleConfiguration> toggle_list);
-  ~BrowserState();
+  ~FamilyLinkSettingsState();
 
-  // Tests whether the browser is in the intended state. The state is checked
-  // for `member`'s browser, which typically should be the child.
+  // Tests whether the browser's Family Link settings are in the intended state.
+  // The state is checked for `member`'s browser, which typically should be the
+  // child.
   bool Check(const Services& services) const;
 
 #if !BUILDFLAG(IS_IOS)
@@ -183,7 +184,7 @@ class BrowserState {
 #if BUILDFLAG(IS_IOS)
   // Seeds the `target_state_` by issuing a RPC, similar to `Seed()`.
   // This method returns immediately, but fetching continues as long as the
-  // BrowserState is alive.
+  // FamilyLinkSettingsState is alive.
   void StartSeeding(
       signin::IdentityManager& caller_identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
@@ -204,4 +205,4 @@ class BrowserState {
 
 }  // namespace supervised_user
 
-#endif  // COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_BROWSER_STATE_MANAGEMENT_H_
+#endif  // COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_FAMILY_LINK_SETTINGS_STATE_MANAGEMENT_H_

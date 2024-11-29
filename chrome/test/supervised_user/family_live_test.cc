@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
@@ -296,7 +296,7 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(
     ui::test::StateIdentifier<InIntendedStateObserver> id,
     const FamilyMember& browser_user,
-    const BrowserState& state) {
+    const FamilyLinkSettingsState& state) {
   return Steps(
       Log(base::StrCat({"WaitForState[", state.ToString(), "]: start"})),
       If([&]() { return !state.Check(browser_user.GetServices()); },

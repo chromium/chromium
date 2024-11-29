@@ -16,7 +16,7 @@
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
-#import "components/supervised_user/test_support/browser_state_management.h"
+#import "components/supervised_user/test_support/family_link_settings_state_management.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -33,8 +33,8 @@
 
 namespace {
 
-supervised_user::BrowserState::Services GetSupervisedUserServicesForProfile(
-    ProfileIOS* profile) {
+supervised_user::FamilyLinkSettingsState::Services
+GetSupervisedUserServicesForProfile(ProfileIOS* profile) {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   // SupervisedUserService is not available for the incognito profile.
@@ -43,39 +43,40 @@ supervised_user::BrowserState::Services GetSupervisedUserServicesForProfile(
           *ios::HostContentSettingsMapFactory::GetForProfile(profile)};
 }
 
-// Helper class that holds a instance of the Family Link BrowserState.
+// Helper class that holds a instance of the Family Link State.
 // It allows the callers of this class to keep an alive instance
-// of a BrowserState for the duration of a test.
-class TestFamilyLinkBrowserStateHelper {
+// of a FamilyLinkSettingsState for the duration of a test.
+class TestFamilyLinkSettingsStateHelper {
  public:
-  static TestFamilyLinkBrowserStateHelper* SharedInstance() {
-    return base::Singleton<TestFamilyLinkBrowserStateHelper>::get();
+  static TestFamilyLinkSettingsStateHelper* SharedInstance() {
+    return base::Singleton<TestFamilyLinkSettingsStateHelper>::get();
   }
 
-  void TearDown() {
-    family_link_browser_state_.reset();
-  }
+  void TearDown() { family_link_settings_state_.reset(); }
 
-  bool IsBrowserStateSeeded() {
-    CHECK(family_link_browser_state_);
+  bool IsFamilyLinkSettingsStateSeeded() {
+    CHECK(family_link_settings_state_);
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
-    return family_link_browser_state_->Check(
+    return family_link_settings_state_->Check(
         GetSupervisedUserServicesForProfile(profile));
   }
 
-  void UpdateIntentAndSeedFamilyLinkState(
-      std::unique_ptr<supervised_user::BrowserState::Intent> intent) {
-    // We should only update the BrowserState if it is not yet created, or if it
-    // has been completely seeded.
-    CHECK(family_link_browser_state_ == nullptr || IsBrowserStateSeeded());
-    family_link_browser_state_ =
-        std::make_unique<supervised_user::BrowserState>(std::move(intent));
-    SeedFamilyLinkBrowserState();
+  void UpdateIntentAndSeedFamilyLinkSettingsState(
+      std::unique_ptr<supervised_user::FamilyLinkSettingsState::Intent>
+          intent) {
+    // We should only update the FamilyLinkSettingsState if it is not yet
+    // created, or if it has been completely seeded.
+    CHECK(family_link_settings_state_ == nullptr ||
+          IsFamilyLinkSettingsStateSeeded());
+    family_link_settings_state_ =
+        std::make_unique<supervised_user::FamilyLinkSettingsState>(
+            std::move(intent));
+    SeedFamilyLinkSettingsState();
   }
 
  private:
-  void SeedFamilyLinkBrowserState() {
+  void SeedFamilyLinkSettingsState() {
     // Prepare the services.
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
@@ -87,60 +88,64 @@ class TestFamilyLinkBrowserStateHelper {
         GetApplicationContext()->GetSharedURLLoaderFactory();
     CHECK(shared_url_loader_factory);
 
-    // The TestFamilyLinkBrowserStateHelper must already be set up by tests.
-    CHECK(family_link_browser_state_);
+    // The TestFamilyLinkSettingsStateHelper must already be set up by tests.
+    CHECK(family_link_settings_state_);
 
     CoreAccountId account_id =
         identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-    family_link_browser_state_->StartSeeding(
+    family_link_settings_state_->StartSeeding(
         *identity_manager, shared_url_loader_factory, account_id.ToString());
   }
 
-  std::unique_ptr<supervised_user::BrowserState> family_link_browser_state_;
+  std::unique_ptr<supervised_user::FamilyLinkSettingsState>
+      family_link_settings_state_;
 };
 
 }  // namespace
 
 @implementation SupervisedUserFamilyLinkAppInterface : NSObject
 
-+ (BOOL)isBrowserStateSeeded {
-  return TestFamilyLinkBrowserStateHelper::SharedInstance()
-      ->IsBrowserStateSeeded();
++ (BOOL)isFamilyLinkSettingsStateSeeded {
+  return TestFamilyLinkSettingsStateHelper::SharedInstance()
+      ->IsFamilyLinkSettingsStateSeeded();
 }
 
 + (void)seedDefaultFamilyLinkSettings {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()
-      ->UpdateIntentAndSeedFamilyLinkState(
-          std::make_unique<supervised_user::BrowserState::ResetIntent>());
+  TestFamilyLinkSettingsStateHelper::SharedInstance()
+      ->UpdateIntentAndSeedFamilyLinkSettingsState(
+          std::make_unique<
+              supervised_user::FamilyLinkSettingsState::ResetIntent>());
 }
 
 + (void)seedSafeSitesFiltering {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()
-      ->UpdateIntentAndSeedFamilyLinkState(
-          std::make_unique<
-              supervised_user::BrowserState::DefineManualSiteListIntent>());
+  TestFamilyLinkSettingsStateHelper::SharedInstance()
+      ->UpdateIntentAndSeedFamilyLinkSettingsState(
+          std::make_unique<supervised_user::FamilyLinkSettingsState::
+                               DefineManualSiteListIntent>());
 }
 
 + (void)seedAllowSite:(NSString*)url {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()
-      ->UpdateIntentAndSeedFamilyLinkState(
-          std::make_unique<
-              supervised_user::BrowserState::DefineManualSiteListIntent>(
-              supervised_user::BrowserState::DefineManualSiteListIntent::
-                  AllowUrl(GURL(base::SysNSStringToUTF8(url)))));
+  TestFamilyLinkSettingsStateHelper::SharedInstance()
+      ->UpdateIntentAndSeedFamilyLinkSettingsState(
+          std::make_unique<supervised_user::FamilyLinkSettingsState::
+                               DefineManualSiteListIntent>(
+              supervised_user::FamilyLinkSettingsState::
+                  DefineManualSiteListIntent::AllowUrl(
+                      GURL(base::SysNSStringToUTF8(url)))));
 }
 
 + (void)seedBlockSite:(NSString*)url {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()
-      ->UpdateIntentAndSeedFamilyLinkState(
-          std::make_unique<
-              supervised_user::BrowserState::DefineManualSiteListIntent>(
-              supervised_user::BrowserState::DefineManualSiteListIntent::
-                  BlockUrl(GURL(base::SysNSStringToUTF8(url)))));
+  TestFamilyLinkSettingsStateHelper::SharedInstance()
+      ->UpdateIntentAndSeedFamilyLinkSettingsState(
+          std::make_unique<supervised_user::FamilyLinkSettingsState::
+                               DefineManualSiteListIntent>(
+              supervised_user::FamilyLinkSettingsState::
+                  DefineManualSiteListIntent::BlockUrl(
+                      GURL(base::SysNSStringToUTF8(url)))));
 }
 
-+ (void)tearDownTestFamilyLinkBrowserStateHelper {
-  TestFamilyLinkBrowserStateHelper::SharedInstance()->TearDown();
++ (void)tearDownTestFamilyLinkSettingsStateHelper {
+  TestFamilyLinkSettingsStateHelper::SharedInstance()->TearDown();
 }
 
 @end

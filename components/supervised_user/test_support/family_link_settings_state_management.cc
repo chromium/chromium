@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 
 #include <memory>
 #include <optional>
@@ -138,7 +138,7 @@ inline void AddWebsiteException(
   exception->set_exception_type(exception_type);
 }
 
-bool AreSafeSitesConfigured(const BrowserState::Services& services) {
+bool AreSafeSitesConfigured(const FamilyLinkSettingsState::Services& services) {
   if (!IsSafeSitesEnabled(services.pref_service.get())) {
     return false;
   }
@@ -170,7 +170,7 @@ bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
   return true;
 }
 
-bool UrlFiltersAreConfigured(const BrowserState::Services& services,
+bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
                              const std::optional<GURL>& allowed_url,
                              const std::optional<GURL>& blocked_url) {
   SupervisedUserURLFilter* url_filter =
@@ -201,11 +201,11 @@ bool UrlFiltersAreConfigured(const BrowserState::Services& services,
   return true;
 }
 
-bool UrlFiltersAreEmpty(const BrowserState::Services& services) {
+bool UrlFiltersAreEmpty(const FamilyLinkSettingsState::Services& services) {
   return services.supervised_user_service->GetURLFilter()->IsManualHostsEmpty();
 }
 
-bool ToggleHasExpectedValue(const BrowserState::Services& services,
+bool ToggleHasExpectedValue(const FamilyLinkSettingsState::Services& services,
                             FamilyLinkToggleConfiguration toggle) {
   content_settings::ProviderType provider_type;
 
@@ -247,31 +247,34 @@ bool ToggleHasExpectedValue(const BrowserState::Services& services,
 }
 }  // namespace
 
-BrowserState::~BrowserState() = default;
-BrowserState::BrowserState(std::unique_ptr<Intent> intent) {
+FamilyLinkSettingsState::~FamilyLinkSettingsState() = default;
+FamilyLinkSettingsState::FamilyLinkSettingsState(
+    std::unique_ptr<Intent> intent) {
   intent_ = std::move(intent);
 }
 
-BrowserState BrowserState::Reset() {
-  return BrowserState(std::make_unique<ResetIntent>());
+FamilyLinkSettingsState FamilyLinkSettingsState::Reset() {
+  return FamilyLinkSettingsState(std::make_unique<ResetIntent>());
 }
-BrowserState BrowserState::EnableSafeSites() {
-  return BrowserState(std::make_unique<DefineManualSiteListIntent>());
+FamilyLinkSettingsState FamilyLinkSettingsState::EnableSafeSites() {
+  return FamilyLinkSettingsState(
+      std::make_unique<DefineManualSiteListIntent>());
 }
-BrowserState BrowserState::AllowSite(const GURL& gurl) {
-  return BrowserState(std::make_unique<DefineManualSiteListIntent>(
+FamilyLinkSettingsState FamilyLinkSettingsState::AllowSite(const GURL& gurl) {
+  return FamilyLinkSettingsState(std::make_unique<DefineManualSiteListIntent>(
       DefineManualSiteListIntent::AllowUrl(gurl)));
 }
-BrowserState BrowserState::BlockSite(const GURL& gurl) {
-  return BrowserState(std::make_unique<DefineManualSiteListIntent>(
+FamilyLinkSettingsState FamilyLinkSettingsState::BlockSite(const GURL& gurl) {
+  return FamilyLinkSettingsState(std::make_unique<DefineManualSiteListIntent>(
       DefineManualSiteListIntent::BlockUrl(gurl)));
 }
-BrowserState BrowserState::AdvancedSettingsToggles(
+FamilyLinkSettingsState FamilyLinkSettingsState::AdvancedSettingsToggles(
     std::list<FamilyLinkToggleConfiguration> toggle_list) {
-  return BrowserState(std::make_unique<ToggleIntent>(std::move(toggle_list)));
+  return FamilyLinkSettingsState(
+      std::make_unique<ToggleIntent>(std::move(toggle_list)));
 }
 
-BrowserState BrowserState::SetAdvancedSettingsDefault() {
+FamilyLinkSettingsState FamilyLinkSettingsState::SetAdvancedSettingsDefault() {
   FamilyLinkToggleConfiguration extensions_toggle(
       {.type = FamilyLinkToggleType::kExtensionsToggle,
        .state = FamilyLinkToggleState::kDisabled});
@@ -286,7 +289,7 @@ BrowserState BrowserState::SetAdvancedSettingsDefault() {
 }
 
 #if !BUILDFLAG(IS_IOS)
-void BrowserState::Seed(
+void FamilyLinkSettingsState::Seed(
     signin::IdentityManager& caller_identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
     std::string_view subject_account_id) const {
@@ -308,7 +311,7 @@ void BrowserState::Seed(
 #endif
 
 #if BUILDFLAG(IS_IOS)
-void BrowserState::StartSeeding(
+void FamilyLinkSettingsState::StartSeeding(
     signin::IdentityManager& caller_identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
     std::string_view subject_account_id) {
@@ -328,45 +331,47 @@ void BrowserState::StartSeeding(
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-bool BrowserState::Check(const Services& services) const {
+bool FamilyLinkSettingsState::Check(const Services& services) const {
   return intent_->Check(services);
 }
 
-std::string BrowserState::ToString() const {
+std::string FamilyLinkSettingsState::ToString() const {
   return intent_->ToString();
 }
 
-BrowserState::Intent::~Intent() = default;
+FamilyLinkSettingsState::Intent::~Intent() = default;
 
-BrowserState::ResetIntent::~ResetIntent() = default;
-std::string BrowserState::ResetIntent::GetRequest() const {
+FamilyLinkSettingsState::ResetIntent::~ResetIntent() = default;
+std::string FamilyLinkSettingsState::ResetIntent::GetRequest() const {
   return kidsmanagement::ResetChromeTestStateRequest().SerializeAsString();
 }
-const FetcherConfig& BrowserState::ResetIntent::GetConfig() const {
+const FetcherConfig& FamilyLinkSettingsState::ResetIntent::GetConfig() const {
   return kResetChromeTestStateConfig;
 }
-std::string BrowserState::ResetIntent::ToString() const {
+std::string FamilyLinkSettingsState::ResetIntent::ToString() const {
   return "Reset";
 }
-bool BrowserState::ResetIntent::Check(
-    const BrowserState::Services& services) const {
+bool FamilyLinkSettingsState::ResetIntent::Check(
+    const FamilyLinkSettingsState::Services& services) const {
   bool result = UrlFiltersAreEmpty(services);
-  LOG(WARNING) << "BrowserState::ResetIntent = " << (result ? "true" : "false");
+  LOG(WARNING) << "FamilyLinkSettingsState::ResetIntent = "
+               << (result ? "true" : "false");
   return result;
 }
 
-BrowserState::DefineManualSiteListIntent::DefineManualSiteListIntent() =
-    default;
-BrowserState::DefineManualSiteListIntent::DefineManualSiteListIntent(
+FamilyLinkSettingsState::DefineManualSiteListIntent::
+    DefineManualSiteListIntent() = default;
+FamilyLinkSettingsState::DefineManualSiteListIntent::DefineManualSiteListIntent(
     AllowUrl url)
     : allowed_url_(url) {}
-BrowserState::DefineManualSiteListIntent::DefineManualSiteListIntent(
+FamilyLinkSettingsState::DefineManualSiteListIntent::DefineManualSiteListIntent(
     BlockUrl url)
     : blocked_url_(url) {}
-BrowserState::DefineManualSiteListIntent::~DefineManualSiteListIntent() =
-    default;
+FamilyLinkSettingsState::DefineManualSiteListIntent::
+    ~DefineManualSiteListIntent() = default;
 
-std::string BrowserState::DefineManualSiteListIntent::GetRequest() const {
+std::string FamilyLinkSettingsState::DefineManualSiteListIntent::GetRequest()
+    const {
   kidsmanagement::DefineChromeTestStateRequest request;
   if (allowed_url_.has_value()) {
     AddWebsiteException(request, *allowed_url_, kidsmanagement::ALLOW);
@@ -380,10 +385,11 @@ std::string BrowserState::DefineManualSiteListIntent::GetRequest() const {
   return request.SerializeAsString();
 }
 const supervised_user::FetcherConfig&
-BrowserState::DefineManualSiteListIntent::GetConfig() const {
+FamilyLinkSettingsState::DefineManualSiteListIntent::GetConfig() const {
   return kDefineChromeTestStateConfig;
 }
-std::string BrowserState::DefineManualSiteListIntent::ToString() const {
+std::string FamilyLinkSettingsState::DefineManualSiteListIntent::ToString()
+    const {
   std::vector<std::string> bits;
   bits.push_back("Define[SAFE_SITES");
   if (allowed_url_.has_value()) {
@@ -397,21 +403,21 @@ std::string BrowserState::DefineManualSiteListIntent::ToString() const {
   bits.push_back("]");
   return base::StrCat(bits);
 }
-bool BrowserState::DefineManualSiteListIntent::Check(
-    const BrowserState::Services& services) const {
+bool FamilyLinkSettingsState::DefineManualSiteListIntent::Check(
+    const FamilyLinkSettingsState::Services& services) const {
   bool result = UrlFiltersAreConfigured(services, allowed_url_, blocked_url_);
-  LOG(WARNING) << "BrowserState::DefineManualSiteListIntent = "
+  LOG(WARNING) << "FamilyLinkSettingsState::DefineManualSiteListIntent = "
                << (result ? "true" : "false");
   return result;
 }
 
-BrowserState::ToggleIntent::ToggleIntent(
+FamilyLinkSettingsState::ToggleIntent::ToggleIntent(
     std::list<FamilyLinkToggleConfiguration> toggle_list)
     : toggle_list_(std::move(toggle_list)) {}
 
-BrowserState::ToggleIntent::~ToggleIntent() = default;
+FamilyLinkSettingsState::ToggleIntent::~ToggleIntent() = default;
 
-std::string BrowserState::ToggleIntent::GetRequest() const {
+std::string FamilyLinkSettingsState::ToggleIntent::GetRequest() const {
   kidsmanagement::DefineChromeTestStateRequest request;
   for (const auto& toggle : toggle_list_) {
     if (toggle.type == FamilyLinkToggleType::kExtensionsToggle) {
@@ -438,11 +444,11 @@ std::string BrowserState::ToggleIntent::GetRequest() const {
   return request.SerializeAsString();
 }
 
-const FetcherConfig& BrowserState::ToggleIntent::GetConfig() const {
+const FetcherConfig& FamilyLinkSettingsState::ToggleIntent::GetConfig() const {
   return kDefineChromeTestStateConfig;
 }
 
-std::string BrowserState::ToggleIntent::ToString() const {
+std::string FamilyLinkSettingsState::ToggleIntent::ToString() const {
   std::vector<std::string> bits;
   bits.push_back("Define[");
   for (const auto& toggle : toggle_list_) {
@@ -454,15 +460,15 @@ std::string BrowserState::ToggleIntent::ToString() const {
   return base::StrCat(bits);
 }
 
-bool BrowserState::ToggleIntent::Check(
-    const BrowserState::Services& services) const {
+bool FamilyLinkSettingsState::ToggleIntent::Check(
+    const FamilyLinkSettingsState::Services& services) const {
   bool result = true;
   for (const auto& toggle : toggle_list_) {
     bool toggle_has_expected_value = ToggleHasExpectedValue(services, toggle);
     // Note: we do not exit the loop early on a false condition as we want
     // to print all the false conditions for debugging purposes.
     if (!toggle_has_expected_value) {
-      LOG(WARNING) << "BrowserState::ToggleIntent[" +
+      LOG(WARNING) << "FamilyLinkSettingsState::ToggleIntent[" +
                           GetToggleAbbrev(toggle.type) + "] = "
                    << (toggle_has_expected_value ? "true" : "false");
     }
@@ -471,7 +477,7 @@ bool BrowserState::ToggleIntent::Check(
   return result;
 }
 
-BrowserState::Services::Services(
+FamilyLinkSettingsState::Services::Services(
     const SupervisedUserService& supervised_user_service,
     const PrefService& pref_service,
     const HostContentSettingsMap& host_content_settings_map)

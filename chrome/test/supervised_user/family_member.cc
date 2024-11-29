@@ -18,7 +18,7 @@
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
@@ -52,7 +52,7 @@ void FamilyMember::SignOutFromWeb() {
   sign_in_functions_.SignOutFromWeb();
 }
 
-BrowserState::Services FamilyMember::GetServices() const {
+FamilyLinkSettingsState::Services FamilyMember::GetServices() const {
   return {
       *SupervisedUserServiceFactory::GetForProfile(&profile_.get()),
       *profile_->GetPrefs(),

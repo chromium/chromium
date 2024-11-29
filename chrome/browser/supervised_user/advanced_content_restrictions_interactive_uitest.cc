@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,9 +67,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
   // Set the cookies switch on FL confirm the setting is received by Chrome.
   RunTestSequence(WaitForStateSeeding(
       kDefineStateObserverId, child(),
-      BrowserState::AdvancedSettingsToggles({FamilyLinkToggleConfiguration(
-          {.type = GetSwitchType(GetParam()),
-           .state = GetSwitchTargetState(GetParam())})})));
+      FamilyLinkSettingsState::AdvancedSettingsToggles(
+          {FamilyLinkToggleConfiguration(
+              {.type = GetSwitchType(GetParam()),
+               .state = GetSwitchTargetState(GetParam())})})));
 }
 
 INSTANTIATE_TEST_SUITE_P(

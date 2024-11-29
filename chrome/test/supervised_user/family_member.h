@@ -14,7 +14,7 @@
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -49,7 +49,7 @@ class FamilyMember {
   }
 
   // These services can be used to verify browser state.
-  BrowserState::Services GetServices() const;
+  FamilyLinkSettingsState::Services GetServices() const;
 
   Browser& browser() const { return browser_.get(); }
   Profile& profile() const { return profile_.get(); }

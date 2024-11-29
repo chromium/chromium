@@ -12,9 +12,9 @@
 // Manages Family Link states for supervised user tests.
 @interface SupervisedUserFamilyLinkAppInterface : NSObject
 
-// Returns YES if the managed Family Link BrowserState managed by the
-// TestFamilyLinkBrowserStateHelper singleton is successfully seeded.
-+ (BOOL)isBrowserStateSeeded;
+// Returns YES if the managed FamilyLinkSettingsState managed by the
+// TestFamilyLinkSettingsStateHelper singleton is successfully seeded.
++ (BOOL)isFamilyLinkSettingsStateSeeded;
 
 // Manages Family Link settings.
 // For subsequent calls to any of these methods, callers must wait for
@@ -26,8 +26,8 @@
 + (void)seedAllowSite:(NSString*)url;
 + (void)seedBlockSite:(NSString*)url;
 
-// Tears down the TestFamilyLinkBrowserStateHelper singleton.
-+ (void)tearDownTestFamilyLinkBrowserStateHelper;
+// Tears down the TestFamilyLinkSettingsStateHelper singleton.
++ (void)tearDownTestFamilyLinkSettingsStateHelper;
 
 @end
 

@@ -14,7 +14,7 @@
 #include "chrome/test/supervised_user/family_live_test.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -212,9 +212,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
 
   RunTestSequence(
       WaitForStateSeeding(kResetStateObserverId, child(),
-                          BrowserState::Reset()),
+                          FamilyLinkSettingsState::Reset()),
       WaitForStateSeeding(kSetSafeSitesStateObserverId, child(),
-                          BrowserState::EnableSafeSites()),
+                          FamilyLinkSettingsState::EnableSafeSites()),
 
       // Supervised user navigates to any page.
       InstrumentTab(kChildElementId, tab_index, &child().browser()),
@@ -223,8 +223,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
                          PageWithMatchingTitle("Example Domain")),
       // Supervisor blocks that page and supervised user sees interstitial
       // blocked page screen.
-      WaitForStateSeeding(kDefineStateObserverId, child(),
-                          BrowserState::BlockSite(all_audiences_site_url)),
+      WaitForStateSeeding(
+          kDefineStateObserverId, child(),
+          FamilyLinkSettingsState::BlockSite(all_audiences_site_url)),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
 }
 
@@ -236,8 +237,8 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
   TurnOnSync();
 
   // Clear all existing filters.
-  RunTestSequence(
-      WaitForStateSeeding(kObserverId, child(), BrowserState::Reset()));
+  RunTestSequence(WaitForStateSeeding(kObserverId, child(),
+                                      FamilyLinkSettingsState::Reset()));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
@@ -255,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
 
   RunTestSequence(
       WaitForStateSeeding(kResetStateObserverId, child(),
-                          BrowserState::Reset()),
+                          FamilyLinkSettingsState::Reset()),
 
       // Supervised user navigates to inappropriate page and is blocked.
       InstrumentTab(kChildElementId, tab_index, &child().browser()),
@@ -264,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
 
       // Supervisor allows that page and supervised user consumes content.
       WaitForStateSeeding(kDefineStateObserverId, child(),
-                          BrowserState::AllowSite(mature_site_url)),
+                          FamilyLinkSettingsState::AllowSite(mature_site_url)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
@@ -283,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 
   RunTestSequence(
       WaitForStateSeeding(kResetStateObserverId, child(),
-                          BrowserState::Reset()),
+                          FamilyLinkSettingsState::Reset()),
       // Supervised user navigates to inappropriate page and is blocked, and
       // makes approval request.
       InstrumentTab(kChildElementId, child_tab_index, &child().browser()),
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 
   TurnOnSync();
   RunTestSequence(WaitForStateSeeding(kResetStateObserverId, child(),
-                                      BrowserState::Reset()));
+                                      FamilyLinkSettingsState::Reset()));
 
   child().SignOutFromWeb();
   // TODO(b/364011203): Once the condition for displaying the interstitial is

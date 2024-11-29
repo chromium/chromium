@@ -14,7 +14,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
-#include "components/supervised_user/test_support/browser_state_management.h"
+#include "components/supervised_user/test_support/family_link_settings_state_management.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/state_observer.h"
@@ -134,7 +134,7 @@ class InteractiveFamilyLiveTest
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForStateSeeding(
       ui::test::StateIdentifier<InIntendedStateObserver> id,
       const FamilyMember& browser_user,
-      const BrowserState& state_manager);
+      const FamilyLinkSettingsState& state_manager);
 };
 
 }  // namespace supervised_user
