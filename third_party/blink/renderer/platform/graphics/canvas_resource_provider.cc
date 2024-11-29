@@ -200,7 +200,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
 
 // * Renders to a shared memory bitmap.
 // * Uses SharedBitmaps to pass frames directly to the compositor.
-class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
+class CanvasResourceProviderSharedBitmap : public CanvasResourceProvider,
                                            public BitmapGpuChannelLostObserver {
  public:
   CanvasResourceProviderSharedBitmap(
@@ -211,23 +211,38 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
       cc::PaintFlags::FilterQuality filter_quality,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceHost* resource_host)
-      : CanvasResourceProviderBitmap(size,
-                                     sk_color_type,
-                                     alpha_type,
-                                     std::move(sk_color_space),
-                                     filter_quality,
-                                     resource_host),
+      : CanvasResourceProvider(kSharedBitmap,
+                               size,
+                               sk_color_type,
+                               alpha_type,
+                               std::move(sk_color_space),
+                               filter_quality,
+                               /*context_provider_wrapper=*/nullptr,
+                               resource_host),
         shared_image_interface_provider_(
             shared_image_interface_provider
                 ? shared_image_interface_provider->GetWeakPtr()
                 : nullptr) {
-    type_ = kSharedBitmap;
-
     if (shared_image_interface_provider_) {
       shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     }
   }
 
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      FlushReason reason,
+      ImageOrientation orientation) override {
+    TRACE_EVENT0("blink", "CanvasResourceProviderSharedBitmap::Snapshot");
+    return SnapshotInternal(orientation, reason);
+  }
+
+  sk_sp<SkSurface> CreateSkSurface() const override {
+    TRACE_EVENT0("blink",
+                 "CanvasResourceProviderSharedBitmap::CreateSkSurface");
+
+    const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+    const auto props = GetSkSurfaceProps();
+    return SkSurfaces::Raster(info, &props);
+  }
   ~CanvasResourceProviderSharedBitmap() override {
     if (shared_image_interface_provider_) {
       shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
@@ -241,6 +256,7 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
     return !IsSharedBitmapGpuChannelLost() && GetSkSurface();
   }
 
+  bool IsAccelerated() const final { return false; }
   bool SupportsDirectCompositing() const override { return true; }
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
