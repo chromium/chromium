@@ -229,26 +229,6 @@ AutofillProfileComparator::GetProfileDifference(
   return difference;
 }
 
-base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
-AutofillProfileComparator::GetProfileDifferenceMap(
-    const AutofillProfile& first_profile,
-    const AutofillProfile& second_profile,
-    FieldTypeSet types,
-    const std::string& app_locale) {
-  std::vector<std::pair<FieldType, std::pair<std::u16string, std::u16string>>>
-      result;
-  result.reserve(types.size());
-
-  for (auto& diff : AutofillProfileComparator::GetProfileDifference(
-           first_profile, second_profile, types, app_locale)) {
-    result.push_back(
-        {diff.type,
-         {std::move(diff.first_value), std::move(diff.second_value)}});
-  }
-  return base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>(
-      std::move(result));
-}
-
 std::vector<ProfileValueDifference>
 AutofillProfileComparator::GetSettingsVisibleProfileDifference(
     const AutofillProfile& first_profile,
