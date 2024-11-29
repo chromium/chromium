@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
@@ -156,7 +158,11 @@ bool AwVulkanContextProvider::Globals::Initialize(
           gpu::CreateSkiaVulkanMemoryAllocator(device_queue.get()),
       .fGetProc = get_proc,
   };
-  gr_context = GrDirectContexts::MakeVulkan(backend_context);
+  GrContextOptions options;
+  std::unique_ptr<AwGrContextOptionsProvider> options_provider =
+      std::make_unique<AwGrContextOptionsProvider>();
+  options_provider->SetCustomGrContextOptions(options);
+  gr_context = GrDirectContexts::MakeVulkan(backend_context, options);
   if (!gr_context) {
     LOG(ERROR) << "Unable to initialize GrContext.";
     return false;

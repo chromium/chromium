@@ -22,12 +22,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_mock.h"
+#include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 using ::testing::_;
 using ::testing::InSequence;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
@@ -37,6 +39,15 @@ namespace gpu {
 class SharedContextStateTest : public ::testing::Test {
  public:
   SharedContextStateTest() = default;
+};
+
+class MockGrContextOptionsProvider
+    : public SharedContextState::GrContextOptionsProvider {
+ public:
+  MOCK_METHOD(void,
+              SetCustomGrContextOptions,
+              (GrContextOptions & options),
+              (const, override));
 };
 
 TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
@@ -96,6 +107,90 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
     bool result =
         shared_context_state->InitializeGL(GpuPreferences(), feature_info);
     EXPECT_FALSE(result);
+  }
+  gl::GLSurfaceTestSupport::ShutdownGL(display);
+}
+
+TEST_F(SharedContextStateTest, GLOptionsProviderSetsCustomOptions) {
+  gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
+  auto* display = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  ASSERT_TRUE(display);
+  {
+    NiceMock<gl::MockGLInterface> gl_interface;
+    gl::MockGLInterface::SetGLInterface(&gl_interface);
+
+    InSequence sequence;
+
+    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+    auto surface = base::MakeRefCounted<gl::GLSurfaceStub>();
+    auto context = base::MakeRefCounted<gl::GLContextStub>(share_group.get());
+    const char gl_version[] = "OpenGL ES 2.0";
+    context->SetGLVersionString(gl_version);
+    const char gl_extensions[] = "GL_KHR_robustness";
+    context->SetExtensionsString(gl_extensions);
+
+    // The stub ctx needs to be initialized so that the gl::GLContext can
+    // store the offscreen stub |surface|.
+    context->Initialize(surface.get(), {});
+    context->MakeCurrent(surface.get());
+    GpuDriverBugWorkarounds workarounds;
+
+    auto shared_context_state = base::MakeRefCounted<SharedContextState>(
+        share_group.get(), surface, context,
+        false /* use_virtualized_gl_contexts */, base::DoNothing(),
+        GrContextType::kGL);
+    StrictMock<MockGrContextOptionsProvider> provider;
+    shared_context_state->gr_context_options_provider_ = &provider;
+    EXPECT_CALL(provider, SetCustomGrContextOptions(_))
+        .Times(1)
+        .RetiresOnSaturation();
+    shared_context_state->InitializeGanesh(
+        GpuPreferences(), workarounds, /*cache=*/nullptr,
+        /*use_shader_cache_shm_count=*/nullptr, /*progress_reporter=*/nullptr);
+  }
+  gl::GLSurfaceTestSupport::ShutdownGL(display);
+}
+
+TEST_F(SharedContextStateTest, VulkanOptionsProviderSetsCustomOptions) {
+  gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
+  auto* display = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  ASSERT_TRUE(display);
+  {
+    NiceMock<gl::MockGLInterface> gl_interface;
+    gl::MockGLInterface::SetGLInterface(&gl_interface);
+    // This line and passing kVulkan into InitializeGanesh should ensure we go
+    // down the Vulkan code path.
+    gl::SetGLImplementationParts(
+        gl::GLImplementationParts(gl::ANGLEImplementation::kVulkan));
+
+    InSequence sequence;
+
+    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+    auto surface = base::MakeRefCounted<gl::GLSurfaceStub>();
+    auto context = base::MakeRefCounted<gl::GLContextStub>(share_group.get());
+    const char gl_version[] = "OpenGL ES 2.0";
+    context->SetGLVersionString(gl_version);
+    const char gl_extensions[] = "GL_KHR_robustness";
+    context->SetExtensionsString(gl_extensions);
+
+    // The stub ctx needs to be initialized so that the gl::GLContext can
+    // store the offscreen stub |surface|.
+    context->Initialize(surface.get(), {});
+    context->MakeCurrent(surface.get());
+    GpuDriverBugWorkarounds workarounds;
+
+    auto shared_context_state = base::MakeRefCounted<SharedContextState>(
+        share_group.get(), surface, context,
+        false /* use_virtualized_gl_contexts */, base::DoNothing(),
+        GrContextType::kVulkan);
+    StrictMock<MockGrContextOptionsProvider> provider;
+    shared_context_state->gr_context_options_provider_ = &provider;
+    EXPECT_CALL(provider, SetCustomGrContextOptions(_))
+        .Times(1)
+        .RetiresOnSaturation();
+    shared_context_state->InitializeGanesh(
+        GpuPreferences(), workarounds, /*cache=*/nullptr,
+        /*use_shader_cache_shm_count=*/nullptr, /*progress_reporter=*/nullptr);
   }
   gl::GLSurfaceTestSupport::ShutdownGL(display);
 }

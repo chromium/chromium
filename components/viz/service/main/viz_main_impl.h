@@ -102,6 +102,8 @@ class VizMainImpl : public mojom::VizMain {
     raw_ptr<gpu::SharedImageManager> shared_image_manager = nullptr;
     raw_ptr<gpu::Scheduler> scheduler = nullptr;
     raw_ptr<VizCompositorThreadRunner> viz_compositor_thread_runner = nullptr;
+    raw_ptr<const gpu::SharedContextState::GrContextOptionsProvider>
+        gr_context_options_provider = nullptr;
 #endif
   };
 

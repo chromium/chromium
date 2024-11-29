@@ -154,7 +154,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       gpu::SyncPointManager* sync_point_manager = nullptr,
       gpu::SharedImageManager* shared_image_manager = nullptr,
       gpu::Scheduler* scheduler = nullptr,
-      base::WaitableEvent* shutdown_event = nullptr);
+      base::WaitableEvent* shutdown_event = nullptr,
+      const gpu::SharedContextState::GrContextOptionsProvider*
+          gr_context_options_provider = nullptr);
 #else
   void InitializeWithHost(
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
@@ -661,6 +663,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // comes from external sources.
   std::unique_ptr<base::WaitableEvent> owned_shutdown_event_;
   raw_ptr<base::WaitableEvent> shutdown_event_ = nullptr;
+
+  raw_ptr<const gpu::SharedContextState::GrContextOptionsProvider>
+      gr_context_options_provider_ = nullptr;
 
   // Callback that safely exits GPU process.
   base::OnceCallback<void(ExitCode)> exit_callback_;

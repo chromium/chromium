@@ -207,7 +207,8 @@ void VizMainImpl::CreateGpuService(
       gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
       gpu_init_->TakeDefaultOffscreenSurface(), std::move(params),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
-      dependencies_.scheduler, dependencies_.shutdown_event);
+      dependencies_.scheduler, dependencies_.shutdown_event,
+      dependencies_.gr_context_options_provider);
 #else
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),

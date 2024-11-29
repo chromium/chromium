@@ -29,6 +29,13 @@ BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disables MSAA and default sharpening when rendering scaled elements. This is
+// often preferable when rendering images/video but can have adverse effects for
+// text on some displays.
+BASE_FEATURE(kWebViewDisableSharpeningAndMSAA,
+             "WebViewDisableSharpeningAndMSAA",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows JS DataTransfer Files from content URIs in drag-drop.
 BASE_FEATURE(kWebViewDragDropFiles,
              "WebViewDragDropFiles",

@@ -555,7 +555,9 @@ void GpuServiceImpl::InitializeWithHost(
     gpu::SyncPointManager* sync_point_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* scheduler,
-    base::WaitableEvent* shutdown_event) {
+    base::WaitableEvent* shutdown_event,
+    const gpu::SharedContextState::GrContextOptionsProvider*
+        gr_context_options_provider) {
   if (!sync_point_manager) {
     sync_point_manager = CreateSyncPointManager();
   }
@@ -576,6 +578,8 @@ void GpuServiceImpl::InitializeWithHost(
   if (!shutdown_event) {
     shutdown_event = CreateShutdownEvent();
   }
+
+  gr_context_options_provider_ = gr_context_options_provider;
 
   InitializeWithHostInternal(
       std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
@@ -647,7 +651,7 @@ void GpuServiceImpl::InitializeWithHostInternal(
       std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
       metal_context_provider(), dawn_context_provider(),
-      dawn_caching_interface_factory());
+      dawn_caching_interface_factory(), gr_context_options_provider_);
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());
