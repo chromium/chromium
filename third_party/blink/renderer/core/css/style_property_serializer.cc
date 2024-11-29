@@ -721,13 +721,15 @@ String StylePropertySerializer::SerializeShorthand(
 // The font shorthand only allows keyword font-stretch values. Thus, we check if
 // a percentage value can be parsed as a keyword, and if so, serialize it as
 // that keyword.
+//
+// It's not very well specified what to do with calc(), so we follow the other
+// browsers here and try to stay flexible.
 const CSSValue* GetFontStretchKeyword(const CSSValue* font_stretch_value) {
   if (IsA<CSSIdentifierValue>(font_stretch_value)) {
     return font_stretch_value;
   }
-  if (auto* primitive_value =
-          DynamicTo<CSSPrimitiveValue>(font_stretch_value)) {
-    double value = primitive_value->GetDoubleValue();
+  if (auto* literal_value = DynamicTo<CSSPrimitiveValue>(font_stretch_value)) {
+    std::optional<double> value = literal_value->GetValueIfKnown();
     if (value == 50) {
       return CSSIdentifierValue::Create(CSSValueID::kUltraCondensed);
     }
