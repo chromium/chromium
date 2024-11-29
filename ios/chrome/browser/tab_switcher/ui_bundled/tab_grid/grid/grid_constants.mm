@@ -59,7 +59,8 @@ const CGFloat kGroupGridFaviconViewCornerRadius = 3.0f;
 
 // The cell header contains the icon, title, and close button.
 const CGFloat kGridCellHeaderHeight = 32.0f;
-const CGFloat kGridCellHeaderAccessibilityHeight = 64.0f;
+const CGFloat kGridCellHeaderAccessibilityHeight = 108.0f;
+const CGFloat kGroupGridCellHeaderAccessibilityHeight = 64.0f;
 const CGFloat kGridCellHeaderLeadingInset = 9.0f;
 const CGFloat kGridCellCloseTapTargetWidthHeight = 32.0f;
 const CGFloat kGridCellCloseButtonContentInset = 8.5f;

@@ -518,7 +518,7 @@ const CGFloat kColorDotLargeInset = 20;
 - (CGFloat)topBarHeight {
   return UIContentSizeCategoryIsAccessibilityCategory(
              self.traitCollection.preferredContentSizeCategory)
-             ? kGridCellHeaderAccessibilityHeight
+             ? kGroupGridCellHeaderAccessibilityHeight
              : kGridCellHeaderHeight;
 }
 
