@@ -209,7 +209,7 @@ void NavigationManagerImpl::SerializeToProto(
   DCHECK_LE(length + offset, items.size());
 
   storage.set_last_committed_item_index(last_committed_item_index);
-  for (const auto* item : base::make_span(items.begin() + offset, length)) {
+  for (const auto* item : base::span(items.begin() + offset, length)) {
     item->SerializeToProto(*storage.add_items());
   }
 }

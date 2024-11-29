@@ -93,7 +93,7 @@ constexpr TabInfo kTabs1[] = {
 constexpr SessionInfo kSessionInfo1 = {
     .active_index = 1,
     .pinned_tab_count = 2,
-    .tabs = base::make_span(kTabs1),
+    .tabs = base::span(kTabs1),
 };
 
 constexpr TabInfo kTabs2[] = {
@@ -113,14 +113,14 @@ const TabGroupInfo kTabGroups1[] = {
 constexpr SessionInfo kSessionInfo2 = {
     .active_index = 0,
     .pinned_tab_count = 0,
-    .tabs = base::make_span(kTabs2),
+    .tabs = base::span(kTabs2),
 };
 
 constexpr SessionInfo kSessionWithGroupsInfo = {
     .active_index = 0,
     .pinned_tab_count = 0,
-    .tabs = base::make_span(kTabs2),
-    .tab_groups = base::make_span(kTabGroups1),
+    .tabs = base::span(kTabs2),
+    .tab_groups = base::span(kTabGroups1),
 };
 
 // Returns the path to the directory containing the optimized session

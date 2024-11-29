@@ -45,8 +45,7 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 
   source->UseStringsJs();
   FlagsUI::AddFlagsIOSStrings(source);
-  source->AddResourcePaths(
-      base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
+  source->AddResourcePaths(kFlagsUiResources);
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();

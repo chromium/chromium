@@ -40,7 +40,7 @@ NSData* CertificateToNSData(net::X509Certificate* certificate) {
 // Converts serialized NSData to a certificate.
 scoped_refptr<net::X509Certificate> NSDataToCertificate(NSData* data) {
   return net::X509Certificate::CreateFromBytes(
-      base::make_span(static_cast<const uint8_t*>(data.bytes), data.length));
+      base::span(static_cast<const uint8_t*>(data.bytes), size_t{data.length}));
 }
 
 }  // namespace

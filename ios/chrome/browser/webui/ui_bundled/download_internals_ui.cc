@@ -167,8 +167,7 @@ DownloadInternalsUI::DownloadInternalsUI(web::WebUIIOS* web_ui,
   web::WebUIIOSDataSource* html_source =
       web::WebUIIOSDataSource::Create(kChromeUIDownloadInternalsHost);
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(base::make_span(
-      kDownloadInternalsResources, kDownloadInternalsResourcesSize));
+  html_source->AddResourcePaths(kDownloadInternalsResources);
   html_source->SetDefaultResource(
       IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
   web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
