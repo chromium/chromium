@@ -742,21 +742,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                   new_browser->tab_strip_model()->GetActiveWebContents());
 }
 
-// TODO(crbug.com/40868761): Test is flaky on Linux and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_CreateForceSignedInProfile DISABLED_CreateForceSignedInProfile
-#else
-#define MAYBE_CreateForceSignedInProfile CreateForceSignedInProfile
-#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       MAYBE_CreateForceSignedInProfile) {
+                       CreateForceSignedInProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
-
-  // Note: Observed some rare flakiness on some bots. Inclusing some logs to
-  // understand it.
-  LOG(WARNING) << "DEBUG - Before showing the picker.";
 
   // Wait for the picker to open on the profile creation flow.
   ShowPickerAndWait();
