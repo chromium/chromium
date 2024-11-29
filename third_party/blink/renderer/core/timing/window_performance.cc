@@ -551,11 +551,15 @@ void WindowPerformance::EventTimingProcessingStart(
     reporting_info.creation_time = pointer_event->OldestPlatformTimeStamp();
     reporting_info.pointer_id = pointer_event->pointerId();
 
+    if (event_type == "pointerdown") {
+      pending_pointer_down_start_time_ = reporting_info.creation_time;
+    }
+
     if (RuntimeEnabledFeaturesBase::
             EventTimingTapStopScrollNoInteractionIdEnabled()) {
       reporting_info.prevent_counting_as_interaction |=
           pointer_event->GetPreventCountingAsInteraction();
-    };
+    }
   } else {
     reporting_info.creation_time = event.PlatformTimeStamp();
 
@@ -630,6 +634,20 @@ void WindowPerformance::EventTimingProcessingEnd(
   CHECK(reporting_info);
   reporting_info->processing_end_time = processing_end;
 
+  // "Artificial" pointerup events will re-use the same timestamp as the
+  // pointerdown, leading to large delays. crbug.com/1321819.
+  if ((event_type == event_type_names::kPointerup ||
+       event_type == event_type_names::kClick) &&
+      reporting_info->creation_time == pending_pointer_down_start_time_) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEventTimingArtificialPointerupOrClick);
+#if BUILDFLAG(IS_MAC)
+    // MacOS in particular seems to have an issue measuring these, because
+    // it leads to arbitrarily long presentation delays. crbug.com/1321819.
+    entry->UpdateFallbackTime(processing_end);
+#endif  // BUILDFLAG(IS_MAC)
+  }
+
   if (event.target()) {
     // `event->target()` is assigned as part of EventDispatch, and will be unset
     // whenever we skip dispatch. (See: crbug.com/1367329).
@@ -655,24 +673,30 @@ void WindowPerformance::EventTimingProcessingEnd(
 void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
     base::TimeTicks commit_finish_time) {
   for (auto entry : event_timing_entries_) {
-    // Skip events that don't need paint, or have already been painted
-    if (entry->GetEventTimingReportingInfo()->commit_finish_time.has_value()) {
+    // Skip events that already have a commit time
+    if (!entry->GetEventTimingReportingInfo()->commit_finish_time.is_null()) {
       continue;
     }
-    if (entry->HasKnownEndTime()) {
+    // Skip events that don't need a next paint measure
+    if (!entry->GetEventTimingReportingInfo()->fallback_time.is_null()) {
       continue;
     }
+    // Skip events that haven't finished processing yet.
+    // This can happen when rendering runs during event dispatch, such as with
+    // nested event loops, which can happen with visibility change.
+    if (entry->GetEventTimingReportingInfo()->processing_end_time.is_null()) {
+      continue;
+    }
+    // The following check should be true in typical conditions, but seems to
+    // fail whenever we see multiple OnPaintFinished (with multiple
+    // EventProcessingEnd) without a Commit after each Paint.
+    // CHECK(entry->GetEventTimingReportingInfo()->presentation_index ==
+    //       event_presentation_promise_count_);
     entry->GetEventTimingReportingInfo()->commit_finish_time =
         commit_finish_time;
   }
 }
 
-// Parameters:
-// |presentation_index|     - The registering index of the presentation promise.
-//                            First registered presentation promise will have an
-//                            index of 1.
-// |presentation_timestamp| - The frame presenting time or an early exit time
-//                            due to no frame updates.
 void WindowPerformance::OnPresentationPromiseResolved(
     uint64_t presentation_index,
     const viz::FrameTimingDetails& presentation_details) {
@@ -680,20 +704,79 @@ void WindowPerformance::OnPresentationPromiseResolved(
     return;
   }
 
-  // If the resolved presentation promise is the latest one we registered, then
-  // events arrive after will need a new presentation promise to provide
-  // presentation feedback.
-  if (presentation_index == event_presentation_promise_count_) {
+  // If the resolved presentation promise is for an animation frame that didn't
+  // observe OnPaintFinished, then the most recent events actually did not need
+  // next paint.  We need to mark these with a fallback time instead of a real
+  // presentation time.
+  // TODO(crbug.com/378647854): Move this to happen before we request
+  // presentation time, when we dont need next paint, rather than after.
+  if (presentation_index == event_presentation_promise_count_ &&
+      !need_new_promise_for_event_presentation_time_) {
+    UpdatePendingEventTimingsWithFallbackTime(
+        presentation_details.presentation_feedback.timestamp);
     need_new_promise_for_event_presentation_time_ = true;
+    return;
   }
 
-  base::TimeTicks presentation_timestamp =
-      presentation_details.presentation_feedback.timestamp;
+  for (auto entry : event_timing_entries_) {
+    if (entry->GetEventTimingReportingInfo()->presentation_index ==
+        presentation_index) {
+      entry->GetEventTimingReportingInfo()->presentation_time =
+          presentation_details.presentation_feedback.timestamp;
+
+      // If page visibility was changed, add a fallback_time to the entry's
+      // processingEnd. Because we already flush events in
+      // `ReportAllPendingEventTimingsOnPageHidden`, this should only happen if
+      // a new event is processed after visibility is changed.  Users cannot
+      // interact with a hidden page, but, there might have been events in queue
+      // when the page was hidden (and they couldn't be flushed because they
+      // weren't even dispatched yet).
+      // TODO(crbug.com/378647854): We might want to just check for this at
+      // event timing registration time.  If the page is currently hidden (or
+      // was made hidden after the event was created/enqueued), then just skip
+      // asking for presentation time.
+      bool was_page_visibility_changed =
+          last_hidden_timestamp_ >
+              entry->GetEventTimingReportingInfo()->creation_time &&
+          last_hidden_timestamp_ <
+              entry->GetEventTimingReportingInfo()->presentation_time;
+      if (was_page_visibility_changed) {
+        entry->UpdateFallbackTime(
+            entry->GetEventTimingReportingInfo()->processing_end_time);
+      }
+
+      // A javascript synchronous modal dialog might show before the event frame
+      // got presented.  If so, we use a fallback time to the dialog showing
+      // time.
+      // TODO(crbug.com/378647854): Simplify the way we measure dialogs:
+      // - Replace the list of dialogs with a single timestamp
+      // - When we see the first dialog per animation frame, resolve all
+      //    events already in queue (similar to visibility change).
+      // - When we process a new event, if we've already seen a modal, use it
+      //    as a fallback time.
+      // - We also don't need to fallback to dialog time after Paint is
+      //    committed, since paint will show at that point.
+      while (!show_modal_dialog_timestamps_.empty() &&
+             show_modal_dialog_timestamps_.front() <
+                 entry->GetEventTimingReportingInfo()->creation_time) {
+        show_modal_dialog_timestamps_.pop_front();
+      }
+      if (!show_modal_dialog_timestamps_.empty() &&
+          show_modal_dialog_timestamps_.front() <
+              entry->GetEventTimingReportingInfo()->presentation_time) {
+        entry->UpdateFallbackTime(show_modal_dialog_timestamps_.front());
+      }
+    }
+  }
+  ReportEventTimings();
+}
+
+void WindowPerformance::UpdatePendingEventTimingsWithFallbackTime(
+    base::TimeTicks fallback_time) {
   for (auto event_timing_entry : event_timing_entries_) {
     if (event_timing_entry->GetEventTimingReportingInfo()->presentation_index ==
-        presentation_index) {
-      event_timing_entry->GetEventTimingReportingInfo()->presentation_time =
-          presentation_timestamp;
+        event_presentation_promise_count_) {
+      event_timing_entry->UpdateFallbackTime(fallback_time);
     }
   }
   ReportEventTimings();
@@ -797,28 +880,29 @@ void WindowPerformance::ReportEventTimings() {
       auto* last_event_reporting_info =
           std::prev(last)->Get()->GetEventTimingReportingInfo();
       auto frame_end_time =
-          last_event_reporting_info->commit_finish_time.value_or(
-              last_event_reporting_info->processing_end_time);
+          !last_event_reporting_info->commit_finish_time.is_null()
+              ? last_event_reporting_info->commit_finish_time
+              : last_event_reporting_info->fallback_time;
 
       TRACE_EVENT_END("devtools.timeline", scope, frame_end_time);
 
-      if (last_event_reporting_info->presentation_time.has_value()) {
-        TRACE_EVENT_INSTANT(
-            "devtools.timeline", "EventPresentation", scope,
-            last_event_reporting_info->presentation_time.value(), flowid);
+      if (!last_event_reporting_info->presentation_time.is_null()) {
+        TRACE_EVENT_INSTANT("devtools.timeline", "EventPresentation", scope,
+                            last_event_reporting_info->presentation_time,
+                            flowid);
       }
 
       if (auto first_entry_with_fallback =
               std::find_if(first, last,
                            [](auto entry) {
-                             return entry->GetEventTimingReportingInfo()
-                                 ->fallback_time.has_value();
+                             return !entry->GetEventTimingReportingInfo()
+                                         ->fallback_time.is_null();
                            });
           first_entry_with_fallback != last) {
         TRACE_EVENT_INSTANT("devtools.timeline", "EventFallbackTime", scope,
                             first_entry_with_fallback->Get()
                                 ->GetEventTimingReportingInfo()
-                                ->fallback_time.value(),
+                                ->fallback_time,
                             flowid);
       }
     }
@@ -848,15 +932,18 @@ void WindowPerformance::ReportEventTimings() {
 void WindowPerformance::ReportEvent(
     InteractiveDetector* interactive_detector,
     Member<PerformanceEventTiming> event_timing_entry) {
-  base::TimeTicks event_creation_time =
-      event_timing_entry->GetEventTimingReportingInfo()->creation_time;
-  base::TimeTicks processing_start =
-      event_timing_entry->GetEventTimingReportingInfo()->processing_start_time;
-  base::TimeTicks processing_end =
-      event_timing_entry->GetEventTimingReportingInfo()->processing_end_time;
-  SetFallbackTime(event_timing_entry);
-
+  auto* timings = event_timing_entry->GetEventTimingReportingInfo();
+  base::TimeTicks event_creation_time = timings->creation_time;
+  base::TimeTicks enqueued_to_main_thread_time =
+      timings->enqueued_to_main_thread_time;
+  base::TimeTicks processing_start = timings->processing_start_time;
+  base::TimeTicks processing_end = timings->processing_end_time;
+  base::TimeDelta processing_duration = processing_end - processing_start;
   base::TimeTicks event_end_time = event_timing_entry->GetEndTime();
+  base::TimeTicks commit_or_end_time = timings->commit_finish_time.is_null()
+                                           ? event_end_time
+                                           : timings->commit_finish_time;
+  base::TimeDelta time_to_next_paint = event_end_time - processing_end;
 
   // event_creation_time might be null in certain tests.
   // CHECK(!event_creation_time.is_null());
@@ -864,7 +951,6 @@ void WindowPerformance::ReportEvent(
   CHECK(!processing_end.is_null());
   CHECK(!event_end_time.is_null());
 
-  base::TimeDelta time_to_next_paint = event_end_time - processing_end;
 
   // Round to 8ms.
   int rounded_duration =
@@ -873,13 +959,8 @@ void WindowPerformance::ReportEvent(
 
   event_timing_entry->SetDuration(rounded_duration);
 
-  base::TimeDelta processing_duration = processing_end - processing_start;
-
   if (event_timing_entry->name() == "pointerdown") {
-    pending_pointer_down_start_time_ = event_timing_entry->startTime();
-
     pending_pointer_down_processing_time_ = processing_duration;
-
     pending_pointer_down_time_to_next_paint_ = time_to_next_paint;
   } else if (event_timing_entry->name() == "pointerup") {
     if (pending_pointer_down_time_to_next_paint_.has_value() &&
@@ -898,13 +979,7 @@ void WindowPerformance::ReportEvent(
 
   // Event Timing
   ResponsivenessMetrics::EventTimestamps event_timestamps = {
-      event_creation_time,
-      event_timing_entry->GetEventTimingReportingInfo()
-          ->enqueued_to_main_thread_time,
-      event_timing_entry->GetEventTimingReportingInfo()
-          ->commit_finish_time.value_or(
-              event_timing_entry->GetEventTimingReportingInfo()
-                  ->processing_end_time),
+      event_creation_time, enqueued_to_main_thread_time, commit_or_end_time,
       event_end_time};
 
   if (SetInteractionIdAndRecordLatency(event_timing_entry, event_timestamps)) {
@@ -999,72 +1074,6 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "devtools.timeline", "EventTiming", hash, unsafe_end_time);
-  }
-}
-
-void WindowPerformance::SetFallbackTime(PerformanceEventTiming* entry) {
-  if (entry->GetEventTimingReportingInfo()->fallback_time.has_value()) {
-    return;
-  }
-  // For artificial events on MacOS, we will fallback entry's end time to its
-  // processingEnd (as if there was no next paint needed). crbug.com/1321819.
-  const bool is_artificial_pointerup_or_click =
-      (entry->name() == event_type_names::kPointerup ||
-       entry->name() == event_type_names::kClick) &&
-      entry->startTime() == pending_pointer_down_start_time_;
-
-  if (is_artificial_pointerup_or_click) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEventTimingArtificialPointerupOrClick);
-  }
-
-  // If the page visibility was changed. We fallback entry's end time to its
-  // processingEnd (as if there was no next paint needed). crbug.com/1312568.
-  bool was_page_visibility_changed =
-      last_hidden_timestamp_ >
-          entry->GetEventTimingReportingInfo()->creation_time &&
-      last_hidden_timestamp_ <
-          entry->GetEventTimingReportingInfo()->presentation_time;
-
-  // An javascript synchronous modal dialog showed before the event frame
-  // got presented. User could wait for arbitrarily long on the dialog. Thus
-  // we fall back presentation time to the pre dialog showing time.
-  // crbug.com/1435448.
-  bool fallback_end_time_to_dialog_time = false;
-  base::TimeTicks first_modal_dialog_timestamp;
-
-  // Clean up stale dialog times.
-  while (!show_modal_dialog_timestamps_.empty() &&
-         show_modal_dialog_timestamps_.front() <
-             entry->GetEventTimingReportingInfo()->creation_time) {
-    show_modal_dialog_timestamps_.pop_front();
-  }
-
-  if (!show_modal_dialog_timestamps_.empty() &&
-      show_modal_dialog_timestamps_.front() <
-          entry->GetEventTimingReportingInfo()->presentation_time) {
-    fallback_end_time_to_dialog_time = true;
-    first_modal_dialog_timestamp = show_modal_dialog_timestamps_.front();
-  }
-
-  const bool fallback_end_time_to_processing_end =
-      was_page_visibility_changed
-#if BUILDFLAG(IS_MAC)
-      || is_artificial_pointerup_or_click
-#endif  // BUILDFLAG(IS_MAC)
-      ;
-
-  // Set a fallback time.
-  if (fallback_end_time_to_dialog_time && fallback_end_time_to_processing_end) {
-    entry->GetEventTimingReportingInfo()->fallback_time =
-        std::min(first_modal_dialog_timestamp,
-                 entry->GetEventTimingReportingInfo()->processing_end_time);
-  } else if (fallback_end_time_to_dialog_time) {
-    entry->GetEventTimingReportingInfo()->fallback_time =
-        first_modal_dialog_timestamp;
-  } else if (fallback_end_time_to_processing_end) {
-    entry->GetEventTimingReportingInfo()->fallback_time =
-        entry->GetEventTimingReportingInfo()->processing_end_time;
   }
 }
 
