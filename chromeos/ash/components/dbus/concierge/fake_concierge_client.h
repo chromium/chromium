@@ -148,6 +148,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
           callback) override;
 
+  void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override;
+
   void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<
@@ -223,6 +228,9 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     return reclaim_vm_memory_call_count_;
   }
   int list_vms_call_count() const { return list_vms_call_count_; }
+  int modify_fake_power_config_call_count() const {
+    return modify_fake_power_config_call_count_;
+  }
 
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
@@ -335,6 +343,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       std::optional<vm_tools::concierge::ListVmsResponse> list_vms_response) {
     list_vms_response_ = list_vms_response;
   }
+  void set_modify_fake_power_config_response(
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
+          modify_fake_power_config_response) {
+    modify_fake_power_config_response_ = modify_fake_power_config_response;
+  }
   void set_get_vm_launch_allowed_response(
       std::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
           get_vm_launch_allowed_response) {
@@ -421,6 +434,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int set_vm_id_call_count_ = 0;
   int reclaim_vm_memory_call_count_ = 0;
   int list_vms_call_count_ = 0;
+  int modify_fake_power_config_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
@@ -464,6 +478,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   std::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
       reclaim_vm_memory_response_;
   std::optional<vm_tools::concierge::ListVmsResponse> list_vms_response_;
+  std::optional<vm_tools::concierge::SuccessFailureResponse>
+      modify_fake_power_config_response_;
   std::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
       get_vm_launch_allowed_response_;
   std::optional<vm_tools::concierge::SuccessFailureResponse> swap_vm_response_;

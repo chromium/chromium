@@ -263,6 +263,14 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kListVmsMethod, request, std::move(callback));
   }
 
+  void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
+    CallMethod(concierge::kModifyFakePowerConfigMethod, request,
+               std::move(callback));
+  }
+
   void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<concierge::GetVmLaunchAllowedResponse>

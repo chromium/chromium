@@ -400,6 +400,16 @@ void FakeConciergeClient::ListVms(
       FROM_HERE, base::BindOnce(std::move(callback), list_vms_response_));
 }
 
+void FakeConciergeClient::ModifyFakePowerConfig(
+    const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+        callback) {
+  modify_fake_power_config_call_count_++;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), modify_fake_power_config_response_));
+}
+
 void FakeConciergeClient::GetVmLaunchAllowed(
     const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
     chromeos::DBusMethodCallback<

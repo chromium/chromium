@@ -279,6 +279,13 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
           callback) = 0;
 
+  // Modifies VM fake power configurations.
+  // |callback| is called after the method call finishes.
+  virtual void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) = 0;
+
   virtual void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<
