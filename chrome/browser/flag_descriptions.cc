@@ -5123,13 +5123,6 @@ const char kEsbDownloadRowPromoFeatureDescription[] =
     "that links to the chrome://settings/security page.";
 #endif
 
-const char kForceSigninFlowInProfilePickerName[] =
-    "Force Signin Flows in Profile Picker";
-const char kForceSigninFlowInProfilePickerDescription[] =
-    "Migrates Force Signin flows from the old popup dialog on top of the "
-    "Profile Picker, to the regular sign in flow within the Profile Picker "
-    "with adaptation to the policy settings";
-
 const char kFreezingOnEnergySaverName[] =
     "Freeze CPU intensive background tabs on Energy Saver";
 const char kFreezingOnEnergySaverDescription[] =

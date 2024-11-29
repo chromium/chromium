@@ -2957,9 +2957,6 @@ extern const char kEsbDownloadRowPromoFeatureName[];
 extern const char kEsbDownloadRowPromoFeatureDescription[];
 #endif
 
-extern const char kForceSigninFlowInProfilePickerName[];
-extern const char kForceSigninFlowInProfilePickerDescription[];
-
 extern const char kFreezingOnEnergySaverName[];
 extern const char kFreezingOnEnergySaverDescription[];
 

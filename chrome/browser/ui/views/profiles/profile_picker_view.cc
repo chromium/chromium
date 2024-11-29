@@ -52,7 +52,6 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -813,43 +812,8 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
 void ProfilePickerView::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
     base::OnceCallback<void(bool)> switch_finished_callback) {
-  // TODO(crbug.com/40237765): Consider having forced signin as separate step
-  // controller for `Step::kAccountSelection`.
-  if (signin_util::IsForceSigninEnabled() &&
-      !base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
-    SwitchToForcedSignIn(std::move(switch_finished_callback));
-    return;
-  }
-
   GetProfilePickerFlowController()->SwitchToDiceSignIn(
       std::move(profile_info), std::move(switch_finished_callback));
-}
-
-void ProfilePickerView::SwitchToForcedSignIn(
-    base::OnceCallback<void(bool)> switch_finished_callback) {
-  DCHECK(signin_util::IsForceSigninEnabled());
-  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
-  ProfileManager::CreateMultiProfileAsync(
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .ChooseNameForNewProfile(icon_index),
-      icon_index, /*is_hidden=*/true,
-      base::BindOnce(&ProfilePickerView::OnProfileForDiceForcedSigninCreated,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(switch_finished_callback)));
-}
-
-void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
-    base::OnceCallback<void(bool)> switch_finished_callback,
-    Profile* profile) {
-  DCHECK(signin_util::IsForceSigninEnabled());
-  if (!profile) {
-    std::move(switch_finished_callback).Run(false);
-    return;
-  }
-
-  std::move(switch_finished_callback).Run(true);
-  ProfilePickerForceSigninDialog::ShowForceSigninDialog(profile);
 }
 
 void ProfilePickerView::SwitchToReauth(

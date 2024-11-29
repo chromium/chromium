@@ -224,16 +224,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       ProfilePicker::ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
-  // Starts the forced sign-in flow (and creates a new profile).
-  // `switch_finished_callback` gets informed whether the creation of the new
-  // profile succeeded and the sign-in UI gets displayed.
-  void SwitchToForcedSignIn(
-      base::OnceCallback<void(bool)> switch_finished_callback);
-
-  // Handles profile creation when forced sign-in is enabled.
-  void OnProfileForDiceForcedSigninCreated(
-      base::OnceCallback<void(bool)> switch_finished_callback,
-      Profile* new_profile);
   // Switches the profile picker layout to display the reauth page to the main
   // account of the given `profile` if needed. On success the `profile` is
   // unlocked and a browser is opend. On failure the user is redirected to the

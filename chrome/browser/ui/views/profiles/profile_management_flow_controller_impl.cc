@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -107,8 +106,6 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents,
     StepSwitchFinishedCallback step_switch_finished_callback) {
-  CHECK(!signin_util::IsForceSigninEnabled() ||
-        base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
   DCHECK(signed_in_profile);
   DCHECK_EQ(Step::kAccountSelection, current_step());
 

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 
@@ -190,7 +189,6 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
   if (signin_util::IsForceSigninEnabled() &&
       !enterprise_util::ProfileCanBeManaged(profile_) &&
       result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {
-    CHECK(base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
     HandleCancelSigninChoice(
         ProfileMetrics::ProfileSignedInFlowOutcome::kForceSigninSyncNotGranted);
     return;

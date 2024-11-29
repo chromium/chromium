@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,22 +33,6 @@ void RecordReauthResult(ProfilePickerReauthResult result) {
 GURL GetLoadingScreenURL() {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
   return url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
-}
-
-GURL GetReauthURL(const std::string& email_to_reauth, GURL continue_url) {
-  // By default `kForceSigninReauthInProfilePickerUseAddSession` is false.
-  // This param will only be used as a fallback in case /AccountChooser (result
-  // of `signin::GetChromeReauthURL()`) does not always return a valid refresh
-  // token, which would cause the reauth to hang. As of now, extensive manual
-  // testing did not show any regression with this usage.
-  // /AddSession (result of `signin::GetAddAccountURLForDice()`) guarantees a
-  // refresh token, however it's UI is less accurate for a reauth.
-  return kForceSigninReauthInProfilePickerUseAddSession.Get()
-             // /AddSession (fallback)
-             ? signin::GetAddAccountURLForDice(email_to_reauth, continue_url)
-             // /AccountChooser (default)
-             : signin::GetChromeReauthURL(
-                   {.email = email_to_reauth, .continue_url = continue_url});
 }
 
 ForceSigninUIError ComputeReauthUIError(ProfilePickerReauthResult result,
@@ -156,8 +139,9 @@ void ProfilePickerDiceReauthProvider::ShowReauth() {
   // Show the back button, the reactions are handled by the host itself.
   // Use the continue_url to know that the user finalized the reauth flow, in
   // case no refresh token were generated.
-  GURL reauth_url =
-      GetReauthURL(email_to_reauth_, GaiaUrls::GetInstance()->blank_page_url());
+  GURL reauth_url = signin::GetChromeReauthURL(
+      {.email = email_to_reauth_,
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url()});
   host_->ShowScreen(
       contents_.get(), reauth_url,
       base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,

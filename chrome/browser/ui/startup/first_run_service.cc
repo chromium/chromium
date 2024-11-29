@@ -202,8 +202,7 @@ void FirstRunService::TryMarkFirstRunAlreadyFinished(
   // enabled which would cause the profile to be signed in already at this
   // point.
   if (policy_effect != PolicyEffect::kNone &&
-      signin_util::IsForceSigninEnabled() &&
-      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+      signin_util::IsForceSigninEnabled()) {
     // When ForceSignin is enabled and the flows are going through the profile
     // picker, the final profile setup should not yet be reached. The
     // rest of the flow is still happening within the Profile Picker, either
