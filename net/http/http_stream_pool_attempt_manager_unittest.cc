@@ -5162,7 +5162,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
   EXPECT_EQ(pool().TotalActiveStreamCount(), 2u);
 
   // Flushing should destroy all active streams and in-flight attempts.
-  pool().FlushWithError(ERR_ABORTED, "For testing");
+  pool().FlushWithError(ERR_ABORTED,
+                        HttpStreamPool::StreamCloseReason::kUnspecified,
+                        "For testing");
   EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
 

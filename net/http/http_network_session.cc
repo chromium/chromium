@@ -360,7 +360,9 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
   websocket_socket_pool_manager_->FlushSocketPoolsWithError(
       net_error, net_log_reason_utf8);
   if (http_stream_pool_) {
-    http_stream_pool_->FlushWithError(net_error, net_log_reason_utf8);
+    http_stream_pool_->FlushWithError(
+        net_error, HttpStreamPool::StreamCloseReason::kCloseAllConnections,
+        net_log_reason_utf8);
   }
   spdy_session_pool_.CloseCurrentSessions(static_cast<Error>(net_error));
   quic_session_pool_.CloseAllSessions(net_error, quic::QUIC_PEER_GOING_AWAY);

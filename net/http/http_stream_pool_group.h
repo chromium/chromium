@@ -149,12 +149,15 @@ class HttpStreamPool::Group {
   std::optional<RequestPriority> GetPriorityIfStalledByPoolLimit() const;
 
   // Closes all streams in this group and cancels all pending requests.
-  void FlushWithError(int error, std::string_view net_log_close_reason_utf8);
+  void FlushWithError(int error,
+                      StreamCloseReason attempt_cancel_reason,
+                      std::string_view net_log_close_reason_utf8);
 
   // Increments the generation of this group. Closes idle streams. Streams
   // handed out before this increment won't be reused. Cancels in-flight
   // connection attempts.
-  void Refresh(std::string_view net_log_close_reason_utf8);
+  void Refresh(std::string_view net_log_close_reason_utf8,
+               StreamCloseReason cancel_reason);
 
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 

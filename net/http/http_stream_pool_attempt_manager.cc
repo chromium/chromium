@@ -84,6 +84,11 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
         base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
                       GetResultHistogramPrefix(result_)}),
         base::TimeTicks::Now() - start_time_);
+
+    if (cancel_reason_.has_value()) {
+      base::UmaHistogramEnumeration(
+          "Net.HttpStreamPool.StreamAttemptCancelReason", *cancel_reason_);
+    }
   }
 
   int Start(std::unique_ptr<StreamAttempt> attempt) {
@@ -100,6 +105,8 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     CHECK(!result_.has_value());
     result_ = rv;
   }
+
+  void SetCancelReason(StreamCloseReason reason) { cancel_reason_ = reason; }
 
   StreamAttempt* attempt() { return attempt_.get(); }
 
@@ -132,6 +139,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   std::unique_ptr<StreamAttempt> attempt_;
   base::TimeTicks start_time_;
   std::optional<int> result_;
+  std::optional<StreamCloseReason> cancel_reason_;
   // Timer to start a next attempt. When fired, `this` is treated as a slow
   // attempt but `this` is not timed out yet.
   base::OneShotTimer slow_timer_;
@@ -416,7 +424,11 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
   MaybeAttemptConnection(/*max_attempts=*/1);
 }
 
-void HttpStreamPool::AttemptManager::CancelInFlightAttempts() {
+void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
+    StreamCloseReason reason) {
+  for (auto& attempt : in_flight_attempts_) {
+    attempt->SetCancelReason(reason);
+  }
   pool()->DecrementTotalConnectingStreamCount(in_flight_attempts_.size());
   in_flight_attempts_.clear();
   slow_attempt_count_ = 0;
@@ -707,7 +719,7 @@ void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
   CHECK(!allowed_alpns_.empty());
 
   if (!CanUseTcpBasedProtocols()) {
-    CancelInFlightAttempts();
+    CancelInFlightAttempts(StreamCloseReason::kCannotUseTcpBasedProtocols);
   }
 
   if (!CanUseQuic()) {
@@ -1357,7 +1369,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady() {
   CHECK(!is_failing_);
   CHECK(spdy_session_);
 
-  group_->Refresh(kSwitchingToHttp2);
+  group_->Refresh(kSwitchingToHttp2, StreamCloseReason::kSpdySessionCreated);
   NotifyPreconnectsComplete(OK);
 }
 
@@ -1366,7 +1378,7 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady() {
   CHECK(!quic_task_);
   DCHECK(CanUseExistingQuicSession());
 
-  group_->Refresh(kSwitchingToHttp3);
+  group_->Refresh(kSwitchingToHttp3, StreamCloseReason::kQuicSessionCreated);
   NotifyPreconnectsComplete(OK);
 }
 

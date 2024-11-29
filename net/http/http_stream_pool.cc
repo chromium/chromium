@@ -195,14 +195,17 @@ void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
 void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
-    group.second->FlushWithError(ERR_NETWORK_CHANGED, kIpAddressChanged);
+    group.second->FlushWithError(ERR_NETWORK_CHANGED,
+                                 StreamCloseReason::kIpAddressChanged,
+                                 kIpAddressChanged);
   }
 }
 
 void HttpStreamPool::OnSSLConfigChanged(
     SSLClientContext::SSLConfigChangeType change_type) {
   for (const auto& group : groups_) {
-    group.second->Refresh(kSslConfigChanged);
+    group.second->Refresh(kSslConfigChanged,
+                          StreamCloseReason::kSslConfigChanged);
   }
   ProcessPendingRequestsInGroups();
 }
@@ -213,7 +216,8 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
     if (GURL::SchemeIsCryptographic(group.first.destination().scheme()) &&
         servers.contains(
             HostPortPair::FromSchemeHostPort(group.first.destination()))) {
-      group.second->Refresh(kSslConfigChanged);
+      group.second->Refresh(kSslConfigChanged,
+                            StreamCloseReason::kSslConfigChanged);
     }
   }
   ProcessPendingRequestsInGroups();
@@ -233,9 +237,11 @@ void HttpStreamPool::OnJobControllerComplete(JobController* job_controller) {
 
 void HttpStreamPool::FlushWithError(
     int error,
+    StreamCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   for (auto& group : groups_) {
-    group.second->FlushWithError(error, net_log_close_reason_utf8);
+    group.second->FlushWithError(error, attempt_cancel_reason,
+                                 net_log_close_reason_utf8);
   }
 }
 

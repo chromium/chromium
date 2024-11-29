@@ -113,7 +113,7 @@ class HttpStreamPool::AttemptManager
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
 
   // Cancels all in-flight attempts.
-  void CancelInFlightAttempts();
+  void CancelInFlightAttempts(StreamCloseReason reason);
 
   // Called when `job` is going to be destroyed.
   void OnJobComplete(Job* job);

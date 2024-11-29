@@ -2388,6 +2388,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.StreamAttemptCancelReason"
+    enum="StreamCloseReason" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The reason why a stream attempt is canceled. Recorded when a stream attempt
+    is destroyed after being canceled.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.StreamAttemptTime.{Result}" units="ms"
     expires_after="2025-02-27">
   <owner>bashi@chromium.org</owner>
