@@ -5978,8 +5978,6 @@ static_library("browser") {
       "//chrome/browser/chromeos/smart_reader",
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/tast_support",
-      "//chrome/browser/lacros/account_manager",
-      "//chrome/browser/lacros/account_manager:impl",
       "//chrome/browser/lacros/cros_apps/api/diagnostics",
       "//chrome/browser/ui/aura/accessibility",
       "//chrome/common/chromeos/extensions",
@@ -6011,7 +6009,6 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/extensions/accessibility_service_private",
-      "//chrome/browser/lacros/account_manager:impl",
     ]
 
     # component builds are not compatible on device.
