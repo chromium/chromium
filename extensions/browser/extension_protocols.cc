@@ -679,9 +679,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
                           scoped_refptr<base::RefCountedMemory> bitmap_data) {
     if (bitmap_data) {
       head->mime_type = "image/bmp";
-      WriteData(std::move(head),
-                base::as_bytes(
-                    base::make_span(bitmap_data->data(), bitmap_data->size())));
+      WriteData(std::move(head), base::as_byte_span(*bitmap_data));
     } else {
       CompleteRequestAndDeleteThis(net::ERR_FAILED);
     }
@@ -773,7 +771,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         std::string contents;
         GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                        &head->charset, &contents);
-        WriteData(std::move(head), base::as_bytes(base::make_span(contents)));
+        WriteData(std::move(head), base::as_byte_span(contents));
       } else if (is_favicon_url) {
         tracker_ = std::make_unique<base::CancelableTaskTracker>();
         ExtensionsBrowserClient::Get()->GetFavicon(

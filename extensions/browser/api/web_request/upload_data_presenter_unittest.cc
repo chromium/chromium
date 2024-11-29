@@ -56,9 +56,9 @@ TEST(WebRequestUploadDataPresenterTest, RawData) {
   const size_t block2_size = sizeof(block2) - 1;
 
   // Expected output.
-  base::Value expected_a(base::as_bytes(base::make_span(block1, block1_size)));
+  base::Value expected_a(base::as_bytes(base::span_from_cstring(block1)));
   base::Value expected_b(kFilename);
-  base::Value expected_c(base::as_bytes(base::make_span(block2, block2_size)));
+  base::Value expected_c(base::as_bytes(base::span_from_cstring(block2)));
 
   base::Value::List expected_list;
   subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey,

@@ -594,7 +594,7 @@ void SocketReadFunction::OnCompleted(int bytes_read,
   base::span<const uint8_t> data_span;
   if (bytes_read > 0) {
     data_span = base::as_bytes(
-        base::make_span(io_buffer->data(), static_cast<size_t>(bytes_read)));
+        base::span(io_buffer->data(), static_cast<size_t>(bytes_read)));
   }
   result.Set(kDataKey, base::Value(data_span));
   Respond(WithArguments(std::move(result)));
@@ -675,7 +675,7 @@ void SocketRecvFromFunction::OnCompleted(int bytes_read,
   base::span<const uint8_t> data_span;
   if (bytes_read > 0) {
     data_span = base::as_bytes(
-        base::make_span(io_buffer->data(), static_cast<size_t>(bytes_read)));
+        base::span(io_buffer->data(), static_cast<size_t>(bytes_read)));
   }
   result.Set(kDataKey, base::Value(data_span));
   result.Set(kAddressKey, address);

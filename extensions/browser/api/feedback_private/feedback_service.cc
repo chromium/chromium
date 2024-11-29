@@ -596,8 +596,8 @@ void FeedbackService::VariationsEncryptWithHpkeKey(
   encrypted_variations.resize(encapsulated_shared_secret_len +
                               variations.size() +
                               EVP_HPKE_CTX_max_overhead(sender_context.get()));
-  base::span<uint8_t> ciphertext = base::make_span(encrypted_variations)
-                                       .subspan(encapsulated_shared_secret_len);
+  base::span<uint8_t> ciphertext =
+      base::span(encrypted_variations).subspan(encapsulated_shared_secret_len);
   size_t ciphertext_len;
 
   if (!EVP_HPKE_CTX_seal(

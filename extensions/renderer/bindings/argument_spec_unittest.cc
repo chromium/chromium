@@ -420,7 +420,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     {
       // Actual data.
       const uint8_t kBuffer[] = {'p', 'i', 'n', 'g'};
-      base::Value expected_value(base::make_span(kBuffer));
+      base::Value expected_value{base::span(kBuffer)};
       ExpectSuccess(spec,
                     "var b = new ArrayBuffer(4);\n"
                     "var v = new Uint8Array(b);\n"
