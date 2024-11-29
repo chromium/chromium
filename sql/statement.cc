@@ -46,6 +46,19 @@ int64_t Statement::TimeToSqlValue(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
+std::string GetSqlStatementStringForTracing(sqlite3_stmt* stmt) {
+  // See https://www.sqlite.org/c3ref/expanded_sql.html
+  // The SQLITE_OMIT_TRACE compile-time option causes sqlite3_expanded_sql() to
+  // always return NULL. Chromium is typically built with SQLITE_OMIT_TRACE
+  // defined, but conditionally expanding the statement allows us to make
+  // one-off builds that produce traces with visible expanded statements.
+#if defined(SQLITE_OMIT_TRACE)
+  return sqlite3_sql(stmt);
+#else
+  return sqlite3_expanded_sql(stmt);
+#endif
+}
+
 // This empty constructor initializes our reference with an empty one so that
 // we don't have to null-check the ref_ to see if the statement is valid: we
 // only have to check the ref's validity bit.
@@ -102,7 +115,7 @@ SqliteResultCode Statement::StepInternal() {
     TRACE_EVENT_BEGIN("sql", "Database::Statement",
                       ref_->database()->GetTracingNamedTrack(),
                       timer.start_time(), "statement",
-                      std::string(sqlite3_sql(ref_->stmt())));
+                      GetSqlStatementStringForTracing(ref_->stmt()));
   }
 
   std::optional<base::ScopedBlockingCall> scoped_blocking_call;
@@ -135,7 +148,7 @@ void Statement::ReportQueryExecutionMetrics() const {
 
   if (time_spent_stepping_) {
     TRACE_EVENT_END("sql", database->GetTracingNamedTrack(), "statement",
-                    std::string(sqlite3_sql(ref_->stmt())));
+                    GetSqlStatementStringForTracing(ref_->stmt()));
     database->RecordTimingHistogram("Sql.Statement.ExecutionTime.",
                                     *time_spent_stepping_);
   }

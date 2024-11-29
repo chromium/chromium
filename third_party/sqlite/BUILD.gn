@@ -10,6 +10,12 @@ import("//third_party/sqlite/sqlite_chromium_configuration_flags.gni")
 import("//third_party/sqlite/sqlite_common_configuration_flags.gni")
 import("//third_party/sqlite/sqlite_dev_configuration_flags.gni")
 
+declare_args() {
+  # When set to `true`, enables tracing in sqlite, which enables the use of
+  # tracing/profiling functions, as well as prepared statement expansion.
+  enable_sqlite_tracing = false
+}
+
 # Compile-time options passed to SQLite.
 #
 # These options are used when building our own SQLite library, which happens
@@ -110,6 +116,11 @@ config("chromium_sqlite3_compile_options") {
   configs = [ ":common_sqlite3_compile_options" ]
 
   defines = sqlite_chromium_configuration_flags
+
+  if (!enable_sqlite_tracing) {
+    # Chrome doesn't use sqlite3_{profile,trace}() by default.
+    defines += [ "SQLITE_OMIT_TRACE" ]
+  }
 }
 
 # These options add SQLite features that we need in developer tools.
