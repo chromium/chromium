@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -253,22 +254,23 @@ void StyleCascade::Apply(CascadeFilter filter) {
   //
   // :-webkit-any(article,aside,nav,section) h1 { ... }
   //
-  if (!state_.GetElement().HasTagName(html_names::kH1Tag)) {
-    return;
-  }
-  if (CascadePriority* priority =
-          map_.Find(GetCSSPropertyFontSize().GetCSSPropertyName())) {
-    if (priority->GetOrigin() != CascadeOrigin::kUserAgent) {
-      return;
-    }
-    const CSSValue* value = ValueAt(match_result_, priority->GetPosition());
-    if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
-      DCHECK(numeric->GetType() == CSSNumericLiteralValue::UnitType::kEms);
-      if (numeric->DoubleValue() != 2.0) {
-        CountUse(WebFeature::kH1UserAgentFontSizeInSectionApplied);
+  if (state_.GetElement().HasTagName(html_names::kH1Tag)) {
+    if (CascadePriority* priority =
+            map_.Find(GetCSSPropertyFontSize().GetCSSPropertyName())) {
+      if (priority->GetOrigin() != CascadeOrigin::kUserAgent) {
+        return;
+      }
+      const CSSValue* value = ValueAt(match_result_, priority->GetPosition());
+      if (const auto* numeric = DynamicTo<CSSNumericLiteralValue>(value)) {
+        DCHECK(numeric->GetType() == CSSNumericLiteralValue::UnitType::kEms);
+        if (numeric->DoubleValue() != 2.0) {
+          CountUse(WebFeature::kH1UserAgentFontSizeInSectionApplied);
+        }
       }
     }
   }
+
+  ApplyUnresolvedEnv();
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
@@ -1796,6 +1798,38 @@ void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,
 
 void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
   state_.StyleBuilder().SetHasVariableReference();
+}
+
+void StyleCascade::ApplyUnresolvedEnv() {
+  // Currently the only field that depends on parsing unresolved env().
+  ApplyIsBottomRelativeToSafeAreaInset();
+}
+
+void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset() {
+  if (!map_.NativeBitset().Has(CSSPropertyID::kBottom)) {
+    return;
+  }
+
+  const CascadePriority* p = map_.FindKnownToExist(CSSPropertyID::kBottom);
+  if (p->GetOrigin() >= CascadeOrigin::kAnimation) {
+    // Effect values from animations/transition do not contain env().
+    return;
+  }
+
+  const CSSValue* value = ValueAt(match_result_, p->GetPosition());
+  const auto* unparsed = DynamicTo<CSSUnparsedDeclarationValue>(value);
+  if (!unparsed) {
+    return;  // Does not contain env().
+  }
+
+  // IsSafeAreaInsetBottom assumes the fallback is not taken.
+  DCHECK(GetEnvironmentVariable(AtomicString("safe-area-inset-bottom"),
+                                /*indices=*/WTF::Vector<unsigned>()));
+
+  if (CSSParserFastPaths::IsSafeAreaInsetBottom(
+          unparsed->VariableDataValue()->OriginalText())) {
+    state_.StyleBuilder().SetIsBottomRelativeToSafeAreaInset(true);
+  }
 }
 
 bool StyleCascade::TreatAsRevertLayer(CascadePriority priority) const {

@@ -473,6 +473,11 @@ class CORE_EXPORT StyleCascade {
   // Marks a CSSProperty as having a reference to a custom property. Needed to
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
+  // Set ComputedStyle bits that require parsing unresolved env() variables.
+  void ApplyUnresolvedEnv();
+  // See comments on IsBottomRelativeToSafeAreaInset in
+  // computed_style_extra_fields.json5.
+  void ApplyIsBottomRelativeToSafeAreaInset();
 
   // Declarations originating from @position-try rules are treated as
   // revert-layer if we're not out-of-flow positioned. Since such declarations
