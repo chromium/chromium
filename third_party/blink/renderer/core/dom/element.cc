@@ -3320,6 +3320,10 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
 
   AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
+  AttachPseudoElement(kPseudoIdScrollUpButton, context);
+  AttachPseudoElement(kPseudoIdScrollLeftButton, context);
+  AttachPseudoElement(kPseudoIdScrollRightButton, context);
+  AttachPseudoElement(kPseudoIdScrollDownButton, context);
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
@@ -4427,10 +4431,10 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
                                    local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);

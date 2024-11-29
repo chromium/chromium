@@ -1783,10 +1783,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 
   void AttachPrecedingPseudoElements(AttachContext& context) {
-    AttachPseudoElement(kPseudoIdScrollUpButton, context);
-    AttachPseudoElement(kPseudoIdScrollDownButton, context);
-    AttachPseudoElement(kPseudoIdScrollLeftButton, context);
-    AttachPseudoElement(kPseudoIdScrollRightButton, context);
     AttachPseudoElement(kPseudoIdMarker, context);
     AttachPseudoElement(kPseudoIdCheckMark, context);
     AttachPseudoElement(kPseudoIdBefore, context);
