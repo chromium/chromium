@@ -8672,3 +8672,8 @@ crbug.com/378680890 [ Mac ] fast/peerconnection/RTCPeerConnection-many.html [ Pa
 
 # Gardener 2024-11-28
 crbug.com/380534434 [ Win ] external/wpt/css/css-scroll-snap/snap-fling-in-large-area.html [ Failure Pass Timeout ]
+
+# Gardener 2024-11-29
+crbug.com/381428629 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass Timeout ]
+crbug.com/381428629 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
+crbug.com/381428629 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/elementwise-binary.https.any.html?cpu [ Failure Pass ]
