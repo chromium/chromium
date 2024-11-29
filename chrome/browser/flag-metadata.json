@@ -5832,6 +5832,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "mantis-feature-key",
+    "owners": [ "cros-mantis@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "maylaunchurl-uses-separate-storage-partition",
     "owners": ["bingler@chromium.org"],
     "expiry_milestone": 135

@@ -1427,6 +1427,11 @@ extern const char kLoginDbDeprecationAndroidName[];
 extern const char kLoginDbDeprecationAndroidDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kMantisFeatureKeyName[];
+extern const char kMantisFeatureKeyDescription[];
+#endif  // IS_CHROMEOS
+
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 

@@ -18257,6 +18257,7 @@ from previous Chrome versions.
   <int value="-834234595" label="BorealisProvision:enabled"/>
   <int value="-833449894" label="PrivacySandboxAdsNoticeCCT:disabled"/>
   <int value="-833024559" label="AuxiliarySearchDonation:enabled"/>
+  <int value="-832970990" label="mantis-feature-key:disabled"/>
   <int value="-832806243" label="QuickActionSearchWidgetAndroid:disabled"/>
   <int value="-832780530" label="SecurePaymentConfirmationDebug:enabled"/>
   <int value="-832561975" label="enable-picture-in-picture"/>
@@ -22424,6 +22425,7 @@ from previous Chrome versions.
   <int value="844420869" label="PrintJobManagementApp:enabled"/>
   <int value="844587371"
       label="DesktopPWAsLocalUpdatingThrottlePersistence:disabled"/>
+  <int value="844878845" label="mantis-feature-key:enabled"/>
   <int value="845659238" label="DevicePosture:enabled"/>
   <int value="846887449" label="BluetoothFlossTelephony:disabled"/>
   <int value="846951416" label="CopylessPaste:enabled"/>

@@ -11873,6 +11873,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHappyEyeballsV3Description, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kHappyEyeballsV3)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"mantis-feature-key", flag_descriptions::kMantisFeatureKeyName,
+     flag_descriptions::kMantisFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kMantisFeatureKey, "")},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

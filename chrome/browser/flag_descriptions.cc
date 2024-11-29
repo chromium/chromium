@@ -2503,6 +2503,12 @@ const char kLoginDbDeprecationAndroidDescription[] =
     "the user chooses to do so.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kMantisFeatureKeyName[] = "Secret key for Mantis feature.";
+const char kMantisFeatureKeyDescription[] =
+    "Feature key to use the Mantis feature on ChromeOS.";
+#endif  // IS_CHROMEOS
+
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 const char kMediaRouterCastAllowAllIPsDescription[] =

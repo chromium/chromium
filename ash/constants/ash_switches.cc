@@ -30,6 +30,11 @@ constexpr char kCampbellHashKey[] =
     "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
     "\x03\x18\x32";
 
+// The hash value for the secret key of the mantis feature.
+constexpr char kMantisHashKey[] =
+    "\x7c\x8c\x82\x6f\x3e\xcd\x16\xf0\xfb\xfe\xfc\x9c\x2a\x48\x07\x75\x7e\xea"
+    "\x46\xf2";
+
 // The hash value for the secret key of the sparky feature.
 constexpr char kSparkyHashKey[] =
     "\x3b\xcc\x52\x86\xf0\x4d\xfd\xd2\xcf\xd7\x05\xe0\xcc\x97\x95\xfd\x8a\x78"
@@ -916,6 +921,9 @@ const char kBrowserDataBackwardMigrationForUser[] =
 // Supply secret key for Coral feature.
 const char kCoralFeatureKey[] = "coral-feature-key";
 
+// Supply secret key for Mantis feature.
+const char kMantisFeatureKey[] = "mantis-feature-key";
+
 // Tells Chrome to forcefully trigger backward data migration.
 extern const char kForceBrowserDataBackwardMigration[] =
     "force-browser-data-backward-migration";
@@ -1394,6 +1402,23 @@ bool IsCampbellSecretKeyMatched() {
   if (!key_matched) {
     LOG(ERROR)
         << "Provided campbel secrey key does not match the expected one.";
+  }
+
+  return key_matched;
+}
+
+bool IsMantisSecretKeyMatched() {
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --mantis-feature-key="INSERT KEY HERE"
+  //  --enable-features=MediaAppImageMantis
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kMantisFeatureKey));
+
+  const bool key_matched = (provided_key_hash == kMantisHashKey);
+  if (!key_matched) {
+    LOG(ERROR) << "Provided secret key does not match the expected one.";
   }
 
   return key_matched;
