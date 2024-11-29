@@ -110,8 +110,8 @@ class CanvasResourceDispatcherTest
 
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-        SkImageInfo::MakeN32Premul(kWidth, kHeight),
-        cc::PaintFlags::FilterQuality::kLow,
+        gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
+        SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kLow,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         test_web_shared_image_interface_provider_.get());
   }

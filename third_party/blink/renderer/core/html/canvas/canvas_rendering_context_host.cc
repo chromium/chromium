@@ -220,7 +220,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // provider.
   if (!provider && dispatcher) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
@@ -311,7 +312,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   // software resource in TextureLayer". blink_web_tests would fail.
   if (!provider && dispatcher) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(), kShouldInitialize,
+        Size(), resource_info.colorType(), resource_info.alphaType(),
+        resource_info.refColorSpace(), FilterQuality(), kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {

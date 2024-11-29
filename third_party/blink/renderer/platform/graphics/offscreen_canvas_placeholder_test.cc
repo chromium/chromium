@@ -82,8 +82,8 @@ void OffscreenCanvasPlaceholderTest::SetUp() {
   dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id);
   dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id);
   resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-      SkImageInfo::MakeN32Premul(kWidth, kHeight),
-      cc::PaintFlags::FilterQuality::kLow,
+      gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
+      SkColorSpace::MakeSRGB(), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       test_web_shared_image_interface_provider_.get());
 }
