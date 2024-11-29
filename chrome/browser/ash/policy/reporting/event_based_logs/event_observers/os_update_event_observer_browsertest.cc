@@ -62,8 +62,6 @@ class OsUpdateEventObserverBrowserTest
     login_manager_mixin_.AppendRegularUsers(1);
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kReportOsUpdateStatus, true);
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kSystemLogUploadEnabled, true);
   }
 
   void SetUpOnMainThread() override {
