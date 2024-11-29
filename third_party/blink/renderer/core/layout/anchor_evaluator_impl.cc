@@ -118,32 +118,6 @@ const LogicalAnchorQuery& LogicalAnchorQuery::Empty() {
   return *empty;
 }
 
-const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
-    const LayoutBox& query_box,
-    const AnchorKey& key) const {
-  if (const PhysicalAnchorReference* reference =
-          Base::GetAnchorReference(key)) {
-    for (const PhysicalAnchorReference* result = reference; result;
-         result = result->next) {
-      if (!result->is_out_of_flow ||
-          result->layout_object->IsBeforeInPreOrder(query_box)) {
-        return result;
-      }
-    }
-  }
-  return nullptr;
-}
-
-const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
-    const LayoutBox& query_box,
-    const AnchorKey& key) const {
-  if (const PhysicalAnchorReference* reference =
-          AnchorReference(query_box, key)) {
-    return reference->layout_object.Get();
-  }
-  return nullptr;
-}
-
 namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
@@ -192,6 +166,33 @@ bool InSameAnchorScope(const AnchorKey& key,
 }
 
 }  // namespace
+
+const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
+    const LayoutBox& query_box,
+    const AnchorKey& key) const {
+  if (const PhysicalAnchorReference* reference =
+          Base::GetAnchorReference(key)) {
+    for (const PhysicalAnchorReference* result = reference; result;
+         result = result->next) {
+      if ((!result->is_out_of_flow ||
+           result->layout_object->IsBeforeInPreOrder(query_box)) &&
+          InSameAnchorScope(key, query_box, *result->layout_object)) {
+        return result;
+      }
+    }
+  }
+  return nullptr;
+}
+
+const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
+    const LayoutBox& query_box,
+    const AnchorKey& key) const {
+  if (const PhysicalAnchorReference* reference =
+          AnchorReference(query_box, key)) {
+    return reference->layout_object.Get();
+  }
+  return nullptr;
+}
 
 const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
     const LayoutBox& query_box,
