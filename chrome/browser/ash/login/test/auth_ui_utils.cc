@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "chrome/browser/ash/login/test/composite_waiter.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/webui/ash/login/osauth/factor_setup_success_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -82,6 +84,14 @@ constexpr UIPath kLocalPasswordSetupBackButton = {"local-password-setup",
                                                   "backButton"};
 constexpr UIPath kLocalPasswordSetupNextButton = {"local-password-setup",
                                                   "nextButton"};
+
+constexpr auto* kPinSetupScreen = PinSetupScreenView::kScreenId.name;
+const test::UIPath kPinSetupDoneStep = {kPinSetupScreen, "doneDialog"};
+const test::UIPath kPinSetupBackButton = {kPinSetupScreen, "backButton"};
+const test::UIPath kPinSetupKeyboardInput = {kPinSetupScreen, "pinKeyboard",
+                                             "pinKeyboard", "pinInput"};
+const test::UIPath kPinSetupNextButton = {kPinSetupScreen, "nextButton"};
+const test::UIPath kPinSetupDoneButton = {kPinSetupScreen, "doneButton"};
 
 const UIPath kFirstOnboardingScreen = {"consolidated-consent"};
 
@@ -327,6 +337,47 @@ void LocalPasswordSetupPageActor::GoBack() {
 void LocalPasswordSetupPageActor::Submit() {
   LocalPasswordSetupExpectNextButton();
   LocalPasswordSetupNextAction();
+}
+
+// ----------------------------------------------------------
+
+PinSetupPageActor::PinSetupPageActor()
+    : OobePageActor(PinSetupScreenView::kScreenId, std::nullopt) {}
+PinSetupPageActor::~PinSetupPageActor() = default;
+
+void PinSetupPageActor::EnterPin(const std::string& pin) {
+  EXPECT_TRUE(base::ranges::all_of(pin, ::isdigit));
+  test::OobeJS().TypeIntoPath(pin, kPinSetupKeyboardInput);
+}
+
+void PinSetupPageActor::TapNext() {
+  test::OobeJS().TapOnPath(kPinSetupNextButton);
+}
+
+void PinSetupPageActor::InsertAndConfirmPin(const std::string& pin) {
+  EnterPin(pin);
+  TapNext();
+  // Wait until the back button is visible to ensure that the UI is showing
+  // the 'confirmation' step.
+  WaitUntilBackButtonVisible();
+  EnterPin(pin);
+  TapNext();
+}
+
+void PinSetupPageActor::TapDone() {
+  test::OobeJS().CreateVisibilityWaiter(true, kPinSetupDoneStep)->Wait();
+  test::OobeJS().TapOnPath(kPinSetupDoneButton);
+}
+
+void PinSetupPageActor::WaitUntilBackButtonVisible() {
+  test::OobeJS().CreateVisibilityWaiter(true, kPinSetupBackButton)->Wait();
+}
+
+std::unique_ptr<PinSetupPageActor> AwaitPinSetupUI() {
+  std::unique_ptr<PinSetupPageActor> result =
+      std::make_unique<PinSetupPageActor>();
+  result->UntilShown()->Wait();
+  return result;
 }
 
 // ----------------------------------------------------------
