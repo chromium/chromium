@@ -16,7 +16,10 @@ config("visibility_hack") {
 # Used by libc++ and libc++abi.
 # See //build/config/c++:runtime_library for the config used by users of libc++.
 config("config") {
-  cflags = [ "-fstrict-aliasing" ]
+  cflags = [
+    "-fstrict-aliasing",
+    "-Wundef",
+  ]
   if (is_win) {
     cflags += [
       # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S
