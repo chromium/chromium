@@ -638,6 +638,7 @@ void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {
 
 std::unique_ptr<PrerenderHandle>
 PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
+    WebContents& web_contents,
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
@@ -649,8 +650,7 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
   if (!content::BrowserThread::CurrentlyOn(BrowserThread::UI))
     return nullptr;
 
-  WebContents* web_contents = GetWebContents();
-  return web_contents->StartPrerendering(
+  return web_contents.StartPrerendering(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*no_vary_search_expected=*/std::nullopt, page_transition,
       /*should_warm_up_compositor=*/false,
@@ -658,6 +658,17 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
       PreloadingHoldbackStatus::kUnspecified,
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
+}
+
+std::unique_ptr<PrerenderHandle>
+PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
+    const GURL& prerendering_url,
+    PreloadingTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix,
+    ui::PageTransition page_transition) {
+  return AddEmbedderTriggeredPrerenderAsync(
+      *GetWebContents(), prerendering_url, trigger_type,
+      embedder_histogram_suffix, page_transition);
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(FrameTreeNodeId host_id,
