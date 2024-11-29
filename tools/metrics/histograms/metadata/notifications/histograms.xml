@@ -266,6 +266,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Notifications.Android.NotificationEvent"
+    enum="NotificationEvent" expires_after="2025-10-31">
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records various events on calling Android NotificationManager. One record is
+    emitted both before and after the call. This metric captures whether a call
+    is made, and whether it successfully returns the desired result. Only
+    measured on Android.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
     expires_after="2025-01-26">
   <owner>peter@chromium.org</owner>

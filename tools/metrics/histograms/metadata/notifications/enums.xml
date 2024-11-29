@@ -67,6 +67,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Invalid Argument error"/>
 </enum>
 
+<enum name="NotificationEvent">
+  <int value="0" label="Notification call started without callback"/>
+  <int value="1" label="Notification call succeeded without callback"/>
+  <int value="2" label="Notification call failed without callback"/>
+  <int value="3" label="Notification call started with callback"/>
+  <int value="4" label="Notification call succeeded with callback"/>
+  <int value="5" label="Notification call failed with callback"/>
+</enum>
+
 <enum name="NotificationHelperComServerModuleStatus">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="FACTORY_CREATION_FAILED"/>

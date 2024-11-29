@@ -14,6 +14,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,9 +167,15 @@ import java.util.function.Function;
         AsyncTask.SERIAL_EXECUTOR.execute(
                 () -> {
                     try (TraceEvent te = TraceEvent.scoped(eventName)) {
+                        NotificationProxyUtils.recordNotificationEventHistogram(
+                                NotificationEvent.NO_CALLBACK_START);
                         runnable.run();
+                        NotificationProxyUtils.recordNotificationEventHistogram(
+                                NotificationEvent.NO_CALLBACK_SUCCESS);
                     } catch (Exception e) {
                         Log.e(TAG, "unable to run a runnable.", e);
+                        NotificationProxyUtils.recordNotificationEventHistogram(
+                                NotificationEvent.NO_CALLBACK_FAILED);
                     }
                 });
     }
@@ -180,13 +187,18 @@ import java.util.function.Function;
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     private <T> void runAsyncAndReply(String eventName, Callable<T> callable, Callback callback) {
         new AsyncTask<T>() {
+            boolean mSuccess = true;
+
             @Override
             protected T doInBackground() {
                 try (TraceEvent te = TraceEvent.scoped(eventName)) {
                     try {
+                        NotificationProxyUtils.recordNotificationEventHistogram(
+                                NotificationEvent.HAS_CALLBACK_START);
                         return callable.call();
                     } catch (Exception e) {
                         Log.e(TAG, "Unable to call method.", e);
+                        mSuccess = false;
                         return null;
                     }
                 }
@@ -195,6 +207,10 @@ import java.util.function.Function;
             @Override
             protected void onPostExecute(T result) {
                 callback.onResult(result);
+                NotificationProxyUtils.recordNotificationEventHistogram(
+                        mSuccess
+                                ? NotificationEvent.HAS_CALLBACK_SUCCESS
+                                : NotificationEvent.HAS_CALLBACK_FAILED);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }

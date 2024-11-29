@@ -19,9 +19,11 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 /**
@@ -59,48 +61,46 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
 
     @Override
     public void areNotificationsEnabled(Callback<Boolean> callback) {
-        try (TraceEvent ignored =
-                TraceEvent.scoped("NotificationManagerProxyImpl.areNotificationsEnabled")) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> areNotificationsEnabled());
-        }
+        runCallableAndReply(
+                TraceEvent.scoped("NotificationManagerProxyImpl.areNotificationsEnabled"),
+                () -> areNotificationsEnabled(),
+                callback);
     }
 
     @Override
     public void cancel(int id) {
-        try (TraceEvent e = TraceEvent.scoped("NotificationManagerProxyImpl.cancel(id)")) {
-            mNotificationManager.cancel(id);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.cancel(id)"),
+                () -> mNotificationManager.cancel(id));
     }
 
     @Override
     public void cancel(String tag, int id) {
-        try (TraceEvent e = TraceEvent.scoped("NotificationManagerProxyImpl.cancel(tag, id)")) {
-            mNotificationManager.cancel(tag, id);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.cancel(tag, id)"),
+                () -> mNotificationManager.cancel(tag, id));
     }
 
     @Override
     public void cancelAll() {
-        try (TraceEvent e = TraceEvent.scoped("NotificationManagerProxyImpl.cancelAll")) {
-            mNotificationManager.cancelAll();
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.cancelAll"),
+                () -> mNotificationManager.cancelAll());
     }
 
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannel")) {
-            mNotificationManager.createNotificationChannel(channel);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannel"),
+                () -> mNotificationManager.createNotificationChannel(channel));
     }
 
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannelGroup")) {
-            mNotificationManager.createNotificationChannelGroup(channelGroup);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannelGroup"),
+                () -> mNotificationManager.createNotificationChannelGroup(channelGroup));
     }
 
     @Override
@@ -113,41 +113,39 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
 
     @Override
     public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels")) {
-            List<NotificationChannel> channels = mNotificationManager.getNotificationChannels();
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(channels));
-        }
+        runCallableAndReply(
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels"),
+                () -> mNotificationManager.getNotificationChannels(),
+                callback);
     }
 
     @Override
     public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups")) {
-            List<NotificationChannelGroup> groups =
-                    mNotificationManager.getNotificationChannelGroups();
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(groups));
-        }
+        runCallableAndReply(
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups"),
+                () -> mNotificationManager.getNotificationChannelGroups(),
+                callback);
     }
 
     @Override
     public void deleteNotificationChannel(String id) {
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannel")) {
-            mNotificationManager.deleteNotificationChannel(id);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannel"),
+                () -> mNotificationManager.deleteNotificationChannel(id));
     }
 
     @Override
     public void deleteAllNotificationChannels(Function<String, Boolean> func) {
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.deleteAllNotificationChannels")) {
-            for (NotificationChannel channel : mNotificationManager.getNotificationChannels()) {
-                if (func.apply(channel.getId())) {
-                    mNotificationManager.deleteNotificationChannel(channel.getId());
-                }
-            }
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteAllNotificationChannels"),
+                () -> {
+                    for (NotificationChannel channel :
+                            mNotificationManager.getNotificationChannels()) {
+                        if (func.apply(channel.getId())) {
+                            mNotificationManager.deleteNotificationChannel(channel.getId());
+                        }
+                    }
+                });
     }
 
     @Override
@@ -157,10 +155,9 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             return;
         }
 
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.notify(id, notification)")) {
-            mNotificationManager.notify(id, notification);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.notify(id, notification)"),
+                () -> mNotificationManager.notify(id, notification));
     }
 
     @Override
@@ -170,10 +167,9 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             return;
         }
 
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.notify(tag, id, notification)")) {
-            mNotificationManager.notify(tag, id, notification);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.notify(tag, id, notification)"),
+                () -> mNotificationManager.notify(tag, id, notification));
     }
 
     @Override
@@ -183,14 +179,15 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             return;
         }
 
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.notify(notification)")) {
-            assert notification.getMetadata() != null;
-            mNotificationManager.notify(
-                    notification.getMetadata().tag,
-                    notification.getMetadata().id,
-                    notification.getNotification());
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.notify(notification)"),
+                () -> {
+                    assert notification.getMetadata() != null;
+                    mNotificationManager.notify(
+                            notification.getMetadata().tag,
+                            notification.getMetadata().id,
+                            notification.getNotification());
+                });
     }
 
     @Override
@@ -205,10 +202,9 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public void deleteNotificationChannelGroup(String groupId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannelGroup")) {
-            mNotificationManager.deleteNotificationChannelGroup(groupId);
-        }
+        runRunnable(
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannelGroup"),
+                () -> mNotificationManager.deleteNotificationChannelGroup(groupId));
     }
 
     private static class StatusBarNotificationAdaptor implements StatusBarNotificationProxy {
@@ -237,13 +233,50 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     @Override
     public void getActiveNotifications(
             Callback<List<? extends StatusBarNotificationProxy>> callback) {
-        try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.getActiveNotifications")) {
-            List<StatusBarNotificationAdaptor> notifications = new ArrayList<>();
-            for (var notification : mNotificationManager.getActiveNotifications()) {
-                notifications.add(new StatusBarNotificationAdaptor(notification));
-            }
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(notifications));
+        runCallableAndReply(
+                TraceEvent.scoped("NotificationManagerProxyImpl.getActiveNotifications"),
+                () -> {
+                    List<StatusBarNotificationAdaptor> notifications = new ArrayList<>();
+                    for (var notification : mNotificationManager.getActiveNotifications()) {
+                        notifications.add(new StatusBarNotificationAdaptor(notification));
+                    }
+                    return notifications;
+                },
+                callback);
+    }
+
+    /** Helper method to run an runnable inside a scoped event. */
+    private void runRunnable(TraceEvent scopedEvent, Runnable runnable) {
+        try (scopedEvent) {
+            NotificationProxyUtils.recordNotificationEventHistogram(
+                    NotificationEvent.NO_CALLBACK_START);
+            runnable.run();
+            NotificationProxyUtils.recordNotificationEventHistogram(
+                    NotificationEvent.NO_CALLBACK_SUCCESS);
+        } catch (Exception e) {
+            Log.e(TAG, "unable to run a runnable.", e);
+            NotificationProxyUtils.recordNotificationEventHistogram(
+                    NotificationEvent.NO_CALLBACK_FAILED);
+        }
+    }
+
+    /**
+     * Helper method to run an runnable inside a scoped event in background, and executes callback
+     * on the ui thread.
+     */
+    private <T> void runCallableAndReply(
+            TraceEvent scopedEvent, Callable<T> callable, Callback callback) {
+        try (scopedEvent) {
+            NotificationProxyUtils.recordNotificationEventHistogram(
+                    NotificationEvent.HAS_CALLBACK_START);
+            T result = callable.call();
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(result));
+            NotificationProxyUtils.recordNotificationEventHistogram(
+                    NotificationEvent.HAS_CALLBACK_SUCCESS);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to call method.", e);
+            NotificationProxyUtils.recordNotificationEventHistogram(
+                    NotificationEvent.HAS_CALLBACK_FAILED);
         }
     }
 }
