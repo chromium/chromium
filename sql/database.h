@@ -276,14 +276,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // is called.
   explicit Database(DatabaseOptions options);
 
-  // This constructor is deprecated.
-  //
-  // When transitioning away from this default constructor, consider setting
-  // DatabaseOptions::explicit_locking to true. For historical reasons, this
-  // constructor results in DatabaseOptions::explicit_locking set to false.
-  //
-  // TODO(crbug.com/40148370): Remove this constructor after migrating all
-  //                          uses to the explicit constructor below.
+  // Convenience constructor for callers that use default options.
   Database();
 
   Database(const Database&) = delete;
