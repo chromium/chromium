@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_file_util.h"
 #import "base/test/test_future.h"
+#import "base/uuid.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -31,7 +32,8 @@ using testing::_;
 
 namespace {
 
-const std::string kPersonalProfileName(kIOSChromeInitialProfile);
+// Name of the personal profile.
+constexpr char kPersonalProfileName[] = "4827c83a-573c-4701-94b3-622597db84fe";
 
 FakeSystemIdentity* gmail_identity1 =
     [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"];
@@ -107,9 +109,9 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
  public:
   explicit FakeProfileManagerIOS(PrefService* local_state)
       : profile_attributes_storage_(local_state) {
-    // Load the "Default" profile, and mark it as the personal profile. This is
+    // Create and load a profile, and mark it as the personal profile. This is
     // similar to what the real ProfileManagerIOS does on startup.
-    profiles_map_[kPersonalProfileName] =
+    profiles_map_[std::string(kPersonalProfileName)] =
         std::make_unique<FakeProfileIOS>(kPersonalProfileName);
     profile_attributes_storage_.AddProfile(kPersonalProfileName);
     profile_attributes_storage_.SetPersonalProfileName(kPersonalProfileName);
@@ -144,10 +146,19 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   }
 
   bool CanCreateProfileWithName(std::string_view name) const override {
-    return true;
+    return !HasProfileWithName(name);
   }
 
-  std::string ReserveNewProfileName() override { NOTREACHED(); }
+  std::string ReserveNewProfileName() override {
+    std::string profile_name;
+    do {
+      const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+      profile_name = uuid.AsLowercaseString();
+    } while (!CanCreateProfileWithName(profile_name));
+
+    profile_attributes_storage_.AddProfile(profile_name);
+    return profile_name;
+  }
 
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
@@ -476,8 +487,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
-  std::string managed_profile_name =
-      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
+  std::string managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{std::string(kPersonalProfileName)});
   ASSERT_FALSE(managed_profile_name.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed;
@@ -533,8 +544,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
-  std::string managed_profile_name1 =
-      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
+  std::string managed_profile_name1 = FindCreatedProfileName(
+      /*known_profile_names=*/{std::string(kPersonalProfileName)});
   ASSERT_FALSE(managed_profile_name1.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed1;
@@ -550,7 +561,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 
   // Find the name of the new profile.
   std::string managed_profile_name2 = FindCreatedProfileName(
-      /*known_profile_names=*/{kPersonalProfileName, managed_profile_name1});
+      /*known_profile_names=*/{std::string(kPersonalProfileName),
+                               managed_profile_name1});
   ASSERT_FALSE(managed_profile_name2.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed2;
@@ -601,8 +613,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
-  std::string managed_profile_name =
-      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
+  std::string managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{std::string(kPersonalProfileName)});
   ASSERT_FALSE(managed_profile_name.empty());
 
   testing::StrictMock<MockObserver> mock_observer_managed;
@@ -709,8 +721,8 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 2u);
 
   // Find the name of the new profile.
-  std::string managed_profile_name =
-      FindCreatedProfileName(/*known_profile_names=*/{kPersonalProfileName});
+  std::string managed_profile_name = FindCreatedProfileName(
+      /*known_profile_names=*/{std::string(kPersonalProfileName)});
   ASSERT_FALSE(managed_profile_name.empty());
 
   // Verify the assignment of identities to profiles.

@@ -8,7 +8,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/uuid.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -19,6 +18,10 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
 namespace {
+
+// Name of the personal profile for tests.
+constexpr char kPersonalProfileNameForTesting[] =
+    "bf09f5cf-94cc-4336-9cc2-26a5e1b8c358";
 
 using ProfileNameToGaiaIds =
     std::map<std::string, std::set<std::string, std::less<>>, std::less<>>;
@@ -31,9 +34,7 @@ ProfileNameToGaiaIds GetMappingFromProfileAttributes(
 
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
     system_identity_manager->IterateOverIdentities(base::BindRepeating(
-        [](std::map<std::string, std::set<std::string, std::less<>>,
-                    std::less<>>& result,
-           id<SystemIdentity> identity) {
+        [](ProfileNameToGaiaIds& result, id<SystemIdentity> identity) {
           // Note: In this case (with the feature flag disabled), the profile
           // name in the mapping isn't used - every identity is considered
           // assigned to every profile.
@@ -162,9 +163,6 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // ProfileAttributesStorageIOS.
   std::string GetPersonalProfileName();
 
-  // Creates a random, not-yet-used name for a new profile.
-  std::string FindUnusedProfileName() const;
-
   // Callback for SystemIdentityManager::IterateOverIdentities(). Checks the
   // mapping of `identity` to a profile, and attaches (or re-attaches) it as
   // necessary. Note that the attaching may happen asynchronously, if the hosted
@@ -288,9 +286,10 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
   }
 
   // Register a new personal profile.
-  const std::string new_personal_profile_name = FindUnusedProfileName();
-  storage->AddProfile(new_personal_profile_name);
+  const std::string new_personal_profile_name =
+      profile_manager_->ReserveNewProfileName();
   storage->SetPersonalProfileName(new_personal_profile_name);
+
   // ..and re-interpret the previous personal profile as a managed profile.
   const std::string& new_managed_profile_name = previous_personal_profile_name;
 
@@ -390,19 +389,9 @@ std::string AccountProfileMapper::Assigner::GetPersonalProfileName() {
   ProfileAttributesStorageIOS* attributes = GetProfileAttributesStorage();
   if (!attributes) {
     CHECK_IS_TEST();
-    return kIOSChromeInitialProfile;
+    return std::string(kPersonalProfileNameForTesting);
   }
   return attributes->GetPersonalProfileName();
-}
-
-std::string AccountProfileMapper::Assigner::FindUnusedProfileName() const {
-  CHECK(profile_manager_);
-  std::string profile_name;
-  do {
-    profile_name = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  } while (profile_manager_->HasProfileWithName(profile_name) ||
-           !profile_manager_->CanCreateProfileWithName(profile_name));
-  return profile_name;
 }
 
 SystemIdentityManager::IteratorResult
@@ -474,8 +463,8 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
   std::string new_profile_name;
   if (is_managed_account && profile_manager_) {
     // Managed account, assign to a new dedicated profile.
-    new_profile_name = FindUnusedProfileName();
-    GetProfileAttributesStorage()->AddProfile(new_profile_name);
+    new_profile_name = profile_manager_->ReserveNewProfileName();
+    DCHECK(!new_profile_name.empty());
   } else {
     // Consumer account, assign to the personal profile.
     new_profile_name = GetPersonalProfileName();
