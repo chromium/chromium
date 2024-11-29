@@ -5065,7 +5065,6 @@ class SharedStorageChromeNoParamsBrowserTest
         privacy_sandbox::kEnforcePrivacySandboxAttestations,
         GetEnforcementAndEnrollmentStatus() !=
             EnforcementAndEnrollmentStatus::kAttestationsUnenforced);
-    m125_feature_.InitAndEnableFeature(blink::features::kSharedStorageAPIM125);
   }
   ~SharedStorageChromeNoParamsBrowserTest() override = default;
 
@@ -5081,8 +5080,6 @@ class SharedStorageChromeNoParamsBrowserTest
   base::test::ScopedFeatureList fenced_frame_api_change_feature_;
   base::test::ScopedFeatureList fenced_frame_feature_;
   base::test::ScopedFeatureList attestation_feature_;
-  base::test::ScopedFeatureList m118_feature_;
-  base::test::ScopedFeatureList m125_feature_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -5129,8 +5126,7 @@ class SharedStorageExtensionBrowserTest
          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting,
          blink::features::kFencedFrames,
          blink::features::kFencedFramesAPIChanges,
-         privacy_sandbox::kEnforcePrivacySandboxAttestations,
-         blink::features::kSharedStorageAPIM125},
+         privacy_sandbox::kEnforcePrivacySandboxAttestations},
         /*disabled_features=*/{});
   }
 

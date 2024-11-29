@@ -482,9 +482,6 @@ class SharedStorageWorkletTest : public PageTestBase {
   }
 
  protected:
-  ScopedSharedStorageAPIM125ForTest shared_storage_m125_runtime_enabled_feature{
-      /*enabled=*/true};
-
   ScopedInterestGroupsInSharedStorageWorkletForTest
       interest_groups_in_shared_storage_worklet_runtime_enabled_feature{
           /*enabled=*/true};

@@ -72,7 +72,6 @@
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 
   [
-    RuntimeEnabled=SharedStorageAPIM125,
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,

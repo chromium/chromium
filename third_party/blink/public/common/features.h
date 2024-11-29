@@ -1609,11 +1609,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageWorkletSharedBackingThreadImplementation);
 
-// Additional Shared Storage API features shipped in M125.
-// TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM125);
-
 // For the Shared Storage API, allow custom data origins in `createWorklet`.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageCreateWorkletCustomDataOrigin);

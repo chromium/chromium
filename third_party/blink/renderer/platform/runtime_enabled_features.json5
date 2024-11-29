@@ -3898,11 +3898,6 @@
       status: "stable",
     },
     {
-      name: "SharedStorageAPIM125",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "SharedStorageWebLocks",
     },
     {

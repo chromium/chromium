@@ -430,12 +430,12 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="AddModuleNonWebVisibleMulipleWorkletsDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     browser received message from renderer trying to create multiple worklets
-    when &quot;SharedStorageAPIM125&quot; feature disabled.
+    when &quot;SharedStorageAPI&quot; feature disabled.
   </int>
   <int value="8" label="AddModuleNonWebVisibleCrossOriginWorkletsDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:
     browser received message from renderer trying to cross-origin worklet when
-    &quot;SharedStorageAPIM125&quot; feature disabled.
+    &quot;SharedStorageAPI&quot; feature disabled.
   </int>
   <int value="9" label="AddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
     Error in `addModule()` or `createWorklet()` not visible to the document:

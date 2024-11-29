@@ -893,8 +893,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
               {"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)},
               {"SharedStorageStalenessThreshold",
                TimeDeltaToString(base::Days(kStalenessThresholdDays))},
-          }},
-         {blink::features::kSharedStorageAPIM125, {}}},
+          }}},
         /*disabled_features=*/{});
 
     fenced_frame_feature_.InitAndEnableFeature(blink::features::kFencedFrames);

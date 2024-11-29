@@ -121,36 +121,10 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
     CreateWorkletCallback callback) {
-  // A document can only create multiple worklets with `kSharedStorageAPIM125`
-  // enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM125)) {
-    if (create_worklet_called_) {
-      // This could indicate a compromised renderer, so let's terminate it.
-      receiver_.ReportBadMessage("Attempted to create multiple worklets.");
-      LogSharedStorageWorkletError(
-          blink::SharedStorageWorkletErrorType::
-              kAddModuleNonWebVisibleMulipleWorkletsDisabled);
-      return;
-    }
-  }
-
   create_worklet_called_ = true;
   bool is_same_origin =
       render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
           data_origin);
-
-  // A document can only create cross-origin worklets with
-  // `kSharedStorageAPIM125` enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM125) &&
-      !is_same_origin) {
-    // This could indicate a compromised renderer, so let's terminate it.
-    receiver_.ReportBadMessage(
-        "Attempted to load a cross-origin module script.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::
-            kAddModuleNonWebVisibleCrossOriginWorkletsDisabled);
-    return;
-  }
 
   // `CreateWorklet()` cannot differentiate between calls from addModule() and
   // createWorklet(). Hence, we skip the mojom validation for opaque origin
