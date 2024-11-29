@@ -258,15 +258,6 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
                               GetUserVisibleTypes(), app_locale);
 }
 
-base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
-AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
-    const AutofillProfile& first_profile,
-    const AutofillProfile& second_profile,
-    const std::string& app_locale) {
-  return GetProfileDifferenceMap(first_profile, second_profile,
-                                 GetUserVisibleTypes(), app_locale);
-}
-
 bool AutofillProfileComparator::Compare(std::u16string_view text1,
                                         std::u16string_view text2,
                                         WhitespaceSpec whitespace_spec) const {

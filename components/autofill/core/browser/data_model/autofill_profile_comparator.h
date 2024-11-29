@@ -107,14 +107,6 @@ class AutofillProfileComparator {
                                       const AutofillProfile& second_profile,
                                       const std::string& app_locale);
 
-  // Same as `GetSettingsVisibleProfileDifference()` but returns a map that maps
-  // the type to a pair of strings that contain the corresponding value from the
-  // first and second profile.
-  static base::flat_map<FieldType, std::pair<std::u16string, std::u16string>>
-  GetSettingsVisibleProfileDifferenceMap(const AutofillProfile& first_profile,
-                                         const AutofillProfile& second_profile,
-                                         const std::string& app_locale);
-
   // Returns a copy of |text| with uppercase converted to lowercase and
   // diacritics removed.
   //
