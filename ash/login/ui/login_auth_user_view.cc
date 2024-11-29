@@ -90,7 +90,6 @@ namespace ash {
 namespace {
 
 constexpr const char kLoginAuthUserViewClassName[] = "LoginAuthUserView";
-constexpr int kMinimiumLoginAuthUserViewHeightDp = 346;
 
 // Distance between the user view (ie, the icon and name) and other elements
 const int kDistanceBetweenUserViewAndPasswordDp = 24;
@@ -1100,7 +1099,7 @@ gfx::Size LoginAuthUserView::CalculatePreferredSize(
   gfx::Size size = views::View::CalculatePreferredSize(available_size);
   // Make sure we are at least as big as the user view. If we do not do this
   // the view will be below minimum size when no auth methods are displayed.
-  size.set_height(std::max(kMinimiumLoginAuthUserViewHeightDp, size.height()));
+  size.set_height(std::max(login::kMinimiumBigUserViewHeightDp, size.height()));
   return size;
 }
 

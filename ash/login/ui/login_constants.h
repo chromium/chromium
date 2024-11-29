@@ -16,6 +16,11 @@ constexpr int kNonBlurredWallpaperBackgroundRadiusDp = 4;
 // show/hide animation.
 constexpr int kChangeUserAnimationDurationMs = 300;
 
+// Minimum height of the Big user views. This should be a lower bound for
+// LoginPublicAccountUserView and LoginAuthUserView, and their values should be
+// the same.
+constexpr int kMinimiumBigUserViewHeightDp = 346;
+
 }  // namespace login
 }  // namespace ash
 
