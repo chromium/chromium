@@ -4872,8 +4872,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                         last_sent_underlying_content_bytes.end()));
 }
 
+// TODO(crbug.com/379747618): flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       InnerTextBytesInFollowUpRequest) {
+                       DISABLED_InnerTextBytesInFollowUpRequest) {
   base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
