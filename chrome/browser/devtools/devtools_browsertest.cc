@@ -2209,7 +2209,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSize) {
 }
 
 // Tests raw headers text.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
+// TODO(crbug.com/40218872): Enable this flaky test. This is flaky on Linux
+// debug build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_TestNetworkSyncSize DISABLED_TestNetworkSyncSize
+#else
+#define MAYBE_TestNetworkSyncSize TestNetworkSyncSize
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSyncSize) {
   RunTest("testNetworkSyncSize", kChunkedTestPage);
 }
 
