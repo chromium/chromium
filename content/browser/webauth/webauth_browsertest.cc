@@ -1844,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Get) {
                                    0x64, 0x43, 0x72, 0x65, 0x64, 0x65,
                                    0x6E, 0x74, 0x69, 0x61, 0x6C};
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      device::fido_parsing_utils::Materialize(base::make_span(kCredentialId)),
+      device::fido_parsing_utils::Materialize(base::span(kCredentialId)),
       "foo.com"));
 
   GetParameters parameters;

@@ -11033,13 +11033,11 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
 
   abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-      mojo_base::BigBuffer(
-          base::as_bytes(base::make_span(encrypted_response))));
+      mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
   abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-      mojo_base::BigBuffer(
-          base::as_bytes(base::make_span(encrypted_response))));
+      mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAuctionAdResponsePromise updating non-promise",
@@ -26285,8 +26283,7 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
 
     abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
         blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-        mojo_base::BigBuffer(
-            base::as_bytes(base::make_span(encrypted_response))));
+        mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
     task_environment()->RunUntilIdle();
     EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));
@@ -26436,8 +26433,7 @@ TEST_F(AuctionRunnerTest, MatchedSelectedReportingIdInServerResponse) {
 
     abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
         blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-        mojo_base::BigBuffer(
-            base::as_bytes(base::make_span(encrypted_response))));
+        mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
     auction_run_loop_->Run();
     EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));
@@ -26658,8 +26654,7 @@ TEST_F(AuctionRunnerTest, MatchedReportingIdsInServerResponse) {
 
     abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
         blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
-        mojo_base::BigBuffer(
-            base::as_bytes(base::make_span(encrypted_response))));
+        mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
 
     auction_run_loop_->Run();
     EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));

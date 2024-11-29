@@ -53,8 +53,7 @@ void CreateAndAddHistogramsHTMLSource(BrowserContext* browser_context) {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
-  source->AddResourcePaths(
-      base::make_span(kHistogramsResources, kHistogramsResourcesSize));
+  source->AddResourcePaths(kHistogramsResources);
   source->SetDefaultResource(IDR_HISTOGRAMS_HISTOGRAMS_INTERNALS_HTML);
 }
 

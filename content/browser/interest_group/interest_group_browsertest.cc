@@ -26267,8 +26267,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
 
   // Check the request body, which is the real time report in cbor.
   std::string body = network::GetUploadData(*request);
-  const auto maybe_map =
-      cbor::Reader::Read(base::as_bytes(base::make_span(body)));
+  const auto maybe_map = cbor::Reader::Read(base::as_byte_span(body));
   ASSERT_TRUE(maybe_map && maybe_map->is_map());
   const auto& map = maybe_map->GetMap();
 

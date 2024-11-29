@@ -3403,7 +3403,7 @@ bool InterestGroupAuction::HandleServerResponseImpl(
   const std::string& plaintext_response = maybe_response->GetPlaintextData();
   std::optional<base::span<const uint8_t>> compressed_response =
       ExtractCompressedBiddingAndAuctionResponse(
-          base::as_bytes(base::make_span(plaintext_response)));
+          base::as_byte_span(plaintext_response));
   if (!compressed_response) {
     saved_response_.emplace();
     base::UmaHistogramEnumeration(

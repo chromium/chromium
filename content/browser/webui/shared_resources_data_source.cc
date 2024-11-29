@@ -83,14 +83,11 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   // included in the either the ts_library() target for the UI using them (if
   // they are only used by one UI) or in //ui/webui/resources/mojo:build_ts
   // (if used by multiple UIs).
-  source->AddResourcePaths(
-      base::make_span(kWebuiResources, kWebuiResourcesSize));
+  source->AddResourcePaths(kWebuiResources);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddResourcePaths(
-      base::make_span(kAshWebuiCommonResources, kAshWebuiCommonResourcesSize));
+  source->AddResourcePaths(kAshWebuiCommonResources);
   // Deprecated -lite style mojo bindings.
-  source->AddResourcePaths(
-      base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
+  source->AddResourcePaths(kMojoBindingsResources);
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
   AddResources(GetChromeosMojoResourceIds(), kChromeosResources,

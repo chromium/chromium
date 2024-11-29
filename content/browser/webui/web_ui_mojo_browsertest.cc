@@ -160,9 +160,6 @@ class TestWebUIController : public WebUIController {
                                BindingsPolicySet bindings = BindingsPolicySet(
                                    {BindingsPolicyValue::kMojoWebUi}))
       : WebUIController(web_ui) {
-    const base::span<const webui::ResourcePath> kMojoWebUiResources =
-        base::make_span(kWebUiMojoTestResources);
-
     web_ui->SetBindings(bindings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {
@@ -172,7 +169,7 @@ class TestWebUIController : public WebUIController {
           network::mojom::CSPDirectiveName::ScriptSrc,
           "script-src chrome://resources 'self' 'unsafe-eval';");
       data_source->DisableTrustedTypesCSP();
-      data_source->AddResourcePaths(kMojoWebUiResources);
+      data_source->AddResourcePaths(kWebUiMojoTestResources);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_HTML);
     }
 #endif
@@ -183,7 +180,7 @@ class TestWebUIController : public WebUIController {
           network::mojom::CSPDirectiveName::ScriptSrc,
           "script-src chrome://resources 'self' 'unsafe-eval';");
       data_source->DisableTrustedTypesCSP();
-      data_source->AddResourcePaths(kMojoWebUiResources);
+      data_source->AddResourcePaths(kWebUiMojoTestResources);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_TS_HTML);
     }
     {

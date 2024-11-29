@@ -869,7 +869,7 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
   }
 
   mojo_base::BigBuffer big_buffer(
-      base::as_bytes(base::make_span(data->data(), length)));
+      base::as_bytes(base::span(data->data(), length)));
   writer_->WriteData(
       std::move(big_buffer),
       base::BindOnce(&AsyncOnlyCompletionCallbackAdaptor::WrappedCallback,

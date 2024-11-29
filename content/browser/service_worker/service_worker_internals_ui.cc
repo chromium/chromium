@@ -372,8 +372,7 @@ ServiceWorkerInternalsUI::ServiceWorkerInternalsUI(WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kServiceWorkerResources, kServiceWorkerResourcesSize));
+  source->AddResourcePaths(kServiceWorkerResources);
   source->SetDefaultResource(IDR_SERVICE_WORKER_SERVICEWORKER_INTERNALS_HTML);
 
   source->DisableDenyXFrameOptions();

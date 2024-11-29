@@ -226,8 +226,7 @@ std::string CreateRequestBodyFromCbor(cbor::Value cbor_value) {
   size_t request_body_size = size_with_padding - kOhttpHeaderSize;
   request_body.resize(request_body_size, 0x00);
 
-  base::SpanWriter writer(
-      base::as_writable_bytes(base::make_span(request_body)));
+  base::SpanWriter writer(base::as_writable_byte_span(request_body));
 
   // Add framing header. First byte includes version and compression format.
   // Always set first byte to 0x00 because request body is uncompressed.
@@ -236,7 +235,7 @@ std::string CreateRequestBodyFromCbor(cbor::Value cbor_value) {
       base::checked_cast<uint32_t>(maybe_cbor_bytes->size()));
 
   // Add CBOR string.
-  writer.Write(base::as_bytes(base::make_span(*maybe_cbor_bytes)));
+  writer.Write(base::as_byte_span(*maybe_cbor_bytes));
 
   DCHECK_EQ(writer.num_written(), size_before_padding - kOhttpHeaderSize);
 

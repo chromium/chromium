@@ -1781,9 +1781,9 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_RemoteStorageDisconnection) {
   const std::string kMetadata("Test metadata");
 
   net::TestCompletionCallback completion;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion.callback());
 
   helper_->SimulateStorageRestartForTesting();
 
@@ -1799,9 +1799,9 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_StorageDisabled) {
   loop.Run();
 
   net::TestCompletionCallback completion;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion.callback());
 
   ASSERT_EQ(completion.WaitForResult(), net::ERR_FAILED);
 }
@@ -1811,13 +1811,13 @@ TEST_P(ServiceWorkerVersionTest, WriteMetadata_MultipleWrites) {
   const std::string kMetadata("Test metadata");
 
   net::TestCompletionCallback completion1;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion1.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion1.callback());
   net::TestCompletionCallback completion2;
-  version_->script_cache_map()->WriteMetadata(
-      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
-      completion2.callback());
+  version_->script_cache_map()->WriteMetadata(version_->script_url(),
+                                              base::as_byte_span(kMetadata),
+                                              completion2.callback());
 
   ASSERT_EQ(completion1.WaitForResult(), static_cast<int>(kMetadata.size()));
   ASSERT_EQ(completion2.WaitForResult(), static_cast<int>(kMetadata.size()));

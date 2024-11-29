@@ -217,7 +217,7 @@ TEST_P(SignedExchangeSignatureVerifierTest, VerifyECDSAP256) {
   envelope.AddResponseHeader("content-encoding", "mi-sha256-03");
   envelope.AddResponseHeader(
       "digest", "mi-sha256-03=wmp4dRMYgxP3tSMCwV/I0CWOCiHZpAihKZk19bsN9RI=");
-  envelope.set_cbor_header(base::make_span(kCborHeadersECDSAP256));
+  envelope.set_cbor_header(base::span(kCborHeadersECDSAP256));
 
   envelope.SetSignatureForTesting((*signature)[0]);
 

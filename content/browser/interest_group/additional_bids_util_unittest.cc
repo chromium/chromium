@@ -70,14 +70,12 @@ namespace {
 //   ED25519_keypair(public_key, private_key);
 //   std::cout << "public_key:\n";
 //   std::cout << SerializeKey<32>(public_key) << "\n";
-//   std::cout << base::Base64Encode(
-//       base::make_span(public_key, sizeof(public_key)));
+//   std::cout << base::Base64Encode(base::span(public_key));
 //   std::cout << "\n\n";
 //
 //   std::cout << "private_key:\n";
 //   std::cout << SerializeKey<64>(private_key) << "\n";
-//   std::cout << base::Base64Encode(
-//       base::make_span(private_key, sizeof(private_key)));
+//   std::cout << base::Base64Encode(base::span(private_key));
 //   std::cout << "\n\n";
 // }
 
