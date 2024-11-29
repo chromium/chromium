@@ -501,7 +501,22 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 }
 
 - (void)animateBottomSheetExitWithCompletion:(void (^)())completion {
-  [_resultsPagePresenter dismissResultsPageAnimated:YES completion:completion];
+  if (_lensOverlayConsentPresenter.isConsentVisible) {
+    [_lensOverlayConsentPresenter
+        dismissConsentViewControllerAnimated:YES
+                                  completion:completion];
+    return;
+  }
+
+  if (_resultsPagePresenter.isResultPageVisible) {
+    [_resultsPagePresenter dismissResultsPageAnimated:YES
+                                           completion:completion];
+    return;
+  }
+
+  if (completion) {
+    completion();
+  }
 }
 
 - (void)animateSelectionUIExitWithCompletion:(void (^)())completion {
@@ -659,11 +674,12 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   [_metricsRecorder recordPermissionsAccepted];
 
   __weak __typeof(self) weakSelf = self;
-  [_containerViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf handleConsentViewControllerDismissed];
-                         }];
+  [_lensOverlayConsentPresenter
+      dismissConsentViewControllerAnimated:YES
+                                completion:^{
+                                  [weakSelf
+                                      handleConsentViewControllerDismissed];
+                                }];
 }
 
 - (void)didTapSecondaryActionButton {

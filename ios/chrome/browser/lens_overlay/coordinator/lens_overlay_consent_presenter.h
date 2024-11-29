@@ -23,6 +23,9 @@
 /// consent dialog.
 @interface LensOverlayConsentPresenter : NSObject
 
+// Whether the consent dialog is currently presented.
+@property(nonatomic, assign, readonly) BOOL isConsentVisible;
+
 - (instancetype)initWithPresentingViewController:(UIViewController*)presentingVC
                   presentedConsentViewController:
                       (LensOverlayConsentViewController*)
@@ -33,6 +36,10 @@
 
 // Presents the consent VC.
 - (void)showConsentViewController;
+
+// Dismisses the consent dialog.
+- (void)dismissConsentViewControllerAnimated:(BOOL)animated
+                                  completion:(void (^)(void))completion;
 
 @end
 

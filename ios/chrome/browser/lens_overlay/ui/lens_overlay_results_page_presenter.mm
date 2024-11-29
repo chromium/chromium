@@ -63,6 +63,11 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   return self;
 }
 
+- (BOOL)isResultPageVisible {
+  return _baseViewController.presentedViewController != nil &&
+         _baseViewController.presentedViewController == _resultViewController;
+}
+
 - (SheetDimensionState)sheetDimension {
   if (!_detentsManager) {
     return SheetDimensionStateHidden;

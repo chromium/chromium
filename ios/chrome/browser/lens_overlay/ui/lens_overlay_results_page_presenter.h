@@ -18,6 +18,9 @@
 @interface LensOverlayResultsPagePresenter
     : NSObject <LensOverlayBottomSheetPresentationDelegate>
 
+// Whether the results page is currently presented.
+@property(nonatomic, assign, readonly) BOOL isResultPageVisible;
+
 // Current sheet dimension.
 @property(nonatomic, readonly) SheetDimensionState sheetDimension;
 
