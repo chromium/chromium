@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 namespace autofill {
 
@@ -62,12 +61,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       content::WebContents* contents,
       std::unique_ptr<AddNewAddressBubbleController> controller,
       bool is_user_gesture) override;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  AutofillBubbleBase* ShowAddressSignInPromo(
-      content::WebContents* web_contents,
-      base::OnceCallback<void(content::WebContents*)> move_address_callback)
-      override;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,
       FilledCardInformationBubbleController* controller,
@@ -98,7 +91,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> iban_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
-  std::unique_ptr<TestAutofillBubble> address_sign_in_promo_bubble_view_;
   std::unique_ptr<TestAutofillBubble>
       save_autofill_prediction_improvements_bubble_view_;
   std::unique_ptr<TestAutofillBubble> add_new_address_profile_bubble_view_;

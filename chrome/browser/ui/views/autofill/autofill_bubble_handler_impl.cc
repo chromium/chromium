@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
-#include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
@@ -191,29 +190,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
       toolbar_button_provider_, web_contents, std::move(controller),
       is_user_gesture);
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> move_address_callback) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kAutofillAddress);
-  AddressSignInPromoView* bubble = new AddressSignInPromoView(
-      anchor_view, web_contents, std::move(move_address_callback));
-  DCHECK(bubble);
-  if (!views::Button::AsButton(anchor_view)) {
-    PageActionIconView* icon_view =
-        toolbar_button_provider_->GetPageActionIconView(
-            PageActionIconType::kAutofillAddress);
-    DCHECK(icon_view);
-    bubble->SetHighlightedButton(icon_view);
-  }
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
-  return bubble;
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 AutofillBubbleBase*
 AutofillBubbleHandlerImpl::ShowSaveAutofillPredictionImprovementsBubble(

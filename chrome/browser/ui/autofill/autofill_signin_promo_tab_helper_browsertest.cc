@@ -3,32 +3,88 @@
 // // found in the LICENSE file.
 #include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
 
-#include "base/test/mock_callback.h"
+#include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 
-class AutofillSigninPromoTabHelperTest : public InProcessBrowserTest {
+namespace {
+
+class AutofillSigninPromoTabHelperTest : public PasswordManagerBrowserTestBase {
  public:
-  signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser()->profile());
+  AutofillSigninPromoTabHelperTest() = default;
+
+  AutofillSigninPromoTabHelperTest(const AutofillSigninPromoTabHelperTest&) =
+      delete;
+  AutofillSigninPromoTabHelperTest& operator=(
+      const AutofillSigninPromoTabHelperTest&) = delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&AutofillSigninPromoTabHelperTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    // Create password stores.
+    local_password_store_ = CreateAndUseTestPasswordStore(context);
+    account_password_store_ = CreateAndUseTestAccountPasswordStore(context);
+  }
+
+  password_manager::PasswordForm MakePasswordForm(
+      const std::string& signon_realm) {
+    password_manager::PasswordForm form;
+    form.url = GURL("http://www.origin.com");
+    form.username_element = u"username_element";
+    form.username_value = u"username_value";
+    form.password_element = u"password_element";
+    form.password_value = u"password_value";
+    form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+    form.signon_realm = signon_realm;
+    return form;
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kImprovedSigninUIOnDesktop};
-  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  const std::string kSignonRealm = "https://example.test";
+  base::CallbackListSubscription create_services_subscription_;
+  scoped_refptr<password_manager::TestPasswordStore> local_password_store_;
+  scoped_refptr<password_manager::TestPasswordStore> account_password_store_;
 };
 
+MATCHER_P(FormMatches, form, "") {
+  return form.signon_realm == arg.signon_realm && form.url == arg.url &&
+         form.action == arg.action &&
+         form.username_element == arg.username_element &&
+         form.username_value == arg.username_value &&
+         form.password_element == arg.password_element &&
+         form.password_value == arg.password_value;
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
-                       CallPasswordMoveCallbackAfterSignInFromTab) {
+                       MoveSavedPasswordToAccountStoreNoExistingAccount) {
+  // Create password form.
+  password_manager::PasswordForm form = MakePasswordForm(kSignonRealm);
+
+  // Save password to local store.
+  auto profile_store_waiter =
+      password_manager::PasswordStoreWaiter(local_password_store_.get());
+  local_password_store_->AddLogin(form);
+  profile_store_waiter.WaitOrReturn();
+
+  EXPECT_EQ(1u, local_password_store_->stored_passwords().size());
+  EXPECT_EQ(0u, account_password_store_->stored_passwords().size());
+
   // Get the sign in tab with the correct access point.
   signin_ui_util::ShowSigninPromptFromPromo(
       browser()->profile(),
@@ -37,59 +93,47 @@ IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
       signin_ui_util::GetSignInTabWithAccessPoint(
           browser(), signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 
-  // Initialize the data move and expect a callback call.
-  base::MockOnceCallback<void(content::WebContents*)> move_callback;
-  EXPECT_CALL(move_callback, Run(sign_in_tab)).Times(1);
+  // The identity manager is observed by AutofillSigninPromoTabHelper, which
+  // will move the password once the primary account has changed.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
 
+  // Pass the password form to the AutofillSigninPromoTabHelper and start
+  // observing the identity manager.
   autofill::AutofillSigninPromoTabHelper* user_data =
       autofill::AutofillSigninPromoTabHelper::GetForWebContents(*sign_in_tab);
   user_data->InitializeDataMoveAfterSignIn(
-      /*move_callback=*/move_callback.Get(),
+      /*move_callback=*/base::BindOnce(
+          [](const password_manager::PasswordForm& form,
+             password_manager::metrics_util::MoveToAccountStoreTrigger trigger,
+             content::WebContents* web_contents) {
+            PasswordsModelDelegateFromWebContents(web_contents)
+                ->MovePendingPasswordToAccountStoreUsingHelper(form, trigger);
+          },
+          form,
+          password_manager::metrics_util::MoveToAccountStoreTrigger::
+              kUserOptedInAfterSavingLocally),
       /*access_point=*/signin_metrics::AccessPoint::
           ACCESS_POINT_PASSWORD_BUBBLE);
 
-  // Sign in, which will execute the callback.
+  auto account_store_waiter =
+      password_manager::PasswordStoreWaiter(account_password_store_.get());
   signin::MakeAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      identity_manager,
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithAccessPoint(
               signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE)
           .Build("test@gmail.com"));
+  account_store_waiter.WaitOrReturn();
+
+  // Check that password was moved to account store.
+  EXPECT_EQ(0u, local_password_store_->stored_passwords().size());
+  EXPECT_EQ(1u, account_password_store_->stored_passwords().size());
+
+  auto found = account_password_store_->stored_passwords().find(kSignonRealm);
+  ASSERT_NE(account_password_store_->stored_passwords().end(), found);
+  EXPECT_THAT(found->second, testing::ElementsAre(FormMatches(form)));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillSigninPromoTabHelperTest,
-                       CallAddressMoveCallbackAfterReauthenticationFromTab) {
-  // Initiate sign in pending state.
-  AccountInfo info = signin::MakePrimaryAccountAvailable(
-      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
-  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
-
-  // Get the reauth tab with the correct access point.
-  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-      browser()->profile(),
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
-  content::WebContents* reauth_tab =
-      signin_ui_util::GetSignInTabWithAccessPoint(
-          browser(), signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE);
-
-  // Initialize the data move and expect a callback call.
-  base::MockOnceCallback<void(content::WebContents*)> move_callback;
-  EXPECT_CALL(move_callback, Run(reauth_tab)).Times(1);
-
-  autofill::AutofillSigninPromoTabHelper* user_data =
-      autofill::AutofillSigninPromoTabHelper::GetForWebContents(*reauth_tab);
-  user_data->InitializeDataMoveAfterSignIn(
-      /*move_callback=*/move_callback.Get(),
-      /*access_point=*/signin_metrics::AccessPoint::
-          ACCESS_POINT_ADDRESS_BUBBLE);
-
-  // Set a new refresh token for the primary account, which verifies the
-  // user's identity and signs them back in. The callback will be executed.
-  identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
-      info.gaia, info.email, "dummy_refresh_token",
-      /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE,
-      signin_metrics::SourceForRefreshTokenOperation::
-          kDiceResponseHandler_Signin);
-}
+}  // namespace
