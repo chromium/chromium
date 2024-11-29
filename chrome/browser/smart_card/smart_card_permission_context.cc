@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
@@ -371,14 +372,30 @@ void SmartCardPermissionContext::OnPermissionRequestDecided(
   switch (result) {
     case SmartCardPermissionRequest::Result::kAllowOnce:
       GrantEphemeralReaderPermission(origin, reader_name);
+      consecutive_denials_.erase(origin);
       std::move(callback).Run(true);
       break;
     case SmartCardPermissionRequest::Result::kAllowAlways:
       GrantPersistentReaderPermission(origin, reader_name);
+      consecutive_denials_.erase(origin);
       std::move(callback).Run(true);
       break;
     case SmartCardPermissionRequest::Result::kDontAllow:
       std::move(callback).Run(false);
+      OnPermissionDenied(origin);
       break;
+  }
+}
+
+void SmartCardPermissionContext::OnPermissionDenied(const url::Origin& origin) {
+  auto consecutive_denials = ++consecutive_denials_[origin];
+
+  DCHECK(consecutive_denials <= 3);
+  if (consecutive_denials >= 3) {
+    HostContentSettingsMapFactory::GetForProfile(&profile_.get())
+        ->SetContentSettingDefaultScope(origin.GetURL(), GURL(),
+                                        ContentSettingsType::SMART_CARD_GUARD,
+                                        ContentSetting::CONTENT_SETTING_BLOCK);
+    consecutive_denials_.erase(origin);
   }
 }
