@@ -133,8 +133,10 @@ enum class OnDeviceModelEligibilityReason {
   kSuccess = 1,
   // The feature flag gating on-device model execution was disabled.
   kFeatureNotEnabled = 2,
+  // DEPRECATED: split into kModelNotEligible, kInsufficientDiskSpace and
+  // kNoOnDeviceFeatureUsed.
   // There was no on-device model available.
-  kModelNotAvailable = 3,
+  kDeprecatedModelNotAvailable = 3,
   // The on-device model was available but there was not an execution config
   // available for the feature.
   kConfigNotAvailableForFeature = 4,
@@ -162,12 +164,20 @@ enum class OnDeviceModelEligibilityReason {
   // There was no on-device model available, but it may be downloaded and
   // installed later.
   kModelToBeInstalled = 15,
+  // The device is not eligible for running the on-device model.
+  kModelNotEligible = 16,
+  // The device does not have enough space to download and install the
+  // on-device model.
+  kInsufficientDiskSpace = 17,
+  // There was no on-device feature usage so the model has not been
+  // downloaded yet.
+  kNoOnDeviceFeatureUsed = 18,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kModelToBeInstalled,
+  kMaxValue = kNoOnDeviceFeatureUsed,
 };
 
 // Observer that is notified when the on-device model availability changes for

@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -149,8 +150,6 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
       return "The service is unable to create new session.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoFeatureNotEnabled:
       return "The feature flag gating model execution was disabled.";
-    case mojom::blink::ModelAvailabilityCheckResult::kNoModelNotAvailable:
-      return "There was no model available.";
     case mojom::blink::ModelAvailabilityCheckResult::
         kNoConfigNotAvailableForFeature:
       return "The model was available but there was not an execution config "
@@ -177,6 +176,11 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
       return "Model validation is still pending.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoValidationFailed:
       return "Model validation failed.";
+    case mojom::blink::ModelAvailabilityCheckResult::kModelNotEligible:
+      return "The device is not eligible for running on-device model.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoInsufficientDiskSpace:
+      return "The device does not have enough space for downloading the "
+             "on-device model";
     case mojom::blink::ModelAvailabilityCheckResult::kReadily:
     case mojom::blink::ModelAvailabilityCheckResult::kAfterDownload:
     case mojom::blink::ModelAvailabilityCheckResult::

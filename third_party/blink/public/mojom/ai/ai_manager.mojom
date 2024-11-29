@@ -29,8 +29,10 @@ enum ModelAvailabilityCheckResult {
   // The model is not available because the feature flag gating on-device model
   // execution was disabled.
   kNoFeatureNotEnabled = 4,
+  // DEPRECATED: it's now split into kModelNotEligible and
+  // kNoInsufficientDiskSpace.
   // The model is not available because there was no on-device model available.
-  kNoModelNotAvailable = 5,
+  // kNoModelNotAvailable = 5,
   // The model is not available because the on-device model was available but
   // there was not an execution config available for the feature.
   kNoConfigNotAvailableForFeature = 6,
@@ -61,6 +63,10 @@ enum ModelAvailabilityCheckResult {
   kNoValidationPending = 15,
   // Validation failed for the model.
   kNoValidationFailed = 16,
+  // The device is not eligible for running on-device model.
+  kModelNotEligible = 17,
+  // The device does not have sufficient disk space for the on-device model.
+  kNoInsufficientDiskSpace = 18,
 
   // Append new line here
 };
