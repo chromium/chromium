@@ -343,7 +343,6 @@ class AppStateTest : public BlockCleanupTest {
   DecisionBlock safe_mode_swizzle_block_;
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
-  std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
   raw_ptr<ProfileIOS> profile_;
 };
 
