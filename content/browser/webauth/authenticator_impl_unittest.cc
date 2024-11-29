@@ -462,7 +462,7 @@ GetTestPublicKeyCredentialRequestOptions() {
   auto options = PublicKeyCredentialRequestOptions::New();
   options->extensions = AuthenticationExtensionsClientInputs::New();
   options->relying_party_id = std::string(kTestRelyingPartyId);
-  options->challenge.assign(32, 0x0A);
+  options->challenge = std::vector<uint8_t>(32, 0x0A);
   options->timeout = base::Minutes(1);
   options->user_verification = device::UserVerificationRequirement::kPreferred;
   options->allow_credentials = GetTestCredentials();

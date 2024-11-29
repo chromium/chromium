@@ -307,7 +307,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseRequestOptions) {
 
   blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_ptr =
       fido_authenticator().ParseRequestOptions(std::move(request_options_json));
-  EXPECT_EQ(kTestChallenge, BytesToBase64(request_options_ptr->challenge));
+  EXPECT_EQ(kTestChallenge, BytesToBase64(*request_options_ptr->challenge));
   EXPECT_EQ(kTestRelyingPartyId, request_options_ptr->relying_party_id);
   EXPECT_EQ(kTestCredentialId,
             BytesToBase64(request_options_ptr->allow_credentials.front().id));

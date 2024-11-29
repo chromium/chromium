@@ -1267,6 +1267,21 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
 
+  if (options->hasPublicKey() && !options->publicKey()->hasChallenge()) {
+    if (!blink::RuntimeEnabledFeatures::
+            WebAuthenticationChallengeUrlEnabled()) {
+      resolver->RejectWithTypeError(
+          "Failed to read the 'challenge' property from "
+          "'PublicKeyCredentialRequestOptions'");
+      return promise;
+    } else if (!options->publicKey()->hasChallengeUrl()) {
+      resolver->RejectWithTypeError(
+          "Failed to read 'challenge' or 'challengeUrl' property from "
+          "'PublicKeyCredentialRequestOptions'");
+      return promise;
+    }
+  }
+
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
   if (options->hasPublicKey()) {

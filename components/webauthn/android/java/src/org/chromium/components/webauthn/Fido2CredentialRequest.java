@@ -388,6 +388,12 @@ public class Fido2CredentialRequest
         mErrorCallback = errorCallback;
         mRecordingCallback = recordingCallback;
 
+        // TODO(https://crbug.com/381219428): Handle challenge_url.
+        if (options.challenge == null) {
+            returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+            return;
+        }
+
         mConditionalUiState = ConditionalUiState.WAITING_FOR_RP_ID_VALIDATION;
         frameHost.performGetAssertionWebAuthSecurityChecks(
                 options.relyingPartyId,

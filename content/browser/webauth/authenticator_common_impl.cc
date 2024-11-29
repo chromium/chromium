@@ -1342,6 +1342,14 @@ void AuthenticatorCommonImpl::GetAssertion(
                             nullptr, nullptr);
     return;
   }
+
+  // TODO(https://crbug.com/381219428): Handle challenge_url.
+  if (!options->challenge.has_value()) {
+    std::move(callback).Run(blink::mojom::AuthenticatorStatus::NOT_IMPLEMENTED,
+                            nullptr, nullptr);
+    return;
+  }
+
   req_state_ = std::make_unique<RequestState>();
   req_state_->request_key = RequestKey(next_request_key_);
 
@@ -1502,7 +1510,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   ClientDataJsonParams client_data_json_params(
       ClientDataRequestType::kWebAuthnGet, caller_origin,
       GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin(),
-      options->challenge, is_cross_origin_iframe);
+      *options->challenge, is_cross_origin_iframe);
   if (payment_options) {
     client_data_json_params.type = ClientDataRequestType::kPaymentGet;
     client_data_json_params.payment_options = std::move(payment_options);

@@ -762,7 +762,17 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
     Convert(const blink::PublicKeyCredentialRequestOptions& options) {
   auto mojo_options =
       blink::mojom::blink::PublicKeyCredentialRequestOptions::New();
-  mojo_options->challenge = ConvertTo<Vector<uint8_t>>(options.challenge());
+
+  // This is a required field if challengeUrl is not enabled, but that has to
+  // be verified by the method handler.
+  if (options.hasChallenge()) {
+    mojo_options->challenge = ConvertTo<Vector<uint8_t>>(options.challenge());
+  }
+
+  if (blink::RuntimeEnabledFeatures::WebAuthenticationChallengeUrlEnabled() &&
+      options.hasChallengeUrl()) {
+    mojo_options->challenge_url = blink::KURL(options.challengeUrl());
+  }
 
   if (options.hasTimeout()) {
     mojo_options->timeout = base::Milliseconds(options.timeout());

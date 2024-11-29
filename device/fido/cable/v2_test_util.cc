@@ -437,9 +437,9 @@ class TestPlatform : public authenticator::Platform {
     request.allow_list = std::move(params->allow_credentials);
     request.user_verification = params->user_verification;
 
-    CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    memcpy(request.client_data_hash.data(), params->challenge.data(),
-           params->challenge.size());
+    CHECK_EQ(request.client_data_hash.size(), params->challenge->size());
+    memcpy(request.client_data_hash.data(), params->challenge->data(),
+           params->challenge->size());
     if (params->extensions) {
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {
