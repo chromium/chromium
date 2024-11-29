@@ -476,6 +476,9 @@ BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
 // Feature flag enabling Save to Drive.
 BASE_DECLARE_FEATURE(kIOSSaveToDrive);
 
+// Feature flag enabling Save to Photos.
+BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
+
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 

@@ -512,6 +512,10 @@ extern const char kIOSChooseFromDriveDescription[];
 extern const char kIOSSaveToDriveName[];
 extern const char kIOSSaveToDriveDescription[];
 
+// Title and description for the flag to enable the Save to Photos feature.
+extern const char kIOSSaveToPhotosName[];
+extern const char kIOSSaveToPhotosDescription[];
+
 // Title and description for the flag to enable the Save to Photos feature
 // improvements.
 extern const char kIOSSaveToPhotosImprovementsName[];
