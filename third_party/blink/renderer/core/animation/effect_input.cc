@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings_generated.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -141,6 +142,8 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
     ExceptionState& exception_state) {
   const CSSParserContext* context =
       document.ElementSheet().Contents()->ParserContext();
+  MediaValues* media_values =
+      MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
@@ -150,8 +153,8 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
     const CSSPrimitiveValue* primitive = css_parsing_utils::ConsumeNumber(
         stream, *context, CSSPrimitiveValue::ValueRange::kAll);
     if (primitive && stream.AtEnd()) {
-      return ParsedOffset(
-          {TimelineOffset::NamedRange::kNone, primitive->GetDoubleValue()});
+      return ParsedOffset({TimelineOffset::NamedRange::kNone,
+                           primitive->ComputeNumber(*media_values)});
     }
     stream.Restore(savepoint);
   }
@@ -163,7 +166,7 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
         stream, *context, CSSPrimitiveValue::ValueRange::kAll);
     if (primitive && stream.AtEnd()) {
       return ParsedOffset({TimelineOffset::NamedRange::kNone,
-                           primitive->GetDoubleValue() / 100});
+                           primitive->ComputeNumber(*media_values)});
     }
     stream.Restore(savepoint);
   }
@@ -180,8 +183,8 @@ std::optional<ParsedOffset> ParseOffsetFromCssText(
   TimelineOffset::NamedRange range =
       To<CSSIdentifierValue>(range_name_percent->Item(0))
           .ConvertTo<TimelineOffset::NamedRange>();
-  double relative_offset =
-      To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue() / 100;
+  double relative_offset = To<CSSPrimitiveValue>(range_name_percent->Item(1))
+                               .ComputeNumber(*media_values);
 
   return ParsedOffset({range, relative_offset});
 }
