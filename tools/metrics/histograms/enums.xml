@@ -10917,6 +10917,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5206" label="Canvas2DIsPointInPath"/>
   <int value="5207" label="Canvas2DIsPointInStroke"/>
   <int value="5208" label="Canvas2DGetImageData"/>
+  <int value="5209" label="V8ExtendingNonExtensibleWithPrivate"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

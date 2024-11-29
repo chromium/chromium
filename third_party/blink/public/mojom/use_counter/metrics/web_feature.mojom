@@ -4580,6 +4580,7 @@ enum WebFeature {
   kCanvas2DIsPointInPath = 5206,
   kCanvas2DIsPointInStroke = 5207,
   kCanvas2DGetImageData = 5208,
+  kV8ExtendingNonExtensibleWithPrivate = 5209,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
