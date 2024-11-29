@@ -2157,7 +2157,8 @@ bool ChromeDownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() {}
+ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() =
+    default;
 
 const char ChromeDownloadManagerDelegate::SafeBrowsingState::
     kSafeBrowsingUserDataKey[] = "Safe Browsing ID";

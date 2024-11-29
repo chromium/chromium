@@ -117,8 +117,8 @@ base::HistogramBase::Sample ToHistogramSample(T t) {
 // No-op delegate.
 class NullWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  NullWebContentsDelegate() {}
-  ~NullWebContentsDelegate() override {}
+  NullWebContentsDelegate() = default;
+  ~NullWebContentsDelegate() override = default;
 };
 
 // Google Mock action that posts a task to the current message loop that invokes

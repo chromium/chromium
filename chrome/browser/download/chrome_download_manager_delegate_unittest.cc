@@ -126,7 +126,7 @@ namespace {
 
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  ~MockWebContentsDelegate() override {}
+  ~MockWebContentsDelegate() override = default;
   MOCK_METHOD(void,
               CanDownload,
               (const GURL&,
@@ -157,7 +157,7 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
                              ReturnArg<1>()));
   }
 
-  ~TestChromeDownloadManagerDelegate() override {}
+  ~TestChromeDownloadManagerDelegate() override = default;
 
   // The concrete implementation talks to the ExtensionDownloadsEventRouter to
   // dispatch a OnDeterminingFilename event. While we would like to test this as

@@ -691,7 +691,7 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
   FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
 
  protected:
-  ~FakeSafeBrowsingService() override {}
+  ~FakeSafeBrowsingService() override = default;
 
   // ServicesDelegate::ServicesCreator:
   bool CanCreateDownloadProtectionService() override { return true; }
@@ -705,8 +705,8 @@ class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
 class TestSafeBrowsingServiceFactory
     : public safe_browsing::SafeBrowsingServiceFactory {
  public:
-  TestSafeBrowsingServiceFactory() : fake_safe_browsing_service_(nullptr) {}
-  ~TestSafeBrowsingServiceFactory() override {}
+  TestSafeBrowsingServiceFactory() = default;
+  ~TestSafeBrowsingServiceFactory() override = default;
 
   safe_browsing::SafeBrowsingServiceInterface* CreateSafeBrowsingService()
       override {
@@ -4859,7 +4859,7 @@ class DisableSafeBrowsingOnInProgressDownload
         final_state_seen_(false) {
     Init();
   }
-  ~DisableSafeBrowsingOnInProgressDownload() override {}
+  ~DisableSafeBrowsingOnInProgressDownload() override = default;
 
   bool IsDownloadInFinalState(DownloadItem* download) override {
     if (download->GetState() != DownloadItem::IN_PROGRESS ||

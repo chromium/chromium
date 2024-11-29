@@ -58,8 +58,8 @@ namespace {
 
 class AndroidUIControllerDelegate : public DownloadUIController::Delegate {
  public:
-  AndroidUIControllerDelegate() {}
-  ~AndroidUIControllerDelegate() override {}
+  AndroidUIControllerDelegate() = default;
+  ~AndroidUIControllerDelegate() override = default;
 
  private:
   // DownloadUIController::Delegate
@@ -89,7 +89,7 @@ class DownloadShelfUIControllerDelegate
   // |profile| is required to outlive DownloadShelfUIControllerDelegate.
   explicit DownloadShelfUIControllerDelegate(Profile* profile)
       : profile_(profile) {}
-  ~DownloadShelfUIControllerDelegate() override {}
+  ~DownloadShelfUIControllerDelegate() override = default;
 
  private:
   // DownloadUIController::Delegate
