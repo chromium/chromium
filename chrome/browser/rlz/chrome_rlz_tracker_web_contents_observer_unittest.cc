@@ -14,9 +14,6 @@ using ::testing::Return;
 class ChromeRLZTrackerWebContentsObserverTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  ChromeRLZTrackerWebContentsObserverTest() {}
-  ~ChromeRLZTrackerWebContentsObserverTest() override {}
-
   rlz::MockRLZTrackerDelegate* delegate() { return delegate_; }
 
  protected:
