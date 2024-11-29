@@ -352,8 +352,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     }
 
     socket_data_ = std::make_unique<StaticSocketDataProvider>(
-        base::span<MockRead>(),
-        base::make_span(mock_writes_.get(), writes_.size()));
+        base::span<MockRead>(), base::span(mock_writes_.get(), writes_.size()));
     socket_data_->set_printer(&printer_);
 
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),

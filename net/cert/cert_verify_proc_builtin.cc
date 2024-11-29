@@ -777,7 +777,7 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
         std::string(base::as_string_view(spki)));
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
       base::Value::Dict results;
-      results.Set("spki", NetLogBinaryValue(base::make_span(spki)));
+      results.Set("spki", NetLogBinaryValue(base::span(spki)));
       results.Set("trust",
                   bssl::CertificateTrust::ForDistrusted().ToDebugString());
       return results;

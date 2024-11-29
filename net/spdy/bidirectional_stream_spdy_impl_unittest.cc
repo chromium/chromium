@@ -445,7 +445,7 @@ TEST_F(BidirectionalStreamSpdyImplTest, SendDataAfterStreamFailed) {
   EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
   // BidirectionalStreamSpdyStreamJob does not count the bytes sent for |rst|
   // because it is sent after SpdyStream::Delegate::OnClose is called.
-  EXPECT_EQ(CountWriteBytes(base::make_span(writes, 1u)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 }
@@ -518,10 +518,10 @@ TEST_P(BidirectionalStreamSpdyImplTest, RstWithNoErrorBeforeSendIsComplete) {
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(is_test_sendv ? 2 : 4, delegate->on_data_sent_count());
   EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
-  EXPECT_EQ(CountWriteBytes(base::make_span(writes, 1u)),
+  EXPECT_EQ(CountWriteBytes(base::span(writes, 1u)),
             delegate->GetTotalSentBytes());
   // Should not count RST stream.
-  EXPECT_EQ(CountReadBytes(base::make_span(reads).first(std::size(reads) - 2)),
+  EXPECT_EQ(CountReadBytes(base::span(reads).first(std::size(reads) - 2)),
             delegate->GetTotalReceivedBytes());
 
   // Now call SendData again should produce an error because end of stream

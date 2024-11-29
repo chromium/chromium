@@ -166,7 +166,7 @@ PickledIOBuffer::~PickledIOBuffer() {
 }
 
 WrappedIOBuffer::WrappedIOBuffer(base::span<const char> data)
-    : IOBuffer(base::make_span(const_cast<char*>(data.data()), data.size())) {}
+    : IOBuffer(base::span(const_cast<char*>(data.data()), data.size())) {}
 
 WrappedIOBuffer::WrappedIOBuffer(base::span<const uint8_t> data)
     : WrappedIOBuffer(base::as_chars(data)) {}

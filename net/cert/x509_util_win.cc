@@ -23,7 +23,7 @@ base::span<const uint8_t> CertContextAsSpan(PCCERT_CONTEXT os_cert) {
   // to the certificate DER encoded data in `pbCertEncoded` of length
   // `cbCertEncoded`.
   return UNSAFE_BUFFERS(
-      base::make_span(os_cert->pbCertEncoded, os_cert->cbCertEncoded));
+      base::span(os_cert->pbCertEncoded, os_cert->cbCertEncoded));
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(

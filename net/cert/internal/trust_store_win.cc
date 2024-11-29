@@ -97,7 +97,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
   // SAFETY: `usage->rgpszUsageIdentifier` is an array of LPSTR (pointer to null
   // terminated string) of length `usage->cUsageIdentifier`.
   base::span<LPSTR> usage_identifiers = UNSAFE_BUFFERS(
-      base::make_span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
+      base::span(usage->rgpszUsageIdentifier, usage->cUsageIdentifier));
   for (std::string_view eku : usage_identifiers) {
     if ((eku == szOID_PKIX_KP_SERVER_AUTH) ||
         (eku == szOID_ANY_ENHANCED_KEY_USAGE)) {

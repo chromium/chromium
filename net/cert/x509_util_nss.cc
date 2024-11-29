@@ -138,7 +138,7 @@ std::string GetDefaultNickname(CERTCertificate* nss_cert, CertType type) {
 base::span<const uint8_t> SECItemAsSpan(const SECItem& item) {
   // SAFETY: item is an NSS SECItem struct that represents an array of bytes
   // pointed to by `data` of length `len`.
-  return UNSAFE_BUFFERS(base::make_span(item.data, item.len));
+  return UNSAFE_BUFFERS(base::span(item.data, item.len));
 }
 
 base::span<const uint8_t> CERTCertificateAsSpan(
