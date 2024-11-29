@@ -28,6 +28,7 @@
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/ort/context_impl_ort.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -235,7 +236,12 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   RecordDeviceType(options->device);
 
 #if BUILDFLAG(IS_WIN)
-  if (ShouldCreateDmlContext(*options)) {
+  if (options->device == mojom::CreateContextOptions::Device::kGpu &&
+      options->power_preference ==
+          mojom::CreateContextOptions::PowerPreference::kLowPower) {
+    context_impl =
+        new ort::ContextImplOrt(std::move(receiver), this, std::move(options));
+  } else if (ShouldCreateDmlContext(*options)) {
     DCHECK(gpu_feature_info_.IsInitialized());
     if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] !=
         gpu::kGpuFeatureStatusEnabled) {
