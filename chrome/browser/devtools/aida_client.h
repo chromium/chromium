@@ -55,6 +55,8 @@ class AidaClient {
     bool blocked_by_geo = true;
     bool blocked_by_rollout = false;
     bool disallow_logging = true;
+    DevToolsGenAiEnterprisePolicyValue enterprise_policy_value =
+        DevToolsGenAiEnterprisePolicyValue::kAllow;
   };
 
   static Availability CanUseAida(Profile* profile);
