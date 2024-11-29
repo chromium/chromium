@@ -45,12 +45,6 @@ BASE_FEATURE(kOneTimePermission,
              "OneTimePermission",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a faster permission request finalization if it is displayed as a
-// quiet chip.
-BASE_FEATURE(kFailFastQuietChip,
-             "FailFastQuietChip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kKeyboardAndPointerLockPrompt,
              "KeyboardAndPointerLockPrompt",

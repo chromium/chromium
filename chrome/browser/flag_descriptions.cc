@@ -845,11 +845,6 @@ const char kBindCookiesToSchemeDescription[] =
     "If enabled, cookies will only be accessible by origins with the same "
     "scheme as the one that originally set the cookie";
 
-const char kFailFastQuietChipName[] = "Fail fast quiet chip";
-const char kFailFastQuietChipDescription[] =
-    "Enables fast finalization of a permission request if it is displayed as a "
-    "quiet chip.";
-
 const char kBackgroundListeningName[] = "BackgroundListening";
 const char kBackgroundListeningDescription[] =
     "Enables the new media player features optimized for background listening.";

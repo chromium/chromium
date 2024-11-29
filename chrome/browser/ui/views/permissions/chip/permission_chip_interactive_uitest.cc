@@ -1106,10 +1106,8 @@ class QuietChipFailFastInteractiveTest : public
                                     PermissionChipInteractiveUITest {
  public:
   QuietChipFailFastInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts,
-         permissions::features::kFailFastQuietChip},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kQuietNotificationPrompts},
+                                          {});
   }
 
  protected:

@@ -486,9 +486,6 @@ extern const char kBindCookiesToPortDescription[];
 extern const char kBindCookiesToSchemeName[];
 extern const char kBindCookiesToSchemeDescription[];
 
-extern const char kFailFastQuietChipName[];
-extern const char kFailFastQuietChipDescription[];
-
 extern const char kBorealisBigGlName[];
 extern const char kBorealisBigGlDescription[];
 
