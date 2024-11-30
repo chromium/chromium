@@ -1135,7 +1135,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="306198082577913404">Turn on prediction improvements</translation>
-<translation id="3062655045399308513">Delete browsing data</translation>
+<translation id="3062655045399308513">Delete browsing data…</translation>
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3068118691172921711">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one minute</translation>
@@ -4242,7 +4242,7 @@ Additional details:
 <translation id="8662463432865928030">Commercial Properties</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="8663909737634214500">Optical disc</translation>
-<translation id="8664326323360157684">Delete browsing data</translation>
+<translation id="8664326323360157684">Delete browsing data…</translation>
 <translation id="8671519637524426245">The <ph name="SECURE_DNS_SALT" /> value does not meet the size requirements.</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8672535691554698269">Computer networks</translation>
