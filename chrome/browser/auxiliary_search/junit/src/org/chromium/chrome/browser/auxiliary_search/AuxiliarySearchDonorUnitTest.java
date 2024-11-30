@@ -64,7 +64,7 @@ public class AuxiliarySearchDonorUnitTest {
     public void testDefaultTtlIsNotZero() {
         assertNotEquals(0L, mAuxiliarySearchDonor.getDocumentTtlMs());
         assertEquals(
-                AuxiliarySearchUtils.DEFAULT_TTL_HOURS * 60 * 60 * 1000,
+                ((long) AuxiliarySearchUtils.DEFAULT_TTL_HOURS) * 60 * 60 * 1000,
                 mAuxiliarySearchDonor.getDocumentTtlMs());
     }
 
@@ -74,7 +74,7 @@ public class AuxiliarySearchDonorUnitTest {
     public void testConfiguredTtlCannotBeZero() {
         assertNotEquals(0L, mAuxiliarySearchDonor.getDocumentTtlMs());
         assertEquals(
-                AuxiliarySearchUtils.DEFAULT_TTL_HOURS * 60 * 60 * 1000,
+                ((long) AuxiliarySearchUtils.DEFAULT_TTL_HOURS) * 60 * 60 * 1000,
                 mAuxiliarySearchDonor.getDocumentTtlMs());
     }
 

@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -401,7 +400,7 @@ public class CompositorViewHolder extends FrameLayout
 
         mDelayTempStripRemoval = TabUiFeatureUtilities.isDelayTempStripRemovalEnabled(getContext());
         mDelayTempStripRemovalTimeoutMs =
-                TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS.getValue();
+                ChromeFeatureList.sDelayTempStripRemovalTimeoutMs.getValue();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setDefaultFocusHighlightEnabled(false);

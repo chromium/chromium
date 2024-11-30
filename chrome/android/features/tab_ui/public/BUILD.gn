@@ -24,15 +24,11 @@ android_resources("ui_java_resources") {
 }
 
 android_library("java") {
-  sources = [
-    "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabManagementFieldTrial.java",
-    "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiThemeUtil.java",
-  ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/tasks/tab_management/TabUiThemeUtil.java" ]
 
   deps = [
     ":ui_java_resources",
     "//base:base_java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/styles/android:java",

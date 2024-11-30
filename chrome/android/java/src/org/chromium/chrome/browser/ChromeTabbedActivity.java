@@ -2113,7 +2113,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             // scheduler decide its priority.
             mJankTracker =
                     new JankTrackerImpl(
-                            this, JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS.getValue());
+                            this,
+                            ChromeFeatureList
+                                    .sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs
+                                    .getValue());
         } else {
             mJankTracker = new PlaceholderJankTracker();
         }
@@ -3708,7 +3711,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         < ActivityState.STOPPED_WITH_NATIVE;
         if (shouldSaveState
                 && onCreateTimeDeltaMs
-                        > MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS
+                        > ChromeFeatureList
+                                .sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs
                                 .getValue()) {
             // Save state only if #onStopWithNative() that invokes this, has not run yet.
             tabModelOrchestrator.getTabPersistentStore().saveState();

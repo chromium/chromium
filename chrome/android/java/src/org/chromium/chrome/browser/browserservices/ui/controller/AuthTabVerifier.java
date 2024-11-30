@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -49,12 +48,6 @@ import java.util.Map;
  */
 @OptIn(markerClass = ExperimentalAuthTab.class)
 public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
-    public static final IntCachedFieldTrialParameter VERIFICATION_TIMEOUT_MS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS,
-                    "verification_timeout_ms",
-                    10_000);
-
     private static boolean sDelayVerificationForTesting;
 
     private final Activity mActivity;
@@ -220,7 +213,8 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::returnTimeoutAsActivityResult),
-                    VERIFICATION_TIMEOUT_MS.getValue());
+                    ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs
+                            .getValue());
         }
     }
 

@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -70,13 +69,6 @@ public class WebappLauncherActivity extends Activity {
     private static final int WEBAPK_LAUNCH_DELAY_MS = 20;
 
     private static final String TAG = "webapps";
-
-    private static final int DEFAULT_WEBAPK_MIN_VERSION = 146;
-    public static final IntCachedFieldTrialParameter MIN_SHELL_APK_VERSION =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.WEB_APK_MIN_SHELL_APK_VERSION,
-                    "version",
-                    DEFAULT_WEBAPK_MIN_VERSION);
 
     /** Extracted parameters from the launch intent. */
     @VisibleForTesting
@@ -230,7 +222,7 @@ public class WebappLauncherActivity extends Activity {
                             appContext,
                             launchData.webApkPackageName,
                             launchData.url,
-                            MIN_SHELL_APK_VERSION.getValue())) {
+                            ChromeFeatureList.sWebApkMinShellApkVersionValue.getValue())) {
                 return true;
             }
 

@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 /** The utility class for magic stack. */
 public class HomeModulesMetricsUtils {
@@ -96,20 +95,6 @@ public class HomeModulesMetricsUtils {
 
     private static final String AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT =
             "auxiliary_search_freshness";
-
-    private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
-    public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.MAGIC_STACK_ANDROID,
-                    HOME_MODULES_SHOW_ALL_MODULES_PARAM,
-                    false);
-
-    private static final String TAB_RESUMPTION_COMBINE_TABS_PARAM = "show_tabs_in_one_module";
-    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_COMBINE_TABS =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-                    TAB_RESUMPTION_COMBINE_TABS_PARAM,
-                    false);
 
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in

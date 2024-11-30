@@ -56,6 +56,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
@@ -963,7 +964,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onResumeWithNative_fromCustomTabs_withoutPackage() {
-        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(true);
+        ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(true);
         mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
 
         try (var watcher =
@@ -979,7 +980,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onResumeWithNative_fromCustomTabs_withPackage() {
-        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(true);
+        ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(true);
         mActivity.onNewIntent(
                 newIntentBuilder(IntentOrigin.CUSTOM_TAB, TEST_URL)
                         .setReferrer(TEST_REFERRER)
@@ -999,7 +1000,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onResumeWithNative_fromCustomTabs_propagationDisabled() {
-        SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID.setForTesting(false);
+        ChromeFeatureList.sSearchinCctApplyReferrerId.setForTesting(false);
         mActivity.onNewIntent(buildTestServiceIntent(IntentOrigin.CUSTOM_TAB));
 
         try (var watcher =

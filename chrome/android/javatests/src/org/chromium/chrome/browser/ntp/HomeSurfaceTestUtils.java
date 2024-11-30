@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -45,9 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class HomeSurfaceTestUtils {
     public static final String START_SURFACE_RETURN_TIME_IMMEDIATE =
             ChromeFeatureList.START_SURFACE_RETURN_TIME
-                    + ":"
-                    + ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS_PARAM
-                    + "/0";
+                    + ":start_surface_return_time_on_tablet_seconds/0";
 
     private static final long MAX_TIMEOUT_MS = 30000L;
 

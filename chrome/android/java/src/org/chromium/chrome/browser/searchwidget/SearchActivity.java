@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.R
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -136,11 +135,6 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     /* package */ static final String HISTOGRAM_SESSION_TERMINATION_REASON =
             "Android.Omnibox.SearchActivity.SessionTerminationReason";
-
-    /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
-    public static final BooleanCachedFieldTrialParameter SEARCH_IN_CCT_APPLY_REFERRER_ID =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SEARCH_IN_CCT, "apply_referrer_id", false);
 
     // NOTE: This is used to capture HISTOGRAM_NAVIGATION_TARGET_TYPE.
     // Do not shuffle or reassign values.
@@ -578,7 +572,7 @@ public class SearchActivity extends AsyncInitializationActivity
         // Start a new UMA session for the new activity.
         umaSessionResume();
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB
-                && SEARCH_IN_CCT_APPLY_REFERRER_ID.getValue()) {
+                && ChromeFeatureList.sSearchinCctApplyReferrerId.getValue()) {
             var referrer = SearchActivityUtils.getReferrer(getIntent());
             var referrerValid = !TextUtils.isEmpty(referrer);
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_REFERRER_VALID, referrerValid);

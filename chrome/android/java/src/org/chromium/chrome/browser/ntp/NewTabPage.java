@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -89,7 +90,6 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -973,7 +973,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return !EdgeToEdgeUtils.DISABLE_NTP_E2E.getValue();
+        return !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableNtpE2e.getValue();
     }
 
     @Override

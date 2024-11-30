@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,7 +84,7 @@ public class HubPaneHostViewRenderTest {
     @DisabledTest(message = "crbug.com/380289107")
     @Feature({"RenderTest"})
     public void testAlternativeFabColor() throws Exception {
-        HubFieldTrial.ALTERNATIVE_FAB_COLOR.setForTesting(true);
+        ChromeFeatureList.sAndroidHubFloatingActionButtonAlternativeFabColor.setForTesting(true);
         testImpl("alternative_color");
     }
 

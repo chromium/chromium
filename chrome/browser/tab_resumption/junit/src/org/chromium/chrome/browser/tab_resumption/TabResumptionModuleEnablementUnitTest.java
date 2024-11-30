@@ -100,7 +100,7 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
         ChromeFeatureList.VISITED_URL_RANKING_SERVICE
     })
     public void testEnablementWithVisitedUrlRankingFeature() {
-        TabResumptionModuleUtils.TAB_RESUMPTION_V2.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidEnableV2.setForTesting(true);
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());

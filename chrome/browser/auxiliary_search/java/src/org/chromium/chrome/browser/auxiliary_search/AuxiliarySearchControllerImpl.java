@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS;
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -62,7 +62,8 @@ public class AuxiliarySearchControllerImpl
         mFaviconHelper = faviconHelper;
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
 
-        mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
+        mZeroStateFaviconNumber =
+                sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
@@ -245,7 +246,8 @@ public class AuxiliarySearchControllerImpl
 
             // Schedules a background task to donate favicons of the remaining tabs.
             mAuxiliarySearchProvider.scheduleBackgroundTask(
-                    SCHEDULE_DELAY_TIME_MS.getValue(), TimeUtils.uptimeMillis());
+                    sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
+                    TimeUtils.uptimeMillis());
         }
     }
 

@@ -60,8 +60,6 @@ public class AuxiliarySearchProvider {
     @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
     @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
     @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;
-    @VisibleForTesting static final int DEFAULT_FAVICON_NUMBER = 5;
-    @VisibleForTesting static final int DEFAULT_SCHEDULE_DELAY_TIME_MS = 0;
 
     @VisibleForTesting
     static final int DEFAULT_WINDOW_END_TIME_MS = 60 * 1000; // 1 min in milliseconds.
@@ -105,7 +103,9 @@ public class AuxiliarySearchProvider {
         mFaviconHelper = new FaviconHelper();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
-        mZeroStateFaviconNumber = AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER.getValue();
+        mZeroStateFaviconNumber =
+                ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber
+                        .getValue();
     }
 
     /**
@@ -212,7 +212,10 @@ public class AuxiliarySearchProvider {
                     zeroStateFaviconFetchedNumber,
                     remainingFaviconFetchCount);
             scheduleBackgroundTask(
-                    (long) AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS.getValue(), startTimeMs);
+                    (long)
+                            ChromeFeatureList.sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs
+                                    .getValue(),
+                    startTimeMs);
         }
     }
 

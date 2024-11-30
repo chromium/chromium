@@ -586,7 +586,7 @@ class TabbedNavigationBarColorController
     }
 
     private static boolean isNavBarColorAnimationDisabled() {
-        return TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM.getValue();
+        return ChromeFeatureList.sNavBarColorMatchesTabBackgroundColorAnimationDisabled.getValue();
     }
 
     @Override

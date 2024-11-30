@@ -231,7 +231,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     public void testRenderSingle_SalientImage() {
-        TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidUseSalientImage.setForTesting(true);
         initModuleView();
 
         SuggestionEntry entry1 =
@@ -291,7 +291,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     public void testLoadTileUrlImageWithSalientImage() {
-        TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidUseSalientImage.setForTesting(true);
         initModuleView();
 
         String histogramName = "MagicStack.Clank.TabResumption.IsSalientImageAvailable";
@@ -354,7 +354,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @SmallTest
     public void testRenderSingleLocalView() {
         initModuleView();
-        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(false);
+        ChromeFeatureList.sTabResumptionModuleAndroidShowDefaultReason.setForTesting(false);
 
         SuggestionEntry entry1 = SuggestionEntry.createFromLocalTab(mTab);
         mSuggestionBundle.entries.add(entry1);
@@ -424,7 +424,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @SmallTest
     public void testRenderSingleLocalViewWithDefaultReason() {
         initModuleView();
-        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidShowDefaultReason.setForTesting(true);
 
         SuggestionEntry entry1 =
                 new SuggestionEntry(
@@ -742,7 +742,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     public void testRenderSingleForHistoryData_BrApp() throws Exception {
-        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(false);
+        ChromeFeatureList.sTabResumptionModuleAndroidShowDefaultReason.setForTesting(false);
         initModuleView();
 
         SuggestionEntry entry1 =
@@ -857,7 +857,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @SmallTest
     public void testRenderSingleWithDefaultReason() throws Exception {
         initModuleView();
-        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidShowDefaultReason.setForTesting(true);
 
         SuggestionEntry entry1 =
                 new SuggestionEntry(
@@ -905,7 +905,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     public void testHistoryDataMatchesTrackingTab() throws Exception {
-        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidFetchHistoryBackend.setForTesting(true);
         initModuleView();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
@@ -992,7 +992,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     public void testHistoryDataMatchesNoneTrackingTab() throws Exception {
-        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidFetchHistoryBackend.setForTesting(true);
         initModuleView();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
@@ -1086,7 +1086,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     public void testHistoryDataDoesNotMatchesAnyLocalTab() throws Exception {
-        TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidFetchHistoryBackend.setForTesting(true);
         initModuleView();
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);

@@ -12,6 +12,7 @@ import androidx.annotation.UiThread;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -64,8 +65,8 @@ public final class EdgeToEdgeFieldTrial {
     }
 
     private void initializeOverrides() {
-        String oemString = EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.getValue();
-        String minVersionString = EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.getValue();
+        String oemString = ChromeFeatureList.sEdgeToEdgeBottomChinOemList.getValue();
+        String minVersionString = ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.getValue();
         if (TextUtils.isEmpty(oemString) || TextUtils.isEmpty(minVersionString)) {
             return;
         }

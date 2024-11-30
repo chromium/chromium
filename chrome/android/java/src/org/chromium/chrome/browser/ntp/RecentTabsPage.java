@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
@@ -177,7 +178,7 @@ public class RecentTabsPage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return !EdgeToEdgeUtils.DISABLE_RECENT_TABS_E2E.getValue();
+        return !ChromeFeatureList.sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e.getValue();
     }
 
     @Override

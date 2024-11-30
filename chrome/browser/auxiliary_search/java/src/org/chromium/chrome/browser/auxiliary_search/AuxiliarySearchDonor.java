@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.CONTENT_TTL_HOURS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -408,7 +408,8 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     public long getDocumentTtlMs() {
         if (mTtlMillis == null) {
-            mTtlMillis = TimeUnit.HOURS.toMillis(CONTENT_TTL_HOURS.getValue());
+            mTtlMillis =
+                    TimeUnit.HOURS.toMillis(sAndroidAppIntegrationV2ContentTtlHours.getValue());
         }
 
         return mTtlMillis;

@@ -561,7 +561,7 @@ public class HomeModulesMediatorUnitTest {
     @Test
     @SmallTest
     public void testGetFilteredEnabledModuleSet_AllModules() {
-        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.setForTesting(true);
+        ChromeFeatureList.sMagicStackAndroidShowAllModules.setForTesting(true);
         for (@ModuleType int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
             mHomeModulesConfigManager.registerModuleEligibilityChecker(i, mModuleConfigChecker);
         }
@@ -594,7 +594,7 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
     public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionEnabled() {
-        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.setForTesting(true);
         for (@ModuleType int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
             mHomeModulesConfigManager.registerModuleEligibilityChecker(i, mModuleConfigChecker);
         }
@@ -618,7 +618,7 @@ public class HomeModulesMediatorUnitTest {
         ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
     })
     public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionDisabled() {
-        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.setForTesting(true);
+        ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.setForTesting(true);
         mHomeModulesConfigManager.registerModuleEligibilityChecker(
                 ModuleType.PRICE_CHANGE, mModuleConfigChecker);
         mHomeModulesConfigManager.registerModuleEligibilityChecker(

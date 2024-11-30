@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -118,20 +117,9 @@ public class ToolbarPhone extends ToolbarLayout
     protected static final int ENTERING_TAB_SWITCHER = 2;
     protected static final int EXITING_TAB_SWITCHER = 3;
 
-    // Finch params and default values for code cleanup.
-    private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
-            "remove_redundant_ntpupdate_in_lbvisualupdate";
     private static final String PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR =
             "remove_gts_layout_location_bar";
     private static final boolean PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL = true;
-    public static final BooleanCachedFieldTrialParameter REMOVE_REDUNDANT_ANIM_CALL =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
-                    PARAM_REMOVE_REDUNDANT_ANIM_CALL,
-                    true);
-    public static final BooleanCachedFieldTrialParameter REFACTOR_ANIMATIONS =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TOOLBAR_PHONE_CLEANUP, "refactor_animations", true);
 
     @ViewDebug.ExportedProperty(
             category = "chrome",
@@ -622,8 +610,9 @@ public class ToolbarPhone extends ToolbarLayout
             // updateUrlExpansionAnimation() is called for these states via
             // setTabSwitcherMode()/onTabSwitcherTransitionFinished() ->
             // updateVisualsForLocationBarState()
-            if (!REMOVE_REDUNDANT_ANIM_CALL.getValue() || !isInTabSwitcherMode()) {
-                if (!REFACTOR_ANIMATIONS.getValue()) {
+            if (!ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()
+                    || !isInTabSwitcherMode()) {
+                if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
                     updateUrlExpansionAnimation();
                 } else {
                     invokeTransition(false);
@@ -916,7 +905,7 @@ public class ToolbarPhone extends ToolbarLayout
             updateLocationBarForNtp(mVisualState, urlHasFocus());
         }
         updateUrlExpansionFraction();
-        if (!REFACTOR_ANIMATIONS.getValue()) {
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
             updateUrlExpansionAnimation();
         } else {
             invokeTransition(false);
@@ -1031,7 +1020,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         updateUrlExpansionFraction();
-        if (!REFACTOR_ANIMATIONS.getValue()) {
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
             updateUrlExpansionAnimation();
         } else {
             invokeTransition(false);
@@ -1054,8 +1043,8 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateUrlExpansionAnimation() {
         // When exiting tab switcher, run / reset NTP animations based on if page is NTP.
         Tab currentTab = getToolbarDataProvider().getTab();
-        if (REMOVE_REDUNDANT_ANIM_CALL.getValue()
-                && !REFACTOR_ANIMATIONS.getValue()
+        if (ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()
+                && !ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()
                 && currentTab != null
                 && mTabSwitcherState == EXITING_TAB_SWITCHER) {
             if (isLocationBarShownInNtp()) {
@@ -1144,7 +1133,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         locationBarBaseTranslationX *= 1f - mUrlExpansionFraction;
 
-        if (!REFACTOR_ANIMATIONS.getValue()) {
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
             mLocationBarBackgroundNtpOffset.setEmpty();
             mLocationBarNtpOffsetLeft = 0;
             mLocationBarNtpOffsetRight = 0;
@@ -1156,7 +1145,7 @@ public class ToolbarPhone extends ToolbarLayout
             getToolbarDataProvider()
                     .getNewTabPageDelegate()
                     .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-            if (!REFACTOR_ANIMATIONS.getValue()) {
+            if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
                 if (isLocationBarShownInNtp) {
                     updateNtpTransitionAnimation();
                 } else {
@@ -1304,7 +1293,7 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private void resetNtpAnimationValues() {
         mLocationBarBackgroundNtpOffset.setEmpty();
-        if (REFACTOR_ANIMATIONS.getValue()) {
+        if (ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
             mLocationBarNtpOffsetLeft = 0;
             mLocationBarNtpOffsetRight = 0;
         }
@@ -2373,7 +2362,7 @@ public class ToolbarPhone extends ToolbarLayout
         boolean wasShowingNtp = ntpDelegate.wasShowingNtp();
         float previousNtpScrollFraction = mNtpSearchBoxScrollFraction;
 
-        if (!REFACTOR_ANIMATIONS.getValue()) {
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
             resetNtpAnimationValues();
         } else {
             invokeTransition(true);
@@ -2603,7 +2592,7 @@ public class ToolbarPhone extends ToolbarLayout
             mLayoutUpdater.run();
         }
         updateShadowVisibility();
-        if (!REFACTOR_ANIMATIONS.getValue()) {
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue()) {
             updateUrlExpansionAnimation();
         } else {
             invokeTransition(false);
@@ -2617,8 +2606,8 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (!visualStateChanged) {
-            if (!REMOVE_REDUNDANT_ANIM_CALL.getValue()) {
-                assert !REFACTOR_ANIMATIONS.getValue();
+            if (!ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()) {
+                assert !ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue();
                 if (mVisualState == VisualState.NEW_TAB_NORMAL) {
                     updateNtpTransitionAnimation();
                 } else {
@@ -2640,8 +2629,8 @@ public class ToolbarPhone extends ToolbarLayout
         updateModernLocationBarColor(getLocationBarColorForToolbarColor(currentPrimaryColor));
 
         mLocationBar.updateVisualsForState();
-        if (!REMOVE_REDUNDANT_ANIM_CALL.getValue()) {
-            assert !REFACTOR_ANIMATIONS.getValue();
+        if (!ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()) {
+            assert !ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue();
             // These are used to skip setting state unnecessarily while in the tab switcher.
             boolean inOrEnteringStaticTab =
                     mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
@@ -3005,7 +2994,8 @@ public class ToolbarPhone extends ToolbarLayout
      * @param resetNtpTransition if the transition is to reset NTP animation.
      */
     private void invokeTransition(boolean resetNtpTransition) {
-        assert (REMOVE_REDUNDANT_ANIM_CALL.getValue() && REFACTOR_ANIMATIONS.getValue());
+        assert (ChromeFeatureList.sToolbarPhoneCleanupRemoveRedundantAnimCall.getValue()
+                && ChromeFeatureList.sToolbarPhoneCleanupRefactorAnimations.getValue());
         if (resetNtpTransition) {
             resetNtpAnimationValues();
             return;

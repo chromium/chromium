@@ -631,7 +631,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES)
     public void isAllowedThirdParty_noDefaultPolicy() {
-        CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
+        ChromeFeatureList.sCctResizableForThirdPartiesDenylistEntries.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         // If no default-policy is present, it defaults to use-denylist.
         assertFalse(
@@ -651,8 +651,8 @@ public class CustomTabIntentDataProviderTest {
                     + ":default_policy/use-denylist"
                     + "/denylist_entries/com.dc.joker|com.marvel.thanos")
     public void isAllowedThirdParty_denylist() {
-        CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-denylist");
-        CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
+        ChromeFeatureList.sCctResizableForThirdPartiesDefaultPolicy.setForTesting("use-denylist");
+        ChromeFeatureList.sCctResizableForThirdPartiesDenylistEntries.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         assertFalse(
                 "Entry in denylist should be rejected",
@@ -671,8 +671,8 @@ public class CustomTabIntentDataProviderTest {
                     + ":default_policy/use-allowlist"
                     + "/allowlist_entries/com.pixar.woody|com.disney.ariel")
     public void isAllowedThirdParty_allowlist() {
-        CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-allowlist");
-        CustomTabIntentDataProvider.ALLOWLIST_ENTRIES.setForTesting(
+        ChromeFeatureList.sCctResizableForThirdPartiesDefaultPolicy.setForTesting("use-allowlist");
+        ChromeFeatureList.sCctResizableForThirdPartiesAllowlistEntries.setForTesting(
                 "com.pixar.woody|com.disney.ariel");
         assertTrue(
                 "Entry in allowlist should be accepted",
@@ -737,7 +737,7 @@ public class CustomTabIntentDataProviderTest {
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.dc.joker");
         CustomTabsConnection.setInstanceForTesting(connection);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
+        ChromeFeatureList.sCctResizableForThirdPartiesDenylistEntries.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
     }
@@ -974,8 +974,8 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateExtraMissing() {
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(false);
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
+        ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.setForTesting(false);
+        ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -994,8 +994,8 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithAllowedPackageName() {
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(false);
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
+        ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.setForTesting(false);
+        ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1015,8 +1015,8 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithoutAllowedPackageName() {
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(false);
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
+        ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.setForTesting(false);
+        ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1036,8 +1036,8 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithFirstPartyAllowed() {
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(true);
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
+        ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.setForTesting(true);
+        ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1058,8 +1058,8 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_AUTO_TRANSLATE)
     public void getTranslateLanguage_autoTranslateWithThirdPartyPackageName() {
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES.setForTesting(true);
-        CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST.setForTesting(
+        ChromeFeatureList.sCctAutoTranslateAllowAllFirstParties.setForTesting(true);
+        ChromeFeatureList.sCctAutoTranslatePackageNamesAllowlist.setForTesting(
                 "com.example.foo|com.example.bar");
 
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -1216,7 +1216,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_originValidation() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting(
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
                 "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -1237,7 +1237,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @DisableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_allowedPackagesRejectedWithFeatureDisabled() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting(
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting(
                 "com.a.b.c|org.d.e.f");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -1258,7 +1258,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_notAllowedInOffTheRecordMode() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1274,7 +1274,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void searchInCct_notAllowedOnPartialCcts() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1294,7 +1294,7 @@ public class CustomTabIntentDataProviderTest {
         shadowPkgMgr.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
         assertTrue(BuildInfo.getInstance().isAutomotive);
 
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
@@ -1308,7 +1308,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_conventionalCct_defaultState() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
@@ -1328,7 +1328,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_conventionalCct_disabledState() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);
@@ -1347,7 +1347,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addShareOption_searchInCct_enabledState() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
@@ -1368,7 +1368,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_searchInCct_defaultState() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
@@ -1389,7 +1389,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_searchInCct_disabledState() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(true);
@@ -1413,7 +1413,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
     public void addOpenInBrowserOption_conventionalCct_enabledState() {
-        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        ChromeFeatureList.sSearchinCctOmniboxAllowedPackageNames.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.shouldEnableOmniboxForIntent(any())).thenReturn(false);

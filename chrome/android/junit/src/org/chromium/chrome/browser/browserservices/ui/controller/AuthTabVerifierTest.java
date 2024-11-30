@@ -13,7 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier.VERIFICATION_TIMEOUT_MS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs;
 
 import android.app.Activity;
 
@@ -194,7 +194,9 @@ public class AuthTabVerifierTest {
         verify(mActivity, never()).setResult(anyInt(), any());
         verify(mActivity, never()).finish();
 
-        ShadowSystemClock.advanceBy(VERIFICATION_TIMEOUT_MS.getValue(), TimeUnit.MILLISECONDS);
+        ShadowSystemClock.advanceBy(
+                sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs.getValue(),
+                TimeUnit.MILLISECONDS);
         // Simulate timeout.
         mDelayedTask.run();
 

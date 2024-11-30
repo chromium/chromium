@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.USE_LARGE_FAVICON;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -66,7 +66,7 @@ public class AuxiliarySearchUtilsUnitTest {
     @Test
     @EnableFeatures("AndroidAppIntegrationWithFavicon:use_large_favicon/true")
     public void testGetFaviconSize() {
-        assertTrue(USE_LARGE_FAVICON.getValue());
+        assertTrue(sAndroidAppIntegrationWithFaviconUseLargeFavicon.getValue());
 
         Resources resources = ContextUtils.getApplicationContext().getResources();
         int faviconSize = resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size);

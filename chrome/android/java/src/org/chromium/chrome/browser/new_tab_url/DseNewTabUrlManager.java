@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -31,11 +30,6 @@ public class DseNewTabUrlManager {
     private Callback<Profile> mProfileCallback;
     private TemplateUrlService mTemplateUrlService;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
-
-    private static final String SWAP_OUT_NTP_PARAM = "swap_out_ntp";
-    public static final BooleanCachedFieldTrialParameter SWAP_OUT_NTP =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID, SWAP_OUT_NTP_PARAM, false);
 
     public DseNewTabUrlManager(ObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
@@ -105,7 +99,7 @@ public class DseNewTabUrlManager {
      * isNewTabSearchEngineUrlAndroidEnabled(), i.e., it doesn't check country code.
      */
     public static boolean isSwapOutNtpFlagEnabled() {
-        return SWAP_OUT_NTP.getValue();
+        return ChromeFeatureList.sNewTabSearchEngineUrlAndroidSwapOutNtp.getValue();
     }
 
     /**
@@ -176,7 +170,8 @@ public class DseNewTabUrlManager {
     }
 
     private static boolean shouldSwapOutNtp() {
-        return isNewTabSearchEngineUrlAndroidEnabled() && SWAP_OUT_NTP.getValue();
+        return isNewTabSearchEngineUrlAndroidEnabled()
+                && ChromeFeatureList.sNewTabSearchEngineUrlAndroidSwapOutNtp.getValue();
     }
 
     public TemplateUrlService getTemplateUrlServiceForTesting() {

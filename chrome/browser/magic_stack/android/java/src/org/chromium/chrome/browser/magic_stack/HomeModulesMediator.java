@@ -617,7 +617,7 @@ public class HomeModulesMediator {
         boolean combinedTabModules =
                 combinedTabModules() && set.contains(ModuleType.TAB_RESUMPTION);
         boolean isHomeSurface = mModuleDelegateHost.isHomeSurface();
-        boolean addAll = HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue();
+        boolean addAll = ChromeFeatureList.sMagicStackAndroidShowAllModules.getValue();
 
         if (combinedTabModules) {
             set.remove(ModuleType.SINGLE_TAB);
@@ -768,7 +768,7 @@ public class HomeModulesMediator {
 
     @VisibleForTesting
     boolean combinedTabModules() {
-        return HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.getValue()
+        return ChromeFeatureList.sTabResumptionModuleAndroidCombineTabs.getValue()
                 && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled();
     }
 

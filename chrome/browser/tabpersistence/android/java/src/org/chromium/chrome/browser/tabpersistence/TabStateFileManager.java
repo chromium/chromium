@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -82,10 +81,6 @@ public class TabStateFileManager {
     private static String sChannelNameOverrideForTest;
 
     private static final long NO_TAB_GROUP_ID = 0L;
-
-    public static final BooleanCachedFieldTrialParameter MIGRATE_STALE_TABS_CACHED_PARAM =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", false);
 
     /** Enum representing the exception that occurred during {@link restoreTabState}. */
     @IntDef({
@@ -871,6 +866,6 @@ public class TabStateFileManager {
     }
 
     private static boolean isMigrateStaleTabsToFlatBufferEnabled() {
-        return MIGRATE_STALE_TABS_CACHED_PARAM.getValue();
+        return ChromeFeatureList.sTabStateFlatBufferMigrateStaleTabs.getValue();
     }
 }

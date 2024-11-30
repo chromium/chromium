@@ -13,6 +13,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctGoogleBottomBarNoVariantHeightDp;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsVariantLayout;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.ADD_NOTES;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
@@ -25,10 +29,6 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -413,7 +413,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getVariantLayoutType_variantLayoutsEnabled_defaultSearchEngineCheckDisabledAndNotEqualToGoogle_doubleDeckerLayoutSet_showsDoubleDeckerLayout() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(false);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(false);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         GoogleBottomBarIntentParams params =
@@ -431,7 +431,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getVariantLayoutType_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndNotEqualToGoogle_doubleDeckerLayoutSet_showsNoVariantLayout() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         GoogleBottomBarIntentParams params =
@@ -469,7 +469,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 1, 2, 3))
                         .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
                         .build();
-        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(DOUBLE_DECKER);
+        sCctGoogleBottomBarVariantLayoutsVariantLayout.setForTesting(DOUBLE_DECKER);
 
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
@@ -485,7 +485,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 1, 2, 3))
                         .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
                         .build();
-        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(SINGLE_DECKER);
+        sCctGoogleBottomBarVariantLayoutsVariantLayout.setForTesting(SINGLE_DECKER);
 
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
@@ -501,7 +501,8 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 1, 2, 3))
                         .setVariantLayoutType(VariantLayoutType.CHROME_CONTROLLED)
                         .build();
-        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(SINGLE_DECKER_WITH_RIGHT_BUTTONS);
+        sCctGoogleBottomBarVariantLayoutsVariantLayout.setForTesting(
+                SINGLE_DECKER_WITH_RIGHT_BUTTONS);
 
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
@@ -517,7 +518,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 1, 2, 3))
                         .setVariantLayoutType(VariantLayoutType.DOUBLE_DECKER)
                         .build();
-        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(NO_VARIANT);
+        sCctGoogleBottomBarVariantLayoutsVariantLayout.setForTesting(NO_VARIANT);
 
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
@@ -533,7 +534,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 1, 2, 3))
                         .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
                         .build();
-        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(NO_VARIANT);
+        sCctGoogleBottomBarVariantLayoutsVariantLayout.setForTesting(NO_VARIANT);
 
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
@@ -549,7 +550,7 @@ public class BottomBarConfigCreatorTest {
                         .addAllEncodedButton(List.of(0, 1, 2, 3))
                         .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
                         .build();
-        GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.setForTesting(NO_VARIANT);
+        sCctGoogleBottomBarVariantLayoutsVariantLayout.setForTesting(NO_VARIANT);
 
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
@@ -566,12 +567,13 @@ public class BottomBarConfigCreatorTest {
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
         assertEquals(
-                BottomBarConfigCreator.DEFAULT_NO_VARIANT_HEIGHT_DP, bottomBarConfig.getHeightDp());
+                ChromeFeatureList.sCctGoogleBottomBarNoVariantHeightDp.getDefaultValue(),
+                bottomBarConfig.getHeightDp());
     }
 
     @Test
     public void create_noVariant_heightSpecifiedByFinch_hasFinchHeight() {
-        GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        sCctGoogleBottomBarNoVariantHeightDp.setForTesting(123);
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
                         .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
@@ -597,7 +599,7 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void create_noVariant_heightSpecifiedByFinchAndIntent_hasIntentHeight() {
-        GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        sCctGoogleBottomBarNoVariantHeightDp.setForTesting(123);
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
                         .setVariantLayoutType(VariantLayoutType.NO_VARIANT)
@@ -642,14 +644,15 @@ public class BottomBarConfigCreatorTest {
         BottomBarConfig bottomBarConfig = mConfigCreator.create(params, List.of());
 
         assertEquals(
-                BottomBarConfigCreator.DEFAULT_SINGLE_DECKER_HEIGHT_DP,
+                ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp
+                        .getDefaultValue(),
                 bottomBarConfig.getHeightDp());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void create_singleDecker_heightSpecifiedByFinch_hasFinchHeight() {
-        GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp.setForTesting(123);
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
                         .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
@@ -677,7 +680,7 @@ public class BottomBarConfigCreatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void create_singleDecker_heightSpecifiedByFinchAndIntent_hasIntentHeight() {
-        GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE.setForTesting(123);
+        sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp.setForTesting(123);
         GoogleBottomBarIntentParams params =
                 GoogleBottomBarIntentParams.newBuilder()
                         .setVariantLayoutType(VariantLayoutType.SINGLE_DECKER)
@@ -708,7 +711,7 @@ public class BottomBarConfigCreatorTest {
     @Test
     @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void initDefaultSearchEngine_variantLayoutsDisabled_doesNotCheckDefaultSearchEngine() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(false);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(false);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -728,7 +731,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabled_doesNotCheckDefaultSearchEngine() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(false);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(false);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -748,7 +751,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndNotEqualToGoogle_writesFalse() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, true);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
@@ -766,7 +769,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndEqualsToGoogle_writesTrue() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
@@ -851,7 +854,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDecker_returnsSetWithAllSupportedCustomParams() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         GoogleBottomBarIntentParams intentParams =
@@ -887,7 +890,7 @@ public class BottomBarConfigCreatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDeckerWithButtonsOnRight_returnsSetWithAllSupportedCustomParams() {
-        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
         GoogleBottomBarIntentParams intentParams =
@@ -923,7 +926,9 @@ public class BottomBarConfigCreatorTest {
             assertEquals(2, config.getButtonList().size());
             assertEquals(SAVE, config.getButtonList().get(0).getId());
             assertEquals(SHARE, config.getButtonList().get(1).getId());
-            assertEquals(BottomBarConfigCreator.DEFAULT_NO_VARIANT_HEIGHT_DP, config.getHeightDp());
+            assertEquals(
+                    ChromeFeatureList.sCctGoogleBottomBarNoVariantHeightDp.getDefaultValue(),
+                    config.getHeightDp());
         } else if (layoutType == DOUBLE_DECKER) {
             assertEquals(2, config.getButtonList().size());
             assertEquals(SAVE, config.getButtonList().get(0).getId());
@@ -938,7 +943,9 @@ public class BottomBarConfigCreatorTest {
         } else if (layoutType == SINGLE_DECKER) {
             assertEquals(0, config.getButtonList().size());
             assertEquals(
-                    BottomBarConfigCreator.DEFAULT_SINGLE_DECKER_HEIGHT_DP, config.getHeightDp());
+                    ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp
+                            .getDefaultValue(),
+                    config.getHeightDp());
         } else {
             throw new IllegalArgumentException(
                     String.format("Layout type with id %s is not tested.", layoutType));

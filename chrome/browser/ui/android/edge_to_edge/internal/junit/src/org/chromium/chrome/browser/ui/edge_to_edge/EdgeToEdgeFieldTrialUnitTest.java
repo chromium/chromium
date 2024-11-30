@@ -47,8 +47,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 30)
     public void overrides_notMeetMinVersion() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foo,bar");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("31,32");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("31,32");
         var instance = EdgeToEdgeFieldTrial.getInstance();
         assertTrue(
                 "Default have no min version override.",
@@ -74,8 +74,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 31)
     public void overrides_someMeetMinVersion() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foo,bar");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("31,32");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("31,32");
         var instance = EdgeToEdgeFieldTrial.getInstance();
         assertTrue(
                 "Default have no min version override.",
@@ -101,8 +101,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 32)
     public void overrides_meetMinVersion() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foo,bar");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("31,32");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("31,32");
         var instance = EdgeToEdgeFieldTrial.getInstance();
         assertTrue(
                 "Default have no min version override.",
@@ -128,8 +128,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 28)
     public void testInvalidInputs_unevenLength() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foobar");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("1,2");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foobar");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("1,2");
         ShadowBuild.setManufacturer("foobar");
         assertFalse(
                 "Invalid override is ignored.",
@@ -139,8 +139,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 28)
     public void testInvalidInputs_unevenLength_2() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foo,bar");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("1");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("1");
         ShadowBuild.setManufacturer("foo");
         assertFalse(
                 "Invalid override is ignored.",
@@ -150,8 +150,8 @@ public class EdgeToEdgeFieldTrialUnitTest {
     @Test
     @Config(sdk = 28)
     public void testInvalidInputs_versionInvalid() {
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST.setForTesting("foo,bar");
-        EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS.setForTesting("1,a");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo,bar");
+        ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("1,a");
         ShadowBuild.setManufacturer("foo");
         assertFalse(
                 "Invalid override is ignored.",
