@@ -73,8 +73,7 @@
     [interruptibleChildCoordinator
         interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                  completion:nil];
-    [self.childCoordinator stop];
-    self.childCoordinator = nil;
+    [self stopChildCoordinator];
   }
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _navigationController = nil;
@@ -84,8 +83,7 @@
 #pragma mark - FirstRunScreenDelegate
 
 - (void)screenWillFinishPresenting {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 
@@ -157,6 +155,13 @@
                      declinedByUser:(BOOL)declined {
   CHECK_EQ(self.childCoordinator, historySyncCoordinator);
   [self screenWillFinishPresenting];
+}
+
+#pragma mark - Private
+
+- (void)stopChildCoordinator {
+  [self.childCoordinator stop];
+  self.childCoordinator = nil;
 }
 
 @end

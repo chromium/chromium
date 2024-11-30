@@ -132,8 +132,7 @@
 }
 
 - (void)stop {
-  [self.identityChooserCoordinator stop];
-  self.identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
   self.delegate = nil;
   self.viewController = nil;
   [self.mediator disconnect];
@@ -156,6 +155,16 @@
 }
 
 #pragma mark - Private
+
+- (void)stopIdentityChooserCoordinator {
+  [self.identityChooserCoordinator stop];
+  self.identityChooserCoordinator = nil;
+}
+
+- (void)stopAddAccountCoordinator {
+  [self.addAccountSigninCoordinator stop];
+  self.addAccountSigninCoordinator = nil;
+}
 
 - (void)stopUMACoordinator {
   [self.UMACoordinator stop];
@@ -184,8 +193,7 @@
 - (void)addAccountSigninCompleteWithResult:(SigninCoordinatorResult)signinResult
                         completionIdentity:
                             (id<SystemIdentity>)signinCompletionIdentity {
-  [self.addAccountSigninCoordinator stop];
-  self.addAccountSigninCoordinator = nil;
+  [self stopAddAccountCoordinator];
   if (signinResult == SigninCoordinatorResultSuccess &&
       self.accountManagerService->IsValidIdentity(signinCompletionIdentity)) {
     self.mediator.selectedIdentity = signinCompletionIdentity;
@@ -233,8 +241,7 @@
 - (void)identityChooserCoordinatorDidClose:
     (IdentityChooserCoordinator*)coordinator {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  [self.identityChooserCoordinator stop];
-  self.identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
 }
 
 - (void)identityChooserCoordinatorDidTapOnAddAccount:

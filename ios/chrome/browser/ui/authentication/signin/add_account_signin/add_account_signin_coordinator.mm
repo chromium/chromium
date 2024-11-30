@@ -208,6 +208,17 @@ using signin_metrics::PromoAction;
 
 #pragma mark - Private
 
+- (void)stopHistorySyncPopupCoordinator {
+  [self.historySyncPopupCoordinator stop];
+  self.historySyncPopupCoordinator.delegate = nil;
+  self.historySyncPopupCoordinator = nil;
+}
+
+- (void)stopPostSigninManagerCoordinator {
+  [self.postSigninManagerCoordinator stop];
+  self.postSigninManagerCoordinator = nil;
+}
+
 // Continues the sign-in workflow according to the sign-in intent
 - (void)continueAddAccountFlowWithSigninResult:
             (SigninCoordinatorResult)signinResult
@@ -299,9 +310,7 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)result
                           signinCompletionIdentity:
                               (id<SystemIdentity>)resultIdentity {
-  [self.postSigninManagerCoordinator stop];
-  self.postSigninManagerCoordinator = nil;
-
+  [self stopPostSigninManagerCoordinator];
   if (result != SigninCoordinatorResultSuccess) {
     [self addAccountDoneWithSigninResult:result identity:resultIdentity];
     return;
@@ -322,8 +331,7 @@ using signin_metrics::PromoAction;
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(SigninCoordinatorResult)result {
-  [self.historySyncPopupCoordinator stop];
-  self.historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(

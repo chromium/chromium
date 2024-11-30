@@ -112,6 +112,11 @@ using base::UserMetricsAction;
 
 #pragma mark - Private
 
+- (void)stopChildCoordinator {
+  [_childCoordinator stop];
+  _childCoordinator = nil;
+}
+
 // Dismiss the main navigation view controller with an animation and run the
 // sign-in completion callback on completion of the animation to finish
 // presenting the screens.
@@ -184,10 +189,7 @@ using base::UserMetricsAction;
   }
   // When this coordinator is interrupted, `_childCoordinator` needs to be
   // stopped here.
-  if (_childCoordinator) {
-    [_childCoordinator stop];
-    _childCoordinator = nil;
-  }
+  [self stopChildCoordinator];
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   _screenProvider = nil;
@@ -200,8 +202,7 @@ using base::UserMetricsAction;
 // Stops the child coordinator and prepares the next screen to present.
 - (void)screenWillFinishPresenting {
   CHECK(_childCoordinator) << base::SysNSStringToUTF8([self description]);
-  [_childCoordinator stop];
-  _childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentScreen:[_screenProvider nextScreenType]];
 }
 

@@ -159,9 +159,7 @@
 }
 
 - (void)stop {
-  _historySyncPopupCoordinator.delegate = nil;
-  [_historySyncPopupCoordinator stop];
-  _historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;
@@ -224,9 +222,7 @@
   // Stop the previous coordinator since the user can tap on the promo button
   // to open a new History Sync Page while the dismiss animation of the previous
   // one is in progress.
-  _historySyncPopupCoordinator.delegate = nil;
-  [_historySyncPopupCoordinator stop];
-  _historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
   // Show the History Sync Opt-In screen. The coordinator will dismiss itself
   // if there is no signed-in account (eg. if sign-in unsuccessful) or if sync
   // is disabled by policies.
@@ -274,10 +270,16 @@
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
                 didFinishWithResult:(SigninCoordinatorResult)result {
-  _historySyncPopupCoordinator.delegate = nil;
-  [_historySyncPopupCoordinator stop];
-  _historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
   [self.mediator refreshSessionsView];
+}
+
+#pragma mark - Private
+
+- (void)stopHistorySyncPopupCoordinator {
+  [_historySyncPopupCoordinator stop];
+  _historySyncPopupCoordinator.delegate = nil;
+  _historySyncPopupCoordinator = nil;
 }
 
 @end

@@ -84,10 +84,7 @@ using l10n_util::GetNSStringF;
       // TrustedVaultClientBackend doesn't support no dismiss. Therefore there
       // is nothing to do. It will be just deallocated when the service will
       // be shutdown.
-      if (self.errorAlertCoordinator) {
-        [self.errorAlertCoordinator stop];
-        self.errorAlertCoordinator = nil;
-      }
+      [self stopErrorAlertCoordinator];
       cancelCompletion();
       return;
     case SigninCoordinatorInterrupt::DismissWithoutAnimation:
@@ -102,8 +99,7 @@ using l10n_util::GetNSStringF;
   if (self.errorAlertCoordinator) {
     CHECK(!self.errorAlertCoordinator.noInteractionAction);
     self.errorAlertCoordinator.noInteractionAction = cancelCompletion;
-    [self.errorAlertCoordinator stop];
-    self.errorAlertCoordinator = nil;
+    [self stopErrorAlertCoordinator];
   } else {
     std::move(_dialogCancelCallback).Run(animated, cancelCompletion);
   }
@@ -149,6 +145,11 @@ using l10n_util::GetNSStringF;
 }
 
 #pragma mark - Private
+
+- (void)stopErrorAlertCoordinator {
+  [self.errorAlertCoordinator stop];
+  self.errorAlertCoordinator = nil;
+}
 
 - (void)trustedVaultDialogDoneWithSuccess:(BOOL)success error:(NSError*)error {
   _dialogCancelCallback.Reset();

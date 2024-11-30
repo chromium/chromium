@@ -73,6 +73,11 @@
 
 #pragma mark - Private
 
+- (void)stopChildCoordinator {
+  [self.childCoordinator stop];
+  self.childCoordinator = nil;
+}
+
 // Dismiss the main navigation view controller with an animation and run the
 // sign-in completion callback on completion of the animation to finish
 // presenting the screens.
@@ -129,8 +134,7 @@
 
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
+  [self stopChildCoordinator];
   self.navigationController = nil;
   self.screenProvider = nil;
   id<SystemIdentity> completionIdentity = identity;
@@ -143,8 +147,7 @@
 // This is called before finishing the presentation of a screen.
 // Stops the child coordinator and prepares the next screen to present.
 - (void)screenWillFinishPresenting {
-  [self.childCoordinator stop];
-  self.childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 

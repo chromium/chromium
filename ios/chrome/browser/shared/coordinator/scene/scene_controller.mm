@@ -799,6 +799,11 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - private
 
+- (void)stopSigninCoordinator {
+  [self.signinCoordinator stop];
+  self.signinCoordinator = nil;
+}
+
 // Creates, if needed, and presents saved passwords settings. Assumes all modal
 // dialods are dismissed and `baseViewController` is available to present.
 - (void)showSavedPasswordsSettingsAfterModalDismissFromViewController:
@@ -3617,12 +3622,11 @@ using UserFeedbackDataCallback =
       if (completion) {
         completion(SigninCoordinatorResultDisabled, nil);
       }
-      [self.signinCoordinator stop];
+      [self stopSigninCoordinator];
       id<PolicyChangeCommands> handler = HandlerForProtocol(
           self.signinCoordinator.browser->GetCommandDispatcher(),
           PolicyChangeCommands);
       [handler showForceSignedOutPrompt];
-      self.signinCoordinator = nil;
       return;
     }
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
@@ -3659,8 +3663,7 @@ using UserFeedbackDataCallback =
           return;
         }
         __typeof(self) strongSelf = weakSelf;
-        [strongSelf.signinCoordinator stop];
-        strongSelf.signinCoordinator = nil;
+        [strongSelf stopSigninCoordinator];
         uiBlocker.reset();
 
         if (completion) {

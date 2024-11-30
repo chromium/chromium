@@ -100,8 +100,7 @@
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+  [self stopAlertCoordinator];
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock consistencyCompletion = ^() {
     [weakSelf finalizeInterruptWithAction:action completion:completion];
@@ -155,8 +154,7 @@
 
 - (void)stop {
   [super stop];
-  [self.defaultAccountCoordinator stop];
-  self.defaultAccountCoordinator = nil;
+  [self stopDefaultAccountCoordinator];
 }
 
 #pragma mark - Properties
@@ -166,6 +164,26 @@
 }
 
 #pragma mark - Private
+
+- (void)stopAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+}
+
+- (void)stopAccountChooserCoordinator {
+  [self.accountChooserCoordinator stop];
+  self.accountChooserCoordinator = nil;
+}
+
+- (void)stopDefaultAccountCoordinator {
+  [self.defaultAccountCoordinator stop];
+  self.defaultAccountCoordinator = nil;
+}
+
+- (void)stopAddAccountCoordinator {
+  [self.addAccountCoordinator stop];
+  self.addAccountCoordinator = nil;
+}
 
 // Finishes the interrupt process. This method needs to be called once all
 // other dialogs on top of ConsistencyPromoSigninCoordinator are properly
@@ -217,8 +235,7 @@
         self.accessPoint);
   }
 
-  [self.addAccountCoordinator stop];
-  self.addAccountCoordinator = nil;
+  [self stopAddAccountCoordinator];
 
   if (signinResult != SigninCoordinatorResultSuccess) {
     return;
@@ -287,10 +304,8 @@
   }
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.navigationController);
-  [self.defaultAccountCoordinator stop];
-  self.defaultAccountCoordinator = nil;
-  [self.accountChooserCoordinator stop];
-  self.accountChooserCoordinator = nil;
+  [self stopDefaultAccountCoordinator];
+  [self stopAccountChooserCoordinator];
   [self.consistencyPromoSigninMediator disconnectWithResult:signinResult];
   self.consistencyPromoSigninMediator = nil;
   [self runCompletionWithSigninResult:signinResult
@@ -318,8 +333,7 @@
     (ConsistencyAccountChooserCoordinator*)coordinator {
   self.defaultAccountCoordinator.selectedIdentity =
       self.accountChooserCoordinator.selectedIdentity;
-  [self.accountChooserCoordinator stop];
-  self.accountChooserCoordinator = nil;
+  [self stopAccountChooserCoordinator];
   [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -428,8 +442,7 @@
   if (self.navigationController.viewControllers.count == 1 &&
       self.accountChooserCoordinator) {
     // AccountChooserCoordinator has been removed by "Back" button.
-    [self.accountChooserCoordinator stop];
-    self.accountChooserCoordinator = nil;
+    [self stopAccountChooserCoordinator];
   }
 }
 
@@ -505,8 +518,7 @@
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SIGN_IN_DISMISS)
                 action:^() {
-                  [weakSelf.alertCoordinator stop];
-                  weakSelf.alertCoordinator = nil;
+                  [weakSelf stopAlertCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
   [self.alertCoordinator start];

@@ -150,8 +150,7 @@
                                            completion:completion];
   } else if (_identityChooserCoordinator) {
     CHECK(!_activityOverlayCoordinator);
-    [_identityChooserCoordinator stop];
-    _identityChooserCoordinator = nil;
+    [self stopIdentityChooserCoordinator];
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                      completionIdentity:nil];
     if (completion) {
@@ -165,8 +164,7 @@
     _mediator.delegate = nil;
     [_mediator interruptWithAction:action completion:nil];
     // Drop the activity overlay if it exists.
-    [_activityOverlayCoordinator stop];
-    _activityOverlayCoordinator = nil;
+    [self stopActivityOverlay];
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                      completionIdentity:nil];
     if (completion) {
@@ -202,8 +200,7 @@
   CHECK_EQ(coordinator, _identityChooserCoordinator)
       << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
   [self startAddAccountForSignInOnly];
 }
 
@@ -212,8 +209,7 @@
   CHECK_EQ(coordinator, _identityChooserCoordinator)
       << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
+  [self stopIdentityChooserCoordinator];
   if (!identity) {
     // If no identity was selected, the coordinator can be closed.
     [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
@@ -221,8 +217,6 @@
     return;
   }
   _identity = identity;
-  [_identityChooserCoordinator stop];
-  _identityChooserCoordinator = nil;
   // The identity is now selected, the sign-in flow can be started.
   [self startSignInOnlyFlow];
 }
@@ -303,7 +297,7 @@
                   resultIdentity:(id<SystemIdentity>)resultIdentity {
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
-  _addAccountSigninCoordinator = nil;
+  [self stopAddAccountSigninCoordinator];
   switch (result) {
     case SigninCoordinatorResultSuccess:
       _identity = resultIdentity;
@@ -333,11 +327,25 @@
 }
 
 // Removes an activity overlay to block the UI. `-[HistorySyncCoordinator
-// showActivityOverlay]` must have been called before.
+// showActivityOverlay]` must have been called before. The activity must exists.
 - (void)removeActivityOverlay {
   CHECK(_activityOverlayCoordinator);
+  [self stopActivityOverlay];
+}
+
+- (void)stopActivityOverlay {
   [_activityOverlayCoordinator stop];
   _activityOverlayCoordinator = nil;
+}
+
+- (void)stopIdentityChooserCoordinator {
+  [_identityChooserCoordinator stop];
+  _identityChooserCoordinator = nil;
+}
+
+- (void)stopAddAccountSigninCoordinator {
+  [_addAccountSigninCoordinator stop];
+  _addAccountSigninCoordinator = nil;
 }
 
 #pragma mark - NSObject

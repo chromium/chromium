@@ -460,6 +460,11 @@
 
 #pragma mark - Private
 
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
 - (void)startSigninCoordinatorWithCompletion:
     (SigninCoordinatorCompletionCallback)completion {
   CHECK(_signinCoordinator);
@@ -496,8 +501,7 @@
                                      completion:
                                          (SigninCoordinatorCompletionCallback)
                                              completion {
-  [_signinCoordinator stop];
-  _signinCoordinator = nil;
+  [self stopSigninCoordinator];
   if (completion) {
     completion(signinResult, completionIdentity);
   }

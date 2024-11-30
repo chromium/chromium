@@ -105,6 +105,11 @@ enum class SignInHistorySyncStep {
 
 #pragma mark - Private
 
+- (void)stopChildCoordinator {
+  [_childCoordinator stop];
+  _childCoordinator = nil;
+}
+
 // Moves to the next step and presents the coordinator of that next step.
 - (void)presentNextStepWithPreviousResult:
     (SigninCoordinatorResult)previousResult {
@@ -207,8 +212,7 @@ enum class SignInHistorySyncStep {
   // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
-  [_childCoordinator stop];
-  _childCoordinator = nil;
+  [self stopChildCoordinator];
   [self presentNextStepWithPreviousResult:result];
 }
 
