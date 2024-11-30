@@ -35,68 +35,83 @@ TEST(Base64Test, Basic) {
   EXPECT_EQ(kText, decoded);
 }
 
-TEST(Base64Test, Forgiving) {
+TEST(Base64Test, ForgivingAndStrictDecode) {
   struct {
     const char* in;
 
     // nullptr indicates a decode failure.
-    const char* expected_out;
+    const char* expected_out_forgiving;
+    const char* expected_out_strict;
   } kTestCases[] = {
       // Failures that should apply in all decoding modes:
       //
       // - Characters not in the base64 alphabet
-      {"abc&", nullptr},
-      {"ab-d", nullptr},
+      {"abc&", nullptr, nullptr},
+      {"ab-d", nullptr, nullptr},
       // - input len % 4 == 1
-      {"abcde", nullptr},
-      {"a", nullptr},
+      {"abcde", nullptr, nullptr},
+      {"a", nullptr, nullptr},
 
       // Invalid padding causes failure if kForgiving is set.
-      {"abcd=", nullptr},
-      {"abcd==", nullptr},
-      {"abcd===", nullptr},
-      {"abcd====", nullptr},
-      {"abcd==============", nullptr},
-      {"=", nullptr},
-      {"====", nullptr},
+      {"abcd=", nullptr, nullptr},
+      {"abcd==", nullptr, nullptr},
+      {"abcd===", nullptr, nullptr},
+      {"abcd====", nullptr, nullptr},
+      {"abcd==============", nullptr, nullptr},
+      {"abcde===", nullptr, nullptr},
+      {"=", nullptr, nullptr},
+      {"====", nullptr, nullptr},
 
       // Otherwise, inputs that are multiples of 4 always succeed, this matches
       // kStrict mode.
-      {"abcd", "i\xB7\x1D"},
-      {"abc=", "i\xB7"},
-      {"abcdefgh", "i\xB7\x1Dy\xF8!"},
+      {"abcd", "i\xB7\x1D", "i\xB7\x1D"},
+      {"abc=", "i\xB7", "i\xB7"},
+      {"abcdefgh", "i\xB7\x1Dy\xF8!", "i\xB7\x1Dy\xF8!"},
 
       // kForgiving mode allows for omitting padding (to a multiple of 4) if
       // len % 4 != 1.
-      {"abcdef", "i\xB7\x1Dy"},
-      {"abc", "i\xB7"},
-      {"ab", "i"},
+      {"abcdef", "i\xB7\x1Dy", nullptr},
+      {"abc", "i\xB7", nullptr},
+      {"ab", "i", nullptr},
 
       // Whitespace should be allowed if kForgiving is set, matching
       // https://infra.spec.whatwg.org/#ascii-whitespace:
       // ASCII whitespace is U+0009 TAB '\t', U+000A LF '\n', U+000C FF '\f',
       // U+000D CR '\r', or U+0020 SPACE ' '.
-      {" a bcd", "i\xB7\x1D"},
-      {"ab\t\tc=", "i\xB7"},
-      {"ab c\ndefgh", "i\xB7\x1Dy\xF8!"},
-      {"a\tb\nc\f d\r", "i\xB7\x1D"},
+      {" a bcd", "i\xB7\x1D", nullptr},
+      {"ab\t\tc=", "i\xB7", nullptr},
+      {"ab c\ndefgh", "i\xB7\x1Dy\xF8!", nullptr},
+      {"a\tb\nc\f d\r", "i\xB7\x1D", nullptr},
+      {"this should fail", "\xB6\x18\xAC\xB2\x1A.\x95\xD7\xDA\x8A", nullptr},
 
       // U+000B VT '\v' is _not_ valid whitespace to be stripped.
-      {"ab\vcd", nullptr},
+      {"ab\vcd", nullptr, nullptr},
 
       // Empty string should yield an empty result.
-      {"", ""},
+      {"", "", ""},
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(::testing::Message()
-                 << EscapeAllExceptUnreserved(test_case.in));
+                 << "Forgiving: " << EscapeAllExceptUnreserved(test_case.in));
     std::string output;
     bool success =
         Base64Decode(test_case.in, &output, Base64DecodePolicy::kForgiving);
-    bool expected_success = test_case.expected_out != nullptr;
+    bool expected_success = test_case.expected_out_forgiving != nullptr;
     EXPECT_EQ(success, expected_success);
     if (expected_success) {
-      EXPECT_EQ(output, test_case.expected_out);
+      EXPECT_EQ(output, test_case.expected_out_forgiving);
+    }
+  }
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(::testing::Message()
+                 << "Strict: " << EscapeAllExceptUnreserved(test_case.in));
+    std::string output;
+    bool success =
+        Base64Decode(test_case.in, &output, Base64DecodePolicy::kStrict);
+    bool expected_success = test_case.expected_out_strict != nullptr;
+    EXPECT_EQ(success, expected_success);
+    if (expected_success) {
+      EXPECT_EQ(output, test_case.expected_out_strict);
     }
   }
 }
