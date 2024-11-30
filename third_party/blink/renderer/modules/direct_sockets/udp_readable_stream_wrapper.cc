@@ -144,7 +144,18 @@ void UDPReadableStreamWrapper::OnReceived(
     int32_t result,
     const std::optional<::net::IPEndPoint>& src_addr,
     std::optional<::base::span<const ::uint8_t>> data) {
-  if (result != net::Error::OK) {
+  if (result != net::OK) {
+    if (result == net::ERR_MSG_TOO_BIG) {
+      // TODO(crbug.com/362145407): Figure out the root cause.
+      DCHECK_GT(pending_receive_requests_, 0);
+      pending_receive_requests_--;
+
+      // For the success case pulling happens automatically after Enqueue();
+      // however, here we have to pull manually to request one more packet.
+      Pull();
+      return;
+    }
+
     ErrorStream(result);
     return;
   }

@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/test/run_until.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/restricted_udp_socket.mojom-blink.h"
@@ -55,18 +56,27 @@ class FakeRestrictedUDPSocket final
   }
 
   void ReceiveMore(uint32_t num_additional_datagrams) override {
-    num_requested_datagrams += num_additional_datagrams;
+    num_requested_datagrams_ += num_additional_datagrams;
   }
 
   void ProvideRequestedDatagrams() {
     DCHECK(remote_.is_bound());
-    while (num_requested_datagrams > 0) {
+    while (num_requested_datagrams_ > 0) {
       remote_->OnReceived(net::OK,
                           net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0U},
                           datagram_.Span8());
-      num_requested_datagrams--;
+      num_requested_datagrams_--;
     }
   }
+
+  void ProvideErrMsgTooBig() {
+    CHECK_GT(num_requested_datagrams_, 0U);
+    remote_->OnReceived(net::ERR_MSG_TOO_BIG, /*src_addr=*/std::nullopt,
+                        /*data=*/std::nullopt);
+    num_requested_datagrams_--;
+  }
+
+  uint32_t num_requested_datagrams() const { return num_requested_datagrams_; }
 
   void Bind(mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
                 pending_remote,
@@ -81,7 +91,7 @@ class FakeRestrictedUDPSocket final
 
  private:
   HeapMojoRemote<network::mojom::blink::UDPSocketListener> remote_;
-  uint32_t num_requested_datagrams = 0;
+  uint32_t num_requested_datagrams_ = 0;
   String datagram_{"abcde"};
 };
 
@@ -323,6 +333,50 @@ TEST(UDPReadableStreamWrapperTest, ReadRejectsOnError) {
       script_state, reader->read(script_state, ASSERT_NO_EXCEPTION));
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
+}
+
+TEST(UDPReadableStreamWrapperTest, ReadContinuesOnErrMsgTooBig) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  ScopedStreamCreator stream_creator(
+      MakeGarbageCollected<StreamCreator>(scope));
+  auto* udp_readable_stream_wrapper = stream_creator->Create(scope);
+
+  // Send empty datagrams.
+  auto& fake_udp_socket = stream_creator->fake_udp_socket();
+  fake_udp_socket.SetTestingDatagram({});
+
+  uint32_t outstanding_requests = fake_udp_socket.num_requested_datagrams();
+  EXPECT_GT(outstanding_requests, 0U);
+
+  fake_udp_socket.ProvideErrMsgTooBig();
+  EXPECT_EQ(outstanding_requests - 1,
+            fake_udp_socket.num_requested_datagrams());
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    // net::ERR_MSG_TOO_BIG should trigger `ReceiveMore(1)` and increase the
+    // number of requested datagrams.
+    return outstanding_requests == fake_udp_socket.num_requested_datagrams();
+  }));
+
+  fake_udp_socket.ProvideRequestedDatagrams();
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      udp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
+          script_state, ASSERT_NO_EXCEPTION);
+
+  ScriptPromiseTester tester(script_state,
+                             reader->read(script_state, ASSERT_NO_EXCEPTION));
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  auto [message, done] = UnpackPromiseResult(scope, tester.Value().V8Value());
+  ASSERT_FALSE(done);
+  ASSERT_TRUE(message->hasData());
+
+  ASSERT_EQ(UDPMessageDataToString(message).length(), 0U);
 }
 
 }  // namespace
