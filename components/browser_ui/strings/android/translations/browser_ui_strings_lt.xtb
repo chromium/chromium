@@ -334,6 +334,7 @@
 <translation id="5968921426641056619">Įveskite žiniatinklio adresą</translation>
 <translation id="5975083100439434680">Tolinti</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015145568571136419">Dabar galite greitai pasiekti siūlomus skirtukus iš įrenginio programų sąrašo ir įrenginio paieškos rezultatų. Tai galite išjungti bet kuriuo metu „Chrome“ nustatymuose</translation>
 <translation id="6015775454662021376">Valdykite šios svetainės prieigą prie jūsų įrenginio</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6042308850641462728">Daugiau</translation>
@@ -435,6 +436,7 @@
 <translation id="7423098979219808738">Pirmiausia paklausti</translation>
 <translation id="7423538860840206698">Neleidžiama skaityti iškarpinės</translation>
 <translation id="7425915948813553151">Tamsioji tema, skirta svetainėms</translation>
+<translation id="7488573225650545859">Slėpti peržiūros skirtukus programų sąraše</translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
 <translation id="7547989957535180761">Įjungus svetainėse gali būti rodomi raginimai prisijungti. Išjungus svetainėse negalima rodyti raginimų prisijungti.</translation>
 <translation id="7553211568594248088">Išeiti iš centro paieškos</translation>
@@ -474,6 +476,7 @@
 <translation id="8087000398470557479">Šis turinys yra iš domeno <ph name="DOMAIN_NAME" />, kurį teikia „Google“.</translation>
 <translation id="8088603949666785339">Daugiau parinkčių skiltyje „<ph name="BANNER_TITLE" />“</translation>
 <translation id="8090579562279016251">Sumažinamas našumas, bet V8 tampa atsparesnis atakoms</translation>
+<translation id="8112925981674547014">Peržiūrėti skirtukus programų sąraše</translation>
 <translation id="8113501330600751161">{DAYS,plural, =1{„Chrome“ rytoj vėl apribos slapukus}one{Liko # diena, kol „Chrome“ vėl apribos slapukus}few{Liko # dienos, kol „Chrome“ vėl apribos slapukus}many{Liko # dienos, kol „Chrome“ vėl apribos slapukus}other{Liko # dienų, kol „Chrome“ vėl apribos slapukus}}</translation>
 <translation id="8116925261070264013">Išjungta</translation>
 <translation id="8117244575099414087">Įjungus svetainėse gali būti naudojami įrenginio jutikliai. Išjungus svetainėse negalima naudoti jutiklių.</translation>

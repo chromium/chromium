@@ -978,6 +978,7 @@
 <translation id="5514904542973294328">បិទដោយ​អ្នក​គ្រប់គ្រងឧបករណ៍នេះ</translation>
 <translation id="5515439363601853141">ដោះសោ​ដើម្បី​មើល​ពាក្យសម្ងាត់​របស់អ្នក</translation>
 <translation id="5517095782334947753">អ្នកមានចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតពី <ph name="FROM_ACCOUNT" /> ។</translation>
+<translation id="5517326820028369152">សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ</translation>
 <translation id="5524843473235508879">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត។</translation>
 <translation id="5526281268548144413">មិនអាចបិទ​នៅលើ​វិនដូ​ច្រើន​បានទេ</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# នាទី​មុន}other{# នាទី​មុន}}</translation>
@@ -1280,6 +1281,7 @@
 <translation id="6817747507826986771">ចែករំលែកទំព័រនេះបានយ៉ាងរហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820942662346226299">បានបិទការដំឡើងកំណែកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
+<translation id="6824933543577433709">បានបិទ​សន្លឹក​ខាងក្រោម​សកម្មភាព​ថ្មីៗ</translation>
 <translation id="6828070228333235514">ឈប់តាមដានតម្លៃ</translation>
 <translation id="6830728435402077660">គ្មានសុវត្ថិភាព</translation>
 <translation id="6831043979455480757">បកប្រែ</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7691043218961417207">រុករកខ្លឹមសារសម្រាប់តាមដាន</translation>
 <translation id="7697383401610880082">ដង​អូស</translation>
 <translation id="7698359219371678927">បង្កើតអ៊ីមែលនៅក្នុង <ph name="APP_NAME" /></translation>
+<translation id="7702420606070050505">បានបើក​សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ​ពេញអេក្រង់</translation>
 <translation id="7707922173985738739">ប្រើ​ទិន្នន័យ​ទូរសព្ទចល័ត</translation>
 <translation id="7709918231054955894">ទទួលបាន​ផ្ទាំង​ទាំងអស់​របស់អ្នក</translation>
 <translation id="7733878270780732638">មិនមាន​ទំហំផ្ទុក​គ្រប់គ្រាន់​លើឧបករណ៍ទេ។</translation>
