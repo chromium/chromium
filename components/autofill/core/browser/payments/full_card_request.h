@@ -23,7 +23,6 @@ namespace autofill {
 
 class AutofillClient;
 class AutofillMetricsTest;
-class BrowserAutofillManagerTest;
 class CreditCard;
 class CreditCardAccessManagerTestBase;
 class CreditCardCvcAuthenticatorTest;
@@ -185,7 +184,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   bool GetShouldUnmaskCardForTesting() const { return should_unmask_card_; }
 
  private:
-  friend class autofill::BrowserAutofillManagerTest;
   friend class autofill::AutofillMetricsTest;
   friend class autofill::autofill_metrics::AutofillMetricsBaseTest;
   friend class autofill::CreditCardAccessManagerTestBase;
