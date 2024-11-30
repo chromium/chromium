@@ -82,7 +82,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="2788811701191021538">Abre la página de configuración de métodos de pago en Chrome.</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
-<translation id="2923827943290349720">Bloquear las pestañas de incógnito al cerrar Chrome</translation>
+<translation id="2923827943290349720">Bloquear las pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="2940565985148833945">Consejo de Chrome: busca con Lens</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Añadir marcadores a Chrome</translation>
@@ -168,7 +168,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="5661521615548540542">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Inténtalo de nuevo más tarde.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando 1 ventana de Chrome}other{Mostrando {count} ventanas de Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5709557627224531708">Establecer Google Chrome como navegador predeterminado</translation>
+<translation id="5709557627224531708">Establece Chrome como navegador predeterminado</translation>
 <translation id="571296537125272375">Sin conexión, Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="5716154293141027663">Abre Chrome siempre que toques enlaces en otras aplicaciones</translation>
 <translation id="5772407442571703917">Descarga Chrome aquí.</translation>
@@ -232,7 +232,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="72119412072970160">Puedes usar las contraseñas que has guardado en el Gestor de contraseñas de Google en otras aplicaciones de tu iPad.</translation>
 <translation id="7214019116829172458">Abrir pestaña de Incógnito de Chrome</translation>
 <translation id="722167379782941918">Chrome recomienda la protección mejorada</translation>
-<translation id="723787869754590019">Usar Chrome para autocompletar</translation>
+<translation id="723787869754590019">Usa Chrome para autocompletar</translation>
 <translation id="7261678641327190792">Chrome no puede comprobar tus contraseñas</translation>
 <translation id="7272930098487145294">Para guardar imágenes, toca Ajustes y permite que Chrome añada fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chrome en este dispositivo</translation>

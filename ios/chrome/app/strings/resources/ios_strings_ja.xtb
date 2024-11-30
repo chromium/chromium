@@ -231,7 +231,7 @@
 <translation id="1979188886349613713">ウェブサイトで指定されていないファイル拡張子を含める</translation>
 <translation id="1980417445547898121">{count,plural, =1{他のデバイスで最近開いた {count} 個のタブをこの iPhone で表示します}other{他のデバイスで最近開いた {count} 個のタブをこの iPhone で表示します}}</translation>
 <translation id="1981118202195772574">モバイル</translation>
-<translation id="1984417487208496350">保護なし（推奨されません）</translation>
+<translation id="1984417487208496350">保護なし（非推奨）</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1989404831625305000">パスワード マネージャーを非表示</translation>
 <translation id="1989858546814009832">{count,plural, =1{Google アカウントに 1 件のブックマークを保存します}other{Google アカウントに {count} 件のブックマークを保存します}}</translation>
@@ -377,7 +377,7 @@
 <translation id="2640733327287333451">ユーザー名が指定されていません ••••••••</translation>
 <translation id="264215785133931186">前回の確認: たった今</translation>
 <translation id="2647434099613338025">言語の追加</translation>
-<translation id="2652129567809778422">パスワードの選択</translation>
+<translation id="2652129567809778422">パスワードを選択</translation>
 <translation id="2658056020748144467">ファイルを開けません</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />、<ph name="STATE" />、このデバイスのみ、<ph name="URL" /></translation>
 <translation id="2664621323652615289">停止</translation>
@@ -395,7 +395,7 @@
 検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="269819437389494246">アクセスしたページを確認したり履歴から削除したりできます</translation>
 <translation id="2704606927547763573">コピーしました</translation>
-<translation id="2708051474374549906">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します</translation>
+<translation id="2708051474374549906">Google に送信される閲覧データに基づき、危険なサイト、ダウンロード、拡張機能から、リアルタイムで予防的に保護します。</translation>
 <translation id="2709516037105925701">自動入力</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
@@ -744,7 +744,7 @@
 <translation id="4488754974567924717">パスワードが不正使用された場合はお知らせします</translation>
 <translation id="4489536976005181779">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストにページを追加しました}}</translation>
 <translation id="4490794477009017910">前のタブに移動</translation>
-<translation id="4493604894403585654"><ph name="USER_EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
+<translation id="4493604894403585654"><ph name="USER_EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
 <translation id="4495516234578759322">次を検索</translation>
 <translation id="4502423230170890588">このデバイスから削除</translation>
 <translation id="4508750114462689118">ログイン プロモーションを閉じる</translation>
@@ -1581,7 +1581,7 @@
 <translation id="8182037667962849780">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2}、他 1 個}other{{website_1}、{website_2}、他 {more_count} 個}}</translation>
 <translation id="8189615296021678665">[保存] をタップすると、次回ログイン時にこのパスワードを簡単に使用できます。</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8195191503358432289">パスワードの追加</translation>
+<translation id="8195191503358432289">パスワードを追加</translation>
 <translation id="8202744799033457229">履歴を表示</translation>
 <translation id="8205564605687841303">キャンセル</translation>
 <translation id="820568752112382238">よくアクセスするサイト</translation>

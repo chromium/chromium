@@ -82,7 +82,7 @@
 <translation id="2788811701191021538">Chrome에서 결제 수단 설정 페이지를 엽니다.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="292371311537977079">Chrome 설정</translation>
-<translation id="2923827943290349720">Chrome 종료 시 시크릿 탭을 잠급니다.</translation>
+<translation id="2923827943290349720">Chrome 종료 시 시크릿 탭 잠금</translation>
 <translation id="2940565985148833945">Chrome 도움말: 렌즈로 검색하세요</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="2986402782150919988">Chrome에 북마크 추가</translation>
@@ -288,7 +288,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8387459386171870978">Chrome 계속 사용</translation>
 <translation id="840168496893712993">일부 부가기능으로 Chrome이 비정상 종료됩니다. 해당 부가기능을 제거하세요.</translation>
 <translation id="8413500425974960807">Chrome 도움말: Chrome을 도크로 이동</translation>
-<translation id="8413795581997394485">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 사이트를 방문하면 Chrome에서 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠도 전송됩니다.</translation>
+<translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="84594714173170813">Google 계정의 Chrome 데이터를 계속 사용하세요.</translation>
 <translation id="8459495907675268833">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다. history.google.com에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="8491300088149538575"><ph name="EMAIL" /> 계정으로 로그인되었습니다.

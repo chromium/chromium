@@ -5132,7 +5132,7 @@ No caso de dispositivos não gerenciados, o usuário pode decidir enviar as mét
 <translation id="4694138212536142867">Ativar relatórios sobre o status de hardware do dispositivo</translation>
 <translation id="4697581738794063407">Controlar o recurso de filtro do parâmetro de URL</translation>
 <translation id="4698895924806859508">Não informar eventos de rede</translation>
-<translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
+<translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4699592681017489215">Esta política configura um interruptor local que pode ser usado para desativar verificações de interceptação de DNS. As verificações tentam descobrir se o navegador está por trás de um proxy que redireciona nomes de host desconhecidos.
 
       Essa detecção pode não ser necessária em um ambiente empresarial em que a configuração de rede é conhecida, já que isso causa certo tráfego HTTP e DNS na inicialização e a cada mudança de configuração do DNS.

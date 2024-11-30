@@ -82,7 +82,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="2788811701191021538">Chrome'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilgi edinin</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
-<translation id="2923827943290349720">Chrome'u kapattığınızda Gizli sekmeleri kilitleyin</translation>
+<translation id="2923827943290349720">Chrome'u kapattığınızda Gizli sekmeler kilitlensin</translation>
 <translation id="2940565985148833945">Chrome İpucu: Lens ile Arama Yapın</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />'u seçin</translation>
 <translation id="2986402782150919988">Chrome'a yer işareti ekle</translation>
@@ -298,7 +298,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="8544583291890527417">Chrome'un sizin için tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar.</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
-<translation id="8630122478628016441">Chrome'u kapattığınızda "Gizli sekmeleri kilitleyin" seçeneğini etkinleştirin.</translation>
+<translation id="8630122478628016441">"Chrome'u kapattığınızda Gizli sekmeler kilitlensin" seçeneğini etkinleştirin.</translation>
 <translation id="8673726683583791503">Google Lens ile Alışveriş Yapın</translation>
 <translation id="8727043961453758442">Chrome'dan en iyi şekilde yararlanın</translation>
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
